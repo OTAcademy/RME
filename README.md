@@ -20,7 +20,7 @@ Have you found a bug? Please create an issue in our [bug tracker](https://github
 Other Applications
 ==========
 
-* To host your MMORPG game server, you can use [The Forgotten Server](https://github.com/Zbizu/forgottenserver).
+* To host your MMORPG game server, you can use [The Forgotten Server Plus](https://github.com/Zbizu/forgottenserver).
 * To play your MMORPG game, you can use [OTClient 1.0](https://github.com/Mehah/otclient)
 * To map your MMORPG game, you can use this map editor.
 
