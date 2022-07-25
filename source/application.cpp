@@ -348,6 +348,10 @@ bool Application::ParseCommandLineMap(wxString& fileName)
 	if(argc == 2) {
 		fileName = wxString(argv[1]);
 		return true;
+	} else if (argc == 3) {
+		if (argv[1] == "-ws") {
+			g_settings.setInteger(Config::WELCOME_DIALOG, argv[2] == "1" ? 1 : 0);
+		}
 	}
 	return false;
 }
