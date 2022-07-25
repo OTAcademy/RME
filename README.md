@@ -2,15 +2,20 @@ What is this?
 =============
 
 This is a map editor for game servers that derivied from OpenTibia server project.
+
 Originally the tool was coded by Remere, you can find his repository [here](https://github.com/hampusborgos/rme).
+
 You can find the project for hosting your own server at [the otserv project](https://github.com/opentibia/server).
+
 The main place for help, discussion and servers is [OTA discord](http://discord.gg/OTAcademy).
 
 I want to contribute
 ====================
 
 Contributions are very welcome, if you would like to make any changes, fork this project or request commit access.
+
 Please, if you would like to contribute anything, documentation, extensions or code speak up!
+
 
 Bugs
 ======
