@@ -24,7 +24,7 @@
 // xxyyzzt (major, minor, subversion)
 #define __RME_VERSION_MAJOR__      3
 #define __RME_VERSION_MINOR__      8
-#define __RME_SUBVERSION__         3
+#define __RME_SUBVERSION__         4
 
 #define __LIVE_NET_VERSION__       5
 
