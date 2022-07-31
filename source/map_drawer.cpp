@@ -1076,7 +1076,15 @@ void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Position& pos, Item* it
 		return;
 	}
 
+	bool lightSourceFilter = false;
 	GameSprite* spr = it.sprite;
+	// Light source
+	if ((it.clientID >= 39092 && it.clientID <= 39100 || it.clientID == 39236 || it.clientID == 39367 || it.clientID == 39368) && !options.ingame) {
+		spr = g_items[SPRITE_LIGHTSOURCE].sprite;
+		red = 0;
+		alpha = 180;
+		lightSourceFilter = true;
+	}
 
 	if (it.isMetaItem())
 		return;
@@ -1160,6 +1168,119 @@ void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Position& pos, Item* it
 
 	if (options.show_hooks && (it.hookSouth || it.hookEast) && zoom <= 3.0)
 		DrawHookIndicator(draw_x, draw_y, it);
+
+	// draw light color
+	if (lightSourceFilter) {
+		int startOffsetX = 22;
+		int startOffsetY = 22;
+		int endOffsetX = 32;
+		int endOffsetY = 32;
+		uint8_t byteR = 0;
+		uint8_t byteG = 0;
+		uint8_t byteB = 0;
+		uint8_t byteA = 255;
+
+		switch (it.clientID) {
+			case 39092:
+				// yellow
+				byteR = 255;
+				byteG = 255;
+				startOffsetX = 17;
+				startOffsetY = 17;
+				break;
+			case 39093:
+				//red
+				byteR = 255;
+				startOffsetX = 19;
+				startOffsetY = 19;
+				break;
+			case 39094:
+			case 39097:
+				// lime
+				byteR = 196;
+				byteG = 255;
+				byteB = 33;
+				startOffsetX = 17;
+				startOffsetY = 17;
+				break;
+			case 39095:
+				// lime
+				byteR = 196;
+				byteG = 255;
+				byteB = 33;
+				startOffsetX = 28;
+				startOffsetY = 28;
+				break;
+			case 39096:
+				// yellow
+				byteR = 255;
+				byteG = 255;
+				startOffsetX = 19;
+				startOffsetY = 19;
+				break;
+			case 39098:
+				// yellow
+				byteR = 255;
+				byteG = 255;
+				startOffsetX = 22;
+				startOffsetY = 22;
+				break;
+			case 39099:
+				// yellow
+				byteR = 255;
+				byteG = 255;
+				startOffsetX = 26;
+				startOffsetY = 26;
+				break;
+			case 39100:
+				// white
+				byteR = 255;
+				byteG = 255;
+				byteB = 255;
+				startOffsetX = 19;
+				startOffsetY = 19;
+				break;
+			case 39236:
+				// white
+				byteR = 255;
+				byteG = 255;
+				byteB = 255;
+				startOffsetX = 28;
+				startOffsetY = 28;
+				break;
+			case 39367:
+				// lime
+				byteR = 196;
+				byteG = 255;
+				byteB = 33;
+				startOffsetX = 26;
+				startOffsetY = 26;
+				break;
+			case 39368:
+				// cyan
+				byteG = 255;
+				byteB = 255;
+				startOffsetX = 22;
+				startOffsetY = 22;
+				break;
+			default:
+				startOffsetX = 31;
+				startOffsetY = 31;
+				break;
+		}
+
+
+
+		glDisable(GL_TEXTURE_2D);
+		glColor4ub(byteR, byteG, byteB, byteA);
+		glBegin(GL_QUADS);
+		glVertex2f(draw_x + startOffsetX, draw_y + startOffsetY);
+		glVertex2f(draw_x + endOffsetX, draw_y + startOffsetY);
+		glVertex2f(draw_x + endOffsetX, draw_y + endOffsetY);
+		glVertex2f(draw_x + startOffsetX, draw_y + endOffsetY);
+		glEnd();
+		glEnable(GL_TEXTURE_2D);
+	}
 
 	if (it.isPodium()) {
 		Outfit outfit = podium->getOutfit();
