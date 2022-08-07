@@ -27715,10 +27715,18 @@
 	<item fromid="20005" toid="20072" article="a" name="sign">
 		<attribute key="allowDistRead" value="true" />
 	</item>
-	<item fromid="20073" toid="20074" article="a" name="steamship station sign" />
-	<item fromid="20075" toid="20076" article="a" name="magic carpet sign" />
-	<item fromid="20077" toid="20078" article="a" name="harbour sign" />
-	<item fromid="20079" toid="20080" article="a" name="bank sign" />
+	<item fromid="20073" toid="20074" article="a" name="steamship station sign">
+		<attribute key="allowDistRead" value="true" />
+	</item>
+	<item fromid="20075" toid="20076" article="a" name="magic carpet sign">
+		<attribute key="allowDistRead" value="true" />
+	</item>
+	<item fromid="20077" toid="20078" article="a" name="harbour sign">
+		<attribute key="allowDistRead" value="true" />
+	</item>
+	<item fromid="20079" toid="20080" article="a" name="bank sign">
+		<attribute key="allowDistRead" value="true" />
+	</item>
 	<item fromid="20081" toid="20082" article="an" name="oriel window" />
 	<item fromid="20083" toid="20086" article="a" name="roof" />
 	<item fromid="20087" toid="20088" article="a" name="blocked cave entrance" />
