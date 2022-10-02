@@ -30,6 +30,15 @@
 #include <wx/dir.h>
 #include "pngfiles.h"
 
+#include "../brushes/door_normal.xpm"
+#include "../brushes/door_normal_small.xpm"
+#include "../brushes/door_locked.xpm"
+#include "../brushes/door_locked_small.xpm"
+#include "../brushes/door_magic.xpm"
+#include "../brushes/door_magic_small.xpm"
+#include "../brushes/door_quest.xpm"
+#include "../brushes/door_quest_small.xpm"
+
 // All 133 template colors
 static uint32_t TemplateOutfitLookupTable[] = {
 	0xFFFFFF, 0xFFD4BF, 0xFFE9BF, 0xFFFFBF, 0xE9FFBF, 0xD4FFBF,
@@ -293,23 +302,23 @@ bool GraphicManager::loadEditorSprites()
 
 	sprite_space[EDITOR_SPRITE_DOOR_NORMAL] =
 		newd EditorSprite(
-			loadPNGFile(door_normal_small_png),
-			loadPNGFile(door_normal_png)
+			newd wxBitmap(door_normal_small_xpm),
+			newd wxBitmap(door_normal_xpm)
 		);
 	sprite_space[EDITOR_SPRITE_DOOR_LOCKED] =
 		newd EditorSprite(
-			loadPNGFile(door_locked_small_png),
-			loadPNGFile(door_locked_png)
+			newd wxBitmap(door_locked_small_xpm),
+			newd wxBitmap(door_locked_xpm)
 		);
 	sprite_space[EDITOR_SPRITE_DOOR_MAGIC] =
 		newd EditorSprite(
-			loadPNGFile(door_magic_small_png),
-			loadPNGFile(door_magic_png)
+			newd wxBitmap(door_magic_small_xpm),
+			newd wxBitmap(door_magic_xpm)
 		);
 	sprite_space[EDITOR_SPRITE_DOOR_QUEST] =
 		newd EditorSprite(
-			loadPNGFile(door_quest_small_png),
-			loadPNGFile(door_quest_png)
+			newd wxBitmap(door_quest_small_xpm),
+			newd wxBitmap(door_quest_xpm)
 		);
 	sprite_space[EDITOR_SPRITE_WINDOW_NORMAL] =
 		newd EditorSprite(
