@@ -37,7 +37,10 @@
 #include "../icons/rectangular_5.xpm"
 #include "../icons/rectangular_6.xpm"
 #include "../icons/rectangular_7.xpm"
-
+#include "../brushes/door_normal.xpm"
+#include "../brushes/door_locked.xpm"
+#include "../brushes/door_magic.xpm"
+#include "../brushes/door_quest.xpm"
 
 wxBitmap ArtProvider::CreateBitmap(const wxArtID& id, const wxArtClient& client, const wxSize& WXUNUSED(size))
 {
@@ -84,6 +87,15 @@ wxBitmap ArtProvider::CreateBitmap(const wxArtID& id, const wxArtClient& client,
 			return wxBitmap(rectangular_6_xpm);
 		else if (id == ART_RECTANGULAR_7)
 			return wxBitmap(rectangular_7_xpm);
+
+		else if (id == ART_DOOR_LOCKED)
+			return wxBitmap(door_locked_xpm);
+		else if (id == ART_DOOR_NORMAL)
+			return wxBitmap(door_normal_xpm);
+		else if (id == ART_DOOR_MAGIC)
+			return wxBitmap(door_magic_xpm);
+		else if (id == ART_DOOR_QUEST)
+			return wxBitmap(door_quest_xpm);
 	}
 
 	return wxNullBitmap;

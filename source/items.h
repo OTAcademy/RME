@@ -319,7 +319,7 @@ public:
 	//uint16_t writeOnceItemId;
 	uint16_t slot_position;
 	uint8_t weapon_type;
-	uint8_t classification; // 12.81
+	uint8_t classification = 0; // 12.81
 	uint16_t ground_equivalent;
 	uint32_t border_group;
 	bool has_equivalent; // True if any item has this as ground_equivalent
