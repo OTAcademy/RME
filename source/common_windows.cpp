@@ -639,6 +639,202 @@ void ExportMiniMapWindow::CheckValues()
 }
 
 // ============================================================================
+// Export Tilesets window
+
+BEGIN_EVENT_TABLE(ExportTilesetsWindow, wxDialog)
+	EVT_BUTTON(TILESET_FILE_BUTTON, ExportTilesetsWindow::OnClickBrowse)
+	EVT_BUTTON(wxID_OK, ExportTilesetsWindow::OnClickOK)
+	EVT_BUTTON(wxID_CANCEL, ExportTilesetsWindow::OnClickCancel)
+END_EVENT_TABLE()
+
+ExportTilesetsWindow::ExportTilesetsWindow(wxWindow* parent, Editor& editor) :
+	wxDialog(parent, wxID_ANY, "Export Tilesets", wxDefaultPosition, wxSize(400, 230)),
+	editor(editor)
+{
+	wxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
+	wxSizer* tmpsizer;
+
+	// Error field
+	error_field = newd wxStaticText(this, wxID_VIEW_DETAILS, "", wxDefaultPosition, wxDefaultSize);
+	error_field->SetForegroundColour(*wxRED);
+	tmpsizer = newd wxBoxSizer(wxHORIZONTAL);
+	tmpsizer->Add(error_field, 0, wxALL, 5);
+	sizer->Add(tmpsizer, 0, wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
+
+	// Output folder
+	directory_text_field = newd wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize);
+	directory_text_field->Bind(wxEVT_KEY_UP, &ExportTilesetsWindow::OnDirectoryChanged, this);
+	directory_text_field->SetValue(wxString(g_settings.getString(Config::TILESET_EXPORT_DIR)));
+	tmpsizer = newd wxStaticBoxSizer(wxHORIZONTAL, this, "Output Folder");
+	tmpsizer->Add(directory_text_field, 1, wxALL, 5);
+	tmpsizer->Add(newd wxButton(this, TILESET_FILE_BUTTON, "Browse"), 0, wxALL, 5);
+	sizer->Add(tmpsizer, 0, wxALL | wxEXPAND, 5);
+
+	// File name
+	file_name_text_field = newd wxTextCtrl(this, wxID_ANY, "tilesets", wxDefaultPosition, wxDefaultSize);
+	file_name_text_field->Bind(wxEVT_KEY_UP, &ExportTilesetsWindow::OnFileNameChanged, this);
+	tmpsizer = newd wxStaticBoxSizer(wxHORIZONTAL, this, "File Name");
+	tmpsizer->Add(file_name_text_field, 1, wxALL, 5);
+	sizer->Add(tmpsizer, 0, wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 5);
+
+	// OK/Cancel buttons
+	tmpsizer = newd wxBoxSizer(wxHORIZONTAL);
+	tmpsizer->Add(ok_button = newd wxButton(this, wxID_OK, "OK"), wxSizerFlags(1).Center());
+	tmpsizer->Add(newd wxButton(this, wxID_CANCEL, "Cancel"), wxSizerFlags(1).Center());
+	sizer->Add(tmpsizer, 0, wxCENTER, 10);
+
+	SetSizer(sizer);
+	Layout();
+	Centre(wxBOTH);
+	CheckValues();
+}
+
+ExportTilesetsWindow::~ExportTilesetsWindow() = default;
+
+void ExportTilesetsWindow::OnClickBrowse(wxCommandEvent & WXUNUSED(event))
+{
+	wxDirDialog dialog(NULL, "Select the output folder", "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+	if (dialog.ShowModal() == wxID_OK) {
+		const wxString& directory = dialog.GetPath();
+		directory_text_field->ChangeValue(directory);
+	}
+	CheckValues();
+}
+
+void ExportTilesetsWindow::OnDirectoryChanged(wxKeyEvent & event)
+{
+	CheckValues();
+	event.Skip();
+}
+
+void ExportTilesetsWindow::OnFileNameChanged(wxKeyEvent & event)
+{
+	CheckValues();
+	event.Skip();
+}
+
+void ExportTilesetsWindow::OnClickOK(wxCommandEvent & WXUNUSED(event))
+{
+	g_gui.CreateLoadBar("Exporting Tilesets");
+
+	try
+	{
+		FileName directory(directory_text_field->GetValue());
+		g_settings.setString(Config::TILESET_EXPORT_DIR, directory_text_field->GetValue().ToStdString());
+
+		FileName file(file_name_text_field->GetValue() + ".xml");
+		file.Normalize(wxPATH_NORM_ALL, directory.GetFullPath());
+
+		pugi::xml_document doc;
+		pugi::xml_node node = doc.append_child("materials");
+
+		std::map<std::string, TilesetCategoryType> palettes{
+			{"Terrain", TILESET_TERRAIN},
+			{"Doodad", TILESET_DOODAD},
+			{"Items", TILESET_ITEM},
+			{"Raw", TILESET_RAW}
+		};
+		for (TilesetContainer::iterator iter = g_materials.tilesets.begin(); iter != g_materials.tilesets.end(); ++iter) {
+			std::string _data = iter->second->name;
+			std::transform(_data.begin(), _data.end(), _data.begin(), [](unsigned char c) { return std::tolower(c); });
+			if (_data == "others") {
+				bool blocked = 1;
+
+				for (const auto& kv : palettes) {
+					TilesetCategory* tilesetCategory = iter->second->getCategory(kv.second);
+
+					if (kv.second != TILESET_RAW && tilesetCategory->brushlist.size() > 0) {
+						blocked = 0;
+					}
+				}
+
+				if (blocked) continue;
+			}
+
+			pugi::xml_node tileset = node.append_child("tileset");
+			tileset.append_attribute("name") = iter->second->name.c_str();
+
+			for (const auto& kv : palettes) {
+				TilesetCategory *tilesetCategory = iter->second->getCategory(kv.second);
+
+				if (tilesetCategory->brushlist.size() > 0) {
+					std::string data = kv.first;
+					std::transform(data.begin(), data.end(), data.begin(), [](unsigned char c) { return std::tolower(c); });
+
+					pugi::xml_node palette = tileset.append_child(data.c_str());
+					for (BrushVector::const_iterator _iter = tilesetCategory->brushlist.begin(); _iter != tilesetCategory->brushlist.end(); ++_iter) {
+						if ( !(*_iter)->isRaw() ) {
+							pugi::xml_node brush = palette.append_child("brush");
+							brush.append_attribute("name") = (*_iter)->getName().c_str();
+						}
+						else {
+							ItemType& it = g_items[(*_iter)->asRaw()->getItemID()];
+							if (it.id != 0) {
+								pugi::xml_node item = palette.append_child("item");
+								item.append_attribute("id") = it.id;
+							}
+						}
+					}
+				}
+			}
+
+			size_t n = std::distance(tileset.begin(), tileset.end());
+			if (n <= 0) {
+				node.remove_child(tileset);
+			}
+		}
+
+		doc.save_file(file.GetFullPath().mb_str());
+		g_gui.PopupDialog("Successfully saved Tilesets", "Saved tilesets to '" + std::string(file.GetFullPath().mb_str()) + "'", wxOK);
+	}
+	catch (std::bad_alloc&)
+	{
+		g_gui.PopupDialog("Error", "There is not enough memory available to complete the operation.", wxOK);
+	}
+
+	g_gui.DestroyLoadBar();
+	EndModal(1);
+}
+
+void ExportTilesetsWindow::OnClickCancel(wxCommandEvent & WXUNUSED(event))
+{
+	// Just close this window
+	EndModal(0);
+}
+
+void ExportTilesetsWindow::CheckValues()
+{
+	if (directory_text_field->IsEmpty()) {
+		error_field->SetLabel("Type or select an output folder.");
+		ok_button->Enable(false);
+		return;
+	}
+
+	if (file_name_text_field->IsEmpty()) {
+		error_field->SetLabel("Type a name for the file.");
+		ok_button->Enable(false);
+		return;
+	}
+
+	FileName directory(directory_text_field->GetValue());
+
+	if (!directory.Exists()) {
+		error_field->SetLabel("Output folder not found.");
+		ok_button->Enable(false);
+		return;
+	}
+
+	if (!directory.IsDirWritable()) {
+		error_field->SetLabel("Output folder is not writable.");
+		ok_button->Enable(false);
+		return;
+	}
+
+	error_field->SetLabel(wxEmptyString);
+	ok_button->Enable(true);
+}
+
+// ============================================================================
 // Numkey forwarding text control
 
 BEGIN_EVENT_TABLE(KeyForwardingTextCtrl, wxTextCtrl)
@@ -1104,6 +1300,13 @@ wxDialog(parent, wxID_ANY, title,
 	edit_item(nullptr),
 	edit_creature(nullptr),
 	edit_spawn(spawn)
+{
+	////
+}
+
+ObjectPropertiesWindowBase::ObjectPropertiesWindowBase(wxWindow* parent, wxString title, wxPoint position /* = wxDefaultPosition */) :
+	wxDialog(parent, wxID_ANY, title,
+		position, wxSize(600, 400), wxCAPTION | wxCLOSE_BOX | wxRESIZE_BORDER)
 {
 	////
 }

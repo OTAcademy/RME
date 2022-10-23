@@ -36,6 +36,7 @@ namespace MenuBar
 		IMPORT_MONSTERS,
 		IMPORT_MINIMAP,
 		EXPORT_MINIMAP,
+		EXPORT_TILESETS,
 		RELOAD_DATA,
 		RECENT_FILES,
 		PREFERENCES,
@@ -192,6 +193,7 @@ public:
 	void OnImportMonsterData(wxCommandEvent& event);
 	void OnImportMinimap(wxCommandEvent& event);
 	void OnExportMinimap(wxCommandEvent& event);
+	void OnExportTilesets(wxCommandEvent& event);
 	void OnReloadDataFiles(wxCommandEvent& event);
 
 	// Edit Menu
