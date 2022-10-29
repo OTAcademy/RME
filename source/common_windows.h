@@ -137,6 +137,34 @@ protected:
 };
 
 /**
+ * The export tilesets dialog, select output path.
+ */
+class ExportTilesetsWindow : public wxDialog
+{
+public:
+	ExportTilesetsWindow(wxWindow* parent, Editor& editor);
+	virtual ~ExportTilesetsWindow();
+
+	void OnClickBrowse(wxCommandEvent&);
+	void OnDirectoryChanged(wxKeyEvent&);
+	void OnFileNameChanged(wxKeyEvent&);
+	void OnClickOK(wxCommandEvent&);
+	void OnClickCancel(wxCommandEvent&);
+
+protected:
+	void CheckValues();
+
+	Editor& editor;
+
+	wxStaticText* error_field;
+	wxTextCtrl* directory_text_field;
+	wxTextCtrl* file_name_text_field;
+	wxButton* ok_button;
+
+	DECLARE_EVENT_TABLE();
+};
+
+/**
  * Text control that will forward up/down pgup / pgdown keys to parent window
  */
 class KeyForwardingTextCtrl : public wxTextCtrl
@@ -278,6 +306,8 @@ public:
 		wxWindow* parent, wxString title,
 		const Map* map, const Tile* tile, Creature* creature,
 		wxPoint position = wxDefaultPosition);
+	ObjectPropertiesWindowBase(
+		wxWindow* parent, wxString title, wxPoint position = wxDefaultPosition);
 
 	Item* getItemBeingEdited();
 	Creature* getCreatureBeingEdited();
