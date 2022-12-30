@@ -1,12 +1,12 @@
 <materials>
-	<brush name="ice" type="border"/>
+	<brush name="ice" type="ground"/>
 	
-	<brush name="void" type="border" server_lookid="100" z-order="95">
+	<brush name="void" type="ground" server_lookid="100" z-order="95">
 		<item id="100" chance="10"/>
 	</brush>
 	
-	<brush name="grass" type="border" server_lookid="4526" z-order="3000">
-		<item id="4526" chance="2500"/>
+	<brush name="grass" type="ground" server_lookid="4526" z-order="3500">
+		<item id="4526" chance="50"/>
 		<item id="4527" chance="15"/>
 		<item id="4528" chance="25"/>
 		<item id="4529" chance="25"/>
@@ -22,251 +22,278 @@
 		<item id="4539" chance="20"/>
 		<item id="4540" chance="20"/>
 		<item id="4541" chance="20"/>
-		<item id="4567" chance="20"/>
-		<item id="4568" chance="20"/>
-		<item id="4569" chance="20"/>
-		<item id="4756" chance="20"/>
-		<item id="470" chance="0"/>
+		<item id="4567" chance="0"/>
+		<item id="4568" chance="0"/>
+		<item id="4569" chance="0"/>
+		<item id="4756" chance="0"/>
 		
-		<border align="outer" id="2"/>
-		<border align="inner" to="none" id="1"/>
+		<border align="outer" id="38"/>
+		<border align="inner" to="none" id="7"/>
 	</brush>
 	
-	<brush name="grass open stone pile" type="border" server_lookid="469" z-order="3000">
+	<brush name="grass open stone pile" type="ground" server_lookid="469" z-order="3000">
 		<item id="469" chance="1"/>
 		
-		<border align="outer" id="2"/>
+		<border align="outer" id="38"/>
 		<friend name="grass"/>
 	</brush>
 	
-	<brush name="grass closed stone pile" type="border" server_lookid="468" z-order="3000">
+	<brush name="grass closed stone pile" type="ground" server_lookid="468" z-order="3000">
 		<item id="468" chance="1"/>
 		
-		<border align="outer" id="2"/>
+		<border align="outer" id="38"/>
 		<friend name="grass"/>
 		<friend name="grass open stone pile"/>
 	</brush>
 	
-	<brush name="grass pitfall" type="border" server_lookid="293" z-order="3000">
+	<brush name="grass pitfall" type="ground" server_lookid="293" z-order="3000">
 		<item id="293" chance="1"/>
 		
-		<border align="outer" id="2"/>
+		<border align="outer" id="38"/>
 		<friend name="grass"/>
 		<friend name="grass open stone pile"/>
 		<friend name="grass closed stone pile"/>
 	</brush>
 	
-	<brush name="sea" type="border" server_lookid="4608" z-order="6000">
+	<brush name="grass pitfall (always open)" type="ground" server_lookid="470" z-order="3000">
+		<item id="470" chance="1"/>
+		
+		<border align="outer" id="38"/>
+		<friend name="grass"/>
+		<friend name="grass open stone pile"/>
+		<friend name="grass closed stone pile"/>
+		<friend name="grass pitfall"/>
+	</brush>
+	
+	<brush name="sea" type="ground" server_lookid="4608" z-order="6000">
 		<item id="4608" chance="3"/>
 		<item id="4609" chance="1"/>
 		<item id="4610" chance="1"/>
 		<item id="4611" chance="1"/>
 		<item id="4612" chance="1"/>
 		<item id="4613" chance="1"/>
-		<item id="4614" chance="1"/>
-		<item id="4615" chance="1"/>
-		<item id="4616" chance="1"/>
-		<item id="4617" chance="1"/>
-		<item id="4618" chance="1"/>
-		<item id="4619" chance="1"/>
-		<item id="4620" chance="1"/>
-		<item id="4621" chance="1"/>
-		<item id="4622" chance="1"/>
-		<item id="4623" chance="1"/>
-		<item id="4624" chance="1"/>
-		<item id="4625" chance="1"/>
-		<item id="4820" chance="0"/>
-		<item id="4821" chance="0"/>
-		<item id="4822" chance="0"/>
-		<item id="4823" chance="0"/>
-		<item id="4824" chance="0"/>
-		<item id="4825" chance="0"/>
+
+		<!-- non-walkable, unknown purpose -->
+		<item id="4664" chance="0"/>
+		<item id="4665" chance="0"/>
+		<item id="4666" chance="0"/>
 		
-		<border align="outer" id="5"/>
+		<!-- non-fishable -->
+		<item id="4614" chance="0"/>
+		<item id="4615" chance="0"/>
+		<item id="4616" chance="0"/>
+		<item id="4617" chance="0"/>
+		<item id="4618" chance="0"/>
+		<item id="4619" chance="0"/>
+		
+		<!-- walkable in future updates -->
+		<item id="4620" chance="0"/>
+		<item id="4621" chance="0"/>
+		<item id="4622" chance="0"/>
+		<item id="4623" chance="0"/>
+		<item id="4624" chance="0"/>
+		<item id="4625" chance="0"/>
+		
+		<border align="outer" id="42"/>
 	</brush>
 	
-	<brush name="ice" type="border" server_lookid="671" z-order="5500">
+	<brush name="walkable sea" type="ground" server_lookid="4608" z-order="7600">
+		<item id="4820" chance="3"/>
+		<item id="4821" chance="1"/>
+		<item id="4822" chance="1"/>
+		<item id="4823" chance="1"/>
+		<item id="4824" chance="1"/>
+		<item id="4825" chance="1"/>
+		
+		<friend name="sea"/>
+		
+		<border align="outer" id="53"/>
+		<border align="outer" to="none" id="53"/>
+		<border align="inner" to="ice" id="47"/>
+	</brush>
+	
+	<brush name="ice" type="ground" server_lookid="671" z-order="5500">
 		<item id="671" chance="2"/>
 		
-		<border align="inner" to="sea" id="6"/>
-		<border align="inner" to="none" id="6"/>
+		<border align="inner" to="sea" id="47"/>
+		<border align="inner" to="none" id="47"/>
 	</brush>
 	
-	<brush name="ice open stone pile" type="border" server_lookid="484" z-order="5500">
+	<brush name="ice open stone pile" type="ground" server_lookid="484" z-order="5500">
 		<item id="484" chance="1"/>
 		
-		<border align="inner" to="sea" id="6"/>
-		<border align="inner" to="none" id="6"/>
+		<border align="inner" to="sea" id="47"/>
+		<border align="inner" to="none" id="47"/>
 		
 		<friend name="ice"/>
 	</brush>
 	
-	<brush name="ice closed stone pile" type="border" server_lookid="483" z-order="5500">
+	<brush name="ice closed stone pile" type="ground" server_lookid="483" z-order="5500">
 		<item id="483" chance="1"/>
 		
-		<border align="inner" to="sea" id="6"/>
-		<border align="inner" to="none" id="6"/>
+		<border align="inner" to="sea" id="47"/>
+		<border align="inner" to="none" id="47"/>
 		
 		<friend name="ice"/>
 		<friend name="ice open stone pile"/>
 	</brush>
 	
-	<brush name="hole in the ice" type="border" server_lookid="485" z-order="5500">
+	<brush name="hole in the ice" type="ground" server_lookid="485" z-order="5500">
 		<item id="485" chance="1"/>
 		
-		<border align="inner" to="sea" id="6"/>
-		<border align="inner" to="none" id="6"/>
+		<border align="inner" to="sea" id="47"/>
+		<border align="inner" to="none" id="47"/>
 		
 		<friend name="ice"/>
 		<friend name="ice open stone pile"/>
 		<friend name="ice closed stone pile"/>
 	</brush>
 	
-	<brush name="snow" type="border" server_lookid="6838" z-order="5505">
+	<brush name="snow" type="ground" server_lookid="670" z-order="5505">
 		<item id="670" chance="240"/>
 		
-		<border align="outer" id="6"/>
+		<border align="outer" id="47"/>
 	</brush>
 	
-	<brush name="lawn" type="border" lookid="106" z-order="2800">
+	<brush name="lawn" type="ground" lookid="106" z-order="2800">
 		<item id="106" chance="8"/>
 		<item id="108" chance="1"/>
 		<item id="109" chance="1"/>
 		
-		<border align="outer" id="8"/>
-		<border align="inner" to="none" id="1"/>
+		<border align="outer" id="50"/>
+		<border align="inner" to="none" id="7"/>
 	</brush>
 	
-	<brush name="cave" type="border" lookid="351" z-order="2000">
+	<brush name="cave" type="ground" lookid="351" z-order="2000">
 		<item id="351" chance="6"/>
 		<item id="352" chance="1"/>
 		<item id="353" chance="1"/>
 		<item id="354" chance="1"/>
 		<item id="355" chance="1"/>
 		
-		<border align="outer" id="7"/>
+		<border align="outer" id="51"/>
 	</brush>
 	
-	<brush name="cave hole" type="border" server_lookid="383" z-order="2000">
+	<brush name="cave hole" type="ground" server_lookid="383" z-order="2000">
 		<item id="383" chance="1"/>
 		
-		<border align="outer" id="7"/>
+		<border align="outer" id="51"/>
 		<friend name="cave"/>
 	</brush>
 	
-	<brush name="cave ropespot" type="border" server_lookid="384" z-order="2000">
+	<brush name="cave ropespot" type="ground" server_lookid="384" z-order="2000">
 		<item id="384" chance="1"/>
 		
-		<border align="outer" id="7"/>
+		<border align="outer" id="51"/>
 		<friend name="cave"/>
 		<friend name="cave hole"/>
 	</brush>
 	
-	<brush name="cave small hole" type="border" server_lookid="385" z-order="2000">
-		<item id="392" chance="1"/>
+	<brush name="cave small hole" type="ground" server_lookid="385" z-order="2000">
+		<item id="385" chance="1"/>
 		
-		<border align="outer" id="7"/>
+		<border align="outer" id="51"/>
 		<friend name="cave"/>
 		<friend name="cave hole"/>
 		<friend name="cave ropespot"/>
 	</brush>
 	
-	<brush name="cave pickhole" type="border" server_lookid="392" z-order="2000">
-		<item id="385" chance="1"/>
+	<brush name="cave pickhole" type="ground" server_lookid="392" z-order="2000">
+		<item id="392" chance="1"/>
 		
-		<border align="outer" id="7"/>
+		<border align="outer" id="51"/>
 		<friend name="cave"/>
 		<friend name="cave hole"/>
 		<friend name="cave ropespot"/>
 		<friend name="cave small hole"/>
 	</brush>
 	
-	<brush name="dry earth" type="border" server_lookid="836" z-order="501">
-		<item id="836" chance="1"/>
+	<brush name="dry earth" type="ground" server_lookid="836" z-order="501">
+		<item id="836" chance="43"/>
 	</brush>
 	
-	<brush name="sand" type="border" server_lookid="231" z-order="3500">
+	<brush name="sand" type="ground" server_lookid="231" z-order="3000">
 		<item id="231" chance="1"/>
 		
-		<border align="outer" id="16">
+		<border align="outer" id="49">
 			-- Handles for the 8 different specific cases which might occur with water/sand borders --
 			<specific>
 				<conditions>
-					<match_border id="16" edge="s"/>
-					<match_border id="5"  edge="e"/>
+					<match_border id="49" edge="s"/>
+					<match_border id="42"  edge="e"/>
 				</conditions>
 				<actions>
-					<replace_border id="5" edge="e" with="4659"/>
+					<replace_border id="42" edge="e" with="4659"/>
 				</actions>
 			</specific>
 			
 			<specific>
 				<conditions>
-					<match_border id="16" edge="n"/>
-					<match_border id="5"  edge="e"/>
+					<match_border id="49" edge="n"/>
+					<match_border id="42"  edge="e"/>
 				</conditions>
 				<actions>
-					<replace_border id="5" edge="e" with="4663"/>
+					<replace_border id="42" edge="e" with="4663"/>
 				</actions>
 			</specific>
 			
 			<specific>
 				<conditions>
-					<match_border id="16" edge="s"/>
-					<match_border id="5"  edge="w"/>
+					<match_border id="49" edge="s"/>
+					<match_border id="42"  edge="w"/>
 				</conditions>
 				<actions>
-					<replace_border id="5" edge="w" with="4658"/>
+					<replace_border id="42" edge="w" with="4658"/>
 				</actions>
 			</specific>
 			
 			<specific>
 				<conditions>
-					<match_border id="16" edge="n"/>
-					<match_border id="5"  edge="w"/>
+					<match_border id="49" edge="n"/>
+					<match_border id="42"  edge="w"/>
 				</conditions>
 				<actions>
-					<replace_border id="5" edge="w" with="4662"/>
+					<replace_border id="42" edge="w" with="4662"/>
 				</actions>
 			</specific>
 			
 			<specific>
 				<conditions>
-					<match_border id="16" edge="e"/>
-					<match_border id="5"  edge="s"/>
+					<match_border id="49" edge="e"/>
+					<match_border id="42"  edge="s"/>
 				</conditions>
 				<actions>
-					<replace_border id="5" edge="s" with="4657"/>
+					<replace_border id="42" edge="s" with="4657"/>
 				</actions>
 			</specific>
 			
 			<specific>
 				<conditions>
-					<match_border id="16" edge="w"/>
-					<match_border id="5"  edge="s"/>
+					<match_border id="49" edge="w"/>
+					<match_border id="42"  edge="s"/>
 				</conditions>
 				<actions>
-					<replace_border id="5" edge="s" with="4661"/>
+					<replace_border id="42" edge="s" with="4661"/>
 				</actions>
 			</specific>
 			
 			<specific>
 				<conditions>
-					<match_border id="16" edge="e"/>
-					<match_border id="5"  edge="n"/>
+					<match_border id="49" edge="e"/>
+					<match_border id="42"  edge="n"/>
 				</conditions>
 				<actions>
-					<replace_border id="5" edge="n" with="4656"/>
+					<replace_border id="42" edge="n" with="4656"/>
 				</actions>
 			</specific>
 			
 			<specific>
 				<conditions>
-					<match_border id="16" edge="w"/>
-					<match_border id="5"  edge="n"/>
+					<match_border id="49" edge="w"/>
+					<match_border id="42"  edge="n"/>
 				</conditions>
 				<actions>
-					<replace_border id="5" edge="n" with="4660"/>
+					<replace_border id="42" edge="n" with="4660"/>
 				</actions>
 			</specific>
 		</border>
@@ -285,120 +312,123 @@
 			<borderitem edge="dsw" item="4637"/>
 			<borderitem edge="dse" item="4636"/>
 		</border>
-		<border align="inner" to="none" id="1"/>
+		<border align="inner" to="none" id="7"/>
 	</brush>
 	
-	<brush name="sand open stone pile" type="border" server_lookid="482" z-order="3500">
+	<brush name="sandstone ropespot" type="ground" server_lookid="418" z-order="3500">
+		<item id="418" chance="1"/>
+	</brush>
+	
+	<brush name="sand open stone pile" type="ground" server_lookid="482" z-order="3500">
 		<item id="482" chance="1"/>
 		
-		<border align="outer" id="16"/>
-		<border align="inner" to="none" id="1"/>
+		<border align="outer" id="49"/>
+		<border align="inner" to="none" id="7"/>
 		<friend name="sand"/>
 	</brush>
 	
-	<brush name="sand closed stone pile" type="border" server_lookid="481" z-order="3500">
+	<brush name="sand closed stone pile" type="ground" server_lookid="481" z-order="3500">
 		<item id="481" chance="1"/>
 		
-		<border align="outer" id="16"/>
-		<border align="inner" to="none" id="1"/>
+		<border align="outer" id="49"/>
+		<border align="inner" to="none" id="7"/>
 		<friend name="sand"/>
 		<friend name="sand open stone pile"/>
 	</brush>
 	
-	<brush name="sand scarab hole" type="border" server_lookid="489" z-order="3500">
+	<brush name="sand scarab hole" type="ground" server_lookid="489" z-order="3500">
 		<item id="489" chance="1"/>
 		
-		<border align="outer" id="16"/>
-		<border align="inner" to="none" id="1"/>
+		<border align="outer" id="49"/>
+		<border align="inner" to="none" id="7"/>
 		<friend name="sand"/>
 		<friend name="sand open stone pile"/>
 		<friend name="sand closed stone pile"/>
 	</brush>
 	
-	<brush name="earth" type="border" lookid="101" z-order="9500" solo_optional="true">
-		<item id="101" chance="130"/>
+	<brush name="earth" type="ground" lookid="101" z-order="9500" solo_optional="true">
+		<item id="101" chance="1"/>
 		
-		<border super="true" align="inner" ground_equivalent="101">
-			<borderitem edge="n"   item="357"/>
-			<borderitem edge="e"   item="358"/>
-			<borderitem edge="s"   item="356"/>
-			<borderitem edge="w"   item="359"/>
-			<borderitem edge="cnw" item="362"/>
-			<borderitem edge="cne" item="363"/>
-			<borderitem edge="csw" item="361"/>
-			<borderitem edge="cse" item="360"/>
-			<borderitem edge="dnw" item="366"/>
-			<borderitem edge="dne" item="367"/>
-			<borderitem edge="dsw" item="365"/>
-			<borderitem edge="dse" item="364"/>
-		</border>
+		<border super="true" id="1" align="inner" ground_equivalent="101"/>
+		<border super="true" id="1" align="inner" to="none" ground_equivalent="101"/>
+		<optional id="2"/>
 	</brush>
 	
-	<brush name="cobblestone" type="border" server_lookid="724" z-order="100">
+	<brush name="cobblestone" type="ground" server_lookid="724" z-order="100">
 		<item id="724" chance="1000"/>
 	</brush>
 	
-	<brush name="grassy cobblestone" type="border" server_lookid="791" z-order="1500">
+	<brush name="grassy cobblestone" type="ground" server_lookid="791" z-order="1500">
 		<item id="791" chance="1000"/>
 	</brush>
 	
-	<brush name="jungle grass" type="border" server_lookid="3263" z-order="3600">
+	<brush name="jungle grass" type="ground" server_lookid="3263" z-order="3600">
 		<item id="3263" chance="1"/>
 		
-		<border align="outer" id="9"/>
-		<border align="inner" to="none" id="1"/>
+		<border align="outer" id="31"/>
+		<border align="inner" to="none" id="7"/>
 	</brush>
 	
-	<brush name="jungle dirt" type="border" server_lookid="3264" z-order="500">
+	<brush name="jungle dirt" type="ground" server_lookid="3264" z-order="500">
 		<item id="3264" chance="11"/>
 		<item id="3265" chance="1"/>
 		
-		<border align="outer" id="9"/>
-		<border align="inner" to="none" id="1"/>
+		<border align="outer" id="31"/>
+		<border align="inner" to="none" id="7"/>
 	</brush>
 	
-	<brush name="mountain ground" type="border" server_lookid="918" z-order="2500">
+	<brush name="mountain ground" type="ground" server_lookid="918" z-order="2500">
 		<item id="918" chance="1000"/>
 		
-		<border align="outer" id="10"/>
+		<border align="outer" id="33"/>
 	</brush>
 	
-	<brush name="mountain top ground" type="border" server_lookid="4405" z-order="2505">
-		<item id="4757" chance="1"/>
-		<item id="4405" chance="0"/>
-		<item id="4406" chance="0"/>
-		<item id="4407" chance="0"/>
-		<item id="4408" chance="0"/>
-		<item id="4409" chance="0"/>
-		<item id="4410" chance="0"/>
-		<item id="4411" chance="0"/>
-		<item id="4412" chance="0"/>
-		<item id="4413" chance="0"/>
-		<item id="4414" chance="0"/>
-		<item id="4415" chance="0"/>
-		<item id="4416" chance="0"/>
-		<item id="4417" chance="0"/>
-		<item id="4418" chance="0"/>
-		<item id="4419" chance="0"/>
-		<item id="4420" chance="0"/>
-		<item id="4421" chance="0"/>
-		<item id="4422" chance="0"/>
+	<brush name="mountain top ground" type="ground" server_lookid="4405" z-order="2505">
+		<item id="4405" chance="300"/>
+		<item id="4406" chance="100"/>
+		<item id="4407" chance="100"/>
+		<item id="4408" chance="100"/>
+		<item id="4409" chance="100"/>
+		<item id="4410" chance="100"/>
+		<item id="4411" chance="100"/>
+		<item id="4412" chance="50"/>
+		<item id="4413" chance="100"/>
+		<item id="4414" chance="100"/>
+		<item id="4415" chance="100"/>
+		<item id="4416" chance="100"/>
+		<item id="4417" chance="100"/>
+		<item id="4418" chance="100"/>
+		<item id="4419" chance="100"/>
+		<item id="4420" chance="70"/>
+		<item id="4421" chance="50"/>
+		<item id="4422" chance="50"/>
 		
-		<border align="outer" id="20"/>
-		<border align="inner" to="none" id="1"/>
+		<border align="outer" id="37"/>
+		<border align="inner" to="none" id="7"/>
 	</brush>
 	
-	<brush name="lava" type="border" server_lookid="598" z-order="150">
+	<brush name="lava" type="ground" server_lookid="598" z-order="150">
 		<item id="598" chance="11"/>
 		<item id="599" chance="1"/>
 		<item id="600" chance="1"/>
 		<item id="601" chance="1"/>
 		
-		<border align="inner" to="cave" id="18"/>
+		<border align="inner" to="cave" id="52"/>
 		<friend name="sea"/>
+		<friend name="walkable sea"/>
 	</brush>
 	
-	<brush name="rocky ground" type="border" server_lookid="4570" z-order="2610">
+	<brush name="walkable lava" type="ground" server_lookid="1509" z-order="150">
+		<item id="1509" chance="11"/>
+		
+		<border align="inner" to="cave" id="52"/>
+		<friend name="lava"/>
+		<friend name="sea"/>
+		<friend name="walkable sea"/>
+	</brush>
+	
+	<brush name="rocky ground" type="ground" server_lookid="4570" z-order="2610">
+		<item id="4566" chance="100"/>
 		<item id="4570" chance="100"/>
 		<item id="4571" chance="100"/>
 		<item id="4572" chance="100"/>
@@ -409,58 +439,61 @@
 		<item id="4577" chance="100"/>
 		<item id="4578" chance="100"/>
 		<item id="4579" chance="100"/>
-		<item id="4595" chance="0"/>
-		<item id="4566" chance="0"/>
+		<item id="4595" chance="100"/>
 		<item id="4759" chance="0"/>
 		
-		<border align="outer" id="11"/>
-		<border align="inner" to="none" id="1"/>
+		<border align="outer" id="39"/>
+		<border align="inner" to="none" id="7"/>
 	</brush>
 	
-	<brush name="white gravel" type="border" server_lookid="104" z-order="2900">
+	<brush name="white gravel" type="ground" server_lookid="104" z-order="2900">
 		<item id="104" chance="1000"/>
 		
-		<border align="outer" id="12"/>
-		<border align="inner" to="none" id="1"/>
+		<border align="outer" id="40"/>
+		<border align="inner" to="none" id="7"/>
 	</brush>
 	
-	<brush name="dirt" type="border" server_lookid="103" z-order="1200">
+	<brush name="dirt" type="ground" server_lookid="103" z-order="1200">
 		<item id="103" chance="1"/>
 		<item id="4833" chance="0"/>
 		<item id="4832" chance="0"/>
 		<item id="806" chance="0"/>
 		<item id="804" chance="0"/>
 		
-		<border align="outer" id="13"/>
-		<border align="inner" to="none" id="1"/>
+		<border align="outer" id="43"/>
+		<border align="inner" to="none" id="7"/>
 	</brush>
 	
-	<brush name="light dirt" type="border" server_lookid="194" z-order="1300">
+	<brush name="light dirt" type="ground" server_lookid="194" z-order="1300">
 		<item id="194" chance="1"/>
 		
-		<border align="outer" id="14"/>
-		<border align="inner" to="none" id="1"/>
+		<border align="outer" id="44"/>
+		<border align="inner" to="none" id="7"/>
 	</brush>
 	
-	<brush name="tar pit" type="border" server_lookid="708" z-order="105">
+	<brush name="tar pit" type="ground" server_lookid="708" z-order="105">
 		<item id="708" chance="850"/>
 		<item id="709" chance="50"/>
 		<item id="710" chance="50"/>
 		<item id="711" chance="50"/>
 		
 		<friend name="lava"/>
+		<friend name="walkable lava"/>
 		<friend name="sea"/>
+		<friend name="walkable sea"/>
 	</brush>
 	
-	<brush name="clear water" type="border" server_lookid="493" z-order="110">
+	<brush name="clear water" type="ground" server_lookid="493" z-order="110">
 		<item id="493" chance="1"/>
 		
 		<friend name="sea"/>
+		<friend name="walkable sea"/>
 		<friend name="tar pit"/>
 		<friend name="lava"/>
+		<friend name="walkable lava"/>
 	</brush>
 	
-	<brush name="swamp" type="border" server_lookid="4691" z-order="4000">
+	<brush name="swamp" type="ground" server_lookid="4691" z-order="4000">
 		<item id="4691" chance="220"/>
 		<item id="4692" chance="33"/>
 		<item id="4693" chance="33"/>
@@ -481,11 +514,11 @@
 		<item id="4755" chance="12"/>
 		<item id="4758" chance="33"/>
 		
-		<border align="outer" id="15"/>
-		<border align="inner" to="none" id="1"/>
+		<border align="outer" id="45"/>
+		<border align="inner" to="none" id="7"/>
 	</brush>
 	
-	<brush name="dark swamp" type="border" server_lookid="4702" z-order="4005">
+	<brush name="dark swamp" type="ground" server_lookid="4702" z-order="4005">
 		<item id="4702" chance="4"/>
 		<item id="4703" chance="1"/>
 		<item id="4704" chance="1"/>
@@ -498,52 +531,72 @@
 		<item id="4711" chance="1"/>
 		<item id="4712" chance="1"/>
 		
-		<border align="outer" id="57"/>
-		<border align="inner" to="none" id="1"/>
+		<border align="outer" id="46"/>
+		<border align="inner" to="none" id="7"/>
 	</brush>
 	
-	<brush name="flat roof" type="border" server_lookid="920" z-order="8000">
+	<brush name="flat roof" type="ground" server_lookid="920" z-order="8000">
 		<item id="920" chance="1"/>
 		<item id="924" chance="0"/>
 		<item id="5081" chance="0"/>
 		
-		<border align="outer" to="none" id="4"/>
+		<border align="outer" to="none" id="8"/>
 	</brush>
 	
-	<brush name="brown bamboo roof" type="border" server_lookid="3348" z-order="8010">
+	<brush name="brown bamboo roof" type="ground" server_lookid="3348" z-order="8010">
 		<item id="3348" chance="1"/>
 		
-		<border align="outer" to="none" id="31"/>
+		<border align="outer" to="none" id="32"/>
 		<border align="outer" id="31"/>
 	</brush>
 	
-	<brush name="mountain" type="border" server_lookid="918" z-order="9900">
+	<brush name="mountain" type="ground" server_lookid="918" z-order="9900">
 		<item id="919" chance="1"/>
 		
-		<border align="inner" to="none" id="3"/>
-		<border align="outer" to="none" id="51"/>
-		<border align="outer" id="10"/>
-		<border align="inner" id="3"/>
-		<optional id="29"/>
+		<border align="inner" to="none" id="6"/>
+		<border align="outer" to="none" id="35"/>
+		<border align="outer" id="33"/>
+		<border align="inner" id="6"/>
+		<optional id="34"/>
 	</brush>
 	
-	<brush name="stone floor" type="border" server_lookid="431" z-order="7500">
+	<brush name="stone floor" type="ground" server_lookid="431" z-order="7500">
 		<item id="431" chance="1000"/>
 		
 		<friend name="earth"/>
 		<friend name="mountain"/>
 	</brush>
 	
-	<brush name="wooden floor" type="border" server_lookid="405" z-order="7505">
+	<brush name="elven wooden floor" type="ground" server_lookid="448" z-order="7500">
+		<item id="448" chance="1000"/>
+		
+		<border super="true" id="4" align="inner" ground_equivalent="448"/>
+		<border super="true" id="4" align="inner" to="none" ground_equivalent="448"/>
+	</brush>
+	
+	<brush name="wooden floor" type="ground" server_lookid="405" z-order="7505">
 		<item id="405" chance="1"/>
 		
 		<friend name="earth"/>
 		<friend name="mountain"/>
 		
-		<optional id="41"/>
+		<optional id="3"/>
 	</brush>
 	
-	<brush name="wooden ladder trapdoor" type="border" server_lookid="427" z-order="7505">
+	<brush name="magic tile" type="ground" server_lookid="471" z-order="1">
+		<item id="471" chance="25"/>
+		<item id="472" chance="25"/>
+		<item id="473" chance="25"/>
+		<item id="474" chance="25"/>
+		
+		<friend name="all"/>
+	</brush>
+	
+	<brush name="carlin wooden floor" type="ground" server_lookid="458" z-order="1">
+		<item id="458" chance="10"/>
+	</brush>
+	
+	<brush name="wooden ladder trapdoor" type="ground" server_lookid="427" z-order="7505">
 		<item id="427" chance="1"/>
 		
 		<friend name="wooden floor"/>
@@ -551,12 +604,11 @@
 		<friend name="earth"/>
 		<friend name="mountain"/>
 		
-		<optional id="41"/>
+		<optional id="3"/>
 	</brush>
 	
-	<brush name="wooden ladder hole" type="border" server_lookid="428" z-order="7505">
-		<item id="428" chance="1"/>
-		<item id="409" chance="0"/>
+	<brush name="wooden ladder hole" type="ground" server_lookid="409" z-order="7505">
+		<item id="409" chance="1"/>
 		
 		<friend name="wooden floor"/>
 		<friend name="wooden ladder trapdoor"/>
@@ -564,10 +616,23 @@
 		<friend name="earth"/>
 		<friend name="mountain"/>
 		
-		<optional id="41"/>
+		<optional id="3"/>
 	</brush>
 	
-	<brush name="wooden trapdoor" type="border" server_lookid="429" z-order="7505">
+	<brush name="wooden ladder hole 2" type="ground" server_lookid="428" z-order="7505">
+		<item id="428" chance="1"/>
+		
+		<friend name="wooden floor"/>
+		<friend name="wooden ladder trapdoor"/>
+		<friend name="wooden ladder hole"/>
+		
+		<friend name="earth"/>
+		<friend name="mountain"/>
+		
+		<optional id="3"/>
+	</brush>
+	
+	<brush name="wooden trapdoor" type="ground" server_lookid="429" z-order="7505">
 		<item id="429" chance="1"/>
 		
 		<friend name="wooden floor"/>
@@ -576,25 +641,43 @@
 		<friend name="earth"/>
 		<friend name="mountain"/>
 		
-		<optional id="41"/>
+		<optional id="3"/>
 	</brush>
 	
-	<brush name="stairs down" type="border" server_lookid="411" z-order="8000">
+	<brush name="sandstone trapdoor" type="ground" server_lookid="461" z-order="1">
+		<item id="461" chance="1"/>
+		
+		<friend name="all"/>
+	</brush>
+	
+	<brush name="open sandstone trapdoor" type="ground" server_lookid="462" z-order="1">
+		<item id="462" chance="1"/>
+		
+		<friend name="all"/>
+	</brush>
+	
+	<brush name="stairs down" type="ground" server_lookid="411" z-order="8000">
 		<item id="411" chance="1"/>
-		<item id="423" chance="0"/>
 		
 		<friend name="earth"/>
 		<friend name="mountain"/>
 	</brush>
 	
-	<brush name="trapdoor down" type="border" server_lookid="410" z-order="8000">
+	<brush name="stairs down 2" type="ground" server_lookid="423" z-order="8000">
+		<item id="423" chance="1"/>
+		
+		<friend name="earth"/>
+		<friend name="mountain"/>
+	</brush>
+	
+	<brush name="trapdoor down" type="ground" server_lookid="410" z-order="8000">
 		<item id="410" chance="1"/>
 		
 		<friend name="earth"/>
 		<friend name="mountain"/>
 	</brush>
 	
-	<brush name="trapdoor ladder down" type="border" server_lookid="369" z-order="7505">
+	<brush name="trapdoor ladder down" type="ground" server_lookid="369" z-order="7505">
 		<item id="369" chance="1"/>
 		<item id="370" chance="0"/>
 		<item id="408" chance="0"/>
@@ -603,7 +686,7 @@
 		<friend name="mountain"/>
 	</brush>
 	
-	<brush name="stone stairway (ground)" type="border" server_lookid="3219" z-order="7900">
+	<brush name="stone stairway (ground)" type="ground" server_lookid="3219" z-order="7900">
 		<item id="3219" chance="10"/>
 		<item id="3220" chance="10"/>
 	</brush>
@@ -611,6 +694,14 @@
 	<brush name="stone stairway" type="doodad" server_lookid="3219" draggable="true" on_blocking="true" redo_borders="true" one_size="true" thickness="100/100">
 		<alternate> <item id="3219" chance="10"/> </alternate>
 		<alternate> <item id="3220" chance="10"/> </alternate>
+	</brush>
+	
+	<brush name="white stone stairs" type="doodad" server_lookid="432" draggable="true" on_blocking="true" redo_borders="true" one_size="true" thickness="100/100">
+		<item id="432" chance="10"/>
+	</brush>
+	
+	<brush name="white stone trapdoor" type="doodad" server_lookid="433" draggable="true" on_blocking="true" redo_borders="true" one_size="true" thickness="100/100">
+		<item id="433" chance="10"/>
 	</brush>
 	
 	<brush name="black stone stairs" type="doodad" server_lookid="4834" draggable="true" on_blocking="true" redo_borders="true" one_size="true" thickness="100/100">
@@ -629,25 +720,25 @@
 		<item id="4837" chance="10"/>
 	</brush>
 	
-	<brush name="white marble floor" type="border" server_lookid="406" z-order="7950">
+	<brush name="white marble floor" type="ground" server_lookid="406" z-order="7950">
 		<item id="406" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="dark tiled sandstone" type="border" server_lookid="412" z-order="7500">
+	<brush name="dark tiled sandstone" type="ground" server_lookid="412" z-order="7500">
 		<item id="412" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="dark sandstone" type="border" server_lookid="790" z-order="500">
+	<brush name="dark sandstone" type="ground" server_lookid="790" z-order="500">
 		<item id="790" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="sandstone" type="border" server_lookid="777" z-order="8600">
+	<brush name="sandstone" type="ground" server_lookid="777" z-order="8600">
 		<item id="777" chance="1"/>
 		
 		<border super="true" align="inner" ground_equivalent="777">
@@ -681,167 +772,294 @@
 		</border>
 	</brush>
 	
-	<brush name="stairs" type="border" server_lookid="459" z-order="7950">
+	<brush name="stairs" type="ground" server_lookid="459" z-order="7950">
 		<item id="459" chance="1"/>
 		
 		<enemy name="all"/>
 	</brush>
 	
-	<brush name="black marble floor" type="border" server_lookid="407" z-order="7950">
+	<brush name="black marble floor" type="ground" server_lookid="407" z-order="7950">
 		<item id="407" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="gray stone tiles" type="border" server_lookid="424" z-order="7950">
+	<brush name="gray stone tiles" type="ground" server_lookid="424" z-order="7950">
 		<item id="424" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="gray stone tiles pressed" type="border" server_lookid="425" z-order="7950">
+	<brush name="gray stone tiles pressed" type="ground" server_lookid="425" z-order="7950">
 		<item id="425" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="gray stone tiles depressed" type="border" server_lookid="426" z-order="7950">
+	<brush name="gray stone tiles depressed" type="ground" server_lookid="426" z-order="7950">
 		<item id="426" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="drawbridge" type="border" server_lookid="1284" z-order="7800">
+	<brush name="drawbridge" type="ground" server_lookid="1284" z-order="7800">
 		<item id="1284" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="drab tiled stone floor" type="border" server_lookid="413" z-order="500">
+	<brush name="drab tiled stone floor" type="ground" server_lookid="413" z-order="500">
 		<item id="413" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="dark tiled stone floor" type="border" server_lookid="414" z-order="500">
+	<brush name="dark tiled stone floor" type="ground" server_lookid="414" z-order="500">
 		<item id="414" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="light tiled stone floor" type="border" server_lookid="420" z-order="500">
+	<brush name="light tiled stone floor" type="ground" server_lookid="420" z-order="500">
 		<item id="420" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="tiled sandstone floor" type="border" server_lookid="419" z-order="500">
+	<brush name="tiled sandstone floor" type="ground" server_lookid="419" z-order="500">
 		<item id="419" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="tiled sandstone floor pressed" type="border" server_lookid="417" z-order="500">
+	<brush name="tiled sandstone floor pressed" type="ground" server_lookid="417" z-order="500">
 		<item id="417" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="tiled sandstone floor depressed" type="border" server_lookid="416" z-order="500">
+	<brush name="tiled sandstone floor depressed" type="ground" server_lookid="416" z-order="500">
 		<item id="416" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="orange tiled floor" type="border" server_lookid="415" z-order="500">
+	<brush name="orange tiled floor" type="ground" server_lookid="415" z-order="500">
 		<item id="415" chance="1"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="dark wooden floor" type="border" server_lookid="3139" z-order="8500">
+	<brush name="dark wooden floor" type="ground" server_lookid="3139" z-order="8500">
 		<item id="3139" chance="1"/>
 		
-		<border align="outer" to="none" id="40"/>
+		<border align="outer" to="none" id="22"/>
 		
 		<friend name="all"/>
 	</brush>
 	
-	<brush name="brick roof, vertical" type="border" server_lookid="929" z-order="8500">
+	<brush name="banuta tiled floor" type="ground" server_lookid="3152" z-order="8500">
+		<item id="3152" chance="1"/>
+		
+		<border align="outer" to="none" id="55"/>
+		<border align="inner" to="none" id="23"/>
+		<border align="inner" id="23"/>
+		<border super="true" id="23" align="inner" ground_equivalent="3152"/>
+		<border super="true" id="23" align="inner" to="none" ground_equivalent="3152"/>
+	</brush>
+	
+	<brush name="banuta floor" type="ground" server_lookid="3153" z-order="8500">
+		<item id="3153" chance="500"/>
+		<item id="3154" chance="500"/>
+		<item id="3155" chance="500"/>
+		<item id="3156" chance="300"/>
+		<item id="3157" chance="100"/>
+		<item id="3215" chance="50"/>
+
+		<border align="outer" to="none" id="55"/>
+		<border align="inner" to="none" id="24"/>
+		<border align="inner" id="24"/>
+		<border super="true" id="24" align="inner" ground_equivalent="3153"/>
+		<border super="true" id="24" align="inner" to="none" ground_equivalent="3153"/>
+		<optional id="28"/>
+
+		<friend name="banuta tiled floor"/>
+	</brush>
+	
+	<brush name="banuta pavement square" type="ground" server_lookid="3177" z-order="1">
+		<item id="3177" chance="100"/>
+
+		<border super="true" id="25" align="inner" ground_equivalent="3177"/>
+		<border super="true" id="25" align="inner" to="none" ground_equivalent="3177"/>
+	</brush>
+
+	<brush name="banuta pavement round" type="ground" server_lookid="3196" z-order="1">
+		<item id="3196" chance="100"/>
+
+		<border super="true" id="26" align="inner" ground_equivalent="3196"/>
+		<border super="true" id="26" align="inner" to="none" ground_equivalent="3196"/>
+	</brush>
+	
+	<brush name="banuta lizard carvings" type="ground" server_lookid="3166" z-order="1">
+		<item id="3166" chance="10"/>
+		<item id="3167" chance="10"/>
+		<item id="3168" chance="10"/>
+		<item id="3170" chance="10"/>
+		<item id="3172" chance="10"/>
+
+		<!-- large structures -->
+		<item id="3158" chance="0"/>
+		<item id="3159" chance="0"/>
+		<item id="3160" chance="0"/>
+		<item id="3161" chance="0"/>
+		<item id="3162" chance="0"/>
+		<item id="3163" chance="0"/>
+		<item id="3164" chance="0"/>
+		<item id="3165" chance="0"/>
+		
+		<!-- snek -->
+		<item id="3199" chance="0"/>
+		<item id="3200" chance="0"/>
+		<item id="3201" chance="0"/>
+		<item id="3202" chance="0"/>
+		<item id="3203" chance="0"/>
+		<item id="3204" chance="0"/>
+		<item id="3205" chance="0"/>
+		<item id="3206" chance="0"/>
+		<item id="3207" chance="0"/>
+		<item id="3208" chance="0"/>
+		<item id="3209" chance="0"/>
+		<item id="3210" chance="0"/>
+		<item id="3211" chance="0"/>
+		<item id="3212" chance="0"/>
+		<item id="3213" chance="0"/>
+		<item id="3214" chance="0"/>		
+
+		<friend name="all"/>
+	</brush>
+	
+	<brush name="banuta decorated tiles" type="ground" server_lookid="3171" z-order="1">
+		<item id="3169" chance="10"/>
+		<item id="3171" chance="10"/>
+
+		<friend name="all"/>
+	</brush>	
+	
+	<brush name="large lizard carvings" type="doodad" server_lookid="3158" draggable="false" on_blocking="true" thickness="100/100">
+		<composite chance="100">
+			<tile x="0" y="0"> <item id="3158"/> </tile>
+			<tile x="1" y="0"> <item id="3159"/> </tile>
+			<tile x="0" y="1"> <item id="3160"/> </tile>
+			<tile x="1" y="1"> <item id="3161"/> </tile>
+		</composite>
+		<composite chance="100">
+			<tile x="0" y="0"> <item id="3162"/> </tile>
+			<tile x="1" y="0"> <item id="3163"/> </tile>
+			<tile x="0" y="1"> <item id="3164"/> </tile>
+			<tile x="1" y="1"> <item id="3165"/> </tile>
+		</composite>
+	</brush>
+	
+	<brush name="snake ornament samples" type="doodad" server_lookid="3205" draggable="false" on_blocking="true" thickness="100/100">
+		<composite chance="100">
+			<tile x="-1" y="-1"> <item id="3199"/> </tile>
+			<tile x="0" y="-1"> <item id="3209"/> </tile>
+			<tile x="1" y="-1"> <item id="3212"/> </tile>
+			<tile x="-1" y="0"> <item id="3206"/> </tile>
+			<tile x="0" y="0"> <item id="3215"/> </tile>
+			<tile x="1" y="0"> <item id="3203"/> </tile>
+			<tile x="-1" y="1"> <item id="3213"/> </tile>
+			<tile x="0" y="1"> <item id="3210"/> </tile>
+			<tile x="1" y="1"> <item id="3202"/> </tile>
+		</composite>
+		<composite chance="100">
+			<tile x="-1" y="-1"> <item id="3211"/> </tile>
+			<tile x="0" y="-1"> <item id="3205"/> </tile>
+			<tile x="1" y="-1"> <item id="3201"/> </tile>
+			<tile x="-1" y="0"> <item id="3207"/> </tile>
+			<tile x="0" y="0"> <item id="3215"/> </tile>
+			<tile x="1" y="0"> <item id="3208"/> </tile>
+			<tile x="-1" y="1"> <item id="3200"/> </tile>
+			<tile x="0" y="1"> <item id="3204"/> </tile>
+			<tile x="1" y="1"> <item id="3214"/> </tile>
+		</composite>
+	</brush>
+	
+	<brush name="brick roof, vertical" type="ground" server_lookid="929" z-order="8500">
 		<item id="929" chance="1000"/>
 		
-		<border align="outer" to="none" id="23"/>
+		<border align="outer" to="none" id="9"/>
 	</brush>
 	
-	<brush name="brick roof, left" type="border" server_lookid="926" z-order="8500">
+	<brush name="brick roof, left" type="ground" server_lookid="926" z-order="8500">
 		<item id="926" chance="1000"/>
 		
-		<border align="outer" to="none" id="24"/>
+		<border align="outer" to="none" id="10"/>
 	</brush>
 	
-	<brush name="brick roof, right" type="border" server_lookid="927" z-order="8500">
+	<brush name="brick roof, right" type="ground" server_lookid="927" z-order="8500">
 		<item id="927" chance="1000"/>
 		
-		<border align="outer" to="none" id="25"/>
+		<border align="outer" to="none" id="11"/>
 	</brush>
 	
-	<brush name="brick roof, up" type="border" server_lookid="936" z-order="8500">
+	<brush name="brick roof, up" type="ground" server_lookid="936" z-order="8500">
 		<item id="936" chance="1000"/>
 		
-		<border align="outer" to="none" id="26"/>
+		<border align="outer" to="none" id="12"/>
 	</brush>
 	
-	<brush name="brick roof, down" type="border" server_lookid="937" z-order="8500">
+	<brush name="brick roof, down" type="ground" server_lookid="937" z-order="8500">
 		<item id="937" chance="1000"/>
 		
-		<border align="outer" to="none" id="28"/>
+		<border align="outer" to="none" id="14"/>
 	</brush>
 	
-	<brush name="brick roof, horizontal" type="border" server_lookid="939" z-order="8500">
+	<brush name="brick roof, horizontal" type="ground" server_lookid="939" z-order="8500">
 		<item id="939" chance="1000"/>
 		
-		<border align="outer" to="none" id="27"/>
+		<border align="outer" to="none" id="13"/>
 	</brush>
 	
-	<brush name="wooden roof, up" type="border" server_lookid="946" z-order="8500">
+	<brush name="wooden roof, up" type="ground" server_lookid="946" z-order="8500">
 		<item id="946" chance="1000"/>
 		
-		<border align="outer" to="none" id="34"/>
-		<border align="outer" id="34"/>
+		<border align="outer" to="none" id="15"/>
+		<border align="outer" id="15"/>
 	</brush>
 	
-	<brush name="wooden roof, horizontal" type="border" server_lookid="947" z-order="8500">
+	<brush name="wooden roof, horizontal" type="ground" server_lookid="947" z-order="8500">
 		<item id="947" chance="1000"/>
 		
-		<border align="outer" to="none" id="35"/>
-		<border align="outer" id="35"/>
+		<border align="outer" to="none" id="16"/>
+		<border align="outer" id="16"/>
 	</brush>
 	
-	<brush name="wooden roof, down" type="border" server_lookid="948" z-order="8500">
+	<brush name="wooden roof, down" type="ground" server_lookid="948" z-order="8500">
 		<item id="948" chance="1000"/>
 		
-		<border align="outer" to="none" id="36"/>
-		<border align="outer" id="36"/>
+		<border align="outer" to="none" id="17"/>
+		<border align="outer" id="17"/>
 	</brush>
 	
-	<brush name="wooden roof, right" type="border" server_lookid="958" z-order="8500">
+	<brush name="wooden roof, right" type="ground" server_lookid="958" z-order="8500">
 		<item id="958" chance="1000"/>
 		
-		<border align="outer" to="none" id="37"/>
-		<border align="outer" id="37"/>
+		<border align="outer" to="none" id="18"/>
+		<border align="outer" id="18"/>
 	</brush>
 	
-	<brush name="wooden roof, vertical" type="border" server_lookid="957" z-order="8500">
+	<brush name="wooden roof, vertical" type="ground" server_lookid="957" z-order="8500">
 		<item id="957" chance="1000"/>
 		
-		<border align="outer" to="none" id="38"/>
-		<border align="outer" id="38"/>
+		<border align="outer" to="none" id="19"/>
+		<border align="outer" id="19"/>
 	</brush>
 	
-	<brush name="wooden roof, left" type="border" server_lookid="956" z-order="8500">
+	<brush name="wooden roof, left" type="ground" server_lookid="956" z-order="8500">
 		<item id="956" chance="1000"/>
 		
-		<border align="outer" to="none" id="39"/>
-		<border align="outer" id="39"/>
+		<border align="outer" to="none" id="20"/>
+		<border align="outer" id="20"/>
 	</brush>
 </materials>

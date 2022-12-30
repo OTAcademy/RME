@@ -1,31 +1,43 @@
 <?xml version="1.0"?>
 <items>
-<item id="2132" charges="200"/>		<!-- silver amulet -->
-<item id="2126" charges="200"/>		<!-- bronze amulet -->
-<item id="2161" charges="200"/>		<!-- strange talisman -->
-<item id="2164" charges="20"/>		<!-- might ring -->
-<item id="2166" time="1800000"/>	<!-- power ring -->
-<item id="2167" time="600000"/>		<!-- energy ring -->
-<item id="2169" time="600000"/>		<!-- time ring -->
-<item id="2197" charges="5"/>		<!-- stone skin amulet -->
-<item id="2198" charges="50"/>		<!-- elven amulet -->
-<item id="2199" charges="150"/>		<!-- garlic necklace -->
-<item id="2200" charges="250"/>		<!-- protection amulet -->
-<item id="2201" charges="200"/>		<!-- dragon necklace -->
-<item id="2207" time="1800000"/>	<!-- sword ring -->
-<item id="2208" time="1800000"/>	<!-- axe ring -->
-<item id="2209" time="1800000"/>	<!-- club ring -->
-<item id="2165" time="600000"/>		<!-- stealth ring -->
-<item id="2168" time="1800000"/>	<!-- life ring -->
-<item id="2214" time="480000"/>		<!-- roh -->
-<item id="1740" questbox="1" />		<!-- unmovables -->
-<item id="1747" questbox="1" />
-<item id="1748" questbox="1" />
-<item id="1749" questbox="1" />
-<item id="1770" questbox="1" />
+	<!-- writeables fix for RME -->
+	<item fromid="1429" toid="1434">
+		<attribute key="maxTextLen" value="1024" />
+	</item>
+	<item fromid="1438" toid="1441">
+		<attribute key="maxTextLen" value="1024" />
+	</item>
+	<item fromid="1947" toid="1981">
+		<attribute key="maxTextLen" value="1024" />
+	</item>
 
-<!-- doors -->
-<item id="1209" article="a" name="closed door" editorsuffix=" (Locked)">
+	<!-- charges and duration -->
+	<item id="2132" charges="200"/>		<!-- silver amulet -->
+	<item id="2126" charges="200"/>		<!-- bronze amulet -->
+	<item id="2161" charges="200"/>		<!-- strange talisman -->
+	<item id="2164" charges="20"/>		<!-- might ring -->
+	<item id="2166" time="1800000"/>	<!-- power ring -->
+	<item id="2167" time="600000"/>		<!-- energy ring -->
+	<item id="2169" time="600000"/>		<!-- time ring -->
+	<item id="2197" charges="5"/>		<!-- stone skin amulet -->
+	<item id="2198" charges="50"/>		<!-- elven amulet -->
+	<item id="2199" charges="150"/>		<!-- garlic necklace -->
+	<item id="2200" charges="250"/>		<!-- protection amulet -->
+	<item id="2201" charges="200"/>		<!-- dragon necklace -->
+	<item id="2207" time="1800000"/>	<!-- sword ring -->
+	<item id="2208" time="1800000"/>	<!-- axe ring -->
+	<item id="2209" time="1800000"/>	<!-- club ring -->
+	<item id="2165" time="600000"/>		<!-- stealth ring -->
+	<item id="2168" time="1800000"/>	<!-- life ring -->
+	<item id="2214" time="480000"/>		<!-- roh -->
+	<item id="1740" questbox="1" />		<!-- unmovables -->
+	<item id="1747" questbox="1" />
+	<item id="1748" questbox="1" />
+	<item id="1749" questbox="1" />
+	<item id="1770" questbox="1" />
+
+	<!-- doors -->
+	<item id="1209" article="a" name="closed door" editorsuffix=" (Locked)">
 		<attribute key="type" value="door"/>
 		<attribute key="blockprojectile" value="1"/>
 		<attribute key="description" value="It is locked."/>
@@ -50,8 +62,8 @@
 	<item id="1214" article="an" name="open door">
 		<attribute key="type" value="door"/>
 	</item>
-	
-<item id="1219" article="a" name="closed door">
+
+	<item id="1219" article="a" name="closed door">
 		<attribute key="type" value="door"/>
 		<attribute key="blockprojectile" value="1"/>
 	</item>
@@ -303,8 +315,8 @@
 		<attribute key="type" value="door"/>
 	</item>
 
-<!-- depots -->
-<item id="2589" article="a" name="locker">
+	<!-- depots -->
+	<item id="2589" article="a" name="locker">
 		<attribute key="type" value="depot"/>
 		<attribute key="containerSize" value="30"/>
 	</item>
