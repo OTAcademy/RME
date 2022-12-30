@@ -80,6 +80,7 @@
 		<otb client="12.86" version="3" id="62"/>
 		<otb client="12.87" version="3" id="63"/>
 		<otb client="12.90" version="3" id="64"/>
+		<otb client="13.10" version="3" id="65"/>
 	</otbs>
 
 	<clients>
@@ -322,6 +323,12 @@
 		</client>
 		
 		<client name="12.90" otb="12.90" visible="true" default="true" data_directory="1290">
+            <otbm version="3"/>
+            <extensions from="8.20 - 8.31" to="12.90"/>
+            <data format="10.57" dat="0x4A10" spr="0x59E48E02"/>
+		</client>
+		
+		<client name="13.10" otb="13.10" visible="true" default="true" data_directory="1310">
             <otbm version="3"/>
             <extensions from="8.20 - 8.31" to="12.90"/>
             <data format="10.57" dat="0x4A10" spr="0x59E48E02"/>
