@@ -479,10 +479,40 @@ bool MainFrame::DoQueryClose() {
 	return true;
 }
 
+bool MainFrame::DoQuerySaveTileset(bool doclose)
+{
+	long ret = g_gui.PopupDialog(
+		"Export tileset",
+		"Do you want to export your tileset changes before exiting?",
+		wxYES | wxNO | wxCANCEL
+	);
+
+	if (ret == wxID_NO) {
+		// "no" - exit without saving
+		return true;
+	} else if (ret == wxID_CANCEL) {
+		// "cancel" - just close the dialog
+		return false;
+	}
+
+	// "yes" button was pressed, open tileset exporting dialog
+	if (g_gui.GetCurrentEditor()) {
+		ExportTilesetsWindow dlg(this, *g_gui.GetCurrentEditor());
+		dlg.ShowModal();
+		dlg.Destroy();
+	}
+
+	return !g_materials.needSave();
+}
+
 bool MainFrame::DoQuerySave(bool doclose)
 {
 	if(!g_gui.IsEditorOpen()) {
 		return true;
+	}
+
+	if (!DoQuerySaveTileset()) {
+		return false;
 	}
 
 	Editor& editor = *g_gui.GetCurrentEditor();
@@ -585,6 +615,9 @@ bool MainFrame::LoadMap(FileName name)
 
 void MainFrame::OnExit(wxCloseEvent& event)
 {
+	// clicking 'x' button
+
+	// do you want to save map changes?
 	while(g_gui.IsEditorOpen()) {
 		if(!DoQuerySave()) {
 			if(event.CanVeto()) {

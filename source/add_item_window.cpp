@@ -100,6 +100,7 @@ void AddItemWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))
 	const ItemType& it = g_items.getItemType(item_id_field->GetValue());
 	if (it.id != 0) {
 		g_materials.addToTileset(tileset_item->name, it.id, category_type);
+		g_materials.modify();
 		g_gui.PopupDialog("Item added to Tileset", "'" + it.name + "' has been added to tileset '" + tileset_item->name + "'", wxOK);
 
 		EndModal(1);

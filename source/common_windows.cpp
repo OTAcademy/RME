@@ -786,6 +786,7 @@ void ExportTilesetsWindow::OnClickOK(wxCommandEvent & WXUNUSED(event))
 
 		doc.save_file(file.GetFullPath().mb_str());
 		g_gui.PopupDialog("Successfully saved Tilesets", "Saved tilesets to '" + std::string(file.GetFullPath().mb_str()) + "'", wxOK);
+		g_materials.modify(false);
 	}
 	catch (std::bad_alloc&)
 	{

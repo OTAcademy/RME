@@ -149,6 +149,7 @@ void AddTilesetWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))
 	if (it.id != 0) {
 		std::string tilesetName = std::string(tileset_name_field->GetValue().mb_str());
 		g_materials.addToTileset(tilesetName, it.id, category_type);
+		g_materials.modify();
 		g_gui.PopupDialog("Added Tileset", "'" + it.name + "' has been added to new tileset '" + tilesetName + "'", wxOK);
 
 		EndModal(1);

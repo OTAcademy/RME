@@ -29,8 +29,8 @@
 // A common class for terrain/doodad/item/raw palette
 
 BEGIN_EVENT_TABLE(BrushPalettePanel, PalettePanel)
-	EVT_BUTTON(wxID_ADD_ITEM_TO_TILESET, BrushPalettePanel::OnClickAddItemToTileset)
-	EVT_BUTTON(wxID_ADD_TILESET, BrushPalettePanel::OnClickAddTileset)
+	EVT_BUTTON(wxID_ADD, BrushPalettePanel::OnClickAddItemToTileset)
+	EVT_BUTTON(wxID_NEW, BrushPalettePanel::OnClickAddTileset)
 	EVT_CHOICEBOOK_PAGE_CHANGING(wxID_ANY, BrushPalettePanel::OnSwitchingPage)
 	EVT_CHOICEBOOK_PAGE_CHANGED(wxID_ANY, BrushPalettePanel::OnPageChanged)
 END_EVENT_TABLE()
@@ -50,10 +50,10 @@ BrushPalettePanel::BrushPalettePanel(wxWindow* parent, const TilesetContainer& t
 	topsizer->Add(ts_sizer, 1, wxEXPAND);
 
 	wxSizer* tmpsizer = newd wxBoxSizer(wxHORIZONTAL);
-	wxButton* buttonAddTileset = newd wxButton(this, wxID_ADD_TILESET, "Add new Tileset");
+	wxButton* buttonAddTileset = newd wxButton(this, wxID_NEW, "Add new Tileset");
 	tmpsizer->Add(buttonAddTileset, wxSizerFlags(0).Center());
 
-	wxButton* buttonAddItemToTileset = newd wxButton(this, wxID_ADD_ITEM_TO_TILESET, "Add new Item");
+	wxButton* buttonAddItemToTileset = newd wxButton(this, wxID_ADD, "Add new Item");
 	tmpsizer->Add(buttonAddItemToTileset, wxSizerFlags(0).Center());
 
 	topsizer->Add(tmpsizer, 0, wxCENTER, 10);

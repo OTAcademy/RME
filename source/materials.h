@@ -39,6 +39,13 @@ public:
 
 	bool isInTileset(Item* item, std::string tileset) const;
 	bool isInTileset(Brush* brush, std::string tileset) const;
+	bool needSave() const {
+		return modified;
+	}
+
+	void modify(bool newValue = true) {
+		this->modified = newValue;
+	}
 
 protected:
 	bool unserializeMaterials(const FileName& filename, pugi::xml_node node, wxString& error, wxArrayString& warnings);
@@ -47,6 +54,7 @@ protected:
 	MaterialsExtensionList extensions;
 
 private:
+	bool modified = false;
 	Materials(const Materials&);
 	Materials& operator=(const Materials&);
 };
