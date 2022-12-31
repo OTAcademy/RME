@@ -702,7 +702,7 @@
 			<item id="6240" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="plant wall2" type="wall" server_lookid="5558">
 		<wall type="horizontal">
 			<item id="5558" chance="1"/>
@@ -805,7 +805,7 @@
 			<item id="3757" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="alabaster wall" type="wall" server_lookid="8476">
 		<wall type="horizontal">
 			<item id="8476" chance="1"/>
@@ -845,7 +845,7 @@
 			<item id="8477" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="stone wall2" type="wall" server_lookid="3458">
 		<wall type="horizontal">
 			<item id="3458" chance="1"/>
@@ -862,7 +862,7 @@
 			<item id="3462" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="metal wall" type="wall" server_lookid="1090">
 		<wall type="horizontal">
 			<item id="1090" chance="1"/>
@@ -877,7 +877,7 @@
 			<item id="1091" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="paravent" type="wall" server_lookid="1171">
 		<wall type="horizontal">
 			<item id="1171" chance="1"/>
@@ -892,7 +892,7 @@
 			<item id="1172" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="lava wall" type="wall" server_lookid="1197">
 		<wall type="horizontal">
 			<item id="1197" chance="1"/>
@@ -907,7 +907,7 @@
 			<item id="1198" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="bamboo wall" type="wall" server_lookid="3424">
 		<wall type="horizontal">
 			<item id="3424" chance="1"/>
@@ -946,7 +946,7 @@
 			<item id="3425" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="grass wall" type="wall" server_lookid="3497">
 		<wall type="horizontal">
 			<item id="3497" chance="10"/>
@@ -965,7 +965,7 @@
 			<item id="3496" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="palisade" type="wall" server_lookid="3509">
 		<wall type="horizontal">
 			<item id="3509" chance="1"/>
@@ -980,7 +980,7 @@
 			<item id="3511" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="bone wall" type="wall" server_lookid="6396">
 		<wall type="horizontal">
 			<item id="6396" chance="10"/>
@@ -999,7 +999,7 @@
 			<item id="6397" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="frozen wall" type="wall" server_lookid="6740">
 		<wall type="horizontal">
 			<item id="6740" chance="1"/>
@@ -1036,7 +1036,7 @@
 			<item id="6741" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="fur wall" type="wall" server_lookid="6774">
 		<wall type="horizontal">
 			<item id="6774" chance="10"/>
@@ -1067,7 +1067,7 @@
 			<item id="6775" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="stone wall3" type="wall" server_lookid="9119">
 		<wall type="horizontal">
 			<item id="9119" chance="1"/>
@@ -1102,7 +1102,7 @@
 			<item id="9120" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="iron wall" type="wall" server_lookid="9210">
 		<wall type="horizontal">
 			<item id="9210" chance="10"/>
@@ -1141,7 +1141,7 @@
 			<item id="9213" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="stone wall4" type="wall" server_lookid="9370">
 		<wall type="horizontal">
 			<item id="9370" chance="1"/>
@@ -1160,7 +1160,7 @@
 			<item id="9372" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="limestone wall" type="wall" server_lookid="10178">
 		<wall type="horizontal">
 			<item id="10178" chance="1"/>
@@ -1199,7 +1199,7 @@
 			<item id="10179" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="limestone wall" type="wall" server_lookid="10178">
 		<wall type="horizontal">
 			<item id="10178" chance="1"/>
@@ -1238,7 +1238,7 @@
 			<item id="10179" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="dark framework wall" type="wall" server_lookid="10227">
 		<wall type="horizontal">
 			<item id="10227" chance="10"/>
@@ -1281,7 +1281,7 @@
 			<item id="10228" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="stone wall5" type="wall" server_lookid="10250">
 		<wall type="horizontal">
 			<item id="10250" chance="1"/>
@@ -1296,7 +1296,7 @@
 			<item id="10251" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="blue palisade" type="wall" server_lookid="12512">
 		<wall type="horizontal">
 			<item id="12512" chance="10"/>
@@ -1313,7 +1313,7 @@
 			<item id="12514" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="stone" type="wall" server_lookid="12959">
 		<wall type="horizontal">
 			<item id="12959" chance="1"/>
@@ -1332,7 +1332,7 @@
 			<item id="12960" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="timber wall" type="wall" server_lookid="11545">
 		<wall type="horizontal">
 			<item id="11545" chance="1"/>
@@ -1357,7 +1357,7 @@
 			<item id="11544" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="light desert wall" type="wall" server_lookid="12847">
 		<wall type="horizontal">
 			<item id="12847" chance="1"/>
@@ -1372,7 +1372,7 @@
 			<item id="13143" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="dark desert wall" type="wall" server_lookid="12890">
 		<wall type="horizontal">
 			<item id="12890" chance="1"/>
@@ -1387,7 +1387,7 @@
 			<item id="13144" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="rocky wall" type="wall" server_lookid="13645">
 		<wall type="horizontal">
 			<item id="13645" chance="1"/>
@@ -1402,7 +1402,7 @@
 			<item id="13646" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="glass wall" type="wall" server_lookid="15562">
 		<wall type="horizontal">
 			<item id="15562" chance="1"/>
@@ -1417,7 +1417,7 @@
 			<item id="15564" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="icy bones" type="wall" server_lookid="18238">
 		<wall type="horizontal">
 			<item id="18238" chance="10"/>
@@ -1436,7 +1436,7 @@
 			<item id="18241" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="muddy stone wall" type="wall" server_lookid="18614">
 		<wall type="horizontal">
 			<item id="18614" chance="1"/>
@@ -1451,7 +1451,7 @@
 			<item id="18615" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="muddy stone wall2" type="wall" server_lookid="18631">
 		<wall type="horizontal">
 			<item id="18631" chance="1"/>
@@ -1466,7 +1466,7 @@
 			<item id="18632" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="brown stone wall" type="wall" server_lookid="19333">
 		<wall type="horizontal">
 			<item id="19333" chance="1"/>
@@ -1481,7 +1481,7 @@
 			<item id="19334" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="red stone wall" type="wall" server_lookid="19344">
 		<wall type="horizontal">
 			<item id="19344" chance="1"/>
@@ -1496,7 +1496,7 @@
 			<item id="19345" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="ornate wall" type="wall" server_lookid="19355">
 		<wall type="horizontal">
 			<item id="19355" chance="1"/>
@@ -1511,7 +1511,7 @@
 			<item id="19356" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="ornate wall2" type="wall" server_lookid="19366">
 		<wall type="horizontal">
 			<item id="19366" chance="1"/>
@@ -1526,7 +1526,7 @@
 			<item id="19367" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="venore wall" type="wall" server_lookid="19410">
 		<wall type="horizontal">
 			<item id="19410" chance="1"/>
@@ -1565,7 +1565,7 @@
 			<item id="19378" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="venore brick wall" type="wall" server_lookid="19485">
 		<wall type="horizontal">
 			<item id="19485" chance="1"/>
@@ -1597,7 +1597,7 @@
 			<item id="19495" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="roshamuul wall" type="wall" server_lookid="21790">
 		<wall type="horizontal">
 			<item id="21790" chance="1"/>
@@ -1614,7 +1614,7 @@
 			<item id="21783" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="oramond wall" type="wall" server_lookid="22768">
 		<wall type="horizontal">
 			<item id="22768" chance="10"/>
@@ -1637,7 +1637,7 @@
 			<item id="22767" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="oramond wall2" type="wall" server_lookid="22947">
 		<wall type="horizontal">
 			<item id="22947" chance="10"/>
@@ -1654,7 +1654,7 @@
 			<item id="22994" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="oramond wall3" type="wall" server_lookid="23595">
 		<wall type="horizontal">
 			<item id="23595" chance="10"/>
@@ -1671,7 +1671,7 @@
 			<item id="23604" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="zaoan wall2" type="wall" server_lookid="10651">
 		<wall type="horizontal">
 			<item id="10651" chance="1"/>
@@ -1690,7 +1690,7 @@
 			<item id="11201" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="zaoan wall1" type="wall" server_lookid="10666">
 		<wall type="horizontal">
 			<item id="10666" chance="1"/>
@@ -1709,7 +1709,7 @@
 			<item id="10652" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="zaoan wall3" type="wall" server_lookid="10663">
 		<wall type="horizontal">
 			<item id="10663" chance="1"/>
@@ -1742,7 +1742,7 @@
 			<item id="11202" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="zaoan wall4" type="wall" server_lookid="17266">
 		<wall type="horizontal">
 			<item id="17266" chance="1"/>
@@ -1761,7 +1761,7 @@
 			<item id="17267" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="zaoan wall5" type="wall" server_lookid="17264">
 		<wall type="horizontal">
 			<item id="17264" chance="1"/>
@@ -1780,7 +1780,7 @@
 			<item id="17268" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="zaoan wall6" type="wall" server_lookid="17265">
 		<wall type="horizontal">
 			<item id="17265" chance="1"/>
@@ -1799,7 +1799,7 @@
 			<item id="17269" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="zaoan wall7" type="wall" server_lookid="17359">
 		<wall type="horizontal">
 			<item id="17359" chance="1"/>
@@ -1818,7 +1818,7 @@
 			<item id="17360" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="zaoan wall8" type="wall" server_lookid="17358">
 		<wall type="horizontal">
 			<item id="17358" chance="1"/>
@@ -1837,7 +1837,7 @@
 			<item id="17361" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="zaoan wall9" type="wall" server_lookid="17357">
 		<wall type="horizontal">
 			<item id="17357" chance="1"/>
@@ -1856,7 +1856,7 @@
 			<item id="17362" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="corrupted wall1" type="wall" server_lookid="11834">
 		<wall type="horizontal">
 			<item id="11834" chance="10"/>
@@ -1893,7 +1893,7 @@
 			<item id="11835" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="corrupted wall2" type="wall" server_lookid="11938">
 		<wall type="horizontal">
 			<item id="11938" chance="1"/>
@@ -1924,7 +1924,7 @@
 			<item id="11939" chance="1"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="dark stone wall" type="wall" server_lookid="25201">
 		<wall type="horizontal">
 			<item id="25201" chance="10"/>
