@@ -49,14 +49,16 @@ BrushPalettePanel::BrushPalettePanel(wxWindow* parent, const TilesetContainer& t
 	ts_sizer->Add(tmp_choicebook, 1, wxEXPAND);
 	topsizer->Add(ts_sizer, 1, wxEXPAND);
 
-	wxSizer* tmpsizer = newd wxBoxSizer(wxHORIZONTAL);
-	wxButton* buttonAddTileset = newd wxButton(this, wxID_NEW, "Add new Tileset");
-	tmpsizer->Add(buttonAddTileset, wxSizerFlags(0).Center());
+	if (g_settings.getBoolean(Config::SHOW_TILESET_EDITOR)) {
+		wxSizer* tmpsizer = newd wxBoxSizer(wxHORIZONTAL);
+		wxButton* buttonAddTileset = newd wxButton(this, wxID_NEW, "Add new Tileset");
+		tmpsizer->Add(buttonAddTileset, wxSizerFlags(0).Center());
 
-	wxButton* buttonAddItemToTileset = newd wxButton(this, wxID_ADD, "Add new Item");
-	tmpsizer->Add(buttonAddItemToTileset, wxSizerFlags(0).Center());
+		wxButton* buttonAddItemToTileset = newd wxButton(this, wxID_ADD, "Add new Item");
+		tmpsizer->Add(buttonAddItemToTileset, wxSizerFlags(0).Center());
 
-	topsizer->Add(tmpsizer, 0, wxCENTER, 10);
+		topsizer->Add(tmpsizer, 0, wxCENTER, 10);
+	}
 
 	for(TilesetContainer::const_iterator iter = tilesets.begin(); iter != tilesets.end(); ++iter) {
 		const TilesetCategory* tcg = iter->second->getCategory(category);
