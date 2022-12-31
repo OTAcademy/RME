@@ -398,7 +398,7 @@
 		<borderitem edge="cse"	item="4470"/>
 		<borderitem edge="csw"	item="4473"/>
 	</border>
-	
+
 	<!-- mountain edge border big, base -->
 	<border id="35">
 		<borderitem edge="s"	item="876"/>
@@ -496,7 +496,7 @@
 		<borderitem edge="csw"	item="4638"/>
 	</border>
 	-->
-	
+
 	<!-- sea -->
 	<border id="42">
 		<borderitem edge="n"   item="4644"/>
@@ -680,19 +680,19 @@
 		<borderitem edge="e"	item="4829"/>
 		<borderitem edge="w"	item="4831"/>
 	</border>
-	
+
 	<!-- banuta roof, unwalkable -->
 	<border id="54">
 		<borderitem edge="s"	item="3221"/>
 		<borderitem edge="e"	item="3222"/>
 		<borderitem edge="cse"	item="3223"/>
 	</border>
-	
+
 	<!-- banuta roof, walkable -->
 	<border id="55">
 		<borderitem edge="s"	item="3218"/>
 		<borderitem edge="e"	item="3188"/>
 		<borderitem edge="cse"	item="3189"/>
 	</border>
-	
+
 </materials>

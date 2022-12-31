@@ -43,7 +43,7 @@
 			<item fromid="4756" toid="4759"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Architecture">
 		<raw>
 			<item id="463"/>
@@ -68,7 +68,7 @@
 			<item id="3900"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Blank">
 		<raw>
 			<item fromid="4328" toid="4393"/>
@@ -77,14 +77,14 @@
 			<item id="4844"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Board Games">
 		<raw>
 			<item fromid="965" toid="1024"/>
 			<item fromid="2624" toid="2639"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Boats and Ships">
 		<raw>
 			<item fromid="1277" toid="1283"/>
@@ -95,7 +95,7 @@
 			<item fromid="5082" toid="5085"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Borders">
 		<raw>
 			<item fromid="356" toid="367"/>
@@ -121,7 +121,7 @@
 			<item fromid="4760" toid="4819"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Bridges">
 		<raw>
 			<item id="1284"/>
@@ -129,14 +129,14 @@
 			<item fromid="3768" toid="3791"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Carpets">
 		<raw>
 			<item fromid="1794" toid="1808"/>
 			<item fromid="4394" toid="4402"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Corpses">
 		<doodad_and_raw>
 			<item fromid="2806" toid="3121"/>
@@ -146,7 +146,7 @@
 			<item id="5014"/>
 		</doodad_and_raw>
 	</tileset>
-	
+
 	<tileset name="Exterior">
 		<raw>
 			<item fromid="1360" toid="1384"/>
@@ -176,7 +176,7 @@
 			<item fromid="5074" toid="5079"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Grounds">
 		<raw>
 			<item id="100"/>
@@ -235,7 +235,7 @@
 			<item fromid="4832" toid="4833"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="House Furniture">
 		<raw>
 			<item id="1442"/>
@@ -295,13 +295,13 @@
 			<item fromid="3852" toid="3860"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Magic Fields">
 		<raw>
 			<item fromid="1487" toid="1508"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Mountains">
 		<raw>
 			<item fromid="873" toid="878"/>
@@ -311,7 +311,7 @@
 			<item fromid="4826" toid="4827"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Musical Instruments">
 		<items_and_raw>
 			<item fromid="2070" toid="2079"/>
@@ -321,7 +321,7 @@
 			<item fromid="2080" toid="2085"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Nature">
 		<raw>
 			<item fromid="386" toid="391"/>
@@ -339,7 +339,7 @@
 			<item fromid="4876" toid="4882"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Quest Assets">
 		<raw>
 			<item id="2317"/>
@@ -374,7 +374,7 @@
 			<item id="5089"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Roofs">
 		<raw>
 			<item fromid="920" toid="964"/>
@@ -384,7 +384,7 @@
 			<item id="5081"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Signs and Flags">
 		<raw>
 			<item fromid="1429" toid="1441"/>
@@ -395,7 +395,7 @@
 			<item id="4991"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Special">
 		<raw>
 			<!-- switch tiles -->
@@ -416,59 +416,59 @@
 			<item id="465"/>
 			<item id="466"/>
 			<item id="467"/>
-			
+
 			<!-- magic tiles -->
 			<item id="471"/>
 			<item id="472"/>
 			<item id="473"/>
 			<item id="474"/>
-			
+
 			<!-- scarab hole -->
 			<item id="489"/>
 
 			<!-- walkable lava and traps -->
 			<item fromid="1509" toid="1513"/>
-			
+
 			<!-- invisible wall -->
 			<item id="1548"/>
-			
+
 			<!-- writeable blackboards -->
 			<item id="1811"/>
 			<item id="1818"/>
-			
+
 			<!-- lever -->
 			<item id="1945"/>
 			<item id="1946"/>
-			
+
 			<!-- candelabrum, not decaying until moved -->
 			<item id="2057"/>
-			
+
 			<!-- depot and post system -->
 			<item fromid="2589" toid="2599"/>
 
 			<!-- port hope depot tiles -->
 			<item id="3216"/>
 			<item id="3217"/>
-			
+
 			<!-- cornucopia -->
 			<item id="3957"/>
-			
+
 			<!-- old and used backpack -->
 			<item id="3960"/>
-			
+
 			<!-- port hope mailbox -->
 			<item id="3981"/>
-			
+
 			<!-- walkable water tiles -->
 			<item fromid="4620" toid="4625"/>
 			<item fromid="4820" toid="4825"/>
 			<item fromid="4828" toid="4831"/>
-			
+
 			<!-- orichalcum pearl -->
 			<item id="5022"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Splash">
 		<raw>
 			<item fromid="2016" toid="2021"/>
@@ -522,7 +522,7 @@
 			<item id="5024"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Statues">
 		<raw>
 			<item id="1443"/>
@@ -536,7 +536,7 @@
 			<item fromid="3739" toid="3742"/>
 		</raw>
 	</tileset>
-	
+
 	<tileset name="Wall Decorations">
 		<raw>
 			<item id="1809"/>

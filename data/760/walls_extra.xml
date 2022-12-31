@@ -540,7 +540,7 @@
 			<item id="3504" chance="100"/>
 		</alternate>
 	</brush>
-	
+
 	<tileset name="Walls - Archways">
 		<terrain>
 			<brush name="mountain wall archway"/>
@@ -560,7 +560,7 @@
 			<brush name="leaf wall archway"/>
 		</terrain>
 	</tileset>
-	
+
 	<tileset name="Walls - Details">
 		<terrain>
 			<brush name="marble window 1"/>

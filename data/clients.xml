@@ -303,31 +303,31 @@
             <extensions from="8.20 - 8.31" to="12.81"/>
             <data format="10.57" dat="0x4A10" spr="0x59E48E02"/>
 		</client>
-    
+
 		<client name="12.85" otb="12.85" visible="true" data_directory="1285">
             <otbm version="3"/>
             <extensions from="8.20 - 8.31" to="12.85"/>
             <data format="10.57" dat="0x4A10" spr="0x59E48E02"/>
 		</client>
-    
+
 		<client name="12.86" otb="12.86" visible="true" default="true" data_directory="1286">
             <otbm version="3"/>
             <extensions from="8.20 - 8.31" to="12.86"/>
             <data format="10.57" dat="0x4A10" spr="0x59E48E02"/>
 		</client>
-		
+
 		<client name="12.87" otb="12.87" visible="true" default="true" data_directory="1287">
             <otbm version="3"/>
             <extensions from="8.20 - 8.31" to="12.87"/>
             <data format="10.57" dat="0x4A10" spr="0x59E48E02"/>
 		</client>
-		
+
 		<client name="12.90" otb="12.90" visible="true" default="true" data_directory="1290">
             <otbm version="3"/>
             <extensions from="8.20 - 8.31" to="12.90"/>
             <data format="10.57" dat="0x4A10" spr="0x59E48E02"/>
 		</client>
-		
+
 		<client name="13.10" otb="13.10" visible="true" default="true" data_directory="1310">
             <otbm version="3"/>
             <extensions from="8.20 - 8.31" to="12.90"/>

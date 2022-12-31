@@ -1832,7 +1832,7 @@
 			<item id="3525" chance="100"/>
 		</table>
 	</brush>
-	
+
 	<tileset name="Walls">
 		<terrain>
 			<brush name="mountain wall"/>

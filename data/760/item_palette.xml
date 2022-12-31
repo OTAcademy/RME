@@ -16,7 +16,7 @@
 			<item id="2357"/>
 		</items>
 	</tileset>
-	
+
 	<tileset name="Containers">
 		<items>
 			<item id="1746"/>
@@ -54,7 +54,7 @@
 			<item id="5015"/>
 		</items>
 	</tileset>
-	
+
 	<tileset name="Decorations">
 		<items>
 			<item fromid="1678" toid="1693"/>
@@ -96,7 +96,7 @@
 			<item id="5080"/>
 		</items>
 	</tileset>
-	
+
 	<tileset name="Equipment">
 		<items>
 			<item id="2128"/>
@@ -115,21 +115,21 @@
 			<item id="3983"/>
 		</items>
 	</tileset>
-	
+
 	<tileset name="Food">
 		<items>
 			<item fromid="2666" toid="2696"/>
 			<item fromid="2787" toid="2796"/>
 		</items>
 	</tileset>
-	
+
 	<tileset name="Furniture Kits">
 		<items>
 			<item fromid="3901" toid="3938"/>
 			<item fromid="5086" toid="5088"/>
 		</items>
 	</tileset>
-	
+
 	<tileset name="Herbs">
 		<items>
 			<item fromid="2798" toid="2805"/>
@@ -138,13 +138,13 @@
 			<item id="2760"/>
 		</items>
 	</tileset>
-	
+
 	<tileset name="Keys">
 		<items>
 			<item fromid="2086" toid="2092"/>
 		</items>
 	</tileset>
-	
+
 	<tileset name="Light Sources">
 		<items>
 			<item fromid="2041" toid="2057"/>
@@ -172,7 +172,7 @@
 			<item id="3976"/>
 		</items>
 	</tileset>
-	
+
 	<tileset name="Trash">
 		<items>
 			<item id="2010"/>
@@ -182,7 +182,7 @@
 			<item fromid="2250" toid="2259"/>
 		</items>
 	</tileset>
-	
+
 	<tileset name="Valuables">
 		<items>
 			<item fromid="1982" toid="1986"/>
@@ -195,13 +195,13 @@
 			<item fromid="2143" toid="2160"/>
 		</items>
 	</tileset>
-	
+
 	<tileset name="Weapons - Ammunition">
 		<items>
 			<item fromid="2543" toid="2547"/>
 		</items>
 	</tileset>
-	
+
 	<tileset name="Weapons - Distance">
 		<items>
 			<item id="1294"/>

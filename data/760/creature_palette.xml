@@ -38,7 +38,7 @@
 			<creature name="wolf" type="monster" looktype="27"/>
 		</creatures>
 	</tileset>
-	
+
 	<tileset name="Bugs and Spiders">
 		<creatures>
 			<creature name="ancient scarab" type="monster" looktype="79"/>
@@ -59,7 +59,7 @@
 			<creature name="wasp" type="monster" looktype="44"/>
 		</creatures>
 	</tileset>
-	
+
 	<tileset name="Humanoid">
 		<creatures>
 			<creature name="amazon" type="monster" looktype="137" lookhead="113" lookbody="120" looklegs="114" lookfeet="132"/>
@@ -107,12 +107,12 @@
 			<creature name="warlock" type="monster" looktype="130" lookhead="19" lookbody="71" looklegs="128" lookfeet="128"/>
 			<creature name="wild warrior" type="monster" looktype="131" lookhead="57" lookbody="57" looklegs="57" lookfeet="57"/>
 			<creature name="witch" type="monster" looktype="54"/>
-		</creatures>		
+		</creatures>
 	</tileset>
-			
+
 	<tileset name="Magic">
 		<creatures>
-			<creature name="behemoth" type="monster" looktype="55"/>	
+			<creature name="behemoth" type="monster" looktype="55"/>
 			<creature name="beholder" type="monster" looktype="17"/>
 			<creature name="blue djinn" type="monster" looktype="80"/>
 			<creature name="cyclops" type="monster" looktype="22"/>
@@ -134,7 +134,7 @@
 			<creature name="yeti" type="monster" looktype="110"/>
 		</creatures>
 	</tileset>
-	
+
 	<tileset name="Traps">
 		<creatures>
 			<creature name="deathslicer" type="monster" looktype="102"/>
@@ -145,7 +145,7 @@
 			<creature name="demongoblin" type="monster" looktype="201"/>
 		</creatures>
 	</tileset>
-		
+
 	<tileset name="Undead">
 		<creatures>
 			<creature name="banshee" type="monster" looktype="78"/>
@@ -158,9 +158,9 @@
 			<creature name="mummy" type="monster" looktype="65"/>
 			<creature name="skeleton" type="monster" looktype="33"/>
 			<creature name="vampire" type="monster" looktype="68"/>
-		</creatures>		
+		</creatures>
 	</tileset>
-	
+
 	<tileset name="Bosses">
 		<creatures>
 			<creature name="Tiquandas Revenge" type="monster" looktype="120"/>
