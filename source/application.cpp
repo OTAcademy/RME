@@ -481,6 +481,12 @@ bool MainFrame::DoQueryClose() {
 
 bool MainFrame::DoQuerySaveTileset(bool doclose)
 {
+
+	if (!g_materials.needSave()) {
+		// skip dialog when there is nothing to save
+		return true;
+	}
+
 	long ret = g_gui.PopupDialog(
 		"Export tileset",
 		"Do you want to export your tileset changes before exiting?",
