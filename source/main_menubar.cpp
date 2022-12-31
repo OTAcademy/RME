@@ -473,10 +473,14 @@ std::vector<wxString> MainMenuBar::GetRecentFiles()
 
 void MainMenuBar::UpdateFloorMenu()
 {
-	if(g_gui.IsEditorOpen()) {
-		for(int i = 0; i < MAP_LAYERS; ++i)
-			CheckItem(MenuBar::ActionID(MenuBar::FLOOR_0 + i), false);
-		CheckItem(MenuBar::ActionID(MenuBar::FLOOR_0 + g_gui.GetCurrentFloor()), true);
+	// this will have to be changed if you want to have more floors
+	// see MAKE_ACTION(FLOOR_0, wxITEM_RADIO, OnChangeFloor);
+	if (MAP_MAX_LAYER < 16) {
+		if (g_gui.IsEditorOpen()) {
+			for (int i = 0; i < MAP_LAYERS; ++i)
+				CheckItem(MenuBar::ActionID(MenuBar::FLOOR_0 + i), false);
+			CheckItem(MenuBar::ActionID(MenuBar::FLOOR_0 + g_gui.GetCurrentFloor()), true);
+		}
 	}
 }
 
@@ -1331,7 +1335,7 @@ namespace OnMapRemoveUnreachable
 			int ey = std::min(pos.y + 8,  65535);
 			int sz, ez;
 
-			if(pos.z < 8) {
+			if(pos.z <= GROUND_LAYER) {
 				sz = 0;
 				ez = 9;
 			} else {
@@ -1810,9 +1814,13 @@ void MainMenuBar::OnChangeFloor(wxCommandEvent& event)
 	if(checking_programmaticly)
 		return;
 
-	for(int i = 0; i < 16; ++i) {
-		if(IsItemChecked(MenuBar::ActionID(MenuBar::FLOOR_0 + i))) {
-			g_gui.ChangeFloor(i);
+	// this will have to be changed if you want to have more floors
+	// see MAKE_ACTION(FLOOR_0, wxITEM_RADIO, OnChangeFloor);
+	if (MAP_MAX_LAYER < 16) {
+		for (int i = 0; i < MAP_LAYERS; ++i) {
+			if (IsItemChecked(MenuBar::ActionID(MenuBar::FLOOR_0 + i))) {
+				g_gui.ChangeFloor(i);
+			}
 		}
 	}
 }

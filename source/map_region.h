@@ -120,9 +120,11 @@ protected:
 	union {
 		QTreeNode* child[MAP_LAYERS];
 		Floor* array[MAP_LAYERS];
+/*
 #if 16 != MAP_LAYERS
 #    error "You need to rewrite the QuadTree in order to handle more or less than 16 floors"
 #endif
+*/
 	};
 
 	friend class BaseMap;

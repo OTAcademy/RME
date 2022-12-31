@@ -572,9 +572,9 @@ bool IOMapOTBM::getVersionInfo(NodeFileReadHandle* f,  MapVersion& out_ver)
 	out_ver.otbm = (MapVersionID)u32;
 
 
-	root->getU16(u16);
-	root->getU16(u16);
-	root->getU32(u32);
+	root->getU16(u16); // map size X
+	root->getU16(u16); // map size Y
+	root->getU32(u32); // OTB major version
 
 	if(!root->getU32(u32)) // OTB minor version
 		return false;

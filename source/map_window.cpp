@@ -141,7 +141,7 @@ void MapWindow::SetScreenCenterPosition(const Position& position)
 
 	int x = position.x * TILE_SIZE;
 	int y = position.y * TILE_SIZE;
-	if(position.z < 8) {
+	if(position.z <= GROUND_LAYER) {
 		// Compensate for floor offset above ground
 		x -= (GROUND_LAYER - position.z) * TILE_SIZE;
 		y -= (GROUND_LAYER - position.z) * TILE_SIZE;

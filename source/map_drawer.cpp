@@ -126,7 +126,7 @@ void MapDrawer::SetupVars()
 	floor = canvas->GetFloor();
 
 	if(options.show_all_floors) {
-		if(floor < 8)
+		if(floor <= GROUND_LAYER)
 			start_z = GROUND_LAYER;
 		else
 			start_z = std::min(MAP_MAX_LAYER, floor + 2);
