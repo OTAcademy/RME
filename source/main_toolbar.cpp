@@ -23,7 +23,6 @@
 #include "brush.h"
 #include "pngfiles.h"
 #include "artprovider.h"
-
 #include <wx/artprov.h>
 #include <wx/mstream.h>
 
@@ -79,6 +78,9 @@ MainToolBar::MainToolBar(wxWindow* parent, wxAuiManager* manager)
 	wxBitmap locked_bitmap = wxArtProvider::GetBitmap(ART_DOOR_LOCKED_SMALL, wxART_TOOLBAR, icon_size);
 	wxBitmap magic_bitmap = wxArtProvider::GetBitmap(ART_DOOR_MAGIC_SMALL, wxART_TOOLBAR, icon_size);
 	wxBitmap quest_bitmap = wxArtProvider::GetBitmap(ART_DOOR_QUEST_SMALL, wxART_TOOLBAR, icon_size);
+	wxBitmap normal_alt_bitmap = wxArtProvider::GetBitmap(ART_DOOR_NORMAL_ALT_SMALL, wxART_TOOLBAR, icon_size);
+	wxBitmap archway_bitmap = wxArtProvider::GetBitmap(ART_DOOR_ARCHWAY_SMALL, wxART_TOOLBAR, icon_size);
+
 	wxBitmap* hatch_bitmap = loadPNGFile(window_hatch_small_png);
 	wxBitmap* window_bitmap = loadPNGFile(window_normal_small_png);
 
@@ -92,10 +94,14 @@ MainToolBar::MainToolBar(wxWindow* parent, wxAuiManager* manager)
 	brushes_toolbar->AddTool(PALETTE_TERRAIN_NOLOGOUT_TOOL, wxEmptyString, nologout_bitmap, wxNullBitmap, wxITEM_CHECK, "No Logout Zone", wxEmptyString, NULL);
 	brushes_toolbar->AddTool(PALETTE_TERRAIN_PVPZONE_TOOL, wxEmptyString, pvp_bitmap, wxNullBitmap, wxITEM_CHECK, "PvP Zone", wxEmptyString, NULL);
 	brushes_toolbar->AddSeparator();
+
 	brushes_toolbar->AddTool(PALETTE_TERRAIN_NORMAL_DOOR, wxEmptyString, normal_bitmap, wxNullBitmap, wxITEM_CHECK, "Normal Door", wxEmptyString, NULL);
 	brushes_toolbar->AddTool(PALETTE_TERRAIN_LOCKED_DOOR, wxEmptyString, locked_bitmap, wxNullBitmap, wxITEM_CHECK, "Locked Door", wxEmptyString, NULL);
 	brushes_toolbar->AddTool(PALETTE_TERRAIN_MAGIC_DOOR, wxEmptyString, magic_bitmap, wxNullBitmap, wxITEM_CHECK, "Magic Door", wxEmptyString, NULL);
 	brushes_toolbar->AddTool(PALETTE_TERRAIN_QUEST_DOOR, wxEmptyString, quest_bitmap, wxNullBitmap, wxITEM_CHECK, "Quest Door", wxEmptyString, NULL);
+	brushes_toolbar->AddTool(PALETTE_TERRAIN_NORMAL_ALT_DOOR, wxEmptyString, normal_alt_bitmap, wxNullBitmap, wxITEM_CHECK, "Normal Door (alt)", wxEmptyString, NULL);
+	brushes_toolbar->AddTool(PALETTE_TERRAIN_ARCHWAY_DOOR, wxEmptyString, archway_bitmap, wxNullBitmap, wxITEM_CHECK, "Archway", wxEmptyString, NULL);
+	brushes_toolbar->AddSeparator();
 	brushes_toolbar->AddTool(PALETTE_TERRAIN_HATCH_DOOR, wxEmptyString, *hatch_bitmap, wxNullBitmap, wxITEM_CHECK, "Hatch Window", wxEmptyString, NULL);
 	brushes_toolbar->AddTool(PALETTE_TERRAIN_WINDOW_DOOR, wxEmptyString, *window_bitmap, wxNullBitmap, wxITEM_CHECK, "Window", wxEmptyString, NULL);
 	brushes_toolbar->Realize();
@@ -209,6 +215,8 @@ void MainToolBar::UpdateButtons()
 	brushes_toolbar->EnableTool(PALETTE_TERRAIN_LOCKED_DOOR, has_map);
 	brushes_toolbar->EnableTool(PALETTE_TERRAIN_MAGIC_DOOR, has_map);
 	brushes_toolbar->EnableTool(PALETTE_TERRAIN_QUEST_DOOR, has_map);
+	brushes_toolbar->EnableTool(PALETTE_TERRAIN_NORMAL_ALT_DOOR, has_map);
+	brushes_toolbar->EnableTool(PALETTE_TERRAIN_ARCHWAY_DOOR, has_map);
 	brushes_toolbar->EnableTool(PALETTE_TERRAIN_HATCH_DOOR, has_map);
 	brushes_toolbar->EnableTool(PALETTE_TERRAIN_WINDOW_DOOR, has_map);
 
@@ -247,6 +255,8 @@ void MainToolBar::UpdateBrushButtons()
 		brushes_toolbar->ToggleTool(PALETTE_TERRAIN_LOCKED_DOOR, brush == g_gui.locked_door_brush);
 		brushes_toolbar->ToggleTool(PALETTE_TERRAIN_MAGIC_DOOR, brush == g_gui.magic_door_brush);
 		brushes_toolbar->ToggleTool(PALETTE_TERRAIN_QUEST_DOOR, brush == g_gui.quest_door_brush);
+		brushes_toolbar->ToggleTool(PALETTE_TERRAIN_NORMAL_ALT_DOOR, brush == g_gui.normal_door_alt_brush);
+		brushes_toolbar->ToggleTool(PALETTE_TERRAIN_ARCHWAY_DOOR, brush == g_gui.archway_door_brush);
 		brushes_toolbar->ToggleTool(PALETTE_TERRAIN_HATCH_DOOR, brush == g_gui.hatch_door_brush);
 		brushes_toolbar->ToggleTool(PALETTE_TERRAIN_WINDOW_DOOR, brush == g_gui.window_door_brush);
 	} else {
@@ -260,6 +270,8 @@ void MainToolBar::UpdateBrushButtons()
 		brushes_toolbar->ToggleTool(PALETTE_TERRAIN_LOCKED_DOOR, false);
 		brushes_toolbar->ToggleTool(PALETTE_TERRAIN_MAGIC_DOOR, false);
 		brushes_toolbar->ToggleTool(PALETTE_TERRAIN_QUEST_DOOR, false);
+		brushes_toolbar->ToggleTool(PALETTE_TERRAIN_NORMAL_ALT_DOOR, false);
+		brushes_toolbar->ToggleTool(PALETTE_TERRAIN_ARCHWAY_DOOR, false);
 		brushes_toolbar->ToggleTool(PALETTE_TERRAIN_HATCH_DOOR, false);
 		brushes_toolbar->ToggleTool(PALETTE_TERRAIN_WINDOW_DOOR, false);
 	}
@@ -471,6 +483,12 @@ void MainToolBar::OnBrushesButtonClick(wxCommandEvent& event)
 			break;
 		case PALETTE_TERRAIN_QUEST_DOOR:
 			g_gui.SelectBrush(g_gui.quest_door_brush);
+			break;
+		case PALETTE_TERRAIN_NORMAL_ALT_DOOR:
+			g_gui.SelectBrush(g_gui.normal_door_alt_brush);
+			break;
+		case PALETTE_TERRAIN_ARCHWAY_DOOR:
+			g_gui.SelectBrush(g_gui.archway_door_brush);
 			break;
 		case PALETTE_TERRAIN_HATCH_DOOR:
 			g_gui.SelectBrush(g_gui.hatch_door_brush);

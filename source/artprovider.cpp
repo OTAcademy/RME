@@ -37,10 +37,12 @@
 #include "../icons/rectangular_5.xpm"
 #include "../icons/rectangular_6.xpm"
 #include "../icons/rectangular_7.xpm"
-#include "../brushes/door_normal.xpm"
-#include "../brushes/door_locked.xpm"
-#include "../brushes/door_magic.xpm"
-#include "../brushes/door_quest.xpm"
+#include "../brushes/door_normal_small.xpm"
+#include "../brushes/door_locked_small.xpm"
+#include "../brushes/door_magic_small.xpm"
+#include "../brushes/door_quest_small.xpm"
+#include "../brushes/door_normal_alt_small.xpm"
+#include "../brushes/door_archway_small.xpm"
 
 wxBitmap ArtProvider::CreateBitmap(const wxArtID& id, const wxArtClient& client, const wxSize& WXUNUSED(size))
 {
@@ -88,14 +90,18 @@ wxBitmap ArtProvider::CreateBitmap(const wxArtID& id, const wxArtClient& client,
 		else if (id == ART_RECTANGULAR_7)
 			return wxBitmap(rectangular_7_xpm);
 
-		else if (id == ART_DOOR_LOCKED)
-			return wxBitmap(door_locked_xpm);
-		else if (id == ART_DOOR_NORMAL)
-			return wxBitmap(door_normal_xpm);
-		else if (id == ART_DOOR_MAGIC)
-			return wxBitmap(door_magic_xpm);
-		else if (id == ART_DOOR_QUEST)
-			return wxBitmap(door_quest_xpm);
+		else if (id == ART_DOOR_NORMAL_SMALL)
+			return wxBitmap(door_normal_small_xpm);
+		else if (id == ART_DOOR_LOCKED_SMALL)
+			return wxBitmap(door_locked_small_xpm);
+		else if (id == ART_DOOR_MAGIC_SMALL)
+			return wxBitmap(door_magic_small_xpm);
+		else if (id == ART_DOOR_QUEST_SMALL)
+			return wxBitmap(door_quest_small_xpm);
+		else if (id == ART_DOOR_NORMAL_ALT_SMALL)
+			return wxBitmap(door_normal_alt_small_xpm);
+		else if (id == ART_DOOR_ARCHWAY_SMALL)
+			return wxBitmap(door_archway_small_xpm);
 	}
 
 	return wxNullBitmap;

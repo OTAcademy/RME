@@ -355,6 +355,14 @@ DoorBrush* Item::getDoorBrush() const
 			door_brush = g_gui.magic_door_brush;
 			break;
 		}
+		case WALL_DOOR_NORMAL_ALT: {
+			door_brush = g_gui.normal_door_alt_brush;
+			break;
+		}
+		case WALL_ARCHWAY: {
+			door_brush = g_gui.archway_door_brush;
+			break;
+		}
 		case WALL_WINDOW: {
 			door_brush = g_gui.window_door_brush;
 			break;

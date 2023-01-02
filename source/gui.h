@@ -388,6 +388,8 @@ public:
 	DoorBrush* magic_door_brush;
 	DoorBrush* quest_door_brush;
 	DoorBrush* hatch_door_brush;
+	DoorBrush* normal_door_alt_brush;
+	DoorBrush* archway_door_brush;
 	DoorBrush* window_door_brush;
 	FlagBrush* pz_brush;
 	FlagBrush* rook_brush;

@@ -172,6 +172,8 @@ bool WallBrush::load(pugi::xml_node node, wxArrayString& warnings)
 					bool all_doors = false;
 					if(type == "normal") {
 						dt.type = WALL_DOOR_NORMAL;
+					} else if(type == "normal_alt") {
+						dt.type = WALL_DOOR_NORMAL_ALT;
 					} else if(type == "locked") {
 						dt.type = WALL_DOOR_LOCKED;
 					} else if(type == "quest") {
@@ -205,6 +207,7 @@ bool WallBrush::load(pugi::xml_node node, wxArrayString& warnings)
 					if(all_doors) {
 						dt.type = WALL_ARCHWAY;     door_items[alignment].push_back(dt);
 						dt.type = WALL_DOOR_NORMAL; door_items[alignment].push_back(dt);
+						dt.type = WALL_DOOR_NORMAL_ALT; door_items[alignment].push_back(dt);
 						dt.type = WALL_DOOR_LOCKED; door_items[alignment].push_back(dt);
 						dt.type = WALL_DOOR_QUEST;  door_items[alignment].push_back(dt);
 						dt.type = WALL_DOOR_MAGIC;  door_items[alignment].push_back(dt);

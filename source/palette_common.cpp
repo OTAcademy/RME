@@ -388,6 +388,8 @@ BEGIN_EVENT_TABLE(BrushToolPanel, PalettePanel)
 	EVT_TOGGLEBUTTON(PALETTE_TERRAIN_QUEST_DOOR, BrushToolPanel::OnClickQuestDoorButton)
 	EVT_TOGGLEBUTTON(PALETTE_TERRAIN_HATCH_DOOR, BrushToolPanel::OnClickHatchDoorButton)
 	EVT_TOGGLEBUTTON(PALETTE_TERRAIN_WINDOW_DOOR,BrushToolPanel::OnClickWindowDoorButton)
+	EVT_TOGGLEBUTTON(PALETTE_TERRAIN_NORMAL_ALT_DOOR,BrushToolPanel::OnClickNormalAltDoorButton)
+	EVT_TOGGLEBUTTON(PALETTE_TERRAIN_ARCHWAY_DOOR,BrushToolPanel::OnClickArchwayDoorButton)
 
 	EVT_TOGGLEBUTTON(PALETTE_TERRAIN_PZ_TOOL,BrushToolPanel::OnClickPZBrushButton)
 	EVT_TOGGLEBUTTON(PALETTE_TERRAIN_NOPVP_TOOL,BrushToolPanel::OnClickNOPVPBrushButton)
@@ -407,6 +409,8 @@ BrushToolPanel::BrushToolPanel(wxWindow* parent) :
 	questDoorButton(nullptr),
 	hatchDoorButton(nullptr),
 	windowDoorButton(nullptr),
+	normalDoorAltButton(nullptr),
+	archwayDoorButton(nullptr),
 	pzBrushButton(nullptr),
 	nopvpBrushButton(nullptr),
 	nologBrushButton(nullptr),
@@ -434,6 +438,8 @@ void BrushToolPanel::InvalidateContents()
 		questDoorButton =
 		hatchDoorButton =
 		windowDoorButton =
+		normalDoorAltButton =
+		archwayDoorButton =
 		pzBrushButton =
 		nopvpBrushButton =
 		nologBrushButton =
@@ -518,6 +524,18 @@ void BrushToolPanel::LoadAllContents()
 		ASSERT(g_gui.window_door_brush);
 		sub_sizer->Add(windowDoorButton = newd BrushButton(this, g_gui.window_door_brush, RENDER_SIZE_32x32, PALETTE_TERRAIN_WINDOW_DOOR));
 			windowDoorButton->SetToolTip("Window Tool");
+
+		// New row
+		size_sizer->Add(sub_sizer);
+		sub_sizer = newd wxBoxSizer(wxHORIZONTAL);
+
+		ASSERT(g_gui.normal_door_alt_brush);
+		sub_sizer->Add(normalDoorAltButton = newd BrushButton(this, g_gui.normal_door_alt_brush, RENDER_SIZE_32x32, PALETTE_TERRAIN_NORMAL_ALT_DOOR));
+		normalDoorAltButton->SetToolTip("Normal Door (alt)");
+
+		ASSERT(g_gui.archway_door_brush);
+		sub_sizer->Add(archwayDoorButton = newd BrushButton(this, g_gui.archway_door_brush, RENDER_SIZE_32x32, PALETTE_TERRAIN_ARCHWAY_DOOR));
+			archwayDoorButton->SetToolTip("Archway Tool");
 	} else {
 		// Create the tool page with 16x16 icons
 		// Create tool window #1
@@ -530,7 +548,10 @@ void BrushToolPanel::LoadAllContents()
 		sub_sizer->Add(eraserButton = newd BrushButton(this, g_gui.eraser, RENDER_SIZE_16x16, PALETTE_TERRAIN_ERASER));
 			eraserButton->SetToolTip("Eraser");
 
-		sub_sizer->AddSpacer(20);
+		//sub_sizer->AddSpacer(20);
+		ASSERT(g_gui.normal_door_alt_brush);
+			sub_sizer->Add(normalDoorAltButton = newd BrushButton(this, g_gui.normal_door_alt_brush, RENDER_SIZE_16x16, PALETTE_TERRAIN_NORMAL_ALT_DOOR));
+			normalDoorAltButton->SetToolTip("Normal Door (alt)");
 
 		ASSERT(g_gui.normal_door_brush);
 		sub_sizer->Add(normalDoorButton = newd BrushButton(this, g_gui.normal_door_brush, RENDER_SIZE_16x16, PALETTE_TERRAIN_NORMAL_DOOR));
@@ -555,6 +576,10 @@ void BrushToolPanel::LoadAllContents()
 		ASSERT(g_gui.window_door_brush);
 		sub_sizer->Add(windowDoorButton = newd BrushButton(this, g_gui.window_door_brush, RENDER_SIZE_16x16, PALETTE_TERRAIN_WINDOW_DOOR));
 			windowDoorButton->SetToolTip("Window Tool");
+
+		ASSERT(g_gui.archway_door_brush);
+			sub_sizer->Add(archwayDoorButton = newd BrushButton(this, g_gui.archway_door_brush, RENDER_SIZE_16x16, PALETTE_TERRAIN_ARCHWAY_DOOR));
+			archwayDoorButton->SetToolTip("Archway Tool");
 
 		// Next row
 		size_sizer->Add(sub_sizer);
@@ -606,6 +631,8 @@ void BrushToolPanel::DeselectAll()
 		questDoorButton->SetValue(false);
 		hatchDoorButton->SetValue(false);
 		windowDoorButton->SetValue(false);
+		normalDoorAltButton->SetValue(false);
+		archwayDoorButton->SetValue(false);
 		pzBrushButton->SetValue(false);
 		nopvpBrushButton->SetValue(false);
 		nologBrushButton->SetValue(false);
@@ -631,6 +658,10 @@ Brush* BrushToolPanel::GetSelectedBrush() const
 		return g_gui.hatch_door_brush;
 	if(windowDoorButton->GetValue())
 		return g_gui.window_door_brush;
+	if(normalDoorAltButton->GetValue())
+		return g_gui.normal_door_alt_brush;
+	if(archwayDoorButton->GetValue())
+		return g_gui.archway_door_brush;
 	if(pzBrushButton->GetValue())
 		return g_gui.pz_brush;
 	if(nopvpBrushButton->GetValue())
@@ -661,6 +692,10 @@ bool BrushToolPanel::SelectBrush(const Brush* whatbrush)
 		button = hatchDoorButton;
 	} else if(whatbrush == g_gui.window_door_brush) {
 		button = windowDoorButton;
+	} else if(whatbrush == g_gui.normal_door_alt_brush) {
+		button = normalDoorAltButton;
+	} else if(whatbrush == g_gui.archway_door_brush) {
+		button = archwayDoorButton;
 	} else if(whatbrush == g_gui.pz_brush) {
 		button = pzBrushButton;
 	} else if(whatbrush == g_gui.rook_brush) {
@@ -731,6 +766,18 @@ void BrushToolPanel::OnClickWindowDoorButton(wxCommandEvent& event)
 {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.window_door_brush);
+}
+
+void BrushToolPanel::OnClickNormalAltDoorButton(wxCommandEvent& event)
+{
+	g_gui.ActivatePalette(GetParentPalette());
+	g_gui.SelectBrush(g_gui.normal_door_alt_brush);
+}
+
+void BrushToolPanel::OnClickArchwayDoorButton(wxCommandEvent& event)
+{
+	g_gui.ActivatePalette(GetParentPalette());
+	g_gui.SelectBrush(g_gui.archway_door_brush);
 }
 
 void BrushToolPanel::OnClickPZBrushButton(wxCommandEvent& event)

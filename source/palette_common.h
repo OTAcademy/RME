@@ -186,6 +186,8 @@ public:
 	void OnClickQuestDoorButton(wxCommandEvent& event);
 	void OnClickHatchDoorButton(wxCommandEvent& event);
 	void OnClickWindowDoorButton(wxCommandEvent& event);
+	void OnClickNormalAltDoorButton(wxCommandEvent& event);
+	void OnClickArchwayDoorButton(wxCommandEvent& event);
 	// ----
 	void OnClickPZBrushButton(wxCommandEvent& event);
 	void OnClickNOPVPBrushButton(wxCommandEvent& event);
@@ -206,6 +208,8 @@ public:
 	BrushButton* questDoorButton;
 	BrushButton* hatchDoorButton;
 	BrushButton* windowDoorButton;
+	BrushButton* normalDoorAltButton;
+	BrushButton* archwayDoorButton;
 	// ----
 	BrushButton* pzBrushButton;
 	BrushButton* nopvpBrushButton;

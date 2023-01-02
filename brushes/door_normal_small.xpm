@@ -1,5 +1,6 @@
 /* XPM */
-static char * door_normal_small_xpm[] = {
+static const char *door_normal_small_xpm[] = {
+/* columns rows colors chars-per-pixel */
 "16 16 36 1",
 " 	c #999999",
 ".	c #ECECEC",
@@ -37,6 +38,7 @@ static char * door_normal_small_xpm[] = {
 "5	c #6B6356",
 "6	c #D2D2D2",
 "7	c #D0D0D0",
+/* pixels */
 "                ",
 " .............. ",
 " ++@@@@@@@@@@++ ",
@@ -52,4 +54,5 @@ static char * door_normal_small_xpm[] = {
 " 44@5%&%*<&<@44 ",
 " 64@@@@@@@@@@46 ",
 " 77777777777777 ",
-"                "};
+"                "
+};

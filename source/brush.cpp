@@ -77,6 +77,8 @@ void Brushes::init()
 	addBrush(g_gui.magic_door_brush = newd DoorBrush(WALL_DOOR_MAGIC));
 	addBrush(g_gui.quest_door_brush = newd DoorBrush(WALL_DOOR_QUEST));
 	addBrush(g_gui.hatch_door_brush = newd DoorBrush(WALL_HATCH_WINDOW));
+	addBrush(g_gui.archway_door_brush = newd DoorBrush(WALL_ARCHWAY));
+	addBrush(g_gui.normal_door_alt_brush = newd DoorBrush(WALL_DOOR_NORMAL_ALT));
 	addBrush(g_gui.window_door_brush = newd DoorBrush(WALL_WINDOW));
 	addBrush(g_gui.house_brush = newd HouseBrush());
 	addBrush(g_gui.house_exit_brush = newd HouseExitBrush());
@@ -318,6 +320,8 @@ std::string DoorBrush::getName() const
 		case WALL_DOOR_LOCKED: return "Locked door brush";
 		case WALL_DOOR_MAGIC: return "Magic door brush";
 		case WALL_DOOR_QUEST: return "Quest door brush";
+		case WALL_DOOR_NORMAL_ALT: return "Normal door (alt) brush";
+		case WALL_ARCHWAY: return "Archway brush";
 		case WALL_WINDOW: return "Window brush";
 		case WALL_HATCH_WINDOW: return "Hatch window brush";
 		default: return "Unknown door brush";
@@ -331,6 +335,8 @@ int DoorBrush::getLookID() const
 		case WALL_DOOR_LOCKED: return EDITOR_SPRITE_DOOR_LOCKED;
 		case WALL_DOOR_MAGIC: return EDITOR_SPRITE_DOOR_MAGIC;
 		case WALL_DOOR_QUEST: return EDITOR_SPRITE_DOOR_QUEST;
+		case WALL_DOOR_NORMAL_ALT: return EDITOR_SPRITE_DOOR_NORMAL_ALT;
+		case WALL_ARCHWAY: return EDITOR_SPRITE_DOOR_ARCHWAY;
 		case WALL_WINDOW: return EDITOR_SPRITE_WINDOW_NORMAL;
 		case WALL_HATCH_WINDOW: return EDITOR_SPRITE_WINDOW_HATCH;
 		default: return EDITOR_SPRITE_DOOR_NORMAL;

@@ -38,6 +38,10 @@
 #include "../brushes/door_magic_small.xpm"
 #include "../brushes/door_quest.xpm"
 #include "../brushes/door_quest_small.xpm"
+#include "../brushes/door_normal_alt.xpm"
+#include "../brushes/door_normal_alt_small.xpm"
+#include "../brushes/door_archway.xpm"
+#include "../brushes/door_archway_small.xpm"
 
 // All 133 template colors
 static uint32_t TemplateOutfitLookupTable[] = {
@@ -319,6 +323,16 @@ bool GraphicManager::loadEditorSprites()
 		newd EditorSprite(
 			newd wxBitmap(door_quest_small_xpm),
 			newd wxBitmap(door_quest_xpm)
+		);
+	sprite_space[EDITOR_SPRITE_DOOR_NORMAL_ALT] =
+		newd EditorSprite(
+			newd wxBitmap(door_normal_alt_small_xpm),
+			newd wxBitmap(door_normal_alt_xpm)
+		);
+	sprite_space[EDITOR_SPRITE_DOOR_ARCHWAY] =
+		newd EditorSprite(
+			newd wxBitmap(door_archway_small_xpm),
+			newd wxBitmap(door_archway_xpm)
 		);
 	sprite_space[EDITOR_SPRITE_WINDOW_NORMAL] =
 		newd EditorSprite(
