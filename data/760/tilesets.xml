@@ -77,6 +77,7 @@
 			<brush name="steering wheel"/>
 			<brush name="fishing boat"/>
 			<brush name="big transport ship"/>
+			<brush name="big ship (alt)"/>
 		</terrain>
 	</tileset>
 

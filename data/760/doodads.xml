@@ -1231,6 +1231,1096 @@
 		</alternate>
 	</brush>
 
+	<!-- credits: Mackan -->
+	<brush name="big ship (alt)" type="doodad" server_lookid = "2113" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+			<!-- Base -->
+				<tile x = "-5" y = "-4" z = "1"> <item id = "4903"/> </tile>
+				<tile x = "-4" y = "-4" z = "1"> <item id = "4886"/> </tile>
+				<tile x = "-3" y = "-4" z = "1"> <item id = "4886"/> </tile>
+				<tile x = "-2" y = "-4" z = "1"> <item id = "4886"/> </tile>
+				<tile x = "-1" y = "-4" z = "1"> <item id = "4886"/> </tile>
+				<tile x = "0" y = "-4" z = "1"> <item id = "4886"/> </tile>
+				<tile x = "1" y = "-4" z = "1"> <item id = "4886"/> </tile>
+				<tile x = "2" y = "-4" z = "1"> <item id = "4886"/> </tile>
+				<tile x = "3" y = "-4" z = "1"> <item id = "4886"/> </tile>
+				<tile x = "4" y = "-4" z = "1"> <item id = "4886"/> </tile>
+				<tile x = "5" y = "-4" z = "1"> <item id = "4886"/> </tile>
+				<tile x = "6" y = "-4" z = "1"> <item id = "4886"/> </tile>
+				<tile x = "7" y = "-4" z = "1"> <item id = "4886"/> </tile>
+				<tile x = "8" y = "-4" z = "1"> <item id = "4904"/> </tile>
+
+				<tile x = "-6" y = "-3" z = "1"> <item id = "4902"/> <item id = "3139"/> </tile>
+				<tile x = "-5" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-4" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "4" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "5" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "6" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "7" y = "-3" z = "1"> <item id = "1386"/> <item id = "3139"/> </tile>
+				<tile x = "8" y = "-3" z = "1"> <item id = "4905"/> </tile>
+
+				<tile x = "-7" y = "-2" z = "1"> <item id = "4902"/> <item id = "3139"/> </tile>
+				<tile x = "-6" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-5" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-4" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "4" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "5" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "6" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "7" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "8" y = "-2" z = "1"> <item id = "4884"/> </tile>
+
+				<tile x = "-8" y = "-1" z = "1"> <item id = "4902"/> <item id = "3139"/> </tile>
+				<tile x = "-7" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-6" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-5" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-4" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "4" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "5" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "6" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "7" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "8" y = "-1" z = "1"> <item id = "4884"/> </tile>
+
+				<tile x = "-10" y = "0" z = "1"> <item id = "4976"/> </tile>
+				<tile x = "-9" y = "0" z = "1"> <item id = "4901"/> </tile>
+				<tile x = "-8" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-7" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-6" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-5" y = "0" z = "1"> <item id = "4942"/> <item id = "3139"/> </tile>
+				<tile x = "-4" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "0" z = "1"> <item id = "4942"/> <item id = "3139"/> </tile>
+				<tile x = "1" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "4" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "5" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "6" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "7" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "8" y = "0" z = "1"> <item id = "4884"/> </tile>
+				<tile x = "9" y = "0" z = "1"> <item id = "4970"/> </tile>
+
+				<tile x = "-9" y = "1" z = "1"> <item id = "4900"/> </tile>
+				<tile x = "-8" y = "1" z = "1"> <item id = "4899"/> </tile>
+				<tile x = "-7" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-6" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-5" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-4" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "4" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "5" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "6" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "7" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "8" y = "1" z = "1"> <item id = "4884"/> </tile>
+
+				<tile x = "-7" y = "2" z="1"> <item id = "4899"/> </tile>
+				<tile x = "-6" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "-5" y = "2" z="1"> <item id = "1386"/> <item id = "3139"/> </tile>
+				<tile x = "-4" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "4" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "5" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "6" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "7" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "8" y = "2" z="1"> <item id = "4884"/> </tile>
+
+				<tile x = "-6" y = "3" z="1"> <item id = "4899"/> </tile>
+				<tile x = "-5" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "-4" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "4" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "5" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "6" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "7" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "8" y = "3" z="1"> <item id = "4884"/> </tile>
+
+				<tile x = "-5" y = "4" z="1"> <item id = "4897"/> </tile>
+				<tile x = "-4" y = "4" z="1"> <item id = "4885"/> </tile>
+				<tile x = "-3" y = "4" z="1"> <item id = "4885"/> </tile>
+				<tile x = "-2" y = "4" z="1"> <item id = "4885"/> </tile>
+				<tile x = "-1" y = "4" z="1"> <item id = "4885"/> </tile>
+				<tile x = "0" y = "4" z="1"> <item id = "4885"/> </tile>
+				<tile x = "1" y = "4" z="1"> <item id = "4885"/> </tile>
+				<tile x = "2" y = "4" z="1"> <item id = "4885"/> </tile>
+				<tile x = "3" y = "4" z="1"> <item id = "4885"/> </tile>
+				<tile x = "4" y = "4" z="1"> <item id = "4885"/> </tile>
+				<tile x = "5" y = "4" z="1"> <item id = "4885"/> </tile>
+				<tile x = "6" y = "4" z="1"> <item id = "4885"/> </tile>
+				<tile x = "7" y = "4" z="1"> <item id = "4885"/> </tile>
+				<tile x = "8" y = "4" z="1"> <item id = "4896"/> </tile>
+			<!-- Main Deck -->
+				<tile x = "-5" y = "-4" z = "0"> <item id = "4941"/> </tile>
+				<tile x = "-4" y = "-4" z = "0"> <item id = "4919"/> </tile>
+				<tile x = "-3" y = "-4" z = "0"> <item id = "4919"/> </tile>
+				<tile x = "-2" y = "-4" z = "0"> <item id = "4919"/> </tile>
+				<tile x = "-1" y = "-4" z = "0"> <item id = "3758"/> <item id = "4919"/> </tile>
+				<tile x = "0" y = "-4" z = "0"> <item id = "3769"/> </tile>
+				<tile x = "1" y = "-4" z = "0"> <item id = "3771"/> </tile>
+				<tile x = "2" y = "-4" z = "0"> <item id = "3758"/> <item id = "3773"/> </tile>
+				<tile x = "3" y = "-4" z = "0"> <item id = "4919"/> </tile>
+				<tile x = "4" y = "-4" z = "0"> <item id = "4920"/> </tile>
+				<tile x = "5" y = "-4" z = "0"> <item id = "5005"/> </tile>
+				<tile x = "6" y = "-4" z = "0"> <item id = "4907"/> </tile>
+				<tile x = "7" y = "-4" z = "0"> <item id = "5005"/> </tile>
+				<tile x = "8" y = "-4" z = "0"> <item id = "5007"/> </tile>
+
+				<tile x = "-6" y = "-3" z = "0"> <item id = "4940"/> <item id="405"/> </tile>
+				<tile x = "-5" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "-4" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "4" y = "-3" z = "0"> <item id = "5004"/> <item id="405"/> </tile>
+				<tile x = "5" y = "-3" z = "0"> <item id = "1386"/> <item id="405"/> </tile>
+				<tile x = "6" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "7" y = "-3" z = "0"> <item id="427"/> </tile>
+				<tile x = "8" y = "-3" z = "0"> <item id = "5008"/> </tile>
+
+				<tile x = "-7" y = "-2" z = "0"> <item id = "4940"/> <item id="405"/> </tile>
+				<tile x = "-6" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-5" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-4" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "-2" z = "0"> <item id = "5003"/> <item id="405"/> </tile>
+				<tile x = "4" y = "-2" z = "0"> <item id = "4910"/> <item id="405"/> </tile>
+				<tile x = "5" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "6" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "7" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "8" y = "-2" z = "0"> <item id = "4906"/> </tile>
+
+				<tile x = "-8" y = "-1" z = "0"> <item id = "4940"/> <item id="405"/> </tile>
+				<tile x = "-7" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-6" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-5" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-4" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "-1" z = "0"> <item id = "4906"/> <item id="405"/> </tile>
+				<tile x = "4" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "5" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "6" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "7" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "8" y = "-1" z = "0"> <item id = "4906"/> </tile>
+
+				<tile x = "-9" y = "0" z = "0"> <item id = "4939"/> </tile>
+				<tile x = "-8" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "-7" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "-6" y = "0" z = "0"> <item id = "4972"/> </tile>
+				<tile x = "-5" y = "0" z = "0"> <item id = "4942"/> <item id="405"/> </tile>
+				<tile x = "-4" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "0" z = "0"> <item id = "4972"/> </tile>
+				<tile x = "0" y = "0" z = "0"> <item id = "4942"/> <item id="405"/> </tile>
+				<tile x = "1" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "0" z = "0"> <item id = "4913"/> <item id="405"/> </tile>
+				<tile x = "4" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "5" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "6" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "7" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "8" y = "0" z = "0"> <item id = "5004"/> </tile>
+				<tile x = "9" y = "0" z = "0"> <item id = "4971"/> </tile>
+				<!-- Front mast -->
+					<tile x = "-14" y = "1" z = "0"> <item id = "4951"/> </tile>
+					<tile x = "-13" y = "1" z = "0"> <item id = "4952"/> </tile>
+					<tile x = "-12" y = "1" z = "0"> <item id = "4952"/> </tile>
+					<tile x = "-11" y = "1" z = "0"> <item id = "4952"/> </tile>
+					<tile x = "-10" y = "1" z = "0"> <item id = "4952"/> </tile>
+					<tile x = "-9" y = "1" z = "0"> <item id = "4953"/> <item id = "4938"/> </tile>
+
+				<tile x = "-8" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-7" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-6" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-5" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-4" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "1" z = "0"> <item id = "4906"/> <item id="405"/> </tile>
+				<tile x = "4" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "5" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "6" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "7" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "8" y = "1" z = "0"> <item id = "5004"/> </tile>
+
+				<tile x = "-8" y = "2" z = "0"> <item id = "4934"/> </tile>
+				<tile x = "-7" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-6" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-5" y = "2" z = "0"> <item id="427"/> </tile>
+				<tile x = "-4" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "2" z = "0"> <item id = "5004"/> <item id="405"/> </tile>
+				<tile x = "4" y = "2" z = "0"> <item id = "5007"/> <item id="405"/> </tile>
+				<tile x = "5" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "6" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "7" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "8" y = "2" z = "0"> <item id = "4906"/> </tile>
+
+				<tile x = "-7" y = "3" z = "0"> <item id = "4934"/> </tile>
+				<tile x = "-6" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "-5" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "-4" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "4" y = "3" z = "0"> <item id = "5008"/> <item id="405"/> </tile>
+				<tile x = "5" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "6" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "7" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "8" y = "3" z = "0"> <item id = "4906"/> </tile>
+
+				<tile x = "-6" y = "4" z = "0"> <item id = "4934"/> </tile>
+				<tile x = "-5" y = "4" z = "0"> <item id = "4933"/> <item id="405"/> </tile>
+				<tile x = "-4" y = "4" z = "0"> <item id = "4983"/> <item id = "4919"/> <item id="405"/> </tile>
+				<tile x = "-3" y = "4" z = "0"> <item id = "4983"/> <item id = "4919"/> <item id="405"/> </tile>
+				<tile x = "-2" y = "4" z = "0"> <item id = "4919"/> <item id="405"/> </tile>
+				<tile x = "-1" y = "4" z = "0"> <item id = "3758"/> <item id = "4919"/> <item id="405"/> </tile>
+				<tile x = "0" y = "4" z = "0"> <item id = "3769"/> <item id="405"/> </tile>
+				<tile x = "1" y = "4" z = "0"> <item id = "3771"/> <item id="405"/> </tile>
+				<tile x = "2" y = "4" z = "0"> <item id = "3758"/> <item id = "3773"/> <item id="405"/> </tile>
+				<tile x = "3" y = "4" z = "0"> <item id = "4919"/> <item id="405"/> </tile>
+				<tile x = "4" y = "4" z = "0"> <item id = "4921"/> <item id="405"/> </tile>
+				<tile x = "5" y = "4" z = "0"> <item id = "5005"/> <item id="405"/> </tile>
+				<tile x = "6" y = "4" z = "0"> <item id = "4907"/> <item id="405"/> </tile>
+				<tile x = "7" y = "4" z = "0"> <item id = "5005"/> <item id="405"/> </tile>
+				<tile x = "8" y = "4" z = "0"> <item id = "4910"/> </tile>
+					<!-- Anchor -->
+						<tile x = "-3" y = "5" z = "0"> <item id = "4974"/> </tile>
+			<!-- First Floor -->
+				<tile x = "4" y = "-4" z = "-1"> <item id = "5003"/> </tile>
+				<tile x = "5" y = "-4" z = "-1"> <item id = "5005"/> </tile>
+				<tile x = "6" y = "-4" z = "-1"> <item id = "4907"/> </tile>
+				<tile x = "7" y = "-4" z = "-1"> <item id = "5005"/> </tile>
+				<tile x = "8" y = "-4" z = "-1"> <item id = "5007"/> </tile>
+
+				<tile x = "4" y = "-3" z = "-1"> <item id = "5004"/> </tile>
+				<tile x = "5" y = "-3" z = "-1"> <item id="427"/> </tile>
+				<tile x = "6" y = "-3" z = "-1"> <item id="405"/> </tile>
+				<tile x = "7" y = "-3" z = "-1"> <item id = "1386"/> <item id="405"/> </tile>
+				<tile x = "8" y = "-3" z = "-1"> <item id = "5008"/> </tile>
+
+				<tile x = "3" y = "-2" z = "-1"> <item id = "5003"/> </tile>
+				<tile x = "4" y = "-2" z = "-1"> <item id = "4910"/> <item id="405"/> </tile>
+				<tile x = "5" y = "-2" z = "-1"> <item id="405"/> </tile>
+				<tile x = "6" y = "-2" z = "-1"> <item id="405"/> </tile>
+				<tile x = "7" y = "-2" z = "-1"> <item id="405"/> </tile>
+				<tile x = "8" y = "-2" z = "-1"> <item id = "4906"/> </tile>
+
+				<tile x = "3" y = "-1" z = "-1"> <item id = "4906"/> </tile>
+				<tile x = "4" y = "-1" z = "-1"> <item id="405"/> </tile>
+				<tile x = "5" y = "-1" z = "-1"> <item id="405"/> </tile>
+				<tile x = "6" y = "-1" z = "-1"> <item id="405"/> </tile>
+				<tile x = "7" y = "-1" z = "-1"> <item id="405"/> </tile>
+				<tile x = "8" y = "-1" z = "-1"> <item id = "4906"/> </tile>
+
+				<tile x = "3" y = "0" z = "-1"> <item id = "4906"/> </tile>
+				<tile x = "4" y = "0" z = "-1"> <item id="405"/> </tile>
+				<tile x = "5" y = "0" z = "-1"> <item id="405"/> </tile>
+				<tile x = "6" y = "0" z = "-1"> <item id="405"/> </tile>
+				<tile x = "7" y = "0" z = "-1"> <item id="405"/> </tile>
+				<tile x = "8" y = "0" z = "-1"> <item id = "5004"/> <item id="405"/> </tile>
+				<tile x = "9" y = "0" z = "-1"> <item id = "4969"/> </tile>
+
+				<tile x = "3" y = "1" z = "-1"> <item id = "5004"/> </tile>
+				<tile x = "4" y = "1" z = "-1"> <item id="405"/> </tile>
+				<tile x = "5" y = "1" z = "-1"> <item id="405"/> </tile>
+				<tile x = "6" y = "1" z = "-1"> <item id="405"/> </tile>
+				<tile x = "7" y = "1" z = "-1"> <item id="405"/> </tile>
+				<tile x = "8" y = "1" z = "-1"> <item id = "5004"/> <item id="405"/> </tile>
+
+				<tile x = "3" y = "2" z = "-1"> <item id = "5004"/> </tile>
+				<tile x = "4" y = "2" z = "-1"> <item id = "5007"/> <item id="405"/> </tile>
+				<tile x = "5" y = "2" z = "-1"> <item id="405"/> </tile>
+				<tile x = "6" y = "2" z = "-1"> <item id="405"/> </tile>
+				<tile x = "7" y = "2" z = "-1"> <item id="405"/> </tile>
+				<tile x = "8" y = "2" z = "-1"> <item id = "4906"/> <item id="405"/> </tile>
+
+				<tile x = "4" y = "3" z = "-1"> <item id = "5008"/> <item id="405"/> </tile>
+				<tile x = "5" y = "3" z = "-1"> <item id="405"/> </tile>
+				<tile x = "6" y = "3" z = "-1"> <item id="405"/> </tile>
+				<tile x = "7" y = "3" z = "-1"> <item id="405"/> </tile>
+				<tile x = "8" y = "3" z = "-1"> <item id = "4906"/> <item id="405"/> </tile>
+
+				<tile x = "4" y = "4" z = "-1"> <item id = "4906"/> </tile>
+				<tile x = "5" y = "4" z = "-1"> <item id = "5005"/> <item id="405"/> </tile>
+				<tile x = "6" y = "4" z = "-1"> <item id = "4907"/> <item id="405"/> </tile>
+				<tile x = "7" y = "4" z = "-1"> <item id = "5005"/> <item id="405"/> </tile>
+				<tile x = "8" y = "4" z = "-1"> <item id = "4910"/> </tile>
+			<!-- Rudder Deck -->
+				<tile x = "4" y = "-4" z = "-2"> <item id = "5002"/> </tile>
+				<tile x = "5" y = "-4" z = "-2"> <item id = "4919"/> </tile>
+				<tile x = "6" y = "-4" z = "-2"> <item id = "4919"/> </tile>
+				<tile x = "7" y = "-4" z = "-2"> <item id = "4919"/> </tile>
+				<tile x = "8" y = "-4" z = "-2"> <item id = "4926"/> </tile>
+
+				<tile x = "4" y = "-3" z = "-2"> <item id = "4922"/> </tile>
+				<tile x = "5" y = "-3" z = "-2"> <item id="405"/> </tile>
+				<tile x = "6" y = "-3" z = "-2"> <item id="405"/> </tile>
+				<tile x = "7" y = "-3" z = "-2"> <item id="427"/> </tile>
+				<tile x = "8" y = "-3" z = "-2"> <item id = "4931"/> <item id="405"/> </tile>
+
+				<tile x = "3" y = "-2" z = "-2"> <item id = "3758"/> <item id="442"/> </tile>
+				<tile x = "4" y = "-2" z = "-2"> <item id = "4932"/> </tile>
+				<tile x = "5" y = "-2" z = "-2"> <item id="405"/> </tile>
+				<tile x = "6" y = "-2" z = "-2"> <item id="405"/> </tile>
+				<tile x = "7" y = "-2" z = "-2"> <item id="405"/> </tile>
+				<tile x = "8" y = "-2" z = "-2"> <item id = "4922"/> <item id = "3758"/> <item id="405"/> </tile>
+
+				<tile x = "3" y = "-1" z = "-2"> <item id = "3775"/> <item id="436"/> </tile>
+				<tile x = "4" y = "-1" z = "-2"> <item id="405"/> </tile>
+				<tile x = "5" y = "-1" z = "-2"> <item id="405"/> </tile>
+				<tile x = "6" y = "-1" z = "-2"> <item id="405"/> </tile>
+				<tile x = "7" y = "-1" z = "-2"> <item id="405"/> </tile>
+				<tile x = "8" y = "-1" z = "-2"> <item id = "3775"/> <item id="405"/> </tile>
+
+				<tile x = "3" y = "0" z = "-2"> <item id = "3779"/> <item id="436"/> </tile>
+				<tile x = "4" y = "0" z = "-2"> <item id = "4964"/> <item id="405"/> </tile>
+				<tile x = "5" y = "0" z = "-2"> <item id="405"/> </tile>
+				<tile x = "6" y = "0" z = "-2"> <item id="405"/> </tile>
+				<tile x = "7" y = "0" z = "-2"> <item id="405"/> </tile>
+				<tile x = "8" y = "0" z = "-2"> <item id = "3779"/> <item id="405"/> </tile>
+
+				<tile x = "3" y = "1" z = "-2"> <item id = "3761"/> <item id = "3775"/> <item id="436"/> </tile>
+				<tile x = "4" y = "1" z = "-2"> <item id = "4965"/> <item id="405"/> </tile>
+				<tile x = "5" y = "1" z = "-2"> <item id="405"/> </tile>
+				<tile x = "6" y = "1" z = "-2"> <item id="405"/> </tile>
+				<tile x = "7" y = "1" z = "-2"> <item id="405"/> </tile>
+				<tile x = "8" y = "1" z = "-2"> <item id = "3761"/> <item id = "3775"/> <item id="405"/> </tile>
+
+				<tile x = "3" y = "2" z = "-2"> <item id = "3758"/> <item id = "3779"/> <item id="436"/> </tile>
+				<tile x = "4" y = "2" z = "-2"> <item id = "4926"/> <item id="405"/> </tile>
+				<tile x = "5" y = "2" z = "-2"> <item id="405"/> </tile>
+				<tile x = "6" y = "2" z = "-2"> <item id="405"/> </tile>
+				<tile x = "7" y = "2" z = "-2"> <item id="405"/> </tile>
+				<tile x = "8" y = "2" z = "-2"> <item id = "3758"/> <item id = "3779"/> <item id="405"/> </tile>
+
+				<tile x = "4" y = "3" z = "-2"> <item id = "4931"/> </tile>
+				<tile x = "5" y = "3" z = "-2"> <item id="405"/> </tile>
+				<tile x = "6" y = "3" z = "-2"> <item id="405"/> </tile>
+				<tile x = "7" y = "3" z = "-2"> <item id="405"/> </tile>
+				<tile x = "8" y = "3" z = "-2"> <item id = "4922"/> <item id="405"/> </tile>
+
+				<tile x = "4" y = "4" z = "-2"> <item id = "4922"/> </tile>
+				<tile x = "5" y = "4" z = "-2"> <item id = "4919"/> <item id="405"/> </tile>
+				<tile x = "6" y = "4" z = "-2"> <item id = "4919"/> <item id="405"/> </tile>
+				<tile x = "7" y = "4" z = "-2"> <item id = "4919"/> <item id="405"/> </tile>
+				<tile x = "8" y = "4" z = "-2"> <item id = "4932"/> <item id="405"/> </tile>
+			<!-- Sails -->
+				<!-- Mast -->
+					<tile x = "0" y = "0" z = "-1"> <item id = "4943"/> </tile>
+				<!-- Sailmast -->
+					<tile x = "-6" y = "-5" z = "-1"> <item id = "4945"/> </tile>
+					<tile x = "-6" y = "-4" z = "-1"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "-3" z = "-1"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "-2" z = "-1"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "-1" z = "-1"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "0" z = "-1"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "1" z = "-1"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "2" z = "-1"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "3" z = "-1"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "4" z = "-1"> <item id = "4946"/> </tile>
+
+					<tile x = "-6" y = "-4" z = "-2"> <item id = "4945"/> </tile>
+					<tile x = "-6" y = "-3" z = "-2"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "-2" z = "-2"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "-1" z = "-2"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "0" z = "-2"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "1" z = "-2"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "2" z = "-2"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "3" z = "-2"> <item id = "4946"/> </tile>
+
+					<tile x = "-6" y = "-3" z = "-3"> <item id = "4945"/> </tile>
+					<tile x = "-6" y = "-2" z = "-3"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "-1" z = "-3"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "0" z = "-3"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "1" z = "-3"> <item id = "3601"/> </tile>
+					<tile x = "-6" y = "2" z = "-3"> <item id = "4946"/> </tile>
+
+					<tile x = "-1" y = "-5" z = "-2"> <item id = "4945"/> </tile>
+					<tile x = "-1" y = "-4" z = "-2"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "-3" z = "-2"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "-2" z = "-2"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "-1" z = "-2"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "0" z = "-2"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "1" z = "-2"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "2" z = "-2"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "3" z = "-2"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "4" z = "-2"> <item id = "4946"/> </tile>
+
+					<tile x = "-1" y = "-4" z = "-3"> <item id = "4945"/> </tile>
+					<tile x = "-1" y = "-3" z = "-3"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "-2" z = "-3"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "-1" z = "-3"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "0" z = "-3"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "1" z = "-3"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "2" z = "-3"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "3" z = "-3"> <item id = "4946"/> </tile>
+
+					<tile x = "-1" y = "-3" z = "-4"> <item id = "4945"/> </tile>
+					<tile x = "-1" y = "-2" z = "-4"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "-1" z = "-4"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "0" z = "-4"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "1" z = "-4"> <item id = "3601"/> </tile>
+					<tile x = "-1" y = "2" z = "-4"> <item id = "4946"/> </tile>
+				<!-- Sails -->
+					<tile x = "-5" y = "-4" z = "-1"> <item id = "4958"/> </tile>
+					<tile x = "-5" y = "-3" z = "-1"> <item id = "4959"/> </tile>
+					<tile x = "-5" y = "-2" z = "-1"> <item id = "4960"/> </tile>
+					<tile x = "-5" y = "-1" z = "-1"> <item id = "4961"/> </tile>
+					<tile x = "-5" y = "0" z = "-1"> <item id = "4944"/> <item id = "4959"/> </tile>
+					<tile x = "-5" y = "1" z = "-1"> <item id = "4960"/> </tile>
+					<tile x = "-5" y = "2" z = "-1"> <item id = "4961"/> </tile>
+					<tile x = "-5" y = "3" z = "-1"> <item id = "4958"/> </tile>
+
+					<tile x = "-5" y = "-3" z = "-2"> <item id = "4959"/> </tile>
+					<tile x = "-5" y = "-2" z = "-2"> <item id = "4960"/> </tile>
+					<tile x = "-5" y = "-1" z = "-2"> <item id = "4961"/> </tile>
+					<tile x = "-5" y = "0" z = "-2"> <item id = "1277"/> <item id = "4959"/> </tile>
+					<tile x = "-5" y = "1" z = "-2"> <item id = "4960"/> </tile>
+					<tile x = "-5" y = "2" z = "-2"> <item id = "4961"/> </tile>
+
+					<tile x = "-5" y = "-2" z = "-3"> <item id = "4959"/> </tile>
+					<tile x = "-5" y = "-1" z = "-3"> <item id = "4961"/> </tile>
+					<tile x = "-5" y = "0" z = "-3"> <item id = "1277"/> <item id = "4959"/> </tile>
+					<tile x = "-5" y = "1" z = "-3"> <item id = "4961"/> </tile>
+
+					<tile x = "0" y = "-4" z = "-2"> <item id = "4958"/> </tile>
+					<tile x = "0" y = "-3" z = "-2"> <item id = "4959"/> </tile>
+					<tile x = "0" y = "-2" z = "-2"> <item id = "4960"/> </tile>
+					<tile x = "0" y = "-1" z = "-2"> <item id = "4961"/> </tile>
+					<tile x = "0" y = "0" z = "-2"> <item id = "4944"/> <item id = "4959"/> </tile>
+					<tile x = "0" y = "1" z = "-2"> <item id = "4960"/> </tile>
+					<tile x = "0" y = "2" z = "-2"> <item id = "4961"/> </tile>
+					<tile x = "0" y = "3" z = "-2"> <item id = "4958"/> </tile>
+
+					<tile x = "0" y = "-3" z = "-3"> <item id = "4959"/> </tile>
+					<tile x = "0" y = "-2" z = "-3"> <item id = "4960"/> </tile>
+					<tile x = "0" y = "-1" z = "-3"> <item id = "4961"/> </tile>
+					<tile x = "0" y = "0" z = "-3"> <item id = "1277"/> <item id = "4959"/> </tile>
+					<tile x = "0" y = "1" z = "-3"> <item id = "4960"/> </tile>
+					<tile x = "0" y = "2" z = "-3"> <item id = "4961"/> </tile>
+
+					<tile x = "0" y = "-2" z = "-4"> <item id = "4959"/> </tile>
+					<tile x = "0" y = "-1" z = "-4"> <item id = "4961"/> </tile>
+					<tile x = "0" y = "0" z = "-4"> <item id = "1277"/> <item id = "4959"/> </tile>
+					<tile x = "0" y = "1" z = "-4"> <item id = "4961"/> </tile>
+				<!-- Flag -->
+					<tile x = "-5" y = "0" z = "-4"> <item id = "1437"/> </tile>
+					<tile x = "0" y = "0" z = "-5"> <item id = "1436"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="10">
+			<!-- Base -->
+				<tile x = "-4" y = "-5" z = "1"> <item id = "4887"/> </tile>
+				<tile x = "-4" y = "-4" z = "1"> <item id = "4883"/> </tile>
+				<tile x = "-4" y = "-3" z = "1"> <item id = "4883"/> </tile>
+				<tile x = "-4" y = "-2" z = "1"> <item id = "4883"/> </tile>
+				<tile x = "-4" y = "-1" z = "1"> <item id = "4883"/> </tile>
+				<tile x = "-4" y = "0" z = "1"> <item id = "4883"/> </tile>
+				<tile x = "-4" y = "1" z = "1"> <item id = "4883"/> </tile>
+				<tile x = "-4" y = "2" z = "1"> <item id = "4883"/> </tile>
+				<tile x = "-4" y = "3" z = "1"> <item id = "4883"/> </tile>
+				<tile x = "-4" y = "4" z = "1"> <item id = "4883"/> </tile>
+				<tile x = "-4" y = "5" z = "1"> <item id = "4883"/> </tile>
+				<tile x = "-4" y = "6" z = "1"> <item id = "4883"/> </tile>
+				<tile x = "-4" y = "7" z = "1"> <item id = "4883"/> </tile>
+				<tile x = "-4" y = "8" z = "1"> <item id = "4894"/> </tile>
+
+				<tile x = "-3" y = "-6" z = "1"> <item id = "4888"/> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "-5" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "-4" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "4" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "5" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "6" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "7" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-3" y = "8" z = "1"> <item id = "4895"/> </tile>
+
+				<tile x = "-2" y = "-7" z = "1"> <item id = "4888"/> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "-6" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "-5" z = "1"> <item id = "1386"/> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "-4" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "4" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "5" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "6" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "7" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-2" y = "8" z = "1"> <item id = "4885"/> </tile>
+
+				<tile x = "-1" y = "-8" z = "1"> <item id = "4888"/> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "-7" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "-6" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "-5" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "-4" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "4" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "5" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "6" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "7" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "-1" y = "8" z = "1"> <item id = "4885"/> </tile>
+
+				<tile x = "0" y = "-10" z = "1"> <item id = "4975"/> </tile>
+				<tile x = "0" y = "-9" z = "1"> <item id = "4889"/> </tile>
+				<tile x = "0" y = "-8" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "-7" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "-6" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "-5" z = "1"> <item id = "4942"/> <item id = "3139"/> </tile>
+				<tile x = "0" y = "-4" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "0" z = "1"> <item id = "4942"/> <item id = "3139"/> </tile>
+				<tile x = "0" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "4" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "5" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "6" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "7" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "0" y = "8" z = "1"> <item id = "4885"/> </tile>
+				<tile x = "0" y = "9" z = "1"> <item id = "4966"/> </tile>
+
+				<tile x = "1" y = "-9" z = "1"> <item id = "4890"/> </tile>
+				<tile x = "1" y = "-8" z = "1"> <item id = "4892"/> </tile>
+				<tile x = "1" y = "-7" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "-6" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "-5" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "-4" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "-3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "-2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "-1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "0" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "1" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "2" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "3" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "4" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "5" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "6" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "7" z = "1"> <item id = "3139"/> </tile>
+				<tile x = "1" y = "8" z = "1"> <item id = "4885"/> </tile>
+
+				<tile x = "2" y = "-7" z="1"> <item id = "4892"/> </tile>
+				<tile x = "2" y = "-6" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "-5" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "-4" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "-3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "-2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "-1" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "0" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "1" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "4" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "5" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "6" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "7" z="1"> <item id = "3139"/> </tile>
+				<tile x = "2" y = "8" z="1"> <item id = "4885"/> </tile>
+
+				<tile x = "3" y = "-6" z="1"> <item id = "4892"/> </tile>
+				<tile x = "3" y = "-5" z="1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "-4" z="1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "-3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "-2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "-1" z="1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "0" z="1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "1" z="1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "2" z="1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "3" z="1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "4" z="1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "5" z="1"> <item id = "1386"/> <item id = "3139"/> </tile>
+				<tile x = "3" y = "6" z="1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "7" z="1"> <item id = "3139"/> </tile>
+				<tile x = "3" y = "8" z="1"> <item id = "4885"/> </tile>
+
+				<tile x = "4" y = "-5" z="1"> <item id = "4893"/> </tile>
+				<tile x = "4" y = "-4" z="1"> <item id = "4884"/> </tile>
+				<tile x = "4" y = "-3" z="1"> <item id = "4884"/> </tile>
+				<tile x = "4" y = "-2" z="1"> <item id = "4884"/> </tile>
+				<tile x = "4" y = "-1" z="1"> <item id = "4884"/> </tile>
+				<tile x = "4" y = "0" z="1"> <item id = "4884"/> </tile>
+				<tile x = "4" y = "1" z="1"> <item id = "4884"/> </tile>
+				<tile x = "4" y = "2" z="1"> <item id = "4884"/> </tile>
+				<tile x = "4" y = "3" z="1"> <item id = "4884"/> </tile>
+				<tile x = "4" y = "4" z="1"> <item id = "4884"/> </tile>
+				<tile x = "4" y = "5" z="1"> <item id = "4884"/> </tile>
+				<tile x = "4" y = "6" z="1"> <item id = "4884"/> </tile>
+				<tile x = "4" y = "7" z="1"> <item id = "4884"/> </tile>
+				<tile x = "4" y = "8" z="1"> <item id = "4896"/> </tile>
+			<!-- Main Deck -->
+				<tile x = "-4" y = "-5" z = "0"> <item id = "4923"/> </tile>
+				<tile x = "-4" y = "-4" z = "0"> <item id = "4922"/> </tile>
+				<tile x = "-4" y = "-3" z = "0"> <item id = "4922"/> </tile>
+				<tile x = "-4" y = "-2" z = "0"> <item id = "4922"/> </tile>
+				<tile x = "-4" y = "-1" z = "0"> <item id = "3758"/> <item id = "4922"/> </tile>
+				<tile x = "-4" y = "0" z = "0"> <item id = "3775"/> </tile>
+				<tile x = "-4" y = "1" z = "0"> <item id = "3777"/> </tile>
+				<tile x = "-4" y = "2" z = "0"> <item id = "3779"/> <item id = "3758"/> </tile>
+				<tile x = "-4" y = "3" z = "0"> <item id = "4922"/> </tile>
+				<tile x = "-4" y = "4" z = "0"> <item id = "4911"/> </tile>
+				<tile x = "-4" y = "5" z = "0"> <item id = "5004"/> </tile>
+				<tile x = "-4" y = "6" z = "0"> <item id = "4906"/> </tile>
+				<tile x = "-4" y = "7" z = "0"> <item id = "5004"/> </tile>
+				<tile x = "-4" y = "8" z = "0"> <item id = "4908"/> </tile>
+
+				<tile x = "-3" y = "-6" z = "0"> <item id = "4940"/> <item id="405"/> </tile>
+				<tile x = "-3" y = "-5" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "-4" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "4" z = "0"> <item id = "5005"/> <item id="405"/> </tile>
+				<tile x = "-3" y = "5" z = "0"> <item id = "1386"/> <item id="405"/> </tile>
+				<tile x = "-3" y = "6" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "7" z = "0"> <item id="405"/> </tile>
+				<tile x = "-3" y = "8" z = "0"> <item id = "4909"/> </tile>
+
+				<tile x = "-2" y = "-7" z = "0"> <item id = "4940"/> <item id="405"/> </tile>
+				<tile x = "-2" y = "-6" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "-5" z = "0"> <item id="427"/> </tile>
+				<tile x = "-2" y = "-4" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "3" z = "0"> <item id = "5003"/> <item id="405"/> </tile>
+				<tile x = "-2" y = "4" z = "0"> <item id = "4910"/> <item id="405"/> </tile>
+				<tile x = "-2" y = "5" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "6" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "7" z = "0"> <item id="405"/> </tile>
+				<tile x = "-2" y = "8" z = "0"> <item id = "4907"/> </tile>
+
+				<tile x = "-1" y = "-8" z = "0"> <item id = "4940"/> <item id="405"/> </tile>
+				<tile x = "-1" y = "-7" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "-6" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "-5" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "-4" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "3" z = "0"> <item id = "4907"/> <item id="405"/> </tile>
+				<tile x = "-1" y = "4" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "5" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "6" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "7" z = "0"> <item id="405"/> </tile>
+				<tile x = "-1" y = "8" z = "0"> <item id = "4907"/> </tile>
+
+				<tile x = "0" y = "-9" z = "0"> <item id = "4927"/> </tile>
+				<tile x = "0" y = "-8" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "-7" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "-6" z = "0"> <item id = "4972"/> </tile>
+				<tile x = "0" y = "-5" z = "0"> <item id = "4942"/> <item id="405"/> </tile>
+				<tile x = "0" y = "-4" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "-1" z = "0"> <item id = "4972"/> </tile>
+				<tile x = "0" y = "0" z = "0"> <item id = "4942"/> <item id="405"/> </tile>
+				<tile x = "0" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "3" z = "0"> <item id = "4916"/> <item id="405"/> </tile>
+				<tile x = "0" y = "4" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "5" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "6" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "7" z = "0"> <item id="405"/> </tile>
+				<tile x = "0" y = "8" z = "0"> <item id = "5005"/> </tile>
+				<tile x = "0" y = "9" z = "0"> <item id = "4968"/> </tile>
+				<!-- Front mast -->
+					<tile x = "1" y = "-14" z = "0"> <item id = "4948"/> </tile>
+					<tile x = "1" y = "-13" z = "0"> <item id = "4949"/> </tile>
+					<tile x = "1" y = "-12" z = "0"> <item id = "4949"/> </tile>
+					<tile x = "1" y = "-11" z = "0"> <item id = "4949"/> </tile>
+					<tile x = "1" y = "-10" z = "0"> <item id = "4949"/> </tile>
+					<tile x = "1" y = "-9" z = "0"> <item id = "4950"/> <item id = "4928"/> </tile>
+
+				<tile x = "1" y = "-8" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "-7" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "-6" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "-5" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "-4" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "3" z = "0"> <item id = "4907"/> <item id="405"/> </tile>
+				<tile x = "1" y = "4" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "5" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "6" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "7" z = "0"> <item id="405"/> </tile>
+				<tile x = "1" y = "8" z = "0"> <item id = "5005"/> </tile>
+
+				<tile x = "2" y = "-8" z = "0"> <item id = "4929"/> </tile>
+				<tile x = "2" y = "-7" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "-6" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "-5" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "-4" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "3" z = "0"> <item id = "5005"/> <item id="405"/> </tile>
+				<tile x = "2" y = "4" z = "0"> <item id = "4908"/> <item id="405"/> </tile>
+				<tile x = "2" y = "5" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "6" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "7" z = "0"> <item id="405"/> </tile>
+				<tile x = "2" y = "8" z = "0"> <item id = "4907"/> </tile>
+
+				<tile x = "3" y = "-7" z = "0"> <item id = "4929"/> </tile>
+				<tile x = "3" y = "-6" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "-5" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "-4" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "-3" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "-2" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "-1" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "0" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "1" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "2" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "3" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "4" z = "0"> <item id = "4909"/> <item id="405"/> </tile>
+				<tile x = "3" y = "5" z = "0"> <item id="427"/> </tile>
+				<tile x = "3" y = "6" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "7" z = "0"> <item id="405"/> </tile>
+				<tile x = "3" y = "8" z = "0"> <item id = "4907"/> </tile>
+
+				<tile x = "4" y = "-6" z = "0"> <item id = "4929"/> </tile>
+				<tile x = "4" y = "-5" z = "0"> <item id = "4931"/> <item id="405"/> </tile>
+				<tile x = "4" y = "-4" z = "0"> <item id = "4978"/> <item id = "4922"/> <item id="405"/> </tile>
+				<tile x = "4" y = "-3" z = "0"> <item id = "4978"/> <item id = "4922"/> <item id="405"/> </tile>
+				<tile x = "4" y = "-2" z = "0"> <item id = "4922"/> <item id="405"/> </tile>
+				<tile x = "4" y = "-1" z = "0"> <item id = "3758"/> <item id = "4922"/> <item id="405"/> </tile>
+				<tile x = "4" y = "0" z = "0"> <item id = "3775"/> <item id="405"/> </tile>
+				<tile x = "4" y = "1" z = "0"> <item id = "3777"/> <item id="405"/> </tile>
+				<tile x = "4" y = "2" z = "0"> <item id = "3779"/> <item id = "3758"/> <item id="405"/> </tile>
+				<tile x = "4" y = "3" z = "0"> <item id = "4922"/> <item id="405"/> </tile>
+				<tile x = "4" y = "4" z = "0"> <item id = "4912"/> <item id="405"/> </tile>
+				<tile x = "4" y = "5" z = "0"> <item id = "5004"/> <item id="405"/> </tile>
+				<tile x = "4" y = "6" z = "0"> <item id = "4906"/> <item id="405"/> </tile>
+				<tile x = "4" y = "7" z = "0"> <item id = "5004"/> <item id="405"/> </tile>
+				<tile x = "4" y = "8" z = "0"> <item id = "4910"/> </tile>
+					<!-- Anchor -->
+						<tile x = "5" y = "-3" z = "0"> <item id = "4977"/> </tile>
+			<!-- First Floor -->
+				<tile x = "-4" y = "4" z = "-1"> <item id = "5003"/> </tile>
+				<tile x = "-4" y = "5" z = "-1"> <item id = "5004"/> </tile>
+				<tile x = "-4" y = "6" z = "-1"> <item id = "4906"/> </tile>
+				<tile x = "-4" y = "7" z = "-1"> <item id = "5004"/> </tile>
+				<tile x = "-4" y = "8" z = "-1"> <item id = "4908"/> </tile>
+
+				<tile x = "-3" y = "4" z = "-1"> <item id = "5005"/> </tile>
+				<tile x = "-3" y = "5" z = "-1"> <item id="427"/> </tile>
+				<tile x = "-3" y = "6" z = "-1"> <item id="405"/> </tile>
+				<tile x = "-3" y = "7" z = "-1"> <item id="405"/> </tile>
+				<tile x = "-3" y = "8" z = "-1"> <item id = "4909"/> </tile>
+
+				<tile x = "-2" y = "3" z = "-1"> <item id = "5003"/> </tile>
+				<tile x = "-2" y = "4" z = "-1"> <item id = "4910"/> <item id="405"/> </tile>
+				<tile x = "-2" y = "5" z = "-1"> <item id="405"/> </tile>
+				<tile x = "-2" y = "6" z = "-1"> <item id="405"/> </tile>
+				<tile x = "-2" y = "7" z = "-1"> <item id="405"/> </tile>
+				<tile x = "-2" y = "8" z = "-1"> <item id = "4907"/> </tile>
+
+				<tile x = "-1" y = "3" z = "-1"> <item id = "4907"/> </tile>
+				<tile x = "-1" y = "4" z = "-1"> <item id="405"/> </tile>
+				<tile x = "-1" y = "5" z = "-1"> <item id="405"/> </tile>
+				<tile x = "-1" y = "6" z = "-1"> <item id="405"/> </tile>
+				<tile x = "-1" y = "7" z = "-1"> <item id="405"/> </tile>
+				<tile x = "-1" y = "8" z = "-1"> <item id = "4907"/> </tile>
+
+				<tile x = "0" y = "3" z = "-1"> <item id = "4907"/> </tile>
+				<tile x = "0" y = "4" z = "-1"> <item id="405"/> </tile>
+				<tile x = "0" y = "5" z = "-1"> <item id="405"/> </tile>
+				<tile x = "0" y = "6" z = "-1"> <item id="405"/> </tile>
+				<tile x = "0" y = "7" z = "-1"> <item id="405"/> </tile>
+				<tile x = "0" y = "8" z = "-1"> <item id = "5005"/> <item id="405"/> </tile>
+				<tile x = "0" y = "9" z = "-1"> <item id = "4967"/> </tile>
+
+				<tile x = "1" y = "3" z = "-1"> <item id = "5005"/> </tile>
+				<tile x = "1" y = "4" z = "-1"> <item id="405"/> </tile>
+				<tile x = "1" y = "5" z = "-1"> <item id="405"/> </tile>
+				<tile x = "1" y = "6" z = "-1"> <item id="405"/> </tile>
+				<tile x = "1" y = "7" z = "-1"> <item id="405"/> </tile>
+				<tile x = "1" y = "8" z = "-1"> <item id = "5005"/> <item id="405"/> </tile>
+
+				<tile x = "2" y = "3" z = "-1"> <item id = "5005"/> </tile>
+				<tile x = "2" y = "4" z = "-1"> <item id = "4908"/> <item id="405"/> </tile>
+				<tile x = "2" y = "5" z = "-1"> <item id="405"/> </tile>
+				<tile x = "2" y = "6" z = "-1"> <item id="405"/> </tile>
+				<tile x = "2" y = "7" z = "-1"> <item id="405"/> </tile>
+				<tile x = "2" y = "8" z = "-1"> <item id = "4907"/> <item id="405"/> </tile>
+
+				<tile x = "3" y = "4" z = "-1"> <item id = "4909"/> <item id="405"/> </tile>
+				<tile x = "3" y = "5" z = "-1"> <item id = "1386"/> <item id="405"/> </tile>
+				<tile x = "3" y = "6" z = "-1"> <item id="405"/> </tile>
+				<tile x = "3" y = "7" z = "-1"> <item id="405"/> </tile>
+				<tile x = "3" y = "8" z = "-1"> <item id = "4907"/> <item id="405"/> </tile>
+
+				<tile x = "4" y = "4" z = "-1"> <item id = "4907"/> </tile>
+				<tile x = "4" y = "5" z = "-1"> <item id = "5004"/> <item id="405"/> </tile>
+				<tile x = "4" y = "6" z = "-1"> <item id = "4906"/> <item id="405"/> </tile>
+				<tile x = "4" y = "7" z = "-1"> <item id = "5004"/> <item id="405"/> </tile>
+				<tile x = "4" y = "8" z = "-1"> <item id = "4910"/> </tile>
+			<!-- Rudder Deck -->
+				<tile x = "-4" y = "4" z = "-2"> <item id = "5002"/> </tile>
+				<tile x = "-4" y = "5" z = "-2"> <item id = "4922"/> </tile>
+				<tile x = "-4" y = "6" z = "-2"> <item id = "4922"/> </tile>
+				<tile x = "-4" y = "7" z = "-2"> <item id = "4922"/> </tile>
+				<tile x = "-4" y = "8" z = "-2"> <item id = "4936"/> </tile>
+
+				<tile x = "-3" y = "4" z = "-2"> <item id = "4919"/> </tile>
+				<tile x = "-3" y = "5" z = "-2"> <item id="405"/> </tile>
+				<tile x = "-3" y = "6" z = "-2"> <item id="405"/> </tile>
+				<tile x = "-3" y = "7" z = "-2"> <item id="405"/> </tile>
+				<tile x = "-3" y = "8" z = "-2"> <item id = "4933"/> <item id="405"/> </tile>
+
+				<tile x = "-2" y = "3" z = "-2"> <item id = "3758"/> <item id="442"/> </tile>
+				<tile x = "-2" y = "4" z = "-2"> <item id = "4932"/> </tile>
+				<tile x = "-2" y = "5" z = "-2"> <item id="405"/> </tile>
+				<tile x = "-2" y = "6" z = "-2"> <item id="405"/> </tile>
+				<tile x = "-2" y = "7" z = "-2"> <item id="405"/> </tile>
+				<tile x = "-2" y = "8" z = "-2"> <item id = "4919"/> <item id = "3758"/> <item id="405"/> </tile>
+
+				<tile x = "-1" y = "3" z = "-2"> <item id = "3769"/> <item id="434"/> </tile>
+				<tile x = "-1" y = "4" z = "-2"> <item id="405"/> </tile>
+				<tile x = "-1" y = "5" z = "-2"> <item id="405"/> </tile>
+				<tile x = "-1" y = "6" z = "-2"> <item id="405"/> </tile>
+				<tile x = "-1" y = "7" z = "-2"> <item id="405"/> </tile>
+				<tile x = "-1" y = "8" z = "-2"> <item id = "3769"/> <item id="405"/> </tile>
+
+				<tile x = "0" y = "3" z = "-2"> <item id = "3773"/> <item id="434"/> </tile>
+				<tile x = "0" y = "4" z = "-2"> <item id = "4963"/> <item id="405"/> </tile>
+				<tile x = "0" y = "5" z = "-2"> <item id="405"/> </tile>
+				<tile x = "0" y = "6" z = "-2"> <item id="405"/> </tile>
+				<tile x = "0" y = "7" z = "-2"> <item id="405"/> </tile>
+				<tile x = "0" y = "8" z = "-2"> <item id = "3773"/> <item id="405"/> </tile>
+
+				<tile x = "1" y = "3" z = "-2"> <item id = "3759"/> <item id = "3769"/> <item id="434"/> </tile>
+				<tile x = "1" y = "4" z = "-2"> <item id = "4962"/> <item id="405"/> </tile>
+				<tile x = "1" y = "5" z = "-2"> <item id="405"/> </tile>
+				<tile x = "1" y = "6" z = "-2"> <item id="405"/> </tile>
+				<tile x = "1" y = "7" z = "-2"> <item id="405"/> </tile>
+				<tile x = "1" y = "8" z = "-2"> <item id = "3759"/> <item id = "3769"/> <item id="405"/> </tile>
+
+				<tile x = "2" y = "3" z = "-2"> <item id = "3758"/> <item id = "3773"/> <item id="434"/> </tile>
+				<tile x = "2" y = "4" z = "-2"> <item id = "4936"/> <item id="405"/> </tile>
+				<tile x = "2" y = "5" z = "-2"> <item id="405"/> </tile>
+				<tile x = "2" y = "6" z = "-2"> <item id="405"/> </tile>
+				<tile x = "2" y = "7" z = "-2"> <item id="405"/> </tile>
+				<tile x = "2" y = "8" z = "-2"> <item id = "3758"/> <item id = "3773"/> <item id="405"/> </tile>
+
+				<tile x = "3" y = "4" z = "-2"> <item id = "4933"/> </tile>
+				<tile x = "3" y = "5" z = "-2"> <item id="427"/> </tile>
+				<tile x = "3" y = "6" z = "-2"> <item id="405"/> </tile>
+				<tile x = "3" y = "7" z = "-2"> <item id="405"/> </tile>
+				<tile x = "3" y = "8" z = "-2"> <item id = "4919"/> <item id="405"/> </tile>
+
+				<tile x = "4" y = "4" z = "-2"> <item id = "4919"/> </tile>
+				<tile x = "4" y = "5" z = "-2"> <item id = "4922"/> <item id="405"/> </tile>
+				<tile x = "4" y = "6" z = "-2"> <item id = "4922"/> <item id="405"/> </tile>
+				<tile x = "4" y = "7" z = "-2"> <item id = "4922"/> <item id="405"/> </tile>
+				<tile x = "4" y = "8" z = "-2"> <item id = "4932"/> <item id="405"/> </tile>
+			<!-- Sails -->
+				<!-- Mast -->
+					<tile x = "0" y = "0" z = "-1"> <item id = "4943"/> </tile>
+				<!-- Sailmast -->
+					<tile x = "-5" y = "-6" z = "-1"> <item id = "4403"/> </tile>
+					<tile x = "-4" y = "-6" z = "-1"> <item id = "3602"/> </tile>
+					<tile x = "-3" y = "-6" z = "-1"> <item id = "3602"/> </tile>
+					<tile x = "-2" y = "-6" z = "-1"> <item id = "3602"/> </tile>
+					<tile x = "-1" y = "-6" z = "-1"> <item id = "3602"/> </tile>
+					<tile x = "0" y = "-6" z = "-1"> <item id = "3602"/> </tile>
+					<tile x = "1" y = "-6" z = "-1"> <item id = "3602"/> </tile>
+					<tile x = "2" y = "-6" z = "-1"> <item id = "3602"/> </tile>
+					<tile x = "3" y = "-6" z = "-1"> <item id = "3602"/> </tile>
+					<tile x = "4" y = "-6" z = "-1"> <item id = "4947"/> </tile>
+
+					<tile x = "-4" y = "-6" z = "-2"> <item id = "4403"/> </tile>
+					<tile x = "-3" y = "-6" z = "-2"> <item id = "3602"/> </tile>
+					<tile x = "-2" y = "-6" z = "-2"> <item id = "3602"/> </tile>
+					<tile x = "-1" y = "-6" z = "-2"> <item id = "3602"/> </tile>
+					<tile x = "0" y = "-6" z = "-2"> <item id = "3602"/> </tile>
+					<tile x = "1" y = "-6" z = "-2"> <item id = "3602"/> </tile>
+					<tile x = "2" y = "-6" z = "-2"> <item id = "3602"/> </tile>
+					<tile x = "3" y = "-6" z = "-2"> <item id = "4947"/> </tile>
+
+					<tile x = "-3" y = "-6" z = "-3"> <item id = "4403"/> </tile>
+					<tile x = "-2" y = "-6" z = "-3"> <item id = "3602"/> </tile>
+					<tile x = "-1" y = "-6" z = "-3"> <item id = "3602"/> </tile>
+					<tile x = "0" y = "-6" z = "-3"> <item id = "3602"/> </tile>
+					<tile x = "1" y = "-6" z = "-3"> <item id = "3602"/> </tile>
+					<tile x = "2" y = "-6" z = "-3"> <item id = "4947"/> </tile>
+
+					<tile x = "-5" y = "-1" z = "-2"> <item id = "4403"/> </tile>
+					<tile x = "-4" y = "-1" z = "-2"> <item id = "3602"/> </tile>
+					<tile x = "-3" y = "-1" z = "-2"> <item id = "3602"/> </tile>
+					<tile x = "-2" y = "-1" z = "-2"> <item id = "3602"/> </tile>
+					<tile x = "-1" y = "-1" z = "-2"> <item id = "3602"/> </tile>
+					<tile x = "0" y = "-1" z = "-2"> <item id = "3602"/> </tile>
+					<tile x = "1" y = "-1" z = "-2"> <item id = "3602"/> </tile>
+					<tile x = "2" y = "-1" z = "-2"> <item id = "3602"/> </tile>
+					<tile x = "3" y = "-1" z = "-2"> <item id = "3602"/> </tile>
+					<tile x = "4" y = "-1" z = "-2"> <item id = "4947"/> </tile>
+
+					<tile x = "-4" y = "-1" z = "-3"> <item id = "4403"/> </tile>
+					<tile x = "-3" y = "-1" z = "-3"> <item id = "3602"/> </tile>
+					<tile x = "-2" y = "-1" z = "-3"> <item id = "3602"/> </tile>
+					<tile x = "-1" y = "-1" z = "-3"> <item id = "3602"/> </tile>
+					<tile x = "0" y = "-1" z = "-3"> <item id = "3602"/> </tile>
+					<tile x = "1" y = "-1" z = "-3"> <item id = "3602"/> </tile>
+					<tile x = "2" y = "-1" z = "-3"> <item id = "3602"/> </tile>
+					<tile x = "3" y = "-1" z = "-3"> <item id = "4947"/> </tile>
+
+					<tile x = "-3" y = "-1" z = "-4"> <item id = "4403"/> </tile>
+					<tile x = "-2" y = "-1" z = "-4"> <item id = "3602"/> </tile>
+					<tile x = "-1" y = "-1" z = "-4"> <item id = "3602"/> </tile>
+					<tile x = "0" y = "-1" z = "-4"> <item id = "3602"/> </tile>
+					<tile x = "1" y = "-1" z = "-4"> <item id = "3602"/> </tile>
+					<tile x = "2" y = "-1" z = "-4"> <item id = "4947"/> </tile>
+				<!-- Sails -->
+					<tile x = "-4" y = "-5" z = "-1"> <item id = "4954"/> </tile>
+					<tile x = "-3" y = "-5" z = "-1"> <item id = "4955"/> </tile>
+					<tile x = "-2" y = "-5" z = "-1"> <item id = "4956"/> </tile>
+					<tile x = "-1" y = "-5" z = "-1"> <item id = "4957"/> </tile>
+					<tile x = "0" y = "-5" z = "-1"> <item id = "4944"/> <item id = "4955"/> </tile>
+					<tile x = "1" y = "-5" z = "-1"> <item id = "4956"/> </tile>
+					<tile x = "2" y = "-5" z = "-1"> <item id = "4957"/> </tile>
+					<tile x = "3" y = "-5" z = "-1"> <item id = "4954"/> </tile>
+
+					<tile x = "-3" y = "-5" z = "-2"> <item id = "4955"/> </tile>
+					<tile x = "-2" y = "-5" z = "-2"> <item id = "4956"/> </tile>
+					<tile x = "-1" y = "-5" z = "-2"> <item id = "4957"/> </tile>
+					<tile x = "0" y = "-5" z = "-2"> <item id = "1277"/> <item id = "4955"/> </tile>
+					<tile x = "1" y = "-5" z = "-2"> <item id = "4956"/> </tile>
+					<tile x = "2" y = "-5" z = "-2"> <item id = "4957"/> </tile>
+
+					<tile x = "-2" y = "-5" z = "-3"> <item id = "4955"/> </tile>
+					<tile x = "-1" y = "-5" z = "-3"> <item id = "4957"/> </tile>
+					<tile x = "0" y = "-5" z = "-3"> <item id = "1277"/> <item id = "4955"/> </tile>
+					<tile x = "1" y = "-5" z = "-3"> <item id = "4957"/> </tile>
+
+					<tile x = "-4" y = "0" z = "-2"> <item id = "4954"/> </tile>
+					<tile x = "-3" y = "0" z = "-2"> <item id = "4955"/> </tile>
+					<tile x = "-2" y = "0" z = "-2"> <item id = "4956"/> </tile>
+					<tile x = "-1" y = "0" z = "-2"> <item id = "4957"/> </tile>
+					<tile x = "0" y = "0" z = "-2"> <item id = "4944"/> <item id = "4955"/> </tile>
+					<tile x = "1" y = "0" z = "-2"> <item id = "4956"/> </tile>
+					<tile x = "2" y = "0" z = "-2"> <item id = "4957"/> </tile>
+					<tile x = "3" y = "0" z = "-2"> <item id = "4954"/> </tile>
+
+					<tile x = "-3" y = "0" z = "-3"> <item id = "4955"/> </tile>
+					<tile x = "-2" y = "0" z = "-3"> <item id = "4956"/> </tile>
+					<tile x = "-1" y = "0" z = "-3"> <item id = "4957"/> </tile>
+					<tile x = "0" y = "0" z = "-3"> <item id = "1277"/> <item id = "4955"/> </tile>
+					<tile x = "1" y = "0" z = "-3"> <item id = "4956"/> </tile>
+					<tile x = "2" y = "0" z = "-3"> <item id = "4957"/> </tile>
+
+					<tile x = "-2" y = "0" z = "-4"> <item id = "4955"/> </tile>
+					<tile x = "-1" y = "0" z = "-4"> <item id = "4957"/> </tile>
+					<tile x = "0" y = "0" z = "-4"> <item id = "1277"/> <item id = "4955"/> </tile>
+					<tile x = "1" y = "0" z = "-4"> <item id = "4957"/> </tile>
+				<!-- Flag -->
+					<tile x = "0" y = "-5" z = "-4"> <item id = "1437"/> </tile>
+					<tile x = "0" y = "0" z = "-5"> <item id = "1436"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+
 	<brush name="ramp" type="doodad" server_lookid="1395" draggable="true" on_blocking="false" one_size="true" redo_borders="true">
 		<alternate>
 			<composite chance="10">
@@ -4657,7 +5747,7 @@
 		<item id="2015" chance="10" subtype="0"/>
 	</brush>
 
-	<brush name="dishes" type="doodad" server_lookid="2009" draggable="true" on_blocking="true" thickness="6/10">
+	<brush name="dishes" type="doodad" server_lookid="2035" draggable="true" on_blocking="true" thickness="6/10">
 		<item id="2012" chance="10" subtype="0"/>
 		<item id="2013" chance="10" subtype="0"/>
 		<item id="2014" chance="10" subtype="0"/>
