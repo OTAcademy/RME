@@ -357,7 +357,8 @@ public:
 	bool isOptionalBorder;
 	bool isWall;
 	bool isBrushDoor;
-	bool isOpen;
+	bool isOpen; // door or window physically open
+	bool isLocked; // door key locked
 	bool isTable;
 	bool isCarpet;
 

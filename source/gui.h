@@ -250,7 +250,9 @@ public:
 	// Helper functions for size
 	void DecreaseBrushSize(bool wrap = false);
 	void IncreaseBrushSize(bool wrap = false);
-
+	// Door brush options
+	void SetDoorLocked(bool on);
+	bool HasDoorLocked();
 
 	// Fetch different useful directories
 	static wxString GetExecDirectory();
@@ -423,6 +425,7 @@ protected:
 	int brush_variation;
 	int creature_spawntime;
 
+	bool draw_locked_doors;
 	bool use_custom_thickness;
 	float custom_thickness_mod;
 

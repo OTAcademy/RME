@@ -85,7 +85,7 @@
 		<wall type="horizontal">
 			<item id="1037" chance="100"/>
 			<item id="1532" chance="0"/>
-			<door id="1212" type="normal" open="false"/>
+			<door id="1212" type="normal" open="false" locked="true"/>
 			<door id="1213" type="normal" open="false"/>
 			<door id="1214" type="normal" open="true"/>
 			<door id="1221" type="locked" open="false"/>
@@ -100,7 +100,7 @@
 		</wall>
 		<wall type="vertical">
 			<item id="1036" chance="100"/>
-			<door id="1209" type="normal" open="false"/>
+			<door id="1209" type="normal" open="false" locked="true"/>
 			<door id="1210" type="normal" open="false"/>
 			<door id="1211" type="normal" open="true"/>
 			<door id="1219" type="locked" open="false"/>
@@ -185,7 +185,7 @@
 	<brush name="sandstone wall" type="wall" server_lookid="1061">
 		<wall type="horizontal">
 			<item id="1061" chance="100"/>
-			<door id="1234" type="normal" open="false"/>
+			<door id="1234" type="normal" open="false" locked="true"/>
 			<door id="1235" type="normal" open="false"/>
 			<door id="1236" type="normal" open="true"/>
 			<door id="1239" type="locked" open="false"/>
@@ -198,7 +198,7 @@
 		</wall>
 		<wall type="vertical">
 			<item id="1060" chance="100"/>
-			<door id="1231" type="normal" open="false"/>
+			<door id="1231" type="normal" open="false" locked="true"/>
 			<door id="1232" type="normal" open="false"/>
 			<door id="1233" type="normal" open="true"/>
 			<door id="1237" type="locked" open="false"/>
@@ -358,7 +358,7 @@
 			<item id="1168" chance="0"/>
 			<item id="1178" chance="0"/>
 			<item id="1176" chance="0"/>
-			<door id="1252" type="normal" open="false"/>
+			<door id="1252" type="normal" open="false" locked="true"/>
 			<door id="1253" type="normal" open="false"/>
 			<door id="1254" type="normal" open="true"/>
 			<door id="1257" type="quest" open="false"/>
@@ -405,7 +405,7 @@
 			<item id="1169" chance="0"/>
 			<item id="1177" chance="0"/>
 			<item id="1179" chance="0"/>
-			<door id="1249" type="normal" open="false"/>
+			<door id="1249" type="normal" open="false" locked="true"/>
 			<door id="1250" type="normal" open="false"/>
 			<door id="1251" type="normal" open="true"/>
 			<door id="1255" type="quest" open="false"/>
@@ -1122,7 +1122,7 @@
 		<wall type="horizontal">
 			<item id="3424" chance="100"/>
 			<item id="3447" chance="100"/>
-			<door id="3535" type="normal" open="false"/>
+			<door id="3535" type="normal" open="false" locked="true"/>
 			<door id="3536" type="normal" open="false"/>
 			<door id="3537" type="normal" open="true"/>
 			<door id="3538" type="locked" open="false"/>
@@ -1137,7 +1137,7 @@
 		<wall type="vertical">
 			<item id="3423" chance="100"/>
 			<item id="3450" chance="100"/>
-			<door id="3544" type="normal" open="false"/>
+			<door id="3544" type="normal" open="false" locked="true"/>
 			<door id="3545" type="normal" open="false"/>
 			<door id="3546" type="normal" open="true"/>
 			<door id="3547" type="locked" open="false"/>
@@ -1693,7 +1693,7 @@
 		<wall type="horizontal">
 			<item id="5005" chance="100"/>
 			<item id="4912" chance="0"/>
-			<door id="4916" type="normal" open="false"/>
+			<door id="4916" type="normal" open="false" locked="true"/>
 			<door id="4917" type="normal" open="false"/>
 			<door id="4918" type="normal" open="true"/>
 			<door id="5084" type="locked" open="false"/>
@@ -1703,7 +1703,7 @@
 		<wall type="vertical">
 			<item id="5004" chance="100"/>
 			<item id="4921" chance="0"/>
-			<door id="4913" type="normal" open="false"/>
+			<door id="4913" type="normal" open="false" locked="true"/>
 			<door id="4914" type="normal" open="false"/>
 			<door id="4915" type="normal" open="true"/>
 			<door id="5082" type="locked" open="false"/>

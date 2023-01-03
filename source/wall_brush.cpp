@@ -18,6 +18,8 @@
 #include "main.h"
 
 #include "wall_brush.h"
+
+#include "gui.h"
 #include "items.h"
 #include "basemap.h"
 
@@ -151,6 +153,15 @@ bool WallBrush::load(pugi::xml_node node, wxArrayString& warnings)
 						}
 					}
 
+					// "locked" checkbox - spawn locked doors
+					bool isLocked;
+					pugi::xml_attribute lockedAttribute = subChildNode.attribute("locked");
+					if (lockedAttribute) {
+						isLocked = lockedAttribute.as_bool();
+					} else {
+						isLocked = false;
+					}
+
 					ItemType& it = g_items[id];
 					if(it.id == 0) {
 						warnings.push_back("There is no itemtype with id " + std::to_string(id));
@@ -165,9 +176,12 @@ bool WallBrush::load(pugi::xml_node node, wxArrayString& warnings)
 					it.isBrushDoor = true;
 					it.wall_hate_me = subChildNode.attribute("hate").as_bool();
 					it.isOpen = isOpen;
+					it.isLocked = isLocked;
 					it.border_alignment = ::BorderType(alignment);
 
 					DoorType dt;
+					dt.locked = isLocked;
+
 					bool all_windows = false;
 					bool all_doors = false;
 					if(type == "normal") {
@@ -205,12 +219,12 @@ bool WallBrush::load(pugi::xml_node node, wxArrayString& warnings)
 					}
 
 					if(all_doors) {
-						dt.type = WALL_ARCHWAY;     door_items[alignment].push_back(dt);
-						dt.type = WALL_DOOR_NORMAL; door_items[alignment].push_back(dt);
+						dt.type = WALL_ARCHWAY;         door_items[alignment].push_back(dt);
+						dt.type = WALL_DOOR_NORMAL;     door_items[alignment].push_back(dt);
 						dt.type = WALL_DOOR_NORMAL_ALT; door_items[alignment].push_back(dt);
-						dt.type = WALL_DOOR_LOCKED; door_items[alignment].push_back(dt);
-						dt.type = WALL_DOOR_QUEST;  door_items[alignment].push_back(dt);
-						dt.type = WALL_DOOR_MAGIC;  door_items[alignment].push_back(dt);
+						dt.type = WALL_DOOR_LOCKED;     door_items[alignment].push_back(dt);
+						dt.type = WALL_DOOR_QUEST;      door_items[alignment].push_back(dt);
+						dt.type = WALL_DOOR_MAGIC;      door_items[alignment].push_back(dt);
 					}
 
 					if(!all_doors && !all_windows) {
@@ -655,6 +669,8 @@ void WallDecorationBrush::draw(BaseMap* map, Tile* tile, void* parameter)
 
 	ItemVector::iterator iter = tile->items.begin();
 
+	bool prefLocked = g_gui.HasDoorLocked();
+
 	tile->cleanWalls(this);
 	while(iter != tile->items.end()) {
 		Item* item = *iter;
@@ -698,8 +714,13 @@ void WallDecorationBrush::draw(BaseMap* map, Tile* tile, void* parameter)
 						ASSERT(it.id != 0);
 
 						if(it.isOpen == open) {
-							id = dt.id;
-							break;
+							if (open || dt.locked == prefLocked) {
+								id = dt.id;
+								break;
+							} else {
+								discarded_id = dt.id;
+								close_match = true;
+							}
 						} else {
 							discarded_id = dt.id;
 							close_match = true;

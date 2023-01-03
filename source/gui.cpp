@@ -86,6 +86,7 @@ GUI::GUI() :
 	brush_variation(0),
 
 	creature_spawntime(0),
+	draw_locked_doors(false),
 	use_custom_thickness(false),
 	custom_thickness_mod(0.0),
 	progressBar(nullptr),
@@ -1637,6 +1638,17 @@ void GUI::IncreaseBrushSize(bool wrap)
 			break;
 		}
 	}
+}
+
+void GUI::SetDoorLocked(bool on)
+{
+	draw_locked_doors = on;
+	RefreshView();
+}
+
+bool GUI::HasDoorLocked()
+{
+	return draw_locked_doors;
 }
 
 Brush* GUI::GetCurrentBrush() const

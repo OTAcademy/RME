@@ -193,6 +193,8 @@ public:
 	void OnClickNOPVPBrushButton(wxCommandEvent& event);
 	void OnClickNoLogoutBrushButton(wxCommandEvent& event);
 	void OnClickPVPZoneBrushButton(wxCommandEvent& event);
+	// ----
+	void OnClickLockDoorCheckbox(wxCommandEvent& event);
 public:
 	void DeselectAll();
 
@@ -215,6 +217,8 @@ public:
 	BrushButton* nopvpBrushButton;
 	BrushButton* nologBrushButton;
 	BrushButton* pvpzoneBrushButton;
+
+	wxCheckBox* lockDoorCheckbox;
 
 	DECLARE_EVENT_TABLE()
 };

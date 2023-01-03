@@ -1038,6 +1038,12 @@ void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Tile* tile, Item* item,
 void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Position& pos, Item* item, bool ephemeral, int red, int green, int blue, int alpha, const Tile* tile) {
 	ItemType& it = g_items[item->getID()];
 
+	// Locked door indicator
+	if (it.isDoor() && it.isLocked) {
+		blue /= 2;
+		green /= 2;
+	}
+
 	if(!options.ingame && !ephemeral && item->isSelected()) {
 		red /= 2;
 		blue /= 2;
@@ -1076,9 +1082,9 @@ void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Position& pos, Item* it
 		return;
 	}
 
+	// Light source (green flame + square with estimated light strength)
 	bool lightSourceFilter = false;
 	GameSprite* spr = it.sprite;
-	// Light source
 	if ((it.clientID >= 39092 && it.clientID <= 39100 || it.clientID == 39236 || it.clientID == 39367 || it.clientID == 39368) && !options.ingame) {
 		spr = g_items[SPRITE_LIGHTSOURCE].sprite;
 		red = 0;
@@ -1166,10 +1172,11 @@ void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Position& pos, Item* it
 		}
 	}
 
+	// draw wall hook
 	if (options.show_hooks && (it.hookSouth || it.hookEast) && zoom <= 3.0)
 		DrawHookIndicator(draw_x, draw_y, it);
 
-	// draw light color
+	// draw light color indicator
 	if (lightSourceFilter) {
 		int startOffsetX = 22;
 		int startOffsetY = 22;

@@ -53,6 +53,9 @@ public:
 	virtual bool canSmear() const { return false; }
 	virtual bool canDrag() const { return true; }
 
+	static uint32_t full_border_types[16];
+	static uint32_t half_border_types[16];
+
 protected:
 	struct WallType {
 		int chance;
@@ -66,6 +69,7 @@ protected:
 	struct DoorType {
 		::DoorType type;
 		uint16_t id;
+		bool locked;
 	};
 	WallNode wall_items[17];
 	std::vector<DoorType> door_items[17];
@@ -73,10 +77,6 @@ protected:
 	WallBrush* redirect_to;
 
 	friend class DoorBrush;
-
-public:
-	static uint32_t full_border_types[16];
-	static uint32_t half_border_types[16];
 };
 
 //=============================================================================

@@ -164,6 +164,8 @@ namespace Config {
 		TOOLBAR_POSITION_LAYOUT,
 		TOOLBAR_SIZES_LAYOUT,
 
+		DRAW_LOCKED_DOOR,
+
 		LAST,
 	};
 }

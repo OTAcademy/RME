@@ -395,6 +395,8 @@ BEGIN_EVENT_TABLE(BrushToolPanel, PalettePanel)
 	EVT_TOGGLEBUTTON(PALETTE_TERRAIN_NOPVP_TOOL,BrushToolPanel::OnClickNOPVPBrushButton)
 	EVT_TOGGLEBUTTON(PALETTE_TERRAIN_NOLOGOUT_TOOL,BrushToolPanel::OnClickNoLogoutBrushButton)
 	EVT_TOGGLEBUTTON(PALETTE_TERRAIN_PVPZONE_TOOL,BrushToolPanel::OnClickPVPZoneBrushButton)
+
+	EVT_CHECKBOX(PALETTE_TERRAIN_LOCK_DOOR, BrushToolPanel::OnClickLockDoorCheckbox)
 END_EVENT_TABLE()
 
 BrushToolPanel::BrushToolPanel(wxWindow* parent) :
@@ -603,7 +605,20 @@ void BrushToolPanel::LoadAllContents()
 			pvpzoneBrushButton->SetToolTip("PVP Zone Tool");
 	}
 
+	sub_sizer->AddSpacer(24); //44?
+
+	wxSizer* checkbox_sub_sizer = newd wxBoxSizer(wxVERTICAL);
+	checkbox_sub_sizer->AddSpacer(3);
+
+	lockDoorCheckbox = newd wxCheckBox(this, PALETTE_TERRAIN_LOCK_DOOR, "Lock door");
+	lockDoorCheckbox->SetToolTip("Prefer to draw \"locked\" variant of selected door brush if applicable.");
+	lockDoorCheckbox->SetValue(g_settings.getInteger(Config::DRAW_LOCKED_DOOR));
+	checkbox_sub_sizer->Add(lockDoorCheckbox);
+
+	sub_sizer->Add(checkbox_sub_sizer);
+
 	size_sizer->Add(sub_sizer);
+
 	SetSizerAndFit(size_sizer);
 
 	loaded = true;
@@ -736,48 +751,72 @@ void BrushToolPanel::OnClickNormalDoorButton(wxCommandEvent& event)
 {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.normal_door_brush);
+
+	// read checkbox settings
+	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickLockedDoorButton(wxCommandEvent& event)
 {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.locked_door_brush);
+
+	// read checkbox settings
+	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickMagicDoorButton(wxCommandEvent& event)
 {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.magic_door_brush);
+
+	// read checkbox settings
+	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickQuestDoorButton(wxCommandEvent& event)
 {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.quest_door_brush);
+
+	// read checkbox settings
+	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickHatchDoorButton(wxCommandEvent& event)
 {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.hatch_door_brush);
+
+	// read checkbox settings
+	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickWindowDoorButton(wxCommandEvent& event)
 {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.window_door_brush);
+
+	// read checkbox settings
+	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickNormalAltDoorButton(wxCommandEvent& event)
 {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.normal_door_alt_brush);
+
+	// read checkbox settings
+	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickArchwayDoorButton(wxCommandEvent& event)
 {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.archway_door_brush);
+
+	// read checkbox settings
+	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickPZBrushButton(wxCommandEvent& event)
@@ -802,6 +841,17 @@ void BrushToolPanel::OnClickPVPZoneBrushButton(wxCommandEvent& event)
 {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.pvp_brush);
+}
+
+void BrushToolPanel::OnClickLockDoorCheckbox(wxCommandEvent& event)
+{
+	g_gui.ActivatePalette(GetParentPalette());
+
+	// apply to current brush
+	g_gui.SetDoorLocked(event.IsChecked());
+
+	// save user preference
+	g_settings.setInteger(Config::DRAW_LOCKED_DOOR, event.IsChecked());
 }
 
 // ============================================================================

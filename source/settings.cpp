@@ -333,6 +333,9 @@ void Settings::IO(IOMode mode)
 	Int(FIND_ITEM_MODE, 0);
 	Int(JUMP_TO_ITEM_MODE, 0);
 
+	// checkbox in terrain palette
+	Int(DRAW_LOCKED_DOOR, 0);
+
 #undef section
 #undef Int
 #undef IntToSave

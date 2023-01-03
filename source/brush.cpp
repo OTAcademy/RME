@@ -349,20 +349,20 @@ void DoorBrush::switchDoor(Item* item)
 	ASSERT(item->isBrushDoor());
 
 	WallBrush* wb = item->getWallBrush();
-	if(!wb) return;
+	if (!wb) {
+		return;
+	}
 
 	bool new_open = !item->isOpen();
 	BorderType wall_alignment = item->getWallAlignment();
-	DoorType doortype = WALL_UNDEFINED;
 
-	for(std::vector<WallBrush::DoorType>::iterator iter = wb->door_items[wall_alignment].begin(); iter != wb->door_items[wall_alignment].end(); ++iter) {
-		WallBrush::DoorType& dt = *iter;
-		if(dt.id == item->getID()) {
-			doortype = dt.type;
-			break;
-		}
+	DoorType doortype = wb->getDoorTypeFromID(item->getID());
+	if (doortype == WALL_UNDEFINED) {
+		return;
 	}
-	if(doortype == WALL_UNDEFINED) return;
+
+	uint16_t oppositeVariant = 0; // give locked/unlocked variant if preferred is unavailable
+	bool prefLocked = g_gui.HasDoorLocked();
 
 	for(std::vector<WallBrush::DoorType>::iterator iter = wb->door_items[wall_alignment].begin(); iter != wb->door_items[wall_alignment].end(); ++iter) {
 		WallBrush::DoorType& dt = *iter;
@@ -372,10 +372,18 @@ void DoorBrush::switchDoor(Item* item)
 			ASSERT(it.id != 0);
 
 			if(it.isOpen == new_open) {
-				item->setID(dt.id);
-				return;
+				if (!new_open || dt.locked == prefLocked) {
+					item->setID(dt.id);
+					return;
+				} else {
+					oppositeVariant = dt.id;
+				}
 			}
 		}
+	}
+
+	if (oppositeVariant != 0) {
+		item->setID(oppositeVariant);
 	}
 }
 
@@ -406,6 +414,8 @@ bool DoorBrush::canDraw(BaseMap* map, const Position& position) const
 		open = item->isOpen();
 	}
 
+	bool prefLocked = g_gui.HasDoorLocked();
+
 	WallBrush* test_brush = wb;
 	do {
 		for(std::vector<WallBrush::DoorType>::iterator iter = test_brush->door_items[wall_alignment].begin();
@@ -418,7 +428,12 @@ bool DoorBrush::canDraw(BaseMap* map, const Position& position) const
 				ASSERT(it.id != 0);
 
 				if(it.isOpen == open) {
-					return true;
+					if (open || dt.locked == prefLocked) {
+						return true;
+					} else {
+						discarded_id = dt.id;
+						close_match = true;
+					}
 				} else if(!close_match) {
 					discarded_id = dt.id;
 					close_match = true;
@@ -481,6 +496,8 @@ void DoorBrush::draw(BaseMap* map, Tile* tile, void* parameter)
 			open = item->isOpen();
 		}
 
+		bool prefLocked = g_gui.HasDoorLocked();
+
 		WallBrush* test_brush = wb;
 		do {
 			for(std::vector<WallBrush::DoorType>::iterator iter = test_brush->door_items[wall_alignment].begin();
@@ -494,9 +511,14 @@ void DoorBrush::draw(BaseMap* map, Tile* tile, void* parameter)
 					ASSERT(it.id != 0);
 
 					if(it.isOpen == open) {
-						item = transformItem(item, dt.id, tile);
-						perfect_match = true;
-						break;
+						if (open || dt.locked == prefLocked) {
+							item = transformItem(item, dt.id, tile);
+							perfect_match = true;
+							break;
+						} else {
+							discarded_id = dt.id;
+							close_match = true;
+						}
 					} else if(!close_match) {
 						discarded_id = dt.id;
 						close_match = true;
@@ -562,9 +584,14 @@ void DoorBrush::draw(BaseMap* map, Tile* tile, void* parameter)
 							ASSERT(it.id != 0);
 
 							if(it.isOpen == open) {
-								item = transformItem(item, dt.id, tile);
-								perfect_match = true;
-								break;
+								if (open || dt.locked == prefLocked) {
+									item = transformItem(item, dt.id, tile);
+									perfect_match = true;
+									break;
+								} else {
+									discarded_id = dt.id;
+									close_match = true;
+								}
 							} else if(!close_match) {
 								discarded_id = dt.id;
 								close_match = true;
