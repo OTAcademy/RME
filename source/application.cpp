@@ -208,8 +208,8 @@ bool Application::OnInit()
 		}
 	}
 	if(g_settings.getInteger(Config::USE_UPDATER) == 1) {
-		UpdateChecker updater;
-		updater.connect(g_gui.root);
+		//UpdateChecker updater;
+		//updater.connect(g_gui.root);
 	}
 #endif
 
