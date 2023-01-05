@@ -14,7 +14,7 @@
 		k - wall hooks
 		l - animation
 		m - minimap
-		n
+		n - collection palette
 		o - show pathing
 		p - junp to prev pos
 		q - show floor shade
@@ -171,6 +171,7 @@
         <item name="$Terrain Palette" hotkey="T" action="SELECT_TERRAIN" help="Select the Terrain palette."/>
         <item name="$Doodad Palette" hotkey="D" action="SELECT_DOODAD" help="Select the Doodad palette."/>
         <item name="$Item Palette" hotkey="I" action="SELECT_ITEM" help="Select the Item palette."/>
+        <item name="Collectio$n Palette" hotkey="N" action="SELECT_COLLECTION" help="Select the Collection palette."/>
         <item name="$House Palette" hotkey="H" action="SELECT_HOUSE" help="Select the House palette."/>
         <item name="$Creature Palette" hotkey="C" action="SELECT_CREATURE" help="Select the Creature palette."/>
         <item name="$Waypoint Palette" hotkey="W" action="SELECT_WAYPOINT" help="Select the Waypoint palette."/>

@@ -732,6 +732,7 @@ void ExportTilesetsWindow::OnClickOK(wxCommandEvent & WXUNUSED(event))
 			{"Terrain", TILESET_TERRAIN},
 			{"Doodad", TILESET_DOODAD},
 			{"Items", TILESET_ITEM},
+			{"Collection", TILESET_COLLECTION},
 			{"Raw", TILESET_RAW}
 		};
 		for (TilesetContainer::iterator iter = g_materials.tilesets.begin(); iter != g_materials.tilesets.end(); ++iter) {

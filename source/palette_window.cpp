@@ -48,6 +48,7 @@ PaletteWindow::PaletteWindow(wxWindow* parent, const TilesetContainer& tilesets)
 	terrain_palette(nullptr),
 	doodad_palette(nullptr),
 	item_palette(nullptr),
+	collection_palette(nullptr),
 	creature_palette(nullptr),
 	house_palette(nullptr),
 	waypoint_palette(nullptr),
@@ -66,6 +67,9 @@ PaletteWindow::PaletteWindow(wxWindow* parent, const TilesetContainer& tilesets)
 
 	item_palette = static_cast<BrushPalettePanel*>(CreateItemPalette(choicebook, tilesets));
 	choicebook->AddPage(item_palette, item_palette->GetName());
+
+	collection_palette = static_cast<BrushPalettePanel*>(CreateCollectionPalette(choicebook, tilesets));
+	choicebook->AddPage(collection_palette, collection_palette->GetName());
 
 	house_palette = static_cast<HousePalettePanel*>(CreateHousePalette(choicebook, tilesets));
 	choicebook->AddPage(house_palette, house_palette->GetName());
@@ -111,6 +115,28 @@ PalettePanel* PaletteWindow::CreateTerrainPalette(wxWindow *parent, const Tilese
 
 	return panel;
 }
+
+PalettePanel* PaletteWindow::CreateCollectionPalette(wxWindow* parent, const TilesetContainer& tilesets)
+{
+	BrushPalettePanel* panel = newd BrushPalettePanel(parent, tilesets, TILESET_COLLECTION);
+	panel->SetListType(wxstr(g_settings.getString(Config::PALETTE_COLLECTION_STYLE)));
+
+	// terrain palette tools
+	BrushToolPanel* tool_panel = newd BrushToolPanel(panel);
+	tool_panel->SetToolbarIconSize(g_settings.getBoolean(Config::USE_LARGE_COLLECTION_TOOLBAR));
+	panel->AddToolPanel(tool_panel);
+
+	// brush thickness panel
+	panel->AddToolPanel(newd BrushThicknessPanel(panel));
+
+	// brush size tools
+	BrushSizePanel* size_panel = newd BrushSizePanel(panel);
+	size_panel->SetToolbarIconSize(g_settings.getBoolean(Config::USE_LARGE_COLLECTION_TOOLBAR));
+	panel->AddToolPanel(size_panel);
+
+	return panel;
+}
+
 
 PalettePanel* PaletteWindow::CreateDoodadPalette(wxWindow *parent, const TilesetContainer& tilesets)
 {
@@ -191,6 +217,10 @@ void PaletteWindow::ReloadSettings(Map* map)
 	if(item_palette) {
 		item_palette->SetListType(wxstr(g_settings.getString(Config::PALETTE_ITEM_STYLE)));
 		item_palette->SetToolbarIconSize(g_settings.getBoolean(Config::USE_LARGE_ITEM_SIZEBAR));
+	}
+	if(collection_palette) {
+		collection_palette->SetListType(wxstr(g_settings.getString(Config::PALETTE_COLLECTION_STYLE)));
+		collection_palette->SetToolbarIconSize(g_settings.getBoolean(Config::USE_LARGE_COLLECTION_TOOLBAR));
 	}
 	if(raw_palette) {
 		raw_palette->SetListType(wxstr(g_settings.getString(Config::PALETTE_RAW_STYLE)));
@@ -281,6 +311,14 @@ bool PaletteWindow::OnSelectBrush(const Brush* whatbrush, PaletteType primary)
 	switch(primary) {
 		case TILESET_TERRAIN: {
 			// This is already searched first
+			break;
+		}
+		case TILESET_COLLECTION: {
+			// new behaviour introduction, needs testing
+			if(collection_palette && collection_palette->SelectBrush(whatbrush)) {
+				SelectPage(TILESET_COLLECTION);
+				return true;
+			}
 			break;
 		}
 		case TILESET_DOODAD: {

@@ -89,11 +89,13 @@ protected:
 
 	// Interface
 	wxChoice* terrain_palette_style_choice;
+	wxChoice* collection_palette_style_choice;
 	wxChoice* doodad_palette_style_choice;
 	wxChoice* item_palette_style_choice;
 	wxChoice* raw_palette_style_choice;
 
 	wxCheckBox* large_terrain_tools_chkbox;
+	wxCheckBox* large_collection_tools_chkbox;
 	wxCheckBox* large_doodad_sizebar_chkbox;
 	wxCheckBox* large_item_sizebar_chkbox;
 	wxCheckBox* large_house_sizebar_chkbox;

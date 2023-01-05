@@ -5118,7 +5118,7 @@
 		<item id="3669" chance="1"/>
 	</brush>
 
-	<brush name="long deformed stone" type="doodad" server_lookid="3665" draggable="true" on_blocking="false" thickness="12/100">
+	<brush name="long deformed stone" type="doodad" server_lookid="3659" draggable="true" on_blocking="false" thickness="12/100">
 		<composite chance="10">
 			<tile x="0" y="0"> <item id="3657"/> </tile>
 			<tile x="1" y="0"> <item id="3658"/> </tile>
@@ -5884,7 +5884,6 @@
 			<item id="1407"/>
 			<item id="1408"/>
 			<item id="1409"/>
-			<item id="1410"/>
 			<brush name="stone coffin (no rose)"/>
 			<brush name="stone coffin (yellow rose)"/>
 			<brush name="stone coffin (blue rose)"/>

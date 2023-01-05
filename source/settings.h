@@ -164,8 +164,11 @@ namespace Config {
 		TOOLBAR_POSITION_LAYOUT,
 		TOOLBAR_SIZES_LAYOUT,
 
+		// add new settings at the end to make sure nothing gets misread
 		DRAW_LOCKED_DOOR,
 		HIGHLIGHT_LOCKED_DOORS,
+		PALETTE_COLLECTION_STYLE,
+		USE_LARGE_COLLECTION_TOOLBAR,
 
 		LAST,
 	};

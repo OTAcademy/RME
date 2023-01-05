@@ -124,6 +124,7 @@ namespace MenuBar
 		SELECT_TERRAIN,
 		SELECT_DOODAD,
 		SELECT_ITEM,
+		SELECT_COLLECTION,
 		SELECT_CREATURE,
 		SELECT_HOUSE,
 		SELECT_WAYPOINT,
@@ -266,6 +267,7 @@ public:
 	void OnSelectTerrainPalette(wxCommandEvent& event);
 	void OnSelectDoodadPalette(wxCommandEvent& event);
 	void OnSelectItemPalette(wxCommandEvent& event);
+	void OnSelectCollectionPalette(wxCommandEvent& event);
 	void OnSelectHousePalette(wxCommandEvent& event);
 	void OnSelectCreaturePalette(wxCommandEvent& event);
 	void OnSelectWaypointPalette(wxCommandEvent& event);

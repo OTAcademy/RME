@@ -94,6 +94,8 @@ void Tileset::loadCategory(pugi::xml_node node, wxArrayString &warnings)
 	const std::string& nodeName = as_lower_str(node.name());
 	if(nodeName == "terrain") {
 		category = getCategory(TILESET_TERRAIN);
+	} else if (nodeName == "collections") {
+		category = getCategory(TILESET_COLLECTION);
 	} else if(nodeName == "doodad") {
 		category = getCategory(TILESET_DOODAD);
 	} else if(nodeName == "items") {
@@ -102,6 +104,9 @@ void Tileset::loadCategory(pugi::xml_node node, wxArrayString &warnings)
 		category = getCategory(TILESET_RAW);
 	} else if(nodeName == "terrain_and_raw") {
 		category = getCategory(TILESET_TERRAIN);
+		subCategory = getCategory(TILESET_RAW);
+	} else if (nodeName == "collections_and_raw") {
+		category = getCategory(TILESET_COLLECTION);
 		subCategory = getCategory(TILESET_RAW);
 	} else if(nodeName == "doodad_and_raw") {
 		category = getCategory(TILESET_DOODAD);

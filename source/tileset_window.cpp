@@ -67,6 +67,7 @@ TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* t
 	palette_field = newd wxChoice(this, wxID_ANY);
 
 	palette_field->Append("Terrain", newd int(TILESET_TERRAIN));
+	palette_field->Append("Collections", newd int(TILESET_COLLECTION));
 	palette_field->Append("Doodad", newd int(TILESET_DOODAD));
 	palette_field->Append("Item", newd int(TILESET_ITEM));
 	palette_field->Append("Raw", newd int(TILESET_RAW));

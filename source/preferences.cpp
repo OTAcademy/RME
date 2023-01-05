@@ -403,6 +403,11 @@ wxNotebookPage* PreferencesWindow::CreateUIPage()
 		"Terrain Palette Style:",
 		"Configures the look of the terrain palette.",
 		g_settings.getString(Config::PALETTE_TERRAIN_STYLE));
+	collection_palette_style_choice = AddPaletteStyleChoice(
+		ui_page, subsizer,
+		"Collections Palette Style:",
+		"Configures the look of the collections palette.",
+		g_settings.getString(Config::PALETTE_COLLECTION_STYLE));
 	doodad_palette_style_choice = AddPaletteStyleChoice(
 		ui_page, subsizer,
 		"Doodad Palette Style:",
@@ -419,13 +424,17 @@ wxNotebookPage* PreferencesWindow::CreateUIPage()
 		"Configures the look of the raw palette.",
 		g_settings.getString(Config::PALETTE_RAW_STYLE));
 
-	sizer->Add(subsizer, 0, wxALL, 5);
+	sizer->Add(subsizer, 0, wxALL, 6);
 
 	sizer->AddSpacer(10);
 
-	large_terrain_tools_chkbox = newd wxCheckBox(ui_page, wxID_ANY, "Use large terrain palette tool & size icons");
+	large_terrain_tools_chkbox = newd wxCheckBox(ui_page, wxID_ANY, "Use large terrain palette tool && size icons");
 	large_terrain_tools_chkbox->SetValue(g_settings.getBoolean(Config::USE_LARGE_TERRAIN_TOOLBAR));
 	sizer->Add(large_terrain_tools_chkbox, 0, wxLEFT | wxTOP, 5);
+
+	large_collection_tools_chkbox = newd wxCheckBox(ui_page, wxID_ANY, "Use large collections palette tool && size icons");
+	large_collection_tools_chkbox->SetValue(g_settings.getBoolean(Config::USE_LARGE_COLLECTION_TOOLBAR));
+	sizer->Add(large_collection_tools_chkbox, 0, wxLEFT | wxTOP, 5);
 
 	large_doodad_sizebar_chkbox = newd wxCheckBox(ui_page, wxID_ANY, "Use large doodad size palette icons");
 	large_doodad_sizebar_chkbox->SetValue(g_settings.getBoolean(Config::USE_LARGE_DOODAD_SIZEBAR));
@@ -679,10 +688,12 @@ void PreferencesWindow::Apply()
 
 	// Interface
 	SetPaletteStyleChoice(terrain_palette_style_choice, Config::PALETTE_TERRAIN_STYLE);
+	SetPaletteStyleChoice(collection_palette_style_choice, Config::PALETTE_COLLECTION_STYLE);
 	SetPaletteStyleChoice(doodad_palette_style_choice, Config::PALETTE_DOODAD_STYLE);
 	SetPaletteStyleChoice(item_palette_style_choice, Config::PALETTE_ITEM_STYLE);
 	SetPaletteStyleChoice(raw_palette_style_choice, Config::PALETTE_RAW_STYLE);
 	g_settings.setInteger(Config::USE_LARGE_TERRAIN_TOOLBAR, large_terrain_tools_chkbox->GetValue());
+	g_settings.setInteger(Config::USE_LARGE_COLLECTION_TOOLBAR, large_collection_tools_chkbox->GetValue());
 	g_settings.setInteger(Config::USE_LARGE_DOODAD_SIZEBAR, large_doodad_sizebar_chkbox->GetValue());
 	g_settings.setInteger(Config::USE_LARGE_ITEM_SIZEBAR, large_item_sizebar_chkbox->GetValue());
 	g_settings.setInteger(Config::USE_LARGE_HOUSE_SIZEBAR, large_house_sizebar_chkbox->GetValue());

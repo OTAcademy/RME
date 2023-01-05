@@ -101,6 +101,7 @@ wxString PalettePanel::GetName() const
 		case TILESET_TERRAIN: return "Terrain Palette";
 		case TILESET_DOODAD: return "Doodad Palette";
 		case TILESET_ITEM: return "Item Palette";
+		case TILESET_COLLECTION: return "Collections Palette";
 		case TILESET_CREATURE: return "Creature Palette";
 		case TILESET_HOUSE: return "House Palette";
 		case TILESET_RAW: return "RAW Palette";
@@ -605,10 +606,10 @@ void BrushToolPanel::LoadAllContents()
 			pvpzoneBrushButton->SetToolTip("PVP Zone Tool");
 	}
 
-	sub_sizer->AddSpacer(24); //44?
+	sub_sizer->AddSpacer(large_icons ? 42 : 24);
 
 	wxSizer* checkbox_sub_sizer = newd wxBoxSizer(wxVERTICAL);
-	checkbox_sub_sizer->AddSpacer(3);
+	checkbox_sub_sizer->AddSpacer(large_icons ? 12 : 3);
 
 	lockDoorCheckbox = newd wxCheckBox(this, PALETTE_TERRAIN_LOCK_DOOR, "Lock door");
 	lockDoorCheckbox->SetToolTip("Prefer to draw \"locked\" variant of selected door brush if applicable.");

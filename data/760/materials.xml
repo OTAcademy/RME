@@ -8,4 +8,5 @@
 	<include file="walls_extra.xml"/>
 	<include file="doodads.xml"/>
 	<include file="tilesets.xml"/>
+	<include file="collections.xml"/>
 </materials>
