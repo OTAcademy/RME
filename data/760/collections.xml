@@ -82,9 +82,123 @@
 			<item id="1738"/>
 			<item id="1741"/>
 			<brush name="randomized trash"/>
+			<!-- quest containers -->
 			<item id="3103"/>
 			<item id="3128"/>
 			<item id="3130"/>
+			<item id="3104"/>
 		</collections>
 	</tileset>
+	
+	<tileset name="Desert">
+		<collections>
+			<brush name="sea"/>
+			<brush name="walkable sea"/>
+			<brush name="tar pit"/>
+			<brush name="mountain"/>
+			<brush name="ramp"/>
+			<brush name="dry earth"/>
+			<brush name="sand"/>
+			<brush name="sand closed stone pile"/>
+			<brush name="sandstone"/>
+			<brush name="dark tiled sandstone"/>
+			<brush name="tiled sandstone floor"/>
+			<brush name="light tiled stone floor"/>
+			<brush name="dark tiled stone floor"/>
+			<brush name="drab tiled stone floor"/>
+			<brush name="orange tiled floor"/>
+			<item id="416"/>
+			<brush name="flat roof"/>
+			<brush name="pyramid ramp"/>
+			<brush name="pyramid corner"/>
+			<brush name="sandstone ropespot"/>
+			<brush name="open sandstone trapdoor"/>
+			<brush name="sandstone trapdoor"/>
+			<item id="1397"/>
+			<item id="1510"/>
+			<item id="1512"/>
+			<brush name="mountain rocks"/>
+			<brush name="small mountain rocks"/>
+			<brush name="cathedral brick shards"/>
+			<brush name="dragon skeleton"/>
+			<brush name="large spiky cactus"/>
+			<brush name="small spiky cactus"/>
+			<brush name="smooth cactus"/>
+			<brush name="palm trees"/>
+			<item id="2783"/>
+			<item id="2784"/>
+			<brush name="altar"/>
+			<brush name="sarcophagus"/>
+			<brush name="scarab button"/>
+			<brush name="oriental carpet"/>
+			<brush name="searing fire field (decaying)"/>
+			<item id="2721"/>
+			<brush name="marble fountain - on"/>
+			<brush name="marble fountain - off"/>
+			<item id="1378"/>
+			<item id="1549"/>
+			<item id="1550"/>
+			<item id="1551"/>
+			<item id="1560"/>
+			<item id="1561"/>
+			<item id="463"/>
+			<item id="1486"/>
+			<item id="1450"/>
+			<item id="1451"/>
+			<brush name="gargoyle statue"/>
+			<brush name="gargoyle statue pedestal"/>
+			<brush name="cobra statue"/>
+			<brush name="cobra statue pedestal"/>
+			<brush name="cobra wall statue"/>
+			<brush name="cobra statue socket"/>
+			<brush name="sandstone wall_2"/>
+			<brush name="lava wall"/>
+			<brush name="paravent wall"/>
+			<brush name="wooden railing"/>
+			<brush name="fence_1"/>
+			<brush name="bars"/>
+			<brush name="sandstone wall"/>
+			<brush name="sandstone wall_1"/>
+			<brush name="stone wall_1"/>
+			<brush name="stone railing_2"/>
+			<brush name="stone railing_3"/>
+			<brush name="sandstone railing"/>
+			<brush name="sandstone railing_1"/>
+			<brush name="white stone wall"/>
+			<brush name="white stone railing"/>
+			<brush name="white stone railing_1"/>
+			<brush name="white stone railing_2"/>
+			<brush name="marble archway"/>
+			<brush name="ornamented marble archway"/>
+			<brush name="marble archway small 1"/>
+			<brush name="marble archway small 2"/>
+			<brush name="marble archway small 3"/>
+			<brush name="marble window 1"/>
+			<brush name="marble window 2"/>
+			<brush name="marble window closed"/>
+			<brush name="marble frame round"/>
+			<brush name="marble frame square"/>
+			<brush name="blue djinn basin"/>
+			<brush name="green djinn basin"/>
+			<brush name="marble basin"/>
+			<brush name="empty ornament frame"/>
+			<brush name="oriental text wall"/>
+			<brush name="blue djinn ornament 1"/>
+			<brush name="blue djinn ornament 2"/>
+			<brush name="blue djinn ornament 3"/>
+			<brush name="blue djinn ornament 4"/>
+			<brush name="blue djinn ornament 5"/>
+			<brush name="green djinn ornament 1"/>
+			<brush name="green djinn ornament 2"/>
+			<brush name="green djinn ornament 3"/>
+			<brush name="green djinn ornament 4"/>
+			<brush name="green djinn ornament 5"/>
+		</collections>
+	</tileset>
+
+	<tileset name="Jungle">
+		<collections>
+		
+		</collections>
+	</tileset>		
 </materials>
