@@ -66,6 +66,7 @@ struct DrawingOptions {
 	bool show_items;
 
 	bool highlight_items;
+	bool highlight_locked_doors;
 	bool show_blocking;
 	bool show_tooltips;
 	bool show_as_minimap;

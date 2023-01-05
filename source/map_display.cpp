@@ -212,6 +212,7 @@ void MapCanvas::OnPaint(wxPaintEvent& event)
 			options.show_special_tiles = g_settings.getBoolean(Config::SHOW_SPECIAL_TILES);
 			options.show_items = g_settings.getBoolean(Config::SHOW_ITEMS);
 			options.highlight_items = g_settings.getBoolean(Config::HIGHLIGHT_ITEMS);
+			options.highlight_locked_doors = g_settings.getBoolean(Config::HIGHLIGHT_LOCKED_DOORS);
 			options.show_blocking = g_settings.getBoolean(Config::SHOW_BLOCKING);
 			options.show_tooltips = g_settings.getBoolean(Config::SHOW_TOOLTIPS);
 			options.show_as_minimap = g_settings.getBoolean(Config::SHOW_AS_MINIMAP);

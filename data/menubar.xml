@@ -1,5 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <menubar>
+	<!--
+		a - enable autoborder
+		b
+		c - creature palette
+		d - doodad palette
+		e - show zones
+		f - show creatures
+		g - ghost loose items
+		h - house palette
+		i - item palette
+		j - jump to brush
+		k - wall hooks
+		l - animation
+		m - minimap
+		n
+		o - show pathing
+		p - junp to prev pos
+		q - show floor shade
+		r - raw palette
+		s - show spawns
+		t - terrain palette
+		u
+		v - highlight items
+		w - waypoint palette
+		x - show locked doors
+		y - show tooltips
+		z
+	-->
+	
     <menu name="$File">
         <item name="$New..." hotkey="Ctrl+N" action="NEW" help="Create a new map."/>
         <item name="$Open..." hotkey="Ctrl+O" action="OPEN" help="Open another map."/>
@@ -121,6 +150,7 @@
         <item name="Show $Ingame Box" hotkey="Shift+I" action="SHOW_INGAME_BOX" help="Shadows out areas not visible ingame (from the center of the screen)."/>
         <item name="Show $Grid" hotkey="Shift+G" action="SHOW_GRID" help="Shows a grid over all items."/>
         <item name="H$ighlight items" hotkey="V" action="HIGHLIGHT_ITEMS" help="Highlight tiles with items on them."/>
+		<item name="Highlight locked doors" hotkey="X" action="HIGHLIGHT_LOCKED_DOORS" help="Highlight doors that require key to open."/>
         <separator/>
         <item name="Show creatures" hotkey="F" action="SHOW_CREATURES" help="Show creatures on the map."/>
         <item name="Show spawns" hotkey="S" action="SHOW_SPAWNS" help="Show spawns on the map."/>

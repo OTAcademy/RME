@@ -65,6 +65,7 @@ void DrawingOptions::SetDefault()
 	show_items = true;
 
 	highlight_items = false;
+	highlight_locked_doors = true;
 	show_blocking = false;
 	show_tooltips = false;
 	show_as_minimap = false;
@@ -93,6 +94,7 @@ void DrawingOptions::SetIngame()
 	show_items = true;
 
 	highlight_items = false;
+	highlight_locked_doors = false;
 	show_blocking = false;
 	show_tooltips = false;
 	show_as_minimap = false;
@@ -1039,7 +1041,7 @@ void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Position& pos, Item* it
 	ItemType& it = g_items[item->getID()];
 
 	// Locked door indicator
-	if (it.isDoor() && it.isLocked) {
+	if (options.highlight_locked_doors && it.isDoor() && it.isLocked) {
 		blue /= 2;
 		green /= 2;
 	}
