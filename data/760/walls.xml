@@ -88,9 +88,6 @@
 			<door id="1212" type="normal" open="false" locked="true"/>
 			<door id="1213" type="normal" open="false"/>
 			<door id="1214" type="normal" open="true"/>
-			<door id="5137" type="normal_alt" open="false" locked="true"/>
-			<door id="5138" type="normal_alt" open="false"/>
-			<door id="5139" type="normal_alt" open="true"/>
 			<door id="1221" type="locked" open="false"/>
 			<door id="1222" type="locked" open="true"/>
 			<door id="1225" type="quest" open="false"/>
@@ -106,9 +103,6 @@
 			<door id="1209" type="normal" open="false" locked="true"/>
 			<door id="1210" type="normal" open="false"/>
 			<door id="1211" type="normal" open="true"/>
-			<door id="5140" type="normal_alt" open="false" locked="true"/>
-			<door id="5141" type="normal_alt" open="false"/>
-			<door id="5142" type="normal_alt" open="true"/>
 			<door id="1219" type="locked" open="false"/>
 			<door id="1220" type="locked" open="true"/>
 			<door id="1223" type="quest" open="false"/>
