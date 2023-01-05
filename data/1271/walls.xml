@@ -306,7 +306,8 @@
 			<door id="5135" type="normal_alt" open="false"/>
 			<door id="5136" type="normal_alt" open="true"/>
 			<door id="3393" type="archway" open="false"/>
-			<door id="3394" type="archway" open="true"/>			<door id="5478" type="hatch window" open="false"/>
+						<door id="3394" type="archway" open="true"/>
+			<door id="5478" type="hatch window" open="false"/>
 			<door id="5400" type="hatch window" open="true"/>
 			<door id="3392" type="window"/>
 		</wall>
