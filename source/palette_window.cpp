@@ -65,11 +65,11 @@ PaletteWindow::PaletteWindow(wxWindow* parent, const TilesetContainer& tilesets)
 	doodad_palette = static_cast<BrushPalettePanel*>(CreateDoodadPalette(choicebook, tilesets));
 	choicebook->AddPage(doodad_palette, doodad_palette->GetName());
 
-	item_palette = static_cast<BrushPalettePanel*>(CreateItemPalette(choicebook, tilesets));
-	choicebook->AddPage(item_palette, item_palette->GetName());
-
 	collection_palette = static_cast<BrushPalettePanel*>(CreateCollectionPalette(choicebook, tilesets));
 	choicebook->AddPage(collection_palette, collection_palette->GetName());
+
+	item_palette = static_cast<BrushPalettePanel*>(CreateItemPalette(choicebook, tilesets));
+	choicebook->AddPage(item_palette, item_palette->GetName());
 
 	house_palette = static_cast<HousePalettePanel*>(CreateHousePalette(choicebook, tilesets));
 	choicebook->AddPage(house_palette, house_palette->GetName());
@@ -313,14 +313,6 @@ bool PaletteWindow::OnSelectBrush(const Brush* whatbrush, PaletteType primary)
 			// This is already searched first
 			break;
 		}
-		case TILESET_COLLECTION: {
-			// new behaviour introduction, needs testing
-			if(collection_palette && collection_palette->SelectBrush(whatbrush)) {
-				SelectPage(TILESET_COLLECTION);
-				return true;
-			}
-			break;
-		}
 		case TILESET_DOODAD: {
 			// Ok, search doodad before terrain
 			if(doodad_palette && doodad_palette->SelectBrush(whatbrush)) {
@@ -328,6 +320,12 @@ bool PaletteWindow::OnSelectBrush(const Brush* whatbrush, PaletteType primary)
 				return true;
 			}
 			break;
+		}
+		case TILESET_COLLECTION: {
+			if (collection_palette && collection_palette->SelectBrush(whatbrush)) {
+				SelectPage(TILESET_COLLECTION);
+				return true;
+			}
 		}
 		case TILESET_ITEM: {
 			if(item_palette && item_palette->SelectBrush(whatbrush)) {

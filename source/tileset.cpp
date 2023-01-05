@@ -206,6 +206,10 @@ void TilesetCategory::loadBrush(pugi::xml_node node, wxArrayString& warnings)
 			}
 			brush->flagAsVisible();
 			brushlist.insert(insertPosition, brush);
+
+			if (type == TILESET_COLLECTION) {
+				brush->setCollection();
+			}
 		} else {
 			warnings.push_back("Brush \"" + wxString(attribute.as_string(), wxConvUTF8) + "\" doesn't exist.");
 		}
@@ -233,10 +237,20 @@ void TilesetCategory::loadBrush(pugi::xml_node node, wxArrayString& warnings)
 			RAWBrush* brush;
 			if(it.raw_brush) {
 				brush = it.raw_brush;
+				if (type == TILESET_COLLECTION) {
+					it.raw_brush->setCollection();
+				}
 			} else {
 				brush = it.raw_brush = newd RAWBrush(it.id);
 				it.has_raw = true;
+				if (type == TILESET_COLLECTION) {
+					it.raw_brush->setCollection();
+				}
 				tileset.brushes.addBrush(brush); // This will take care of cleaning up afterwards
+			}
+
+			if (type == TILESET_COLLECTION) {
+				it.collection_brush = brush;
 			}
 
 			if(it.doodad_brush == nullptr && !isTrivial()) {

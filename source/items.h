@@ -303,6 +303,7 @@ public:
 	uint16_t clientID;
 	Brush* brush;
 	Brush* doodad_brush;
+	Brush* collection_brush;
 	RAWBrush* raw_brush;
 	bool is_metaitem;
 	// This is needed as a consequence of the item palette & the raw palette

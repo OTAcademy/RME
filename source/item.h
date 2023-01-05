@@ -22,6 +22,8 @@
 #include "iomap_otbm.h"
 //#include "iomap_otmm.h"
 #include "item_attributes.h"
+#include "doodad_brush.h"
+#include "raw_brush.h"
 
 class Creature;
 class Border;
@@ -170,6 +172,9 @@ public:
 	CarpetBrush* getCarpetBrush() const;
 	Brush* getDoodadBrush() const {return g_items[id].doodad_brush;} // This is not necessarily a doodad brush
 	RAWBrush* getRAWBrush() const {return g_items[id].raw_brush;}
+	bool hasCollectionBrush() const {
+		return g_items[id].collection_brush;
+	}
 	uint16_t getGroundEquivalent() const {return g_items[id].ground_equivalent;}
 	uint16_t hasBorderEquivalent() const {return g_items[id].has_equivalent;}
 	uint32_t getBorderGroup() const {return g_items[id].border_group;}

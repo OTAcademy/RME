@@ -89,6 +89,7 @@ BEGIN_EVENT_TABLE(MapCanvas, wxGLCanvas)
 	EVT_MENU(MAP_POPUP_MENU_SELECT_RAW_BRUSH, MapCanvas::OnSelectRAWBrush)
 	EVT_MENU(MAP_POPUP_MENU_SELECT_GROUND_BRUSH, MapCanvas::OnSelectGroundBrush)
 	EVT_MENU(MAP_POPUP_MENU_SELECT_DOODAD_BRUSH, MapCanvas::OnSelectDoodadBrush)
+	EVT_MENU(MAP_POPUP_MENU_SELECT_COLLECTION_BRUSH, MapCanvas::OnSelectCollectionBrush)
 	EVT_MENU(MAP_POPUP_MENU_SELECT_DOOR_BRUSH, MapCanvas::OnSelectDoorBrush)
 	EVT_MENU(MAP_POPUP_MENU_SELECT_WALL_BRUSH, MapCanvas::OnSelectWallBrush)
 	EVT_MENU(MAP_POPUP_MENU_SELECT_CARPET_BRUSH, MapCanvas::OnSelectCarpetBrush)
@@ -2086,6 +2087,55 @@ void MapCanvas::OnSelectHouseBrush(wxCommandEvent& WXUNUSED(event))
 	}
 }
 
+void MapCanvas::OnSelectCollectionBrush(wxCommandEvent& WXUNUSED(event))
+{
+	Tile* tile = editor.selection.getSelectedTile();
+	if (!tile)
+		return;
+
+	for (auto* item : tile->items) {
+		if (item->isWall()) {
+			WallBrush* wb = item->getWallBrush();
+			if (wb && wb->visibleInPalette() && wb->hasCollection()) {
+				g_gui.SelectBrush(wb, TILESET_COLLECTION);
+				return;
+			}
+		}
+		if (item->isTable()) {
+			TableBrush* tb = item->getTableBrush();
+			if (tb && tb->visibleInPalette() && tb->hasCollection()) {
+				g_gui.SelectBrush(tb, TILESET_COLLECTION);
+				return;
+			}
+		}
+		if (item->isCarpet()) {
+			CarpetBrush* cb = item->getCarpetBrush();
+			if (cb && cb->visibleInPalette() && cb->hasCollection()) {
+				g_gui.SelectBrush(cb, TILESET_COLLECTION);
+				return;
+			}
+		}
+		if (Brush* db = item->getDoodadBrush()) {
+			if (db && db->visibleInPalette() && db->hasCollection()) {
+				g_gui.SelectBrush(db, TILESET_COLLECTION);
+				return;
+			}
+		}
+		if (item->isSelected()) {
+			RAWBrush* rb = item->getRAWBrush();
+			if (rb && rb->hasCollection()) {
+				g_gui.SelectBrush(rb, TILESET_COLLECTION);
+				return;
+			}
+		}
+	}
+	GroundBrush* gb = tile->getGroundBrush();
+	if (gb && gb->visibleInPalette() && gb->hasCollection()) {
+		g_gui.SelectBrush(gb, TILESET_COLLECTION);
+		return;
+	}
+}
+
 void MapCanvas::OnSelectCreatureBrush(wxCommandEvent& WXUNUSED(event))
 {
 	Tile* tile = editor.selection.getSelectedTile();
@@ -2316,6 +2366,7 @@ void MapPopupMenu::Update()
 			bool hasWall = false;
 			bool hasCarpet = false;
 			bool hasTable = false;
+			bool hasCollection = false;
 			Item* topItem = nullptr;
 			Item* topSelectedItem = (selected_items.size() == 1 ? selected_items.back() : nullptr);
 			Creature* topCreature = tile->creature;
@@ -2324,15 +2375,28 @@ void MapPopupMenu::Update()
 			for (auto *item : tile->items) {
 				if(item->isWall()) {
 					Brush* wb = item->getWallBrush();
-					if(wb && wb->visibleInPalette()) hasWall = true;
+					if (wb && wb->visibleInPalette()) {
+						hasWall = true;
+						hasCollection = hasCollection || wb->hasCollection();
+					}
 				}
 				if(item->isTable()) {
 					Brush* tb = item->getTableBrush();
-					if(tb && tb->visibleInPalette()) hasTable = true;
+					if (tb && tb->visibleInPalette()) {
+						hasTable = true;
+						hasCollection = hasCollection || tb->hasCollection();
+					}
+
 				}
 				if(item->isCarpet()) {
 					Brush* cb = item->getCarpetBrush();
-					if(cb && cb->visibleInPalette()) hasCarpet = true;
+					if (cb && cb->visibleInPalette()) {
+						hasCarpet = true;
+						hasCollection = hasCollection || cb->hasCollection();
+					}
+				}
+				if(Brush* db = item->getDoodadBrush()){
+					hasCollection = hasCollection || db->hasCollection();
 				}
 				if(item->isSelected()) {
 					topItem = item;
@@ -2402,6 +2466,9 @@ void MapPopupMenu::Update()
 				if(tile->hasGround() && tile->getGroundBrush() && tile->getGroundBrush()->visibleInPalette())
 					Append( MAP_POPUP_MENU_SELECT_GROUND_BRUSH, "Select Groundbrush", "Uses the current item as a groundbrush");
 
+				if (hasCollection || topSelectedItem && topSelectedItem->hasCollectionBrush() || tile->getGroundBrush() && tile->getGroundBrush()->hasCollection())
+					Append(MAP_POPUP_MENU_SELECT_COLLECTION_BRUSH, "Select Collection", "Use this collection");
+
 				if(tile->isHouseTile())
 					Append(MAP_POPUP_MENU_SELECT_HOUSE_BRUSH, "Select House", "Draw with the house on this tile.");
 
@@ -2422,6 +2489,9 @@ void MapPopupMenu::Update()
 				if(tile->hasGround() && tile->getGroundBrush() && tile->getGroundBrush()->visibleInPalette()) {
 					Append( MAP_POPUP_MENU_SELECT_GROUND_BRUSH, "Select Groundbrush", "Uses the current tile as a groundbrush");
 				}
+
+				if (hasCollection || tile->getGroundBrush() && tile->getGroundBrush()->hasCollection())
+					Append(MAP_POPUP_MENU_SELECT_COLLECTION_BRUSH, "Select Collection", "Use this collection");
 
 				if(tile->isHouseTile()) {
 					Append(MAP_POPUP_MENU_SELECT_HOUSE_BRUSH, "Select House", "Draw with the house on this tile.");

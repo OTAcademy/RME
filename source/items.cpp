@@ -32,6 +32,7 @@ ItemType::ItemType() :
 	clientID(0),
 	brush(nullptr),
 	doodad_brush(nullptr),
+	collection_brush(nullptr),
 	raw_brush(nullptr),
 	is_metaitem(false),
 	has_raw(false),

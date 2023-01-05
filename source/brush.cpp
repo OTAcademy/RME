@@ -208,7 +208,7 @@ Brush* Brushes::getBrush(const std::string& name) const
 // Brush
 uint32_t Brush::id_counter = 0;
 Brush::Brush() :
-	id(++id_counter), visible(false)
+	id(++id_counter), visible(false), usesCollection(false)
 {
 	////
 }

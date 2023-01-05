@@ -161,10 +161,14 @@ public:
 	bool visibleInPalette() const { return visible; }
 	void flagAsVisible() { visible = true; }
 
+	bool hasCollection() const { return usesCollection; }
+	void setCollection() { usesCollection = true; }
+
 protected:
 	static uint32_t id_counter;
 	uint32_t id;
 	bool visible; // Visible in any palette?
+	bool usesCollection;
 };
 
 //=============================================================================
