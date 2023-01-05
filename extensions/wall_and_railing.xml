@@ -74,7 +74,7 @@
 			<item id="3424" chance="500"/>
 			<item id="3426" chance="100"/>
 			<item id="3432" chance="100"/>
-			<door id="3535" type="normal" open="false"/>
+			<door id="3535" type="normal" open="false" locked="true"/>
 			<door id="3536" type="normal" open="false"/>
 			<door id="3537" type="normal" open="true"/>
 			<door id="3538" type="locked" open="false"/>
@@ -89,7 +89,7 @@
 			<item id="3423" chance="400"/>
 			<item id="3428" chance="100"/>
 			<item id="3430" chance="100"/>
-			<door id="3544" type="normal" open="false"/>
+			<door id="3544" type="normal" open="false" locked="true"/>
 			<door id="3545" type="normal" open="false"/>
 			<door id="3546" type="normal" open="true"/>
 			<door id="3547" type="locked" open="false"/>

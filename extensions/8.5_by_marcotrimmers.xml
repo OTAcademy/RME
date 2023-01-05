@@ -965,7 +965,7 @@
 			<item id="10178" chance="10"/>
 			<item id="10180" chance="10"/>
 			<item id="10186" chance="10"/>
-			<door id="10468" type="normal" open="false"/>
+			<door id="10468" type="normal" open="false" locked="true"/>
 			<door id="10469" type="normal" open="false"/>
 			<door id="10470" type="normal" open="true"/>
 			<door id="10471" type="locked" open="false"/>
@@ -982,7 +982,7 @@
 			<item id="10177" chance="10"/>
 			<item id="10182" chance="10"/>
 			<item id="10184" chance="10"/>
-			<door id="10477" type="normal" open="false"/>
+			<door id="10477" type="normal" open="false" locked="true"/>
 			<door id="10478" type="normal" open="false"/>
 			<door id="10479" type="normal" open="true"/>
 			<door id="10480" type="locked" open="false"/>
@@ -1028,7 +1028,7 @@
 			<item id="10235" chance="1"/>
 			<item id="10245" chance="7"/>
 			<item id="10246" chance="7"/>
-			<door id="10271" type="normal" open="false"/>
+			<door id="10271" type="normal" open="false" locked="true"/>
 			<door id="10272" type="normal" open="false"/>
 			<door id="10273" type="normal" open="true"/>
 			<door id="10276" type="locked" open="false"/>
@@ -1047,7 +1047,7 @@
 			<item id="10233" chance="1"/>
 			<item id="10247" chance="7"/>
 			<item id="10248" chance="7"/>
-			<door id="10268" type="normal" open="false"/>
+			<door id="10268" type="normal" open="false" locked="true"/>
 			<door id="10269" type="normal" open="false"/>
 			<door id="10270" type="normal" open="true"/>
 			<door id="10274" type="locked" open="false"/>

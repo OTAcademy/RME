@@ -2,9 +2,9 @@
 	<brush name="stone wall" type="wall" server_lookid="1050">
 		<wall type="horizontal">
 			<item id="1050" chance="500"/>
-			<item id="1052" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1058" chance="0"/> -- This needs to be here for backwards compability --
-			<door id="6252" type="normal" open="false"/>
+			<item id="1052" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1058" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<door id="6252" type="normal" open="false" locked="true"/>
 			<door id="6253" type="normal" open="false"/>
 			<door id="6254" type="normal" open="true"/>
 			<door id="6257" type="locked" open="false"/>
@@ -19,9 +19,9 @@
 		</wall>
 		<wall type="vertical">
 			<item id="1049" chance="400"/>
-			<item id="1054" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1056" chance="0"/> -- This needs to be here for backwards compability --
-			<door id="6249" type="normal" open="false"/>
+			<item id="1054" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1056" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<door id="6249" type="normal" open="false" locked="true"/>
 			<door id="6250" type="normal" open="false"/>
 			<door id="6251" type="normal" open="true"/>
 			<door id="6255" type="locked" open="false"/>
@@ -36,9 +36,9 @@
 		</wall>
 		<wall type="corner">
 			<item id="1053" chance="1000"/>
-			<item id="1055" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1057" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1059" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="1055" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1057" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1059" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="pole">
 			<item id="1051" chance="1000"/>
@@ -63,13 +63,13 @@
 	<brush name="framework wall" type="wall" server_lookid="1037">
 		<wall type="horizontal">
 			<item id="1037" chance="500"/>
-			<item id="1039" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1045" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="1039" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1045" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 			<item id="5152" chance="150"/>
 			<item id="5153" chance="150"/>
 			<door id="1215" type="archway" open="false"/>
 			<door id="1216" type="archway" open="false"/>
-			<door id="1212" type="normal" open="false"/>
+			<door id="1212" type="normal" open="false" locked="true"/>
 			<door id="1213" type="normal" open="false"/>
 			<door id="1214" type="normal" open="true"/>
 			<door id="1221" type="locked" open="false"/>
@@ -84,14 +84,14 @@
 		</wall>
 		<wall type="vertical">
 			<item id="1036" chance="400"/>
-			<item id="1041" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1043" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="1041" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1043" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 			<item id="5154" chance="150"/>
 			<item id="5155" chance="150"/>
 			<door id="1217" type="archway" open="false"/>
 			<door id="1218" type="archway" open="false"/>
+			<door id="1209" type="normal" open="false" locked="true"/>
 			<door id="1210" type="normal" open="false"/>
-			<door id="1209" type="normal" open="false"/>
 			<door id="1211" type="normal" open="true"/>
 			<door id="1219" type="locked" open="false"/>
 			<door id="1220" type="locked" open="true"/>
@@ -105,11 +105,11 @@
 		</wall>
 		<wall type="corner">
 			<item id="1042" chance="1000"/>
-			<item id="1040" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1044" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1046" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1047" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1048" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="1040" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1044" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1046" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1047" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1048" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="pole">
 			<item id="1038" chance="1000"/>
@@ -141,7 +141,7 @@
 			<item id="1034" chance="0"/>
 			<door id="1207" type="archway" open="false"/>
 			<door id="1208" type="archway" open="false"/>
-			<door id="5098" type="normal" open="false"/>
+			<door id="5098" type="normal" open="false" locked="true"/>
 			<door id="5099" type="normal" open="false"/>
 			<door id="5100" type="normal" open="true"/>
 			<door id="5101" type="locked" open="false"/>
@@ -160,7 +160,7 @@
 			<item id="1032" chance="0"/>
 			<door id="1205" type="archway" open="false"/>
 			<door id="1206" type="archway" open="false"/>
-			<door id="5107" type="normal" open="false"/>
+			<door id="5107" type="normal" open="false" locked="true"/>
 			<door id="5108" type="normal" open="false"/>
 			<door id="5109" type="normal" open="true"/>
 			<door id="5110" type="locked" open="false"/>
@@ -175,9 +175,9 @@
 		</wall>
 		<wall type="corner">
 			<item id="1029" chance="1"/>
-			<item id="1031" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1033" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1035" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="1031" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1033" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1035" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="pole">
 			<item id="1027" chance="1"/>
@@ -189,7 +189,7 @@
 			<item id="1061" chance="1"/>
 			<item id="1063" chance="0"/>
 			<item id="1069" chance="0"/>
-			<door id="1234" type="normal" open="false"/>
+			<door id="1234" type="normal" open="false" locked="true"/>
 			<door id="1235" type="normal" open="false"/>
 			<door id="1236" type="normal" open="true"/>
 			<door id="1239" type="locked" open="false"/>
@@ -206,7 +206,7 @@
 			<item id="1060" chance="1"/>
 			<item id="1065" chance="0"/>
 			<item id="1067" chance="0"/>
-			<door id="1231" type="normal" open="false"/>
+			<door id="1231" type="normal" open="false" locked="true"/>
 			<door id="1232" type="normal" open="false"/>
 			<door id="1233" type="normal" open="true"/>
 			<door id="1237" type="locked" open="false"/>
@@ -221,9 +221,9 @@
 		</wall>
 		<wall type="corner">
 			<item id="1064" chance="1"/>
-			<item id="1066" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1068" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1070" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="1066" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1068" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1070" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="pole">
 			<item id="1062" chance="1"/>
@@ -249,15 +249,15 @@
 		</wall>
 		<wall type="corner">
 			<item id="1104" chance="1"/>
-			<item id="1106" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1108" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1110" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="1106" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1108" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1110" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="pole">
 			<item id="1102" chance="1"/>
 		</wall>
 
-		<friend name="egypt wall" redirect="true"/> -- There can only be one redirection! --
+		<friend name="egypt wall" redirect="true"/> <!-- There can only be one redirection! -->
 	</brush>
 
 	<brush name="ruin wall" type="wall" server_lookid="3362">
@@ -287,7 +287,7 @@
 			<item id="3421" chance="0"/>
 			<item id="3422" chance="0"/>
 
-			<door id="5116" type="normal" open="false"/>
+			<door id="5116" type="normal" open="false" locked="true"/>
 			<door id="5117" type="normal" open="false"/>
 			<door id="5118" type="normal" open="true"/>
 			<door id="5119" type="locked" open="false"/>
@@ -328,7 +328,7 @@
 			<item id="3412" chance="0"/>
 			<item id="3413" chance="0"/>
 
-			<door id="5125" type="normal" open="false"/>
+			<door id="5125" type="normal" open="false" locked="true"/>
 			<door id="5126" type="normal" open="false"/>
 			<door id="5127" type="normal" open="true"/>
 			<door id="5128" type="locked" open="false"/>
@@ -345,15 +345,15 @@
 		</wall>
 		<wall type="corner">
 			<item id="3365" chance="1"/>
-			<item id="3367" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="3369" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="5520" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="3367" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="3369" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="5520" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="pole">
 			<item id="3363" chance="1"/>
 		</wall>
 
-		<friend name="framework wall" redirect="true"/> -- There can only be one redirection! --
+		<friend name="framework wall" redirect="true"/> <!-- There can only be one redirection! -->
 	</brush>
 
 	<brush name="marble wall" type="wall" server_lookid="1112">
@@ -388,7 +388,7 @@
 			<item id="1114" chance="0"/>
 			<item id="1118" chance="0"/>
 
-			<door id="1252" type="normal" open="false"/>
+			<door id="1252" type="normal" open="false" locked="true"/>
 			<door id="1253" type="normal" open="false"/>
 			<door id="1254" type="normal" open="true"/>
 			<!--<door id="6200" type="locked" open="false"/>-->
@@ -432,7 +432,7 @@
 			<item id="1116" chance="0"/>
 			<item id="5010" chance="0"/>
 
-			<door id="1249" type="normal" open="false"/>
+			<door id="1249" type="normal" open="false" locked="true"/>
 			<door id="1250" type="normal" open="false"/>
 			<door id="1251" type="normal" open="true"/>
 			<!--<door id="6198" type="locked" open="false"/>-->
@@ -449,8 +449,8 @@
 		<wall type="corner">
 			<item id="1115" chance="1"/>
 			<item id="1117" chance="0"/>
-			<item id="5011" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="1119" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="5011" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="1119" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="pole">
 			<item id="1113" chance="1"/>
@@ -460,35 +460,35 @@
 	<brush name="rock wall" type="wall" server_lookid="904">
 		<wall type="horizontal">
 			<item id="904" chance="500"/>
-			<item id="906" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="912" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="906" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="912" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="vertical">
 			<item id="903" chance="400"/>
-			<item id="908" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="910" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="908" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="910" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="corner">
 			<item id="907" chance="1000"/>
-			<item id="909" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="911" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="913" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="909" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="911" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="913" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="pole">
 			<item id="905" chance="1000"/>
 		</wall>
 
-		<friend id="plaster wall" redirect="true"/>
+		<friend id="framework wall" redirect="true"/>
 	</brush>
 
 	<brush name="wooden wall" type="wall" server_lookid="6840">
 		<wall type="horizontal">
 			<item id="6840" chance="500"/>
-			<item id="6842" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="6848" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="6842" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="6848" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 			<door id="6882" type="archway" open="false"/>
 			<door id="6884" type="archway" open="false"/>
-			<door id="6891" type="normal" open="false"/>
+			<door id="6891" type="normal" open="false" locked="true"/>
 			<door id="6892" type="normal" open="false"/>
 			<door id="6893" type="normal" open="true"/>
 			<door id="6894" type="locked" open="false"/>
@@ -503,12 +503,12 @@
 		</wall>
 		<wall type="vertical">
 			<item id="6839" chance="400"/>
-			<item id="6844" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="6846" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="6846" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="6844" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="6846" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="6846" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 			<door id="6883" type="archway" open="false"/>
 			<door id="6885" type="archway" open="false"/>
-			<door id="6900" type="normal" open="false"/>
+			<door id="6900" type="normal" open="false" locked="true"/>
 			<door id="6901" type="normal" open="false"/>
 			<door id="6902" type="normal" open="true"/>
 			<door id="6903" type="locked" open="false"/>
@@ -523,9 +523,9 @@
 		</wall>
 		<wall type="corner">
 			<item id="6843" chance="1000"/>
-			<item id="6845" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="6847" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="6849" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="6845" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="6847" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="6849" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="pole">
 			<item id="6841" chance="1000"/>
@@ -549,19 +549,19 @@
 	<brush name="low stone-wooden wall" type="wall" server_lookid="6858">
 		<wall type="horizontal">
 			<item id="6858" chance="500"/>
-			<item id="6860" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="6866" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="6860" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="6866" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="vertical">
 			<item id="6857" chance="400"/>
-			<item id="6862" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="6864" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="6862" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="6864" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="corner">
 			<item id="6861" chance="1000"/>
-			<item id="6863" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="6865" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="6867" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="6863" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="6865" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="6867" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="pole">
 			<item id="9063" chance="1000"/>
@@ -622,6 +622,21 @@
 		<friend name="high stone-wooden wall"/>
 	</brush>
 
+	<brush name="rope wall" type="wall" server_lookid="6983">
+		<wall type="horizontal">
+			<item id="6981" chance="1"/>
+		</wall>
+		<wall type="vertical">
+			<item id="6982" chance="1"/>
+		</wall>
+		<wall type="corner">
+			<item id="6983" chance="1"/>
+		</wall>
+		<wall type="pole">
+			<item id="6986" chance="1"/>
+		</wall>
+	</brush>
+
 	<brush name="wood wall" type="wall" server_lookid="6136">
 		<wall type="horizontal">
 			<item id="6140" chance="4"/>
@@ -630,7 +645,7 @@
 			<item id="6148" chance="0"/>
 			<item id="6134" chance="0"/>
 			<item id="6146" chance="0"/>
-			<door id="6195" type="normal" open="false"/>
+			<door id="6195" type="normal" open="false" locked="true"/>
 			<door id="6196" type="normal" open="false"/>
 			<door id="6197" type="normal" open="true"/>
 			<door id="6200" type="locked" open="false"/>
@@ -649,7 +664,7 @@
 			<item id="6149" chance="0"/>
 			<item id="6151" chance="0"/>
 			<item id="6144" chance="0"/>
-			<door id="6192" type="normal" open="false"/>
+			<door id="6192" type="normal" open="false" locked="true"/>
 			<door id="6193" type="normal" open="false"/>
 			<door id="6194" type="normal" open="true"/>
 			<door id="6198" type="locked" open="false"/>
@@ -665,9 +680,9 @@
 		<wall type="corner">
 			<item id="6141" chance="1"/>
 			<item id="6150" chance="0"/>
-			<item id="6143" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="6145" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="6147" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="6143" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="6145" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="6147" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="pole">
 			<item id="6139" chance="1"/>
@@ -675,7 +690,7 @@
 		</wall>
 	</brush>
 
-	<brush name="plant wall" type="wall" server_lookid="6239">
+	<brush name="plant wall" type="wall decoration" server_lookid="6239">
 		<wall type="horizontal">
 			<item id="6239" chance="1"/>
 			<item id="6241" chance="0"/>
@@ -694,9 +709,9 @@
 		</wall>
 		<wall type="corner">
 			<item id="6242" chance="1"/>
-			<item id="6244" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="6246" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="6248" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="6244" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="6246" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="6248" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="pole">
 			<item id="6240" chance="1"/>
@@ -753,10 +768,10 @@
 			<item id="5270" chance="5"/>
 			<item id="5272" chance="1"/>
 			<item id="5273" chance="1"/>
-			<item id="5262" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="5262" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="5264" chance="0"/> -- This needs to be here for backwards compability --
-			<door id="5278" type="normal" open="false"/> --
+			<item id="5262" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="5262" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="5264" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<door id="5278" type="normal" open="false" locked="true"/> --
 			<door id="5279" type="normal" open="false"/> --
 			<door id="5280" type="normal" open="true"/> --
 			<door id="5286" type="locked" open="false"/> --
@@ -773,7 +788,7 @@
 			<item id="5268" chance="5"/>
 			<item id="5274" chance="1"/>
 			<item id="5275" chance="1"/>
-			<door id="5281" type="normal" open="false"/>
+			<door id="5281" type="normal" open="false" locked="true"/>
 			<door id="5282" type="normal" open="false"/>
 			<door id="5283" type="normal" open="true"/>
 			<door id="5284" type="locked" open="false"/>
@@ -788,9 +803,9 @@
 		</wall>
 		<wall type="corner">
 			<item id="5265" chance="10"/>
-			<item id="5267" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="5269" chance="0"/> -- This needs to be here for backwards compability --
-			<item id="5271" chance="0"/> -- This needs to be here for backwards compability --
+			<item id="5267" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="5269" chance="0"/> <!-- This needs to be here for backwards compatibility -->
+			<item id="5271" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 		</wall>
 		<wall type="pole">
 			<item id="5263" chance="10"/>
@@ -811,7 +826,7 @@
 			<item id="8476" chance="1"/>
 			<item id="8478" chance="0"/>
 			<item id="8484" chance="0"/>
-			<door id="8544" type="normal" open="false"/>
+			<door id="8544" type="normal" open="false" locked="true"/>
 			<door id="8545" type="normal" open="false"/>
 			<door id="8546" type="normal" open="true"/>
 			<door id="8549" type="locked" open="false"/>
@@ -825,7 +840,7 @@
 			<item id="8475" chance="1"/>
 			<item id="8480" chance="0"/>
 			<item id="8482" chance="0"/>
-			<door id="8541" type="normal" open="false"/>
+			<door id="8541" type="normal" open="false" locked="true"/>
 			<door id="8542" type="normal" open="false"/>
 			<door id="8543" type="normal" open="true"/>
 			<door id="8547" type="locked" open="false"/>
@@ -845,7 +860,6 @@
 			<item id="8477" chance="1"/>
 		</wall>
 	</brush>
-
 	<brush name="stone wall2" type="wall" server_lookid="3458">
 		<wall type="horizontal">
 			<item id="3458" chance="1"/>
@@ -911,7 +925,7 @@
 	<brush name="bamboo wall" type="wall" server_lookid="3424">
 		<wall type="horizontal">
 			<item id="3424" chance="1"/>
-			<door id="3535" type="normal" open="false"/>
+			<door id="3535" type="normal" open="false" locked="true"/>
 			<door id="3536" type="normal" open="false"/>
 			<door id="3537" type="normal" open="true"/>
 			<door id="3538" type="locked" open="false"/>
@@ -926,7 +940,7 @@
 		</wall>
 		<wall type="vertical">
 			<item id="3423" chance="1"/>
-			<door id="3544" type="normal" open="false"/>
+			<door id="3544" type="normal" open="false" locked="true"/>
 			<door id="3545" type="normal" open="false"/>
 			<door id="3546" type="normal" open="true"/>
 			<door id="3547" type="locked" open="false"/>
@@ -1003,7 +1017,7 @@
 	<brush name="frozen wall" type="wall" server_lookid="6740">
 		<wall type="horizontal">
 			<item id="6740" chance="1"/>
-			<door id="7033" type="normal" open="false"/>
+			<door id="7033" type="normal" open="false" locked="true"/>
 			<door id="7034" type="normal" open="false"/>
 			<door id="7035" type="normal" open="true"/>
 			<door id="7036" type="locked" open="false"/>
@@ -1017,7 +1031,7 @@
 		</wall>
 		<wall type="vertical">
 			<item id="6739" chance="1"/>
-			<door id="7042" type="normal" open="false"/>
+			<door id="7042" type="normal" open="false" locked="true"/>
 			<door id="7043" type="normal" open="false"/>
 			<door id="7044" type="normal" open="true"/>
 			<door id="7045" type="locked" open="false"/>
@@ -1041,7 +1055,7 @@
 		<wall type="horizontal">
 			<item id="6774" chance="10"/>
 			<item id="6786" chance="2"/>
-			<door id="6795" type="normal" open="false"/>
+			<door id="6795" type="normal" open="false" locked="true"/>
 			<door id="6799" type="normal" open="false"/>
 			<door id="6796" type="normal" open="true"/>
 			<door id="7056" type="locked" open="false"/>
@@ -1052,7 +1066,7 @@
 		<wall type="vertical">
 			<item id="6773" chance="10"/>
 			<item id="6784" chance="2"/>
-			<door id="6797" type="normal" open="false"/>
+			<door id="6797" type="normal" open="false" locked="true"/>
 			<door id="6801" type="normal" open="false"/>
 			<door id="6798" type="normal" open="true"/>
 			<door id="7054" type="locked" open="false"/>
@@ -1071,7 +1085,7 @@
 	<brush name="stone wall3" type="wall" server_lookid="9119">
 		<wall type="horizontal">
 			<item id="9119" chance="1"/>
-			<door id="9168" type="normal" open="false"/>
+			<door id="9168" type="normal" open="false" locked="true"/>
 			<door id="9169" type="normal" open="false"/>
 			<door id="9170" type="normal" open="true"/>
 			<door id="9173" type="locked" open="false"/>
@@ -1084,7 +1098,7 @@
 		</wall>
 		<wall type="vertical">
 			<item id="9118" chance="1"/>
-			<door id="9165" type="normal" open="false"/>
+			<door id="9165" type="normal" open="false" locked="true"/>
 			<door id="9166" type="normal" open="false"/>
 			<door id="9167" type="normal" open="true"/>
 			<door id="9171" type="locked" open="false"/>
@@ -1109,7 +1123,7 @@
 			<item id="9211" chance="5"/>
 			<item id="9212" chance="5"/>
 			<item id="9223" chance="2"/>
-			<door id="9270" type="normal" open="false"/>
+			<door id="9270" type="normal" open="false" locked="true"/>
 			<door id="9271" type="normal" open="false"/>
 			<door id="9272" type="normal" open="true"/>
 			<door id="9275" type="locked" open="false"/>
@@ -1124,7 +1138,7 @@
 			<item id="9208" chance="5"/>
 			<item id="9209" chance="5"/>
 			<item id="9222" chance="2"/>
-			<door id="9267" type="normal" open="false"/>
+			<door id="9267" type="normal" open="false" locked="true"/>
 			<door id="9268" type="normal" open="false"/>
 			<door id="9269" type="normal" open="true"/>
 			<door id="9273" type="locked" open="false"/>
@@ -1164,7 +1178,7 @@
 	<brush name="limestone wall" type="wall" server_lookid="10178">
 		<wall type="horizontal">
 			<item id="10178" chance="1"/>
-			<door id="10468" type="normal" open="false"/>
+			<door id="10468" type="normal" open="false" locked="true"/>
 			<door id="10469" type="normal" open="false"/>
 			<door id="10470" type="normal" open="true"/>
 			<door id="10471" type="locked" open="false"/>
@@ -1179,46 +1193,7 @@
 		</wall>
 		<wall type="vertical">
 			<item id="10177" chance="1"/>
-			<door id="10477" type="normal" open="false"/>
-			<door id="10478" type="normal" open="false"/>
-			<door id="10479" type="normal" open="true"/>
-			<door id="10480" type="locked" open="false"/>
-			<door id="10481" type="locked" open="true"/>
-			<door id="10482" type="quest" open="false"/>
-			<door id="10483" type="quest" open="true"/>
-			<door id="10484" type="magic" open="false"/>
-			<door id="10485" type="magic" open="true"/>
-			<door id="10489" type="hatch_window" open="false"/>
-			<door id="10491" type="hatch_window" open="true"/>
-			<door id="10487" type="window"/>
-		</wall>
-		<wall type="corner">
-			<item id="10181" chance="1"/>
-		</wall>
-		<wall type="pole">
-			<item id="10179" chance="1"/>
-		</wall>
-	</brush>
-
-	<brush name="limestone wall" type="wall" server_lookid="10178">
-		<wall type="horizontal">
-			<item id="10178" chance="1"/>
-			<door id="10468" type="normal" open="false"/>
-			<door id="10469" type="normal" open="false"/>
-			<door id="10470" type="normal" open="true"/>
-			<door id="10471" type="locked" open="false"/>
-			<door id="10472" type="locked" open="true"/>
-			<door id="10473" type="quest" open="false"/>
-			<door id="10474" type="quest" open="true"/>
-			<door id="10475" type="magic" open="false"/>
-			<door id="10476" type="magic" open="true"/>
-			<door id="10488" type="hatch_window" open="false"/>
-			<door id="10490" type="hatch_window" open="true"/>
-			<door id="10486" type="window"/>
-		</wall>
-		<wall type="vertical">
-			<item id="10177" chance="1"/>
-			<door id="10477" type="normal" open="false"/>
+			<door id="10477" type="normal" open="false" locked="true"/>
 			<door id="10478" type="normal" open="false"/>
 			<door id="10479" type="normal" open="true"/>
 			<door id="10480" type="locked" open="false"/>
@@ -1244,7 +1219,7 @@
 			<item id="10227" chance="10"/>
 			<item id="10245" chance="6"/>
 			<item id="10246" chance="2"/>
-			<door id="10271" type="normal" open="false"/>
+			<door id="10271" type="normal" open="false" locked="true"/>
 			<door id="10272" type="normal" open="false"/>
 			<door id="10273" type="normal" open="true"/>
 			<door id="10276" type="locked" open="false"/>
@@ -1261,7 +1236,7 @@
 			<item id="10226" chance="10"/>
 			<item id="10247" chance="6"/>
 			<item id="10248" chance="2"/>
-			<door id="10268" type="normal" open="false"/>
+			<door id="10268" type="normal" open="false" locked="true"/>
 			<door id="10269" type="normal" open="false"/>
 			<door id="10270" type="normal" open="true"/>
 			<door id="10274" type="locked" open="false"/>
@@ -1530,7 +1505,7 @@
 	<brush name="venore wall" type="wall" server_lookid="19410">
 		<wall type="horizontal">
 			<item id="19410" chance="1"/>
-			<door id="19840" type="normal" open="false"/>
+			<door id="19840" type="normal" open="false" locked="true"/>
 			<door id="19841" type="normal" open="false"/>
 			<door id="19842" type="normal" open="true"/>
 			<door id="19843" type="locked" open="false"/>
@@ -1545,7 +1520,7 @@
 		</wall>
 		<wall type="vertical">
 			<item id="19405" chance="1"/>
-			<door id="19849" type="normal" open="false"/>
+			<door id="19849" type="normal" open="false" locked="true"/>
 			<door id="19850" type="normal" open="false"/>
 			<door id="19851" type="normal" open="true"/>
 			<door id="19852" type="locked" open="false"/>
@@ -1569,7 +1544,7 @@
 	<brush name="venore brick wall" type="wall" server_lookid="19485">
 		<wall type="horizontal">
 			<item id="19485" chance="1"/>
-			<door id="19980" type="normal" open="false"/>
+			<door id="19980" type="normal" open="false" locked="true"/>
 			<door id="19981" type="normal" open="false"/>
 			<door id="19982" type="normal" open="true"/>
 			<door id="19983" type="locked" open="false"/>
@@ -1582,7 +1557,7 @@
 		</wall>
 		<wall type="vertical">
 			<item id="19481" chance="1"/>
-			<door id="19989" type="normal" open="false"/>
+			<door id="19989" type="normal" open="false" locked="true"/>
 			<door id="19990" type="normal" open="false"/>
 			<door id="19991" type="normal" open="true"/>
 			<door id="19992" type="locked" open="false"/>
@@ -1617,18 +1592,34 @@
 
 	<brush name="oramond wall" type="wall" server_lookid="22768">
 		<wall type="horizontal">
-			<item id="22768" chance="10"/>
-			<item id="22765" chance="2"/>
+			<item id="22765" chance="10"/>
+			<item id="22768" chance="0"/>
+			<door id="22815" type="normal" open="false" locked="true"/>
 			<door id="22814" type="normal" open="false"/>
-			<door id="22815" type="locked" open="false"/>
-			<door id="22813" type="window"/>
+			<door id="22816" type="normal" open="true"/>
+			<door id="22817" type="locked" open="false"/>
+			<door id="22818" type="locked" open="true"/>
+			<door id="22821" type="quest" open="false"/>
+			<door id="22822" type="quest" open="true"/>
+			<door id="22819" type="magic" open="false"/>
+			<door id="22820" type="magic" open="true"/>
+			<door id="22839" type="any window" open="false"/>
+			<door id="22813" type="window" open="true"/>
 		</wall>
 		<wall type="vertical">
-			<item id="22769" chance="10"/>
-			<item id="22763" chance="2"/>
+			<item id="22763" chance="10"/>
+			<item id="22769" chance="0"/>
+			<door id="22824" type="normal" open="false" locked="true"/>
 			<door id="22823" type="normal" open="false"/>
-			<door id="22824" type="locked" open="false"/>
-			<door id="22812" type="window"/>
+			<door id="22825" type="normal" open="true"/>
+			<door id="22826" type="locked" open="false"/>
+			<door id="22827" type="locked" open="true"/>
+			<door id="22830" type="quest" open="false"/>
+			<door id="22831" type="quest" open="true"/>
+			<door id="22828" type="magic" open="false"/>
+			<door id="22829" type="magic" open="true"/>
+			<door id="22838" type="any window" open="false"/>
+			<door id="22812" type="window" open="true"/>
 		</wall>
 		<wall type="corner">
 			<item id="22770" chance="1"/>
@@ -1713,7 +1704,7 @@
 	<brush name="zaoan wall3" type="wall" server_lookid="10663">
 		<wall type="horizontal">
 			<item id="10663" chance="1"/>
-			<door id="10775" type="normal" open="false"/>
+			<door id="10775" type="normal" open="false" locked="true"/>
 			<door id="10776" type="normal" open="false"/>
 			<door id="10777" type="normal" open="true"/>
 			<door id="10780" type="quest" open="false"/>
@@ -1725,7 +1716,7 @@
 		</wall>
 		<wall type="vertical">
 			<item id="10661" chance="1"/>
-			<door id="10784" type="normal" open="false"/>
+			<door id="10784" type="normal" open="false" locked="true"/>
 			<door id="10785" type="normal" open="false"/>
 			<door id="10786" type="normal" open="true"/>
 			<door id="10789" type="quest" open="false"/>
@@ -1863,7 +1854,7 @@
 			<item id="11847" chance="4"/>
 			<item id="11848" chance="6"/>
 			<item id="11849" chance="2"/>
-			<door id="12092" type="normal" open="false"/>
+			<door id="12092" type="normal" open="false" locked="true"/>
 			<door id="12093" type="normal" open="false"/>
 			<door id="12094" type="normal" open="true"/>
 			<door id="12095" type="quest" open="false"/>
@@ -1877,7 +1868,7 @@
 			<item id="11850" chance="4"/>
 			<item id="11851" chance="6"/>
 			<item id="11852" chance="2"/>
-			<door id="12099" type="normal" open="false"/>
+			<door id="12099" type="normal" open="false" locked="true"/>
 			<door id="12100" type="normal" open="false"/>
 			<door id="12101" type="normal" open="true"/>
 			<door id="12102" type="quest" open="false"/>
@@ -1897,7 +1888,7 @@
 	<brush name="corrupted wall2" type="wall" server_lookid="11938">
 		<wall type="horizontal">
 			<item id="11938" chance="1"/>
-			<door id="12188" type="normal" open="false"/>
+			<door id="12188" type="normal" open="false" locked="true"/>
 			<door id="12189" type="normal" open="false"/>
 			<door id="12190" type="normal" open="true"/>
 			<door id="12195" type="locked" open="false"/>
@@ -1908,7 +1899,7 @@
 		</wall>
 		<wall type="vertical">
 			<item id="11937" chance="1"/>
-			<door id="12917" type="normal" open="false"/>
+			<door id="12917" type="normal" open="false" locked="true"/>
 			<door id="12918" type="normal" open="false"/>
 			<door id="12919" type="normal" open="true"/>
 			<door id="12204" type="locked" open="false"/>
@@ -1929,7 +1920,7 @@
 		<wall type="horizontal">
 			<item id="25201" chance="10"/>
 			<item id="25203" chance="10"/>
-			<door id="25283" type="normal" open="false"/>
+			<door id="25283" type="normal" open="false" locked="true"/>
 			<door id="25284" type="normal" open="false"/>
 			<door id="25285" type="normal" open="true"/>
 			<door id="25286" type="quest" open="false"/>
@@ -1938,7 +1929,7 @@
 		<wall type="vertical">
 			<item id="25200" chance="10"/>
 			<item id="25205" chance="10"/>
-			<door id="25290" type="normal" open="false"/>
+			<door id="25290" type="normal" open="false" locked="true"/>
 			<door id="25291" type="normal" open="false"/>
 			<door id="25292" type="normal" open="true"/>
 			<door id="25293" type="quest" open="false"/>

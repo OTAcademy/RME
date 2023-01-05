@@ -4,7 +4,7 @@
 			<item id="1050" chance="500"/>
 			<item id="1052" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 			<item id="1058" chance="0"/> <!-- This needs to be here for backwards compatibility -->
-			<door id="6252" type="normal" open="false"/>
+			<door id="6252" type="normal" open="false" locked="true"/>
 			<door id="6253" type="normal" open="false"/>
 			<door id="6254" type="normal" open="true"/>
 			<door id="6257" type="locked" open="false"/>
@@ -21,7 +21,7 @@
 			<item id="1049" chance="400"/>
 			<item id="1054" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 			<item id="1056" chance="0"/> <!-- This needs to be here for backwards compatibility -->
-			<door id="6249" type="normal" open="false"/>
+			<door id="6249" type="normal" open="false" locked="true"/>
 			<door id="6250" type="normal" open="false"/>
 			<door id="6251" type="normal" open="true"/>
 			<door id="6255" type="locked" open="false"/>
@@ -69,7 +69,7 @@
 			<item id="5153" chance="150"/>
 			<door id="1215" type="archway" open="false"/>
 			<door id="1216" type="archway" open="false"/>
-			<door id="1212" type="normal" open="false"/>
+			<door id="1212" type="normal" open="false" locked="true"/>
 			<door id="1213" type="normal" open="false"/>
 			<door id="1214" type="normal" open="true"/>
 			<door id="1221" type="locked" open="false"/>
@@ -90,8 +90,8 @@
 			<item id="5155" chance="150"/>
 			<door id="1217" type="archway" open="false"/>
 			<door id="1218" type="archway" open="false"/>
+			<door id="1209" type="normal" open="false" locked="true"/>
 			<door id="1210" type="normal" open="false"/>
-			<door id="1209" type="normal" open="false"/>
 			<door id="1211" type="normal" open="true"/>
 			<door id="1219" type="locked" open="false"/>
 			<door id="1220" type="locked" open="true"/>
@@ -141,7 +141,7 @@
 			<item id="1034" chance="0"/>
 			<door id="1207" type="archway" open="false"/>
 			<door id="1208" type="archway" open="false"/>
-			<door id="5098" type="normal" open="false"/>
+			<door id="5098" type="normal" open="false" locked="true"/>
 			<door id="5099" type="normal" open="false"/>
 			<door id="5100" type="normal" open="true"/>
 			<door id="5101" type="locked" open="false"/>
@@ -160,7 +160,7 @@
 			<item id="1032" chance="0"/>
 			<door id="1205" type="archway" open="false"/>
 			<door id="1206" type="archway" open="false"/>
-			<door id="5107" type="normal" open="false"/>
+			<door id="5107" type="normal" open="false" locked="true"/>
 			<door id="5108" type="normal" open="false"/>
 			<door id="5109" type="normal" open="true"/>
 			<door id="5110" type="locked" open="false"/>
@@ -189,7 +189,7 @@
 			<item id="1061" chance="1"/>
 			<item id="1063" chance="0"/>
 			<item id="1069" chance="0"/>
-			<door id="1234" type="normal" open="false"/>
+			<door id="1234" type="normal" open="false" locked="true"/>
 			<door id="1235" type="normal" open="false"/>
 			<door id="1236" type="normal" open="true"/>
 			<door id="1239" type="locked" open="false"/>
@@ -206,7 +206,7 @@
 			<item id="1060" chance="1"/>
 			<item id="1065" chance="0"/>
 			<item id="1067" chance="0"/>
-			<door id="1231" type="normal" open="false"/>
+			<door id="1231" type="normal" open="false" locked="true"/>
 			<door id="1232" type="normal" open="false"/>
 			<door id="1233" type="normal" open="true"/>
 			<door id="1237" type="locked" open="false"/>
@@ -287,7 +287,7 @@
 			<item id="3421" chance="0"/>
 			<item id="3422" chance="0"/>
 
-			<door id="5116" type="normal" open="false"/>
+			<door id="5116" type="normal" open="false" locked="true"/>
 			<door id="5117" type="normal" open="false"/>
 			<door id="5118" type="normal" open="true"/>
 			<door id="5119" type="locked" open="false"/>
@@ -328,7 +328,7 @@
 			<item id="3412" chance="0"/>
 			<item id="3413" chance="0"/>
 
-			<door id="5125" type="normal" open="false"/>
+			<door id="5125" type="normal" open="false" locked="true"/>
 			<door id="5126" type="normal" open="false"/>
 			<door id="5127" type="normal" open="true"/>
 			<door id="5128" type="locked" open="false"/>
@@ -388,7 +388,7 @@
 			<item id="1114" chance="0"/>
 			<item id="1118" chance="0"/>
 
-			<door id="1252" type="normal" open="false"/>
+			<door id="1252" type="normal" open="false" locked="true"/>
 			<door id="1253" type="normal" open="false"/>
 			<door id="1254" type="normal" open="true"/>
 			<!--<door id="6200" type="locked" open="false"/>-->
@@ -432,7 +432,7 @@
 			<item id="1116" chance="0"/>
 			<item id="5010" chance="0"/>
 
-			<door id="1249" type="normal" open="false"/>
+			<door id="1249" type="normal" open="false" locked="true"/>
 			<door id="1250" type="normal" open="false"/>
 			<door id="1251" type="normal" open="true"/>
 			<!--<door id="6198" type="locked" open="false"/>-->
@@ -488,7 +488,7 @@
 			<item id="6848" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 			<door id="6882" type="archway" open="false"/>
 			<door id="6884" type="archway" open="false"/>
-			<door id="6891" type="normal" open="false"/>
+			<door id="6891" type="normal" open="false" locked="true"/>
 			<door id="6892" type="normal" open="false"/>
 			<door id="6893" type="normal" open="true"/>
 			<door id="6894" type="locked" open="false"/>
@@ -508,7 +508,7 @@
 			<item id="6846" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 			<door id="6883" type="archway" open="false"/>
 			<door id="6885" type="archway" open="false"/>
-			<door id="6900" type="normal" open="false"/>
+			<door id="6900" type="normal" open="false" locked="true"/>
 			<door id="6901" type="normal" open="false"/>
 			<door id="6902" type="normal" open="true"/>
 			<door id="6903" type="locked" open="false"/>
@@ -645,7 +645,7 @@
 			<item id="6148" chance="0"/>
 			<item id="6134" chance="0"/>
 			<item id="6146" chance="0"/>
-			<door id="6195" type="normal" open="false"/>
+			<door id="6195" type="normal" open="false" locked="true"/>
 			<door id="6196" type="normal" open="false"/>
 			<door id="6197" type="normal" open="true"/>
 			<door id="6200" type="locked" open="false"/>
@@ -664,7 +664,7 @@
 			<item id="6149" chance="0"/>
 			<item id="6151" chance="0"/>
 			<item id="6144" chance="0"/>
-			<door id="6192" type="normal" open="false"/>
+			<door id="6192" type="normal" open="false" locked="true"/>
 			<door id="6193" type="normal" open="false"/>
 			<door id="6194" type="normal" open="true"/>
 			<door id="6198" type="locked" open="false"/>
@@ -771,7 +771,7 @@
 			<item id="5262" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 			<item id="5262" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 			<item id="5264" chance="0"/> <!-- This needs to be here for backwards compatibility -->
-			<door id="5278" type="normal" open="false"/> -->
+			<door id="5278" type="normal" open="false" locked="true"/> -->
 			<door id="5279" type="normal" open="false"/> -->
 			<door id="5280" type="normal" open="true"/> -->
 			<door id="5286" type="locked" open="false"/> -->
@@ -788,7 +788,7 @@
 			<item id="5268" chance="5"/>
 			<item id="5274" chance="1"/>
 			<item id="5275" chance="1"/>
-			<door id="5281" type="normal" open="false"/>
+			<door id="5281" type="normal" open="false" locked="true"/>
 			<door id="5282" type="normal" open="false"/>
 			<door id="5283" type="normal" open="true"/>
 			<door id="5284" type="locked" open="false"/>
@@ -826,7 +826,7 @@
 			<item id="8476" chance="1"/>
 			<item id="8478" chance="0"/>
 			<item id="8484" chance="0"/>
-			<door id="8544" type="normal" open="false"/>
+			<door id="8544" type="normal" open="false" locked="true"/>
 			<door id="8545" type="normal" open="false"/>
 			<door id="8546" type="normal" open="true"/>
 			<door id="8549" type="locked" open="false"/>
@@ -840,7 +840,7 @@
 			<item id="8475" chance="1"/>
 			<item id="8480" chance="0"/>
 			<item id="8482" chance="0"/>
-			<door id="8541" type="normal" open="false"/>
+			<door id="8541" type="normal" open="false" locked="true"/>
 			<door id="8542" type="normal" open="false"/>
 			<door id="8543" type="normal" open="true"/>
 			<door id="8547" type="locked" open="false"/>

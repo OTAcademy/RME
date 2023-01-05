@@ -6,7 +6,7 @@
 			<item id="1045" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 			<door id="1215" type="archway" open="false"/>
 			<door id="1216" type="archway" open="false"/>
-			<door id="1212" type="normal" open="false"/>
+			<door id="1212" type="normal" open="false" locked="true"/>
 			<door id="1213" type="normal" open="false"/>
 			<door id="1214" type="normal" open="true"/>
 			<door id="1221" type="locked" open="false"/>
@@ -23,8 +23,8 @@
 			<item id="1043" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 			<door id="1217" type="archway" open="false"/>
 			<door id="1218" type="archway" open="false"/>
+			<door id="1209" type="normal" open="false" locked="true"/>
 			<door id="1210" type="normal" open="false"/>
-			<door id="1209" type="normal" open="false"/>
 			<door id="1211" type="normal" open="true"/>
 			<door id="1219" type="locked" open="false"/>
 			<door id="1220" type="locked" open="true"/>
@@ -108,7 +108,7 @@
 			<item id="1061" chance="1"/>
 			<item id="1063" chance="0"/>
 			<item id="1069" chance="0"/>
-			<door id="1234" type="normal" open="false"/>
+			<door id="1234" type="normal" open="false" locked="true"/>
 			<door id="1235" type="normal" open="false"/>
 			<door id="1236" type="normal" open="true"/>
 			<door id="1239" type="locked" open="false"/>
@@ -123,7 +123,7 @@
 			<item id="1060" chance="1"/>
 			<item id="1065" chance="0"/>
 			<item id="1067" chance="0"/>
-			<door id="1231" type="normal" open="false"/>
+			<door id="1231" type="normal" open="false" locked="true"/>
 			<door id="1232" type="normal" open="false"/>
 			<door id="1233" type="normal" open="true"/>
 			<door id="1237" type="locked" open="false"/>
