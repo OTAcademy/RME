@@ -72,6 +72,9 @@
 			<door id="1212" type="normal" open="false" locked="true"/>
 			<door id="1213" type="normal" open="false"/>
 			<door id="1214" type="normal" open="true"/>
+			<door id="5137" type="normal_alt" open="false" locked="true"/>
+			<door id="5138" type="normal_alt" open="false"/>
+			<door id="5139" type="normal_alt" open="true"/>
 			<door id="1221" type="locked" open="false"/>
 			<door id="1222" type="locked" open="true"/>
 			<door id="1225" type="quest" open="false"/>
@@ -93,6 +96,9 @@
 			<door id="1209" type="normal" open="false" locked="true"/>
 			<door id="1210" type="normal" open="false"/>
 			<door id="1211" type="normal" open="true"/>
+			<door id="5140" type="normal_alt" open="false" locked="true"/>
+			<door id="5141" type="normal_alt" open="false"/>
+			<door id="5142" type="normal_alt" open="true"/>
 			<door id="1219" type="locked" open="false"/>
 			<door id="1220" type="locked" open="true"/>
 			<door id="1223" type="quest" open="false"/>
@@ -293,9 +299,11 @@
 			<door id="5122" type="quest" open="true"/>
 			<door id="5123" type="magic" open="false"/>
 			<door id="5124" type="magic" open="true"/>
-			<door id="3393" type="normal" open="false"/>
-			<door id="3394" type="normal" open="true"/>
-			<door id="5478" type="hatch window" open="false"/>
+			<door id="5134" type="normal_alt" open="false" locked="true"/>
+			<door id="5135" type="normal_alt" open="false"/>
+			<door id="5136" type="normal_alt" open="true"/>
+			<door id="3393" type="archway" open="false"/>
+			<door id="3394" type="archway" open="true"/>			<door id="5478" type="hatch window" open="false"/>
 			<door id="5400" type="hatch window" open="true"/>
 			<door id="3392" type="window"/>
 		</wall>
@@ -334,8 +342,12 @@
 			<door id="5131" type="quest" open="true"/>
 			<door id="5132" type="magic" open="false"/>
 			<door id="5133" type="magic" open="true"/>
-			<door id="5134" type="normal" open="false"/>
-			<door id="5135" type="normal" open="true"/>
+			<door id="5143" type="normal_alt" open="false" locked="true"/>
+			<door id="5144" type="normal_alt" open="false"/>
+			<door id="5145" type="normal_alt" open="true"/>
+			<door id="3395" type="archway" open="false"/>
+			<door id="3396" type="archway" open="true"/>
+
 			<door id="5479" type="hatch window" open="false"/>
 			<door id="5401" type="hatch window" open="true"/>
 			<door id="3376" type="window"/>
@@ -751,9 +763,12 @@
 			<item id="5272" chance="1"/>
 			<item id="5262" chance="0"/> <!-- This needs to be here for backwards compatibility -->
 			<item id="5264" chance="0"/> <!-- This needs to be here for backwards compatibility -->
-			<door id="5278" type="normal" open="false" locked="true"/> --
-			<door id="5279" type="normal" open="false"/> --
-			<door id="5280" type="normal" open="true"/> --
+			<door id="5278" type="normal" open="false" locked="true"/>
+			<door id="5279" type="normal" open="false"/>
+			<door id="5280" type="normal" open="true"/>
+			<door id="5278" type="normal_alt" open="false" locked="true"/>
+			<door id="5279" type="normal_alt" open="false"/>
+			<door id="5280" type="normal_alt" open="true"/>
 			<door id="5286" type="locked" open="false"/> --
 			<door id="5287" type="locked" open="true"/> --
 			<door id="5290" type="quest" open="false"/>
@@ -771,6 +786,9 @@
 			<door id="5281" type="normal" open="false" locked="true"/>
 			<door id="5282" type="normal" open="false"/>
 			<door id="5283" type="normal" open="true"/>
+			<door id="5281" type="normal_alt" open="false" locked="true"/>
+			<door id="5282" type="normal_alt" open="false"/>
+			<door id="5283" type="normal_alt" open="true"/>
 			<door id="5284" type="locked" open="false"/>
 			<door id="5285" type="locked" open="true"/>
 			<door id="5288" type="quest" open="false"/>
