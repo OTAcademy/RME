@@ -1,0 +1,242 @@
+<materials>
+	<tileset name="Amulets and Rings">
+		<items>
+			<item id="2121"/>
+			<item fromid="2123" toid="2126"/>
+			<item fromid="2129" toid="2133"/>
+			<item id="2135"/>
+			<item id="2136"/>
+			<item id="2138"/>
+			<item id="2142"/>
+			<item id="2161"/>
+			<item fromid="2164" toid="2173"/>
+			<item id="2179"/>
+			<item fromid="2196" toid="2216"/>
+			<item id="2218"/>
+			<item id="2357"/>
+		</items>
+	</tileset>
+
+	<tileset name="Containers">
+		<items>
+			<item id="1746"/>
+			<item fromid="1987" toid="2004"/>
+			<item id="2365"/>
+			<item id="3939"/>
+			<item id="3940"/>
+		</items>
+	</tileset>
+
+	<tileset name="Containers - Fluid">
+		<items>
+			<item fromid="2005" toid="2009"/>
+			<item fromid="2011" toid="2015"/>
+			<item id="2023"/>
+			<item fromid="2031" toid="2033"/>
+			<item id="2562"/>
+			<item fromid="2574" toid="2577"/>
+			<item id="3941"/>
+			<item id="3942"/>
+		</items>
+	</tileset>
+
+	<tileset name="Creature Products">
+		<items>
+			<item id="2174"/>
+			<item id="2176"/>
+			<item id="2177"/>
+			<item id="2178"/>
+			<item id="2192"/>
+			<item id="2193"/>
+			<item id="2194"/>
+			<item id="3956"/>
+			<item id="4850"/>
+			<item id="5015"/>
+		</items>
+	</tileset>
+
+	<tileset name="Decorations">
+		<items>
+			<item fromid="1678" toid="1693"/>
+			<item id="1845"/>
+			<item id="1848"/>
+			<item id="1851"/>
+			<item id="1852"/>
+			<item id="1853"/>
+			<item id="1854"/>
+			<item id="1857"/>
+			<item id="1860"/>
+			<item id="1863"/>
+			<item id="1866"/>
+			<item id="1869"/>
+			<item id="1872"/>
+			<item id="1877"/>
+			<item id="1880"/>
+			<item id="1881"/>
+			<item id="2035"/>
+			<item id="2036"/>
+			<item id="2062"/>
+			<item id="2063"/>
+			<item id="2093"/>
+			<item id="2096"/>
+			<item id="2097"/>
+			<item id="2099"/>
+			<item id="2100"/>
+			<item id="2102"/>
+			<item id="2103"/>
+			<item id="2104"/>
+			<item id="2107"/>
+			<item fromid="2108" toid="2115"/>
+			<item id="2322"/>
+			<item id="2326"/>
+			<item id="2355"/>
+			<item id="2366"/>
+			<item id="3954"/>
+			<item id="3955"/>
+			<item id="5080"/>
+		</items>
+	</tileset>
+
+	<tileset name="Equipment">
+		<items>
+			<item id="2128"/>
+			<item id="2139"/>
+			<item id="2175"/>
+			<item id="2195"/>
+			<item id="2217"/>
+			<item id="2323"/>
+			<item id="2342"/>
+			<item id="2343"/>
+			<item id="2358"/>
+			<item fromid="2457" toid="2542"/>
+			<item fromid="2640" toid="2665"/>
+			<item fromid="3967" toid="3975"/>
+			<item id="3982"/>
+			<item id="3983"/>
+		</items>
+	</tileset>
+
+	<tileset name="Food">
+		<items>
+			<item fromid="2666" toid="2696"/>
+			<item fromid="2787" toid="2796"/>
+		</items>
+	</tileset>
+
+	<tileset name="Furniture Kits">
+		<items>
+			<item fromid="3901" toid="3938"/>
+			<item fromid="5086" toid="5088"/>
+		</items>
+	</tileset>
+
+	<tileset name="Herbs">
+		<items>
+			<item fromid="2798" toid="2805"/>
+			<item id="2759"/>
+			<item id="2741"/>
+			<item id="2760"/>
+		</items>
+	</tileset>
+
+	<tileset name="Keys">
+		<items>
+			<item fromid="2086" toid="2092"/>
+		</items>
+	</tileset>
+
+	<tileset name="Light Sources">
+		<items>
+			<item fromid="2041" toid="2057"/>
+			<item id="2162"/>
+			<item id="2163"/>
+			<item id="2361"/>
+		</items>
+	</tileset>
+
+	<tileset name="Runes">
+		<items>
+			<item fromid="2260" toid="2316"/>
+		</items>
+	</tileset>
+
+	<tileset name="Tools">
+		<items>
+			<item id="2120"/>
+			<item id="2324"/>
+			<item fromid="2548" toid="2554"/>
+			<item fromid="2556" toid="2561"/>
+			<item fromid="2563" toid="2573"/>
+			<item fromid="2578" toid="2580"/>
+			<item id="2600"/>
+			<item id="3976"/>
+		</items>
+	</tileset>
+
+	<tileset name="Trash">
+		<items>
+			<item id="2010"/>
+			<item id="2022"/>
+			<item id="2024"/>
+			<item fromid="2219" toid="2246"/>
+			<item fromid="2250" toid="2259"/>
+		</items>
+	</tileset>
+
+	<tileset name="Valuables">
+		<items>
+			<item fromid="1982" toid="1986"/>
+			<item id="2122"/>
+			<item id="2127"/>
+			<item id="2134"/>
+			<item id="2137"/>
+			<item id="2140"/>
+			<item id="2141"/>
+			<item fromid="2143" toid="2160"/>
+		</items>
+	</tileset>
+
+	<tileset name="Weapons - Ammunition">
+		<items>
+			<item fromid="2543" toid="2547"/>
+		</items>
+	</tileset>
+
+	<tileset name="Weapons - Distance">
+		<items>
+			<item id="1294"/>
+			<item id="2389"/>
+			<item id="2399"/>
+			<item id="2410"/>
+			<item id="2455"/>
+			<item id="2456"/>
+			<item id="3965"/>
+		</items>
+	</tileset>
+
+	<tileset name="Weapons - Magic">
+		<items>
+			<item fromid="2181" toid="2191"/>
+		</items>
+	</tileset>
+
+	<tileset name="Weapons - Melee">
+		<items>
+			<item fromid="2376" toid="2388"/>
+			<item fromid="2390" toid="2398"/>
+			<item fromid="2400" toid="2409"/>
+			<item fromid="2411" toid="2454"/>
+			<item id="3961"/>
+			<item id="3962"/>
+			<item id="3963"/>
+			<item id="3964"/>
+			<item id="3966"/>
+		</items>
+	</tileset>
+
+	<tileset name="Writeables">
+		<items>
+			<item fromid="1947" toid="1981"/>
+		</items>
+	</tileset>
+</materials>

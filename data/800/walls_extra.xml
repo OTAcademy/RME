@@ -1,0 +1,789 @@
+<materials>
+	<brush name="mountain wall archway" type="doodad" server_lookid="916" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="916"/> </tile>
+				<tile x="1" y="0"> <item id="917"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="914"/> </tile>
+				<tile x="0" y="1"> <item id="915"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="brick wall archway" type="doodad" server_lookid="1207" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1207"/> </tile>
+				<tile x="1" y="0"> <item id="1208"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1205"/> </tile>
+				<tile x="0" y="1"> <item id="1206"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="framework wall archway" type="doodad" server_lookid="1215" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1215"/> </tile>
+				<tile x="1" y="0"> <item id="1216"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1217"/> </tile>
+				<tile x="0" y="1"> <item id="1218"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="marble archway" type="doodad" server_lookid="1124" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1124"/> </tile>
+				<tile x="1" y="0"> <item id="1125"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1122"/> </tile>
+				<tile x="0" y="1"> <item id="1123"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="ornamented marble archway" type="doodad" server_lookid="1120" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1120"/> </tile>
+				<tile x="1" y="0"> <item id="1121"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1126"/> </tile>
+				<tile x="0" y="1"> <item id="1127"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="marble archway small 1" type="doodad" server_lookid="1158" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1158" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1159" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="marble archway small 2" type="doodad" server_lookid="1160" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1160" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1161" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="marble archway small 3" type="doodad" server_lookid="1162" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1162" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1163" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="barred marble window" type="doodad" server_lookid="5303" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="5303" chance="100"/>
+			<item id="6448" chance="0"/>
+		</alternate>
+		<alternate>
+			<item id="5304" chance="100"/>
+			<item id="6449" chance="0"/>
+		</alternate>
+	</brush>
+	<brush name="marble window 1" type="doodad" server_lookid="1269" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1269" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1270" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="marble window 2" type="doodad" server_lookid="1271" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1271" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1272" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="blue djinn ornament 1" type="doodad" server_lookid="1128" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1128"/> </tile>
+				<tile x="1" y="0"> <item id="1129"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1130"/> </tile>
+				<tile x="0" y="1"> <item id="1131"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="blue djinn ornament 2" type="doodad" server_lookid="1132" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1132"/> </tile>
+				<tile x="1" y="0"> <item id="1133"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1134"/> </tile>
+				<tile x="0" y="1"> <item id="1135"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="blue djinn ornament 3" type="doodad" server_lookid="1136" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1136" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1137" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="blue djinn ornament 4" type="doodad" server_lookid="1140" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1140" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1141" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="blue djinn ornament 5" type="doodad" server_lookid="1142" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1142" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1143" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="green djinn ornament 1" type="doodad" server_lookid="1180" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1180"/> </tile>
+				<tile x="1" y="0"> <item id="1181"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1182"/> </tile>
+				<tile x="0" y="1"> <item id="1183"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="green djinn ornament 2" type="doodad" server_lookid="1184" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1184"/> </tile>
+				<tile x="1" y="0"> <item id="1185"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="1186"/> </tile>
+				<tile x="0" y="1"> <item id="1187"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="green djinn ornament 3" type="doodad" server_lookid="1188" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1188" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1189" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="green djinn ornament 4" type="doodad" server_lookid="1190" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1190" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1191" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="green djinn ornament 5" type="doodad" server_lookid="1192" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1192" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1193" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="empty ornament frame" type="doodad" server_lookid="1138" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1138" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1139" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="blue djinn basin" type="doodad" server_lookid="1154" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1154" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1155" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="green djinn basin" type="doodad" server_lookid="1194" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1194" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1195" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="marble basin" type="doodad" server_lookid="1156" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1156" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1157" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="marble window closed" type="doodad" server_lookid="1164" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1164" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1165" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="marble frame square" type="doodad" server_lookid="1166" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1166" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1167" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="marble frame round" type="doodad" server_lookid="1168" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="1168" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="1169" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="oriental text wall" type="doodad" server_lookid="1148" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="-3" y="0"> <item id="1178"/> </tile>
+				<tile x="-2" y="0"> <item id="1144"/> </tile>
+				<tile x="-1" y="0"> <item id="1148"/> </tile>
+				<tile x="0" y="0"> <item id="1150"/> </tile>
+				<tile x="1" y="0"> <item id="1152"/> </tile>
+				<tile x="2" y="0"> <item id="1146"/> </tile>
+				<tile x="3" y="0"> <item id="1144"/> </tile>
+				<tile x="4" y="0"> <item id="1176"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="-3"> <item id="1177"/> </tile>
+				<tile x="0" y="-2"> <item id="1145"/> </tile>
+				<tile x="0" y="-1"> <item id="1149"/> </tile>
+				<tile x="0" y="0"> <item id="1151"/> </tile>
+				<tile x="0" y="1"> <item id="1153"/> </tile>
+				<tile x="0" y="2"> <item id="1147"/> </tile>
+				<tile x="0" y="3"> <item id="1145"/> </tile>
+				<tile x="0" y="4"> <item id="1179"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="cathedral archway" type="doodad" server_lookid="3445" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="3445"/> </tile>
+				<tile x="1" y="0"> <item id="3446"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="3441"/> </tile>
+				<tile x="0" y="1"> <item id="3442"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="cathedral archway small" type="doodad" server_lookid="3393" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3393" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3395" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="ruined cathedral archway" type="doodad" server_lookid="3443" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="3443"/> </tile>
+				<tile x="1" y="0"> <item id="3444"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="3439"/> </tile>
+				<tile x="0" y="1"> <item id="3440"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="ruined cathedral archway small" type="doodad" server_lookid="3394" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3394" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3396" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="cathedral wall window mosaic" type="doodad" server_lookid="5400" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="5400" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="5401" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="cathedral wall window barred" type="doodad" server_lookid="5478" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="5478" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="5479" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="cathedral wall window old" type="doodad" server_lookid="3392" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3392" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3776" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="cathedral wall carving" type="doodad" server_lookid="3417" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="3417"/> </tile>
+				<tile x="1" y="0"> <item id="3418"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="3373"/> </tile>
+				<tile x="0" y="1"> <item id="3374"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="cathedral wall pattern 1" type="doodad" server_lookid="3407" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3407" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3378" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="cathedral wall pattern 2" type="doodad" server_lookid="3415" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3415" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3380" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="cathedral wall pattern 3" type="doodad" server_lookid="3414" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3414" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3377" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="cathedral wall pattern 4" type="doodad" server_lookid="3408" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3408" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3379" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="cathedral window eagle" type="doodad" server_lookid="3405" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="3405"/> </tile>
+				<tile x="1" y="0"> <item id="3406"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="3412"/> </tile>
+				<tile x="0" y="1"> <item id="3413"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="cathedral window cross" type="doodad" server_lookid="3372" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3372" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3381" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="cathedral window hexagon" type="doodad" server_lookid="3391" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3391" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3390" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="cathedral window saint" type="doodad" server_lookid="3419" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3419" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3370" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="cathedral window priestess" type="doodad" server_lookid="3371" draggable="true" on_blocking="true" thickness="100/100">
+			<item id="3371" chance="100"/>
+	</brush>
+	<brush name="cathedral window stars" type="doodad" server_lookid="3422" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3422" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3384" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="cathedral window stars broken" type="doodad" server_lookid="3421" draggable="true" on_blocking="true" thickness="100/100">
+			<item id="3421" chance="100"/>
+	</brush>
+	<brush name="cathedral window pillar" type="doodad" server_lookid="3385" draggable="true" on_blocking="true" thickness="100/100">
+			<item id="3385" chance="100"/>
+	</brush>
+	<brush name="cathedral window pillar ruined" type="doodad" server_lookid="3409" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3409" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3375" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="ruined cathedral wall pattern" type="doodad" server_lookid="3411" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3411" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3397" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="ruined cathedral wall window" type="doodad" server_lookid="3410" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3410" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3382" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="bamboo wall alt" type="doodad" server_lookid="3447" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3447" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3450" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="bamboo window alt" type="doodad" server_lookid="3448" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3448" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3451" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="wall carving medusa" type="doodad" server_lookid="3474" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="3474"/> </tile>
+				<tile x="1" y="0"> <item id="3475"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="3533"/> </tile>
+				<tile x="0" y="1"> <item id="3534"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="wall carving footprint" type="doodad" server_lookid="3469" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3469" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3465" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="wall carving lizard" type="doodad" server_lookid="3470" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3470" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3466" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="banuta archway" type="doodad" server_lookid="3477" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="3477"/> </tile>
+				<tile x="1" y="0"> <item id="3476"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="3478"/> </tile>
+				<tile x="0" y="1"> <item id="3479"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="banuta archway small" type="doodad" server_lookid="3472" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3472" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3468" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="leaf wall archway" type="doodad" server_lookid="3505" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3505" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3504" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="framework wall archway section" type="doodad" server_lookid="7144" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="7144" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="7143" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="tree archway sample" type="doodad" server_lookid="6275" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="6177"/> </tile>
+				
+				<tile x="1" y="0"> <item id="6232"/> </tile>
+				<tile x="2" y="0"> <item id="6175"/> </tile>
+				
+				<tile x="0" y="1"> <item id="6233"/> </tile>
+				<tile x="0" y="2"> <item id="6176"/> </tile>
+				
+				<tile x="1" y="2"> <item id="6232"/> </tile>
+				<tile x="2" y="1"> <item id="6233"/> </tile>
+				<tile x="2" y="2"> <item id="6275"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="tendril archway sample" type="doodad" server_lookid="6276" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="6240"/> </tile>
+				
+				<tile x="1" y="0"> <item id="6236"/> </tile>
+				<tile x="2" y="0"> <item id="6234"/> </tile>
+				
+				<tile x="0" y="1"> <item id="6237"/> </tile>
+				<tile x="0" y="2"> <item id="6235"/> </tile>
+				
+				<tile x="1" y="2"> <item id="6236"/> </tile>
+				<tile x="2" y="1"> <item id="6237"/> </tile>
+				<tile x="2" y="2"> <item id="6276"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="bone archway sample" type="doodad" server_lookid="6412" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="6413"/> </tile>
+				
+				<tile x="1" y="0"> <item id="6409"/> </tile>
+				<tile x="2" y="0"> <item id="6408"/> </tile>
+				
+				<tile x="0" y="1"> <item id="6411"/> </tile>
+				<tile x="0" y="2"> <item id="6410"/> </tile>
+				
+				<tile x="1" y="2"> <item id="6409"/> </tile>
+				<tile x="2" y="1"> <item id="6411"/> </tile>
+				<tile x="2" y="2"> <item id="6412"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	<brush name="ice archway sample" type="doodad" server_lookid="6767" draggable="false" on_blocking="true" thickness="100/100">
+		<alternate>
+			<composite chance="100">
+				<tile x="0" y="0"> <item id="6730"/> </tile>
+				
+				<tile x="1" y="0"> <item id="7061"/> </tile>
+				<tile x="2" y="0"> <item id="6766"/> </tile>
+				<tile x="3" y="0"> <item id="6765"/> </tile>
+				
+				<tile x="0" y="1"> <item id="7060"/> </tile>
+				<tile x="0" y="2"> <item id="6764"/> </tile>
+				<tile x="0" y="3"> <item id="6763"/> </tile>
+				
+				<tile x="1" y="3"> <item id="7061"/> </tile>
+				<tile x="2" y="3"> <item id="6766"/> </tile>
+				
+				<tile x="3" y="1"> <item id="7060"/> </tile>
+				<tile x="3" y="2"> <item id="6764"/> </tile>
+				
+				<tile x="3" y="3"> <item id="6767"/> </tile>
+			</composite>
+		</alternate>
+	</brush>
+	
+	<brush name="frozen demon (ice wall)" type="doodad" server_lookid="7291" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="7291" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="7292" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="frozen mammoth (ice wall)" type="doodad" server_lookid="7293" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="7293" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="7294" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="frozen dragon (ice wall)" type="doodad" server_lookid="7295" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="7295" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="7296" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="frozen behemoth (ice wall)" type="doodad" server_lookid="7297" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="7297" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="7298" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="frozen plaguesmith (ice wall)" type="doodad" server_lookid="7299" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="7299" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="7300" chance="100"/>
+		</alternate>
+	</brush>
+	<brush name="frozen ice golem (ice wall)" type="doodad" server_lookid="7301" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="7301" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="7302" chance="100"/>
+		</alternate>
+	</brush>
+	
+	<tileset name="Walls - Archways">
+		<terrain>
+			<brush name="mountain wall archway"/>
+			<brush name="brick wall archway"/>
+			<brush name="framework wall archway"/>
+			<brush name="framework wall archway section"/>
+			<brush name="marble archway"/>
+			<brush name="ornamented marble archway"/>
+			<brush name="marble archway small 1"/>
+			<brush name="marble archway small 2"/>
+			<brush name="marble archway small 3"/>
+			<brush name="cathedral archway"/>
+			<brush name="cathedral archway small"/>
+			<brush name="ruined cathedral archway"/>
+			<brush name="ruined cathedral archway small"/>
+			<brush name="banuta archway"/>
+			<brush name="banuta archway small"/>
+			<brush name="leaf wall archway"/>
+			<brush name="tree archway sample"/>
+			<brush name="tendril archway sample"/>
+			<brush name="bone archway sample"/>
+			<brush name="ice archway sample"/>
+		</terrain>
+	</tileset>
+
+	<tileset name="Walls - Details">
+		<terrain>
+			<brush name="barred marble window"/>
+			<brush name="marble window 1"/>
+			<brush name="marble window 2"/>
+			<brush name="marble window closed"/>
+			<brush name="marble frame round"/>
+			<brush name="marble frame square"/>
+			<brush name="blue djinn basin"/>
+			<brush name="green djinn basin"/>
+			<brush name="marble basin"/>
+			<brush name="empty ornament frame"/>
+			<brush name="oriental text wall"/>
+			<brush name="blue djinn ornament 1"/>
+			<brush name="blue djinn ornament 2"/>
+			<brush name="blue djinn ornament 3"/>
+			<brush name="blue djinn ornament 4"/>
+			<brush name="blue djinn ornament 5"/>
+			<brush name="green djinn ornament 1"/>
+			<brush name="green djinn ornament 2"/>
+			<brush name="green djinn ornament 3"/>
+			<brush name="green djinn ornament 4"/>
+			<brush name="green djinn ornament 5"/>
+			<brush name="cathedral wall window mosaic"/>
+			<brush name="cathedral wall window barred"/>
+			<brush name="cathedral wall window old"/>
+			<brush name="ruined cathedral wall window"/>
+			<brush name="ruined cathedral wall pattern"/>
+			<brush name="cathedral wall pattern 1"/>
+			<brush name="cathedral wall pattern 2"/>
+			<brush name="cathedral wall pattern 3"/>
+			<brush name="cathedral wall pattern 4"/>
+			<brush name="cathedral wall carving"/>
+			<brush name="cathedral window eagle"/>
+			<brush name="cathedral window cross"/>
+			<brush name="cathedral window hexagon"/>
+			<brush name="cathedral window saint"/>
+			<brush name="cathedral window priestess"/>
+			<brush name="cathedral window stars"/>
+			<brush name="cathedral window stars broken"/>
+			<brush name="cathedral window pillar"/>
+			<brush name="cathedral window pillar ruined"/>
+			<brush name="bamboo wall alt"/>
+			<brush name="bamboo window alt"/>
+			<brush name="wall carving medusa"/>
+			<brush name="wall carving lizard"/>
+			<brush name="wall carving footprint"/>
+			<brush name="frozen demon (ice wall)"/>
+			<brush name="frozen mammoth (ice wall)"/>
+			<brush name="frozen dragon (ice wall)"/>
+			<brush name="frozen behemoth (ice wall)"/>
+			<brush name="frozen plaguesmith (ice wall)"/>
+			<brush name="frozen ice golem (ice wall)"/>
+		</terrain>
+	</tileset>
+</materials>

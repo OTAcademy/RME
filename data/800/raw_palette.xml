@@ -1,0 +1,580 @@
+<materials>
+	<!-- removed in later versions -->
+	<tileset name="Borders (deprecated)">
+		<raw>
+			<item fromid="110" toid="193"/>
+			<item fromid="195" toid="230"/>
+			<item fromid="232" toid="279"/>
+			<item fromid="281" toid="292"/>
+			<item fromid="295" toid="350"/>
+			<item fromid="393" toid="404"/>
+			<item fromid="494" toid="597"/>
+			<item fromid="606" toid="617"/>
+			<item fromid="630" toid="669"/>
+			<item fromid="672" toid="707"/>
+			<item fromid="712" toid="723"/>
+			<item fromid="725" toid="776"/>
+			<item fromid="792" toid="803"/>
+			<item id="805"/>
+			<item fromid="807" toid="872"/>
+			<item fromid="879" toid="890"/>
+			<item fromid="3246" toid="3257"/>
+			<item fromid="3259" toid="3262"/>
+			<item fromid="3266" toid="3281"/>
+			<item fromid="3553" toid="3568"/>
+			<item fromid="3575" toid="3586"/>
+		</raw>
+	</tileset>
+
+	<!-- removed in later versions -->
+	<tileset name="Grounds (deprecated)">
+		<raw>
+			<item id="102"/>
+			<item id="105"/>
+			<item id="107"/>
+			<item fromid="490" toid="492"/>
+			<item fromid="602" toid="605"/>
+			<item fromid="618" toid="629"/>
+			<item id="3258"/>
+			<item fromid="3282" toid="3297"/>
+			<item fromid="4422" toid="4455"/>
+			<item fromid="4567" toid="4569"/>
+			<item fromid="4756" toid="4759"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Architecture">
+		<raw>
+			<item id="463"/>
+			<item fromid="1514" toid="1523"/>
+			<item fromid="1533" toid="1547"/>
+			<item id="1549"/>
+			<item id="1550"/>
+			<item id="1551"/>
+			<item id="1560"/>
+			<item id="1561"/>
+			<item fromid="1578" toid="1581"/>
+			<item fromid="3709" toid="3714"/>
+			<item id="3727"/>
+			<item id="3728"/>
+			<item id="3737"/>
+			<item id="3738"/>
+			<item fromid="3745" toid="3755"/>
+			<item id="3766"/>
+			<item id="3767"/>
+			<item id="3792"/>
+			<item id="3793"/>
+			<item id="3900"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Blank">
+		<raw>
+			<item fromid="4328" toid="4393"/>
+			<item fromid="4626" toid="4631"/>
+			<item id="4841"/>
+			<item id="4844"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Board Games">
+		<raw>
+			<item fromid="965" toid="1024"/>
+			<item fromid="2624" toid="2639"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Boats and Ships">
+		<raw>
+			<item fromid="1277" toid="1283"/>
+			<item fromid="3587" toid="3602"/>
+			<item id="4403"/>
+			<item fromid="4883" toid="4989"/>
+			<item fromid="4998" toid="5008"/>
+			<item fromid="5082" toid="5085"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Borders">
+		<raw>
+			<item fromid="356" toid="367"/>
+			<item fromid="371" toid="382"/>
+			<item fromid="434" toid="445"/>
+			<item fromid="449" toid="456"/>
+			<item fromid="477" toid="478"/>
+			<item fromid="487" toid="488"/>
+			<item fromid="778" toid="789"/>
+			<item fromid="891" toid="902"/>
+			<item fromid="3140" toid="3151"/>
+			<item fromid="3182" toid="3189"/>
+			<item id="3218"/>
+			<item fromid="3221" toid="3245"/>
+			<item fromid="3298" toid="3309"/>
+			<item fromid="4456" toid="4467"/>
+			<item fromid="4514" toid="4525"/>
+			<item fromid="4542" toid="4565"/>
+			<item fromid="4596" toid="4607"/>
+			<item fromid="4632" toid="4663"/>
+			<item fromid="4667" toid="4690"/>
+			<item fromid="4713" toid="4748"/>
+			<item fromid="4760" toid="4819"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Bridges">
+		<raw>
+			<item id="1284"/>
+			<item fromid="3756" toid="3765"/>
+			<item fromid="3768" toid="3791"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Carpets">
+		<raw>
+			<item fromid="1794" toid="1808"/>
+			<item fromid="4394" toid="4402"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Corpses">
+		<doodad_and_raw>
+			<item fromid="2806" toid="3121"/>
+			<item fromid="3128" toid="3134"/>
+			<item fromid="4251" toid="4327"/>
+			<item fromid="4992" toid="4994"/>
+			<item id="5014"/>
+		</doodad_and_raw>
+	</tileset>
+
+	<tileset name="Exterior">
+		<raw>
+			<item fromid="1360" toid="1384"/>
+			<item fromid="1406" toid="1428"/>
+			<item fromid="1479" toid="1486"/>
+			<item fromid="1662" toid="1665"/>
+			<item fromid="1742" toid="1745"/>
+			<item fromid="1900" toid="1908"/>
+			<item id="2180"/>
+			<item id="2247"/>
+			<item id="2248"/>
+			<item id="2249"/>
+			<item id="2555"/>
+			<item fromid="2585" toid="2588"/>
+			<item fromid="2606" toid="2623"/>
+			<item fromid="3122" toid="3127"/>
+			<item fromid="3689" toid="3696"/>
+			<item fromid="3743" toid="3744"/>
+			<item fromid="3802" toid="3804"/>
+			<item fromid="3844" toid="3851"/>
+			<item fromid="3867" toid="3873"/>
+			<item fromid="3882" toid="3897"/>
+			<item fromid="3977" toid="3980"/>
+			<item id="4404"/>
+			<item id="4875"/>
+			<item fromid="5025" toid="5044"/>
+			<item fromid="5074" toid="5079"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Grounds">
+		<raw>
+			<item id="100"/>
+			<item id="101"/>
+			<item id="103"/>
+			<item id="104"/>
+			<item id="106"/>
+			<item id="108"/>
+			<item id="109"/>
+			<item id="194"/>
+			<item id="231"/>
+			<item id="280"/>
+			<item fromid="351" toid="355"/>
+			<item id="368"/>
+			<item id="405"/>
+			<item id="406"/>
+			<item id="407"/>
+			<item id="412"/>
+			<item id="413"/>
+			<item id="414"/>
+			<item id="415"/>
+			<item id="419"/>
+			<item id="420"/>
+			<item id="424"/>
+			<item id="431"/>
+			<item id="448"/>
+			<item id="457"/>
+			<item id="458"/>
+			<item id="493"/>
+			<item fromid="598" toid="601"/>
+			<item id="670"/>
+			<item id="671"/>
+			<item fromid="708" toid="711"/>
+			<item id="724"/>
+			<item id="777"/>
+			<item id="790"/>
+			<item id="791"/>
+			<item id="804"/>
+			<item id="806"/>
+			<item fromid="918" toid="919"/>
+			<item id="1284"/>
+			<item id="3139"/>
+			<item fromid="3152" toid="3181"/>
+			<item fromid="3190" toid="3215"/>
+			<item id="3263"/>
+			<item id="3264"/>
+			<item id="3265"/>
+			<item fromid="4405" toid="4421"/>
+			<item fromid="4526" toid="4541"/>
+			<item id="4566"/>
+			<item fromid="4570" toid="4579"/>
+			<item id="4595"/>
+			<item fromid="4608" toid="4619"/>
+			<item fromid="4664" toid="4666"/>
+			<item fromid="4691" toid="4712"/>
+			<item fromid="4749" toid="4755"/>
+			<item fromid="4832" toid="4833"/>
+		</raw>
+	</tileset>
+
+	<tileset name="House Furniture">
+		<raw>
+			<item id="1442"/>
+			<item id="1446"/>
+			<item id="1447"/>
+			<item fromid="1460" toid="1465"/>
+			<item fromid="1476" toid="1478"/>
+			<item id="1614"/>
+			<item id="1615"/>
+			<item id="1616"/>
+			<item id="1619"/>
+			<item fromid="1650" toid="1653"/>
+			<item fromid="1658" toid="1661"/>
+			<item fromid="1666" toid="1677"/>
+			<item fromid="1714" toid="1717"/>
+			<item fromid="1724" toid="1741"/>
+			<item fromid="1747" toid="1753"/>
+			<item id="1770"/>
+			<item id="1774"/>
+			<item id="1775"/>
+			<item id="2034"/>
+			<item id="2064"/>
+			<item id="2065"/>
+			<item id="2094"/>
+			<item id="2095"/>
+			<item id="2098"/>
+			<item id="2101"/>
+			<item id="2105"/>
+			<item id="2106"/>
+			<item fromid="2116" toid="2119"/>
+			<item fromid="2581" toid="2584"/>
+			<item fromid="2601" toid="2605"/>
+			<item fromid="3805" toid="3821"/>
+			<item fromid="3832" toid="3835"/>
+			<item id="5046"/>
+			<item id="5055"/>
+			<item id="5056"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Interior">
+		<raw>
+			<item fromid="1602" toid="1613"/>
+			<item id="1617"/>
+			<item id="1618"/>
+			<item fromid="1620" toid="1649"/>
+			<item fromid="1654" toid="1657"/>
+			<item fromid="1694" toid="1713"/>
+			<item fromid="1718" toid="1723"/>
+			<item fromid="1754" toid="1769"/>
+			<item id="1771"/>
+			<item id="1772"/>
+			<item id="1773"/>
+			<item fromid="1776" toid="1793"/>
+			<item fromid="3822" toid="3831"/>
+			<item fromid="3836" toid="3843"/>
+			<item fromid="3852" toid="3860"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Magic Fields">
+		<raw>
+			<item fromid="1487" toid="1508"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Mountains">
+		<raw>
+			<item fromid="873" toid="878"/>
+			<item fromid="903" toid="919"/>
+			<item fromid="1071" toid="1083"/>
+			<item fromid="4468" toid="4513"/>
+			<item fromid="4826" toid="4827"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Musical Instruments">
+		<items_and_raw>
+			<item fromid="2070" toid="2079"/>
+			<item fromid="3951" toid="3953"/>
+		</items_and_raw>
+		<raw>
+			<item fromid="2080" toid="2085"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Nature">
+		<raw>
+			<item fromid="386" toid="391"/>
+			<item id="486"/>
+			<item fromid="1285" toid="1359"/>
+			<item fromid="1909" toid="1944"/>
+			<item fromid="2697" toid="2786"/>
+			<item id="2797"/>
+			<item fromid="3312" toid="3323"/>
+			<item fromid="3325" toid="3347"/>
+			<item fromid="3569" toid="3574"/>
+			<item fromid="3603" toid="3677"/>
+			<item fromid="3984" toid="4250"/>
+			<item fromid="4580" toid="4594"/>
+			<item fromid="4876" toid="4882"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Quest Assets">
+		<raw>
+			<item id="2317"/>
+			<item id="2318"/>
+			<item id="2319"/>
+			<item id="2320"/>
+			<item id="2321"/>
+			<item id="2325"/>
+			<item fromid="2327" toid="2341"/>
+			<item fromid="2344" toid="2354"/>
+			<item id="2356"/>
+			<item id="2359"/>
+			<item id="2360"/>
+			<item id="2362"/>
+			<item id="2363"/>
+			<item id="2364"/>
+			<item fromid="2367" toid="2375"/>
+			<item id="4838"/>
+			<item id="4839"/>
+			<item id="4840"/>
+			<item id="4842"/>
+			<item id="4843"/>
+			<item id="4845"/>
+			<item id="4846"/>
+			<item id="4847"/>
+			<item id="4848"/>
+			<item id="4849"/>
+			<item fromid="4851" toid="4874"/>
+			<item id="4995"/>
+			<item id="4996"/>
+			<item id="4997"/>
+			<item id="5089"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Roofs">
+		<raw>
+			<item fromid="920" toid="964"/>
+			<item fromid="3348" toid="3360"/>
+			<item id="5045"/>
+			<item fromid="5047" toid="5054"/>
+			<item id="5081"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Signs and Flags">
+		<raw>
+			<item fromid="1429" toid="1441"/>
+			<item id="1810"/>
+			<item id="1815"/>
+			<item fromid="1819" toid="1824"/>
+			<item id="4990"/>
+			<item id="4991"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Special">
+		<raw>
+			<!-- switch tiles -->
+			<item id="416"/>
+			<item id="417"/>
+			<item id="421"/>
+			<item id="422"/>
+			<item id="425"/>
+			<item id="426"/>
+			<item id="446"/>
+			<item id="447"/>
+
+			<!-- invisible walkable floor -->
+			<item id="460"/>
+
+			<!-- tomb fake wall (walkable) -->
+			<item id="464"/>
+			<item id="465"/>
+			<item id="466"/>
+			<item id="467"/>
+
+			<!-- magic tiles -->
+			<item id="471"/>
+			<item id="472"/>
+			<item id="473"/>
+			<item id="474"/>
+
+			<!-- scarab hole -->
+			<item id="489"/>
+
+			<!-- walkable lava and traps -->
+			<item fromid="1509" toid="1513"/>
+
+			<!-- invisible wall -->
+			<item id="1548"/>
+
+			<!-- writeable blackboards -->
+			<item id="1811"/>
+			<item id="1818"/>
+
+			<!-- lever -->
+			<item id="1945"/>
+			<item id="1946"/>
+
+			<!-- candelabrum, not decaying until moved -->
+			<item id="2057"/>
+
+			<!-- depot and post system -->
+			<item fromid="2589" toid="2599"/>
+
+			<!-- port hope depot tiles -->
+			<item id="3216"/>
+			<item id="3217"/>
+
+			<!-- cornucopia -->
+			<item id="3957"/>
+
+			<!-- old and used backpack -->
+			<item id="3960"/>
+
+			<!-- port hope mailbox -->
+			<item id="3981"/>
+
+			<!-- walkable water tiles -->
+			<item fromid="4620" toid="4625"/>
+			<item fromid="4820" toid="4825"/>
+			<item fromid="4828" toid="4831"/>
+
+			<!-- orichalcum pearl -->
+			<item id="5022"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Splash">
+		<raw>
+			<item fromid="2016" toid="2021"/>
+			<item fromid="2025" toid="2030"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Stairs">
+		<raw>
+			<item id="293"/>
+			<item id="294"/>
+			<item id="369"/>
+			<item id="370"/>
+			<item id="383"/>
+			<item id="384"/>
+			<item id="385"/>
+			<item id="392"/>
+			<item id="408"/>
+			<item id="409"/>
+			<item id="410"/>
+			<item id="411"/>
+			<item id="418"/>
+			<item id="423"/>
+			<item id="427"/>
+			<item id="428"/>
+			<item id="429"/>
+			<item id="430"/>
+			<item id="432"/>
+			<item id="433"/>
+			<item id="459"/>
+			<item id="461"/>
+			<item id="462"/>
+			<item id="468"/>
+			<item id="469"/>
+			<item id="470"/>
+			<item id="475"/>
+			<item id="476"/>
+			<item fromid="479" toid="485"/>
+			<item id="924"/>
+			<item fromid="1385" toid="1405"/>
+			<item fromid="1552" toid="1559"/>
+			<item fromid="3135" toid="3138"/>
+			<item id="3219"/>
+			<item id="3220"/>
+			<item id="3310"/>
+			<item id="3311"/>
+			<item id="3324"/>
+			<item fromid="3678" toid="3688"/>
+			<item fromid="4834" toid="4837"/>
+			<item id="5023"/>
+			<item id="5024"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Statues">
+		<raw>
+			<item id="1443"/>
+			<item id="1444"/>
+			<item id="1445"/>
+			<item fromid="1448" toid="1459"/>
+			<item fromid="1466" toid="1475"/>
+			<item fromid="3697" toid="3708"/>
+			<item fromid="3715" toid="3726"/>
+			<item fromid="3729" toid="3736"/>
+			<item fromid="3739" toid="3742"/>
+		</raw>
+	</tileset>
+
+	<tileset name="Wall Decorations">
+		<raw>
+			<item id="1809"/>
+			<item id="1812"/>
+			<item id="1813"/>
+			<item id="1814"/>
+			<item id="1816"/>
+			<item id="1817"/>
+			<item fromid="1825" toid="1844"/>
+			<item id="1846"/>
+			<item id="1847"/>
+			<item id="1849"/>
+			<item id="1850"/>
+			<item id="1855"/>
+			<item id="1856"/>
+			<item id="1858"/>
+			<item id="1859"/>
+			<item id="1861"/>
+			<item id="1862"/>
+			<item id="1864"/>
+			<item id="1865"/>
+			<item id="1867"/>
+			<item id="1868"/>
+			<item id="1870"/>
+			<item id="1871"/>
+			<item fromid="1873" toid="1876"/>
+			<item id="1878"/>
+			<item id="1879"/>
+			<item fromid="1882" toid="1899"/>
+			<item fromid="2037" toid="2040"/>
+			<item fromid="2058" toid="2061"/>
+			<item fromid="2066" toid="2069"/>
+			<item fromid="3861" toid="3866"/>
+			<item fromid="3874" toid="3881"/>
+			<item fromid="3898" toid="3899"/>
+			<item fromid="3943" toid="3950"/>
+			<item fromid="5016" toid="5021"/>
+			<item fromid="5057" toid="5060"/>
+		</raw>
+	</tileset>
+</materials>
