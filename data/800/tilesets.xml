@@ -70,6 +70,27 @@
 			<brush name="wooden roof, left"/>
 			<brush name="wooden roof, vertical"/>
 			<brush name="wooden roof, right"/>
+			<brush name="marquee rw ver 1"/>
+			<brush name="marquee yb ver 1"/>
+			<brush name="marquee g ver 1"/>
+			<brush name="marquee b ver 1"/>
+			<item id="5313"/>
+			<brush name="marquee rw ver 2"/>
+			<brush name="marquee yb ver 2"/>
+			<brush name="marquee g ver 2"/>
+			<brush name="marquee b ver 2"/>
+			<item id="6994"/>
+			<brush name="marquee rw hor 1"/>
+			<brush name="marquee yb hor 1"/>
+			<brush name="marquee g hor 1"/>
+			<brush name="marquee b hor 1"/>
+			<item id="6889"/>
+			<brush name="marquee rw hor 2"/>
+			<brush name="marquee yb hor 2"/>
+			<brush name="marquee g hor 2"/>
+			<brush name="marquee b hor 2"/>
+			<item id="6173"/>
+
 		</terrain>
 	</tileset>
 
@@ -137,7 +158,7 @@
 			<item id="3138"/>
 
 			<!-- stairs -->
-			<item id="1385"/>
+			<brush name="white stone stairs up"/>
 
 			<!-- tile trapdoors -->
 			<brush name="white stone trapdoor"/>
@@ -174,6 +195,9 @@
 
 			<!-- bamboo -->
 			<brush name="bamboo ramp"/>
+			
+			<!-- 7.8+ -->
+			<brush name="wooden stairs"/>
 		</terrain>
 	</tileset>
 

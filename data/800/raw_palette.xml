@@ -65,6 +65,8 @@
 			<item id="3792"/>
 			<item id="3793"/>
 			<item id="3900"/>
+			<item id="5254"/>
+			<item id="5255"/>
 		</raw>
 	</tileset>
 
@@ -74,6 +76,7 @@
 			<item fromid="4626" toid="4631"/>
 			<item id="4841"/>
 			<item id="4844"/>
+			<item id="5090"/>
 		</raw>
 	</tileset>
 
@@ -133,6 +136,7 @@
 		<raw>
 			<item fromid="1794" toid="1808"/>
 			<item fromid="4394" toid="4402"/>
+			<item fromid="5569" toid="5595"/>
 		</raw>
 	</tileset>
 
@@ -143,6 +147,34 @@
 			<item fromid="4251" toid="4327"/>
 			<item fromid="4992" toid="4994"/>
 			<item id="5014"/>
+			<item fromid="5522" toid="5538"/>
+			<item fromid="5540" toid="5542"/>
+			<item fromid="5565" toid="5568"/>
+			<item fromid="5625" toid="5630"/>
+			<item fromid="5666" toid="5668"/>
+			<item fromid="5688" toid="5690"/>
+			<item fromid="5727" toid="5729"/>
+			<item id="5762"/>
+			<item id="5765"/>
+			<item id="5766"/>
+			<item id="5767"/>
+			<item fromid="5931" toid="5936"/>
+			<item fromid="5960" toid="6084"/>
+			<item fromid="6302" toid="6351"/>
+			<item fromid="6354" toid="6355"/>
+			<item fromid="6364" toid="6367"/>
+			<item id="6516"/>
+			<item fromid="6520" toid="6522"/>
+			<item id="6560"/>
+			<item fromid="7091" toid="7094"/>
+			<item fromid="7256" toid="7258"/>
+			<item id="7260"/>
+			<item fromid="7282" toid="7285"/>
+			<item fromid="7316" toid="7341"/>
+			<item fromid="7344" toid="7347"/>
+			
+			<!-- slain arena boss -->
+			<item id="7349"/>
 		</doodad_and_raw>
 	</tileset>
 
@@ -337,6 +369,8 @@
 			<item fromid="3984" toid="4250"/>
 			<item fromid="4580" toid="4594"/>
 			<item fromid="4876" toid="4882"/>
+			<item fromid="5092" toid="5096"/>
+			<item fromid="5156" toid="5157"/>
 		</raw>
 	</tileset>
 
@@ -382,6 +416,7 @@
 			<item id="5045"/>
 			<item fromid="5047" toid="5054"/>
 			<item id="5081"/>
+			<item fromid="5158" toid="5253"/>
 		</raw>
 	</tileset>
 
@@ -520,6 +555,7 @@
 			<item fromid="4834" toid="4837"/>
 			<item id="5023"/>
 			<item id="5024"/>
+			<item fromid="5258" toid="5260"/>
 		</raw>
 	</tileset>
 

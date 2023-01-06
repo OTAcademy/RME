@@ -120,6 +120,7 @@
 		<items>
 			<item fromid="2666" toid="2696"/>
 			<item fromid="2787" toid="2796"/>
+			<item id="5097"/>
 		</items>
 	</tileset>
 
@@ -170,6 +171,7 @@
 			<item fromid="2578" toid="2580"/>
 			<item id="2600"/>
 			<item id="3976"/>
+			<item id="5091"/>
 		</items>
 	</tileset>
 

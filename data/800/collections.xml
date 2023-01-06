@@ -89,6 +89,24 @@
 			<item id="3128"/>
 			<item id="3130"/>
 			<item id="3104"/>
+			<item id="6560"/>
+			
+			<!-- to do: 7.8 stuff
+				cathedral wall
+				barred window
+				ball on chains
+				iron maiden
+				pillory
+				barred window
+				shackles
+				wall chains
+				straw
+				cot
+				straw mat
+				pulley
+				bars
+				balista
+			-->
 		</collections>
 	</tileset>
 	
@@ -342,6 +360,38 @@
 			<brush name="wooden bars"/>
 			<brush name="wooden bars_1"/>
 			<brush name="wooden bars_2"/>
+		</collections>
+	</tileset>
+	
+	<tileset name="Tropical">
+		<collections>
+			<brush name="sea"/>
+			<brush name="walkable sea"/>
+			<brush name="sand"/>
+			<brush name="jungle grass"/>
+			<brush name="large mossy rocks"/>
+			<brush name="small mossy rocks"/>
+			<item id="1353"/>
+			<brush name="cathedral brick shards"/>
+			<brush name="flowery wall"/>
+			<brush name="mossy wall"/>
+			<brush name="mossy wall_1"/>
+			<item id="3985"/>
+			<brush name="thorn bush"/>
+			<brush name="thorn bush_1"/>
+			<brush name="palm trees"/>
+			<brush name="banana trees"/>
+			<brush name="mango trees"/>
+			<brush name="peach trees"/>
+			<brush name="straw"/>
+			<brush name="fern trees"/>
+			<item id="4015"/>
+			<brush name="purple kiss plants"/>
+			<brush name="small jungle plants"/>
+			<brush name="brown mushroom small"/>
+			<brush name="small mushroom"/>
+			<item id="4208"/>
+			<brush name="mossy spots"/>
 		</collections>
 	</tileset>
 </materials>

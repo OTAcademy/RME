@@ -5295,10 +5295,23 @@
 	</brush>
 
 	<brush name="palm trees" type="doodad" server_lookid="2725" draggable="true" on_blocking="false" thickness="12/100">
-		<item id="2725" chance="10"/>
-		<item id="2726" chance="10"/>
+		<item id="2725" chance="50"/>
+		<item id="2726" chance="25"/>
+		<item id="5096" chance="25"/>
+	</brush>
+	
+	<brush name="banana trees" type="doodad" server_lookid="5094" draggable="true" on_blocking="false" thickness="12/100">
+		<item id="5092" chance="25"/>
+		<item id="5093" chance="25"/>
+		<item id="5094" chance="25"/>
+		<item id="5095" chance="25"/>
 	</brush>
 
+	<brush name="mango trees" type="doodad" server_lookid="5157" draggable="true" on_blocking="false" thickness="12/100">
+		<item id="5157" chance="50"/>
+		<item id="5156" chance="50"/>
+	</brush>
+	
 	<brush name="meadow flowers" type="doodad" server_lookid="2743" draggable="true" on_blocking="true" thickness="30/100">
 		<item id="2740" chance="10"/>
 		<item id="2741" chance="10"/>
@@ -6072,6 +6085,24 @@
 		</carpet>
 	</brush>
 	
+	<brush name="white stone stairs up" type="doodad" server_lookid="1385" draggable="true" on_blocking="false" thickness="100/100">
+		<alternate>
+			<item id="1385" chance="10"/>
+		</alternate>
+		<alternate>
+			<item id="5258" chance="10"/>
+		</alternate>
+	</brush>
+	
+	<brush name="wooden stairs" type="doodad" server_lookid="5259" draggable="true" on_blocking="false" thickness="100/100">
+		<alternate>
+			<item id="5259" chance="10"/>
+		</alternate>
+		<alternate>
+			<item id="5260" chance="10"/>
+		</alternate>
+	</brush>
+	
 	<!-- tilesets -->
 	<tileset name="Architecture">
 		<doodad>
@@ -6409,6 +6440,8 @@
 			<brush name="small spiky cactus"/>
 			<brush name="smooth cactus"/>
 			<brush name="palm trees"/>
+			<brush name="banana trees"/>
+			<brush name="mango trees"/>
 			<item id="2739"/>
 			<brush name="meadow flowers"/>
 			<item id="2748"/>

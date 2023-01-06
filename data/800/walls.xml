@@ -2872,6 +2872,42 @@
 			<item fromid="3958" toid="3959"/>
 			<item fromid="5009" toid="5013"/>
 			<item fromid="5061" toid="5073"/>
+			<item fromid="5098" toid="5155"/>
+			<item id="5256"/>
+			<item id="5257"/>
+			<item fromid="5261" toid="5295"/>
+			<item fromid="5303" toid="5331"/>
+			<item id="5400"/>
+			<item id="5401"/>
+			<item id="5478"/>
+			<item id="5479"/>
+			<item fromid="5515" toid="5520"/>
+			<item fromid="5732" toid="5737"/>
+			<item id="5745"/>
+			<item id="5746"/>
+			<item id="5748"/>
+			<item id="5749"/>
+			<!-- quest assets
+			<item id="6116"/>
+			<item id="6117"/>
+			<item fromid="6289" toid="6290"/>
+			-->
+			<item fromid="6133" toid="6159"/>
+			<item fromid="6175" toid="6179"/>
+			<item fromid="6192" toid="6209"/>
+			<item fromid="6232" toid="6266"/>
+			<item fromid="6268" toid="6270"/>
+			<item fromid="6275" toid="6276"/>
+			<item fromid="6281" toid="6284"/>
+			<item fromid="6395" toid="6422"/>
+			<item fromid="6436" toid="6473"/>
+			<item fromid="6773" toid="6803"/>
+			<item fromid="6839" toid="6867"/>
+			<item fromid="6882" toid="6885"/>
+			<item fromid="6891" toid="6908"/>
+			<item fromid="7025" toid="7052"/>
+			<item fromid="7054" toid="7057"/>
+			<item fromid="7143" toid="7144"/>
 		</raw>
 	</tileset>
 </materials>

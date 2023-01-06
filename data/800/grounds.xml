@@ -1062,4 +1062,108 @@
 		<border align="outer" to="none" id="20"/>
 		<border align="outer" id="20"/>
 	</brush>
+	
+	<brush name="marquee rw hor 1" type="ground" server_lookid="5159" z-order="9000">
+		<item id="5159" chance="1000"/>
+
+		<border align="outer" to="none" id="56"/>
+	</brush>
+	
+	<brush name="marquee rw hor 2" type="ground" server_lookid="5160" z-order="9000">
+		<item id="5160" chance="1000"/>
+
+		<border align="outer" to="none" id="57"/>
+		<friend name="marquee rw hor 1"/>
+	</brush>
+	
+	<brush name="marquee yb hor 1" type="ground" server_lookid="5177" z-order="9000">
+		<item id="5177" chance="1000"/>
+
+		<border align="outer" to="none" id="58"/>
+	</brush>
+	
+	<brush name="marquee yb hor 2" type="ground" server_lookid="5174" z-order="9000">
+		<item id="5174" chance="1000"/>
+
+		<border align="outer" to="none" id="59"/>
+		<friend name="marquee yb hor 1"/>
+	</brush>
+	
+	<brush name="marquee g hor 1" type="ground" server_lookid="5210" z-order="9000">
+		<item id="5210" chance="1000"/>
+
+		<border align="outer" to="none" id="60"/>
+	</brush>
+	
+	<brush name="marquee g hor 2" type="ground" server_lookid="5213" z-order="9000">
+		<item id="5213" chance="1000"/>
+
+		<border align="outer" to="none" id="61"/>
+		<friend name="marquee g hor 1"/>
+	</brush>
+	
+	<brush name="marquee b hor 1" type="ground" server_lookid="5234" z-order="9000">
+		<item id="5234" chance="1000"/>
+
+		<border align="outer" to="none" id="62"/>
+	</brush>
+	
+	<brush name="marquee b hor 2" type="ground" server_lookid="5237" z-order="9000">
+		<item id="5237" chance="1000"/>
+
+		<border align="outer" to="none" id="63"/>
+		<friend name="marquee b hor 1"/>
+	</brush>
+	
+	<brush name="marquee rw ver 1" type="ground" server_lookid="5186" z-order="9000">
+		<item id="5186" chance="1000"/>
+
+		<border align="outer" to="none" id="64"/>
+	</brush>
+	
+	<brush name="marquee rw ver 2" type="ground" server_lookid="5189" z-order="9000">
+		<item id="5189" chance="1000"/>
+
+		<border align="outer" to="none" id="65"/>
+		<friend name="marquee rw ver 1"/>
+	</brush>
+	
+	<brush name="marquee yb ver 1" type="ground" server_lookid="5199" z-order="9000">
+		<item id="5199" chance="1000"/>
+
+		<border align="outer" to="none" id="66"/>
+	</brush>
+	
+	<brush name="marquee yb ver 2" type="ground" server_lookid="5200" z-order="9000">
+		<item id="5200" chance="1000"/>
+
+		<border align="outer" to="none" id="67"/>
+		<friend name="marquee yb ver 1"/>
+	</brush>
+	
+	<brush name="marquee g ver 1" type="ground" server_lookid="5223" z-order="9000">
+		<item id="5223" chance="1000"/>
+
+		<border align="outer" to="none" id="68"/>
+	</brush>
+	
+	<brush name="marquee g ver 2" type="ground" server_lookid="5224" z-order="9000">
+		<item id="5224" chance="1000"/>
+
+		<border align="outer" to="none" id="69"/>
+		<friend name="marquee g ver 1"/>
+	</brush>
+	
+	<brush name="marquee b ver 1" type="ground" server_lookid="5247" z-order="9000">
+		<item id="5247" chance="1000"/>
+
+		<border align="outer" to="none" id="70"/>
+	</brush>
+	
+	<brush name="marquee b ver 2" type="ground" server_lookid="5248" z-order="9000">
+		<item id="5248" chance="1000"/>
+
+		<border align="outer" to="none" id="71"/>
+		<friend name="marquee b ver 1"/>
+	</brush>
 </materials>
