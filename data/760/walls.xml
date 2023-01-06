@@ -1833,6 +1833,15 @@
 		</table>
 	</brush>
 
+	<brush name="palisade handle" type="doodad" server_lookid="3523" draggable="true" on_blocking="true" thickness="100/100">
+		<alternate>
+			<item id="3523" chance="100"/>
+		</alternate>
+		<alternate>
+			<item id="3524" chance="100"/>
+		</alternate>
+	</brush>
+	
 	<tileset name="Walls">
 		<terrain>
 			<brush name="mountain wall"/>
@@ -1880,6 +1889,7 @@
 			<brush name="palisade_6"/>
 			<brush name="palisade_7"/>
 			<brush name="palisade_8"/>
+			<brush name="palisade handle"/>
 			<brush name="wooden bars"/>
 			<brush name="wooden bars_1"/>
 			<brush name="wooden bars_2"/>
