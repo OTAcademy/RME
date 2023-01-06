@@ -2858,7 +2858,7 @@
 		</alternate>
 	</brush>
 
-	<brush name="ancient fountain - on" type="doodad" server_lookid="3729" draggable="true" on_blocking="false" thickness="100/100">
+	<brush name="ancient fountain" type="doodad" server_lookid="3733" draggable="true" on_blocking="false" thickness="100/100">
 		<alternate>
 			<composite chance="10">
 				<tile x="0" y="0"> <item id="3733"/> </tile>
@@ -2873,25 +2873,6 @@
 				<tile x="0" y="1"> <item id="3731"/> </tile>
 				<tile x="1" y="0"> <item id="3730"/> </tile>
 				<tile x="1" y="1"> <item id="3732"/> </tile>
-			</composite>
-		</alternate>
-	</brush>
-
-	<brush name="ancient fountain - off" type="doodad" server_lookid="3733" draggable="true" on_blocking="false" thickness="100/100">
-		<alternate>
-			<composite chance="10">
-				<tile x="0" y="0"> <item id="3729"/> </tile>
-				<tile x="0" y="1"> <item id="3731"/> </tile>
-				<tile x="1" y="0"> <item id="3730"/> </tile>
-				<tile x="1" y="1"> <item id="3732"/> </tile>
-			</composite>
-		</alternate>
-		<alternate>
-			<composite chance="10">
-				<tile x="0" y="0"> <item id="3733"/> </tile>
-				<tile x="0" y="1"> <item id="3735"/> </tile>
-				<tile x="1" y="0"> <item id="3734"/> </tile>
-				<tile x="1" y="1"> <item id="3736"/> </tile>
 			</composite>
 		</alternate>
 	</brush>
@@ -5871,8 +5852,7 @@
 			<brush name="marble fountain - off"/>
 			<item id="1378"/>
 			<brush name="water well"/>
-			<brush name="ancient fountain - on"/>
-			<brush name="ancient fountain - off"/>
+			<brush name="ancient fountain"/>
 			<brush name="lava fountain"/>
 			<brush name="draw well"/>
 			<brush name="altar"/>

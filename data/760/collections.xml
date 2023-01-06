@@ -120,6 +120,7 @@
 			<brush name="mountain rocks"/>
 			<brush name="small mountain rocks"/>
 			<brush name="cathedral brick shards"/>
+			<brush name="limestone rocks"/>
 			<brush name="dragon skeleton"/>
 			<brush name="large spiky cactus"/>
 			<brush name="small spiky cactus"/>
@@ -196,9 +197,148 @@
 		</collections>
 	</tileset>
 
+	<tileset name="Forest">
+		<collections>
+			<brush name="sea"/>
+			<brush name="walkable sea"/>
+			<brush name="swamp"/>
+			<brush name="grass"/>
+			<brush name="grass closed stone pile"/>
+			<brush name="grass pitfall"/>
+			<brush name="grass pitfall (always open)"/>
+			<brush name="dirt"/>
+			<brush name="drawbridge"/>
+			<brush name="mountain rocks"/>
+			<brush name="small mountain rocks"/>
+			<brush name="very small rocks"/>
+			<item id="1304"/>
+			<item id="1353"/>
+			<brush name="large mossy rocks"/>
+			<brush name="small mossy rocks"/>
+			<brush name="limestone rocks"/>
+			<brush name="waterfall"/>
+			<brush name="common forest trees"/>
+			<brush name="thick forest trees"/>
+			<brush name="colorful forest trees"/>
+			<item id="2785"/>
+			<brush name="forest bushes"/>
+			<item id="2699"/>
+			<item id="2702"/>
+			<brush name="dead trees"/>
+			<brush name="dead trees 2"/>
+			<brush name="swamp grass"/>
+			<brush name="swamp plants"/>
+			<item id="2783"/>
+			<item id="2784"/>
+			<brush name="brown mushroom small"/>
+			<brush name="small mushroom"/>
+			<item fromid="2787" toid="2796"/>
+			<item id="3871"/>
+			<item id="3872"/>
+			<item id="3873"/>
+			<item fromid="1421" toid="1426"/>
+		</collections>
+	</tileset>
+	
 	<tileset name="Jungle">
 		<collections>
-		
+			<brush name="sea"/>
+			<brush name="walkable sea"/>
+			<brush name="dark swamp"/>
+			<brush name="jungle grass"/>
+			<brush name="jungle dirt"/>
+			<brush name="mountain rocks"/>
+			<brush name="small mountain rocks"/>
+			<brush name="very small rocks"/>
+			<item id="1304"/>
+			<item id="1353"/>
+			<brush name="large mossy rocks"/>
+			<brush name="small mossy rocks"/>
+			<brush name="waterfall"/>
+			<brush name="mossy wall"/>
+			<brush name="mossy wall_1"/>
+			<item id="3310"/>
+			<item id="3324"/>
+			<brush name="bug trail"/>
+			<item id="3323"/>
+			<item id="3985"/>
+			<brush name="thorn bush"/>
+			<brush name="thorn bush_1"/>
+			<brush name="giant tree"/>
+			<brush name="liana"/>
+			<brush name="giant tree root"/>
+			<brush name="grass drift"/>
+			<brush name="fallen tree"/>
+			<brush name="jungle vines"/>
+			<brush name="mossy fallen tree"/>
+			<brush name="tree crown"/>
+			<item id="4875"/>
+			<brush name="swamp grass"/>
+			<brush name="peach trees"/>
+			<brush name="fern trees"/>
+			<item id="4015"/>
+			<brush name="jungle flora"/>
+			<brush name="purple kiss plants"/>
+			<brush name="small jungle plants"/>
+			<brush name="large leaves"/>
+			<brush name="bamboo plants"/>
+			<brush name="tall bamboo plants"/>
+			<brush name="jungle giant tree"/>
+			<brush name="jungle giant tree vines"/>
+			<brush name="monkey tail"/>
+			<brush name="small jungle flowers"/>
+			<brush name="giant rose"/>
+			<brush name="bell plants"/>
+			<brush name="pearl flowers"/>
+			<brush name="brown mushroom large"/>
+			<brush name="brown mushroom small"/>
+			<brush name="moldy brown mushroom large"/>
+			<brush name="slime table mushroom"/>
+			<brush name="small mushroom"/>
+			<brush name="glimmer cap mushroom"/>
+			<brush name="mossy spots"/>
+			<item id="4208"/>
+			<brush name="ancient fountain"/>
+			<item id="3802"/>
+			<item id="3803"/>
+			<item id="3804"/>
+			<brush name="hammock"/>
+			<brush name="brown bamboo roof"/>
+			<brush name="dark wooden floor"/>
+			<item id="3216"/>
+			<item fromid="3135" toid="3138"/>
+			<item id="3678"/>
+			<brush name="bamboo ramp"/>
+			<brush name="rope bridge"/>
+			<brush name="bamboo columns (rotatable)"/>
+			<brush name="bamboo wall"/>
+			<brush name="bamboo wall alt"/>
+			<brush name="bamboo window alt"/>
+			<brush name="bamboo palisade"/>
+			<brush name="banuta archway"/>
+			<brush name="banuta archway small"/>
+			<brush name="stone wall_5"/>
+			<brush name="stone wall_6"/>
+			<brush name="stone wall_7"/>
+			<brush name="stone wall_8"/>
+			<brush name="broken stone wall"/>
+			<brush name="wall carving medusa"/>
+			<brush name="wall carving lizard"/>
+			<brush name="wall carving footprint"/>
+			<brush name="leaf wall archway"/>
+			<brush name="grass wall"/>
+			<brush name="palisade"/>
+			<brush name="palisade_1"/>
+			<brush name="palisade_2"/>
+			<brush name="palisade_3"/>
+			<brush name="palisade_4"/>
+			<brush name="palisade_5"/>
+			<brush name="palisade_6"/>
+			<brush name="palisade_7"/>
+			<brush name="palisade_8"/>
+			<brush name="wooden bars"/>
+			<brush name="wooden bars_1"/>
+			<brush name="wooden bars_2"/>
 		</collections>
-	</tileset>		
+	</tileset>
 </materials>
