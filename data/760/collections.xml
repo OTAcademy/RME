@@ -101,6 +101,7 @@
 			<brush name="sand"/>
 			<brush name="sand closed stone pile"/>
 			<brush name="sandstone"/>
+			<brush name="dark sandstone"/>
 			<brush name="dark tiled sandstone"/>
 			<brush name="tiled sandstone floor"/>
 			<brush name="light tiled stone floor"/>
