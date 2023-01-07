@@ -108,6 +108,9 @@ void Tileset::loadCategory(pugi::xml_node node, wxArrayString &warnings)
 	} else if (nodeName == "collections_and_raw") {
 		category = getCategory(TILESET_COLLECTION);
 		subCategory = getCategory(TILESET_RAW);
+	} else if (nodeName == "collections_and_terrain") {
+		category = getCategory(TILESET_COLLECTION);
+		subCategory = getCategory(TILESET_TERRAIN);
 	} else if(nodeName == "doodad_and_raw") {
 		category = getCategory(TILESET_DOODAD);
 		subCategory = getCategory(TILESET_RAW);
