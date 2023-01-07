@@ -2785,6 +2785,29 @@
 		</wall>
 	</brush>
 
+	<brush name="damaged ship cabin wall" type="wall" server_lookid="5452">
+		<wall type="horizontal">
+			<item id="5452" chance="1"/>
+		</wall>
+		<wall type="vertical">
+			<item id="5450" chance="1"/>
+		</wall>
+		<wall type="corner">
+			<item id="5453" chance="1"/>
+		</wall>
+		<friend name="ship cabin wall" redirect="true"/>
+	</brush>
+
+	<brush name="damaged ship railling" type="wall" server_lookid="5454">
+		<wall type="horizontal">
+			<item id="5454" chance="1"/>
+		</wall>
+		<wall type="vertical">
+			<item id="5455" chance="1"/>
+		</wall>
+		<friend name="ship railing" redirect="true"/>
+	</brush>
+	
 	<tileset name="Walls">
 		<terrain>
 			<!-- added in 7.6 and before -->

@@ -195,16 +195,21 @@
 			<item fromid="2606" toid="2623"/>
 			<item fromid="3122" toid="3127"/>
 			<item fromid="3689" toid="3696"/>
+			
+			<!-- 3744 gets replaced to immobile skull candle in later updates -->
+			<!-- so use 4404 as lit variant instead -->
 			<item fromid="3743" toid="3744"/>
+			<item id="4404"/>
+
 			<item fromid="3802" toid="3804"/>
 			<item fromid="3844" toid="3851"/>
 			<item fromid="3867" toid="3873"/>
 			<item fromid="3882" toid="3897"/>
 			<item fromid="3977" toid="3980"/>
-			<item id="4404"/>
 			<item id="4875"/>
-			<item fromid="5025" toid="5044"/>
+			
 			<item fromid="5074" toid="5079"/>
+			<item fromid="5296" toid="5302"/>
 		</raw>
 	</tileset>
 
@@ -376,12 +381,15 @@
 
 	<tileset name="Quest Assets">
 		<raw>
+			<!-- 7.0 mainland quests -->
 			<item id="2317"/>
 			<item id="2318"/>
 			<item id="2319"/>
 			<item id="2320"/>
 			<item id="2321"/>
 			<item id="2325"/>
+			
+			<!-- postman, djinn, hota -->
 			<item fromid="2327" toid="2341"/>
 			<item fromid="2344" toid="2354"/>
 			<item id="2356"/>
@@ -390,7 +398,11 @@
 			<item id="2362"/>
 			<item id="2363"/>
 			<item id="2364"/>
+			
+			<!-- tomb puzzle instruments -->
 			<item fromid="2367" toid="2375"/>
+
+			<!-- banuta and explorer society quest -->
 			<item id="4838"/>
 			<item id="4839"/>
 			<item id="4840"/>
@@ -406,6 +418,15 @@
 			<item id="4996"/>
 			<item id="4997"/>
 			<item id="5089"/>
+			
+			<!-- bamboo lamps, different client ids, unknown purpose -->
+			<item fromid="5025" toid="5044"/>
+			<item fromid="5402" toid="5404"/>
+
+			<!-- druid addon quest -->
+			<item id="5659"/>
+			<item id="5687"/>
+			
 		</raw>
 	</tileset>
 
@@ -428,6 +449,7 @@
 			<item fromid="1819" toid="1824"/>
 			<item id="4990"/>
 			<item id="4991"/>
+			<item fromid="5332" toid="5389"/>
 		</raw>
 	</tileset>
 

@@ -95,18 +95,51 @@
 	</tileset>
 
 	<tileset name="Sea">
-		<terrain>
+		<collections_and_terrain>
+			<!-- land -->
 			<brush name="sea"/>
 			<brush name="walkable sea"/>
 			<brush name="drawbridge"/>
+			<brush name="drawbridge plank (1x3)"/>
+			<brush name="drawbridge plank (2x3)"/>
+			
+			<!-- underwater -->
+			<brush name="ventilation grille (normal)"/>
+			<brush name="ventilation grille (underwater pickhole)"/>
+			<item id="5460"/>
+			<brush name="wooden floor (underwater)"/>
+			<brush name="dark wooden floor (underwater)"/>
+			<brush name="ocean floor"/>
+			<brush name="bubbles"/>
+			<brush name="reef stones"/>
+			<brush name="coral reef"/>
+			<item id="5421"/>
+			<brush name="sea organisms"/>
+			<brush name="sea shells"/>
+			<item id="5554"/>
+			
+			<!-- ship walls -->
 			<brush name="ship cabin wall"/>
+			<brush name="damaged ship cabin wall"/>
 			<brush name="ship railing"/>
+			<brush name="damaged ship railling"/>
+			<brush name="damaged ship hull (rotatable)"/>
+
+			<!-- damaged ship parts -->
 			<brush name="rudder of the boat"/>
 			<brush name="steering wheel"/>
+			<brush name="broken steering wheel"/>
+			<brush name="damaged mast"/>
+			<brush name="damaged mast2"/>
+			<brush name="ship ruins"/>
+			<brush name="ship anchor"/>
+			<item id="5444"/>
+			
+			<!-- complete ships -->
 			<brush name="fishing boat"/>
 			<brush name="big transport ship"/>
 			<brush name="big ship (alt)"/>
-		</terrain>
+		</collections_and_terrain>
 	</tileset>
 
 	<tileset name="Snow">

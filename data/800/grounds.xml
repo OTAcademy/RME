@@ -1166,4 +1166,32 @@
 		<border align="outer" to="none" id="71"/>
 		<friend name="marquee b ver 1"/>
 	</brush>
+	
+	<brush name="wooden floor (underwater)" type="ground" server_lookid="5743" z-order="1">
+		<item id="5743" chance="100"/>
+	</brush>
+	
+	<brush name="dark wooden floor (underwater)" type="ground" server_lookid="5744" z-order="1">
+		<item id="5744" chance="100"/>
+	</brush>
+	
+	<brush name="ventilation grille (normal)" type="ground" server_lookid="4972" z-order="1">
+		<item id="4972" chance="100"/>
+	</brush>
+	
+	<brush name="ventilation grille (underwater pickhole)" type="ground" server_lookid="5764" z-order="1">
+		<item id="5764" chance="100"/>
+		<friend name="all"/>
+	</brush>
+	
+	<brush name="ocean floor" type="ground" server_lookid="5410" z-order="3000">
+		<item id="5405" chance="10"/>
+		<item id="5406" chance="10"/>
+		<item id="5407" chance="10"/>
+		<item id="5408" chance="10"/>
+		<item id="5409" chance="10"/>
+		<item id="5410" chance="10"/>
+
+		<border align="outer" id="72"/>
+	</brush>
 </materials>
