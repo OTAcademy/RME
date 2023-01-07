@@ -5,7 +5,8 @@
 			<brush name="lava"/>
 			<brush name="walkable lava"/>
 			<brush name="clear water"/>
-			<brush name="earth"/>
+			<brush name="earth (soft)"/>
+			<brush name="earth (hard)"/>
 			<brush name="dirt"/>
 			<brush name="light dirt"/>
 			<brush name="cave"/>

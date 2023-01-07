@@ -220,7 +220,7 @@
 			<specific>
 				<conditions>
 					<match_border id="49" edge="s"/>
-					<match_border id="42"  edge="e"/>
+					<match_border id="42" edge="e"/>
 				</conditions>
 				<actions>
 					<replace_border id="42" edge="e" with="4659"/>
@@ -230,7 +230,7 @@
 			<specific>
 				<conditions>
 					<match_border id="49" edge="n"/>
-					<match_border id="42"  edge="e"/>
+					<match_border id="42" edge="e"/>
 				</conditions>
 				<actions>
 					<replace_border id="42" edge="e" with="4663"/>
@@ -240,7 +240,7 @@
 			<specific>
 				<conditions>
 					<match_border id="49" edge="s"/>
-					<match_border id="42"  edge="w"/>
+					<match_border id="42" edge="w"/>
 				</conditions>
 				<actions>
 					<replace_border id="42" edge="w" with="4658"/>
@@ -250,7 +250,7 @@
 			<specific>
 				<conditions>
 					<match_border id="49" edge="n"/>
-					<match_border id="42"  edge="w"/>
+					<match_border id="42" edge="w"/>
 				</conditions>
 				<actions>
 					<replace_border id="42" edge="w" with="4662"/>
@@ -260,7 +260,7 @@
 			<specific>
 				<conditions>
 					<match_border id="49" edge="e"/>
-					<match_border id="42"  edge="s"/>
+					<match_border id="42" edge="s"/>
 				</conditions>
 				<actions>
 					<replace_border id="42" edge="s" with="4657"/>
@@ -270,7 +270,7 @@
 			<specific>
 				<conditions>
 					<match_border id="49" edge="w"/>
-					<match_border id="42"  edge="s"/>
+					<match_border id="42" edge="s"/>
 				</conditions>
 				<actions>
 					<replace_border id="42" edge="s" with="4661"/>
@@ -280,7 +280,7 @@
 			<specific>
 				<conditions>
 					<match_border id="49" edge="e"/>
-					<match_border id="42"  edge="n"/>
+					<match_border id="42" edge="n"/>
 				</conditions>
 				<actions>
 					<replace_border id="42" edge="n" with="4656"/>
@@ -290,7 +290,7 @@
 			<specific>
 				<conditions>
 					<match_border id="49" edge="w"/>
-					<match_border id="42"  edge="n"/>
+					<match_border id="42" edge="n"/>
 				</conditions>
 				<actions>
 					<replace_border id="42" edge="n" with="4660"/>
@@ -346,14 +346,480 @@
 		<friend name="sand closed stone pile"/>
 	</brush>
 
-	<brush name="earth" type="ground" lookid="101" z-order="9500" solo_optional="true">
+	<brush name="earth (soft)" type="ground" server_lookid="101" z-order="10500">
 		<item id="101" chance="1"/>
-
-		<border super="true" id="1" align="inner" ground_equivalent="101"/>
-		<border super="true" id="1" align="inner" to="none" ground_equivalent="101"/>
-		<optional id="2"/>
+		<border align="outer" id="73"/>
+		<border align="outer" to="none" id="73"/>
 	</brush>
 
+	<brush name="earth (hard)" type="ground" server_lookid="5711" z-order="9040">
+		<item id="5711" chance="1"/>
+		
+		
+		<border align="outer" id="74">
+			<!-- border directly above SOFT tile -->
+			<specific>
+				<conditions> <match_border id="73" edge="s"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="5638"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="s"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="5638"/> </actions>
+			</specific>
+
+			<!-- border directly below SOFT tile -->
+			<specific>
+				<conditions> <match_border id="73" edge="n"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="5684"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="n"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="5683"/> </actions>
+			</specific>
+			
+			<!-- border to the left of SOFT tile -->
+			<specific>
+				<conditions> <match_border id="73" edge="e"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="5637"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="e"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="5637"/> </actions>
+			</specific>
+			
+			<!-- border to the right of SOFT tile -->
+			<specific>
+				<conditions> <match_border id="73" edge="w"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="5686"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="w"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="5685"/> </actions>
+			</specific>
+			
+			<!-- border directly above HARD tile -->
+			<specific>
+				<conditions> <match_border id="74" edge="s"/> <match_border id="73" edge="cse"/> </conditions>
+				<actions> <replace_border id="73" edge="cse" with="5642"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="s"/> <match_border id="73" edge="csw"/> </conditions>
+				<actions> <replace_border id="73" edge="csw" with="5642"/> </actions>
+			</specific>
+
+			<!-- border directly below HARD tile -->
+			<specific>
+				<conditions> <match_border id="74" edge="n"/> <match_border id="73" edge="cne"/> </conditions>
+				<actions> <replace_border id="73" edge="cne" with="5640"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="n"/> <match_border id="73" edge="cnw"/> </conditions>
+				<actions> <replace_border id="73" edge="cnw" with="5640"/> </actions>
+			</specific>
+			
+			<!-- border to the left of HARD tile -->
+			<specific>
+				<conditions> <match_border id="74" edge="e"/> <match_border id="73" edge="cse"/> </conditions>
+				<actions> <replace_border id="73" edge="cse" with="5641"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="e"/> <match_border id="73" edge="cne"/> </conditions>
+				<actions> <replace_border id="73" edge="cne" with="5641"/> </actions>
+			</specific>
+			
+			<!-- border to the right of HARD tile -->
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="73" edge="csw"/> </conditions>
+				<actions> <replace_border id="73" edge="csw" with="5639"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="73" edge="cnw"/> </conditions>
+				<actions> <replace_border id="73" edge="cnw" with="5639"/> </actions>
+			</specific>
+
+			<!-- north-west corner specific (SOFT and HARD) -->
+			<specific>
+				<conditions> <match_border id="73" edge="csw"/> <match_border id="73" edge="cne"/> <match_border id="74" edge="dse"/> </conditions>
+				<actions> <replace_border id="74" edge="dse" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="csw"/> <match_border id="74" edge="cne"/> <match_border id="73" edge="dse"/> </conditions>
+				<actions> <replace_border id="73" edge="dse" with="5649"/> </actions>
+			</specific>
+	
+			<specific>
+				<conditions> <match_border id="74" edge="dse"/> <match_border id="73" edge="cne"/> </conditions>
+				<actions> <replace_border id="73" edge="cne" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="dse"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="5649"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dse"/> <match_border id="73" edge="csw"/> </conditions>
+				<actions> <replace_border id="73" edge="csw" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="dse"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="5649"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="e"/> <match_border id="73" edge="s"/> </conditions>
+				<actions> <replace_border id="73" edge="s" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="e"/> <match_border id="74" edge="s"/> </conditions>
+				<actions> <replace_border id="74" edge="s" with="5649"/> </actions>
+			</specific>
+	
+			<!-- north-east corner specific (SOFT and HARD) -->
+			<specific>
+				<conditions> <match_border id="73" edge="cnw"/> <match_border id="73" edge="cse"/> <match_border id="74" edge="dsw"/> </conditions>
+				<actions> <replace_border id="74" edge="dsw" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="cnw"/> <match_border id="74" edge="cse"/> <match_border id="73" edge="dsw"/> </conditions>
+				<actions> <replace_border id="73" edge="dsw" with="5650"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dsw"/> <match_border id="73" edge="cse"/> </conditions>
+				<actions> <replace_border id="73" edge="cse" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="dsw"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="5650"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dsw"/> <match_border id="73" edge="cnw"/> </conditions>
+				<actions> <replace_border id="73" edge="cnw" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="dsw"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="5650"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="73" edge="s"/> </conditions>
+				<actions> <replace_border id="73" edge="s" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="w"/> <match_border id="74" edge="s"/> </conditions>
+				<actions> <replace_border id="74" edge="s" with="5650"/> </actions>
+			</specific>
+			
+			<!-- south-west corner specific (SOFT and HARD) -->
+			<specific>
+				<conditions> <match_border id="73" edge="cnw"/> <match_border id="73" edge="cse"/> <match_border id="74" edge="dne"/> </conditions>
+				<actions> <replace_border id="74" edge="dne" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="cnw"/> <match_border id="74" edge="cse"/> <match_border id="73" edge="dne"/> </conditions>
+				<actions> <replace_border id="73" edge="dne" with="5652"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dne"/> <match_border id="73" edge="cse"/> </conditions>
+				<actions> <replace_border id="73" edge="cse" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="dne"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="5652"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dne"/> <match_border id="73" edge="cnw"/> </conditions>
+				<actions> <replace_border id="73" edge="cnw" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="dne"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="5652"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="n"/> <match_border id="73" edge="e"/> </conditions>
+				<actions> <replace_border id="73" edge="e" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="n"/> <match_border id="74" edge="e"/> </conditions>
+				<actions> <replace_border id="74" edge="e" with="5652"/> </actions>
+			</specific>
+
+			<!-- south-east corner specific (SOFT and HARD) -->
+			<specific>
+				<conditions> <match_border id="73" edge="csw"/> <match_border id="73" edge="cne"/> <match_border id="74" edge="dnw"/> </conditions>
+				<actions> <replace_border id="74" edge="dnw" with="5648"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="csw"/> <match_border id="74" edge="cne"/> <match_border id="73" edge="dnw"/> </conditions>
+				<actions> <replace_border id="73" edge="dnw" with="5648"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dnw"/> <match_border id="73" edge="csw"/> </conditions>
+				<actions> <replace_border id="73" edge="csw" with="5648"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="dnw"/> <match_border id="73" edge="cne"/> </conditions>
+				<actions> <replace_border id="73" edge="cne" with="5648"/> </actions>
+			</specific>
+
+			<specific>
+				<conditions> <match_border id="73" edge="dnw"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="5647"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="dnw"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="5647"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="73" edge="n"/> </conditions>
+				<actions> <replace_border id="73" edge="n" with="5648"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="w"/> <match_border id="74" edge="n"/> </conditions>
+				<actions> <replace_border id="74" edge="n" with="5647"/> </actions>
+			</specific>
+		</border>
+		
+		<!-- same specifics as brush above -->
+		<border align="outer" to="none" id="74">
+			<!-- border directly above SOFT tile -->
+			<specific>
+				<conditions> <match_border id="73" edge="s"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="5638"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="s"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="5638"/> </actions>
+			</specific>
+
+			<!-- border directly below SOFT tile -->
+			<specific>
+				<conditions> <match_border id="73" edge="n"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="5684"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="n"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="5683"/> </actions>
+			</specific>
+			
+			<!-- border to the left of SOFT tile -->
+			<specific>
+				<conditions> <match_border id="73" edge="e"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="5637"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="e"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="5637"/> </actions>
+			</specific>
+			
+			<!-- border to the right of SOFT tile -->
+			<specific>
+				<conditions> <match_border id="73" edge="w"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="5686"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="w"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="5685"/> </actions>
+			</specific>
+			
+			<!-- border directly above HARD tile -->
+			<specific>
+				<conditions> <match_border id="74" edge="s"/> <match_border id="73" edge="cse"/> </conditions>
+				<actions> <replace_border id="73" edge="cse" with="5642"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="s"/> <match_border id="73" edge="csw"/> </conditions>
+				<actions> <replace_border id="73" edge="csw" with="5642"/> </actions>
+			</specific>
+
+			<!-- border directly below HARD tile -->
+			<specific>
+				<conditions> <match_border id="74" edge="n"/> <match_border id="73" edge="cne"/> </conditions>
+				<actions> <replace_border id="73" edge="cne" with="5640"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="n"/> <match_border id="73" edge="cnw"/> </conditions>
+				<actions> <replace_border id="73" edge="cnw" with="5640"/> </actions>
+			</specific>
+			
+			<!-- border to the left of HARD tile -->
+			<specific>
+				<conditions> <match_border id="74" edge="e"/> <match_border id="73" edge="cse"/> </conditions>
+				<actions> <replace_border id="73" edge="cse" with="5641"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="e"/> <match_border id="73" edge="cne"/> </conditions>
+				<actions> <replace_border id="73" edge="cne" with="5641"/> </actions>
+			</specific>
+			
+			<!-- border to the right of HARD tile -->
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="73" edge="csw"/> </conditions>
+				<actions> <replace_border id="73" edge="csw" with="5639"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="73" edge="cnw"/> </conditions>
+				<actions> <replace_border id="73" edge="cnw" with="5639"/> </actions>
+			</specific>
+
+			<!-- north-west corner specific (SOFT and HARD) -->
+			<specific>
+				<conditions> <match_border id="73" edge="csw"/> <match_border id="73" edge="cne"/> <match_border id="74" edge="dse"/> </conditions>
+				<actions> <replace_border id="74" edge="dse" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="csw"/> <match_border id="74" edge="cne"/> <match_border id="73" edge="dse"/> </conditions>
+				<actions> <replace_border id="73" edge="dse" with="5649"/> </actions>
+			</specific>
+	
+			<specific>
+				<conditions> <match_border id="74" edge="dse"/> <match_border id="73" edge="cne"/> </conditions>
+				<actions> <replace_border id="73" edge="cne" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="dse"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="5649"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dse"/> <match_border id="73" edge="csw"/> </conditions>
+				<actions> <replace_border id="73" edge="csw" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="dse"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="5649"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="e"/> <match_border id="73" edge="s"/> </conditions>
+				<actions> <replace_border id="73" edge="s" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="e"/> <match_border id="74" edge="s"/> </conditions>
+				<actions> <replace_border id="74" edge="s" with="5649"/> </actions>
+			</specific>
+	
+			<!-- north-east corner specific (SOFT and HARD) -->
+			<specific>
+				<conditions> <match_border id="73" edge="cnw"/> <match_border id="73" edge="cse"/> <match_border id="74" edge="dsw"/> </conditions>
+				<actions> <replace_border id="74" edge="dsw" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="cnw"/> <match_border id="74" edge="cse"/> <match_border id="73" edge="dsw"/> </conditions>
+				<actions> <replace_border id="73" edge="dsw" with="5650"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dsw"/> <match_border id="73" edge="cse"/> </conditions>
+				<actions> <replace_border id="73" edge="cse" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="dsw"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="5650"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dsw"/> <match_border id="73" edge="cnw"/> </conditions>
+				<actions> <replace_border id="73" edge="cnw" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="dsw"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="5650"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="73" edge="s"/> </conditions>
+				<actions> <replace_border id="73" edge="s" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="w"/> <match_border id="74" edge="s"/> </conditions>
+				<actions> <replace_border id="74" edge="s" with="5650"/> </actions>
+			</specific>
+			
+			<!-- south-west corner specific (SOFT and HARD) -->
+			<specific>
+				<conditions> <match_border id="73" edge="cnw"/> <match_border id="73" edge="cse"/> <match_border id="74" edge="dne"/> </conditions>
+				<actions> <replace_border id="74" edge="dne" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="cnw"/> <match_border id="74" edge="cse"/> <match_border id="73" edge="dne"/> </conditions>
+				<actions> <replace_border id="73" edge="dne" with="5652"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dne"/> <match_border id="73" edge="cse"/> </conditions>
+				<actions> <replace_border id="73" edge="cse" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="dne"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="5652"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dne"/> <match_border id="73" edge="cnw"/> </conditions>
+				<actions> <replace_border id="73" edge="cnw" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="dne"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="5652"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="n"/> <match_border id="73" edge="e"/> </conditions>
+				<actions> <replace_border id="73" edge="e" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="n"/> <match_border id="74" edge="e"/> </conditions>
+				<actions> <replace_border id="74" edge="e" with="5652"/> </actions>
+			</specific>
+
+			<!-- south-east corner specific (SOFT and HARD) -->
+			<specific>
+				<conditions> <match_border id="73" edge="csw"/> <match_border id="73" edge="cne"/> <match_border id="74" edge="dnw"/> </conditions>
+				<actions> <replace_border id="74" edge="dnw" with="5648"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="csw"/> <match_border id="74" edge="cne"/> <match_border id="73" edge="dnw"/> </conditions>
+				<actions> <replace_border id="73" edge="dnw" with="5648"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dnw"/> <match_border id="73" edge="csw"/> </conditions>
+				<actions> <replace_border id="73" edge="csw" with="5648"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="dnw"/> <match_border id="73" edge="cne"/> </conditions>
+				<actions> <replace_border id="73" edge="cne" with="5648"/> </actions>
+			</specific>
+
+			<specific>
+				<conditions> <match_border id="73" edge="dnw"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="5647"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="dnw"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="5647"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="73" edge="n"/> </conditions>
+				<actions> <replace_border id="73" edge="n" with="5648"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="73" edge="w"/> <match_border id="74" edge="n"/> </conditions>
+				<actions> <replace_border id="74" edge="n" with="5647"/> </actions>
+			</specific>
+		</border>
+		
+		<friend name="earth (soft)"/>
+	</brush>
+	
 	<brush name="cobblestone" type="ground" server_lookid="724" z-order="100">
 		<item id="724" chance="1000"/>
 	</brush>
@@ -563,7 +1029,8 @@
 	<brush name="stone floor" type="ground" server_lookid="431" z-order="7500">
 		<item id="431" chance="1000"/>
 
-		<friend name="earth"/>
+		<friend name="earth (soft)"/>
+		<friend name="earth (hard)"/>
 		<friend name="mountain"/>
 	</brush>
 
@@ -577,7 +1044,8 @@
 	<brush name="wooden floor" type="ground" server_lookid="405" z-order="7505">
 		<item id="405" chance="1"/>
 
-		<friend name="earth"/>
+		<friend name="earth (soft)"/>
+		<friend name="earth (hard)"/>
 		<friend name="mountain"/>
 
 		<optional id="3"/>
@@ -601,7 +1069,8 @@
 
 		<friend name="wooden floor"/>
 
-		<friend name="earth"/>
+		<friend name="earth (soft)"/>
+		<friend name="earth (hard)"/>
 		<friend name="mountain"/>
 
 		<optional id="3"/>
@@ -613,7 +1082,8 @@
 		<friend name="wooden floor"/>
 		<friend name="wooden ladder trapdoor"/>
 
-		<friend name="earth"/>
+		<friend name="earth (soft)"/>
+		<friend name="earth (hard)"/>
 		<friend name="mountain"/>
 
 		<optional id="3"/>
@@ -626,7 +1096,8 @@
 		<friend name="wooden ladder trapdoor"/>
 		<friend name="wooden ladder hole"/>
 
-		<friend name="earth"/>
+		<friend name="earth (soft)"/>
+		<friend name="earth (hard)"/>
 		<friend name="mountain"/>
 
 		<optional id="3"/>
@@ -638,7 +1109,8 @@
 		<friend name="wooden floor"/>
 		<friend name="wooden ladder trapdoor"/>
 		<friend name="wooden ladder hole"/>
-		<friend name="earth"/>
+		<friend name="earth (soft)"/>
+		<friend name="earth (hard)"/>
 		<friend name="mountain"/>
 
 		<optional id="3"/>
@@ -659,21 +1131,24 @@
 	<brush name="stairs down" type="ground" server_lookid="411" z-order="8000">
 		<item id="411" chance="1"/>
 
-		<friend name="earth"/>
+		<friend name="earth (soft)"/>
+		<friend name="earth (hard)"/>
 		<friend name="mountain"/>
 	</brush>
 
 	<brush name="stairs down 2" type="ground" server_lookid="423" z-order="8000">
 		<item id="423" chance="1"/>
 
-		<friend name="earth"/>
+		<friend name="earth (soft)"/>
+		<friend name="earth (hard)"/>
 		<friend name="mountain"/>
 	</brush>
 
 	<brush name="trapdoor down" type="ground" server_lookid="410" z-order="8000">
 		<item id="410" chance="1"/>
 
-		<friend name="earth"/>
+		<friend name="earth (soft)"/>
+		<friend name="earth (hard)"/>
 		<friend name="mountain"/>
 	</brush>
 
@@ -682,7 +1157,8 @@
 		<item id="370" chance="0"/>
 		<item id="408" chance="0"/>
 
-		<friend name="earth"/>
+		<friend name="earth (soft)"/>
+		<friend name="earth (hard)"/>
 		<friend name="mountain"/>
 	</brush>
 

@@ -95,6 +95,8 @@
 			<item fromid="4883" toid="4989"/>
 			<item fromid="4998" toid="5008"/>
 			<item fromid="5082" toid="5085"/>
+			<item id="5426"/>
+			<item fromid="5439" toid="5459"/>
 		</raw>
 	</tileset>
 
@@ -121,6 +123,7 @@
 			<item fromid="4667" toid="4690"/>
 			<item fromid="4713" toid="4748"/>
 			<item fromid="4760" toid="4819"/>
+			<item fromid="5427" toid="5438"/>
 		</raw>
 	</tileset>
 
@@ -210,6 +213,8 @@
 			
 			<item fromid="5074" toid="5079"/>
 			<item fromid="5296" toid="5302"/>
+			<item id="5424"/>
+			<item id="5425"/>
 		</raw>
 	</tileset>
 
@@ -270,6 +275,7 @@
 			<item fromid="4691" toid="4712"/>
 			<item fromid="4749" toid="4755"/>
 			<item fromid="4832" toid="4833"/>
+			<item fromid="5405" toid="5410"/>
 		</raw>
 	</tileset>
 
@@ -376,6 +382,8 @@
 			<item fromid="4876" toid="4882"/>
 			<item fromid="5092" toid="5096"/>
 			<item fromid="5156" toid="5157"/>
+			<item fromid="5390" toid="5399"/>
+			<item fromid="5411" toid="5423"/>
 		</raw>
 	</tileset>
 

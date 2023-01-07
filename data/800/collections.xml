@@ -6,7 +6,8 @@
 			<brush name="walkable lava"/>
 			<brush name="clear water"/>
 			<brush name="drawbridge"/>
-			<brush name="earth"/>
+			<brush name="earth (soft)"/>
+			<brush name="earth (hard)"/>
 			<brush name="cave"/>
 			<brush name="dirt"/>
 			<brush name="light dirt"/>
@@ -381,8 +382,15 @@
 			<brush name="thorn bush_1"/>
 			<brush name="palm trees"/>
 			<brush name="banana trees"/>
+			<brush name="pawpaw trees"/>
 			<brush name="mango trees"/>
 			<brush name="peach trees"/>
+			<brush name="mangrove mixed (land)"/>
+			<brush name="mangrove mixed (water)"/>
+			<brush name="mangrove green (land)"/>
+			<brush name="mangrove dry (land)"/>
+			<brush name="mangrove green (water)"/>
+			<brush name="mangrove dry (water)"/>
 			<brush name="straw"/>
 			<brush name="fern trees"/>
 			<item id="4015"/>

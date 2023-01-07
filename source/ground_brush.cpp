@@ -468,6 +468,9 @@ bool GroundBrush::load(pugi::xml_node node, wxArrayString& warnings)
 						}
 					}
 				}
+				if (specificCaseBlock) {
+					borderBlock->specific_cases.push_back(specificCaseBlock);
+				}
 			}
 			borders.push_back(borderBlock);
 		} else if(childName == "friend") {
@@ -636,6 +639,11 @@ const GroundBrush::BorderBlock* GroundBrush::getBrushTo(GroundBrush* first, Grou
 	}
 	//printf("None\n");
 	return nullptr;
+}
+
+inline GroundBrush* extractGroundBrushFromTile(BaseMap* map, uint32_t x, uint32_t y, uint32_t z) {
+	Tile* t = map->getTile(x, y, z);
+	return t ? t->getGroundBrush() : nullptr;
 }
 
 void GroundBrush::doBorders(BaseMap* map, Tile* tile)
@@ -931,7 +939,6 @@ void GroundBrush::doBorders(BaseMap* map, Tile* tile)
 			if(specificCaseBlock->to_replace_id == 0) {
 				continue;
 			}
-
 			if(specificCaseBlock->with_id == 0) {
 				continue;
 			}
@@ -961,43 +968,36 @@ void GroundBrush::doBorders(BaseMap* map, Tile* tile)
 			}
 
 			//printf("\t\t%d matches of %d\n", matches, scb->items_to_match.size());
-			if(matches == specificCaseBlock->items_to_match.size()) {
+			if(matches >= specificCaseBlock->items_to_match.size()) {
 				auto& tileItems = tile->items;
 				auto it = tileItems.begin();
-				if(specificCaseBlock->delete_all) {
-					// Delete all matching borders
-					while(it != tileItems.end()) {
-						Item* item = *it;
-						if(!item->isBorder()) {
-							break;
-						}
 
-						bool inc = true;
-						for(uint16_t matchId : specificCaseBlock->items_to_match) {
-							if(item->getID() == matchId) {
+				// if delete_all mode, consider the border replaced
+				bool replaced = specificCaseBlock->delete_all;
+
+				while(it != tileItems.end()) {
+					Item* item = *it;
+					if(!item->isBorder()) {
+						continue;
+					}
+
+					bool inc = true;
+					for (uint16_t matchId : specificCaseBlock->items_to_match) {
+						if (item->getID() == matchId) {
+							if (!replaced && item->getID() == specificCaseBlock->to_replace_id) {
+								// replace the matching border, delete everything else
+								item->setID(specificCaseBlock->with_id);
+								replaced = true;
+							} else {
 								delete item;
 								it = tileItems.erase(it);
 								inc = false;
 								break;
 							}
 						}
-
-						if(inc) {
-							++it;
-						}
 					}
-				} else {
-					// All matched, replace!
-					while(it != tileItems.end()) {
-						Item* item = *it;
-						if(!item->isBorder()) {
-							return;
-						}
 
-						if(item->getID() == specificCaseBlock->to_replace_id) {
-							item->setID(specificCaseBlock->with_id);
-							return;
-						}
+					if(inc) {
 						++it;
 					}
 				}

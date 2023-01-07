@@ -2978,14 +2978,22 @@
 		</composite>
 	</brush>
 
-	<brush name="vertical mill" type="doodad" server_lookid="1379" draggable="true" on_blocking="false" thickness="10/10">
-		<composite chance="10">
-			<tile x="0" y="0"> <item id="1379"/> </tile>
-			<tile x="1" y="0"> <item id="1380"/> </tile>
-		</composite>
+	<brush name="water wheel (on/off)" type="doodad" server_lookid="5424" draggable="true" on_blocking="false" thickness="10/10">
+		<alternate>
+			<composite chance="10">
+				<tile x="0" y="0"> <item id="5424"/> </tile>
+				<tile x="1" y="0"> <item id="5425"/> </tile>
+			</composite>
+		</alternate>
+		<alternate>
+			<composite chance="10">
+				<tile x="0" y="0"> <item id="1379"/> </tile>
+				<tile x="1" y="0"> <item id="1380"/> </tile>
+			</composite>
+		</alternate>
 	</brush>
 
-	<brush name="horizontal mill" type="doodad" server_lookid="1381" draggable="true" on_blocking="false" thickness="10/10">
+	<brush name="mill" type="doodad" server_lookid="1381" draggable="true" on_blocking="false" thickness="10/10">
 		<composite chance="10">
 			<tile x="0" y="0"> <item id="1381"/> </tile>
 			<tile x="1" y="0"> <item id="1382"/> </tile>
@@ -5312,6 +5320,45 @@
 		<item id="5156" chance="50"/>
 	</brush>
 	
+	<brush name="pawpaw trees" type="doodad" server_lookid="5390" draggable="true" on_blocking="false" thickness="12/100">
+		<item id="5390" chance="50"/>
+		<item id="5391" chance="50"/>
+	</brush>
+	
+	<brush name="mangrove green (land)" type="doodad" server_lookid="5393" draggable="true" on_blocking="true" thickness="100/100">
+		<item id="5393" chance="60"/>
+		<item id="5397" chance="40"/>
+	</brush>
+	
+	<brush name="mangrove dry (land)" type="doodad" server_lookid="5392" draggable="true" on_blocking="true" thickness="100/100">
+		<item id="5392" chance="60"/>
+		<item id="5396" chance="40"/>
+	</brush>
+	
+	<brush name="mangrove green (water)" type="doodad" server_lookid="5395" draggable="true" on_blocking="true" thickness="100/100">
+		<item id="5395" chance="60"/>
+		<item id="5399" chance="40"/>
+	</brush>
+	
+	<brush name="mangrove dry (water)" type="doodad" server_lookid="5394" draggable="true" on_blocking="true" thickness="100/100">
+		<item id="5394" chance="60"/>
+		<item id="5398" chance="40"/>
+	</brush>
+	
+	<brush name="mangrove mixed (land)" type="doodad" server_lookid="5393" draggable="true" on_blocking="true" thickness="100/100">
+		<item id="5392" chance="30"/>
+		<item id="5393" chance="30"/>
+		<item id="5396" chance="20"/>
+		<item id="5397" chance="20"/>
+	</brush>
+	
+	<brush name="mangrove mixed (water)" type="doodad" server_lookid="5395" draggable="true" on_blocking="true" thickness="100/100">
+		<item id="5394" chance="30"/>
+		<item id="5395" chance="30"/>
+		<item id="5398" chance="20"/>
+		<item id="5399" chance="20"/>
+	</brush>
+	
 	<brush name="meadow flowers" type="doodad" server_lookid="2743" draggable="true" on_blocking="true" thickness="30/100">
 		<item id="2740" chance="10"/>
 		<item id="2741" chance="10"/>
@@ -6584,8 +6631,8 @@
 			<brush name="altar"/>
 			<brush name="sacrificial stone"/>
 			<brush name="sacrificial stone (blood)"/>
-			<brush name="vertical mill"/>
-			<brush name="horizontal mill"/>
+			<brush name="water wheel (on/off)"/>
+			<brush name="mill"/>
 			<item id="1406"/>
 			<item id="1407"/>
 			<item id="1408"/>
@@ -6866,7 +6913,14 @@
 			<brush name="smooth cactus"/>
 			<brush name="palm trees"/>
 			<brush name="banana trees"/>
+			<brush name="pawpaw trees"/>
 			<brush name="mango trees"/>
+			<brush name="mangrove mixed (land)"/>
+			<brush name="mangrove mixed (water)"/>
+			<brush name="mangrove green (land)"/>
+			<brush name="mangrove dry (land)"/>
+			<brush name="mangrove green (water)"/>
+			<brush name="mangrove dry (water)"/>
 			<item id="2739"/>
 			<brush name="meadow flowers"/>
 			<item id="2748"/>

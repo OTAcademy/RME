@@ -871,8 +871,8 @@
 
 	<!-- cave wall dirt -->
 	<border id="73">
-		<borderitem edge="s"	item="5632"/>
-		<borderitem edge="n"	item="5638"/>
+		<borderitem edge="n"	item="5632"/>
+		<borderitem edge="s"	item="5638"/>
 		<borderitem edge="w"	item="5631"/>
 		<borderitem edge="e"	item="5637"/>
 		<borderitem edge="dnw"	item="5647"/>
@@ -887,8 +887,8 @@
 
 	<!-- cave wall stone -->
 	<border id="74">
-		<borderitem edge="s"	item="5640"/>
-		<borderitem edge="n"	item="5642"/>
+		<borderitem edge="n"	item="5640"/>
+		<borderitem edge="s"	item="5642"/>
 		<borderitem edge="w"	item="5639"/>
 		<borderitem edge="e"	item="5641"/>
 		<borderitem edge="dnw"	item="5648"/>
