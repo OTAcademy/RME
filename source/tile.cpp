@@ -663,7 +663,12 @@ void Tile::deselectGround()
 
 void Tile::setHouse(House* _house)
 {
-	house_id = (_house? _house->id : 0);
+	house_id = (_house? _house->getID() : 0);
+}
+
+void Tile::setHouseID(uint32_t newHouseId)
+{
+	house_id = newHouseId;
 }
 
 void Tile::addHouseExit(House* h)
@@ -671,7 +676,7 @@ void Tile::addHouseExit(House* h)
 	if(!h)
 		return;
 	HouseExitList* house_exits = location->createHouseExits();
-	house_exits->push_back(h->id);
+	house_exits->push_back(h->getID());
 }
 
 void Tile::removeHouseExit(House* h)
@@ -684,7 +689,7 @@ void Tile::removeHouseExit(House* h)
 		return;
 
 	for(std::vector<uint32_t>::iterator it = house_exits->begin(); it != house_exits->end(); ++it) {
-		if(*it == h->id) {
+		if(*it == h->getID()) {
 			house_exits->erase(it);
 			return;
 		}

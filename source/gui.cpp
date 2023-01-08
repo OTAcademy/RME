@@ -953,7 +953,8 @@ PaletteWindow* GUI::CreatePalette()
 	palettes.push_front(palette);
 	// Select brush from this palette
 	SelectBrushInternal(palette->GetSelectedBrush());
-
+	// fix for blank house list on f5 or new palette
+	palette->OnUpdate(IsEditorOpen() ? &GetCurrentMap() : nullptr);
 	return palette;
 }
 

@@ -870,7 +870,7 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f)
 							house = map.houses.getHouse(house_id);
 							if(!house) {
 								house = newd House(map);
-								house->id = house_id;
+								house->setID(house_id);
 								map.houses.addHouse(house);
 							}
 						} else {
@@ -1215,7 +1215,7 @@ bool IOMapOTBM::loadHouses(Map& map, pugi::xml_document& doc)
 		if((attribute = houseNode.attribute("name"))) {
 			house->name = attribute.as_string();
 		} else {
-			house->name = "House #" + std::to_string(house->id);
+			house->name = "House #" + std::to_string(house->getID());
 		}
 
 		Position exitPosition(
@@ -1238,7 +1238,7 @@ bool IOMapOTBM::loadHouses(Map& map, pugi::xml_document& doc)
 		if((attribute = houseNode.attribute("townid"))) {
 			house->townid = attribute.as_uint();
 		} else {
-			warning("House %d has no town! House was removed.", house->id);
+			warning("House %d has no town! House was removed.", house->getID());
 			map.houses.removeHouse(house);
 		}
 	}
@@ -1633,7 +1633,7 @@ bool IOMapOTBM::saveHouses(Map& map, pugi::xml_document& doc)
 		pugi::xml_node houseNode = houseNodes.append_child("house");
 
 		houseNode.append_attribute("name") = house->name.c_str();
-		houseNode.append_attribute("houseid") = house->id;
+		houseNode.append_attribute("houseid") = house->getID();
 
 		const Position& exitPosition = house->getExit();
 		houseNode.append_attribute("entryx") = exitPosition.x;

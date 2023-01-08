@@ -551,7 +551,7 @@ bool Editor::importMap(FileName filename, int import_x_offset, int import_y_offs
 
 		for(HouseMap::iterator hit = imported_map.houses.begin(); hit != imported_map.houses.end();) {
 			House* imported_house = hit->second;
-			House* current_house = map.houses.getHouse(imported_house->id);
+			House* current_house = map.houses.getHouse(imported_house->getID());
 			imported_house->townid = town_id_map[imported_house->townid];
 
 			Position oldexit = imported_house->getExit();
@@ -559,7 +559,7 @@ bool Editor::importMap(FileName filename, int import_x_offset, int import_y_offs
 
 			switch(house_import_type) {
 				case IMPORT_MERGE: {
-					house_id_map[imported_house->id] = imported_house->id;
+					house_id_map[imported_house->getID()] = imported_house->getID();
 					if(current_house) {
 						++hit;
 						Position newexit = oldexit + offset;
@@ -573,7 +573,7 @@ bool Editor::importMap(FileName filename, int import_x_offset, int import_y_offs
 						// Compare and insert/merge depending on parameters
 						if(current_house->name == imported_house->name && current_house->townid == imported_house->townid) {
 							// Just add to map
-							house_id_map[imported_house->id] = current_house->id;
+							house_id_map[imported_house->getID()] = current_house->getID();
 							++hit;
 							Position newexit = oldexit + offset;
 							if(newexit.isValid()) imported_house->setExit(&map, newexit);
@@ -581,19 +581,19 @@ bool Editor::importMap(FileName filename, int import_x_offset, int import_y_offs
 						} else {
 							// Conflict! Find a newd id and replace old
 							uint32_t new_id = map.houses.getEmptyID();
-							house_id_map[imported_house->id] = new_id;
-							imported_house->id = new_id;
+							house_id_map[imported_house->getID()] = new_id;
+							imported_house->setID(new_id);
 						}
 					} else {
-						house_id_map[imported_house->id] = imported_house->id;
+						house_id_map[imported_house->getID()] = imported_house->getID();
 					}
 					break;
 				}
 				case IMPORT_INSERT: {
 					// Find a newd id and replace old
 					uint32_t new_id = map.houses.getEmptyID();
-					house_id_map[imported_house->id] = new_id;
-					imported_house->id = new_id;
+					house_id_map[imported_house->getID()] = new_id;
+					imported_house->setID(new_id);
 					break;
 				}
 				case IMPORT_DONT: {

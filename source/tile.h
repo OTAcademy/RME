@@ -186,6 +186,7 @@ public: //Functions
 	// Has to do with houses
 	bool isHouseTile() const;
 	uint32_t getHouseID() const;
+	void setHouseID(uint32_t newHouseId);
 	void addHouseExit(House* h);
 	void removeHouseExit(House* h);
 	bool isHouseExit() const;

@@ -95,6 +95,8 @@ public:
 	EditHouseDialog(wxWindow* parent, Map* map, House* house);
 	virtual ~EditHouseDialog();
 
+	void OnFocusChange(wxFocusEvent&);
+
 	void OnClickOK(wxCommandEvent&);
 	void OnClickCancel(wxCommandEvent&);
 protected:
@@ -104,7 +106,8 @@ protected:
 	wxString house_name, house_id, house_rent;
 
 	wxTextCtrl* name_field;
-	wxTextCtrl* id_field;
+	wxChoice* town_id_field;
+	wxSpinCtrl * id_field;
 	wxTextCtrl* rent_field;
 	wxCheckBox* guildhall_field;
 

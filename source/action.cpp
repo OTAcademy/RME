@@ -39,7 +39,7 @@ Change* Change::Create(House* house, const Position& where)
 	Change* c = newd Change();
 	c->type = CHANGE_MOVE_HOUSE_EXIT;
 	std::pair<uint32_t, Position>* p = newd std::pair<uint32_t, Position>;
-	p->first = house->id;
+	p->first = house->getID();
 	p->second = where;
 	c->data = p;
 	return c;

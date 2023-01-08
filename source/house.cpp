@@ -37,6 +37,16 @@ Houses::~Houses()
 
 uint32_t Houses::getEmptyID()
 {
+	// ids were edited or planned id is taken, search forwards
+	if (max_house_id == 0 || houses[max_house_id + 1]) {
+		while (houses[++max_house_id]) {
+			// do nothing, we search for an empty slot
+		}
+
+		// houses[n] was nullptr, we return n
+		return max_house_id;
+	}
+
 	return ++max_house_id;
 }
 
@@ -59,6 +69,20 @@ void Houses::removeHouse(House* house_to_remove)
 
 	house_to_remove->clean();
 	delete house_to_remove;
+}
+
+void Houses::changeId(House* house, uint32_t newID)
+{
+	ASSERT(house);
+	HouseMap::iterator it = houses.find(house->id);
+	if (it != houses.end())
+		houses.erase(it);
+
+	house->setID(newID);
+	houses[newID] = house;
+
+	// id list structure changed, prepare search for new free slot
+	max_house_id = 0;
 }
 
 House* Houses::getHouse(uint32_t houseid)

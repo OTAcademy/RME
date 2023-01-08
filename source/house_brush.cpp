@@ -45,7 +45,7 @@ void HouseBrush::setHouse(House* house)
 uint32_t HouseBrush::getHouseID() const
 {
 	if(draw_house)
-		return draw_house->id;
+		return draw_house->getID();
 	return 0;
 }
 

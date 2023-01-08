@@ -160,14 +160,14 @@ bool HousePalettePanel::SelectBrush(const Brush* whatbrush)
 	if(whatbrush->isHouse() && map) {
 		const HouseBrush* house_brush = static_cast<const HouseBrush*>(whatbrush);
 		for(HouseMap::iterator house_iter = map->houses.begin(); house_iter != map->houses.end(); ++house_iter) {
-			if(house_iter->second->id == house_brush->getHouseID()) {
+			if(house_iter->second->getID() == house_brush->getHouseID()) {
 				for(uint32_t i = 0; i < town_choice->GetCount(); ++i) {
 					Town* town = reinterpret_cast<Town*>(town_choice->GetClientData(i));
 					// If it's "No Town" (nullptr) select it, or if it has the same town ID as the house
 					if(town == nullptr || town->getID() == house_iter->second->townid) {
 						SelectTown(i);
 						for(uint32_t j = 0; j < house_list->GetCount(); ++j) {
-							if(house_iter->second->id == reinterpret_cast<House*>(house_list->GetClientData(j))->id) {
+							if(house_iter->second->getID() == reinterpret_cast<House*>(house_list->GetClientData(j))->getID()) {
 								SelectHouse(j);
 								return true;
 							}
@@ -358,10 +358,10 @@ void HousePalettePanel::OnClickAddHouse(wxCommandEvent& event)
 		return;
 
 	House* new_house = newd House(*map);
-	new_house->id = map->houses.getEmptyID();
+	new_house->setID(map->houses.getEmptyID());
 
 	std::ostringstream os;
-	os << "Unnamed House #" << new_house->id;
+	os << "Unnamed House #" << new_house->getID();
 	new_house->name = os.str();
 	Town* town = reinterpret_cast<Town*>(town_choice->GetClientData(town_choice->GetSelection()));
 
@@ -390,6 +390,10 @@ void HousePalettePanel::OnClickEditHouse(wxCommandEvent& event)
 			// Something changed, change name of house
 			house_list->SetString(selection, wxstr(house->getDescription()));
 			house_list->Sort();
+
+			// refresh house list for town
+			SelectTown(town_choice->GetSelection());
+			g_gui.SelectBrush();
 			refresh_timer.Start(300, true);
 		}
 	}
@@ -444,54 +448,110 @@ void HousePalettePanel::OnListBoxClick(wxMouseEvent& event) {
 // House Edit Dialog
 
 BEGIN_EVENT_TABLE(EditHouseDialog, wxDialog)
+	EVT_SET_FOCUS(EditHouseDialog::OnFocusChange)
 	EVT_BUTTON(wxID_OK, EditHouseDialog::OnClickOK)
 	EVT_BUTTON(wxID_CANCEL, EditHouseDialog::OnClickCancel)
 END_EVENT_TABLE()
 
 EditHouseDialog::EditHouseDialog(wxWindow* parent, Map* map, House* house) :
-	wxDialog(parent, wxID_ANY, "House", wxDefaultPosition, wxSize(250,160)),
+	// window title
+	wxDialog(parent, wxID_ANY, "House Properties", wxDefaultPosition, wxSize(250,160)),
 	map(map),
 	what_house(house)
 {
 	ASSERT(map);
 	ASSERT(house);
 
-	// Create topsizer
-	wxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
-	wxSizer* tmpsizer;
+	// main properties window box
+	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
+	wxSizer* boxsizer = newd wxStaticBoxSizer(wxVERTICAL, this, "House Properties");
+	wxFlexGridSizer* housePropContainer = newd wxFlexGridSizer(2, 10, 10);
+	housePropContainer->AddGrowableCol(1);
+
+	wxFlexGridSizer* subsizer = newd wxFlexGridSizer(2, 10, 10);
+	subsizer->AddGrowableCol(1);
 
 	house_name = wxstr(house->name);
-	house_id = i2ws(house->id);
+	house_id = i2ws(house->getID());
 	house_rent = i2ws(house->rent);
 
-	// House options
-	tmpsizer = newd wxStaticBoxSizer(wxHORIZONTAL, this, "Name");
-	name_field = newd wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxSize(230,20), 0, wxTextValidator(wxFILTER_ASCII, &house_name));
-	tmpsizer->Add(name_field);
+	// House name
+	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Name:"), wxSizerFlags(0).Border(wxLEFT, 5));
+	name_field = newd wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxSize(160,20), 0, wxTextValidator(wxFILTER_ASCII, &house_name));
+	subsizer->Add(name_field, wxSizerFlags(1).Expand());
 
-	sizer->Add(tmpsizer, wxSizerFlags().Border(wxALL, 20));
+	// Town selection menu
+	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Town:"), wxSizerFlags(0).Border(wxLEFT, 5));
 
-	tmpsizer = newd wxStaticBoxSizer(wxHORIZONTAL, this, "Rent / ID");
+	const Towns& towns = map->towns;
+
+	town_id_field = newd wxChoice(this, wxID_ANY);
+	int to_select_index = 0;
+	uint32_t houseTownId = house->townid;
+
+	if (towns.count() > 0) {
+		bool found = false;
+		for (TownMap::const_iterator town_iter = towns.begin(); town_iter != towns.end(); ++town_iter) {
+			if (town_iter->second->getID() == houseTownId) {
+				found = true;
+			}
+			town_id_field->Append(wxstr(town_iter->second->getName()), newd int(town_iter->second->getID()));
+			if (!found) {
+				++to_select_index;
+			}
+		}
+
+		if (!found) {
+			if (houseTownId != 0) {
+				town_id_field->Append("Undefined Town (id:" + i2ws(houseTownId) + ")", newd int(houseTownId));
+				++to_select_index;
+			}
+		}
+	}
+	town_id_field->SetSelection(to_select_index);
+	subsizer->Add(town_id_field, wxSizerFlags(1).Expand());
+	// end town selection
+
+	// Rent price
+	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Rent:"), wxSizerFlags(0).Border(wxLEFT, 5));
 	rent_field = newd wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxSize(160,20), 0, wxTextValidator(wxFILTER_NUMERIC, &house_rent));
-	tmpsizer->Add(rent_field);
-	id_field = newd wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxSize(70,20), 0, wxTextValidator(wxFILTER_NUMERIC, &house_id));
-	id_field->Enable(false);
-	tmpsizer->Add(id_field);
-	sizer->Add(tmpsizer, wxSizerFlags().Border(wxALL, 20));
+	subsizer->Add(rent_field, wxSizerFlags(1).Expand());
 
-	// House options
-	guildhall_field = newd wxCheckBox(this, wxID_ANY, "Guildhall", wxDefaultPosition);
+	// Right column
+	wxFlexGridSizer* subsizerRight = newd wxFlexGridSizer(1, 10, 10);
 
-	sizer->Add(guildhall_field, wxSizerFlags().Border(wxRIGHT | wxLEFT | wxBOTTOM, 20));
+	// house ID
+	wxFlexGridSizer* houseSizer = newd wxFlexGridSizer(2, 10, 10);
+
+	houseSizer->Add(newd wxStaticText(this, wxID_ANY, "ID:"), wxSizerFlags(0).Center());
+	id_field = newd wxSpinCtrl(this, wxID_ANY, "", wxDefaultPosition, wxSize(40, 20), wxSP_ARROW_KEYS, 1, 0xFFFF, house->getID());
+	//id_field->Enable(false);
+	houseSizer->Add(id_field, wxSizerFlags(1).Expand());
+	subsizerRight->Add(houseSizer, wxSizerFlags(1).Expand());
+
+	// Guildhall checkbox
+	wxSizer* checkbox_sub_sizer = newd wxBoxSizer(wxVERTICAL);
+	checkbox_sub_sizer->AddSpacer(4);
+
+	guildhall_field = newd wxCheckBox(this, wxID_ANY, "Guildhall");
+
+	checkbox_sub_sizer->Add(guildhall_field);
+	subsizerRight->Add(checkbox_sub_sizer);
 	guildhall_field->SetValue(house->guildhall);
 
-	// OK/Cancel buttons
-	tmpsizer = newd wxBoxSizer(wxHORIZONTAL);
-	tmpsizer->Add(newd wxButton(this, wxID_OK, "OK"), wxSizerFlags(1).Center());
-	tmpsizer->Add(newd wxButton(this, wxID_CANCEL, "Cancel"), wxSizerFlags(1).Center());
-	sizer->Add(tmpsizer, wxSizerFlags(1).Center().Border(wxRIGHT | wxLEFT | wxBOTTOM, 20));
+	// construct the layout
+	housePropContainer->Add(subsizer, wxSizerFlags(5).Expand());
+	housePropContainer->Add(subsizerRight, wxSizerFlags(5).Expand());
+	boxsizer->Add(housePropContainer, wxSizerFlags(5).Expand().Border(wxTOP | wxBOTTOM, 10));
+	topsizer->Add(boxsizer, wxSizerFlags(0).Expand().Border(wxRIGHT | wxLEFT, 20));
 
-	SetSizerAndFit(sizer);
+	// OK/Cancel buttons
+	wxSizer* buttonsSizer = newd wxBoxSizer(wxHORIZONTAL);
+	buttonsSizer->Add(newd wxButton(this, wxID_OK, "OK"), wxSizerFlags(1).Center().Border(wxTOP | wxBOTTOM, 10));
+	buttonsSizer->Add(newd wxButton(this, wxID_CANCEL, "Cancel"), wxSizerFlags(1).Center().Border(wxTOP | wxBOTTOM, 10));
+	topsizer->Add(buttonsSizer, wxSizerFlags(0).Center().Border(wxLEFT | wxRIGHT, 20));
+
+	SetSizerAndFit(topsizer);
 }
 
 EditHouseDialog::~EditHouseDialog()
@@ -499,29 +559,51 @@ EditHouseDialog::~EditHouseDialog()
 	////
 }
 
+void EditHouseDialog::OnFocusChange(wxFocusEvent& event)
+{
+	wxWindow* win = event.GetWindow();
+	if(wxSpinCtrl* spin = dynamic_cast<wxSpinCtrl*>(win))
+		spin->SetSelection(-1, -1);
+	else if(wxTextCtrl* text = dynamic_cast<wxTextCtrl*>(win))
+		text->SetSelection(-1, -1);
+}
+
 void EditHouseDialog::OnClickOK(wxCommandEvent& WXUNUSED(event))
 {
 	if(Validate() && TransferDataFromWindow()) {
-		// Verify the newd information
+		// Verify the new rent information
 		long new_house_rent;
 		house_rent.ToLong(&new_house_rent);
-
 		if(new_house_rent < 0) {
 			g_gui.PopupDialog(this, "Error", "House rent cannot be less than 0.", wxOK);
 			return;
 		}
 
-		if(house_name.length() == 0) {
-			g_gui.PopupDialog(this, "Error", "House name cannot be nil.", wxOK);
+		// Verify the new house id
+		uint32_t new_house_id = id_field->GetValue();
+		if (new_house_id < 1) {
+			g_gui.PopupDialog(this, "Error", "House id cannot be less than 1.", wxOK);
 			return;
 		}
 
+		// Verify the new house name
+		if(house_name.length() == 0) {
+			g_gui.PopupDialog(this, "Error", "House name cannot be empty.", wxOK);
+			return;
+		}
+		
 		if(g_settings.getInteger(Config::WARN_FOR_DUPLICATE_ID)) {
 			Houses& houses = map->houses;
 			for(HouseMap::const_iterator house_iter = houses.begin(); house_iter != houses.end(); ++house_iter) {
 				House* house = house_iter->second;
 				ASSERT(house);
-				if(wxstr(house->name) == house_name && house->id != what_house->id) {
+				
+				if (house->getID() == new_house_id && new_house_id != what_house->getID()) {
+					g_gui.PopupDialog(this, "Error", "This house id is already in use.", wxOK);
+					return;
+				}
+
+				if(wxstr(house->name) == house_name && house->getID() != what_house->getID()) {
 					int ret = g_gui.PopupDialog(this, "Warning", "This house name is already in use, are you sure you want to continue?", wxYES | wxNO);
 					if(ret == wxID_NO) {
 						return;
@@ -530,10 +612,25 @@ void EditHouseDialog::OnClickOK(wxCommandEvent& WXUNUSED(event))
 			}
 		}
 
+		if (new_house_id != what_house->getID()) {
+			int ret = g_gui.PopupDialog(this, "Warning", "Changing existing house ids on a production server WILL HAVE DATABASE CONSEQUENCES such as potential item loss, house owner change or invalidating guest lists.\nYou are doing it at own risk!\n\nAre you ABSOLUTELY sure you want to continue?", wxYES | wxNO);
+			if (ret == wxID_NO) {
+				return;
+			}
+
+			uint32_t old_house_id = what_house->getID();
+
+			map->convertHouseTiles(old_house_id, new_house_id);
+			map->houses.changeId(what_house, new_house_id);
+		}
+
 		// Transfer to house
+		int* new_town_id = reinterpret_cast<int*>(town_id_field->GetClientData(town_id_field->GetSelection()));
+
 		what_house->name = nstr(house_name);
 		what_house->rent = new_house_rent;
 		what_house->guildhall = guildhall_field->GetValue();
+		what_house->townid = *new_town_id;
 
 		EndModal(1);
 	}

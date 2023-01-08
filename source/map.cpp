@@ -303,6 +303,30 @@ void Map::cleanInvalidTiles(bool showdialog)
 		g_gui.DestroyLoadBar();
 }
 
+void Map::convertHouseTiles(uint32_t fromId, uint32_t toId)
+{
+	g_gui.CreateLoadBar("Converting house tiles...");
+	uint64_t tiles_done = 0;
+
+	for (MapIterator miter = begin(); miter != end(); ++miter) {
+		Tile* tile = (*miter)->get();
+		ASSERT(tile);
+
+		uint32_t houseId = tile->getHouseID();
+		if (houseId == 0 || houseId != fromId)
+			continue;
+
+		tile->setHouseID(toId);
+		++tiles_done;
+		if (tiles_done % 0x10000 == 0) {
+			g_gui.SetLoadDone(int(tiles_done / double(getTileCount()) * 100.0));
+		}
+
+	}
+
+	g_gui.DestroyLoadBar();
+}
+
 MapVersion Map::getVersion() const
 {
 	return mapVersion;
