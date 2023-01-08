@@ -215,102 +215,87 @@
 	<brush name="sand" type="ground" server_lookid="231" z-order="3000">
 		<item id="231" chance="1"/>
 
-		<border align="outer" id="49">
-			-- Handles for the 8 different specific cases which might occur with water/sand borders --
-			<specific>
+		<border align="outer" id="49"/>
+		<border align="inner" to="sea" id="41" ground_equivalent="231" super="true">
+			<specific keep_border="true">
 				<conditions>
-					<match_border id="49" edge="s"/>
-					<match_border id="42"  edge="e"/>
+					<match_border id="41" edge="s"/>
+					<match_border id="38" edge="e"/>
 				</conditions>
 				<actions>
-					<replace_border id="42" edge="e" with="4659"/>
+					<replace_border id="41" edge="s" with="4661"/>
 				</actions>
 			</specific>
 
-			<specific>
+			<specific keep_border="true">
 				<conditions>
-					<match_border id="49" edge="n"/>
-					<match_border id="42"  edge="e"/>
+					<match_border id="41" edge="n"/>
+					<match_border id="38" edge="e"/>
 				</conditions>
 				<actions>
-					<replace_border id="42" edge="e" with="4663"/>
+					<replace_border id="41" edge="n" with="4660"/>
 				</actions>
 			</specific>
 
-			<specific>
+			<specific keep_border="true">
 				<conditions>
-					<match_border id="49" edge="s"/>
-					<match_border id="42"  edge="w"/>
+					<match_border id="41" edge="s"/>
+					<match_border id="38" edge="w"/>
 				</conditions>
 				<actions>
-					<replace_border id="42" edge="w" with="4658"/>
+					<replace_border id="41" edge="s" with="4657"/>
 				</actions>
 			</specific>
 
-			<specific>
+			<specific keep_border="true">
 				<conditions>
-					<match_border id="49" edge="n"/>
-					<match_border id="42"  edge="w"/>
+					<match_border id="41" edge="n"/>
+					<match_border id="38" edge="w"/>
 				</conditions>
 				<actions>
-					<replace_border id="42" edge="w" with="4662"/>
+					<replace_border id="41" edge="n" with="4656"/>
 				</actions>
 			</specific>
 
-			<specific>
+			<specific keep_border="true">
 				<conditions>
-					<match_border id="49" edge="e"/>
-					<match_border id="42"  edge="s"/>
+					<match_border id="41" edge="e"/>
+					<match_border id="38" edge="s"/>
 				</conditions>
 				<actions>
-					<replace_border id="42" edge="s" with="4657"/>
+					<replace_border id="41" edge="e" with="4663"/>
 				</actions>
 			</specific>
 
-			<specific>
+			<specific keep_border="true">
 				<conditions>
-					<match_border id="49" edge="w"/>
-					<match_border id="42"  edge="s"/>
+					<match_border id="41" edge="w"/>
+					<match_border id="38" edge="s"/>
 				</conditions>
 				<actions>
-					<replace_border id="42" edge="s" with="4661"/>
+					<replace_border id="41" edge="w" with="4662"/>
 				</actions>
 			</specific>
 
-			<specific>
+			<specific keep_border="true">
 				<conditions>
-					<match_border id="49" edge="e"/>
-					<match_border id="42"  edge="n"/>
+					<match_border id="41" edge="e"/>
+					<match_border id="38" edge="n"/>
 				</conditions>
 				<actions>
-					<replace_border id="42" edge="n" with="4656"/>
+					<replace_border id="41" edge="e" with="4659"/>
 				</actions>
 			</specific>
 
-			<specific>
+			<specific keep_border="true">
 				<conditions>
-					<match_border id="49" edge="w"/>
-					<match_border id="42"  edge="n"/>
+					<match_border id="41" edge="w"/>
+					<match_border id="38" edge="n"/>
 				</conditions>
 				<actions>
-					<replace_border id="42" edge="n" with="4660"/>
+					<replace_border id="41" edge="w" with="4658"/>
 				</actions>
 			</specific>
-		</border>
-
-		<border align="inner" to="sea" ground_equivalent="231">
-			<borderitem edge="n"   item="4632"/>
-			<borderitem edge="e"   item="4635"/>
-			<borderitem edge="s"   item="4634"/>
-			<borderitem edge="w"   item="4633"/>
-			<borderitem edge="cnw" item="4643"/>
-			<borderitem edge="cne" item="4642"/>
-			<borderitem edge="csw" item="4641"/>
-			<borderitem edge="cse" item="4640"/>
-			<borderitem edge="dnw" item="4639"/>
-			<borderitem edge="dne" item="4638"/>
-			<borderitem edge="dsw" item="4637"/>
-			<borderitem edge="dse" item="4636"/>
 		</border>
 		<border align="inner" to="none" id="7"/>
 	</brush>

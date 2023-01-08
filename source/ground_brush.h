@@ -64,13 +64,14 @@ protected: // Members
 	bool randomize;
 
 	struct SpecificCaseBlock {
-		SpecificCaseBlock() : match_group(0), group_match_alignment(BORDER_NONE), to_replace_id(0), with_id(0), delete_all(false) {}
+		SpecificCaseBlock() : match_group(0), group_match_alignment(BORDER_NONE), to_replace_id(0), with_id(0), delete_all(false), keepBorder(false) {}
 		std::vector<uint16_t> items_to_match;
 		uint32_t match_group;
 		BorderType group_match_alignment;
 		uint16_t to_replace_id;
 		uint16_t with_id;
 		bool delete_all;
+		bool keepBorder;
 	};
 
 	struct BorderBlock {

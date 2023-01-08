@@ -469,6 +469,10 @@ bool GroundBrush::load(pugi::xml_node node, wxArrayString& warnings)
 					}
 				}
 				if (specificCaseBlock) {
+					if (attribute = subChildNode.attribute("keep_border")) {
+						specificCaseBlock->keepBorder = attribute.as_bool();
+					}
+
 					borderBlock->specific_cases.push_back(specificCaseBlock);
 				}
 			}
@@ -989,10 +993,12 @@ void GroundBrush::doBorders(BaseMap* map, Tile* tile)
 								item->setID(specificCaseBlock->with_id);
 								replaced = true;
 							} else {
-								delete item;
-								it = tileItems.erase(it);
-								inc = false;
-								break;
+								if (specificCaseBlock->delete_all || !specificCaseBlock->keepBorder) {
+									delete item;
+									it = tileItems.erase(it);
+									inc = false;
+									break;
+								}
 							}
 						}
 					}

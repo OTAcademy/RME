@@ -480,22 +480,20 @@
 	</border>
 
 	<!-- beach -->
-	<!--
 	<border id="41">
-		<borderitem edge="s"	item="4632"/>
-		<borderitem edge="n"	item="4634"/>
-		<borderitem edge="w"	item="4635"/>
-		<borderitem edge="e"	item="4633"/>
-		<borderitem edge="dnw"	item="4640"/>
-		<borderitem edge="dne"	item="4641"/>
-		<borderitem edge="dsw"	item="4642"/>
-		<borderitem edge="dse"	item="4643"/>
-		<borderitem edge="cne"	item="4637"/>
-		<borderitem edge="cnw"	item="4636"/>
-		<borderitem edge="cse"	item="4639"/>
-		<borderitem edge="csw"	item="4638"/>
+		<borderitem edge="n"	item="4632"/>
+		<borderitem edge="s"	item="4634"/>
+		<borderitem edge="e"	item="4635"/>
+		<borderitem edge="w"	item="4633"/>
+		<borderitem edge="cse"	item="4640"/>
+		<borderitem edge="csw"	item="4641"/>
+		<borderitem edge="cne"	item="4642"/>
+		<borderitem edge="cnw"	item="4643"/>
+		<borderitem edge="dsw"	item="4637"/>
+		<borderitem edge="dse"	item="4636"/>
+		<borderitem edge="dnw"	item="4639"/>
+		<borderitem edge="dne"	item="4638"/>
 	</border>
-	-->
 
 	<!-- sea -->
 	<border id="42">

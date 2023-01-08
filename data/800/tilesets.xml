@@ -264,6 +264,7 @@
 			<brush name="lawn"/>
 			<brush name="cobblestone"/>
 			<brush name="sandstone"/>
+			<brush name="dark sandstone"/>
 			<brush name="grassy cobblestone"/>
 			<brush name="drawbridge"/>
 			<brush name="dark wooden floor"/>
