@@ -144,9 +144,12 @@
 	</tileset>
 
 	<tileset name="Snow">
-		<terrain>
+		<collections_and_terrain>
 			<brush name="sea"/>
 			<brush name="walkable sea"/>
+			<brush name="earth (soft)"/>
+			<brush name="earth (hard)"/>
+			<brush name="cave (snow)"/>
 			<brush name="snow"/>
 			<brush name="ice"/>
 			<brush name="ramp"/>
@@ -159,7 +162,7 @@
 			<brush name="hole in the ice"/>
 			<brush name="ice debris"/>
 			<item id="486"/>
-		</terrain>
+		</collections_and_terrain>
 	</tileset>
 
 	<tileset name="Stairs">

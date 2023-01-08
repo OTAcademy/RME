@@ -1073,14 +1073,14 @@
 
 	<!-- snowy cave wall border -->
 	<border id="87">
-		<borderitem edge="s"	item="6823"/>
-		<borderitem edge="n"	item="6825"/>
+		<borderitem edge="n"	item="6823"/>
+		<borderitem edge="s"	item="6825"/>
 		<borderitem edge="w"	item="6822"/>
 		<borderitem edge="e"	item="6824"/>
-		<borderitem edge="dnw"	item="6833"/>
-		<borderitem edge="dne"	item="6832"/>
-		<borderitem edge="dsw"	item="6830"/>
-		<borderitem edge="dse"	item="6831"/>
+		<borderitem edge="dsw"	item="6833"/>
+		<borderitem edge="dse"	item="6832"/>
+		<borderitem edge="dnw"	item="6830"/>
+		<borderitem edge="dne"	item="6831"/>
 		<borderitem edge="cne"	item="6829"/>
 		<borderitem edge="cnw"	item="6828"/>
 		<borderitem edge="cse"	item="6826"/>

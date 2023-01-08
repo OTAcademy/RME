@@ -331,14 +331,39 @@
 		<friend name="sand closed stone pile"/>
 	</brush>
 
+	<brush name="cave (snow)" type="ground" server_lookid="6826" z-order="10500">
+		<item id="6838" chance="40"/>
+		<border align="outer" id="87"/>
+		<border align="outer" to="none" id="87"/>
+	</brush>
+	
 	<brush name="earth (soft)" type="ground" server_lookid="101" z-order="10500">
-		<item id="101" chance="1"/>
+		<item id="101" chance="40"/>
+		<item id="5711" chance="1"/>
+		<item id="5712" chance="1"/>
+		<item id="5713" chance="1"/>
+		<item id="5714" chance="1"/>
+		<item id="5715" chance="1"/>
+		<item id="5716" chance="1"/>
+		<item id="5717" chance="1"/>
+		
+		<border align="inner" id="47" to="cave (snow)"/>
 		<border align="outer" id="73"/>
 		<border align="outer" to="none" id="73"/>
 	</brush>
-
+	
 	<brush name="earth (hard)" type="ground" server_lookid="5711" z-order="9040">
-		<item id="5711" chance="1"/>
+		<item id="5718" chance="1"/>
+		<item id="5719" chance="1"/>
+		<item id="5720" chance="1"/>
+		<item id="5721" chance="1"/>
+		<item id="5722" chance="1"/>
+		<item id="5723" chance="1"/>
+		<item id="5724" chance="1"/>
+		<item id="5725" chance="1"/>
+		<item id="5726" chance="1"/>
+		
+		<border align="inner" id="47" to="cave (snow)"/>
 		
 		<border align="outer" id="74">
 			<!-- border directly above SOFT tile -->
@@ -567,6 +592,234 @@
 			<specific>
 				<conditions> <match_border id="73" edge="w"/> <match_border id="74" edge="n"/> </conditions>
 				<actions> <replace_border id="74" edge="n" with="5647"/> </actions>
+			</specific>
+			
+			<!-- border directly above SNOW tile -->
+			<specific>
+				<conditions> <match_border id="87" edge="s"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="6825"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="s"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="6825"/> </actions>
+			</specific>
+
+			<!-- border directly below SNOW tile -->
+			<specific>
+				<conditions> <match_border id="87" edge="n"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="6834"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="n"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="6835"/> </actions>
+			</specific>
+			
+			<!-- border to the left of SNOW tile -->
+			<specific>
+				<conditions> <match_border id="87" edge="e"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="6824"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="e"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="6824"/> </actions>
+			</specific>
+			
+			<!-- border to the right of SNOW tile -->
+			<specific>
+				<conditions> <match_border id="87" edge="w"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="6836"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="w"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="6837"/> </actions>
+			</specific>
+			
+			<!-- border directly above HARD tile (vs SNOW) -->
+			<specific>
+				<conditions> <match_border id="74" edge="s"/> <match_border id="87" edge="cse"/> </conditions>
+				<actions> <replace_border id="87" edge="cse" with="5642"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="s"/> <match_border id="87" edge="csw"/> </conditions>
+				<actions> <replace_border id="87" edge="csw" with="5642"/> </actions>
+			</specific>
+
+			<!-- border directly below HARD tile (vs SNOW) -->
+			<specific>
+				<conditions> <match_border id="74" edge="n"/> <match_border id="87" edge="cne"/> </conditions>
+				<actions> <replace_border id="87" edge="cne" with="5640"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="n"/> <match_border id="87" edge="cnw"/> </conditions>
+				<actions> <replace_border id="87" edge="cnw" with="5640"/> </actions>
+			</specific>
+			
+			<!-- border to the left of HARD tile (vs SNOW) -->
+			<specific>
+				<conditions> <match_border id="74" edge="e"/> <match_border id="87" edge="cse"/> </conditions>
+				<actions> <replace_border id="87" edge="cse" with="5641"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="e"/> <match_border id="87" edge="cne"/> </conditions>
+				<actions> <replace_border id="87" edge="cne" with="5641"/> </actions>
+			</specific>
+			
+			<!-- border to the right of HARD tile (vs SNOW) -->
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="87" edge="csw"/> </conditions>
+				<actions> <replace_border id="87" edge="csw" with="5639"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="87" edge="cnw"/> </conditions>
+				<actions> <replace_border id="87" edge="cnw" with="5639"/> </actions>
+			</specific>
+
+			<!-- north-west corner specific (SNOW) -->
+			<specific>
+				<conditions> <match_border id="87" edge="csw"/> <match_border id="87" edge="cne"/> <match_border id="74" edge="dse"/> </conditions>
+				<actions> <replace_border id="74" edge="dse" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="csw"/> <match_border id="74" edge="cne"/> <match_border id="87" edge="dse"/> </conditions>
+				<actions> <replace_border id="87" edge="dse" with="6832"/> </actions>
+			</specific>
+	
+			<specific>
+				<conditions> <match_border id="74" edge="dse"/> <match_border id="87" edge="cne"/> </conditions>
+				<actions> <replace_border id="87" edge="cne" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="dse"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="6832"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dse"/> <match_border id="87" edge="csw"/> </conditions>
+				<actions> <replace_border id="87" edge="csw" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="dse"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="6832"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="e"/> <match_border id="87" edge="s"/> </conditions>
+				<actions> <replace_border id="87" edge="s" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="e"/> <match_border id="74" edge="s"/> </conditions>
+				<actions> <replace_border id="74" edge="s" with="6832"/> </actions>
+			</specific>
+	
+			<!-- north-east corner specific (SNOW) -->
+			<specific>
+				<conditions> <match_border id="87" edge="cnw"/> <match_border id="87" edge="cse"/> <match_border id="74" edge="dsw"/> </conditions>
+				<actions> <replace_border id="74" edge="dsw" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="cnw"/> <match_border id="74" edge="cse"/> <match_border id="87" edge="dsw"/> </conditions>
+				<actions> <replace_border id="87" edge="dsw" with="6833"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dsw"/> <match_border id="87" edge="cse"/> </conditions>
+				<actions> <replace_border id="87" edge="cse" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="dsw"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="6833"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dsw"/> <match_border id="87" edge="cnw"/> </conditions>
+				<actions> <replace_border id="87" edge="cnw" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="dsw"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="6833"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="87" edge="s"/> </conditions>
+				<actions> <replace_border id="87" edge="s" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="w"/> <match_border id="74" edge="s"/> </conditions>
+				<actions> <replace_border id="74" edge="s" with="6833"/> </actions>
+			</specific>
+			
+			<!-- south-west corner specific (SNOW) -->
+			<specific>
+				<conditions> <match_border id="87" edge="cnw"/> <match_border id="87" edge="cse"/> <match_border id="74" edge="dne"/> </conditions>
+				<actions> <replace_border id="74" edge="dne" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="cnw"/> <match_border id="74" edge="cse"/> <match_border id="87" edge="dne"/> </conditions>
+				<actions> <replace_border id="87" edge="dne" with="5652"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dne"/> <match_border id="87" edge="cse"/> </conditions>
+				<actions> <replace_border id="87" edge="cse" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="dne"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="5652"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dne"/> <match_border id="87" edge="cnw"/> </conditions>
+				<actions> <replace_border id="87" edge="cnw" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="dne"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="5652"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="n"/> <match_border id="87" edge="e"/> </conditions>
+				<actions> <replace_border id="87" edge="e" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="n"/> <match_border id="74" edge="e"/> </conditions>
+				<actions> <replace_border id="74" edge="e" with="5652"/> </actions>
+			</specific>
+
+			<!-- south-east corner specific (SNOW) -->
+			<specific>
+				<conditions> <match_border id="87" edge="csw"/> <match_border id="87" edge="cne"/> <match_border id="74" edge="dnw"/> </conditions>
+				<actions> <replace_border id="74" edge="dnw" with="5648"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="csw"/> <match_border id="74" edge="cne"/> <match_border id="87" edge="dnw"/> </conditions>
+				<actions> <replace_border id="87" edge="dnw" with="5648"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dnw"/> <match_border id="87" edge="csw"/> </conditions>
+				<actions> <replace_border id="87" edge="csw" with="5648"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="dnw"/> <match_border id="87" edge="cne"/> </conditions>
+				<actions> <replace_border id="87" edge="cne" with="5648"/> </actions>
+			</specific>
+
+			<specific>
+				<conditions> <match_border id="87" edge="dnw"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="6830"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="dnw"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="6830"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="87" edge="n"/> </conditions>
+				<actions> <replace_border id="87" edge="n" with="5648"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="w"/> <match_border id="74" edge="n"/> </conditions>
+				<actions> <replace_border id="74" edge="n" with="6830"/> </actions>
 			</specific>
 		</border>
 		
@@ -798,6 +1051,234 @@
 			<specific>
 				<conditions> <match_border id="73" edge="w"/> <match_border id="74" edge="n"/> </conditions>
 				<actions> <replace_border id="74" edge="n" with="5647"/> </actions>
+			</specific>
+			
+			<!-- border directly above SNOW tile -->
+			<specific>
+				<conditions> <match_border id="87" edge="s"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="6825"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="s"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="6825"/> </actions>
+			</specific>
+
+			<!-- border directly below SNOW tile -->
+			<specific>
+				<conditions> <match_border id="87" edge="n"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="6834"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="n"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="6835"/> </actions>
+			</specific>
+			
+			<!-- border to the left of SNOW tile -->
+			<specific>
+				<conditions> <match_border id="87" edge="e"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="6824"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="e"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="6824"/> </actions>
+			</specific>
+			
+			<!-- border to the right of SNOW tile -->
+			<specific>
+				<conditions> <match_border id="87" edge="w"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="6836"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="w"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="6837"/> </actions>
+			</specific>
+			
+			<!-- border directly above HARD tile (vs SNOW) -->
+			<specific>
+				<conditions> <match_border id="74" edge="s"/> <match_border id="87" edge="cse"/> </conditions>
+				<actions> <replace_border id="87" edge="cse" with="5642"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="s"/> <match_border id="87" edge="csw"/> </conditions>
+				<actions> <replace_border id="87" edge="csw" with="5642"/> </actions>
+			</specific>
+
+			<!-- border directly below HARD tile (vs SNOW) -->
+			<specific>
+				<conditions> <match_border id="74" edge="n"/> <match_border id="87" edge="cne"/> </conditions>
+				<actions> <replace_border id="87" edge="cne" with="5640"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="n"/> <match_border id="87" edge="cnw"/> </conditions>
+				<actions> <replace_border id="87" edge="cnw" with="5640"/> </actions>
+			</specific>
+			
+			<!-- border to the left of HARD tile (vs SNOW) -->
+			<specific>
+				<conditions> <match_border id="74" edge="e"/> <match_border id="87" edge="cse"/> </conditions>
+				<actions> <replace_border id="87" edge="cse" with="5641"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="e"/> <match_border id="87" edge="cne"/> </conditions>
+				<actions> <replace_border id="87" edge="cne" with="5641"/> </actions>
+			</specific>
+			
+			<!-- border to the right of HARD tile (vs SNOW) -->
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="87" edge="csw"/> </conditions>
+				<actions> <replace_border id="87" edge="csw" with="5639"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="87" edge="cnw"/> </conditions>
+				<actions> <replace_border id="87" edge="cnw" with="5639"/> </actions>
+			</specific>
+
+			<!-- north-west corner specific (SNOW) -->
+			<specific>
+				<conditions> <match_border id="87" edge="csw"/> <match_border id="87" edge="cne"/> <match_border id="74" edge="dse"/> </conditions>
+				<actions> <replace_border id="74" edge="dse" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="csw"/> <match_border id="74" edge="cne"/> <match_border id="87" edge="dse"/> </conditions>
+				<actions> <replace_border id="87" edge="dse" with="6832"/> </actions>
+			</specific>
+	
+			<specific>
+				<conditions> <match_border id="74" edge="dse"/> <match_border id="87" edge="cne"/> </conditions>
+				<actions> <replace_border id="87" edge="cne" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="dse"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="6832"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dse"/> <match_border id="87" edge="csw"/> </conditions>
+				<actions> <replace_border id="87" edge="csw" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="dse"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="6832"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="e"/> <match_border id="87" edge="s"/> </conditions>
+				<actions> <replace_border id="87" edge="s" with="5653"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="e"/> <match_border id="74" edge="s"/> </conditions>
+				<actions> <replace_border id="74" edge="s" with="6832"/> </actions>
+			</specific>
+	
+			<!-- north-east corner specific (SNOW) -->
+			<specific>
+				<conditions> <match_border id="87" edge="cnw"/> <match_border id="87" edge="cse"/> <match_border id="74" edge="dsw"/> </conditions>
+				<actions> <replace_border id="74" edge="dsw" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="cnw"/> <match_border id="74" edge="cse"/> <match_border id="87" edge="dsw"/> </conditions>
+				<actions> <replace_border id="87" edge="dsw" with="6833"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dsw"/> <match_border id="87" edge="cse"/> </conditions>
+				<actions> <replace_border id="87" edge="cse" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="dsw"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="6833"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dsw"/> <match_border id="87" edge="cnw"/> </conditions>
+				<actions> <replace_border id="87" edge="cnw" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="dsw"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="6833"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="87" edge="s"/> </conditions>
+				<actions> <replace_border id="87" edge="s" with="5654"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="w"/> <match_border id="74" edge="s"/> </conditions>
+				<actions> <replace_border id="74" edge="s" with="6833"/> </actions>
+			</specific>
+			
+			<!-- south-west corner specific (SNOW) -->
+			<specific>
+				<conditions> <match_border id="87" edge="cnw"/> <match_border id="87" edge="cse"/> <match_border id="74" edge="dne"/> </conditions>
+				<actions> <replace_border id="74" edge="dne" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="cnw"/> <match_border id="74" edge="cse"/> <match_border id="87" edge="dne"/> </conditions>
+				<actions> <replace_border id="87" edge="dne" with="5652"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dne"/> <match_border id="87" edge="cse"/> </conditions>
+				<actions> <replace_border id="87" edge="cse" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="dne"/> <match_border id="74" edge="cse"/> </conditions>
+				<actions> <replace_border id="74" edge="cse" with="5652"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dne"/> <match_border id="87" edge="cnw"/> </conditions>
+				<actions> <replace_border id="87" edge="cnw" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="dne"/> <match_border id="74" edge="cnw"/> </conditions>
+				<actions> <replace_border id="74" edge="cnw" with="5652"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="n"/> <match_border id="87" edge="e"/> </conditions>
+				<actions> <replace_border id="87" edge="e" with="5652"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="n"/> <match_border id="74" edge="e"/> </conditions>
+				<actions> <replace_border id="74" edge="e" with="5652"/> </actions>
+			</specific>
+
+			<!-- south-east corner specific (SNOW) -->
+			<specific>
+				<conditions> <match_border id="87" edge="csw"/> <match_border id="87" edge="cne"/> <match_border id="74" edge="dnw"/> </conditions>
+				<actions> <replace_border id="74" edge="dnw" with="5648"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="csw"/> <match_border id="74" edge="cne"/> <match_border id="87" edge="dnw"/> </conditions>
+				<actions> <replace_border id="87" edge="dnw" with="5648"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="dnw"/> <match_border id="87" edge="csw"/> </conditions>
+				<actions> <replace_border id="87" edge="csw" with="5648"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="74" edge="dnw"/> <match_border id="87" edge="cne"/> </conditions>
+				<actions> <replace_border id="87" edge="cne" with="5648"/> </actions>
+			</specific>
+
+			<specific>
+				<conditions> <match_border id="87" edge="dnw"/> <match_border id="74" edge="csw"/> </conditions>
+				<actions> <replace_border id="74" edge="csw" with="6830"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="dnw"/> <match_border id="74" edge="cne"/> </conditions>
+				<actions> <replace_border id="74" edge="cne" with="6830"/> </actions>
+			</specific>
+			
+			<specific>
+				<conditions> <match_border id="74" edge="w"/> <match_border id="87" edge="n"/> </conditions>
+				<actions> <replace_border id="87" edge="n" with="5648"/> </actions>
+			</specific>
+			<specific>
+				<conditions> <match_border id="87" edge="w"/> <match_border id="74" edge="n"/> </conditions>
+				<actions> <replace_border id="74" edge="n" with="6830"/> </actions>
 			</specific>
 		</border>
 		
