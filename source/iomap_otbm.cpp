@@ -721,6 +721,11 @@ bool IOMapOTBM::loadMap(Map& map, const FileName& filename)
 		warning("Failed to load spawns.");
 		map.spawnfile = nstr(filename.GetName()) + "-spawn.xml";
 	}
+	if (!loadWaypoints(map, filename)) {
+		// just assume the map did not have this file before
+		//warning("Failed to load waypoints.");
+		map.waypointfile = nstr(filename.GetName()) + "-waypoint.xml";
+	}
 	return true;
 }
 
@@ -805,6 +810,14 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f)
 			}
 			case OTBM_ATTR_EXT_HOUSE_FILE: {
 				if(!mapHeaderNode->getString(map.housefile)) {
+					warning("Invalid map housefile tag");
+				}
+				break;
+			}
+			case OTBM_ATTR_EXT_SPAWN_NPC_FILE: {
+				// compatibility: skip Canary RME NPC spawn file tag
+				std::string stringToSkip;
+				if (!mapHeaderNode->getString(stringToSkip)) {
 					warning("Invalid map housefile tag");
 				}
 				break;
@@ -1245,6 +1258,22 @@ bool IOMapOTBM::loadHouses(Map& map, pugi::xml_document& doc)
 	return true;
 }
 
+bool IOMapOTBM::loadWaypoints(Map& map, const FileName& dir) {
+	std::string fn = (const char*)(dir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME).mb_str(wxConvUTF8));
+	fn += map.waypointfile;
+	FileName filename(wxstr(fn));
+	if (!filename.FileExists())
+		return false;
+
+	pugi::xml_document doc;
+	pugi::xml_parse_result result = doc.load_file(fn.c_str());
+	if (!result) {
+		return false;
+	}
+	return loadWaypoints(map, doc);
+};
+bool IOMapOTBM::loadWaypoints(Map& map, pugi::xml_document& doc) { return true;  };
+
 bool IOMapOTBM::saveMap(Map& map, const FileName& identifier)
 {
 #ifdef OTGZ_SUPPORT
@@ -1293,6 +1322,30 @@ bool IOMapOTBM::saveMap(Map& map, const FileName& identifier)
 			// Write to the arhive
 			entry = archive_entry_new();
 			archive_entry_set_pathname(entry, "world/houses.xml");
+			archive_entry_set_size(entry, xmlData.size());
+			archive_entry_set_filetype(entry, AE_IFREG);
+			archive_entry_set_perm(entry, 0644);
+
+			// Write to the archive
+			archive_write_header(a, entry);
+			archive_write_data(a, xmlData.data(), xmlData.size());
+
+			// Free the entry
+			archive_entry_free(entry);
+			streamData.str("");
+		}
+
+		g_gui.SetLoadDone(0, "Saving waypoints...");
+
+		pugi::xml_document wpDoc;
+		if (saveWaypoints(map, wpDoc)) {
+			// Write the data
+			wpDoc.save(streamData, "", pugi::format_raw, pugi::encoding_utf8);
+			std::string xmlData = streamData.str();
+
+			// Write to the arhive
+			entry = archive_entry_new();
+			archive_entry_set_pathname(entry, "world/waypoints.xml");
 			archive_entry_set_size(entry, xmlData.size());
 			archive_entry_set_filetype(entry, AE_IFREG);
 			archive_entry_set_perm(entry, 0644);
@@ -1356,6 +1409,9 @@ bool IOMapOTBM::saveMap(Map& map, const FileName& identifier)
 
 	g_gui.SetLoadDone(99, "Saving houses...");
 	saveHouses(map, identifier);
+
+	g_gui.SetLoadDone(99, "Saving waypoints...");
+	saveWaypoints(map, identifier);
 	return true;
 }
 
@@ -1371,6 +1427,8 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f)
 	 * to port to newer versions of the editor than a custom binary
 	 * format.
 	 */
+
+	bool waypointsWarning = false;
 
 	const IOMapOTBM& self = *this;
 
@@ -1511,15 +1569,20 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f)
 			}
 			f.endNode();
 
-			if(version.otbm >= MAP_OTBM_3) {
+			bool supportWaypoints = version.otbm >= MAP_OTBM_3;
+			if (supportWaypoints || map.waypoints.waypoints.size() > 0) {
+				if (!supportWaypoints) {
+					waypointsWarning = true;
+				}
+
 				f.addNode(OTBM_WAYPOINTS);
-				for(const auto& waypointEntry : map.waypoints) {
+				for (const auto& waypointEntry : map.waypoints) {
 					Waypoint* waypoint = waypointEntry.second;
 					f.addNode(OTBM_WAYPOINT);
-						f.addString(waypoint->name);
-						f.addU16(waypoint->pos.x);
-						f.addU16(waypoint->pos.y);
-						f.addU8(waypoint->pos.z);
+					f.addString(waypoint->name);
+					f.addU16(waypoint->pos.x);
+					f.addU16(waypoint->pos.y);
+					f.addU8(waypoint->pos.z);
 					f.endNode();
 				}
 				f.endNode();
@@ -1528,6 +1591,11 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f)
 		f.endNode();
 	}
 	f.endNode();
+
+	if (waypointsWarning) {
+		g_gui.PopupDialog(g_gui.root, "Warning",
+			"Waypoints were saved, but they are not supported in OTBM 2!\nIf your map fails to load, consider removing all waypoints and saving again.\n\nThis warning can be disabled in file->preferences.", wxOK);
+	}
 	return true;
 }
 
@@ -1647,6 +1715,47 @@ bool IOMapOTBM::saveHouses(Map& map, pugi::xml_document& doc)
 
 		houseNode.append_attribute("townid") = house->townid;
 		houseNode.append_attribute("size") = static_cast<int32_t>(house->size());
+	}
+	return true;
+}
+
+bool IOMapOTBM::saveWaypoints(Map& map, const FileName& dir)
+{
+	wxString filepath = dir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME);
+	filepath += wxString(map.housefile.c_str(), wxConvUTF8);
+
+	// Create the XML file
+	pugi::xml_document doc;
+	if (saveWaypoints(map, doc)) {
+		return doc.save_file(filepath.wc_str(), "\t", pugi::format_default, pugi::encoding_utf8);
+	}
+	return false;
+}
+
+bool IOMapOTBM::saveWaypoints(Map& map, pugi::xml_document& doc)
+{
+	pugi::xml_node decl = doc.prepend_child(pugi::node_declaration);
+	if (!decl) {
+		return false;
+	}
+
+	decl.append_attribute("version") = "1.0";
+
+	pugi::xml_node houseNodes = doc.append_child("waypoints");
+	for (const auto& houseEntry : map.houses) {
+		const House* house = houseEntry.second;
+		pugi::xml_node houseNode = houseNodes.append_child("waypoint");
+
+		houseNode.append_attribute("name") = house->name.c_str();
+		houseNode.append_attribute("id") = house->getID();
+		houseNode.append_attribute("icon") = house->getID();
+
+		const Position& exitPosition = house->getExit();
+		houseNode.append_attribute("x") = exitPosition.x;
+		houseNode.append_attribute("y") = exitPosition.y;
+		houseNode.append_attribute("z") = exitPosition.z;
+
+		houseNode.append_attribute("townid") = house->townid;
 	}
 	return true;
 }

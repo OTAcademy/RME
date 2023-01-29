@@ -73,7 +73,7 @@ void WaypointPalettePanel::OnSwitchOut()
 void WaypointPalettePanel::SetMap(Map* m)
 {
 	map = m;
-	this->Enable(m && m->getVersion().otbm >= MAP_OTBM_3);
+	this->Enable(m);
 }
 
 void WaypointPalettePanel::SelectFirstBrush()

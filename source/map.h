@@ -115,6 +115,7 @@ protected:
 
 	std::string spawnfile; // The maps spawnfile
 	std::string housefile; // The housefile
+	std::string waypointfile; // The waypoints file (stores extended waypoint information such as id, preferred icon and matching town)
 
 public:
 	Towns towns;
