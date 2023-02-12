@@ -203,6 +203,10 @@ void MapCanvas::OnPaint(wxPaintEvent& event)
 			options.transparent_floors = g_settings.getBoolean(Config::TRANSPARENT_FLOORS);
 			options.transparent_items = g_settings.getBoolean(Config::TRANSPARENT_ITEMS);
 			options.show_ingame_box = g_settings.getBoolean(Config::SHOW_INGAME_BOX);
+			options.show_lights = g_settings.getBoolean(Config::SHOW_LIGHTS);
+			options.show_light_str = g_settings.getBoolean(Config::SHOW_LIGHT_STR);
+			options.show_tech_items = g_settings.getBoolean(Config::SHOW_TECHNICAL_ITEMS);
+			options.show_waypoints = g_settings.getBoolean(Config::SHOW_WAYPOINTS);
 			options.show_grid = g_settings.getInteger(Config::SHOW_GRID);
 			options.ingame = !g_settings.getBoolean(Config::SHOW_EXTRA);
 			options.show_all_floors = g_settings.getBoolean(Config::SHOW_ALL_FLOORS);
@@ -334,15 +338,15 @@ void MapCanvas::ScreenToMap(int screen_x, int screen_y, int* map_x, int* map_y)
 	screen_y *= GetContentScaleFactor();
 
 	if(screen_x < 0) {
-		*map_x = (start_x + screen_x) / TILE_SIZE;
+		*map_x = (start_x + screen_x) / TileSize;
 	} else {
-		*map_x = int(start_x + (screen_x * zoom)) / TILE_SIZE;
+		*map_x = int(start_x + (screen_x * zoom)) / TileSize;
 	}
 
 	if(screen_y < 0) {
-		*map_y = (start_y + screen_y) / TILE_SIZE;
+		*map_y = (start_y + screen_y) / TileSize;
 	} else {
-		*map_y = int(start_y + (screen_y * zoom)) / TILE_SIZE;
+		*map_y = int(start_y + (screen_y * zoom)) / TileSize;
 	}
 
 	if(floor <= GROUND_LAYER) {
@@ -1602,7 +1606,7 @@ void MapCanvas::OnKeyDown(wxKeyEvent& event)
 			else if(zoom == 1.0)
 				tiles = 1;
 
-			static_cast<MapWindow*>(GetParent())->Scroll(start_x, int(start_y - TILE_SIZE * tiles * zoom));
+			static_cast<MapWindow*>(GetParent())->Scroll(start_x, int(start_y - TileSize * tiles * zoom));
 			UpdatePositionStatus();
 			Refresh();
 			break;
@@ -1618,7 +1622,7 @@ void MapCanvas::OnKeyDown(wxKeyEvent& event)
 			else if(zoom == 1.0)
 				tiles = 1;
 
-			static_cast<MapWindow*>(GetParent())->Scroll(start_x, int(start_y + TILE_SIZE * tiles * zoom));
+			static_cast<MapWindow*>(GetParent())->Scroll(start_x, int(start_y + TileSize * tiles * zoom));
 			UpdatePositionStatus();
 			Refresh();
 			break;
@@ -1634,7 +1638,7 @@ void MapCanvas::OnKeyDown(wxKeyEvent& event)
 			else if(zoom == 1.0)
 				tiles = 1;
 
-			static_cast<MapWindow*>(GetParent())->Scroll(int(start_x - TILE_SIZE * tiles * zoom), start_y);
+			static_cast<MapWindow*>(GetParent())->Scroll(int(start_x - TileSize * tiles * zoom), start_y);
 			UpdatePositionStatus();
 			Refresh();
 			break;
@@ -1650,7 +1654,7 @@ void MapCanvas::OnKeyDown(wxKeyEvent& event)
 			else if(zoom == 1.0)
 				tiles = 1;
 
-			static_cast<MapWindow*>(GetParent())->Scroll(int(start_x + TILE_SIZE * tiles * zoom), start_y);
+			static_cast<MapWindow*>(GetParent())->Scroll(int(start_x + TileSize * tiles * zoom), start_y);
 			UpdatePositionStatus();
 			Refresh();
 			break;
@@ -1713,13 +1717,13 @@ void MapCanvas::OnKeyDown(wxKeyEvent& event)
 				if(g_gui.IsSelectionMode()) {
 					int view_start_x, view_start_y;
 					static_cast<MapWindow*>(GetParent())->GetViewStart(&view_start_x, &view_start_y);
-					int view_start_map_x = view_start_x / TILE_SIZE, view_start_map_y = view_start_y / TILE_SIZE;
+					int view_start_map_x = view_start_x / TileSize, view_start_map_y = view_start_y / TileSize;
 
 					int view_screensize_x, view_screensize_y;
 					static_cast<MapWindow*>(GetParent())->GetViewSize(&view_screensize_x, &view_screensize_y);
 
-					int map_x = int(view_start_map_x + (view_screensize_x * zoom) / TILE_SIZE / 2);
-					int map_y = int(view_start_map_y + (view_screensize_y * zoom) / TILE_SIZE / 2);
+					int map_x = int(view_start_map_x + (view_screensize_x * zoom) / TileSize / 2);
+					int map_y = int(view_start_map_y + (view_screensize_y * zoom) / TileSize / 2);
 
 					hk = Hotkey(Position(map_x, map_y, floor));
 				} else if(g_gui.GetCurrentBrush()) {
@@ -1739,7 +1743,7 @@ void MapCanvas::OnKeyDown(wxKeyEvent& event)
 					int map_y = hk.GetPosition().y;
 					int map_z = hk.GetPosition().z;
 
-					static_cast<MapWindow*>(GetParent())->Scroll(TILE_SIZE * map_x, TILE_SIZE * map_y, true);
+					static_cast<MapWindow*>(GetParent())->Scroll(TileSize * map_x, TileSize * map_y, true);
 					floor = map_z;
 
 					g_gui.SetStatusText("Used hotkey " + i2ws(index));

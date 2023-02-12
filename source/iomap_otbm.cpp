@@ -1334,7 +1334,8 @@ bool IOMapOTBM::saveMap(Map& map, const FileName& identifier)
 			archive_entry_free(entry);
 			streamData.str("");
 		}
-
+		// to do
+		/*
 		g_gui.SetLoadDone(0, "Saving waypoints...");
 
 		pugi::xml_document wpDoc;
@@ -1358,7 +1359,7 @@ bool IOMapOTBM::saveMap(Map& map, const FileName& identifier)
 			archive_entry_free(entry);
 			streamData.str("");
 		}
-
+		*/
 		g_gui.SetLoadDone(0, "Saving OTBM map...");
 
 		MemoryNodeFileWriteHandle otbmWriter;
@@ -1410,8 +1411,9 @@ bool IOMapOTBM::saveMap(Map& map, const FileName& identifier)
 	g_gui.SetLoadDone(99, "Saving houses...");
 	saveHouses(map, identifier);
 
-	g_gui.SetLoadDone(99, "Saving waypoints...");
-	saveWaypoints(map, identifier);
+	// to do
+	//g_gui.SetLoadDone(99, "Saving waypoints...");
+	//saveWaypoints(map, identifier);
 	return true;
 }
 
@@ -1722,7 +1724,7 @@ bool IOMapOTBM::saveHouses(Map& map, pugi::xml_document& doc)
 bool IOMapOTBM::saveWaypoints(Map& map, const FileName& dir)
 {
 	wxString filepath = dir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME);
-	filepath += wxString(map.housefile.c_str(), wxConvUTF8);
+	filepath += wxString(map.waypointfile.c_str(), wxConvUTF8);
 
 	// Create the XML file
 	pugi::xml_document doc;

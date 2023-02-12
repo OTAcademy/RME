@@ -29,6 +29,8 @@ class Creature;
 class Border;
 class Tile;
 
+struct SpriteLight;
+
 enum ITEMPROPERTY {
 	BLOCKSOLID,
 	HASHEIGHT,
@@ -183,6 +185,9 @@ public:
 	uint8_t getMiniMapColor() const;
 	int getHeight() const;
 	std::pair<int,int> getDrawOffset() const;
+
+	bool hasLight() const;
+	SpriteLight getLight() const;
 
 	// Item types
 	bool hasProperty(enum ITEMPROPERTY prop) const;

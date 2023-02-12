@@ -49,10 +49,15 @@ struct DrawingOptions {
 
 	void SetIngame();
 	void SetDefault();
+	bool isDrawLight() const noexcept;
 
 	bool transparent_floors;
 	bool transparent_items;
 	bool show_ingame_box;
+	bool show_lights;
+	bool show_light_str;
+	bool show_tech_items;
+	bool show_waypoints;
 	bool ingame;
 	bool dragging;
 
@@ -78,12 +83,14 @@ struct DrawingOptions {
 };
 
 class MapCanvas;
+class LightDrawer;
 
 class MapDrawer
 {
 	MapCanvas* canvas;
 	Editor& editor;
 	DrawingOptions options;
+	std::shared_ptr<LightDrawer> light_drawer;
 
 	float zoom;
 
@@ -123,6 +130,7 @@ public:
 	void DrawIngameBox();
 	void DrawGrid();
 	void DrawTooltips();
+	void DrawLight();
 
 	void TakeScreenshot(uint8_t* screenshot_buffer);
 
@@ -141,6 +149,7 @@ protected:
 	void WriteTooltip(Item* item, std::ostringstream& stream);
 	void WriteTooltip(Waypoint* item, std::ostringstream& stream);
 	void MakeTooltip(int screenx, int screeny, const std::string& text, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255);
+	void AddLight(TileLocation* location);
 
 	enum BrushColor {
 		COLOR_BRUSH,
@@ -155,10 +164,12 @@ protected:
 
 	void getColor(Brush* brush, const Position& position, uint8_t &r, uint8_t &g, uint8_t &b);
 	void glBlitTexture(int sx, int sy, int texture_number, int red, int green, int blue, int alpha);
-	void glBlitSquare(int sx, int sy, int red, int green, int blue, int alpha);
+	void glBlitSquare(int sx, int sy, int red, int green, int blue, int alpha, int size = 0);
 	void glColor(wxColor color);
 	void glColor(BrushColor color);
 	void glColorCheck(Brush* brush, const Position& pos);
+	void drawRect(int x, int y, int w, int h, const wxColor& color, int width = 1);
+	void drawFilledRect(int x, int y, int w, int h, const wxColor& color);
 };
 
 

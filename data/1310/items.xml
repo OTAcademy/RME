@@ -65702,15 +65702,15 @@
 		<attribute key="weight" value="175" />
 	</item>
 	<item fromid="44072" article="a" toid="44122" name="bridge"/>
-	<item id="44123" article="a" name="primal light" editorsuffix=" (19sqm Orange Glow)"/>
-	<item id="44124" article="a" name="primal light" editorsuffix=" (15sqm Red Glow)"/>
-	<item id="44125" article="a" name="primal light" editorsuffix=" (19sqm Yellow Glow)"/>
-	<item id="44126" article="a" name="primal light" editorsuffix=" (3sqm Green Glow)"/>
-	<item id="44127" article="a" name="primal light" editorsuffix=" (15sqm Orange Glow)"/>
-	<item id="44128" article="a" name="primal light" editorsuffix=" (19sqm Green Glow)"/>
-	<item id="44129" article="a" name="primal light" editorsuffix=" (13sqm Orange Glow)"/>
-	<item id="44130" article="a" name="primal light" editorsuffix=" (7sqm Red Glow)"/>
-	<item id="44131" article="a" name="primal light" editorsuffix=" (15sqm Blue Glow)"/>
+	<item id="44123" article="a" name="primal light" editorsuffix=" (R: 6, Yellow)"/>
+	<item id="44124" article="a" name="primal light" editorsuffix=" (R: 6, Red)"/>
+	<item id="44125" article="a" name="primal light" editorsuffix=" (R: 6, Green)"/>
+	<item id="44126" article="a" name="primal light" editorsuffix=" (R: 1, Green)"/>
+	<item id="44127" article="a" name="primal light" editorsuffix=" (R: 6, Yellow)"/>
+	<item id="44128" article="a" name="primal light" editorsuffix=" (R: 6, Green)"/>
+	<item id="44129" article="a" name="primal light" editorsuffix=" (R: 6, Yellow)"/>
+	<item id="44130" article="a" name="primal light" editorsuffix=" (R: 3, Yellow)"/>
+	<item id="44131" article="a" name="primal light" editorsuffix=" (R: 6, White)"/>
 	<item fromid="44132" toid="44136" article="a" name="flame" editorsuffix=" (Not Walkable)"/>
 	<item id="44137" article="a" name="fire"/>
 	<item id="44138" article="a" name="delicate vase" editorsuffix=" (Immobile)"/>
@@ -66392,7 +66392,7 @@
 		<attribute key="slotType" value="necklace" />
 		<attribute key="loottype" value="amulet" />
 	</item>
-	<item id="44267" article="a" name="primal light"/>
+	<item id="44267" article="a" name="primal light" editorsuffix=" (R: 1, White)"/>
 	<!-- 44268 -->
 	<item id="44269" article="a" name="portal without energy"/>
 	<item id="44270" article="a" name="burnt coral vow flower"/>
@@ -66929,7 +66929,8 @@
 		<attribute key="corpseType" value="blood" />
 		<attribute key="fluidSource" value="blood" />
 	</item>
-	<item fromid="44398" toid="44399" article="a"  name="primal light"/>
+	<item id="44398" article="a" name="primal light" editorsuffix=" (R: 3, Green)"/>
+	<item id="44399" article="a" name="primal light" editorsuffix=" (R: 5, Cyan)"/>
 	<item fromid="44400" toid="44402" name="mossy floor"/>
 	<item id="44403" name="monster leftovers"/>
 	<item id="44404" article="a" name="crystal flame"/>

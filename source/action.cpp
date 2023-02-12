@@ -393,7 +393,9 @@ void Action::undo(DirtyList* dirty_list)
 						if(oldtile && oldtile->getWaypointCount() > 0)
 							oldtile->decreaseWaypointCount();
 
-					newtile->increaseWaypointCount();
+					if (newtile) {
+						newtile->increaseWaypointCount();
+					}
 
 					// Update shit
 					Position oldpos = wp->pos;

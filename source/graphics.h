@@ -45,6 +45,11 @@ class GraphicManager;
 class FileReadHandle;
 class Animator;
 
+struct SpriteLight {
+	uint8_t intensity = 0;
+	uint8_t color = 0;
+};
+
 class Sprite {
 public:
 	Sprite() {}
@@ -86,6 +91,9 @@ public:
 	int getDrawHeight() const;
 	std::pair<int, int> getDrawOffset() const;
 	uint8_t getMiniMapColor() const;
+
+	bool hasLight() const noexcept { return has_light; }
+	const SpriteLight& getLight() const noexcept { return light; }
 
 protected:
 	class Image;
@@ -180,6 +188,9 @@ public:
 	uint16_t drawoffset_y;
 
 	uint16_t minimap_color;
+
+	bool has_light = false;
+	SpriteLight light;
 
 	std::vector<NormalImage*> spriteList;
 	std::list<TemplateImage*> instanced_templates; // Templates that use this sprite

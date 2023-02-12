@@ -24,7 +24,7 @@
 // xxyyzzt (major, minor, subversion)
 #define __RME_VERSION_MAJOR__      3
 #define __RME_VERSION_MINOR__      9
-#define __RME_SUBVERSION__         1
+#define __RME_SUBVERSION__         9
 
 #define __LIVE_NET_VERSION__       5
 
@@ -38,12 +38,17 @@
     __RME_VERSION_MINOR__, \
     __RME_SUBVERSION__)
 
+#define __PRERELEASE__ 1
+
 #ifdef __EXPERIMENTAL__
 #   define __RME_VERSION__ std::string(i2s(__RME_VERSION_MAJOR__) + "." + i2s(__RME_VERSION_MINOR__) + "." + i2s(__RME_SUBVERSION__) + " BETA")
 #   define __W_RME_VERSION__ (wxString() << __RME_VERSION_MAJOR__ << "." << __RME_VERSION_MINOR__ << "." << __RME_SUBVERSION__ << " BETA")
 #elif __SNAPSHOT__
 #   define __RME_VERSION__ std::string(i2s(__RME_VERSION_MAJOR__) + "." + i2s(__RME_VERSION_MINOR__) + "." + i2s(__RME_SUBVERSION__) + " - SNAPSHOT")
 #   define __W_RME_VERSION__ (wxString() << __RME_VERSION_MAJOR__ << "." << __RME_VERSION_MINOR__ << "." << __RME_SUBVERSION__ << " - SNAPSHOT")
+#elif __PRERELEASE__
+#   define __RME_VERSION__ std::string(i2s(__RME_VERSION_MAJOR__) + "." + i2s(__RME_VERSION_MINOR__) + "." + i2s(__RME_SUBVERSION__) + "_OTA (Pre-release)")
+#   define __W_RME_VERSION__ (wxString() << __RME_VERSION_MAJOR__ << "." << __RME_VERSION_MINOR__ << "." << __RME_SUBVERSION__ << "_OTA (Pre-release)")
 #else
 #   define __RME_VERSION__ std::string(i2s(__RME_VERSION_MAJOR__) + "." + i2s(__RME_VERSION_MINOR__) + "." + i2s(__RME_SUBVERSION__) + "_OTA")
 #   define __W_RME_VERSION__ (wxString() << __RME_VERSION_MAJOR__ << "." << __RME_VERSION_MINOR__ << "." << __RME_SUBVERSION__ << "_OTA")
@@ -118,7 +123,7 @@
 #define MAP_MAX_LAYER 15
 
 // The size of the tile in pixels
-#define TILE_SIZE 32
+constexpr int TileSize = 32;
 
 // The default size of sprites
 #define SPRITE_PIXELS 32
@@ -127,14 +132,19 @@
 // The sea layer
 #define GROUND_LAYER 7
 
-#define CLIENT_MAP_WIDTH 17
-#define CLIENT_MAP_HEIGHT 13
+constexpr int ClientMapWidth = 17;
+constexpr int ClientMapHeight = 13;
 
 #define MAP_LOAD_FILE_WILDCARD_OTGZ "OpenTibia Binary Map (*.otbm;*.otgz)|*.otbm;*.otgz"
 #define MAP_SAVE_FILE_WILDCARD_OTGZ "OpenTibia Binary Map (*.otbm)|*.otbm|Compressed OpenTibia Binary Map (*.otgz)|*.otgz"
 
 #define MAP_LOAD_FILE_WILDCARD "OpenTibia Binary Map (*.otbm)|*.otbm"
 #define MAP_SAVE_FILE_WILDCARD "OpenTibia Binary Map (*.otbm)|*.otbm"
+
+// Lights
+constexpr int MaxLightIntensity = 8;
+constexpr int PixelFormatRGB = 3;
+constexpr int PixelFormatRGBA = 4;
 
 // wxString conversions
 #define nstr(str) std::string((const char*)(str.mb_str(wxConvUTF8)))
