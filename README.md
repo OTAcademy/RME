@@ -1,13 +1,13 @@
 What is this?
 =============
 
-This is a map editor for game servers that derivied from OpenTibia server project.
+This is a map editor for game servers that derivied from [OpenTibia](https://github.com/opentibia/server) server project.
 
-Originally the tool was coded by Remere, you can find his repository [here](https://github.com/hampusborgos/rme).
+It is a fork of a [Map Editor](https://github.com/hampusborgos/rme) created by [Remere](https://github.com/hampusborgos).
 
-You can find the project for hosting your own server at [the otserv project](https://github.com/opentibia/server).
+You can find an engine compatible with OTBM format at [OTAcademy](https://github.com/OTAcademy), [OTLand](https://github.com/OTLand), [OpenTibiaBR](https://github.com/OpenTibiaBR) or other OT communities.
 
-The main place for help, discussion and servers is [OTA discord](http://discord.gg/OTAcademy).
+Visit [OTAcademy discord](http://discord.gg/OTAcademy) if you are looking for support or updates.
 
 I want to contribute
 ====================

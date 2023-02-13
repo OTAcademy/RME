@@ -80,6 +80,8 @@ struct DrawingOptions {
 	bool show_preview;
 	bool show_hooks;
 	bool hide_items_when_zoomed;
+
+	bool experimental_fog;
 };
 
 class MapCanvas;

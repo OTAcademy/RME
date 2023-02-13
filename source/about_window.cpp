@@ -163,10 +163,10 @@ AboutWindow::AboutWindow(wxWindow* parent) :
 {
 	wxString about;
 
-	about << "Remere's Map Editor\n";
+	about << "OTAcademy Map Editor\n";
+	about << "(based on Remere's Map Editor)\n\n";
 	about << "This program is a map editor for game servers\nthat derivied from OpenTibia project.\n\n";
-	about << "Created by Remere\n";
-	about << "Brought to you by github.com/OTAcademy\n\n";
+	about << "Brought to you by OTAcademy\n\n";
 
 	about << "Version " << __W_RME_VERSION__ << " for ";
 	about <<

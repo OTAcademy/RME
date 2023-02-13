@@ -34,7 +34,7 @@ public:
 	LightDrawer();
 	virtual ~LightDrawer();
 
-	void draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, int screensize_x, int screensize_y, int zoom);
+	void draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog);
 
 	void setGlobalLightColor(uint8_t color);
 	void addLight(int map_x, int map_y, const SpriteLight& light);

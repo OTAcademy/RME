@@ -317,7 +317,8 @@ void MapDrawer::DrawMap()
 							for(int map_y = 0; map_y < 4; ++map_y) {
 								TileLocation* location = nd->getTile(map_x, map_y, map_z);
 								DrawTile(location);
-								if (location && options.isDrawLight()) {
+								// draw light, but only if not zoomed too far
+								if (location && options.isDrawLight() && zoom <= 10.0) {
 									AddLight(location);
 								}
 							}
@@ -551,19 +552,23 @@ void MapDrawer::DrawDraggingShadow()
 				int draw_x = ((pos.x * TileSize) - view_scroll_x) - offset;
 				int draw_y = ((pos.y * TileSize) - view_scroll_y) - offset;
 
-				ItemVector toRender = tile->getSelectedItems();
+				// save performance when moving large chunks unzoomed
+				ItemVector toRender = tile->getSelectedItems(zoom > 3.0);
 				Tile* desttile = editor.map.getTile(pos);
 				for(ItemVector::const_iterator iit = toRender.begin(); iit != toRender.end(); iit++) {
-					if(desttile)
-						BlitItem(draw_x, draw_y, desttile, *iit, true, 160,160,160,160);
+					if (desttile)
+						BlitItem(draw_x, draw_y, desttile, *iit, true, 160, 160, 160, 160);
 					else
-						BlitItem(draw_x, draw_y, pos, *iit, true, 160,160,160,160);
+						BlitItem(draw_x, draw_y, pos, *iit, true, 160, 160, 160, 160);
 				}
 
-				if(tile->creature && tile->creature->isSelected() && options.show_creatures)
-					BlitCreature(draw_x, draw_y, tile->creature);
-				if(tile->spawn && tile->spawn->isSelected())
-					BlitSpriteType(draw_x, draw_y, SPRITE_SPAWN, 160, 160, 160, 160);
+				// save performance when moving large chunks unzoomed
+				if (zoom <= 3.0) {
+					if (tile->creature && tile->creature->isSelected() && options.show_creatures)
+						BlitCreature(draw_x, draw_y, tile->creature);
+					if (tile->spawn && tile->spawn->isSelected())
+						BlitSpriteType(draw_x, draw_y, SPRITE_SPAWN, 160, 160, 160, 160);
+				}
 			}
 		}
 	}
@@ -1058,7 +1063,7 @@ void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Position& pos, Item* it
 		// Red invalid client id
 		if (it.id == 0) {
 			glDisable(GL_TEXTURE_2D);
-			glBlitSquare(draw_x, draw_y, 255, 0, 0, alpha);
+			glBlitSquare(draw_x, draw_y, red, 0, 0, alpha);
 			glEnable(GL_TEXTURE_2D);
 			return;
 		}
@@ -1177,6 +1182,11 @@ void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Position& pos, Item* it
 		}
 	}
 
+	// zoomed out very far, avoid drawing stuff barely visible
+	if (zoom > 3.0) {
+		return;
+	}
+
 	if (it.isPodium()) {
 		Outfit outfit = podium->getOutfit();
 		if (!podium->hasShowOutfit()) {
@@ -1200,7 +1210,7 @@ void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Position& pos, Item* it
 	}
 
 	// draw wall hook
-	if (!options.ingame && options.show_hooks && (it.hookSouth || it.hookEast) && zoom <= 3.0) {
+	if (!options.ingame && options.show_hooks && (it.hookSouth || it.hookEast)) {
 		glDisable(GL_TEXTURE_2D);
 		DrawHookIndicator(draw_x, draw_y, it);
 		glEnable(GL_TEXTURE_2D);
@@ -1707,7 +1717,7 @@ void MapDrawer::DrawTooltips()
 void MapDrawer::DrawLight()
 {
 	// draw in-game light
-	light_drawer->draw(start_x, start_y, end_x, end_y, view_scroll_x, view_scroll_y, screensize_x, screensize_y, zoom);
+	light_drawer->draw(start_x, start_y, end_x, end_y, view_scroll_x, view_scroll_y, options.experimental_fog);
 }
 
 void MapDrawer::MakeTooltip(int screenx, int screeny, const std::string& text, uint8_t r, uint8_t g, uint8_t b)

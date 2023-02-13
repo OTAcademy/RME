@@ -331,6 +331,10 @@ void Settings::IO(IOMode mode)
 	String(TOOLBAR_POSITION_LAYOUT, "");
 	String(TOOLBAR_SIZES_LAYOUT, "");
 
+	// experimental
+	section("experimental");
+	Int(EXPERIMENTAL_FOG, 0);
+
 	section("");
 	Int(GOTO_WEBSITE_ON_BOOT, 0);
 	Int(USE_UPDATER, 1);

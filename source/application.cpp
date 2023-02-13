@@ -41,7 +41,7 @@
 #include <GL/glut.h>
 #endif
 
-#include "../brushes/icon/rme_icon.xpm"
+#include "../brushes/icon/editor_icon.xpm"
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_CLOSE(MainFrame::OnExit)
@@ -175,7 +175,7 @@ bool Application::OnInit()
 	// Load palette
 	g_gui.LoadPerspective();
 
-    wxIcon icon(rme_icon);
+    wxIcon icon(editor_icon);
     g_gui.root->SetIcon(icon);
 
     if (g_settings.getInteger(Config::WELCOME_DIALOG) == 1 && m_file_to_open == wxEmptyString) {

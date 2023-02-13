@@ -124,7 +124,7 @@ public: //Functions
 	bool hasUniqueItem() const { return testFlags(statflags, TILESTATE_UNIQUE); }
 
 	ItemVector popSelectedItems(bool ignoreTileSelected = false);
-	ItemVector getSelectedItems();
+	ItemVector getSelectedItems(bool unzoomed = false);
 	Item* getTopSelectedItem();
 
 	// Refresh internal flags (such as selected etc.)

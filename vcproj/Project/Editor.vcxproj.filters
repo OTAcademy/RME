@@ -682,7 +682,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="rme.rc">
+    <ResourceCompile Include="Editor.rc">
       <Filter>resources</Filter>
     </ResourceCompile>
   </ItemGroup>

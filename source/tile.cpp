@@ -347,7 +347,7 @@ ItemVector Tile::popSelectedItems(bool ignoreTileSelected)
 	return pop_items;
 }
 
-ItemVector Tile::getSelectedItems()
+ItemVector Tile::getSelectedItems(bool unzoomed)
 {
 	ItemVector selected_items;
 
@@ -357,13 +357,16 @@ ItemVector Tile::getSelectedItems()
 		selected_items.push_back(ground);
 	}
 
-	ItemVector::iterator it;
+	// save performance when zoomed out
+	if (!unzoomed) {
+		ItemVector::iterator it;
 
-	it = items.begin();
-	while(it != items.end()) {
-		if((*it)->isSelected()) {
-			selected_items.push_back(*it);
-		} it++;
+		it = items.begin();
+		while (it != items.end()) {
+			if ((*it)->isSelected()) {
+				selected_items.push_back(*it);
+			} it++;
+		}
 	}
 
 	return selected_items;

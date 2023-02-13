@@ -218,6 +218,9 @@
 		<item name="Floor 14" action="FLOOR_14" help=""/>
 		<item name="Floor 15" action="FLOOR_15" help=""/>
 	</menu>
+	<menu name="Experimental">
+		<item name="Fog in light view" hotkey="" action="EXPERIMENTAL_FOG" help="Apply fog filter to light effect."/>
+	</menu>
 	<menu name="About">
 		<item name="Extensions..." hotkey="F2" action="EXTENSIONS" help=""/>
 		<item name="Goto Website" hotkey="F3" action="GOTO_WEBSITE" help=""/>

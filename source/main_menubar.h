@@ -153,6 +153,8 @@ namespace MenuBar
 		EXTENSIONS,
 		GOTO_WEBSITE,
 		ABOUT,
+
+		EXPERIMENTAL_FOG,
 	};
 }
 

@@ -33,7 +33,7 @@ LightDrawer::~LightDrawer()
 	lights.clear();
 }
 
-void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, int screensize_x, int screensize_y, int zoom)
+void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog)
 {
 	int w = end_x - map_x;
 	int h = end_y - map_y;
@@ -53,7 +53,7 @@ void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x,
 			buffer[color_index] = global_color.Red();
 			buffer[color_index + 1] = global_color.Green();
 			buffer[color_index + 2] = global_color.Blue();
-			buffer[color_index + 3] = global_color.Alpha();
+			buffer[color_index + 3] = 140;//global_color.Alpha();
 
 			for (auto& light : lights) {
 				float intensity = calculateIntensity(mx, my, light);
@@ -83,7 +83,9 @@ void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x,
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
 
-	glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+	if (!fog) {
+		glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+	}
 
 	glEnable(GL_TEXTURE_2D);
 		glBegin(GL_QUADS);
@@ -95,6 +97,16 @@ void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x,
 	glDisable(GL_TEXTURE_2D);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	if (fog) {
+		glColor4ub(10, 10, 10, 80);
+		glBegin(GL_QUADS);
+		glVertex2f(draw_x, draw_y);
+		glVertex2f(draw_x + draw_width, draw_y);
+		glVertex2f(draw_x + draw_width, draw_y + draw_height);
+		glVertex2f(draw_x, draw_y + draw_height);
+		glEnd();
+	}
 }
 
 void LightDrawer::setGlobalLightColor(uint8_t color)

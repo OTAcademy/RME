@@ -173,6 +173,9 @@ namespace Config {
 		SHOW_LIGHT_STR,
 		SHOW_TECHNICAL_ITEMS,
 		SHOW_WAYPOINTS,
+
+		EXPERIMENTAL_FOG,
+
 		LAST,
 	};
 }
