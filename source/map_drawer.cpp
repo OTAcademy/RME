@@ -1395,7 +1395,7 @@ void MapDrawer::DrawRawBrush(int screenx, int screeny, ItemType* itemType, uint8
 	BlitSpriteType(screenx, screeny, spr, r, g, b, alpha);
 }
 
-void MapDrawer::WriteTooltip(Item* item, std::ostringstream& stream)
+void MapDrawer::WriteTooltip(Item* item, std::ostringstream& stream, bool isHouseTile)
 {
 	if(item == nullptr)
 		return;
@@ -1407,7 +1407,9 @@ void MapDrawer::WriteTooltip(Item* item, std::ostringstream& stream)
 	const uint16_t unique = item->getUniqueID();
 	const uint16_t action = item->getActionID();
 	const std::string& text = item->getText();
-	if(unique == 0 && action == 0 && text.empty())
+	bool houseDoor = isHouseTile && item->isDoor();
+	Teleport* tp = dynamic_cast<Teleport*>(item);
+	if(unique == 0 && action == 0 && text.empty() && !houseDoor && !tp)
 		return;
 
 	if(stream.tellp() > 0)
@@ -1421,6 +1423,15 @@ void MapDrawer::WriteTooltip(Item* item, std::ostringstream& stream)
 		stream << "uid: " << unique << "\n";
 	if(!text.empty())
 		stream << "text: " << text << "\n";
+	if (tp) {
+		Position& dest = tp->getDestination();
+		stream << "destination: " <<  dest.x << ", " << dest.y << ", " << dest.z << "\n";
+	}
+	if (houseDoor) {
+		if (Door* door = dynamic_cast<Door*>(item)) {
+			stream << "door id: " << static_cast<int>(door->getDoorID()) << "\n";
+		}
+	}
 }
 
 void MapDrawer::WriteTooltip(Waypoint* waypoint, std::ostringstream& stream)
@@ -1549,7 +1560,7 @@ void MapDrawer::DrawTile(TileLocation* location)
 			for(ItemVector::iterator it = tile->items.begin(); it != tile->items.end(); it++) {
 				// item tooltip
 				if(options.show_tooltips && map_z == floor)
-					WriteTooltip(*it, tooltip);
+					WriteTooltip(*it, tooltip, tile->isHouseTile());
 
 				// item animation
 				if(options.show_preview && zoom <= 2.0)
@@ -1726,7 +1737,7 @@ void MapDrawer::DrawTooltips()
 		height = (height + 4.0f) * scale;
 
 		float x = tooltip->x + (TileSize / 2.0f);
-		float y = tooltip->y + ((TileSize / 2.0f) * scale);
+		float y = tooltip->y;
 		float center = width / 2.0f;
 		float space = (7.0f * scale);
 		float startx = x - center;
