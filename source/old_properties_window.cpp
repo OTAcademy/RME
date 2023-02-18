@@ -329,10 +329,13 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 
 			wxSizer* possizer = newd wxBoxSizer(wxHORIZONTAL);
 			x_field = newd wxSpinCtrl(this, wxID_ANY, i2ws(teleport->getX()), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, map->getWidth(), teleport->getX());
+			x_field->Bind(wxEVT_CHAR, &OldPropertiesWindow::OnChar, this);
 			possizer->Add(x_field, wxSizerFlags(3).Expand());
 			y_field = newd wxSpinCtrl(this, wxID_ANY, i2ws(teleport->getY()), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, map->getHeight(), teleport->getY());
+			y_field->Bind(wxEVT_CHAR, &OldPropertiesWindow::OnChar, this);
 			possizer->Add(y_field, wxSizerFlags(3).Expand());
 			z_field = newd wxSpinCtrl(this, wxID_ANY, i2ws(teleport->getZ()), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, MAP_MAX_LAYER, teleport->getZ());
+			z_field->Bind(wxEVT_CHAR, &OldPropertiesWindow::OnChar, this);
 			possizer->Add(z_field, wxSizerFlags(2).Expand());
 
 			subsizer->Add(possizer, wxSizerFlags(1).Expand());
@@ -591,6 +594,24 @@ void OldPropertiesWindow::OnFocusChange(wxFocusEvent& event)
 		spin->SetSelection(-1, -1);
 	else if(wxTextCtrl* text = dynamic_cast<wxTextCtrl*>(win))
 		text->SetSelection(-1, -1);
+}
+
+void OldPropertiesWindow::OnChar(wxKeyEvent& evt)
+{
+	if (evt.GetKeyCode() == WXK_CONTROL_V) {
+		Position position;
+		const Editor* const editor = g_gui.GetCurrentEditor();
+		if (posFromClipboard(position, editor->getMapWidth(), editor->getMapHeight())) {
+			x_field->SetValue(position.x);
+			y_field->SetValue(position.y);
+			z_field->SetValue(position.z);
+			return;
+
+		}
+
+	}
+
+	evt.Skip();
 }
 
 void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))

@@ -22,6 +22,8 @@
 
 #include <sstream>
 #include <random>
+#include <regex>
+#include <algorithm>
 
 // random generator
 std::mt19937& getRandomGenerator()
@@ -196,45 +198,46 @@ std::string wstring2string(const std::wstring& widestring)
 	return std::string((const char*)s.mb_str(wxConvUTF8));
 }
 
-bool posFromClipboard(int& x, int& y, int& z)
+bool posFromClipboard(Position& position, const int mapWidth /* = MAP_MAX_WIDTH */, const int mapHeight /* = MAP_MAX_HEIGHT */)
 {
+	if (!wxTheClipboard->Open()) {
+		return false;
+	}
+
+	if (!wxTheClipboard->IsSupported(wxDF_TEXT)) {
+		wxTheClipboard->Close();
+		return false;
+	}
+
+	wxTextDataObject data;
+	wxTheClipboard->GetData(data);
+
+	std::string input = data.GetText().ToStdString();
+	if (input.empty()) {
+		wxTheClipboard->Close();
+		return false;
+	}
+
 	bool done = false;
+	std::smatch matches;
+	static const std::regex expression = std::regex(R"(.*?(\d+).*?(\d+).*?(\d+).*?)", std::regex_constants::ECMAScript);
+	if (std::regex_match(input, matches, expression)) {
+		try {
+			const int tmpX = std::stoi(matches.str(1));
+			const int tmpY = std::stoi(matches.str(2));
+			const int tmpZ = std::stoi(matches.str(3));
 
-	if(wxTheClipboard->Open()) {
-		if(wxTheClipboard->IsSupported(wxDF_TEXT)) {
-			std::vector<int> values;
-			wxTextDataObject data;
-			wxTheClipboard->GetData(data);
-			wxString text = data.GetText();
-
-			if(text.size() < 50) {
-				bool r = false;
-				wxString sv;
-
-				for(size_t s = 0; s < text.size(); ++s) {
-					if(text[s] >= '0' && text[s] <= '9') {
-						sv << text[s];
-						r = true;
-					} else if(r) {
-						values.push_back(ws2i(sv));
-						sv.Clear();
-						r = false;
-
-						if(values.size() >= 3)
-							break;
-					}
-				}
-			}
-
-			if(values.size() == 3) {
-				x = values[0];
-				y = values[1];
-				z = values[2];
+			const Position pastedPos = Position(tmpX, tmpY, tmpZ);
+			if (pastedPos.isValid() && tmpX <= mapWidth && tmpY <= mapHeight) {
+				position.x = tmpX;
+				position.y = tmpY;
+				position.z = tmpZ;
 				done = true;
 			}
-		}
-		wxTheClipboard->Close();
+		} catch (const std::out_of_range&) {}
 	}
+
+	wxTheClipboard->Close();
 	return done;
 }
 
