@@ -62,6 +62,17 @@ Tile* BaseMap::createTile(int x, int y, int z)
 	return t;
 }
 
+Tile* BaseMap::getOrCreateTile(const Position& pos)
+{
+	if (Tile* t = getTile(pos)) {
+		return t;
+	}
+
+	Tile* newTile = createTile(pos.x, pos.y, pos.z);
+	newTile->setLocation(createTileL(pos));
+	return newTile;
+}
+
 TileLocation* BaseMap::getTileL(int x, int y, int z)
 {
 	ASSERT(z < MAP_LAYERS);
@@ -72,8 +83,7 @@ TileLocation* BaseMap::getTileL(int x, int y, int z)
 			return &floor->locs[(x & 3)*4 + (y & 3)];
 	}
 
-	// tile does not exist, create
-	return createTileL(x, y, z);
+	return nullptr;
 }
 
 const TileLocation* BaseMap::getTileL(int x, int y, int z) const

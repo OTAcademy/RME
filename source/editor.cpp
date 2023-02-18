@@ -507,8 +507,7 @@ bool Editor::importMap(FileName filename, int import_x_offset, int import_y_offs
 			Position newexit = oldexit + offset;
 			if(newexit.isValid()) {
 				imported_town->setTemplePosition(newexit);
-				TileLocation* townTile = map.getTileL(newexit);
-				townTile->increaseTownCount();
+				map.getOrCreateTile(newexit)->getLocation()->increaseTownCount();
 			}
 
 			switch(house_import_type) {

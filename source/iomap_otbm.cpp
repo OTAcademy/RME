@@ -999,8 +999,7 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f)
 				pos.y = y;
 				pos.z = z;
 				town->setTemplePosition(pos);
-				TileLocation* townTile = map.getTileL(pos);
-				townTile->increaseTownCount();
+				map.getOrCreateTile(pos)->getLocation()->increaseTownCount();
 			}
 		} else if(node_type == OTBM_WAYPOINTS) {
 			for(BinaryNode* waypointNode = mapNode->getChild(); waypointNode != nullptr; waypointNode = waypointNode->advance()) {

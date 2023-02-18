@@ -82,6 +82,7 @@ struct DrawingOptions {
 	bool hide_items_when_zoomed;
 	bool show_towns;
 	bool always_show_zones;
+	bool extended_house_shader;
 
 	bool experimental_fog;
 };

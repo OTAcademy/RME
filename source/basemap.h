@@ -89,6 +89,7 @@ public:
 	Tile* createTile(int x, int y, int z);
 	Tile* getTile(int x, int y, int z);
 	Tile* getTile(const Position& pos);
+	Tile* getOrCreateTile(const Position& pos);
 	const Tile* getTile(int x, int y, int z) const;
 	const Tile* getTile(const Position& pos) const;
 	TileLocation* getTileL(int x, int y, int z);

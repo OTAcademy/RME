@@ -218,6 +218,7 @@ void Settings::IO(IOMode mode)
 	Int(SHOW_WALL_HOOKS, 0);
 	Int(SHOW_TOWNS, 0);
 	Int(ALWAYS_SHOW_ZONES, 1);
+	Int(EXT_HOUSE_SHADER, 1);
 
 	section("Version");
 	Int(VERSION_ID, 0);

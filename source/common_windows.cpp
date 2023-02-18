@@ -1456,13 +1456,11 @@ void EditTownsDialog::UpdateSelection(int new_selection)
 			}
 
 			if(old_town) {
-				TileLocation* townTile = editor.map.getTileL(old_town->getTemplePosition());
-				townTile->decreaseTownCount();
+				editor.map.getOrCreateTile(old_town->getTemplePosition())->getLocation()->decreaseTownCount();
 
 				Position templePos = temple_position->GetPosition();
 
-				townTile = editor.map.getTileL(templePos);
-				townTile->increaseTownCount();
+				editor.map.getOrCreateTile(templePos)->getLocation()->increaseTownCount();
 
 				//printf("Changed town %d:%s\n", old_town_id, old_town->getName().c_str());
 				//printf("New values %d:%s:%d:%d:%d\n", town_id, town_name.c_str(), templepos.x, templepos.y, templepos.z);
@@ -1526,8 +1524,7 @@ void EditTownsDialog::OnClickAdd(wxCommandEvent& WXUNUSED(event))
 	new_town->setTemplePosition(Position(0,0,0));
 	town_list.push_back(new_town);
 
-	TileLocation* townTile = editor.map.getTileL(Position(0, 0, 0));
-	townTile->increaseTownCount();
+	editor.map.getOrCreateTile(Position(0, 0, 0))->getLocation()->increaseTownCount();
 
 	BuildListBox(false);
 	UpdateSelection(town_list.size()-1);
@@ -1564,6 +1561,10 @@ void EditTownsDialog::OnClickRemove(wxCommandEvent& WXUNUSED(event))
 			}
 		}
 
+		// remove town flag from tile
+		editor.map.getOrCreateTile(town->getTemplePosition())->getLocation()->decreaseTownCount();
+
+		// remove town object
 		delete town;
 		town_list.erase(town_iter);
 		BuildListBox(false);
@@ -1590,13 +1591,11 @@ void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event))
 			}
 
 			if(old_town) {
-				TileLocation* townTile = editor.map.getTileL(old_town->getTemplePosition());
-				townTile->decreaseTownCount();
+				editor.map.getOrCreateTile(old_town->getTemplePosition())->getLocation()->decreaseTownCount();
 
 				Position templePos = temple_position->GetPosition();
 
-				townTile = editor.map.getTileL(templePos);
-				townTile->increaseTownCount();
+				editor.map.getOrCreateTile(templePos)->getLocation()->increaseTownCount();
 
 				//printf("Changed town %d:%s\n", old_town_id, old_town->getName().c_str());
 				//printf("New values %d:%s:%d:%d:%d\n", town_id, town_name.c_str(), templepos.x, templepos.y, templepos.z);

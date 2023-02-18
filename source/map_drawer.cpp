@@ -1559,7 +1559,17 @@ void MapDrawer::DrawTile(TileLocation* location)
 				if((*it)->isBorder()) {
 					BlitItem(draw_x, draw_y, tile, *it, false, r, g, b);
 				} else {
-					BlitItem(draw_x, draw_y, tile, *it);
+					r = 255, g = 255, b = 255;
+
+					if (options.extended_house_shader && options.show_houses && tile->isHouseTile()) {
+						if ((int)tile->getHouseID() == current_house_id) {
+							r /= 2;
+						} else {
+							r /= 2;
+							g /= 2;
+						}
+					}
+					BlitItem(draw_x, draw_y, tile, *it, false, r, g, b);
 				}
 			}
 			// monster/npc on tile
@@ -1585,7 +1595,7 @@ void MapDrawer::DrawTile(TileLocation* location)
 
 			// town temple (gray flag)
 			if(options.show_towns && tile->isTownExit(editor.map)) {
-				BlitSpriteType(draw_x, draw_y, SPRITE_TOWN_TEMPLE, 255, 255, 64);
+				BlitSpriteType(draw_x, draw_y, SPRITE_TOWN_TEMPLE, 255, 255, 64, 170);
 			}
 
 			// spawn (purple flame)

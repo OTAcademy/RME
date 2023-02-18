@@ -144,6 +144,7 @@
 		<item name="Only show Colors" hotkey="Ctrl+E" action="SHOW_ONLY_COLORS" help="Show only the special tiles on the map."/>
 		<item name="Only show Modified" hotkey="Ctrl+M" action="SHOW_ONLY_MODIFIED" help="Show only the tiles that have been modified since the map was opened."/>		
 		<item name="Always show zones" hotkey="" action="ALWAYS_SHOW_ZONES" help="Zones will be visible even on empty tiles."/>		
+		<item name="Extended house shader" hotkey="" action="EXT_HOUSE_SHADER" help="Draw house brush on walls and items."/>
 		<separator/>
 		<item name="Show tooltips" hotkey="Y" action="SHOW_TOOLTIPS" help="Show tooltips."/>
 		<item name="Show grid" hotkey="Shift+G" action="SHOW_GRID" help="Shows a grid over all items."/>
