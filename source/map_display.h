@@ -73,6 +73,7 @@ public:
 	void OnPaste(wxCommandEvent& event);
 	void OnDelete(wxCommandEvent& event);
 	// ----
+	void OnSetDestination(wxCommandEvent& event);
 	void OnGotoDestination(wxCommandEvent& event);
 	void OnRotateItem(wxCommandEvent& event);
 	void OnSwitchDoor(wxCommandEvent& event);

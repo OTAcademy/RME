@@ -81,6 +81,7 @@ BEGIN_EVENT_TABLE(MapCanvas, wxGLCanvas)
 	EVT_MENU(MAP_POPUP_MENU_COPY_SERVER_ID, MapCanvas::OnCopyServerId)
 	EVT_MENU(MAP_POPUP_MENU_COPY_CLIENT_ID, MapCanvas::OnCopyClientId)
 	EVT_MENU(MAP_POPUP_MENU_COPY_NAME, MapCanvas::OnCopyName)
+	EVT_MENU(MAP_POPUP_MENU_SET_DESTINATION, MapCanvas::OnSetDestination)
 	// ----
 	EVT_MENU(MAP_POPUP_MENU_ROTATE, MapCanvas::OnRotateItem)
 	EVT_MENU(MAP_POPUP_MENU_GOTO, MapCanvas::OnGotoDestination)
@@ -1966,6 +1967,17 @@ void MapCanvas::OnRotateItem(wxCommandEvent& WXUNUSED(event))
 	g_gui.RefreshView();
 }
 
+void MapCanvas::OnSetDestination(wxCommandEvent& WXUNUSED(event))
+{
+	Tile* tile = editor.selection.getSelectedTile();
+	ItemVector selected_items = tile->getSelectedItems();
+	ASSERT(selected_items.size() > 0);
+	Teleport* teleport = dynamic_cast<Teleport*>(selected_items.front());
+	if (teleport) {
+		teleport->setDestination(tile->getPosition());
+	}
+}
+
 void MapCanvas::OnGotoDestination(wxCommandEvent& WXUNUSED(event))
 {
 	Tile* tile = editor.selection.getSelectedTile();
@@ -2418,6 +2430,11 @@ void MapPopupMenu::Update()
 				Append(MAP_POPUP_MENU_COPY_CLIENT_ID, "Copy Item Client Id", "Copy the client id of this item");
 				Append(MAP_POPUP_MENU_COPY_NAME, "Copy Item Name", "Copy the name of this item");
 				AppendSeparator();
+			}
+
+			Teleport* teleport = dynamic_cast<Teleport*>(selected_items.front());
+			if (teleport) {
+				Append(MAP_POPUP_MENU_SET_DESTINATION, "Set Teleport Position", "Set current position to the teleport destination");
 			}
 
 			if(topSelectedItem || topCreature || topItem) {
