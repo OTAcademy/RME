@@ -317,7 +317,7 @@ void Door::serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHan
 	}
 }
 
-DoorType Door::getDoorType()
+DoorType Door::getDoorType() const
 {
 	WallBrush* wb = getWallBrush();
 	if (!wb) {
@@ -325,6 +325,23 @@ DoorType Door::getDoorType()
 	}
 
 	return wb->getDoorTypeFromID(id);
+}
+
+bool Door::isRealDoor() const
+{
+	const DoorType& dt = getDoorType();
+	// doors with no wallbrush will appear as WALL_UNDEFINED
+	// this is for compatibility
+	return dt == WALL_UNDEFINED || dt == WALL_DOOR_NORMAL || dt == WALL_DOOR_LOCKED || dt == WALL_DOOR_QUEST || dt == WALL_DOOR_MAGIC || dt == WALL_DOOR_NORMAL_ALT;
+}
+
+uint8_t Door::getDoorID() const
+{
+	return isRealDoor() ? doorId : 0;
+}
+
+void Door::setDoorID(uint8_t id) {
+	doorId = isRealDoor() ? id : 0;
 }
 
 // ============================================================================

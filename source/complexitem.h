@@ -92,15 +92,16 @@ class Door : public Item
 
 		Item* deepCopy() const;
 
-		uint8_t getDoorID() const { return doorId; }
-		void setDoorID(uint8_t id) { doorId = id; }
+		uint8_t getDoorID() const;
+		void setDoorID(uint8_t id);
 
 		virtual void serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
 		virtual bool readItemAttribute_OTBM(const IOMap& maphandle, OTBM_ItemAttribute attr, BinaryNode* node);
 		//virtual void serializeItemAttributes_OTMM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
 		//virtual bool readItemAttribute_OTMM(const IOMap& maphandle, OTMM_ItemAttribute attr, BinaryNode* node);
 
-		DoorType getDoorType();
+		DoorType getDoorType() const;
+		bool isRealDoor() const;
 
 	protected:
 		uint8_t doorId;

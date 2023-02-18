@@ -318,7 +318,7 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 		if(door) {
 			subsizer->Add(newd wxStaticText(this, wxID_ANY, "Door ID"));
 			door_id_field = newd wxSpinCtrl(this, wxID_ANY, i2ws(door->getDoorID()), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, 0xFF, door->getDoorID());
-			if(!edit_tile || !edit_tile->isHouseTile()) {
+			if(!edit_tile || !edit_tile->isHouseTile() || !door->isRealDoor()) {
 				door_id_field->Disable();
 			}
 			subsizer->Add(door_id_field, wxSizerFlags(1).Expand());

@@ -1411,8 +1411,7 @@ void MapDrawer::WriteTooltip(Item* item, std::ostringstream& stream, bool isHous
 
 	if (isHouseTile && item->isDoor()) {
 		if (Door* door = dynamic_cast<Door*>(item)) {
-			DoorType dt = door->getDoorType();
-			if (dt == WALL_DOOR_NORMAL || dt == WALL_DOOR_LOCKED || dt == WALL_DOOR_QUEST || dt == WALL_DOOR_MAGIC || dt == WALL_DOOR_NORMAL_ALT) {
+			if (door->isRealDoor()) {
 				doorId = door->getDoorID();
 			}
 		}
