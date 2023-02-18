@@ -190,6 +190,7 @@ public: //Functions
 	void addHouseExit(House* h);
 	void removeHouseExit(House* h);
 	bool isHouseExit() const;
+	bool isTownExit(Map& map) const;
 	const HouseExitList* getHouseExits() const;
 	HouseExitList* getHouseExits();
 	bool hasHouseExit(uint32_t exit) const;

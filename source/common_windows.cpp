@@ -1456,11 +1456,17 @@ void EditTownsDialog::UpdateSelection(int new_selection)
 			}
 
 			if(old_town) {
-				Position templepos = temple_position->GetPosition();
+				TileLocation* townTile = editor.map.getTileL(old_town->getTemplePosition());
+				townTile->decreaseTownCount();
+
+				Position templePos = temple_position->GetPosition();
+
+				townTile = editor.map.getTileL(templePos);
+				townTile->increaseTownCount();
 
 				//printf("Changed town %d:%s\n", old_town_id, old_town->getName().c_str());
 				//printf("New values %d:%s:%d:%d:%d\n", town_id, town_name.c_str(), templepos.x, templepos.y, templepos.z);
-				old_town->setTemplePosition(templepos);
+				old_town->setTemplePosition(templePos);
 
 				wxString new_name = name_field->GetValue();
 				wxString old_name = wxstr(old_town->getName());
@@ -1519,6 +1525,9 @@ void EditTownsDialog::OnClickAdd(wxCommandEvent& WXUNUSED(event))
 	new_town->setName("Unnamed Town");
 	new_town->setTemplePosition(Position(0,0,0));
 	town_list.push_back(new_town);
+
+	TileLocation* townTile = editor.map.getTileL(Position(0, 0, 0));
+	townTile->increaseTownCount();
 
 	BuildListBox(false);
 	UpdateSelection(town_list.size()-1);
@@ -1581,11 +1590,17 @@ void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event))
 			}
 
 			if(old_town) {
-				Position templepos = temple_position->GetPosition();
+				TileLocation* townTile = editor.map.getTileL(old_town->getTemplePosition());
+				townTile->decreaseTownCount();
+
+				Position templePos = temple_position->GetPosition();
+
+				townTile = editor.map.getTileL(templePos);
+				townTile->increaseTownCount();
 
 				//printf("Changed town %d:%s\n", old_town_id, old_town->getName().c_str());
 				//printf("New values %d:%s:%d:%d:%d\n", town_id, town_name.c_str(), templepos.x, templepos.y, templepos.z);
-				old_town->setTemplePosition(templepos);
+				old_town->setTemplePosition(templePos);
 
 				wxString new_name = name_field->GetValue();
 				wxString old_name = wxstr(old_town->getName());

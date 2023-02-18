@@ -226,6 +226,9 @@ void MapCanvas::OnPaint(wxPaintEvent& event)
 			options.show_preview = g_settings.getBoolean(Config::SHOW_PREVIEW);
 			options.show_hooks = g_settings.getBoolean(Config::SHOW_WALL_HOOKS);
 			options.hide_items_when_zoomed = g_settings.getBoolean(Config::HIDE_ITEMS_WHEN_ZOOMED);
+			options.show_towns = g_settings.getBoolean(Config::SHOW_TOWNS);
+			options.always_show_zones = g_settings.getBoolean(Config::ALWAYS_SHOW_ZONES);
+
 			options.experimental_fog = g_settings.getBoolean(Config::EXPERIMENTAL_FOG);
 		}
 

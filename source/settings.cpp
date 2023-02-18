@@ -216,6 +216,8 @@ void Settings::IO(IOMode mode)
 	Int(SHOW_ONLY_MODIFIED_TILES, 0);
 	Int(SHOW_PREVIEW, 1);
 	Int(SHOW_WALL_HOOKS, 0);
+	Int(SHOW_TOWNS, 0);
+	Int(ALWAYS_SHOW_ZONES, 1);
 
 	section("Version");
 	Int(VERSION_ID, 0);

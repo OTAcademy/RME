@@ -29,6 +29,7 @@ TileLocation::TileLocation() :
 	position(0, 0, 0),
 	spawn_count(0),
 	waypoint_count(0),
+	town_count(0),
 	house_exits(nullptr)
 {
 	////

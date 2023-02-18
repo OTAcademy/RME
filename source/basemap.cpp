@@ -71,7 +71,9 @@ TileLocation* BaseMap::getTileL(int x, int y, int z)
 		if(floor)
 			return &floor->locs[(x & 3)*4 + (y & 3)];
 	}
-	return nullptr;
+
+	// tile does not exist, create
+	return createTileL(x, y, z);
 }
 
 const TileLocation* BaseMap::getTileL(int x, int y, int z) const

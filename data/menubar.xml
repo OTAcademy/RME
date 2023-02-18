@@ -58,16 +58,7 @@
 		<item name="Undo" hotkey="Ctrl+Z" action="UNDO" help="Undo last action."/>
 		<item name="Redo" hotkey="Ctrl+Shift+Z" action="REDO" help="Redo last undid action."/>
 		<separator/>
-		<item name="Find Item..." hotkey="Ctrl+F" action="FIND_ITEM" help="Find all instances of an item type the map."/>
 		<item name="Replace Items..." hotkey="Ctrl+Shift+F" action="REPLACE_ITEMS" help="Replaces all occurrences of one item with another."/>
-		<menu name="Find on Map">
-			<item name="Find Everything" action="SEARCH_ON_MAP_EVERYTHING" help="Find all unique/action/text/container items."/>
-			<separator/>
-			<item name="Find Unique" action="SEARCH_ON_MAP_UNIQUE" help="Find all items with an unique ID on map."/>
-			<item name="Find Action" action="SEARCH_ON_MAP_ACTION" help="Find all items with an action ID on map."/>
-			<item name="Find Container" action="SEARCH_ON_MAP_CONTAINER" help="Find all containers on map."/>
-			<item name="Find Writeable" action="SEARCH_ON_MAP_WRITEABLE" help="Find all writeable items on map."/>
-		</menu>
 		<separator/>
 		<menu name="Border Options">
 			<item name="Border Automagic" hotkey="A" action="AUTOMAGIC" help="Turns on all automatic border functions."/>
@@ -85,25 +76,43 @@
 			<item name="Clear Modified State" action="CLEAR_MODIFIED_STATE" help="Clears the modified state from all tiles."/>
 		</menu>
 		<separator/>
-		<item name="Go to Previous Position" hotkey="P" action="GOTO_PREVIOUS_POSITION" help="Go to the previous screen center position."/>
-		<item name="Go to Position..." hotkey="Ctrl+G" action="GOTO_POSITION" help="Go to a specific XYZ position."/>
-		<item name="Jump to Brush..." hotkey="J" action="JUMP_TO_BRUSH" help="Jump to a brush."/>
-		<item name="Jump to Item..." hotkey="Ctrl+J" action="JUMP_TO_ITEM_BRUSH" help="Jump to an item brush (RAW palette)."/>
-		<separator/>
 		<item name="Cut" hotkey="Ctrl+X" action="CUT" help="Cut a part of the map."/>
 		<item name="Copy" hotkey="Ctrl+C" action="COPY" help="Copy a part of the map."/>
 		<item name="Paste" hotkey="Ctrl+V" action="PASTE" help="Paste a part of the map."/>
 	</menu>
+	<menu name="Editor">
+		<item name="New View" hotkey="Ctrl+Shift+N" action="NEW_VIEW" help="Creates a new view of the current map."/>
+		<item name="Enter Fullscreen" hotkey="F11" action="TOGGLE_FULLSCREEN" help="Changes between fullscreen mode and windowed mode."/>
+		<item name="Take Screenshot" hotkey="F10" action="TAKE_SCREENSHOT" help="Saves the current view to the disk."/>
+		<separator/>
+		<menu name="Zoom">
+			<item name="Zoom In" hotkey="Ctrl++" action="ZOOM_IN" help="Increase the zoom."/>
+			<item name="Zoom Out" hotkey="Ctrl+-" action="ZOOM_OUT" help="Decrease the zoom."/>
+			<item name="Zoom Normal" hotkey="Ctrl+0" action="ZOOM_NORMAL" help="Normal zoom(100%)."/>
+		</menu>
+	</menu>
+	<menu name="Search">
+		<item name="Find Item..." hotkey="Ctrl+F" action="FIND_ITEM" help="Find all instances of an item type the map."/>
+		<separator/>
+		<item name="Find Unique" action="SEARCH_ON_MAP_UNIQUE" help="Find all items with an unique ID on map."/>
+		<item name="Find Action" action="SEARCH_ON_MAP_ACTION" help="Find all items with an action ID on map."/>
+		<item name="Find Container" action="SEARCH_ON_MAP_CONTAINER" help="Find all containers on map."/>
+		<item name="Find Writeable" action="SEARCH_ON_MAP_WRITEABLE" help="Find all writeable items on map."/>
+		<separator/>
+		<item name="Find Everything" action="SEARCH_ON_MAP_EVERYTHING" help="Find all unique/action/text/container items."/>
+	</menu>
 	<menu name="Map">
 		<item name="Edit Towns" hotkey="Ctrl+T" action="EDIT_TOWNS" help="Edit towns."/>
+		<!-- these were never implemented
 		<item name="Edit Items" hotkey="Ctrl+I" action="EDIT_ITEMS" help="Edit items."/>
 		<item name="Edit Monsters" action="EDIT_MONSTERS" help="Edit monsters."/>
+		-->
 		<separator/>
 		<item name="Cleanup..." action="MAP_CLEANUP" help="Removes all items that do not exist in the OTB file (red tiles the server can't load)."/>
 		<item name="Properties..." hotkey="Ctrl+P" action="MAP_PROPERTIES" help="Show and change the map properties."/>
 		<item name="Statistics" hotkey="F8" action="MAP_STATISTICS" help="Show map statistics."/>
 	</menu>
-	<menu name="Select">
+	<menu name="Selection">
 		<item name="Replace Items on Selection" action="REPLACE_ON_SELECTION_ITEMS" help="Replace items on selected area."/>
 		<item name="Find Item on Selection" action="SEARCH_ON_SELECTION_ITEM" help="Find items on selected area."/>
 		<item name="Remove Item on Selection" action="REMOVE_ON_SELECTION_ITEM" help="Remove item on selected area."/>
@@ -128,59 +137,79 @@
 		<item name="Borderize Selection" action="BORDERIZE_SELECTION" help="Creates automatic borders in the entire selected area."/>
 		<item name="Randomize Selection" action="RANDOMIZE_SELECTION" help="Randomizes the ground tiles of the selected area."/>
 	</menu>
-	<menu name="View">		
-		<item name="New View" hotkey="Ctrl+Shift+N" action="NEW_VIEW" help="Creates a new view of the current map."/>
-		<item name="Enter Fullscreen" hotkey="F11" action="TOGGLE_FULLSCREEN" help="Changes between fullscreen mode and windowed mode."/>
-		<item name="Take Screenshot" hotkey="F10" action="TAKE_SCREENSHOT" help="Saves the current view to the disk."/>
+	<menu name="View">
+		<!-- mapeditor view options -->
+		<item name="Show all Floors" hotkey="Ctrl+W" action="SHOW_ALL_FLOORS" help="If not checked other floors are hidden."/>
+		<item name="Show as Minimap" hotkey="Shift+E" action="SHOW_AS_MINIMAP" help="Show only the tile minimap colors."/>
+		<item name="Only show Colors" hotkey="Ctrl+E" action="SHOW_ONLY_COLORS" help="Show only the special tiles on the map."/>
+		<item name="Only show Modified" hotkey="Ctrl+M" action="SHOW_ONLY_MODIFIED" help="Show only the tiles that have been modified since the map was opened."/>		
+		<item name="Always show zones" hotkey="" action="ALWAYS_SHOW_ZONES" help="Zones will be visible even on empty tiles."/>		
 		<separator/>
+		<item name="Show tooltips" hotkey="Y" action="SHOW_TOOLTIPS" help="Show tooltips."/>
+		<item name="Show grid" hotkey="Shift+G" action="SHOW_GRID" help="Shows a grid over all items."/>
+		<item name="Show client box" hotkey="Shift+I" action="SHOW_INGAME_BOX" help="Shadows out areas not visible ingame (from the center of the screen)."/>
+		<separator/>
+		<item name="Ghost loose items" hotkey="G" action="GHOST_ITEMS" help="Ghost items (except ground)."/>
+		<item name="Ghost higher floors" hotkey="Ctrl+L" action="GHOST_HIGHER_FLOORS" help="Ghost floors."/>
+		<item name="Show shade" hotkey="Q" action="SHOW_SHADE" help="Shade lower floors."/>
+	</menu>
+	<menu name="Show">
+		<!-- item/zone filters -->
 		<item name="Show Animation" hotkey="L" action="SHOW_PREVIEW" help="Show item animations."/>		
 		<item name="Show Light" hotkey="Shift+L" action="SHOW_LIGHTS" help="Show lights."/>
 		<item name="Show Light Strength" hotkey="Shift+K" action="SHOW_LIGHT_STR" help="Show indicators of light strength."/>
 		<item name="Show Technical Items" hotkey="Shift+T" action="SHOW_TECHNICAL_ITEMS" help="Shows some of special items that are not visible in game."/>
-		<separator/>
-		<item name="Show shade" hotkey="Q" action="SHOW_SHADE" help="Shade lower floors."/>
-		<item name="Ghost loose items" hotkey="G" action="GHOST_ITEMS" help="Ghost items (except ground)."/>
-		<item name="Ghost higher floors" hotkey="Ctrl+L" action="GHOST_HIGHER_FLOORS" help="Ghost floors."/>
 		<separator/>
 		<item name="Show creatures" hotkey="F" action="SHOW_CREATURES" help="Show creatures on the map."/>
 		<item name="Show spawns" hotkey="S" action="SHOW_SPAWNS" help="Show spawns on the map."/>
 		<item name="Show special" hotkey="E" action="SHOW_SPECIAL" help="Show special tiles on the map, like PZ."/>
 		<item name="Show houses" hotkey="Ctrl+H" action="SHOW_HOUSES" help="Show houses on the map."/>
 		<item name="Show pathing" hotkey="O" action="SHOW_PATHING" help="Show blocking tiles."/>
-		<separator/>
-		<item name="Show tooltips" hotkey="Y" action="SHOW_TOOLTIPS" help="Show tooltips."/>
+		<item name="Show towns" hotkey="" action="SHOW_TOWNS" help="Show temple positions."/>
 		<item name="Show waypoints" hotkey="Shift+W" action="SHOW_WAYPOINTS" help="Show waypoints."/>
-		<item name="Show grid" hotkey="Shift+G" action="SHOW_GRID" help="Shows a grid over all items."/>
-		<item name="Show client box" hotkey="Shift+I" action="SHOW_INGAME_BOX" help="Shadows out areas not visible ingame (from the center of the screen)."/>
 		<separator/>
 		<item name="Highlight Items" hotkey="V" action="HIGHLIGHT_ITEMS" help="Highlight tiles with items on them."/>
 		<item name="Highlight Locked Doors" hotkey="X" action="HIGHLIGHT_LOCKED_DOORS" help="Highlight doors that require key to open."/>
 		<item name="Show Wall Hooks" hotkey="K" action="SHOW_WALL_HOOKS" help="Show indicators for wall hooks."/>
+	</menu>
+	<menu name="Navigate">
+		<item name="Go to Previous Position" hotkey="P" action="GOTO_PREVIOUS_POSITION" help="Go to the previous screen center position."/>
+		<item name="Go to Position..." hotkey="Ctrl+G" action="GOTO_POSITION" help="Go to a specific XYZ position."/>
+		<item name="Jump to Brush..." hotkey="J" action="JUMP_TO_BRUSH" help="Jump to a brush."/>
+		<item name="Jump to Item..." hotkey="Ctrl+J" action="JUMP_TO_ITEM_BRUSH" help="Jump to an item brush (RAW palette)."/>
 		<separator/>
-		<item name="Show all Floors" hotkey="Ctrl+W" action="SHOW_ALL_FLOORS" help="If not checked other floors are hidden."/>
-		<item name="Show as Minimap" hotkey="Shift+E" action="SHOW_AS_MINIMAP" help="Show only the tile minimap colors."/>
-		<item name="Only show Colors" hotkey="Ctrl+E" action="SHOW_ONLY_COLORS" help="Show only the special tiles on the map."/>
-		<item name="Only show Modified" hotkey="Ctrl+M" action="SHOW_ONLY_MODIFIED" help="Show only the tiles that have been modified since the map was opened."/>		
-		<separator/>
-		<menu name="Zoom">
-			<item name="Zoom In" hotkey="Ctrl++" action="ZOOM_IN" help="Increase the zoom."/>
-			<item name="Zoom Out" hotkey="Ctrl+-" action="ZOOM_OUT" help="Decrease the zoom."/>
-			<item name="Zoom Normal" hotkey="Ctrl+0" action="ZOOM_NORMAL" help="Normal zoom(100%)."/>
+		<menu name="Floor">
+			<item name="Floor 0" action="FLOOR_0" help=""/>
+			<item name="Floor 1" action="FLOOR_1" help=""/>
+			<item name="Floor 2" action="FLOOR_2" help=""/>
+			<item name="Floor 3" action="FLOOR_3" help=""/>
+			<item name="Floor 4" action="FLOOR_4" help=""/>
+			<item name="Floor 5" action="FLOOR_5" help=""/>
+			<item name="Floor 6" action="FLOOR_6" help=""/>
+			<item name="Floor 7" action="FLOOR_7" help=""/>
+			<item name="Floor 8" action="FLOOR_8" help=""/>
+			<item name="Floor 9" action="FLOOR_9" help=""/>
+			<item name="Floor 10" action="FLOOR_10" help=""/>
+			<item name="Floor 11" action="FLOOR_11" help=""/>
+			<item name="Floor 12" action="FLOOR_12" help=""/>
+			<item name="Floor 13" action="FLOOR_13" help=""/>
+			<item name="Floor 14" action="FLOOR_14" help=""/>
+			<item name="Floor 15" action="FLOOR_15" help=""/>
 		</menu>
 	</menu>
 	<menu name="Window">
 		<item name="Minimap" hotkey="M" action="WIN_MINIMAP" help="Displays the minimap window."/>
 		<item name="New Palette" action="NEW_PALETTE" help="Creates a new palette."/>
-		<separator/>
-		<item name="Terrain Palette" hotkey="T" action="SELECT_TERRAIN" help="Select the Terrain palette."/>
-		<item name="Doodad Palette" hotkey="D" action="SELECT_DOODAD" help="Select the Doodad palette."/>
-		<item name="Item Palette" hotkey="I" action="SELECT_ITEM" help="Select the Item palette."/>
-		<item name="Collection Palette" hotkey="N" action="SELECT_COLLECTION" help="Select the Collection palette."/>
-		<item name="House Palette" hotkey="H" action="SELECT_HOUSE" help="Select the House palette."/>
-		<item name="Creature Palette" hotkey="C" action="SELECT_CREATURE" help="Select the Creature palette."/>
-		<item name="Waypoint Palette" hotkey="W" action="SELECT_WAYPOINT" help="Select the Waypoint palette."/>
-		<item name="RAW Palette" hotkey="R" action="SELECT_RAW" help="Select the RAW palette."/>
-		<separator/>
+		<menu name="Palette">
+			<item name="Terrain" hotkey="T" action="SELECT_TERRAIN" help="Select the Terrain palette."/>
+			<item name="Doodad" hotkey="D" action="SELECT_DOODAD" help="Select the Doodad palette."/>
+			<item name="Item" hotkey="I" action="SELECT_ITEM" help="Select the Item palette."/>
+			<item name="Collection" hotkey="N" action="SELECT_COLLECTION" help="Select the Collection palette."/>
+			<item name="House" hotkey="H" action="SELECT_HOUSE" help="Select the House palette."/>
+			<item name="Creature" hotkey="C" action="SELECT_CREATURE" help="Select the Creature palette."/>
+			<item name="Waypoint" hotkey="W" action="SELECT_WAYPOINT" help="Select the Waypoint palette."/>
+			<item name="RAW" hotkey="R" action="SELECT_RAW" help="Select the RAW palette."/>
+		</menu>
 		<menu name="Toolbars">
 			<item name="Brushes" action="VIEW_TOOLBARS_BRUSHES" help="Show or hide the Brushes toolbar."/>
 			<item name="Position" action="VIEW_TOOLBARS_POSITION" help="Show or hide the Position toolbar."/>
@@ -200,24 +229,6 @@
 		<item name="Debug .dat" action="DEBUG_VIEW_DAT" help="View all item sprites available."/>
 	</menu>
 	-->
-	<menu name="Floor">
-		<item name="Floor 0" action="FLOOR_0" help=""/>
-		<item name="Floor 1" action="FLOOR_1" help=""/>
-		<item name="Floor 2" action="FLOOR_2" help=""/>
-		<item name="Floor 3" action="FLOOR_3" help=""/>
-		<item name="Floor 4" action="FLOOR_4" help=""/>
-		<item name="Floor 5" action="FLOOR_5" help=""/>
-		<item name="Floor 6" action="FLOOR_6" help=""/>
-		<item name="Floor 7" action="FLOOR_7" help=""/>
-		<item name="Floor 8" action="FLOOR_8" help=""/>
-		<item name="Floor 9" action="FLOOR_9" help=""/>
-		<item name="Floor 10" action="FLOOR_10" help=""/>
-		<item name="Floor 11" action="FLOOR_11" help=""/>
-		<item name="Floor 12" action="FLOOR_12" help=""/>
-		<item name="Floor 13" action="FLOOR_13" help=""/>
-		<item name="Floor 14" action="FLOOR_14" help=""/>
-		<item name="Floor 15" action="FLOOR_15" help=""/>
-	</menu>
 	<menu name="Experimental">
 		<item name="Fog in light view" hotkey="" action="EXPERIMENTAL_FOG" help="Apply fog filter to light effect."/>
 	</menu>

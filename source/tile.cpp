@@ -28,6 +28,8 @@
 #include "wall_brush.h"
 #include "carpet_brush.h"
 #include "table_brush.h"
+#include "town.h"
+#include "map.h"
 
 Tile::Tile(int x, int y, int z) :
 	location(nullptr),
@@ -674,6 +676,11 @@ void Tile::setHouseID(uint32_t newHouseId)
 	house_id = newHouseId;
 }
 
+bool Tile::isTownExit(Map& map) const
+{
+	return location->getTownCount() > 0;
+}
+
 void Tile::addHouseExit(House* h)
 {
 	if(!h)
@@ -698,4 +705,3 @@ void Tile::removeHouseExit(House* h)
 		}
 	}
 }
-

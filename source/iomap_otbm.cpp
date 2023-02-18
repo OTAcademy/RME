@@ -999,6 +999,8 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f)
 				pos.y = y;
 				pos.z = z;
 				town->setTemplePosition(pos);
+				TileLocation* townTile = map.getTileL(pos);
+				townTile->increaseTownCount();
 			}
 		} else if(node_type == OTBM_WAYPOINTS) {
 			for(BinaryNode* waypointNode = mapNode->getChild(); waypointNode != nullptr; waypointNode = waypointNode->advance()) {
@@ -1451,7 +1453,7 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f)
 		{
 			f.addByte(OTBM_ATTR_DESCRIPTION);
 			// Neither SimOne's nor OpenTibia cares for additional description tags
-			f.addString("Saved with Remere's Map Editor " + __RME_VERSION__);
+			f.addString("Saved with " + __RME_APPLICATION_NAME__ + " " + __RME_VERSION__);
 
 			f.addU8(OTBM_ATTR_DESCRIPTION);
 			f.addString(map.description);
