@@ -100,6 +100,8 @@ class Door : public Item
 		//virtual void serializeItemAttributes_OTMM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
 		//virtual bool readItemAttribute_OTMM(const IOMap& maphandle, OTMM_ItemAttribute attr, BinaryNode* node);
 
+		DoorType getDoorType();
+
 	protected:
 		uint8_t doorId;
 };

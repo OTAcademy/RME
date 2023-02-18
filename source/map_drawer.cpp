@@ -1407,9 +1407,19 @@ void MapDrawer::WriteTooltip(Item* item, std::ostringstream& stream, bool isHous
 	const uint16_t unique = item->getUniqueID();
 	const uint16_t action = item->getActionID();
 	const std::string& text = item->getText();
-	bool houseDoor = isHouseTile && item->isDoor();
+	uint8_t doorId = 0;
+
+	if (isHouseTile && item->isDoor()) {
+		if (Door* door = dynamic_cast<Door*>(item)) {
+			DoorType dt = door->getDoorType();
+			if (dt == WALL_DOOR_NORMAL || dt == WALL_DOOR_LOCKED || dt == WALL_DOOR_QUEST || dt == WALL_DOOR_MAGIC || dt == WALL_DOOR_NORMAL_ALT) {
+				doorId = door->getDoorID();
+			}
+		}
+	}
+
 	Teleport* tp = dynamic_cast<Teleport*>(item);
-	if(unique == 0 && action == 0 && text.empty() && !houseDoor && !tp)
+	if(unique == 0 && action == 0 && doorId == 0 && text.empty() && !tp)
 		return;
 
 	if(stream.tellp() > 0)
@@ -1421,16 +1431,13 @@ void MapDrawer::WriteTooltip(Item* item, std::ostringstream& stream, bool isHous
 		stream << "aid: " << action << "\n";
 	if(unique > 0)
 		stream << "uid: " << unique << "\n";
+	if (doorId > 0)
+		stream << "door id: " << static_cast<int>(doorId) << "\n";
 	if(!text.empty())
 		stream << "text: " << text << "\n";
 	if (tp) {
 		Position& dest = tp->getDestination();
 		stream << "destination: " <<  dest.x << ", " << dest.y << ", " << dest.z << "\n";
-	}
-	if (houseDoor) {
-		if (Door* door = dynamic_cast<Door*>(item)) {
-			stream << "door id: " << static_cast<int>(door->getDoorID()) << "\n";
-		}
 	}
 }
 

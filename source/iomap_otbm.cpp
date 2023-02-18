@@ -33,6 +33,7 @@
 #include "item.h"
 #include "complexitem.h"
 #include "town.h"
+#include "wall_brush.h"
 
 #include "iomap_otbm.h"
 
@@ -314,6 +315,16 @@ void Door::serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHan
 		stream.addByte(OTBM_ATTR_HOUSEDOORID);
 		stream.addU8(doorId);
 	}
+}
+
+DoorType Door::getDoorType()
+{
+	WallBrush* wb = getWallBrush();
+	if (!wb) {
+		return WALL_UNDEFINED;
+	}
+
+	return wb->getDoorTypeFromID(id);
 }
 
 // ============================================================================
