@@ -213,18 +213,19 @@ bool WallBrush::load(pugi::xml_node node, wxArrayString& warnings)
 					}
 
 					dt.id = id;
-					if(all_windows) {
-						dt.type = WALL_WINDOW;       door_items[alignment].push_back(dt);
-						dt.type = WALL_HATCH_WINDOW; door_items[alignment].push_back(dt);
-					}
 
 					if(all_doors) {
-						dt.type = WALL_ARCHWAY;         door_items[alignment].push_back(dt);
 						dt.type = WALL_DOOR_NORMAL;     door_items[alignment].push_back(dt);
 						dt.type = WALL_DOOR_NORMAL_ALT; door_items[alignment].push_back(dt);
 						dt.type = WALL_DOOR_LOCKED;     door_items[alignment].push_back(dt);
 						dt.type = WALL_DOOR_QUEST;      door_items[alignment].push_back(dt);
 						dt.type = WALL_DOOR_MAGIC;      door_items[alignment].push_back(dt);
+						dt.type = WALL_ARCHWAY;         door_items[alignment].push_back(dt);
+					}
+
+					if (all_windows) {
+						dt.type = WALL_WINDOW;       door_items[alignment].push_back(dt);
+						dt.type = WALL_HATCH_WINDOW; door_items[alignment].push_back(dt);
 					}
 
 					if(!all_doors && !all_windows) {

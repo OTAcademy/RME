@@ -21,12 +21,12 @@
 		r - raw palette
 		s - show spawns
 		t - terrain palette
-		u
+		u - show locked doors
 		v - highlight items
 		w - waypoint palette
-		x - show locked doors
+		x - RESERVED FOR ROTATE HOTKEY
 		y - show tooltips
-		z
+		z - RESERVED FOR ROTATE HOTKEY
 	-->
 
 	<menu name="File">
@@ -40,7 +40,9 @@
 		<menu name="Import">
 			<item name="Import Map..." action="IMPORT_MAP" help="Import map data from another map file."/>
 			<item name="Import Monsters/NPC..." action="IMPORT_MONSTERS" help="Import either a monsters.xml file or a specific monster/NPC."/>
+			<!-- this was never implemented
 			<item name="Import Minimap..." action="IMPORT_MINIMAP" help="Import map data from a .bmp file."/>
+			-->
 		</menu>
 		<menu name="Export">
 			<item name="Export Minimap..." action="EXPORT_MINIMAP" help="Export minimap to an image file."/>
@@ -170,7 +172,7 @@
 		<item name="Show waypoints" hotkey="Shift+W" action="SHOW_WAYPOINTS" help="Show waypoints."/>
 		<separator/>
 		<item name="Highlight Items" hotkey="V" action="HIGHLIGHT_ITEMS" help="Highlight tiles with items on them."/>
-		<item name="Highlight Locked Doors" hotkey="X" action="HIGHLIGHT_LOCKED_DOORS" help="Highlight doors that require key to open."/>
+		<item name="Highlight Locked Doors" hotkey="U" action="HIGHLIGHT_LOCKED_DOORS" help="Highlight doors that require key to open."/>
 		<item name="Show Wall Hooks" hotkey="K" action="SHOW_WALL_HOOKS" help="Show indicators for wall hooks."/>
 	</menu>
 	<menu name="Navigate">
