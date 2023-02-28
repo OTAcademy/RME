@@ -22,8 +22,6 @@ LightDrawer::LightDrawer()
 {
 	texture = 0;
 	global_color = wxColor(50, 50, 50, 255);
-
-	createGLTexture();
 }
 
 LightDrawer::~LightDrawer()
@@ -35,18 +33,19 @@ LightDrawer::~LightDrawer()
 
 void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog)
 {
+	if (texture == 0) {
+		createGLTexture();
+	}
+
 	int w = end_x - map_x;
 	int h = end_y - map_y;
 
 	buffer.resize(static_cast<size_t>(w * h * PixelFormatRGBA));
 
-	constexpr int half_tile_size = TileSize / 2;
 	for (int x = 0; x < w; ++x) {
 		for (int y = 0; y < h; ++y) {
 			int mx = (map_x + x);
 			int my = (map_y + y);
-			int px = (mx * TileSize + half_tile_size);
-			int py = (my * TileSize + half_tile_size);
 			int index = (y * w + x);
 			int color_index = index * PixelFormatRGBA;
 
@@ -77,6 +76,7 @@ void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x,
 	int draw_height = h * TileSize;
 
 	glBindTexture(GL_TEXTURE_2D, texture);
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
@@ -87,6 +87,7 @@ void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x,
 		glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
+	glColor4ub(255, 255, 255, 255); // reset color
 	glEnable(GL_TEXTURE_2D);
 		glBegin(GL_QUADS);
 		glTexCoord2f(0.f, 0.f); glVertex2f(draw_x, draw_y);
@@ -141,9 +142,12 @@ void LightDrawer::clear() noexcept
 void LightDrawer::createGLTexture()
 {
 	glGenTextures(1, &texture);
+	ASSERT(texture == 0);
 }
 
 void LightDrawer::unloadGLTexture()
 {
-	glDeleteTextures(1, &texture);
+	if (texture != 0) {
+		glDeleteTextures(1, &texture);
+	}
 }
