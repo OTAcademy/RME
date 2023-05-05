@@ -1845,7 +1845,7 @@ void MapDrawer::AddLight(TileLocation* location)
 
 	if (tile->ground) {
 		if (tile->ground->hasLight()) {
-			light_drawer->addLight(position.x, position.y, tile->ground->getLight());
+			light_drawer->addLight(position.x, position.y, position.z, tile->ground->getLight());
 		}
 	}
 
@@ -1853,7 +1853,7 @@ void MapDrawer::AddLight(TileLocation* location)
 	if (!hidden && !tile->items.empty()) {
 		for (auto item : tile->items) {
 			if (item->hasLight()) {
-				light_drawer->addLight(position.x, position.y, item->getLight());
+				light_drawer->addLight(position.x, position.y, position.z, item->getLight());
 			}
 		}
 	}

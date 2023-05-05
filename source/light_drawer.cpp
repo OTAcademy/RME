@@ -115,8 +115,13 @@ void LightDrawer::setGlobalLightColor(uint8_t color)
 	global_color = colorFromEightBit(color);
 }
 
-void LightDrawer::addLight(int map_x, int map_y, const SpriteLight& light)
+void LightDrawer::addLight(int map_x, int map_y, int map_z, const SpriteLight& light)
 {
+	if (map_z <= GROUND_LAYER) {
+		map_x -= (GROUND_LAYER - map_z);
+		map_y -= (GROUND_LAYER - map_z);
+	}
+
 	if (map_x <= 0 || map_x >= MAP_MAX_WIDTH || map_y <= 0 || map_y >= MAP_MAX_HEIGHT) {
 		return;
 	}
