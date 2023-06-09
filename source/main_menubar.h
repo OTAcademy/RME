@@ -163,7 +163,7 @@ namespace MenuBar
 
 class MainFrame;
 
-class MainMenuBar : wxEvtHandler
+class MainMenuBar : public wxEvtHandler
 {
 public:
 	MainMenuBar(MainFrame* frame);
