@@ -7178,6 +7178,7 @@
 	</item>
 	<item id="3103" article="a" name="pile of bones" editorsuffix=" (Not Decaying)">
 		<attribute key="weight" value="10000" />
+		<attribute key="containerSize" value="20" />
 	</item>
 	<item fromid="3104" toid="3107" article="a" name="dead dragon" editorsuffix=" (Not Decaying)">
 		<attribute key="containerSize" value="20" />
