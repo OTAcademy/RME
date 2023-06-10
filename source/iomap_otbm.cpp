@@ -23,6 +23,11 @@
 #include <wx/mstream.h>
 #include <wx/datstrm.h>
 
+// bugfix for Windows 11
+#ifdef __WINDOWS__
+#include <regex>
+#endif
+
 #include "settings.h"
 #include "gui.h" // Loadbar
 
@@ -1072,14 +1077,21 @@ bool IOMapOTBM::loadSpawns(Map& map, const FileName& dir)
 {
 	std::string fn = (const char*)(dir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME).mb_str(wxConvUTF8));
 	fn += map.spawnfile;
+#ifdef __WINDOWS__
+	// bugfix for Windows 11
+	fn = std::regex_replace(fn, std::regex("/"), "\\");
+#endif
 
 	FileName filename(wxstr(fn));
-	if(!filename.FileExists())
+	if (!filename.FileExists()) {
+		warnings.push_back("IOMapOTBM::loadSpawns: File not found.");
 		return false;
+	}
 
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(fn.c_str());
 	if(!result) {
+		warnings.push_back("IOMapOTBM::loadSpawns: File loading error.");
 		return false;
 	}
 	return loadSpawns(map, doc);
@@ -1220,13 +1232,21 @@ bool IOMapOTBM::loadHouses(Map& map, const FileName& dir)
 {
 	std::string fn = (const char*)(dir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME).mb_str(wxConvUTF8));
 	fn += map.housefile;
+#ifdef __WINDOWS__
+	// bugfix for Windows 11
+	fn = std::regex_replace(fn, std::regex("/"), "\\");
+#endif
+
 	FileName filename(wxstr(fn));
-	if(!filename.FileExists())
+	if (!filename.FileExists()) {
+		warnings.push_back("IOMapOTBM::loadHouses: File not found.");
 		return false;
+	}
 
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(fn.c_str());
 	if(!result) {
+		warnings.push_back("IOMapOTBM::loadHouses: File loading error.");
 		return false;
 	}
 	return loadHouses(map, doc);

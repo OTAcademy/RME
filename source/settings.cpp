@@ -361,7 +361,7 @@ void Settings::load()
 {
 	wxConfigBase* conf;
 #ifdef __WINDOWS__
-	FileName filename("rme.cfg");
+	FileName filename("editor.cfg");
 	if(filename.FileExists()) { // Use local file if it exists
 		wxFileInputStream file(filename.GetFullPath());
 		conf = newd wxFileConfig(file);
@@ -372,13 +372,13 @@ void Settings::load()
 		g_settings.setInteger(Config::INDIRECTORY_INSTALLATION, 0);
 	}
 #else
-	FileName filename("./rme.cfg");
+	FileName filename("./editor.cfg");
 	if(filename.FileExists()) { // Use local file if it exists
 		wxFileInputStream file(filename.GetFullPath());
 		conf = newd wxFileConfig(file);
 		g_settings.setInteger(Config::INDIRECTORY_INSTALLATION, 1);
 	} else { // Else use global (user-specific) conf
-		filename.Assign(wxStandardPaths::Get().GetUserConfigDir() + "/.rme/rme.cfg");
+		filename.Assign(wxStandardPaths::Get().GetUserConfigDir() + "/.rme/editor.cfg");
 		if(filename.FileExists()) {
 			wxFileInputStream file(filename.GetFullPath());
 			conf = newd wxFileConfig(file);
@@ -401,7 +401,7 @@ void Settings::save(bool endoftheworld)
 		wxFileConfig* conf = dynamic_cast<wxFileConfig*>(wxConfig::Get());
 		if(!conf)
 			return;
-		FileName filename("rme.cfg");
+		FileName filename("editor.cfg");
 		wxFileOutputStream file(filename.GetFullPath());
 		conf->Save(file);
 	}
@@ -409,12 +409,12 @@ void Settings::save(bool endoftheworld)
 	wxFileConfig* conf = dynamic_cast<wxFileConfig*>(wxConfig::Get());
 	if(!conf)
 		return;
-	FileName filename("./rme.cfg");
+	FileName filename("./editor.cfg");
 	if(filename.FileExists()) { // Use local file if it exists
 		wxFileOutputStream file(filename.GetFullPath());
 		conf->Save(file);
 	} else { // Else use global (user-specific) conf
-		wxString path = wxStandardPaths::Get().GetUserConfigDir() + "/.rme/rme.cfg";
+		wxString path = wxStandardPaths::Get().GetUserConfigDir() + "/.rme/editor.cfg";
 		filename.Assign(path);
 		filename.Mkdir(0755, wxPATH_MKDIR_FULL);
 		wxFileOutputStream file(filename.GetFullPath());
