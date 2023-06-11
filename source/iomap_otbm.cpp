@@ -1079,8 +1079,11 @@ bool IOMapOTBM::loadSpawns(Map& map, const FileName& dir)
 		return false;
 	}
 
+	// has to be declared again as encoding-specific characters break loading there
+	std::string encoded_path = (const char*)(dir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME).mb_str(wxConvWhateverWorks));
+	encoded_path += map.spawnfile;
 	pugi::xml_document doc;
-	pugi::xml_parse_result result = doc.load_file(fn.c_str());
+	pugi::xml_parse_result result = doc.load_file(encoded_path.c_str());
 	if(!result) {
 		warnings.push_back("IOMapOTBM::loadSpawns: File loading error.");
 		return false;
@@ -1230,8 +1233,11 @@ bool IOMapOTBM::loadHouses(Map& map, const FileName& dir)
 		return false;
 	}
 
+	// has to be declared again as encoding-specific characters break loading there
+	std::string encoded_path = (const char*)(dir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME).mb_str(wxConvWhateverWorks));
+	encoded_path += map.housefile;
 	pugi::xml_document doc;
-	pugi::xml_parse_result result = doc.load_file(fn.c_str());
+	pugi::xml_parse_result result = doc.load_file(encoded_path.c_str());
 	if(!result) {
 		warnings.push_back("IOMapOTBM::loadHouses: File loading error.");
 		return false;
