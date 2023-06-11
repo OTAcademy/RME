@@ -184,7 +184,7 @@ void TilesetCategory::loadBrush(pugi::xml_node node, wxArrayString& warnings)
 
 	std::string brushName = node.attribute("after").as_string();
 	if((attribute = node.attribute("afteritem"))) {
-		ItemType& it = g_items[attribute.as_ushort()];
+		ItemType& it = g_items[attribute.as_uint()];
 		if(it.id != 0) {
 			brushName = it.raw_brush ? it.raw_brush->getName() : std::string();
 		}
@@ -222,10 +222,10 @@ void TilesetCategory::loadBrush(pugi::xml_node node, wxArrayString& warnings)
 			if(!(attribute = node.attribute("fromid"))) {
 				warnings.push_back("Couldn't read raw ids.");
 			}
-			toId = node.attribute("toid").as_ushort();
+			toId = node.attribute("toid").as_uint();
 		}
 
-		fromId = attribute.as_ushort();
+		fromId = attribute.as_uint();
 		toId = std::max<uint16_t>(fromId, toId);
 
 		std::vector<Brush*> tempBrushVector;
