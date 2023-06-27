@@ -1072,12 +1072,15 @@ void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Position& pos, Item* it
 				BlitSquare(draw_x, draw_y, red, green, 0, alpha / 3 * 2);
 				return;
 
-				// Red invisible walkable tile
+			// Red invisible walkable tile
 			case 470:
+			case 17970:
+			case 20028:
+			case 34168:
 				BlitSquare(draw_x, draw_y, red, 0, 0, alpha / 3 * 2);
 				return;
 
-				// Cyan invisible wall
+			// Cyan invisible wall
 			case 2187:
 				BlitSquare(draw_x, draw_y, 0, green, blue, 80);
 				return;
