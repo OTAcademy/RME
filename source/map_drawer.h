@@ -18,6 +18,11 @@
 #ifndef RME_MAP_DRAWER_H_
 #define RME_MAP_DRAWER_H_
 
+#include <iostream>
+#include <unordered_set>
+#include <unordered_map>
+#include <memory>
+
 class GameSprite;
 
 struct MapTooltip
@@ -68,6 +73,7 @@ struct DrawingOptions {
 	bool show_houses;
 	bool show_shade;
 	bool show_special_tiles;
+	bool show_zone_areas;
 	bool show_items;
 
 	bool highlight_items;
@@ -90,6 +96,117 @@ struct DrawingOptions {
 class MapCanvas;
 class LightDrawer;
 
+struct FinderPosition
+{
+	FinderPosition() {}
+	FinderPosition(int _x, int _y, int _z) : x(_x), y(_y), z(_z) {}
+	int x, y, z;
+
+	bool operator==(const FinderPosition& other) const
+	{
+		return x == other.x && y == other.y && z == other.z;
+	}
+
+	double distance(const FinderPosition& b) const
+	{
+		return std::sqrt(std::pow(x - b.x, 2) + std::pow(y - b.y, 2));
+	}
+
+	struct Hash
+	{
+		size_t operator()(const FinderPosition& p) const
+		{
+			return p.x ^ p.y ^ p.z;
+		}
+	};
+};
+
+class ZoneFinder
+{
+private:
+	std::unordered_set<FinderPosition, FinderPosition::Hash> positions;
+	std::vector<std::vector<FinderPosition>> zones;
+	std::unordered_set<FinderPosition, FinderPosition::Hash> visited;
+
+	bool isValid(const FinderPosition& pos)
+	{
+		return positions.find(pos) != positions.end() && visited.find(pos) == visited.end();
+	}
+
+	void dfs(const FinderPosition& pos, std::vector<FinderPosition>& zone)
+	{
+		if (visited.find(pos) != visited.end())
+		{
+			return;
+		}
+
+		visited.insert(pos);
+		zone.push_back(pos);
+
+		std::vector<FinderPosition> neighbors = {
+			{pos.x + 1, pos.y, pos.z},
+			{pos.x - 1, pos.y, pos.z},
+			{pos.x, pos.y + 1, pos.z},
+			{pos.x, pos.y - 1, pos.z}
+		};
+
+		for (const auto& next : neighbors)
+		{
+			if (isValid(next))
+			{
+				dfs(next, zone);
+			}
+		}
+	}
+
+public:
+	ZoneFinder(const std::vector<FinderPosition>& inputPositions) : positions(inputPositions.begin(), inputPositions.end()) {}
+
+	std::vector<std::vector<FinderPosition>> findZones()
+	{
+		for (const auto& pos : positions)
+		{
+			if (visited.find(pos) == visited.end())
+			{
+				std::vector<FinderPosition> zone;
+				dfs(pos, zone);
+				zones.push_back(zone);
+			}
+		}
+
+		return zones;
+	}
+
+	FinderPosition findClosestToCenter(const std::vector<FinderPosition>& zone)
+	{
+		FinderPosition centroid = { 0, 0, 0 };
+		for (const auto& pos : zone)
+		{
+			centroid.x += pos.x;
+			centroid.y += pos.y;
+			centroid.z += pos.z;
+		}
+
+		centroid.x /= zone.size();
+		centroid.y /= zone.size();
+		centroid.z /= zone.size();
+
+		double minDistance = std::numeric_limits<double>::max();
+		FinderPosition closestPosition;
+		for (const auto& pos : zone)
+		{
+			const double dist = pos.distance(centroid);
+			if (dist < minDistance)
+			{
+				minDistance = dist;
+				closestPosition = pos;
+			}
+		}
+
+		return closestPosition;
+	}
+};
+
 class MapDrawer
 {
 	MapCanvas* canvas;
@@ -110,6 +227,7 @@ class MapDrawer
 	int floor;
 
 protected:
+	std::unordered_map<uint16_t, std::vector<FinderPosition>> zoneTiles;
 	std::vector<MapTooltip*> tooltips;
 	std::ostringstream tooltip;
 
@@ -153,7 +271,7 @@ protected:
 	void DrawTile(TileLocation* tile);
 	void DrawBrushIndicator(int x, int y, Brush* brush, uint8_t r, uint8_t g, uint8_t b);
 	void DrawHookIndicator(int x, int y, const ItemType& type);
-	void WriteTooltip(Item* item, std::ostringstream& stream, bool isHouseTile = false);
+	void WriteTooltip(Tile* tile, Item* item, std::ostringstream& stream, bool isHouseTile);
 	void WriteTooltip(Waypoint* item, std::ostringstream& stream);
 	void MakeTooltip(int screenx, int screeny, const std::string& text, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255);
 	void AddLight(TileLocation* location);

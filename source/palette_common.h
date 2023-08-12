@@ -78,6 +78,7 @@ public:
 	// Select the brush in the parameter, this only changes the look of the panel
 	virtual bool SelectBrush(const Brush* whatbrush);
 
+	virtual void DeselectAll() {}
 	// Updates the palette window to use the current brush size
 	virtual void OnUpdateBrushSize(BrushShape shape, int size);
 	// Called when this page is about to be displayed
@@ -97,6 +98,45 @@ protected:
 	int last_brush_size;
 
 	DECLARE_EVENT_TABLE();
+};
+
+class ZoneBrushPanel : public PalettePanel {
+public:
+	ZoneBrushPanel(wxWindow* parent);
+	~ZoneBrushPanel() {}
+
+	// Interface
+	// Flushes this panel and consequent views will feature reloaded data
+	void InvalidateContents();
+	// Loads the currently displayed page
+	void LoadCurrentContents();
+	// Loads all content in this panel
+	void LoadAllContents();
+
+	// Returns the currently selected brush (First brush if panel is not loaded)
+	Brush* GetSelectedBrush() const;
+	// Select the brush in the parameter, this only changes the look of the panel
+	bool SelectBrush(const Brush* whatbrush);
+
+	wxString GetName() const;
+	void SetToolbarIconSize(bool large);
+	void OnZoneIdChange(wxCommandEvent& WXUNUSED(event));
+
+	// Called when this page is displayed
+	void OnSwitchIn();
+
+	// wxWidgets event handling
+	void OnClickZoneBrushButton(wxCommandEvent& event);
+	void DeselectAll();
+
+protected:
+	bool loaded;
+	bool large_icons;
+
+	BrushButton* zoneButton;
+	wxSpinCtrl* zoneIdSpin;
+
+	DECLARE_EVENT_TABLE()
 };
 
 class BrushSizePanel : public PalettePanel {

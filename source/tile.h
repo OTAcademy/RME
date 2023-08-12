@@ -31,6 +31,7 @@ enum {
 	TILESTATE_NOLOGOUT       = 0x0008,
 	TILESTATE_PVPZONE        = 0x0010,
 	TILESTATE_REFRESH        = 0x0020,
+	TILESTATE_ZONE_BRUSH	 = 0x0040,
 	// Internal
 	TILESTATE_SELECTED  = 0x0001,
 	TILESTATE_UNIQUE    = 0x0002,
@@ -197,9 +198,11 @@ public: //Functions
 	void setHouse(House* house);
 
 	// Mapflags (PZ, PVPZONE etc.)
+	void setZoneId(uint16_t _zoneId);
 	void setMapFlags(uint16_t _flags);
 	void unsetMapFlags(uint16_t _flags);
 	uint16_t getMapFlags() const;
+	uint16_t getZoneId() const;
 
 	// Statflags (You really ought not to touch this)
 	void setStatFlags(uint16_t _flags);
@@ -209,10 +212,11 @@ public: //Functions
 protected:
 	union {
 		struct {
+			uint16_t zoneId;
 			uint16_t mapflags;
 			uint16_t statflags;
 		};
-		uint32_t flags;
+		uint64_t flags;
 	};
 
 private:
@@ -292,6 +296,16 @@ inline void Tile::unsetStatFlags(uint16_t _flags) {
 
 inline uint16_t Tile::getStatFlags() const {
 	return statflags;
+}
+
+inline void Tile::setZoneId(uint16_t _zoneId)
+{
+	zoneId = _zoneId;
+}
+
+inline uint16_t Tile::getZoneId() const
+{
+	return zoneId;
 }
 
 #endif

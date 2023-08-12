@@ -44,9 +44,62 @@
 #include "waypoint_brush.h"
 #include "light_drawer.h"
 
+using Color = std::tuple<int, int, int>;
+
+static std::vector<Color> colors;
+void GenerateColors()
+{
+	int r = 250, g = 100, b = 100;
+	const int step = 25;
+	bool incrementing = true;
+
+	while (true)
+	{
+		if (std::find(colors.begin(), colors.end(), Color({ r, g, b })) == colors.end())
+		{
+			colors.push_back({ r, g, b });
+		}
+
+		if (g < 250 && incrementing)
+		{
+			g += step;
+		}
+		else if (r > 100 && !incrementing && g == 250)
+		{
+			r -= step;
+		}
+		else if (b < 250 && r == 100)
+		{
+			b += step;
+		}
+		else if (g > 100 && b == 250)
+		{
+			g -= step;
+		}
+		else if (r < 250 && g == 100)
+		{
+			r += step;
+		}
+		else if (b > 100 && r == 250)
+		{
+			b -= step;
+		}
+		else if (b == 100 && g == 250)
+		{
+			incrementing = false;
+		}
+
+		if (r == 250 && g == 100 && b == 100 && !incrementing)
+		{
+			break;
+		}
+	}
+}
+
 DrawingOptions::DrawingOptions()
 {
 	SetDefault();
+	GenerateColors();
 }
 
 void DrawingOptions::SetDefault()
@@ -68,6 +121,7 @@ void DrawingOptions::SetDefault()
 	show_houses = true;
 	show_shade = true;
 	show_special_tiles = true;
+	show_zone_areas = true;
 	show_items = true;
 
 	highlight_items = false;
@@ -101,6 +155,7 @@ void DrawingOptions::SetIngame()
 	show_houses = false;
 	show_shade = false;
 	show_special_tiles = false;
+	show_zone_areas = false;
 	show_items = true;
 
 	highlight_items = false;
@@ -300,6 +355,7 @@ void MapDrawer::DrawMap()
 			int nd_end_x = (end_x & ~3) + 4;
 			int nd_end_y = (end_y & ~3) + 4;
 
+			zoneTiles.clear();
 			for(int nd_map_x = nd_start_x; nd_map_x <= nd_end_x; nd_map_x += 4) {
 				for(int nd_map_y = nd_start_y; nd_map_y <= nd_end_y; nd_map_y += 4) {
 					QTreeNode* nd = editor.map.getLeaf(nd_map_x, nd_map_y);
@@ -340,6 +396,39 @@ void MapDrawer::DrawMap()
 							glVertex2f(cx,     cy);
 						glEnd();
 					}
+				}
+			}
+
+			for (auto& itZonePos : zoneTiles)
+			{
+				ZoneFinder finder(itZonePos.second);
+				auto zones = finder.findZones();
+
+				for (const auto& itZone : zones)
+				{
+					const FinderPosition center = finder.findClosestToCenter(itZone);
+
+					QTreeNode* nd = editor.map.getLeaf(center.x, center.y);
+					TileLocation* location = nd->getTile(center.x, center.y, center.z);
+
+					const Tile* tile = location->get();
+
+					std::ostringstream tooltip;
+					tooltip << "zone id: " << tile->getZoneId();
+
+					int offset;
+					if (map_z <= GROUND_LAYER)
+					{
+						offset = (GROUND_LAYER - map_z) * TileSize;
+					}
+					else
+					{
+						offset = TileSize * (floor - map_z);
+					}
+
+					int draw_x = ((tile->getX() * TileSize) - view_scroll_x) - offset;
+					int draw_y = ((tile->getY() * TileSize) - view_scroll_y) - offset;
+					MakeTooltip(draw_x, draw_y + 8, tooltip.str());
 				}
 			}
 		}
@@ -393,20 +482,46 @@ void MapDrawer::DrawMap()
 									r /= 2;
 									g /= 2;
 								}
-							} else if(options.show_special_tiles && tile->isPZ()) {
-								r /= 2;
-								b /= 2;
 							}
-							if(options.show_special_tiles && tile->getMapFlags() & TILESTATE_PVPZONE) {
-								r = r/3*2;
-								b = r/3*2;
+							else if (options.show_special_tiles || options.show_zone_areas)
+							{
+								if (options.show_zone_areas && tile->getMapFlags() & TILESTATE_ZONE_BRUSH)
+								{
+									const uint16_t zoneId = tile->getZoneId();
+									const uint16_t colorIndex = zoneId % colors.size();
+									const Color colour = colors[colorIndex];
+
+									r = std::get<0>(colour);
+									g = std::get<1>(colour);
+									b = std::get<2>(colour);
+								}
+
+								if (options.show_special_tiles)
+								{
+									if (tile->isPZ())
+									{
+										r /= 2;
+										b /= 2;
+									}
+
+									if (tile->getMapFlags() & TILESTATE_PVPZONE)
+									{
+										r = r / 3 * 2;
+										b = r / 3 * 2;
+									}
+
+									if (tile->getMapFlags() & TILESTATE_NOLOGOUT)
+									{
+										b /= 2;
+									}
+
+									if (tile->getMapFlags() & TILESTATE_NOPVP)
+									{
+										g /= 2;
+									}
+								}
 							}
-							if(options.show_special_tiles && tile->getMapFlags() & TILESTATE_NOLOGOUT) {
-								b /= 2;
-							}
-							if(options.show_special_tiles && tile->getMapFlags() & TILESTATE_NOPVP) {
-								g /= 2;
-							}
+
 							BlitItem(draw_x, draw_y, tile, tile->ground, true, r, g, b, 160);
 						}
 
@@ -1399,48 +1514,88 @@ void MapDrawer::DrawRawBrush(int screenx, int screeny, ItemType* itemType, uint8
 	BlitSpriteType(screenx, screeny, spr, r, g, b, alpha);
 }
 
-void MapDrawer::WriteTooltip(Item* item, std::ostringstream& stream, bool isHouseTile)
+void MapDrawer::WriteTooltip(Tile* tile, Item* item, std::ostringstream& stream, bool isHouseTile)
 {
-	if(item == nullptr)
+	if (item == nullptr)
+	{
 		return;
+	}
 
 	const uint16_t id = item->getID();
-	if(id < 100)
+	if (id < 100)
+	{
 		return;
+	}
 
+	const uint16_t zoneId = tile->getZoneId();
 	const uint16_t unique = item->getUniqueID();
 	const uint16_t action = item->getActionID();
 	const std::string& text = item->getText();
 	uint8_t doorId = 0;
 
-	if (isHouseTile && item->isDoor()) {
-		if (Door* door = dynamic_cast<Door*>(item)) {
-			if (door->isRealDoor()) {
+	if (isHouseTile && item->isDoor())
+	{
+		if (Door* door = dynamic_cast<Door*>(item))
+		{
+			if (door->isRealDoor())
+			{
 				doorId = door->getDoorID();
 			}
 		}
 	}
 
 	Teleport* tp = dynamic_cast<Teleport*>(item);
-	if(unique == 0 && action == 0 && doorId == 0 && text.empty() && !tp)
+	if (unique == 0 && action == 0 && doorId == 0 && zoneId == 0 && text.empty() && !tp)
+	{
 		return;
+	}
 
-	if(stream.tellp() > 0)
+	if (zoneId != 0)
+	{
+		auto itZone = zoneTiles.find(zoneId);
+		if (itZone == zoneTiles.end())
+		{
+			zoneTiles.emplace(zoneId, std::vector<FinderPosition>({ FinderPosition(tile->getX(), tile->getY(), tile->getZ()) }));
+		}
+		else
+		{
+			itZone->second.push_back(FinderPosition(tile->getX(), tile->getY(), tile->getZ()));
+		}
+	}
+	else
+	{
+		stream << "id: " << id << "\n";
+	}
+
+	if (stream.tellp() > 0)
+	{
 		stream << "\n";
-
-	stream << "id: " << id << "\n";
+	}
 
 	if (action > 0)
+	{
 		stream << "aid: " << action << "\n";
-	if(unique > 0)
+	}
+
+	if (unique > 0)
+	{
 		stream << "uid: " << unique << "\n";
+	}
+
 	if (doorId > 0)
+	{
 		stream << "door id: " << static_cast<int>(doorId) << "\n";
-	if(!text.empty())
+	}
+
+	if (!text.empty())
+	{
 		stream << "text: " << text << "\n";
-	if (tp) {
+	}
+
+	if (tp)
+	{
 		Position& dest = tp->getDestination();
-		stream << "destination: " <<  dest.x << ", " << dest.y << ", " << dest.z << "\n";
+		stream << "destination: " << dest.x << ", " << dest.y << ", " << dest.z << "\n";
 	}
 }
 
@@ -1520,22 +1675,44 @@ void MapDrawer::DrawTile(TileLocation* location)
 				r /= 2;
 				g /= 2;
 			}
-		} else if(showspecial && tile->isPZ()) {
-			r /= 2;
-			b /= 2;
 		}
+		else if (showspecial || options.show_zone_areas)
+		{
+			if (options.show_zone_areas && tile->getMapFlags() & TILESTATE_ZONE_BRUSH)
+			{
+				const uint16_t zoneId = tile->getZoneId();
+				const uint16_t colorIndex = zoneId % colors.size();
+				const Color colour = colors[colorIndex];
 
-		if(showspecial && tile->getMapFlags() & TILESTATE_PVPZONE) {
-			g = r / 4;
-			b = b / 3 * 2;
-		}
+				r = std::get<0>(colour);
+				g = std::get<1>(colour);
+				b = std::get<2>(colour);
+			}
 
-		if(showspecial && tile->getMapFlags() & TILESTATE_NOLOGOUT) {
-			b /= 2;
-		}
+			if (showspecial)
+			{
+				if (tile->isPZ())
+				{
+					r /= 2;
+					b /= 2;
+				}
 
-		if(showspecial && tile->getMapFlags() & TILESTATE_NOPVP) {
-			g /= 2;
+				if (tile->getMapFlags() & TILESTATE_PVPZONE)
+				{
+					g = r / 4;
+					b = b / 3 * 2;
+				}
+
+				if (tile->getMapFlags() & TILESTATE_NOLOGOUT)
+				{
+					b /= 2;
+				}
+
+				if (tile->getMapFlags() & TILESTATE_NOPVP)
+				{
+					g /= 2;
+				}
+			}
 		}
 	}
 
@@ -1561,7 +1738,7 @@ void MapDrawer::DrawTile(TileLocation* location)
 	}
 
 	if(options.show_tooltips && map_z == floor && tile->ground)
-		WriteTooltip(tile->ground, tooltip);
+		WriteTooltip(tile, tile->ground, tooltip, false);
 // end filters for ground tile
 
 	if(!only_colors) {
@@ -1570,7 +1747,7 @@ void MapDrawer::DrawTile(TileLocation* location)
 			for(ItemVector::iterator it = tile->items.begin(); it != tile->items.end(); it++) {
 				// item tooltip
 				if(options.show_tooltips && map_z == floor)
-					WriteTooltip(*it, tooltip, tile->isHouseTile());
+					WriteTooltip(tile, *it, tooltip, tile->isHouseTile());
 
 				// item animation
 				if(options.show_preview && zoom <= 2.0)
@@ -1580,8 +1757,6 @@ void MapDrawer::DrawTile(TileLocation* location)
 				if((*it)->isBorder()) {
 					BlitItem(draw_x, draw_y, tile, *it, false, r, g, b);
 				} else {
-					r = 255, g = 255, b = 255;
-
 					if (options.extended_house_shader && options.show_houses && tile->isHouseTile()) {
 						if ((int)tile->getHouseID() == current_house_id) {
 							r /= 2;
@@ -1631,9 +1806,9 @@ void MapDrawer::DrawTile(TileLocation* location)
 			// tooltips
 			if (options.show_tooltips) {
 				if (location->getWaypointCount() > 0)
-					MakeTooltip(draw_x, draw_y, tooltip.str(), 0, 255, 0);
+					MakeTooltip(draw_x, draw_y + 8, tooltip.str(), 0, 255, 0);
 				else
-					MakeTooltip(draw_x, draw_y, tooltip.str());
+					MakeTooltip(draw_x, draw_y + 8, tooltip.str());
 			}
 			tooltip.str("");
 		}

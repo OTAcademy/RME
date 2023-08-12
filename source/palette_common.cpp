@@ -178,6 +178,135 @@ void PalettePanel::OnRefreshTimer(wxTimerEvent&)
 }
 
 // ============================================================================
+// Zone brush Page
+
+BEGIN_EVENT_TABLE(ZoneBrushPanel, wxPanel)
+EVT_TOGGLEBUTTON(PALETTE_TERRAIN_ZONE_BRUSH, ZoneBrushPanel::OnClickZoneBrushButton)
+END_EVENT_TABLE()
+
+ZoneBrushPanel::ZoneBrushPanel(wxWindow* parent) :
+	PalettePanel(parent, wxID_ANY),
+	loaded(false),
+	large_icons(true),
+	zoneButton(nullptr)
+{
+	////
+}
+
+void ZoneBrushPanel::InvalidateContents()
+{
+	if (loaded)
+	{
+		DestroyChildren();
+		SetSizer(nullptr);
+
+		zoneButton = nullptr;
+		loaded = false;
+	}
+}
+
+void ZoneBrushPanel::LoadCurrentContents()
+{
+	LoadAllContents();
+}
+
+void ZoneBrushPanel::LoadAllContents()
+{
+	if (loaded)
+	{
+		return;
+	}
+
+	wxSizer* size_sizer = newd wxBoxSizer(wxVERTICAL);;
+	wxSizer* sub_sizer = newd wxBoxSizer(wxHORIZONTAL);
+	RenderSize render_size;
+
+	if (large_icons)
+	{
+		// 32x32
+		render_size = RENDER_SIZE_32x32;
+	}
+	else
+	{
+		// 16x16
+		render_size = RENDER_SIZE_16x16;
+	}
+
+	ASSERT(g_gui.zone_brush);
+	sub_sizer->Add(zoneButton = newd BrushButton(this, g_gui.zone_brush, render_size, PALETTE_TERRAIN_ZONE_BRUSH));
+	zoneButton->SetToolTip("Zone Brush");
+
+	zoneIdSpin = newd wxSpinCtrl(this, wxID_ANY, i2ws(1), wxPoint(wxDefaultPosition.x + 12, wxDefaultPosition.y), wxDefaultSize, wxSP_ARROW_KEYS, 0, 65535);
+	sub_sizer->Add(zoneIdSpin, wxSizerFlags(1).Center());
+	g_gui.zone_brush->setZoneId(zoneIdSpin->GetValue());
+
+	size_sizer->Add(sub_sizer);
+	SetSizerAndFit(size_sizer);
+
+	zoneIdSpin->Connect(wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler(ZoneBrushPanel::OnZoneIdChange), NULL, this);
+	zoneIdSpin->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(ZoneBrushPanel::OnZoneIdChange), NULL, this);
+
+	loaded = true;
+}
+
+void ZoneBrushPanel::OnZoneIdChange(wxCommandEvent& WXUNUSED(event))
+{
+	g_gui.zone_brush->setZoneId(zoneIdSpin->GetValue());
+}
+
+wxString ZoneBrushPanel::GetName() const
+{
+	return "Zone Brush Tool";
+}
+
+void ZoneBrushPanel::SetToolbarIconSize(bool d)
+{
+	InvalidateContents();
+	large_icons = d;
+}
+
+void ZoneBrushPanel::OnSwitchIn()
+{
+	LoadCurrentContents();
+}
+
+void ZoneBrushPanel::OnClickZoneBrushButton(wxCommandEvent& event)
+{
+	g_gui.ActivatePalette(GetParentPalette());
+	g_gui.SelectBrush(g_gui.zone_brush);
+}
+
+Brush* ZoneBrushPanel::GetSelectedBrush() const
+{
+	if (zoneButton->GetValue())
+	{
+		return g_gui.zone_brush;
+	}
+
+	return nullptr;
+}
+
+bool ZoneBrushPanel::SelectBrush(const Brush* whatbrush)
+{
+	DeselectAll();
+	if (whatbrush == g_gui.zone_brush)
+	{
+		zoneButton->SetValue(true);
+		return true;
+	}
+
+	return false;
+}
+
+void ZoneBrushPanel::DeselectAll()
+{
+	if (loaded)
+	{
+		zoneButton->SetValue(false);
+	}
+}
+
+// ============================================================================
 // Size Page
 
 BEGIN_EVENT_TABLE(BrushSizePanel, wxPanel)

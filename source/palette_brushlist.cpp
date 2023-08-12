@@ -165,6 +165,10 @@ bool BrushPalettePanel::SelectBrush(const Brush* whatbrush)
 		return false;
 	}
 
+	for (PalettePanel* toolBar : tool_bars) {
+		toolBar->DeselectAll();
+	}
+
 	for(PalettePanel* toolBar : tool_bars) {
 		if(toolBar->SelectBrush(whatbrush)) {
 			panel->SelectBrush(nullptr);

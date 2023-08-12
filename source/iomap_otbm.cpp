@@ -930,6 +930,18 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f)
 									warning("Invalid tile flags of tile on %d:%d:%d", pos.x, pos.y, pos.z);
 								}
 								tile->setMapFlags(flags);
+
+								if (flags & TILESTATE_ZONE_BRUSH)
+								{
+									uint16_t zoneId = 0;
+									if (!tileNode->getU16(zoneId))
+									{
+										warning("Invalid zone id of tile on %d:%d:%d", pos.x, pos.y, pos.z);
+									}
+
+									tile->setZoneId(zoneId);
+								}
+
 								break;
 							}
 							case OTBM_ATTR_ITEM: {
@@ -1556,6 +1568,11 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f)
 				if(save_tile->getMapFlags()) {
 					f.addByte(OTBM_ATTR_TILE_FLAGS);
 					f.addU32(save_tile->getMapFlags());
+
+					if (save_tile->getMapFlags() & TILESTATE_ZONE_BRUSH)
+					{
+						f.addU16(save_tile->getZoneId());
+					}
 				}
 
 				if(save_tile->ground) {

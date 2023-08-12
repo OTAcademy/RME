@@ -337,6 +337,11 @@ void DoodadBrush::draw(BaseMap* map, Tile* tile, void* parameter)
 	if(clear_mapflags || clear_statflags) {
 		tile->setMapFlags(tile->getMapFlags() & (~clear_mapflags));
 		tile->setMapFlags(tile->getStatFlags() & (~clear_statflags));
+
+		if (clear_mapflags & TILESTATE_ZONE_BRUSH)
+		{
+			tile->setZoneId(0);
+		}
 	}
 }
 
