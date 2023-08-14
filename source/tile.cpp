@@ -37,6 +37,7 @@ Tile::Tile(int x, int y, int z) :
 	creature(nullptr),
 	spawn(nullptr),
 	house_id(0),
+	zoneId(0),
 	mapflags(0),
 	statflags(0),
 	minimapColor(INVALID_MINIMAP_COLOR)
@@ -50,6 +51,7 @@ Tile::Tile(TileLocation& loc) :
 	creature(nullptr),
 	spawn(nullptr),
 	house_id(0),
+	zoneId(0),
 	mapflags(0),
 	statflags(0),
 	minimapColor(INVALID_MINIMAP_COLOR)
@@ -326,7 +328,7 @@ ItemVector Tile::popSelectedItems(bool ignoreTileSelected)
 {
 	ItemVector pop_items;
 
-	if(!ignoreTileSelected && !isSelected()) return pop_items;
+	//if(!ignoreTileSelected && !isSelected()) return pop_items;
 
 	if(ground && ground->isSelected()) {
 		pop_items.push_back(ground);

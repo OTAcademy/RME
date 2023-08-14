@@ -215,6 +215,7 @@ void MapCanvas::OnPaint(wxPaintEvent& event)
 			options.show_houses = g_settings.getBoolean(Config::SHOW_HOUSES);
 			options.show_shade = g_settings.getBoolean(Config::SHOW_SHADE);
 			options.show_special_tiles = g_settings.getBoolean(Config::SHOW_SPECIAL_TILES);
+			options.show_zone_areas = g_settings.getBoolean(Config::SHOW_ZONE_AREAS);
 			options.show_items = g_settings.getBoolean(Config::SHOW_ITEMS);
 			options.highlight_items = g_settings.getBoolean(Config::HIGHLIGHT_ITEMS);
 			options.highlight_locked_doors = g_settings.getBoolean(Config::HIGHLIGHT_LOCKED_DOORS);

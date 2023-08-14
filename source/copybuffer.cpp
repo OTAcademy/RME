@@ -140,7 +140,9 @@ void CopyBuffer::cut(Editor& editor, int floor)
 			copied_tile->house_id = newtile->house_id;
 			newtile->house_id = 0;
 			copied_tile->setMapFlags(tile->getMapFlags());
+			copied_tile->setZoneId(tile->getZoneId());
 			newtile->setMapFlags(TILESTATE_NONE);
+			newtile->setZoneId(0);
 		}
 
 		ItemVector tile_selection = newtile->popSelectedItems();

@@ -109,6 +109,10 @@ PalettePanel* PaletteWindow::CreateTerrainPalette(wxWindow *parent, const Tilese
 	tool_panel->SetToolbarIconSize(g_settings.getBoolean(Config::USE_LARGE_TERRAIN_TOOLBAR));
 	panel->AddToolPanel(tool_panel);
 
+	ZoneBrushPanel* zone_brush_panel = newd ZoneBrushPanel(panel);
+	zone_brush_panel->SetToolbarIconSize(g_settings.getBoolean(Config::USE_LARGE_TERRAIN_TOOLBAR));
+	panel->AddToolPanel(zone_brush_panel);
+
 	BrushSizePanel* size_panel = newd BrushSizePanel(panel);
 	size_panel->SetToolbarIconSize(g_settings.getBoolean(Config::USE_LARGE_TERRAIN_TOOLBAR));
 	panel->AddToolPanel(size_panel);
@@ -125,6 +129,10 @@ PalettePanel* PaletteWindow::CreateCollectionPalette(wxWindow* parent, const Til
 	BrushToolPanel* tool_panel = newd BrushToolPanel(panel);
 	tool_panel->SetToolbarIconSize(g_settings.getBoolean(Config::USE_LARGE_COLLECTION_TOOLBAR));
 	panel->AddToolPanel(tool_panel);
+
+	ZoneBrushPanel* zone_brush_panel = newd ZoneBrushPanel(panel);
+	zone_brush_panel->SetToolbarIconSize(g_settings.getBoolean(Config::USE_LARGE_COLLECTION_TOOLBAR));
+	panel->AddToolPanel(zone_brush_panel);
 
 	// brush thickness panel
 	panel->AddToolPanel(newd BrushThicknessPanel(panel));

@@ -223,7 +223,10 @@ public:
 	virtual int getLookID() const;
 	virtual std::string getName() const;
 
+	void setZoneId(uint16_t _zoneId) { zoneId = _zoneId; }
+
 protected:
+	uint16_t zoneId;
 	uint32_t flag;
 };
 
