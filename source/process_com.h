@@ -15,13 +15,12 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-
 #ifdef _USE_PROCESS_COM
 
-#ifndef RME_PROCESS_COMMUNICATION_H_
-#define RME_PROCESS_COMMUNICATION_H_
+	#ifndef RME_PROCESS_COMMUNICATION_H_
+		#define RME_PROCESS_COMMUNICATION_H_
 
-#include "wx/ipc.h"
+		#include "wx/ipc.h"
 
 class RMEProcessConnection : public wxConnection {
 public:
@@ -41,6 +40,7 @@ public:
 
 class RMEProcessClient : public wxClient {
 	wxConnectionBase* proc;
+
 public:
 	RMEProcessClient();
 	~RMEProcessClient();
@@ -48,6 +48,6 @@ public:
 	wxConnectionBase* OnMakeConnection();
 };
 
-#endif
+	#endif
 
 #endif

@@ -20,8 +20,7 @@
 
 class GameSprite;
 
-struct MapTooltip
-{
+struct MapTooltip {
 	enum TextLength {
 		MAX_CHARS_PER_LINE = 40,
 		MAX_CHARS = 255,
@@ -33,8 +32,9 @@ struct MapTooltip
 	}
 
 	void checkLineEnding() {
-		if(text.at(text.size() - 1) == '\n')
+		if (text.at(text.size() - 1) == '\n') {
 			text.resize(text.size() - 1);
+		}
 	}
 
 	int x, y;
@@ -90,8 +90,7 @@ struct DrawingOptions {
 class MapCanvas;
 class LightDrawer;
 
-class MapDrawer
-{
+class MapDrawer {
 	MapCanvas* canvas;
 	Editor& editor;
 	DrawingOptions options;
@@ -139,7 +138,9 @@ public:
 
 	void TakeScreenshot(uint8_t* screenshot_buffer);
 
-	DrawingOptions& getOptions() { return options; }
+	DrawingOptions& getOptions() {
+		return options;
+	}
 
 protected:
 	void BlitItem(int& screenx, int& screeny, const Tile* tile, Item* item, bool ephemeral = false, int red = 255, int green = 255, int blue = 255, int alpha = 255);
@@ -169,7 +170,7 @@ protected:
 		COLOR_BLANK,
 	};
 
-	void getColor(Brush* brush, const Position& position, uint8_t &r, uint8_t &g, uint8_t &b);
+	void getColor(Brush* brush, const Position& position, uint8_t& r, uint8_t& g, uint8_t& b);
 	void glBlitTexture(int sx, int sy, int texture_number, int red, int green, int blue, int alpha);
 	void glBlitSquare(int sx, int sy, int red, int green, int blue, int alpha, int size = 0);
 	void glColor(wxColor color);
@@ -179,6 +180,4 @@ protected:
 	void drawFilledRect(int x, int y, int w, int h, const wxColor& color);
 };
 
-
 #endif
-

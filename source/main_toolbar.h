@@ -25,8 +25,7 @@
 #include "gui_ids.h"
 #include "numbertextctrl.h"
 
-class MainToolBar : public wxEvtHandler
-{
+class MainToolBar : public wxEvtHandler {
 public:
 	MainToolBar(wxWindow* parent, wxAuiManager* manager);
 	~MainToolBar();

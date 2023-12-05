@@ -22,97 +22,89 @@
 #include "iomap.h"
 
 // Container
-Container::Container(const uint16_t type) : Item(type, 0)
-{
+Container::Container(const uint16_t type) :
+	Item(type, 0) {
 	////
 }
 
-Container::~Container()
-{
-	for(Item* item : contents) {
+Container::~Container() {
+	for (Item* item : contents) {
 		delete item;
 	}
 }
 
-Item* Container::deepCopy() const
-{
+Item* Container::deepCopy() const {
 	Item* copy = Item::deepCopy();
 	Container* copyContainer = dynamic_cast<Container*>(copy);
-	if(copyContainer) {
-		for(Item* item : contents) {
+	if (copyContainer) {
+		for (Item* item : contents) {
 			copyContainer->contents.push_back(item->deepCopy());
 		}
 	}
 	return copy;
 }
 
-Item* Container::getItem(size_t index) const
-{
-	if(index < contents.size()) {
+Item* Container::getItem(size_t index) const {
+	if (index < contents.size()) {
 		return contents[index];
 	}
 	return nullptr;
 }
 
-double Container::getWeight()
-{
+double Container::getWeight() {
 	return g_items[id].weight;
 }
 
 // Teleport
-Teleport::Teleport(const uint16_t type) : Item(type, 0),
-	destination(0, 0, 0)
-{
+Teleport::Teleport(const uint16_t type) :
+	Item(type, 0),
+	destination(0, 0, 0) {
 	////
 }
 
-Item* Teleport::deepCopy() const
-{
+Item* Teleport::deepCopy() const {
 	Teleport* copy = static_cast<Teleport*>(Item::deepCopy());
 	copy->destination = destination;
 	return copy;
 }
 
 // Door
-Door::Door(const uint16_t type) : Item(type, 0),
-	doorId(0)
-{
+Door::Door(const uint16_t type) :
+	Item(type, 0),
+	doorId(0) {
 	////
 }
 
-Item* Door::deepCopy() const
-{
+Item* Door::deepCopy() const {
 	Door* copy = static_cast<Door*>(Item::deepCopy());
 	copy->doorId = doorId;
 	return copy;
 }
 
 // Depot
-Depot::Depot(const uint16_t type) : Item(type, 0),
-	depotId(0)
-{
+Depot::Depot(const uint16_t type) :
+	Item(type, 0),
+	depotId(0) {
 	////
 }
 
-Item* Depot::deepCopy() const
-{
+Item* Depot::deepCopy() const {
 	Item* copy = Item::deepCopy();
 	Depot* copy_depot = dynamic_cast<Depot*>(copy);
-	if(copy_depot) {
+	if (copy_depot) {
 		copy_depot->depotId = depotId;
 	}
 	return copy;
 }
 
 // Podium
-Podium::Podium(const uint16_t type) : Item(type, 0),
-outfit(Outfit()), showOutfit(true), showMount(true), showPlatform(true), direction(0)
-{
+Podium::Podium(const uint16_t type) :
+	Item(type, 0),
+	outfit(Outfit()), showOutfit(true), showMount(true), showPlatform(true), direction(0) {
 	////
 }
 
-Item* Podium::deepCopy() const
-{
+Item* Podium::deepCopy() const {
 	Podium* copy = static_cast<Podium*>(Item::deepCopy());
 	copy->outfit = outfit;
 	copy->showOutfit = showOutfit;

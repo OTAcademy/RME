@@ -1841,7 +1841,7 @@
 			<item id="3524" chance="100"/>
 		</alternate>
 	</brush>
-	
+
 	<tileset name="Walls">
 		<terrain>
 			<brush name="mountain wall"/>

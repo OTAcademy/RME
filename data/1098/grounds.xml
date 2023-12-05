@@ -953,7 +953,7 @@
 					<replace_border id="22" edge="cse" with="5638"/>
 				</actions>
 			</specific>
-			
+
 			<specific>
 				<conditions>
 					<match_border id="21" edge="n"/>
@@ -963,7 +963,7 @@
 					<replace_border id="22" edge="cne" with="5684"/>
 				</actions>
 			</specific>
-			
+
 			<specific>
 				<conditions>
 					<match_border id="21" edge="s"/>
@@ -973,7 +973,7 @@
 					<replace_border id="22" edge="csw" with="5638"/>
 				</actions>
 			</specific>
-			
+
 			<specific>
 				<conditions>
 					<match_border id="21" edge="n"/>
@@ -983,7 +983,7 @@
 					<replace_border id="22" edge="cnw" with="5683"/>
 				</actions>
 			</specific>
-			
+
 			<specific>
 				<conditions>
 					<match_border id="21" edge="e"/>
@@ -993,7 +993,7 @@
 					<replace_border id="22" edge="cse" with="5637"/>
 				</actions>
 			</specific>
-			
+
 			<specific>
 				<conditions>
 					<match_border id="21" edge="w"/>
@@ -1003,7 +1003,7 @@
 					<replace_border id="22" edge="csw" with="5686"/>
 				</actions>
 			</specific>
-			
+
 			<specific>
 				<conditions>
 					<match_border id="21" edge="e"/>
@@ -1013,7 +1013,7 @@
 					<replace_border id="22" edge="cne" with="5637"/>
 				</actions>
 			</specific>
-			
+
 			<specific>
 				<conditions>
 					<match_border id="21" edge="w"/>
@@ -1035,7 +1035,7 @@
 					<replace_border id="22" edge="cse" with="5638"/>
 				</actions>
 			</specific>
-			
+
 			<specific>
 				<conditions>
 					<match_border id="21" edge="n"/>
@@ -1045,7 +1045,7 @@
 					<replace_border id="22" edge="cne" with="5684"/>
 				</actions>
 			</specific>
-			
+
 			<specific>
 				<conditions>
 					<match_border id="21" edge="s"/>
@@ -1055,7 +1055,7 @@
 					<replace_border id="22" edge="csw" with="5638"/>
 				</actions>
 			</specific>
-			
+
 			<specific>
 				<conditions>
 					<match_border id="21" edge="n"/>
@@ -1065,7 +1065,7 @@
 					<replace_border id="22" edge="cnw" with="5683"/>
 				</actions>
 			</specific>
-			
+
 			<specific>
 				<conditions>
 					<match_border id="21" edge="e"/>
@@ -1075,7 +1075,7 @@
 					<replace_border id="22" edge="cse" with="5637"/>
 				</actions>
 			</specific>
-			
+
 			<specific>
 				<conditions>
 					<match_border id="21" edge="w"/>
@@ -1085,7 +1085,7 @@
 					<replace_border id="22" edge="csw" with="5686"/>
 				</actions>
 			</specific>
-			
+
 			<specific>
 				<conditions>
 					<match_border id="21" edge="e"/>
@@ -1095,7 +1095,7 @@
 					<replace_border id="22" edge="cne" with="5637"/>
 				</actions>
 			</specific>
-			
+
 			<specific>
 				<conditions>
 					<match_border id="21" edge="w"/>

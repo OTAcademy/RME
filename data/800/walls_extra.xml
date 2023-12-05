@@ -586,13 +586,13 @@
 		<alternate>
 			<composite chance="100">
 				<tile x="0" y="0"> <item id="6177"/> </tile>
-				
+
 				<tile x="1" y="0"> <item id="6232"/> </tile>
 				<tile x="2" y="0"> <item id="6175"/> </tile>
-				
+
 				<tile x="0" y="1"> <item id="6233"/> </tile>
 				<tile x="0" y="2"> <item id="6176"/> </tile>
-				
+
 				<tile x="1" y="2"> <item id="6232"/> </tile>
 				<tile x="2" y="1"> <item id="6233"/> </tile>
 				<tile x="2" y="2"> <item id="6275"/> </tile>
@@ -603,13 +603,13 @@
 		<alternate>
 			<composite chance="100">
 				<tile x="0" y="0"> <item id="6240"/> </tile>
-				
+
 				<tile x="1" y="0"> <item id="6236"/> </tile>
 				<tile x="2" y="0"> <item id="6234"/> </tile>
-				
+
 				<tile x="0" y="1"> <item id="6237"/> </tile>
 				<tile x="0" y="2"> <item id="6235"/> </tile>
-				
+
 				<tile x="1" y="2"> <item id="6236"/> </tile>
 				<tile x="2" y="1"> <item id="6237"/> </tile>
 				<tile x="2" y="2"> <item id="6276"/> </tile>
@@ -620,13 +620,13 @@
 		<alternate>
 			<composite chance="100">
 				<tile x="0" y="0"> <item id="6413"/> </tile>
-				
+
 				<tile x="1" y="0"> <item id="6409"/> </tile>
 				<tile x="2" y="0"> <item id="6408"/> </tile>
-				
+
 				<tile x="0" y="1"> <item id="6411"/> </tile>
 				<tile x="0" y="2"> <item id="6410"/> </tile>
-				
+
 				<tile x="1" y="2"> <item id="6409"/> </tile>
 				<tile x="2" y="1"> <item id="6411"/> </tile>
 				<tile x="2" y="2"> <item id="6412"/> </tile>
@@ -637,26 +637,26 @@
 		<alternate>
 			<composite chance="100">
 				<tile x="0" y="0"> <item id="6730"/> </tile>
-				
+
 				<tile x="1" y="0"> <item id="7061"/> </tile>
 				<tile x="2" y="0"> <item id="6766"/> </tile>
 				<tile x="3" y="0"> <item id="6765"/> </tile>
-				
+
 				<tile x="0" y="1"> <item id="7060"/> </tile>
 				<tile x="0" y="2"> <item id="6764"/> </tile>
 				<tile x="0" y="3"> <item id="6763"/> </tile>
-				
+
 				<tile x="1" y="3"> <item id="7061"/> </tile>
 				<tile x="2" y="3"> <item id="6766"/> </tile>
-				
+
 				<tile x="3" y="1"> <item id="7060"/> </tile>
 				<tile x="3" y="2"> <item id="6764"/> </tile>
-				
+
 				<tile x="3" y="3"> <item id="6767"/> </tile>
 			</composite>
 		</alternate>
 	</brush>
-	
+
 	<brush name="frozen demon (ice wall)" type="doodad" server_lookid="7291" draggable="true" on_blocking="true" thickness="100/100">
 		<alternate>
 			<item id="7291" chance="100"/>
@@ -705,7 +705,7 @@
 			<item id="7302" chance="100"/>
 		</alternate>
 	</brush>
-	
+
 	<tileset name="Walls - Archways">
 		<terrain>
 			<brush name="mountain wall archway"/>

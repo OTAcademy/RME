@@ -23,20 +23,25 @@
 //=============================================================================
 // Wallbrush, for drawing walls
 
-class WallBrush : public TerrainBrush
-{
+class WallBrush : public TerrainBrush {
 public:
 	static void init();
 
 	WallBrush();
 	virtual ~WallBrush();
 
-	bool isWall() const { return true; }
-	WallBrush* asWall() { return static_cast<WallBrush*>(this); }
+	bool isWall() const {
+		return true;
+	}
+	WallBrush* asWall() {
+		return static_cast<WallBrush*>(this);
+	}
 
 	virtual bool load(pugi::xml_node node, wxArrayString& warnings);
 
-	virtual bool canDraw(BaseMap* map, const Position& position) const {return true;}
+	virtual bool canDraw(BaseMap* map, const Position& position) const {
+		return true;
+	}
 
 	// Draw to the target tile
 	// Note that this actually only puts the first WALL_NORMAL item on the tile.
@@ -50,8 +55,12 @@ public:
 	bool hasWall(Item* item);
 	::DoorType getDoorTypeFromID(uint16_t id);
 
-	virtual bool canSmear() const { return false; }
-	virtual bool canDrag() const { return true; }
+	virtual bool canSmear() const {
+		return false;
+	}
+	virtual bool canDrag() const {
+		return true;
+	}
 
 	static uint32_t full_border_types[16];
 	static uint32_t half_border_types[16];
@@ -62,7 +71,8 @@ protected:
 		uint16_t id;
 	};
 	struct WallNode {
-		WallNode() : total_chance(0) {}
+		WallNode() :
+			total_chance(0) { }
 		int total_chance;
 		std::vector<WallType> items;
 	};
@@ -82,14 +92,17 @@ protected:
 //=============================================================================
 // Wall decoration brush, for drawing decoration on walls
 
-class WallDecorationBrush : public WallBrush
-{
+class WallDecorationBrush : public WallBrush {
 public:
 	WallDecorationBrush();
 	virtual ~WallDecorationBrush();
 
-	bool isWallDecoration() const { return true; }
-	WallDecorationBrush* asWallDecoration() { return static_cast<WallDecorationBrush*>(this); }
+	bool isWallDecoration() const {
+		return true;
+	}
+	WallDecorationBrush* asWallDecoration() {
+		return static_cast<WallDecorationBrush*>(this);
+	}
 
 	// We use the exact same loading algorithm as normal walls
 

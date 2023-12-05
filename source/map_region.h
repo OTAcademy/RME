@@ -24,9 +24,9 @@ class Tile;
 class Floor;
 class BaseMap;
 
-class TileLocation
-{
+class TileLocation {
 	TileLocation();
+
 public:
 	~TileLocation();
 
@@ -42,32 +42,68 @@ protected:
 	HouseExitList* house_exits; // Any house exits pointing here
 
 public:
-
 	// Access tile
 	// Can't set directly since that does not update tile count
-	Tile* get() {return tile;}
-	const Tile* get() const {return tile;}
+	Tile* get() {
+		return tile;
+	}
+	const Tile* get() const {
+		return tile;
+	}
 
 	int size() const;
 	bool empty() const;
 
-	Position getPosition() const { return position; }
+	Position getPosition() const {
+		return position;
+	}
 
-	int getX() const {return position.x;}
-	int getY() const {return position.y;}
-	int getZ() const {return position.z;}
+	int getX() const {
+		return position.x;
+	}
+	int getY() const {
+		return position.y;
+	}
+	int getZ() const {
+		return position.z;
+	}
 
-	size_t getSpawnCount() const {return spawn_count;}
-	void increaseSpawnCount() {spawn_count++;}
-	void decreaseSpawnCount() {spawn_count--;}
-	size_t getWaypointCount() const {return waypoint_count;}
-	void increaseWaypointCount() {waypoint_count++;}
-	void decreaseWaypointCount() {waypoint_count--;}
-	size_t getTownCount() const { return town_count; }
-	void increaseTownCount() { town_count++; }
-	void decreaseTownCount() { town_count--; }
-	HouseExitList* createHouseExits() {if(house_exits) return house_exits; return house_exits = newd HouseExitList;}
-	HouseExitList* getHouseExits() {return house_exits;}
+	size_t getSpawnCount() const {
+		return spawn_count;
+	}
+	void increaseSpawnCount() {
+		spawn_count++;
+	}
+	void decreaseSpawnCount() {
+		spawn_count--;
+	}
+	size_t getWaypointCount() const {
+		return waypoint_count;
+	}
+	void increaseWaypointCount() {
+		waypoint_count++;
+	}
+	void decreaseWaypointCount() {
+		waypoint_count--;
+	}
+	size_t getTownCount() const {
+		return town_count;
+	}
+	void increaseTownCount() {
+		town_count++;
+	}
+	void decreaseTownCount() {
+		town_count--;
+	}
+	HouseExitList* createHouseExits() {
+		if (house_exits) {
+			return house_exits;
+		}
+		return house_exits = newd HouseExitList;
+	}
+	HouseExitList* getHouseExits() {
+		return house_exits;
+	}
 
 	friend class Floor;
 	friend class QTreeNode;
@@ -81,8 +117,7 @@ public:
 };
 
 // This is not a QuadTree, but a HexTree (16 child nodes to every node), so the name is abit misleading
-class QTreeNode
-{
+class QTreeNode {
 public:
 	QTreeNode(BaseMap& map);
 	virtual ~QTreeNode();
@@ -116,6 +151,7 @@ public:
 	void setRequested(bool underground, bool r);
 	bool isVisible(bool underground);
 	bool isRequested(bool underground);
+
 protected:
 	BaseMap& map;
 	uint32_t visible;
@@ -124,11 +160,11 @@ protected:
 	union {
 		QTreeNode* child[MAP_LAYERS];
 		Floor* array[MAP_LAYERS];
-/*
-#if 16 != MAP_LAYERS
-#    error "You need to rewrite the QuadTree in order to handle more or less than 16 floors"
-#endif
-*/
+		/*
+		#if 16 != MAP_LAYERS
+		#    error "You need to rewrite the QuadTree in order to handle more or less than 16 floors"
+		#endif
+		*/
 	};
 
 	friend class BaseMap;

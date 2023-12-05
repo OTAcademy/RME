@@ -15,14 +15,12 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-
 #ifndef RME_MAIN_BAR_H_
 #define RME_MAIN_BAR_H_
 
 #include <wx/docview.h>
 
-namespace MenuBar
-{
+namespace MenuBar {
 	struct Action;
 
 	enum ActionID {
@@ -163,8 +161,7 @@ namespace MenuBar
 
 class MainFrame;
 
-class MainMenuBar : public wxEvtHandler
-{
+class MainMenuBar : public wxEvtHandler {
 public:
 	MainMenuBar(MainFrame* frame);
 	virtual ~MainMenuBar();
@@ -297,15 +294,15 @@ protected:
 	// Checks the items in the menus according to the settings (in config)
 	void LoadValues();
 	void SearchItems(bool unique, bool action, bool container, bool writable, bool onSelection = false);
-protected:
 
+protected:
 	MainFrame* frame;
 	wxMenuBar* menubar;
 
 	// Used so that calling Check on menu items don't trigger events (avoids infinite recursion)
 	bool checking_programmaticly;
 
-	std::map<MenuBar::ActionID, std::list<wxMenuItem*> > items;
+	std::map<MenuBar::ActionID, std::list<wxMenuItem*>> items;
 
 	// Hardcoded recent files
 	wxFileHistory recentFiles;
@@ -315,13 +312,12 @@ protected:
 	DECLARE_EVENT_TABLE();
 };
 
-namespace MenuBar
-{
-	struct Action
-	{
-		Action() : id(0), kind(wxITEM_NORMAL) {}
-		Action(std::string s, int id, wxItemKind kind, wxCommandEventFunction handler)
-			: id(id), setting(0), name(s), kind(kind), handler(handler) {}
+namespace MenuBar {
+	struct Action {
+		Action() :
+			id(0), kind(wxITEM_NORMAL) { }
+		Action(std::string s, int id, wxItemKind kind, wxCommandEventFunction handler) :
+			id(id), setting(0), name(s), kind(kind), handler(handler) { }
 
 		int id;
 		int setting;

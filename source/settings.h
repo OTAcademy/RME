@@ -201,9 +201,12 @@ public:
 	void setString(uint32_t key, std::string newval);
 
 	wxConfigBase& getConfigObject();
-	void setDefaults() {IO(DEFAULT);}
+	void setDefaults() {
+		IO(DEFAULT);
+	}
 	void load();
 	void save(bool endoftheworld = false);
+
 public:
 	enum DynamicType {
 		TYPE_NONE,
@@ -213,27 +216,42 @@ public:
 	};
 	class DynamicValue {
 	public:
-		DynamicValue() : type(TYPE_NONE) {
+		DynamicValue() :
+			type(TYPE_NONE) {
 			intval = 0;
 		};
-		DynamicValue(DynamicType t) : type(t) {
-			if(t == TYPE_STR) strval = nullptr;
-			else if(t == TYPE_INT) intval = 0;
-			else if(t == TYPE_FLOAT) floatval = 0.0;
-			else intval = 0;
+		DynamicValue(DynamicType t) :
+			type(t) {
+			if (t == TYPE_STR) {
+				strval = nullptr;
+			} else if (t == TYPE_INT) {
+				intval = 0;
+			} else if (t == TYPE_FLOAT) {
+				floatval = 0.0;
+			} else {
+				intval = 0;
+			}
 		};
 		~DynamicValue() {
-			if(type == TYPE_STR)
+			if (type == TYPE_STR) {
 				delete strval;
+			}
 		}
-		DynamicValue(const DynamicValue& dv) : type(dv.type) {
-			if(dv.type == TYPE_STR) strval = newd std::string(*dv.strval);
-			else if(dv.type == TYPE_INT) intval = dv.intval;
-			else if(dv.type == TYPE_FLOAT) floatval = dv.floatval;
-			else intval = 0;
+		DynamicValue(const DynamicValue& dv) :
+			type(dv.type) {
+			if (dv.type == TYPE_STR) {
+				strval = newd std::string(*dv.strval);
+			} else if (dv.type == TYPE_INT) {
+				intval = dv.intval;
+			} else if (dv.type == TYPE_FLOAT) {
+				floatval = dv.floatval;
+			} else {
+				intval = 0;
+			}
 		};
 
 		std::string str();
+
 	private:
 		DynamicType type;
 		union {
@@ -244,6 +262,7 @@ public:
 
 		friend class Settings;
 	};
+
 private:
 	enum IOMode {
 		DEFAULT,

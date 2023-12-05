@@ -103,7 +103,7 @@
 			<brush name="drawbridge"/>
 			<brush name="drawbridge plank (1x3)"/>
 			<brush name="drawbridge plank (2x3)"/>
-			
+
 			<!-- underwater -->
 			<brush name="ventilation grille (normal)"/>
 			<brush name="ventilation grille (underwater pickhole)"/>
@@ -118,7 +118,7 @@
 			<brush name="sea organisms"/>
 			<brush name="sea shells"/>
 			<item id="5554"/>
-			
+
 			<!-- ship walls -->
 			<brush name="ship cabin wall"/>
 			<brush name="damaged ship cabin wall"/>
@@ -135,7 +135,7 @@
 			<brush name="ship ruins"/>
 			<brush name="ship anchor"/>
 			<item id="5444"/>
-			
+
 			<!-- complete ships -->
 			<brush name="fishing boat"/>
 			<brush name="big transport ship"/>
@@ -232,7 +232,7 @@
 
 			<!-- bamboo -->
 			<brush name="bamboo ramp"/>
-			
+
 			<!-- 7.8+ -->
 			<brush name="wooden stairs"/>
 		</terrain>

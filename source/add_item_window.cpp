@@ -54,8 +54,7 @@ AddItemWindow::AddItemWindow(wxWindow* win_parent, TilesetCategoryType categoryT
 	item_id_field(nullptr),
 	item_id_label(nullptr),
 	item_name_label(nullptr),
-	item_button(nullptr)
-{
+	item_button(nullptr) {
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
 	wxString description = "Add a Item";
 
@@ -95,8 +94,7 @@ AddItemWindow::AddItemWindow(wxWindow* win_parent, TilesetCategoryType categoryT
 	item_button->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(AddItemWindow::OnItemClicked), NULL, this);
 }
 
-void AddItemWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))
-{
+void AddItemWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	const ItemType& it = g_items.getItemType(item_id_field->GetValue());
 	if (it.id != 0) {
 		g_materials.addToTileset(tileset_item->name, it.id, category_type);
@@ -104,20 +102,17 @@ void AddItemWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))
 		g_gui.PopupDialog("Item added to Tileset", "'" + it.name + "' has been added to tileset '" + tileset_item->name + "'", wxOK);
 
 		EndModal(1);
-	}
-	else {
+	} else {
 		g_gui.PopupDialog("Something went wrong", "You need to select any item", wxOK);
 	}
 }
 
-void AddItemWindow::OnClickCancel(wxCommandEvent& WXUNUSED(event))
-{
+void AddItemWindow::OnClickCancel(wxCommandEvent& WXUNUSED(event)) {
 	// Just close this window
 	EndModal(0);
 }
 
-void AddItemWindow::OnChangeItemId(wxCommandEvent& WXUNUSED(event))
-{
+void AddItemWindow::OnChangeItemId(wxCommandEvent& WXUNUSED(event)) {
 	uint16_t itemId = item_id_field->GetValue();
 	ItemType& it = g_items[itemId];
 	if (it.id != 0) {
@@ -125,14 +120,12 @@ void AddItemWindow::OnChangeItemId(wxCommandEvent& WXUNUSED(event))
 		item_name_label->SetLabelText("\"" + wxstr(it.name) + "\"");
 
 		item_button->SetSprite(it.clientID);
-	}
-	else {
+	} else {
 		item_id_field->SetValue(100);
 	}
 }
 
-void AddItemWindow::OnItemClicked(wxMouseEvent& WXUNUSED(event))
-{
+void AddItemWindow::OnItemClicked(wxMouseEvent& WXUNUSED(event)) {
 	FindItemDialog dialog(this, "Item");
 	if (dialog.ShowModal() == wxID_OK) {
 		uint16_t id = dialog.getResultID();
@@ -141,9 +134,10 @@ void AddItemWindow::OnItemClicked(wxMouseEvent& WXUNUSED(event))
 	dialog.Destroy();
 }
 
-void AddItemWindow::SetItemIdToItemButton(uint16_t id)
-{
-	if (!item_button) return;
+void AddItemWindow::SetItemIdToItemButton(uint16_t id) {
+	if (!item_button) {
+		return;
+	}
 
 	if (id != 0) {
 		const ItemType& it = g_items.getItemType(id);

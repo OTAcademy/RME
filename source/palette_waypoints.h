@@ -46,6 +46,7 @@ public:
 	void OnSwitchIn();
 	// Called when this page is hidden
 	void OnSwitchOut();
+
 public:
 	// wxWidgets event handling
 	void OnClickWaypoint(wxListEvent& event);
@@ -55,6 +56,7 @@ public:
 	void OnClickRemoveWaypoint(wxCommandEvent& event);
 
 	void SetMap(Map* map);
+
 protected:
 	Map* map;
 	wxListCtrl* waypoint_list;

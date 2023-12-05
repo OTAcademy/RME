@@ -64,7 +64,7 @@ enum BorderType {
 };
 
 enum TileAlignement {
-	TILE_NORTHWEST =1,
+	TILE_NORTHWEST = 1,
 	TILE_NORTH = 2,
 	TILE_NORTHEAST = 4,
 	TILE_WEST = 8,

@@ -61,6 +61,7 @@ public:
 	// Forward key events to the parent window (The Map Window)
 	void OnKey(wxKeyEvent& event);
 	void OnClose(wxCloseEvent&);
+
 protected:
 	static PalettePanel* CreateTerrainPalette(wxWindow* parent, const TilesetContainer& tilesets);
 	static PalettePanel* CreateDoodadPalette(wxWindow* parent, const TilesetContainer& tilesets);

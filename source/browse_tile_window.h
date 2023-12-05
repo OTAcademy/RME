@@ -24,8 +24,7 @@
 
 class BrowseTileListBox;
 
-class BrowseTileWindow : public wxDialog
-{
+class BrowseTileWindow : public wxDialog {
 public:
 	BrowseTileWindow(wxWindow* parent, Tile* tile, wxPoint position = wxDefaultPosition);
 	~BrowseTileWindow();
@@ -46,4 +45,3 @@ protected:
 };
 
 #endif
-

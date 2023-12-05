@@ -25,13 +25,12 @@
 //=============================================================================
 // Border lookup tables
 
-void GroundBrush::init()
-{
+void GroundBrush::init() {
 	GroundBrush::border_types[0] // 0
 		= BORDER_NONE;
 	GroundBrush::border_types[TILE_NORTHWEST] // 1
 		= NORTHWEST_CORNER;
-	GroundBrush::border_types[TILE_NORTH] //10
+	GroundBrush::border_types[TILE_NORTH] // 10
 		= NORTH_HORIZONTAL;
 	GroundBrush::border_types[TILE_NORTH | TILE_NORTHWEST] // 11
 		= NORTH_HORIZONTAL;
@@ -75,12 +74,12 @@ void GroundBrush::init()
 		= NORTHEAST_DIAGONAL;
 	GroundBrush::border_types[TILE_EAST | TILE_NORTHEAST | TILE_NORTH | TILE_NORTHWEST] // 10111
 		= NORTHEAST_DIAGONAL;
-	GroundBrush::border_types[TILE_EAST | TILE_WEST] //11000
+	GroundBrush::border_types[TILE_EAST | TILE_WEST] // 11000
 		= WEST_HORIZONTAL | EAST_HORIZONTAL << 8;
 	GroundBrush::border_types[TILE_EAST | TILE_WEST | TILE_NORTHWEST] // 11001
 		= WEST_HORIZONTAL | EAST_HORIZONTAL << 8;
 	GroundBrush::border_types[TILE_EAST | TILE_WEST | TILE_NORTH] // 11010
-		= NORTH_HORIZONTAL |  WEST_HORIZONTAL << 8 | EAST_HORIZONTAL << 16;
+		= NORTH_HORIZONTAL | WEST_HORIZONTAL << 8 | EAST_HORIZONTAL << 16;
 	GroundBrush::border_types[TILE_EAST | TILE_WEST | TILE_NORTH | TILE_NORTHWEST] // 11011
 		= NORTH_HORIZONTAL | WEST_HORIZONTAL << 8 | EAST_HORIZONTAL << 16;
 	GroundBrush::border_types[TILE_EAST | TILE_WEST | TILE_NORTHEAST] // 11100
@@ -288,7 +287,7 @@ void GroundBrush::init()
 		= SOUTHEAST_CORNER;
 	GroundBrush::border_types[TILE_SOUTHEAST | TILE_NORTHWEST] // 1
 		= NORTHWEST_CORNER | SOUTHEAST_CORNER << 8;
-	GroundBrush::border_types[TILE_SOUTHEAST | TILE_NORTH] //10
+	GroundBrush::border_types[TILE_SOUTHEAST | TILE_NORTH] // 10
 		= NORTH_HORIZONTAL | SOUTHEAST_CORNER << 8;
 	GroundBrush::border_types[TILE_SOUTHEAST | TILE_NORTH | TILE_NORTHWEST] // 11
 		= NORTH_HORIZONTAL | SOUTHEAST_CORNER << 8;
@@ -332,7 +331,7 @@ void GroundBrush::init()
 		= NORTHEAST_DIAGONAL;
 	GroundBrush::border_types[TILE_SOUTHEAST | TILE_EAST | TILE_NORTHEAST | TILE_NORTH | TILE_NORTHWEST] // 10111
 		= NORTHEAST_DIAGONAL;
-	GroundBrush::border_types[TILE_SOUTHEAST | TILE_EAST | TILE_WEST] //11000
+	GroundBrush::border_types[TILE_SOUTHEAST | TILE_EAST | TILE_WEST] // 11000
 		= EAST_HORIZONTAL | WEST_HORIZONTAL << 8;
 	GroundBrush::border_types[TILE_SOUTHEAST | TILE_EAST | TILE_WEST | TILE_NORTHWEST] // 11001
 		= EAST_HORIZONTAL | WEST_HORIZONTAL << 8;
@@ -615,7 +614,7 @@ void TableBrush::init() {
 		= TABLE_ALONE;
 	TableBrush::table_types[TILE_NORTHWEST] // 1
 		= TABLE_ALONE;
-	TableBrush::table_types[TILE_NORTH] //10
+	TableBrush::table_types[TILE_NORTH] // 10
 		= TABLE_SOUTH_END;
 	TableBrush::table_types[TILE_NORTH | TILE_NORTHWEST] // 11
 		= TABLE_ALONE;
@@ -659,7 +658,7 @@ void TableBrush::init() {
 		= TABLE_WEST_END;
 	TableBrush::table_types[TILE_EAST | TILE_NORTHEAST | TILE_NORTH | TILE_NORTHWEST] // 10111
 		= TABLE_WEST_END;
-	TableBrush::table_types[TILE_EAST | TILE_WEST] //11000
+	TableBrush::table_types[TILE_EAST | TILE_WEST] // 11000
 		= TABLE_HORIZONTAL;
 	TableBrush::table_types[TILE_EAST | TILE_WEST | TILE_NORTHWEST] // 11001
 		= TABLE_HORIZONTAL;
@@ -872,7 +871,7 @@ void TableBrush::init() {
 		= TABLE_ALONE;
 	TableBrush::table_types[TILE_SOUTHEAST | TILE_NORTHWEST] // 1
 		= TABLE_ALONE;
-	TableBrush::table_types[TILE_SOUTHEAST | TILE_NORTH] //10
+	TableBrush::table_types[TILE_SOUTHEAST | TILE_NORTH] // 10
 		= TABLE_SOUTH_END;
 	TableBrush::table_types[TILE_SOUTHEAST | TILE_NORTH | TILE_NORTHWEST] // 11
 		= TABLE_ALONE;
@@ -916,7 +915,7 @@ void TableBrush::init() {
 		= TABLE_WEST_END;
 	TableBrush::table_types[TILE_SOUTHEAST | TILE_EAST | TILE_NORTHEAST | TILE_NORTH | TILE_NORTHWEST] // 10111
 		= TABLE_WEST_END;
-	TableBrush::table_types[TILE_SOUTHEAST | TILE_EAST | TILE_WEST] //11000
+	TableBrush::table_types[TILE_SOUTHEAST | TILE_EAST | TILE_WEST] // 11000
 		= TABLE_HORIZONTAL;
 	TableBrush::table_types[TILE_SOUTHEAST | TILE_EAST | TILE_WEST | TILE_NORTHWEST] // 11001
 		= TABLE_HORIZONTAL;
@@ -1131,7 +1130,7 @@ void CarpetBrush::init() {
 		= CARPET_CENTER;
 	CarpetBrush::carpet_types[TILE_NORTHWEST] // 1
 		= CARPET_CENTER;
-	CarpetBrush::carpet_types[TILE_NORTH] //10
+	CarpetBrush::carpet_types[TILE_NORTH] // 10
 		= CARPET_CENTER;
 	CarpetBrush::carpet_types[TILE_NORTH | TILE_NORTHWEST] // 11
 		= NORTHWEST_CORNER;
@@ -1175,7 +1174,7 @@ void CarpetBrush::init() {
 		= NORTHEAST_CORNER;
 	CarpetBrush::carpet_types[TILE_EAST | TILE_NORTHEAST | TILE_NORTH | TILE_NORTHWEST] // 10111
 		= NORTHEAST_CORNER;
-	CarpetBrush::carpet_types[TILE_EAST | TILE_WEST] //11000
+	CarpetBrush::carpet_types[TILE_EAST | TILE_WEST] // 11000
 		= CARPET_CENTER;
 	CarpetBrush::carpet_types[TILE_EAST | TILE_WEST | TILE_NORTHWEST] // 11001
 		= NORTH_HORIZONTAL;
@@ -1266,7 +1265,8 @@ void CarpetBrush::init() {
 	CarpetBrush::carpet_types[TILE_SOUTH | TILE_NORTHEAST] // 1000100
 		= NORTHEAST_CORNER;
 	CarpetBrush::carpet_types[TILE_SOUTH | TILE_NORTHEAST | TILE_NORTHWEST] // 1000101
-		= NORTH_HORIZONTAL;;
+		= NORTH_HORIZONTAL;
+	;
 	CarpetBrush::carpet_types[TILE_SOUTH | TILE_NORTHEAST | TILE_NORTH] // 1000110
 		= NORTHEAST_CORNER;
 	CarpetBrush::carpet_types[TILE_SOUTH | TILE_NORTHEAST | TILE_NORTH | TILE_NORTHWEST] // 1000111
@@ -1388,7 +1388,7 @@ void CarpetBrush::init() {
 		= SOUTHEAST_CORNER;
 	CarpetBrush::carpet_types[TILE_SOUTHEAST | TILE_NORTHWEST] // 1
 		= NORTHWEST_CORNER;
-	CarpetBrush::carpet_types[TILE_SOUTHEAST | TILE_NORTH] //10
+	CarpetBrush::carpet_types[TILE_SOUTHEAST | TILE_NORTH] // 10
 		= SOUTHEAST_CORNER;
 	CarpetBrush::carpet_types[TILE_SOUTHEAST | TILE_NORTH | TILE_NORTHWEST] // 11
 		= NORTHWEST_CORNER;
@@ -1432,7 +1432,7 @@ void CarpetBrush::init() {
 		= NORTHEAST_CORNER;
 	CarpetBrush::carpet_types[TILE_SOUTHEAST | TILE_EAST | TILE_NORTHEAST | TILE_NORTH | TILE_NORTHWEST] // 10111
 		= NORTHEAST_CORNER;
-	CarpetBrush::carpet_types[TILE_SOUTHEAST | TILE_EAST | TILE_WEST] //11000
+	CarpetBrush::carpet_types[TILE_SOUTHEAST | TILE_EAST | TILE_WEST] // 11000
 		= SOUTH_HORIZONTAL;
 	CarpetBrush::carpet_types[TILE_SOUTHEAST | TILE_EAST | TILE_WEST | TILE_NORTHWEST] // 11001
 		= SOUTH_HORIZONTAL;
@@ -1641,4 +1641,3 @@ void CarpetBrush::init() {
 	CarpetBrush::carpet_types[TILE_SOUTHEAST | TILE_SOUTH | TILE_SOUTHWEST | TILE_EAST | TILE_WEST | TILE_NORTHEAST | TILE_NORTH | TILE_NORTHWEST] // 1111111
 		= CARPET_CENTER;
 }
-

@@ -21,8 +21,7 @@
 #include "graphics.h"
 #include "position.h"
 
-class LightDrawer
-{
+class LightDrawer {
 	struct Light {
 		uint16_t map_x = 0;
 		uint16_t map_y = 0;

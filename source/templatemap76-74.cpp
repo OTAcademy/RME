@@ -17,7 +17,6 @@
 
 #include "main.h"
 
-
 #include "templates.h"
 
 ConversionMap getReplacementMapFrom760To740() {

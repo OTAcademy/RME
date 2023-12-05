@@ -18,36 +18,33 @@
 #include "main.h"
 #include "net_connection.h"
 
-NetworkMessage::NetworkMessage()
-{
+NetworkMessage::NetworkMessage() {
 	clear();
 }
 
-void NetworkMessage::clear()
-{
+void NetworkMessage::clear() {
 	buffer.resize(4);
 	position = 4;
 	size = 0;
 }
 
-void NetworkMessage::expand(const size_t length)
-{
-	if(position + length >= buffer.size()) {
+void NetworkMessage::expand(const size_t length) {
+	if (position + length >= buffer.size()) {
 		buffer.resize(position + length + 1);
 	}
 	size += length;
 }
 
-template<> std::string NetworkMessage::read<std::string>()
-{
+template <>
+std::string NetworkMessage::read<std::string>() {
 	const uint16_t length = read<uint16_t>();
 	char* strBuffer = reinterpret_cast<char*>(&buffer[position]);
 	position += length;
 	return std::string(strBuffer, length);
 }
 
-template<> Position NetworkMessage::read<Position>()
-{
+template <>
+Position NetworkMessage::read<Position>() {
 	Position position;
 	position.x = read<uint16_t>();
 	position.y = read<uint16_t>();
@@ -55,8 +52,8 @@ template<> Position NetworkMessage::read<Position>()
 	return position;
 }
 
-template<> void NetworkMessage::write<std::string>(const std::string& value)
-{
+template <>
+void NetworkMessage::write<std::string>(const std::string& value) {
 	const size_t length = value.length();
 	write<uint16_t>(length);
 
@@ -65,8 +62,8 @@ template<> void NetworkMessage::write<std::string>(const std::string& value)
 	position += length;
 }
 
-template<> void NetworkMessage::write<Position>(const Position& value)
-{
+template <>
+void NetworkMessage::write<Position>(const Position& value) {
 	write<uint16_t>(value.x);
 	write<uint16_t>(value.y);
 	write<uint8_t>(value.z);
@@ -74,40 +71,36 @@ template<> void NetworkMessage::write<Position>(const Position& value)
 
 // NetworkConnection
 NetworkConnection::NetworkConnection() :
-	service(nullptr), thread(), stopped(false)
-{
+	service(nullptr), thread(), stopped(false) {
 	//
 }
 
-NetworkConnection::~NetworkConnection()
-{
+NetworkConnection::~NetworkConnection() {
 	stop();
 }
 
-NetworkConnection& NetworkConnection::getInstance()
-{
+NetworkConnection& NetworkConnection::getInstance() {
 	static NetworkConnection connection;
 	return connection;
 }
 
-bool NetworkConnection::start()
-{
-	if(thread.joinable()) {
-		if(stopped) {
+bool NetworkConnection::start() {
+	if (thread.joinable()) {
+		if (stopped) {
 			return false;
 		}
 		return true;
 	}
 
 	stopped = false;
-	if(!service) {
+	if (!service) {
 		service = new boost::asio::io_service;
 	}
 
 	thread = std::thread([this]() -> void {
 		boost::asio::io_service& serviceRef = *service;
 		try {
-			while(!stopped) {
+			while (!stopped) {
 				serviceRef.run_one();
 				serviceRef.reset();
 			}
@@ -118,9 +111,8 @@ bool NetworkConnection::start()
 	return true;
 }
 
-void NetworkConnection::stop()
-{
-	if(!service) {
+void NetworkConnection::stop() {
+	if (!service) {
 		return;
 	}
 
@@ -132,7 +124,6 @@ void NetworkConnection::stop()
 	service = nullptr;
 }
 
-boost::asio::io_service& NetworkConnection::get_service()
-{
+boost::asio::io_service& NetworkConnection::get_service() {
 	return *service;
 }

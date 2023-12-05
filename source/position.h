@@ -32,25 +32,31 @@ public:
 	// cases
 	int x, y, z;
 
-	Position() : x(0), y(0), z(0) {}
-	Position(int _x, int _y, int _z) : x(_x), y(_y), z(_z) {}
+	Position() :
+		x(0), y(0), z(0) { }
+	Position(int _x, int _y, int _z) :
+		x(_x), y(_y), z(_z) { }
 
 	bool operator<(const Position& p) const {
-		if(z < p.z)
+		if (z < p.z) {
 			return true;
-		if(z > p.z)
+		}
+		if (z > p.z) {
 			return false;
+		}
 
-		if(y < p.y)
+		if (y < p.y) {
 			return true;
-		if(y > p.y)
+		}
+		if (y > p.y) {
 			return false;
+		}
 
-		if(x < p.x)
+		if (x < p.x) {
 			return true;
-		//if(x > p.x)
+		}
+		// if(x > p.x)
 		//	return false;
-
 
 		return false;
 	}
@@ -85,7 +91,7 @@ public:
 	}
 
 	bool operator!=(const Position& p) const {
-		return ! (*this == p);
+		return !(*this == p);
 	}
 
 	bool isValid() const;
@@ -100,15 +106,25 @@ inline std::istream& operator>>(std::istream& is, Position& pos) {
 	char a, b;
 	int x, y, z;
 	is >> x;
-	if(!is) return is;
+	if (!is) {
+		return is;
+	}
 	is >> a;
-	if(!is || a != ':') return is;
+	if (!is || a != ':') {
+		return is;
+	}
 	is >> y;
-	if(!is) return is;
+	if (!is) {
+		return is;
+	}
 	is >> b;
-	if(!is || b != ':') return is;
+	if (!is || b != ':') {
+		return is;
+	}
 	is >> z;
-	if(!is) return is;
+	if (!is) {
+		return is;
+	}
 
 	pos.x = x;
 	pos.y = y;

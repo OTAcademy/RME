@@ -23,12 +23,11 @@
 
 class BaseMap;
 
-class MapAllocator
-{
+class MapAllocator {
 
 public:
-	MapAllocator() {}
-	~MapAllocator() {}
+	MapAllocator() { }
+	~MapAllocator() { }
 
 	// shorthands for tiles
 	Tile* operator()(TileLocation* location) {

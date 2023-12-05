@@ -21,8 +21,7 @@
 #include "tileset.h"
 #include "client_version.h"
 
-class MaterialsExtension
-{
+class MaterialsExtension {
 public:
 	MaterialsExtension(std::string name, std::string author, std::string description);
 	~MaterialsExtension();
@@ -38,6 +37,7 @@ public:
 	std::string description;
 	bool for_all_versions;
 	ClientVersionList version_list;
+
 private:
 	MaterialsExtension(const MaterialsExtension&);
 	MaterialsExtension& operator=(const MaterialsExtension&);

@@ -28,8 +28,7 @@ class DCButton;
 // and everything. This is the window that's inside each tab in the
 // editor. Does NOT control any map rendering or editing at all.
 // MapCanvas does that. (mapdisplay.h)
-class MapWindow : public wxPanel
-{
+class MapWindow : public wxPanel {
 public:
 	MapWindow(wxWindow* parent, Editor& editor);
 	virtual ~MapWindow();
@@ -71,7 +70,9 @@ public:
 	void GoToPreviousCenterPosition();
 
 	// Return the containing canvas
-	MapCanvas* GetCanvas() const { return canvas; }
+	MapCanvas* GetCanvas() const {
+		return canvas;
+	}
 
 	void ShowReplaceItemsDialog(bool selectionOnly);
 	void CloseReplaceItemsDialog();
@@ -103,16 +104,21 @@ private:
 // MapScrollbar, a special scrollbar that relays alot of events
 // to the canvas, which allows scrolling when the scrollbar has
 // focus (even though it also resents focus as hard as it can.
-class MapScrollBar : public wxScrollBar
-{
+class MapScrollBar : public wxScrollBar {
 public:
 	MapScrollBar(MapWindow* parent, wxWindowID id, long style, wxWindow* canvas) :
-	  wxScrollBar(parent, id, wxDefaultPosition, wxDefaultSize, style), canvas(canvas) {}
-	virtual ~MapScrollBar() {}
+		wxScrollBar(parent, id, wxDefaultPosition, wxDefaultSize, style), canvas(canvas) { }
+	virtual ~MapScrollBar() { }
 
-	void OnKey(wxKeyEvent& event) {canvas->GetEventHandler()->AddPendingEvent(event);}
-	void OnWheel(wxMouseEvent& event) {canvas->GetEventHandler()->AddPendingEvent(event);}
-	void OnFocus(wxFocusEvent& event) {canvas->SetFocus();}
+	void OnKey(wxKeyEvent& event) {
+		canvas->GetEventHandler()->AddPendingEvent(event);
+	}
+	void OnWheel(wxMouseEvent& event) {
+		canvas->GetEventHandler()->AddPendingEvent(event);
+	}
+	void OnFocus(wxFocusEvent& event) {
+		canvas->SetFocus();
+	}
 
 	wxWindow* canvas;
 	DECLARE_EVENT_TABLE()

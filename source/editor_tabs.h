@@ -22,8 +22,7 @@
 
 class EditorTab;
 
-class MapTabbook : public wxPanel
-{
+class MapTabbook : public wxPanel {
 public:
 	MapTabbook(wxWindow* parent, wxWindowID id);
 	~MapTabbook();
@@ -55,8 +54,7 @@ protected:
 	DECLARE_EVENT_TABLE();
 };
 
-class EditorTab
-{
+class EditorTab {
 public:
 	EditorTab();
 	virtual ~EditorTab();
@@ -66,7 +64,7 @@ public:
 	virtual wxString GetTitle() const = 0;
 
 	//
-	virtual void OnSwitchEditorMode(EditorMode mode) {}
+	virtual void OnSwitchEditorMode(EditorMode mode) { }
 };
 
 #endif

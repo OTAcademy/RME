@@ -25,8 +25,7 @@
 class ContainerItemButton;
 class ContainerItemPopupMenu;
 
-class AddItemWindow : public ObjectPropertiesWindowBase
-{
+class AddItemWindow : public ObjectPropertiesWindowBase {
 public:
 	AddItemWindow(wxWindow* parent, TilesetCategoryType categoryType, Tileset* tilesetItem, wxPoint = wxDefaultPosition);
 
@@ -36,6 +35,7 @@ public:
 
 	void OnClickOK(wxCommandEvent&);
 	void OnClickCancel(wxCommandEvent&);
+
 protected:
 	int item_id;
 
@@ -51,4 +51,3 @@ protected:
 };
 
 #endif
-

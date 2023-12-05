@@ -20,8 +20,7 @@
 
 #include "main.h"
 
-class SearchResultWindow : public wxPanel
-{
+class SearchResultWindow : public wxPanel {
 public:
 	SearchResultWindow(wxWindow* parent);
 	virtual ~SearchResultWindow();

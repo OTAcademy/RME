@@ -20,46 +20,47 @@
 #include "waypoints.h"
 #include "map.h"
 
-void Waypoints::addWaypoint(Waypoint* wp)
-{
+void Waypoints::addWaypoint(Waypoint* wp) {
 	removeWaypoint(wp->name);
-	if(wp->pos != Position()) {
+	if (wp->pos != Position()) {
 		Tile* t = map.getTile(wp->pos);
-		if(!t)
+		if (!t) {
 			map.setTile(wp->pos, t = map.allocator(map.createTileL(wp->pos)));
+		}
 		t->getLocation()->increaseWaypointCount();
 	}
 	waypoints.insert(std::make_pair(as_lower_str(wp->name), wp));
 }
 
-Waypoint* Waypoints::getWaypoint(std::string name)
-{
+Waypoint* Waypoints::getWaypoint(std::string name) {
 	to_lower_str(name);
 	WaypointMap::iterator iter = waypoints.find(name);
-	if(iter == waypoints.end())
+	if (iter == waypoints.end()) {
 		return nullptr;
+	}
 	return iter->second;
 }
 
-Waypoint* Waypoints::getWaypoint(TileLocation* location)
-{
-	if(!location)
+Waypoint* Waypoints::getWaypoint(TileLocation* location) {
+	if (!location) {
 		return nullptr;
+	}
 	// TODO find waypoint by position hash.
-	for(WaypointMap::iterator it = waypoints.begin(); it != waypoints.end(); it++) {
+	for (WaypointMap::iterator it = waypoints.begin(); it != waypoints.end(); it++) {
 		Waypoint* waypoint = it->second;
-		if(waypoint && waypoint->pos == location->position)
+		if (waypoint && waypoint->pos == location->position) {
 			return waypoint;
+		}
 	}
 	return nullptr;
 }
 
-void Waypoints::removeWaypoint(std::string name)
-{
+void Waypoints::removeWaypoint(std::string name) {
 	to_lower_str(name);
 	WaypointMap::iterator iter = waypoints.find(name);
-	if(iter == waypoints.end())
+	if (iter == waypoints.end()) {
 		return;
+	}
 	delete iter->second;
 	waypoints.erase(iter);
 }

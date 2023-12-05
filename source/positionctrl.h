@@ -20,21 +20,31 @@
 
 #include "numbertextctrl.h"
 
-class PositionCtrl : public wxStaticBoxSizer
-{
+class PositionCtrl : public wxStaticBoxSizer {
 public:
-	PositionCtrl(wxWindow* parent, const wxString& label, int x, int y, int z,
-		int maxx = MAP_MAX_WIDTH, int maxy = MAP_MAX_HEIGHT, int maxz = MAP_MAX_LAYER);
+	PositionCtrl(wxWindow* parent, const wxString& label, int x, int y, int z, int maxx = MAP_MAX_WIDTH, int maxy = MAP_MAX_HEIGHT, int maxz = MAP_MAX_LAYER);
 	~PositionCtrl();
 
-	long GetX() const { return x_field->GetIntValue(); }
-	long GetY() const { return y_field->GetIntValue(); }
-	long GetZ() const { return z_field->GetIntValue(); }
+	long GetX() const {
+		return x_field->GetIntValue();
+	}
+	long GetY() const {
+		return y_field->GetIntValue();
+	}
+	long GetZ() const {
+		return z_field->GetIntValue();
+	}
 	Position GetPosition() const;
 
-	void SetX(long value) { x_field->SetIntValue(value); }
-	void SetY(long value) { y_field->SetIntValue(value); }
-	void SetZ(long value) { z_field->SetIntValue(value); }
+	void SetX(long value) {
+		x_field->SetIntValue(value);
+	}
+	void SetY(long value) {
+		y_field->SetIntValue(value);
+	}
+	void SetZ(long value) {
+		z_field->SetIntValue(value);
+	}
 	void SetPosition(Position pos);
 
 	bool Enable(bool enable = true);

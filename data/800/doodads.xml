@@ -5307,7 +5307,7 @@
 		<item id="2726" chance="25"/>
 		<item id="5096" chance="25"/>
 	</brush>
-	
+
 	<brush name="banana trees" type="doodad" server_lookid="5094" draggable="true" on_blocking="false" thickness="12/100">
 		<item id="5092" chance="25"/>
 		<item id="5093" chance="25"/>
@@ -5319,46 +5319,46 @@
 		<item id="5157" chance="50"/>
 		<item id="5156" chance="50"/>
 	</brush>
-	
+
 	<brush name="pawpaw trees" type="doodad" server_lookid="5390" draggable="true" on_blocking="false" thickness="12/100">
 		<item id="5390" chance="50"/>
 		<item id="5391" chance="50"/>
 	</brush>
-	
+
 	<brush name="mangrove green (land)" type="doodad" server_lookid="5393" draggable="true" on_blocking="true" thickness="100/100">
 		<item id="5393" chance="60"/>
 		<item id="5397" chance="40"/>
 	</brush>
-	
+
 	<brush name="mangrove dry (land)" type="doodad" server_lookid="5392" draggable="true" on_blocking="true" thickness="100/100">
 		<item id="5392" chance="60"/>
 		<item id="5396" chance="40"/>
 	</brush>
-	
+
 	<brush name="mangrove green (water)" type="doodad" server_lookid="5395" draggable="true" on_blocking="true" thickness="100/100">
 		<item id="5395" chance="60"/>
 		<item id="5399" chance="40"/>
 	</brush>
-	
+
 	<brush name="mangrove dry (water)" type="doodad" server_lookid="5394" draggable="true" on_blocking="true" thickness="100/100">
 		<item id="5394" chance="60"/>
 		<item id="5398" chance="40"/>
 	</brush>
-	
+
 	<brush name="mangrove mixed (land)" type="doodad" server_lookid="5393" draggable="true" on_blocking="true" thickness="100/100">
 		<item id="5392" chance="30"/>
 		<item id="5393" chance="30"/>
 		<item id="5396" chance="20"/>
 		<item id="5397" chance="20"/>
 	</brush>
-	
+
 	<brush name="mangrove mixed (water)" type="doodad" server_lookid="5395" draggable="true" on_blocking="true" thickness="100/100">
 		<item id="5394" chance="30"/>
 		<item id="5395" chance="30"/>
 		<item id="5398" chance="20"/>
 		<item id="5399" chance="20"/>
 	</brush>
-	
+
 	<brush name="meadow flowers" type="doodad" server_lookid="2743" draggable="true" on_blocking="true" thickness="30/100">
 		<item id="2740" chance="10"/>
 		<item id="2741" chance="10"/>
@@ -5873,7 +5873,7 @@
 			<item id="6272" chance="100"/>
 		</table>
 	</brush>
-	
+
 	<brush name="straw" type="carpet" server_lookid="5485" on_blocking="true">
 		<carpet align="s">
 			<item id="5487" chance="100"/>
@@ -6131,7 +6131,7 @@
 			<item id="7145" chance="100"/>
 		</carpet>
 	</brush>
-	
+
 	<brush name="white stone stairs up" type="doodad" server_lookid="1385" draggable="true" on_blocking="false" thickness="100/100">
 		<alternate>
 			<item id="1385" chance="10"/>
@@ -6140,7 +6140,7 @@
 			<item id="5258" chance="10"/>
 		</alternate>
 	</brush>
-	
+
 	<brush name="wooden stairs" type="doodad" server_lookid="5259" draggable="true" on_blocking="false" thickness="100/100">
 		<alternate>
 			<item id="5259" chance="10"/>
@@ -6149,12 +6149,12 @@
 			<item id="5260" chance="10"/>
 		</alternate>
 	</brush>
-	
+
 	<brush name="fish remains" type="doodad" server_lookid="2226" draggable="true" on_blocking="false" thickness="12/100">
 	    <item id="2226" chance="50"/>
 	    <item id="2240" chance="50"/>
 	</brush>
-	
+
 	<brush name="broken steering wheel" type="doodad" server_lookid="5426" draggable="true" on_blocking="true" thickness="100/100">
 		<alternate> <!-- south -->
 			<composite chance="10">
@@ -6174,7 +6174,7 @@
 		<alternate> <item id="5442" chance="30"/> </alternate> <!-- south -->
 		<alternate> <item id="5443" chance="30"/> </alternate> <!-- east -->
 	</brush>
-	
+
 	<brush name="damaged mast2" type="table" server_lookid="5445">
 		<table align="north"> <item id="5445" chance="10"/> </table>
 		<table align="vertical"> <item id="5445" chance="10"/> </table>
@@ -6184,12 +6184,12 @@
 		<table align="east"> <item id="5446" chance="10"/> </table>
 		<table align="alone"> <item id="5446" chance="10"/> </table>
 	</brush>
-	
+
 	<brush name="reef stones" type="doodad" server_lookid="5411" draggable="true" on_blocking="false" thickness="12/100">
 		<item id="5411" chance="10"/>
 		<item id="5412" chance="10"/>
 	</brush>
-	
+
 	<brush name="coral reef" type="doodad" server_lookid="5413" draggable="true" on_blocking="false" thickness="12/100">
 		<item id="5413" chance="10"/>
 		<item id="5414" chance="10"/>
@@ -6198,31 +6198,31 @@
 		<item id="5422" chance="10"/>
 		<item id="5423" chance="10"/>
 	</brush>
-	
+
 	<brush name="bubbles" type="doodad" server_lookid="5419" draggable="true" on_blocking="true" thickness="7/100">
 	    <item id="5419" chance="70"/>
 	    <item id="5420" chance="30"/>
 	</brush>
-	
+
 	<brush name="sea organisms" type="doodad" server_lookid="5417" draggable="true" on_blocking="true" thickness="12/100">
 	    <item id="5417" chance="50"/>
 	    <item id="5418" chance="50"/>
 	</brush>
-	
+
 	<brush name="sea shells" type="doodad" server_lookid="5681" draggable="true" on_blocking="true" thickness="12/100">
 	    <item id="5679" chance="25"/>
 	    <item id="5680" chance="25"/>
 	    <item id="5681" chance="25"/>
 	    <item id="5682" chance="25"/>
 	</brush>
-	
+
 	<brush name="damaged ship hull (rotatable)" type="doodad" server_lookid="5458" draggable="true" on_blocking="true" thickness="10/10">
 		<alternate> <item id="5458" chance="30"/> </alternate>
 		<alternate> <item id="5456" chance="30"/> </alternate>
 		<alternate> <item id="5459" chance="30"/> </alternate>
 		<alternate> <item id="5457" chance="30"/> </alternate>
 	</brush>
-	
+
 	<brush name="ship ruins" type="doodad" server_lookid="5448" draggable="true" on_blocking="false" thickness="12/100">
 	    <item id="5448" chance="20"/>
 	    <item id="5444" chance="20"/>
@@ -6230,7 +6230,7 @@
 	    <item id="5449" chance="20"/>
 	    <item id="5451" chance="20"/>
 	</brush>
-	
+
 	<brush name="drawbridge plank (1x3)" type="doodad" server_lookid="1284" draggable="true" on_blocking="true" thickness="100/100">
 		<alternate>
 			<composite chance="10">
@@ -6247,7 +6247,7 @@
 			</composite>
 		</alternate>
 	</brush>
-	
+
 	<brush name="drawbridge plank (2x3)" type="doodad" server_lookid="1284" draggable="true" on_blocking="true" thickness="100/100">
 		<alternate>
 			<composite chance="10">
@@ -6270,12 +6270,12 @@
 			</composite>
 		</alternate>
 	</brush>
-	
+
 	<brush name="ship anchor" type="doodad" server_lookid="4977" draggable="true" on_blocking="true" thickness="10/10">
 		<alternate> <item id="4977" chance="10"/> </alternate>
 		<alternate> <item id="4974" chance="10"/> </alternate>
 	</brush>
-	
+
 	<brush name="leaning planks" type="doodad" server_lookid="5299" draggable="true" on_blocking="true" thickness="6/10">
 		<alternate>
 			<item id="5298" chance="10"/>
@@ -6292,7 +6292,7 @@
 		<item id="5301" chance="10"/>
 		<item id="5302" chance="10"/>
 	</brush>
-	
+
 	<brush name="wooden planks (on wall)" type="doodad" server_lookid="6475" draggable="true" on_blocking="true" on_duplicate="true" thickness="10/10">
 		<alternate>
 			<item id="6475" chance="10"/>
@@ -6301,7 +6301,7 @@
 			<item id="6474" chance="10"/>
 		</alternate>
 	</brush>
-	
+
 	<brush name="archery sign (wall)" type="doodad" on_blocking="true" server_lookid="5388">
 		<alternate>
 			<item id="5388" chance="3"/>
@@ -6562,7 +6562,7 @@
 			<item id="5332" chance="3"/>
 		</alternate>
 	</brush>
-	
+
 	<brush name="note pinned on a wall" type="doodad" on_blocking="true" server_lookid="6121">
 		<alternate>
 			<item id="6121" chance="3"/>
@@ -6571,7 +6571,7 @@
 			<item id="6122" chance="3"/>
 		</alternate>
 	</brush>
-	
+
 	<!-- tilesets -->
 	<tileset name="Architecture">
 		<doodad>
@@ -6981,7 +6981,7 @@
 			<brush name="wall sign"/>
 
 			<brush name="wooden sign"/>
-			
+
 			<brush name="potion sign"/>
 			<brush name="library sign"/>
 			<brush name="tavern sign"/>
@@ -6996,7 +6996,7 @@
 			<brush name="archery sign"/>
 			<brush name="weapon sign"/>
 			<brush name="armor sign"/>
-			
+
 			<brush name="potion sign (wall)"/>
 			<brush name="library sign (wall)"/>
 			<brush name="tavern sign (wall)"/>
@@ -7004,14 +7004,14 @@
 			<brush name="gem sign (wall)"/>
 			<brush name="food sign (meat, wall)"/>
 			<brush name="food sign (grape, wall)"/>
-			<brush name="food sign (fruit, wall)"/>			
+			<brush name="food sign (fruit, wall)"/>
 			<brush name="tool sign (wall)"/>
 			<brush name="post sign (wall)"/>
 			<brush name="depot sign (wall)"/>
 			<brush name="archery sign (wall)"/>
 			<brush name="weapon sign (wall)"/>
 			<brush name="armor sign (wall)"/>
-			
+
 			<brush name="note pinned on a wall"/>
 		</doodad>
 	</tileset>

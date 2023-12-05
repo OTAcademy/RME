@@ -26,54 +26,52 @@
 // RAW brush
 
 RAWBrush::RAWBrush(uint16_t itemid) :
-	Brush()
-{
+	Brush() {
 	ItemType& it = g_items[itemid];
-	if(it.id == 0)
+	if (it.id == 0) {
 		itemtype = nullptr;
-	else
+	} else {
 		itemtype = &it;
+	}
 }
 
-RAWBrush::~RAWBrush()
-{
+RAWBrush::~RAWBrush() {
 	////
 }
 
-int RAWBrush::getLookID() const
-{
-	if(itemtype)
+int RAWBrush::getLookID() const {
+	if (itemtype) {
 		return itemtype->clientID;
+	}
 	return 0;
 }
 
-uint16_t RAWBrush::getItemID() const
-{
+uint16_t RAWBrush::getItemID() const {
 	return itemtype->id;
 }
 
-std::string RAWBrush::getName() const
-{
-	if(!itemtype)
+std::string RAWBrush::getName() const {
+	if (!itemtype) {
 		return "RAWBrush";
+	}
 
-	if(itemtype->hookSouth)
+	if (itemtype->hookSouth) {
 		return i2s(itemtype->id) + " - " + itemtype->name + " (Hook South)";
-	else if(itemtype->hookEast)
+	} else if (itemtype->hookEast) {
 		return i2s(itemtype->id) + " - " + itemtype->name + " (Hook East)";
+	}
 
 	return i2s(itemtype->id) + " - " + itemtype->name + itemtype->editorsuffix;
 }
 
-void RAWBrush::undraw(BaseMap* map, Tile* tile)
-{
-	if(tile->ground && tile->ground->getID() == itemtype->id) {
+void RAWBrush::undraw(BaseMap* map, Tile* tile) {
+	if (tile->ground && tile->ground->getID() == itemtype->id) {
 		delete tile->ground;
 		tile->ground = nullptr;
 	}
-	for(ItemVector::iterator iter = tile->items.begin(); iter != tile->items.end();) {
+	for (ItemVector::iterator iter = tile->items.begin(); iter != tile->items.end();) {
 		Item* item = *iter;
-		if(item->getID() == itemtype->id) {
+		if (item->getID() == itemtype->id) {
 			delete item;
 			iter = tile->items.erase(iter);
 		} else {
@@ -82,20 +80,21 @@ void RAWBrush::undraw(BaseMap* map, Tile* tile)
 	}
 }
 
-void RAWBrush::draw(BaseMap* map, Tile* tile, void* parameter)
-{
-	if(!itemtype) return;
+void RAWBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
+	if (!itemtype) {
+		return;
+	}
 
-	bool b = parameter? *reinterpret_cast<bool*>(parameter) : false;
-	if((g_settings.getInteger(Config::RAW_LIKE_SIMONE) && !b) && itemtype->alwaysOnBottom && itemtype->alwaysOnTopOrder == 2) {
-		for(ItemVector::iterator iter = tile->items.begin(); iter != tile->items.end();) {
+	bool b = parameter ? *reinterpret_cast<bool*>(parameter) : false;
+	if ((g_settings.getInteger(Config::RAW_LIKE_SIMONE) && !b) && itemtype->alwaysOnBottom && itemtype->alwaysOnTopOrder == 2) {
+		for (ItemVector::iterator iter = tile->items.begin(); iter != tile->items.end();) {
 			Item* item = *iter;
-			if(item->getTopOrder() == itemtype->alwaysOnTopOrder) {
+			if (item->getTopOrder() == itemtype->alwaysOnTopOrder) {
 				delete item;
 				iter = tile->items.erase(iter);
-			}
-			else
+			} else {
 				++iter;
+			}
 		}
 	}
 	tile->addItem(Item::Create(itemtype->id));

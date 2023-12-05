@@ -3,7 +3,7 @@
 		1-55: 7.0 - 7.6
 		56-95: 7.8 - 8.0
 	-->
-	
+
 	<!-- retro cave wall brown -->
 	<border id="1">
 		<borderitem edge="n"	item="357"/>
@@ -498,7 +498,7 @@
 		<borderitem edge="dnw"	item="4639"/>
 		<borderitem edge="dne"	item="4638"/>
 	</border>
-	
+
 	<!-- sea -->
 	<border id="42">
 		<borderitem edge="n"   item="4644"/>
@@ -1118,7 +1118,7 @@
 		<borderitem edge="cse"	item="6933"/>
 		<borderitem edge="csw"	item="6930"/>
 	</border>
-	
+
 	<!-- mountain border snow -->
 	<border id="90">
 		<borderitem edge="s"	item="6941"/>
@@ -1150,7 +1150,7 @@
 		<borderitem edge="cse"	item="7074"/>
 		<borderitem edge="csw"	item="7073"/>
 	</border>
-	
+
 	<!-- gray mud hard border -->
 	<border id="92">
 		<borderitem edge="s"	item="7081"/>

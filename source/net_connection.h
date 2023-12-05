@@ -26,23 +26,22 @@
 #include <thread>
 #include <mutex>
 
-struct NetworkMessage
-{
+struct NetworkMessage {
 	NetworkMessage();
 
 	void clear();
 	void expand(const size_t length);
 
 	//
-	template<typename T> T read()
-	{
+	template <typename T>
+	T read() {
 		T& value = *reinterpret_cast<T*>(&buffer[position]);
 		position += sizeof(T);
 		return value;
 	}
 
-	template<typename T> void write(const T& value)
-	{
+	template <typename T>
+	void write(const T& value) {
 		expand(sizeof(T));
 		memcpy(&buffer[position], &value, sizeof(T));
 		position += sizeof(T);
@@ -54,31 +53,34 @@ struct NetworkMessage
 	size_t size;
 };
 
-template<> std::string NetworkMessage::read<std::string>();
-template<> Position NetworkMessage::read<Position>();
-template<> void NetworkMessage::write<std::string>(const std::string& value);
-template<> void NetworkMessage::write<Position>(const Position& value);
+template <>
+std::string NetworkMessage::read<std::string>();
+template <>
+Position NetworkMessage::read<Position>();
+template <>
+void NetworkMessage::write<std::string>(const std::string& value);
+template <>
+void NetworkMessage::write<Position>(const Position& value);
 
-class NetworkConnection
-{
-	private:
-		NetworkConnection();
-		NetworkConnection(const NetworkConnection& copy) = delete;
+class NetworkConnection {
+private:
+	NetworkConnection();
+	NetworkConnection(const NetworkConnection& copy) = delete;
 
-	public:
-		~NetworkConnection();
+public:
+	~NetworkConnection();
 
-		static NetworkConnection& getInstance();
+	static NetworkConnection& getInstance();
 
-		bool start();
-		void stop();
+	bool start();
+	void stop();
 
-		boost::asio::io_service& get_service();
+	boost::asio::io_service& get_service();
 
-	private:
-		boost::asio::io_service* service;
-		std::thread thread;
-		bool stopped;
+private:
+	boost::asio::io_service* service;
+	std::thread thread;
+	bool stopped;
 };
 
 #endif

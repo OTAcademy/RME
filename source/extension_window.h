@@ -20,8 +20,7 @@
 
 class MaterialsExtension;
 
-class ExtensionsDialog : public wxDialog
-{
+class ExtensionsDialog : public wxDialog {
 public:
 	ExtensionsDialog(wxWindow* parent);
 	virtual ~ExtensionsDialog();
@@ -36,6 +35,5 @@ private:
 	wxString HTML() const;
 	wxString HTMLForExtension(MaterialsExtension* me) const;
 };
-
 
 #endif

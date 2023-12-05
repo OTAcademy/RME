@@ -19,8 +19,9 @@
 #define RME_OUTFIT_H_
 
 struct Outfit {
-	Outfit() : lookType(0), lookItem(0), lookMount(0), lookAddon(0), lookHead(0), lookBody(0), lookLegs(0), lookFeet(0), lookMountHead(0), lookMountBody(0), lookMountLegs(0), lookMountFeet(0) {}
-	~Outfit() {}
+	Outfit() :
+		lookType(0), lookItem(0), lookMount(0), lookAddon(0), lookHead(0), lookBody(0), lookLegs(0), lookFeet(0), lookMountHead(0), lookMountBody(0), lookMountLegs(0), lookMountFeet(0) { }
+	~Outfit() { }
 	int lookType;
 	int lookItem;
 	int lookMount;

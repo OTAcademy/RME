@@ -17,8 +17,6 @@
 
 #include "main.h"
 
-
-
 #include "templates.h"
 
 ConversionMap getReplacementMapFrom800To810() {

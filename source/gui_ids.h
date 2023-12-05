@@ -37,8 +37,7 @@ enum EditorMode {
 };
 
 // Window IDs
-enum EditorActionID
-{
+enum EditorActionID {
 	MAIN_FRAME_MENU = wxID_HIGHEST + 1,
 
 	MAP_WINDOW_HSCROLL = MAIN_FRAME_MENU + 1000,

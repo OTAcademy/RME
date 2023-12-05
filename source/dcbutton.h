@@ -33,8 +33,7 @@ enum RenderSize {
 	RENDER_SIZE_64x64,
 };
 
-class DCButton : public wxPanel
-{
+class DCButton : public wxPanel {
 public:
 	DCButton();
 	DCButton(wxWindow* parent, wxWindowID id, wxPoint pos, int type, RenderSize sz, int sprite_id);
@@ -47,6 +46,7 @@ public:
 
 	void OnPaint(wxPaintEvent&);
 	void OnClick(wxMouseEvent&);
+
 protected:
 	void SetOverlay(Sprite* espr);
 

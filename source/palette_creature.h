@@ -15,7 +15,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-
 #ifndef RME_TILESET_CREATURE_H_
 #define RME_TILESET_CREATURE_H_
 
@@ -48,6 +47,7 @@ protected:
 	void SelectTileset(size_t index);
 	void SelectCreature(size_t index);
 	void SelectCreature(std::string name);
+
 public:
 	// Event handling
 	void OnChangeSpawnTime(wxSpinEvent& event);
@@ -57,6 +57,7 @@ public:
 	void OnListBoxChange(wxCommandEvent& event);
 	void OnClickCreatureBrushButton(wxCommandEvent& event);
 	void OnClickSpawnBrushButton(wxCommandEvent& event);
+
 protected:
 	void SelectCreatureBrush();
 	void SelectSpawnBrush();

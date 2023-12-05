@@ -29,8 +29,7 @@
 
 class FindDialogListBox;
 
-class FindItemDialog : public wxDialog
-{
+class FindItemDialog : public wxDialog {
 public:
 	enum SearchMode {
 		ServerIDs = 0,
@@ -56,8 +55,12 @@ public:
 	FindItemDialog(wxWindow* parent, const wxString& title, bool onlyPickupables = false);
 	~FindItemDialog();
 
-	Brush* getResult() const { return result_brush; }
-	uint16_t getResultID() const { return result_id; }
+	Brush* getResult() const {
+		return result_brush;
+	}
+	uint16_t getResultID() const {
+		return result_id;
+	}
 
 	SearchMode getSearchMode() const;
 	void setSearchMode(SearchMode mode);

@@ -83,8 +83,7 @@ enum ClientVersions {
 };
 
 // OTBM versions
-enum MapVersionID
-{
+enum MapVersionID {
 	MAP_OTBM_UNKNOWN = -1,
 	MAP_OTBM_1 = 0,
 	MAP_OTBM_2 = 1,
@@ -93,24 +92,23 @@ enum MapVersionID
 };
 
 // The composed version of a otbm file (otbm version, client version)
-struct MapVersion
-{
-	MapVersion() : otbm(MAP_OTBM_1), client(CLIENT_VERSION_NONE) {}
-	MapVersion(MapVersionID m, ClientVersionID c) : otbm(m), client(c) {}
+struct MapVersion {
+	MapVersion() :
+		otbm(MAP_OTBM_1), client(CLIENT_VERSION_NONE) { }
+	MapVersion(MapVersionID m, ClientVersionID c) :
+		otbm(m), client(c) { }
 	MapVersionID otbm;
 	ClientVersionID client;
 };
 
-enum OtbFormatVersion : uint32_t
-{
+enum OtbFormatVersion : uint32_t {
 	OTB_VERSION_1 = 1,
 	OTB_VERSION_2 = 2,
 	OTB_VERSION_3 = 3,
 };
 
 // Represents an OTB version
-struct OtbVersion
-{
+struct OtbVersion {
 	// '8.60', '7.40' etc.
 	std::string name;
 	// What file format the OTB is in (version 1..3)
@@ -120,8 +118,7 @@ struct OtbVersion
 };
 
 // Formats for the metadata file
-enum DatFormat
-{
+enum DatFormat {
 	DAT_FORMAT_UNKNOWN,
 	DAT_FORMAT_74,
 	DAT_FORMAT_755,
@@ -133,8 +130,7 @@ enum DatFormat
 	DAT_FORMAT_1057
 };
 
-enum DatFlags : uint8_t
-{
+enum DatFlags : uint8_t {
 	DatFlagGround = 0,
 	DatFlagGroundBorder = 1,
 	DatFlagOnBottom = 2,
@@ -181,8 +177,7 @@ enum DatFlags : uint8_t
 };
 
 // Represents a client file version
-struct ClientData
-{
+struct ClientData {
 	DatFormat datFormat;
 	uint32_t datSignature;
 	uint32_t sprSignature;
@@ -192,8 +187,7 @@ struct ClientData
 class ClientVersion;
 typedef std::vector<ClientVersion*> ClientVersionList;
 
-class ClientVersion : boost::noncopyable
-{
+class ClientVersion : boost::noncopyable {
 public:
 	ClientVersion(OtbVersion otb, std::string versionName, wxString path);
 	~ClientVersion() = default;
@@ -211,7 +205,9 @@ public:
 	static ClientVersionList getAllVersionsSupportedForClientVersion(ClientVersion* v);
 	static ClientVersion* getLatestVersion();
 
-	bool operator==(const ClientVersion& o) const {return otb.id == o.otb.id;}
+	bool operator==(const ClientVersion& o) const {
+		return otb.id == o.otb.id;
+	}
 
 	bool hasValidPaths();
 	bool loadValidPaths();
@@ -228,9 +224,15 @@ public:
 
 	FileName getDataPath() const;
 	FileName getLocalDataPath() const;
-	FileName getClientPath() const { return client_path; }
-	wxFileName getMetadataPath() const { return metadata_path; }
-	wxFileName getSpritesPath() const { return sprites_path; }
+	FileName getClientPath() const {
+		return client_path;
+	}
+	wxFileName getMetadataPath() const {
+		return metadata_path;
+	}
+	wxFileName getSpritesPath() const {
+		return sprites_path;
+	}
 
 private:
 	OtbVersion otb;
@@ -264,9 +266,8 @@ private:
 	static OtbMap otb_versions;
 };
 
-inline int VersionComparisonPredicate(ClientVersion* a, ClientVersion* b)
-{
-	if(a->getID() < b->getID()) {
+inline int VersionComparisonPredicate(ClientVersion* a, ClientVersion* b) {
+	if (a->getID() < b->getID()) {
 		return 1;
 	}
 	return 0;
