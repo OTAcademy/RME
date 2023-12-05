@@ -1,28 +1,53 @@
+---
 name: Check code style
-
 on:
-  push:
-    branches:
-      - master
-      - v*
-
-    paths:
-      - .clang-format
-      - source/**
-
   pull_request:
     paths:
-      - .clang-format
-      - source/**
-
+      - "source/**"
+      - ".github/workflows/clang-format.yml"
+  push:
+    paths:
+      - "source/**"
 jobs:
-  check-format:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Cancel Previous Runs
+        if: github.ref != 'refs/heads/main'
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          concurrent_skipping: "same_content"
+          cancel_others: true
 
-      - name: Install dependencies
-        run: sudo apt update -q && sudo apt install -yq clang-format
+      - name: Set up Git
+        if: ${{ github.ref != 'refs/heads/main' }}
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions"
 
-      - name: Check code style
-        run: clang-format -n -style=file --Werror source/*.{cpp,h}
+      - name: Actions checkout
+        if: ${{ github.ref != 'refs/heads/main' }}
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run clang format lint
+        if: ${{ github.ref != 'refs/heads/main' }}
+        uses: DoozyX/clang-format-lint-action@v0.16.2
+        with:
+          source: "source"
+          extensions: "cpp,hpp,h"
+          clangFormatVersion: 16
+          inplace: true
+
+      - name: Run add and commit
+        if: ${{ github.ref != 'refs/heads/main' }}
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: GitHub Actions
+          author_email: github-actions[bot]@users.noreply.github.com
+          message: "Code format - (Clang-format)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
