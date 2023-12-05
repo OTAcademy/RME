@@ -561,7 +561,7 @@
 			<item id="1119" chance="100"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="paravent wall" type="wall" server_lookid="1171">
 		<wall type="horizontal">
 			<item id="1171" chance="100"/>
@@ -715,7 +715,7 @@
 			<item id="1544" chance="100"/>
 		</wall>
 	</brush>
-	
+
 	<brush name="bars" type="wall" server_lookid="1547">
 		<wall type="horizontal">
 			<item id="1547" chance="100"/>
@@ -2010,7 +2010,7 @@
 			<item id="3524" chance="100"/>
 		</alternate>
 	</brush>
-	
+
 	<brush name="wooden wall" type="wall" server_lookid="5262">
 		<wall type="horizontal">
 			<item id="5262" chance="100"/>
@@ -2383,7 +2383,7 @@
 		</wall>
 		<friend name="bone wall" redirect="true"/>
 	</brush>
-	
+
 	<brush name="ice wall" type="wall" server_lookid="6729">
 		<wall type="horizontal">
 			<item id="6729" chance="100"/>
@@ -2807,7 +2807,7 @@
 		</wall>
 		<friend name="ship railing" redirect="true"/>
 	</brush>
-	
+
 	<tileset name="Walls">
 		<terrain>
 			<!-- added in 7.6 and before -->
@@ -2865,7 +2865,7 @@
 			<brush name="wooden bars_2"/>
 			<brush name="burning wall"/>
 			<brush name="electric sparks"/>
-			
+
 			<!-- added in 7.8-8.0 -->
 			<brush name="wooden wall"/>
 			<brush name="wooden railing_1"/>

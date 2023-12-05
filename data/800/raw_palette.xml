@@ -175,7 +175,7 @@
 			<item fromid="7282" toid="7285"/>
 			<item fromid="7316" toid="7341"/>
 			<item fromid="7344" toid="7347"/>
-			
+
 			<!-- slain arena boss -->
 			<item id="7349"/>
 		</doodad_and_raw>
@@ -198,7 +198,7 @@
 			<item fromid="2606" toid="2623"/>
 			<item fromid="3122" toid="3127"/>
 			<item fromid="3689" toid="3696"/>
-			
+
 			<!-- 3744 gets replaced to immobile skull candle in later updates -->
 			<!-- so use 4404 as lit variant instead -->
 			<item fromid="3743" toid="3744"/>
@@ -210,7 +210,7 @@
 			<item fromid="3882" toid="3897"/>
 			<item fromid="3977" toid="3980"/>
 			<item id="4875"/>
-			
+
 			<item fromid="5074" toid="5079"/>
 			<item fromid="5296" toid="5302"/>
 			<item id="5424"/>
@@ -396,7 +396,7 @@
 			<item id="2320"/>
 			<item id="2321"/>
 			<item id="2325"/>
-			
+
 			<!-- postman, djinn, hota -->
 			<item fromid="2327" toid="2341"/>
 			<item fromid="2344" toid="2354"/>
@@ -406,7 +406,7 @@
 			<item id="2362"/>
 			<item id="2363"/>
 			<item id="2364"/>
-			
+
 			<!-- tomb puzzle instruments -->
 			<item fromid="2367" toid="2375"/>
 
@@ -426,7 +426,7 @@
 			<item id="4996"/>
 			<item id="4997"/>
 			<item id="5089"/>
-			
+
 			<!-- bamboo lamps, different client ids, unknown purpose -->
 			<item fromid="5025" toid="5044"/>
 			<item fromid="5402" toid="5404"/>
@@ -434,7 +434,7 @@
 			<!-- druid addon quest -->
 			<item id="5659"/>
 			<item id="5687"/>
-			
+
 		</raw>
 	</tileset>
 

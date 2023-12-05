@@ -48,7 +48,7 @@
 			<item id="1335"/>
 			<item id="2247"/>
 			<item id="2248"/>
-			<brush name="dragon skeleton"/>			
+			<brush name="dragon skeleton"/>
 			<item id="1336"/>
 			<brush name="small mountain rocks"/>
 			<brush name="cave rocks"/>
@@ -66,7 +66,7 @@
 			<brush name="moldy brown mushroom large"/>
 			<brush name="slime table mushroom"/>
 			<brush name="small mushroom"/>
-			<brush name="mossy spots"/>			
+			<brush name="mossy spots"/>
 			<item id="1481"/>
 			<brush name="blood"/>
 			<brush name="bloodwall"/>
@@ -89,7 +89,7 @@
 			<item id="3104"/>
 		</collections>
 	</tileset>
-	
+
 	<tileset name="Desert">
 		<collections>
 			<brush name="sea"/>
@@ -240,7 +240,7 @@
 			<item fromid="1421" toid="1426"/>
 		</collections>
 	</tileset>
-	
+
 	<tileset name="Jungle">
 		<collections>
 			<brush name="sea"/>
