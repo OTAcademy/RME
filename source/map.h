@@ -284,4 +284,43 @@ inline int64_t RemoveItemOnMap(Map& map, RemoveIfType& condition, bool selectedO
 	return removed;
 }
 
+template <typename RemoveIfType>
+inline int64_t RemoveItemDuplicateOnMap(Map& map, RemoveIfType& condition, bool selectedOnly) {
+	int64_t done = 0;
+	int64_t removed = 0;
+
+	MapIterator it = map.begin();
+	MapIterator end = map.end();
+
+	while (it != end) {
+		++done;
+		Tile* tile = (*it)->get();
+		if (selectedOnly && !tile->isSelected()) {
+			++it;
+			continue;
+		}
+
+		if (tile->ground) {
+			if (condition(map, tile, tile->ground, removed, done)) {
+				delete tile->ground;
+				tile->ground = nullptr;
+				++removed;
+			}
+		}
+
+		for (auto iit = tile->items.begin(); iit != tile->items.end();) {
+			Item* item = *iit;
+			if (condition(map, tile, item, removed, done)) {
+				iit = tile->items.erase(iit);
+				delete item;
+				++removed;
+			} else {
+				++iit;
+			}
+		}
+		++it;
+	}
+	return removed;
+}
+
 #endif

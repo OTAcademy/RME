@@ -199,6 +199,14 @@ MainMenuBar::MainMenuBar(MainFrame* frame) :
 	MAKE_ACTION(GOTO_WEBSITE, wxITEM_NORMAL, OnGotoWebsite);
 	MAKE_ACTION(ABOUT, wxITEM_NORMAL, OnAbout);
 
+	MAKE_ACTION(SEARCH_ON_MAP_DUPLICATE, wxITEM_NORMAL, OnSearchForDuplicateItemsOnMap);
+	MAKE_ACTION(SEARCH_ON_SELECTION_DUPLICATE, wxITEM_NORMAL, OnSearchForDuplicateItemsOnSelection);
+	MAKE_ACTION(REMOVE_ON_MAP_DUPLICATE_ITEMS, wxITEM_NORMAL, OnRemoveForDuplicateItemsOnMap);
+	MAKE_ACTION(REMOVE_ON_SELECTION_DUPLICATE_ITEMS, wxITEM_NORMAL, OnRemoveForDuplicateItemsOnSelection);
+
+	MAKE_ACTION(SEARCH_ON_MAP_WALLS_UPON_WALLS, wxITEM_NORMAL, OnSearchForWallsUponWallsOnMap);
+	MAKE_ACTION(SEARCH_ON_SELECTION_WALLS_UPON_WALLS, wxITEM_NORMAL, OnSearchForWallsUponWallsOnSelection);
+
 	// A deleter, this way the frame does not need
 	// to bother deleting us.
 	class CustomMenuBar : public wxMenuBar {
@@ -402,6 +410,14 @@ void MainMenuBar::Update() {
 	EnableItem(LIVE_CLOSE, is_live);
 
 	EnableItem(DEBUG_VIEW_DAT, loaded);
+
+	EnableItem(SEARCH_ON_MAP_DUPLICATE, is_host);
+	EnableItem(SEARCH_ON_SELECTION_DUPLICATE, has_selection && is_host);
+	EnableItem(REMOVE_ON_MAP_DUPLICATE_ITEMS, is_local);
+	EnableItem(REMOVE_ON_SELECTION_DUPLICATE_ITEMS, is_local && has_selection);
+
+	EnableItem(SEARCH_ON_MAP_WALLS_UPON_WALLS, is_host);
+	EnableItem(SEARCH_ON_SELECTION_WALLS_UPON_WALLS, is_host && has_selection);
 
 	UpdateFloorMenu();
 }
@@ -2053,5 +2069,245 @@ void MainMenuBar::SearchItems(bool unique, bool action, bool container, bool wri
 	result->Clear();
 	for (std::vector<std::pair<Tile*, Item*>>::iterator iter = found.begin(); iter != found.end(); ++iter) {
 		result->AddPosition(searcher.desc(iter->second), iter->first->getPosition());
+	}
+}
+
+void MainMenuBar::OnSearchForDuplicateItemsOnMap(wxCommandEvent& WXUNUSED(event)) {
+	SearchDuplicatedItems(false);
+}
+
+void MainMenuBar::OnSearchForDuplicateItemsOnSelection(wxCommandEvent& WXUNUSED(event)) {
+	SearchDuplicatedItems(true);
+}
+
+void MainMenuBar::OnRemoveForDuplicateItemsOnMap(wxCommandEvent& WXUNUSED(event)) {
+	RemoveDuplicatesItems(false);
+}
+
+void MainMenuBar::OnRemoveForDuplicateItemsOnSelection(wxCommandEvent& WXUNUSED(event)) {
+	RemoveDuplicatesItems(true);
+}
+
+void MainMenuBar::OnSearchForWallsUponWallsOnMap(wxCommandEvent& WXUNUSED(event)) {
+	SearchWallsUponWalls(false);
+}
+
+void MainMenuBar::OnSearchForWallsUponWallsOnSelection(wxCommandEvent& WXUNUSED(event)) {
+	SearchWallsUponWalls(true);
+}
+
+namespace SearchDuplicatedItems {
+	struct condition {
+		std::unordered_set<Tile*> foundTiles;
+
+		void operator()(Map& map, Tile* tile, Item* item, long long done) {
+			if (done % 0x8000 == 0) {
+				g_gui.SetLoadDone((unsigned int)(100 * done / map.getTileCount()));
+			}
+
+			if (!tile) {
+				return;
+			}
+
+			if (!item) {
+				return;
+			}
+
+			if (item->isGroundTile()) {
+				return;
+			}
+
+			if (foundTiles.count(tile) == 0) {
+				std::unordered_set<int> itemIDs;
+				for (Item* existingItem : tile->items) {
+					if (itemIDs.count(existingItem->getID()) > 0) {
+						foundTiles.insert(tile);
+						break;
+					}
+					itemIDs.insert(existingItem->getID());
+				}
+			}
+		}
+	};
+}
+
+void MainMenuBar::SearchDuplicatedItems(bool onSelection /* = false*/) {
+	if (!g_gui.IsEditorOpen()) {
+		return;
+	}
+
+	if (onSelection) {
+		g_gui.CreateLoadBar("Searching on selected area...");
+	} else {
+		g_gui.CreateLoadBar("Searching on map...");
+	}
+
+	SearchDuplicatedItems::condition finder;
+
+	foreach_ItemOnMap(g_gui.GetCurrentMap(), finder, onSelection);
+	std::unordered_set<Tile*>& foundTiles = finder.foundTiles;
+
+	g_gui.DestroyLoadBar();
+
+	size_t setSize = foundTiles.size();
+
+	wxString msg;
+	msg << setSize << " duplicate items founded.";
+
+	g_gui.PopupDialog("Search completed", msg, wxOK);
+
+	SearchResultWindow* result = g_gui.ShowSearchWindow();
+	result->Clear();
+	for (const Tile* tile : foundTiles) {
+		result->AddPosition("Duplicate items", tile->getPosition());
+	}
+}
+
+namespace RemoveDuplicatesItems {
+	struct condition {
+		bool operator()(Map& map, Tile* tile, Item* item, long long removed, long long done) {
+			if (done % 0x8000 == 0) {
+				g_gui.SetLoadDone((unsigned int)(100 * done / map.getTileCount()));
+			}
+
+			if (!tile) {
+				return false;
+			}
+
+			if (!item) {
+				return false;
+			}
+
+			if (item->isGroundTile()) {
+				return false;
+			}
+
+			if (item->isMoveable() && item->hasElevation()) {
+				return false;
+			}
+
+			std::unordered_set<int> itemIDsDuplicates;
+			for (Item* itemInTile : tile->items) {
+				if (itemInTile && itemInTile->getID() == item->getID()) {
+					if (itemIDsDuplicates.count(itemInTile->getID()) > 0) {
+						itemIDsDuplicates.clear();
+						return true;
+					}
+					itemIDsDuplicates.insert(itemInTile->getID());
+				}
+			}
+
+			itemIDsDuplicates.clear();
+			return false;
+		}
+	};
+}
+
+void MainMenuBar::RemoveDuplicatesItems(bool onSelection /* = false*/) {
+	if (!g_gui.IsEditorOpen()) {
+		return;
+	}
+
+	int ok = g_gui.PopupDialog("Remove Duplicate Items", "Do you want to remove all duplicates items from the map?", wxYES | wxNO);
+
+	if (ok == wxID_YES) {
+		g_gui.GetCurrentEditor()->selection.clear();
+		g_gui.GetCurrentEditor()->actionQueue->clear();
+
+		RemoveDuplicatesItems::condition func;
+
+		if (onSelection) {
+			g_gui.CreateLoadBar("Searching on selected area for items to remove...");
+		} else {
+			g_gui.CreateLoadBar("Searching on map for items to remove...");
+		}
+
+		long long removed = RemoveItemDuplicateOnMap(g_gui.GetCurrentMap(), func, onSelection);
+
+		g_gui.DestroyLoadBar();
+
+		wxString msg;
+		msg << removed << " duplicate items deleted.";
+
+		g_gui.PopupDialog("Search completed", msg, wxOK);
+
+		g_gui.GetCurrentMap().doChange();
+	}
+}
+
+namespace SearchWallsUponWalls {
+	struct condition {
+		std::unordered_set<Tile*> foundTiles;
+
+		void operator()(Map& map, Tile* tile, Item* item, long long done) {
+			if (done % 0x8000 == 0) {
+				g_gui.SetLoadDone(static_cast<unsigned int>(100 * done / map.getTileCount()));
+			}
+
+			if (!tile) {
+				return;
+			}
+
+			if (!item) {
+				return;
+			}
+
+			if (!item->isBlockMissiles()) {
+				return;
+			}
+
+			if (item->isWall() || item->isDoor()) {
+				std::unordered_set<int> itemIDs;
+				for (Item* itemInTile : tile->items) {
+					if (itemInTile) {
+						if (itemInTile->isWall() || itemInTile->isDoor()) {
+							if (item->getID() != itemInTile->getID()) {
+								itemIDs.insert(itemInTile->getID());
+							}
+						}
+					}
+				}
+
+				size_t itemIDsSize = itemIDs.size();
+				if (itemIDsSize > 0) {
+					foundTiles.insert(tile);
+				}
+
+				itemIDs.clear();
+			}
+		}
+	};
+}
+
+void MainMenuBar::SearchWallsUponWalls(bool onSelection /* = false*/) {
+	if (!g_gui.IsEditorOpen()) {
+		return;
+	}
+
+	if (onSelection) {
+		g_gui.CreateLoadBar("Searching on selected area...");
+	} else {
+		g_gui.CreateLoadBar("Searching on map...");
+	}
+
+	SearchWallsUponWalls::condition finder;
+
+	foreach_ItemOnMap(g_gui.GetCurrentMap(), finder, onSelection);
+
+	std::unordered_set<Tile*>& foundTiles = finder.foundTiles;
+
+	g_gui.DestroyLoadBar();
+
+	size_t setSize = foundTiles.size();
+
+	wxString msg;
+	msg << setSize << " items under walls and doors founded.";
+
+	g_gui.PopupDialog("Search completed", msg, wxOK);
+
+	SearchResultWindow* result = g_gui.ShowSearchWindow();
+	result->Clear();
+	for (const Tile* tile : foundTiles) {
+		result->AddPosition("Item Under", tile->getPosition());
 	}
 }

@@ -74,6 +74,7 @@
 			<item name="Remove Items by ID..." action="MAP_REMOVE_ITEMS" help="Removes all items with the selected ID from the map."/>
 			<item name="Remove all Corpses..." action="MAP_REMOVE_CORPSES" help="Removes all corpses from the map."/>
 			<item name="Remove all Unreachable Tiles..." action="MAP_REMOVE_UNREACHABLE_TILES" help="Removes all tiles that cannot be reached (or seen) by the player from the map."/>
+			<item name="Remove all duplicates items..." action="REMOVE_ON_MAP_DUPLICATE_ITEMS" help="Removes all items duplicates on map."/>
 			<item name="Clear Invalid Houses" action="CLEAR_INVALID_HOUSES" help="Clears house tiles not belonging to any house."/>
 			<item name="Clear Modified State" action="CLEAR_MODIFIED_STATE" help="Clears the modified state from all tiles."/>
 		</menu>
@@ -100,6 +101,8 @@
 		<item name="Find Action" action="SEARCH_ON_MAP_ACTION" help="Find all items with an action ID on map."/>
 		<item name="Find Container" action="SEARCH_ON_MAP_CONTAINER" help="Find all containers on map."/>
 		<item name="Find Writeable" action="SEARCH_ON_MAP_WRITEABLE" help="Find all writeable items on map."/>
+		<item name="Find Duplicate Items" action="SEARCH_ON_MAP_DUPLICATE" help="Find all positions where there are duplicate items on the map."/>
+		<item name="Find Walls Upon Walls" action="SEARCH_ON_MAP_WALLS_UPON_WALLS" help="Find all positions where there are walls/windows/doors on walls/windows/doors on the map."/>
 		<separator/>
 		<item name="Find Everything" action="SEARCH_ON_MAP_EVERYTHING" help="Find all unique/action/text/container items."/>
 	</menu>
@@ -126,6 +129,8 @@
 			<item name="Find Action" action="SEARCH_ON_SELECTION_ACTION" help="Find all items with an action ID on selected area."/>
 			<item name="Find Container" action="SEARCH_ON_SELECTION_CONTAINER" help="Find all containers on selected area."/>
 			<item name="Find Writeable" action="SEARCH_ON_SELECTION_WRITEABLE" help="Find all writeable items on selected area."/>
+			<item name="Find Duplicate Items" action="SEARCH_ON_SELECTION_DUPLICATE" help="Find all positions where there are duplicate items on selected area."/>
+			<item name="Find Walls Upon Walls" action="SEARCH_ON_SELECTION_WALLS_UPON_WALLS" help="Find all positions where there are walls/windows/doors on walls/windows/doors on selected area."/>
 		</menu>
 		<separator/>
 		<menu name="Selection Mode">
