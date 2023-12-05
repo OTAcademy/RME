@@ -19,39 +19,37 @@
 
 #ifdef _USE_UPDATER_
 
-#include <wx/url.h>
+	#include <wx/url.h>
 
-#include "json.h"
+	#include "json.h"
 
-#include "updater.h"
+	#include "updater.h"
 
 const wxEventType EVT_UPDATE_CHECK_FINISHED = wxNewEventType();
 
-UpdateChecker::UpdateChecker()
-{
+UpdateChecker::UpdateChecker() {
 	////
 }
 
-UpdateChecker::~UpdateChecker()
-{
+UpdateChecker::~UpdateChecker() {
 	////
 }
 
-void UpdateChecker::connect(wxEvtHandler* receiver)
-{
+void UpdateChecker::connect(wxEvtHandler* receiver) {
 	wxString address = "http://www.remeresmapeditor.com/update.php";
-	address << "?os=" <<
-#ifdef __WINDOWS__
-	"windows";
-#elif __LINUX__
-	"linux";
-#else
-	"unknown";
-#endif
+	address << "?os="
+			<<
+	#ifdef __WINDOWS__
+		"windows";
+	#elif __LINUX__
+		"linux";
+	#else
+		"unknown";
+	#endif
 	address << "&verid=" << __RME_VERSION_ID__;
-#ifdef __EXPERIMENTAL__
+	#ifdef __EXPERIMENTAL__
 	address << "&beta";
-#endif
+	#endif
 	wxURL* url = newd wxURL(address);
 	UpdateConnectionThread* connection = newd UpdateConnectionThread(receiver, url);
 	connection->Execute();
@@ -59,27 +57,24 @@ void UpdateChecker::connect(wxEvtHandler* receiver)
 
 UpdateConnectionThread::UpdateConnectionThread(wxEvtHandler* receiver, wxURL* url) :
 	receiver(receiver),
-	url(url)
-{
+	url(url) {
 	////
 }
 
-UpdateConnectionThread::~UpdateConnectionThread()
-{
+UpdateConnectionThread::~UpdateConnectionThread() {
 	////
 }
 
-wxThread::ExitCode UpdateConnectionThread::Entry()
-{
+wxThread::ExitCode UpdateConnectionThread::Entry() {
 	wxInputStream* input = url->GetInputStream();
-	if(!input) {
+	if (!input) {
 		delete input;
 		delete url;
 		return 0;
 	}
 
 	std::string data;
-	while(!input->Eof()) {
+	while (!input->Eof()) {
 		data += input->GetC();
 	}
 
@@ -87,7 +82,9 @@ wxThread::ExitCode UpdateConnectionThread::Entry()
 	delete url;
 	wxCommandEvent event(EVT_UPDATE_CHECK_FINISHED);
 	event.SetClientData(newd std::string(data));
-	if(receiver) receiver->AddPendingEvent(event);
+	if (receiver) {
+		receiver->AddPendingEvent(event);
+	}
 	return 0;
 }
 

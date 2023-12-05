@@ -55,10 +55,9 @@
 #define ART_DOOR_ARCHWAY wxART_MAKE_ART_ID(ART_DOOR_ARCHWAY)
 #define ART_DOOR_ARCHWAY_SMALL wxART_MAKE_ART_ID(ART_DOOR_ARCHWAY_SMALL)
 
-class ArtProvider : public wxArtProvider
-{
+class ArtProvider : public wxArtProvider {
 protected:
-	virtual wxBitmap CreateBitmap(const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
+	virtual wxBitmap CreateBitmap(const wxArtID &id, const wxArtClient &client, const wxSize &size) override;
 };
 
 #endif // RME_ART_PROVIDER_H_

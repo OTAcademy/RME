@@ -55,12 +55,11 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 	depot_id_field(nullptr),
 	splash_type_field(nullptr),
 	text_field(nullptr),
-	description_field(nullptr)
-{
+	description_field(nullptr) {
 	ASSERT(edit_item);
 
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
-	if(Container* container = dynamic_cast<Container*>(edit_item)) {
+	if (Container* container = dynamic_cast<Container*>(edit_item)) {
 		// Container
 		wxSizer* boxsizer = newd wxStaticBoxSizer(wxVERTICAL, this, "Container Properties");
 
@@ -85,18 +84,18 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 
 		bool use_large_sprites = g_settings.getBoolean(Config::USE_LARGE_CONTAINER_ICONS);
 		wxSizer* horizontal_sizer = nullptr;
-		const int additional_height_increment = (use_large_sprites? 40 : 24);
+		const int additional_height_increment = (use_large_sprites ? 40 : 24);
 		int additional_height = 0;
 
 		int32_t maxColumns;
-		if(use_large_sprites) {
+		if (use_large_sprites) {
 			maxColumns = 6;
 		} else {
 			maxColumns = 12;
 		}
 
-		for(uint32_t index = 0; index < container->getVolume(); ++index) {
-			if(!horizontal_sizer) {
+		for (uint32_t index = 0; index < container->getVolume(); ++index) {
+			if (!horizontal_sizer) {
 				horizontal_sizer = newd wxBoxSizer(wxHORIZONTAL);
 			}
 
@@ -106,14 +105,14 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 			container_items.push_back(containerItemButton);
 			horizontal_sizer->Add(containerItemButton);
 
-			if(((index + 1) % maxColumns) == 0) {
+			if (((index + 1) % maxColumns) == 0) {
 				contents_sizer->Add(horizontal_sizer);
 				horizontal_sizer = nullptr;
 				additional_height += additional_height_increment;
 			}
 		}
 
-		if(horizontal_sizer != nullptr) {
+		if (horizontal_sizer != nullptr) {
 			contents_sizer->Add(horizontal_sizer);
 			additional_height += additional_height_increment;
 		}
@@ -122,8 +121,8 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 
 		topsizer->Add(boxsizer, wxSizerFlags(0).Expand().Border(wxALL, 20));
 
-		//SetSize(260, 150 + additional_height);
-	} else if(edit_item->canHoldText() || edit_item->canHoldDescription()) {
+		// SetSize(260, 150 + additional_height);
+	} else if (edit_item->canHoldText() || edit_item->canHoldDescription()) {
 		// Book
 		wxSizer* boxsizer = newd wxStaticBoxSizer(wxVERTICAL, this, "Writeable Properties");
 
@@ -153,7 +152,7 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 
 		topsizer->Add(boxsizer, wxSizerFlags(0).Expand().Border(wxALL, 20));
 
-		//SetSize(220, 310);
+		// SetSize(220, 310);
 	} else if (edit_item->isSplash() || edit_item->isFluidContainer()) {
 		// Splash
 		wxSizer* boxsizer = newd wxStaticBoxSizer(wxVERTICAL, this, "Splash Properties");
@@ -177,7 +176,7 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 		}
 
 		if (item->getSubtype()) {
-			const std::string& what = Item::LiquidID2Name(item->getSubtype());
+			const std::string &what = Item::LiquidID2Name(item->getSubtype());
 			if (what == "Unknown") {
 				splash_type_field->Append(wxstr(Item::LiquidID2Name(LIQUID_NONE)), newd int32_t(LIQUID_NONE));
 			}
@@ -200,8 +199,8 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 
 		topsizer->Add(boxsizer, wxSizerFlags(0).Expand().Border(wxALL, 20));
 
-		//SetSize(220, 190);
-	} else if(Depot* depot = dynamic_cast<Depot*>(edit_item)) {
+		// SetSize(220, 190);
+	} else if (Depot* depot = dynamic_cast<Depot*>(edit_item)) {
 		// Depot
 		wxSizer* boxsizer = newd wxStaticBoxSizer(wxVERTICAL, this, "Depot Properties");
 		wxFlexGridSizer* subsizer = newd wxFlexGridSizer(2, 10, 10);
@@ -210,30 +209,31 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 		subsizer->Add(newd wxStaticText(this, wxID_ANY, "ID " + i2ws(item->getID())));
 		subsizer->Add(newd wxStaticText(this, wxID_ANY, "\"" + wxstr(item->getName()) + "\""));
 
-		const Towns& towns = map->towns;
+		const Towns &towns = map->towns;
 		subsizer->Add(newd wxStaticText(this, wxID_ANY, "Depot ID"));
 		depot_id_field = newd wxChoice(this, wxID_ANY);
 		int to_select_index = 0;
-		if(towns.count() > 0) {
+		if (towns.count() > 0) {
 			bool found = false;
-			for(TownMap::const_iterator town_iter = towns.begin();
-					town_iter != towns.end();
-					++town_iter)
-			{
-				if(town_iter->second->getID() == depot->getDepotID()) {
+			for (TownMap::const_iterator town_iter = towns.begin();
+				 town_iter != towns.end();
+				 ++town_iter) {
+				if (town_iter->second->getID() == depot->getDepotID()) {
 					found = true;
 				}
 				depot_id_field->Append(wxstr(town_iter->second->getName()), newd int(town_iter->second->getID()));
-				if(!found) ++to_select_index;
+				if (!found) {
+					++to_select_index;
+				}
 			}
-			if(!found) {
-				if(depot->getDepotID() != 0) {
+			if (!found) {
+				if (depot->getDepotID() != 0) {
 					depot_id_field->Append("Undefined Town (id:" + i2ws(depot->getDepotID()) + ")", newd int(depot->getDepotID()));
 				}
 			}
 		}
 		depot_id_field->Append("No Town", newd int(0));
-		if(depot->getDepotID() == 0) {
+		if (depot->getDepotID() == 0) {
 			to_select_index = depot_id_field->GetCount() - 1;
 		}
 		depot_id_field->SetSelection(to_select_index);
@@ -242,7 +242,7 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 
 		boxsizer->Add(subsizer, wxSizerFlags(5).Expand());
 		topsizer->Add(boxsizer, wxSizerFlags(0).Expand().Border(wxALL, 20));
-		//SetSize(220, 140);
+		// SetSize(220, 140);
 	} else {
 		// Normal item
 		Door* door = dynamic_cast<Door*>(edit_item);
@@ -250,12 +250,12 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 		Podium* podium = dynamic_cast<Podium*>(edit_item);
 
 		wxString description;
-		if(door) {
+		if (door) {
 			ASSERT(tile_parent);
 			description = "Door Properties";
-		} else if(teleport) {
+		} else if (teleport) {
 			description = "Teleport Properties";
-		} else if(podium) {
+		} else if (podium) {
 			description = "Podium Properties";
 		} else {
 			description = "Item Properties";
@@ -277,12 +277,16 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 		subsizer->Add(newd wxStaticText(this, wxID_ANY, "ID " + i2ws(item->getID())));
 		subsizer->Add(newd wxStaticText(this, wxID_ANY, "\"" + wxstr(item->getName()) + "\""));
 
-		subsizer->Add(newd wxStaticText(this, wxID_ANY, (item->isCharged()? "Charges" : "Count")));
+		subsizer->Add(newd wxStaticText(this, wxID_ANY, (item->isCharged() ? "Charges" : "Count")));
 		int max_count = 100;
-		if(item->isClientCharged()) max_count = 250;
-		if(item->isExtraCharged()) max_count = 65500;
+		if (item->isClientCharged()) {
+			max_count = 250;
+		}
+		if (item->isExtraCharged()) {
+			max_count = 65500;
+		}
 		count_field = newd wxSpinCtrl(this, wxID_ANY, i2ws(edit_item->getCount()), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, max_count, edit_item->getCount());
-		if(!item->isStackable() && !item->isCharged()) {
+		if (!item->isStackable() && !item->isCharged()) {
 			count_field->Enable(false);
 		}
 		subsizer->Add(count_field, wxSizerFlags(1).Expand());
@@ -294,7 +298,6 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 		subsizer->Add(newd wxStaticText(this, wxID_ANY, "Unique ID"));
 		unique_id_field = newd wxSpinCtrl(this, wxID_ANY, i2ws(edit_item->getUniqueID()), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, 0xFFFF, edit_item->getUniqueID());
 		subsizer->Add(unique_id_field, wxSizerFlags(1).Expand());
-
 
 		// item classification (12.81+)
 		if (g_items.MajorVersion >= 3 && g_items.MinorVersion >= 60 && (edit_item->getClassification() > 0 || edit_item->isWeapon() || edit_item->isWearableEquipment())) {
@@ -315,16 +318,16 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 		}
 		*/
 
-		if(door) {
+		if (door) {
 			subsizer->Add(newd wxStaticText(this, wxID_ANY, "Door ID"));
 			door_id_field = newd wxSpinCtrl(this, wxID_ANY, i2ws(door->getDoorID()), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, 0xFF, door->getDoorID());
-			if(!edit_tile || !edit_tile->isHouseTile() || !door->isRealDoor()) {
+			if (!edit_tile || !edit_tile->isHouseTile() || !door->isRealDoor()) {
 				door_id_field->Disable();
 			}
 			subsizer->Add(door_id_field, wxSizerFlags(1).Expand());
 		}
 
-		if(teleport) {
+		if (teleport) {
 			subsizer->Add(newd wxStaticText(this, wxID_ANY, "Destination"));
 
 			wxSizer* possizer = newd wxBoxSizer(wxHORIZONTAL);
@@ -373,7 +376,7 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 
 			// outfit container
 			wxFlexGridSizer* outfitContainer = newd wxFlexGridSizer(2, 10, 10);
-			const Outfit& outfit = podium->getOutfit();
+			const Outfit &outfit = podium->getOutfit();
 
 			outfitContainer->Add(newd wxStaticText(this, wxID_ANY, "Outfit"));
 			outfitContainer->Add(newd wxStaticText(this, wxID_ANY, ""));
@@ -392,7 +395,7 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 
 			outfitContainer->Add(newd wxStaticText(this, wxID_ANY, "Legs"));
 			look_legs = newd wxSpinCtrl(this, wxID_ANY, i2ws(outfit.lookLegs), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, OUTFIT_COLOR_MAX, outfit.lookLegs);
-			outfitContainer->Add(look_legs , wxSizerFlags(3).Expand());
+			outfitContainer->Add(look_legs, wxSizerFlags(3).Expand());
 
 			outfitContainer->Add(newd wxStaticText(this, wxID_ANY, "Feet"));
 			look_feet = newd wxSpinCtrl(this, wxID_ANY, i2ws(outfit.lookFeet), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, OUTFIT_COLOR_MAX, outfit.lookFeet);
@@ -485,8 +488,7 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 	depot_id_field(nullptr),
 	splash_type_field(nullptr),
 	text_field(nullptr),
-	description_field(nullptr)
-{
+	description_field(nullptr) {
 	ASSERT(edit_creature);
 
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
@@ -506,7 +508,7 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Direction"));
 	direction_field = newd wxChoice(this, wxID_ANY);
 
-	for(Direction dir = DIRECTION_FIRST; dir <= DIRECTION_LAST; ++dir) {
+	for (Direction dir = DIRECTION_FIRST; dir <= DIRECTION_LAST; ++dir) {
 		direction_field->Append(wxstr(Creature::DirID2Name(dir)), newd int32_t(dir));
 	}
 	direction_field->SetSelection(edit_creature->getDirection());
@@ -515,7 +517,7 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 	boxsizer->Add(subsizer, wxSizerFlags(1).Expand());
 
 	topsizer->Add(boxsizer, wxSizerFlags(3).Expand().Border(wxALL, 20));
-	//SetSize(220, 0);
+	// SetSize(220, 0);
 
 	wxSizer* std_sizer = newd wxBoxSizer(wxHORIZONTAL);
 	std_sizer->Add(newd wxButton(this, wxID_OK, "OK"), wxSizerFlags(1).Center().Border(wxTOP | wxBOTTOM, 10));
@@ -537,14 +539,13 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 	depot_id_field(nullptr),
 	splash_type_field(nullptr),
 	text_field(nullptr),
-	description_field(nullptr)
-{
+	description_field(nullptr) {
 	ASSERT(edit_spawn);
 
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
 	wxSizer* boxsizer = newd wxStaticBoxSizer(wxVERTICAL, this, "Spawn Properties");
 
-	//if(item->canHoldDescription()) num_items += 1;
+	// if(item->canHoldDescription()) num_items += 1;
 
 	wxFlexGridSizer* subsizer = newd wxFlexGridSizer(2, 10, 10);
 	subsizer->AddGrowableCol(1);
@@ -567,37 +568,35 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 	Centre(wxBOTH);
 }
 
-OldPropertiesWindow::~OldPropertiesWindow()
-{
+OldPropertiesWindow::~OldPropertiesWindow() {
 	// Warning: edit_item may no longer be valid, DONT USE IT!
-	if(splash_type_field) {
-		for(uint32_t i = 0; i < splash_type_field->GetCount(); ++i) {
+	if (splash_type_field) {
+		for (uint32_t i = 0; i < splash_type_field->GetCount(); ++i) {
 			delete reinterpret_cast<int*>(splash_type_field->GetClientData(i));
 		}
 	}
-	if(direction_field) {
-		for(uint32_t i = 0; i < direction_field->GetCount(); ++i) {
+	if (direction_field) {
+		for (uint32_t i = 0; i < direction_field->GetCount(); ++i) {
 			delete reinterpret_cast<int*>(direction_field->GetClientData(i));
 		}
 	}
-	if(depot_id_field) {
-		for(uint32_t i = 0; i < depot_id_field->GetCount(); ++i) {
+	if (depot_id_field) {
+		for (uint32_t i = 0; i < depot_id_field->GetCount(); ++i) {
 			delete reinterpret_cast<int*>(depot_id_field->GetClientData(i));
 		}
 	}
 }
 
-void OldPropertiesWindow::OnFocusChange(wxFocusEvent& event)
-{
+void OldPropertiesWindow::OnFocusChange(wxFocusEvent &event) {
 	wxWindow* win = event.GetWindow();
-	if(wxSpinCtrl* spin = dynamic_cast<wxSpinCtrl*>(win))
+	if (wxSpinCtrl* spin = dynamic_cast<wxSpinCtrl*>(win)) {
 		spin->SetSelection(-1, -1);
-	else if(wxTextCtrl* text = dynamic_cast<wxTextCtrl*>(win))
+	} else if (wxTextCtrl* text = dynamic_cast<wxTextCtrl*>(win)) {
 		text->SetSelection(-1, -1);
+	}
 }
 
-void OldPropertiesWindow::OnChar(wxKeyEvent& evt)
-{
+void OldPropertiesWindow::OnChar(wxKeyEvent &evt) {
 	if (evt.GetKeyCode() == WXK_CONTROL_V) {
 		Position position;
 		const Editor* const editor = g_gui.GetCurrentEditor();
@@ -606,62 +605,59 @@ void OldPropertiesWindow::OnChar(wxKeyEvent& evt)
 			y_field->SetValue(position.y);
 			z_field->SetValue(position.z);
 			return;
-
 		}
-
 	}
 
 	evt.Skip();
 }
 
-void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))
-{
-	if(edit_item) {
-		if(dynamic_cast<Container*>(edit_item)) {
+void OldPropertiesWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
+	if (edit_item) {
+		if (dynamic_cast<Container*>(edit_item)) {
 			// Container
 			int new_uid = unique_id_field->GetValue();
 			int new_aid = action_id_field->GetValue();
 
-			if((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
+			if ((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
 				g_gui.PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
 				return;
 			}
-			if(/* there is no item with the same UID */false) {
+			if (/* there is no item with the same UID */ false) {
 				g_gui.PopupDialog(this, "Error", "Unique ID must be unique, this UID is already taken.", wxOK);
 				return;
 			}
-			if((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
+			if ((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
 				g_gui.PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
 				return;
 			}
 
 			edit_item->setUniqueID(new_uid);
 			edit_item->setActionID(new_aid);
-		} else if(edit_item->canHoldText() || edit_item->canHoldDescription()) {
+		} else if (edit_item->canHoldText() || edit_item->canHoldDescription()) {
 			// Book
 			int new_uid = unique_id_field->GetValue();
 			int new_aid = action_id_field->GetValue();
 			std::string text = nstr(text_field->GetValue());
 
-			if((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
+			if ((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
 				g_gui.PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
 				return;
 			}
-			if(/* there is no item with the same UID */false) {
+			if (/* there is no item with the same UID */ false) {
 				g_gui.PopupDialog(this, "Error", "Unique ID must be unique, this UID is already taken.", wxOK);
 				return;
 			}
-			if((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
+			if ((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
 				g_gui.PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
 				return;
 			}
-			if(text.length() >= 0xFFFF) {
+			if (text.length() >= 0xFFFF) {
 				g_gui.PopupDialog(this, "Error", "Text is longer than 65535 characters, this is not supported by OpenTibia. Reduce the length of the text.", wxOK);
 				return;
 			}
-			if(edit_item->canHoldText() && text.length() > edit_item->getMaxWriteLength()) {
+			if (edit_item->canHoldText() && text.length() > edit_item->getMaxWriteLength()) {
 				int ret = g_gui.PopupDialog(this, "Error", "Text is longer than the maximum supported length of this book type, do you still want to change it?", wxYES | wxNO);
-				if(ret != wxID_YES) {
+				if (ret != wxID_YES) {
 					return;
 				}
 			}
@@ -669,32 +665,32 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))
 			edit_item->setUniqueID(new_uid);
 			edit_item->setActionID(new_aid);
 			edit_item->setText(text);
-		} else if(edit_item->isSplash() || edit_item->isFluidContainer()) {
+		} else if (edit_item->isSplash() || edit_item->isFluidContainer()) {
 			// Splash
 			int new_uid = unique_id_field->GetValue();
 			int new_aid = action_id_field->GetValue();
 			int* new_type = reinterpret_cast<int*>(splash_type_field->GetClientData(splash_type_field->GetSelection()));
 
-			if((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
+			if ((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
 				g_gui.PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
 				return;
 			}
-			if(/* there is no item with the same UID */false) {
+			if (/* there is no item with the same UID */ false) {
 				g_gui.PopupDialog(this, "Error", "Unique ID must be unique, this UID is already taken.", wxOK);
 				return;
 			}
-			if((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
+			if ((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
 				g_gui.PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
 				return;
 			}
-			if(new_type) {
+			if (new_type) {
 				edit_item->setSubtype(*new_type);
 			}
 			edit_item->setUniqueID(new_uid);
 			edit_item->setActionID(new_aid);
 
 			// Clean up client data
-		} else if(Depot* depot = dynamic_cast<Depot*>(edit_item)) {
+		} else if (Depot* depot = dynamic_cast<Depot*>(edit_item)) {
 			// Depot
 			int* new_depotid = reinterpret_cast<int*>(depot_id_field->GetClientData(depot_id_field->GetSelection()));
 
@@ -711,27 +707,27 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))
 			int new_tier = tier_field ? tier_field->GetValue() : 0;
 
 			std::string new_desc;
-			if(edit_item->canHoldDescription() && description_field) {
+			if (edit_item->canHoldDescription() && description_field) {
 				description_field->GetValue();
 			}
 			Position new_dest;
-			if(teleport) {
+			if (teleport) {
 				new_dest = Position(x_field->GetValue(), y_field->GetValue(), z_field->GetValue());
 			}
 			uint8_t new_door_id = 0;
-			if(door) {
+			if (door) {
 				new_door_id = door_id_field->GetValue();
 			}
 
-			if((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
+			if ((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
 				g_gui.PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
 				return;
 			}
-			if(/* there is no item with the same UID */false) {
+			if (/* there is no item with the same UID */ false) {
 				g_gui.PopupDialog(this, "Error", "Unique ID must be unique, this UID is already taken.", wxOK);
 				return;
 			}
-			if((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
+			if ((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
 				g_gui.PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
 				return;
 			}
@@ -749,16 +745,16 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))
 			}
 			*/
 
-			if(door && g_settings.getInteger(Config::WARN_FOR_DUPLICATE_ID)) {
-				if(edit_tile && edit_tile->isHouseTile()) {
+			if (door && g_settings.getInteger(Config::WARN_FOR_DUPLICATE_ID)) {
+				if (edit_tile && edit_tile->isHouseTile()) {
 					const House* house = edit_map->houses.getHouse(edit_tile->getHouseID());
-					if(house) {
+					if (house) {
 						Position pos = house->getDoorPositionByID(new_door_id);
-						if(pos == Position()) {
+						if (pos == Position()) {
 							// Do nothing
-						} else if(pos != edit_tile->getPosition()) {
+						} else if (pos != edit_tile->getPosition()) {
 							int ret = g_gui.PopupDialog(this, "Warning", "This doorid conflicts with another one in this house, are you sure you want to continue?", wxYES | wxNO);
-							if(ret == wxID_NO) {
+							if (ret == wxID_NO) {
 								return;
 							}
 						}
@@ -766,16 +762,16 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))
 				}
 			}
 
-			if(teleport) {
-				if(edit_map->getTile(new_dest) == nullptr || edit_map->getTile(new_dest)->isBlocking()) {
+			if (teleport) {
+				if (edit_map->getTile(new_dest) == nullptr || edit_map->getTile(new_dest)->isBlocking()) {
 					int ret = g_gui.PopupDialog(this, "Warning", "This teleport leads nowhere, or to an invalid location. Do you want to change the destination?", wxYES | wxNO);
-					if(ret == wxID_YES) {
+					if (ret == wxID_YES) {
 						return;
 					}
 				}
 			}
 
-			Outfit& newOutfit = Outfit();
+			Outfit &newOutfit = Outfit();
 			if (podium) {
 				int newLookType = look_type->GetValue();
 				int newMount = look_mount->GetValue();
@@ -794,15 +790,7 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))
 				int newMountLegs = look_mountlegs->GetValue();
 				int newMountFeet = look_mountfeet->GetValue();
 
-				if (newHead < 0 || newHead > OUTFIT_COLOR_MAX ||
-					newBody < 0 || newBody > OUTFIT_COLOR_MAX ||
-					newLegs < 0 || newLegs > OUTFIT_COLOR_MAX ||
-					newFeet < 0 || newFeet > OUTFIT_COLOR_MAX ||
-					newMountHead < 0 || newMountHead > OUTFIT_COLOR_MAX ||
-					newMountBody < 0 || newMountBody > OUTFIT_COLOR_MAX ||
-					newMountLegs < 0 || newMountLegs > OUTFIT_COLOR_MAX ||
-					newMountFeet < 0 || newMountFeet > OUTFIT_COLOR_MAX
-					) {
+				if (newHead < 0 || newHead > OUTFIT_COLOR_MAX || newBody < 0 || newBody > OUTFIT_COLOR_MAX || newLegs < 0 || newLegs > OUTFIT_COLOR_MAX || newFeet < 0 || newFeet > OUTFIT_COLOR_MAX || newMountHead < 0 || newMountHead > OUTFIT_COLOR_MAX || newMountBody < 0 || newMountBody > OUTFIT_COLOR_MAX || newMountLegs < 0 || newMountLegs > OUTFIT_COLOR_MAX || newMountFeet < 0 || newMountFeet > OUTFIT_COLOR_MAX) {
 					wxString response = "Outfit and mount colors must be between 0 and ";
 					response << i2ws(OUTFIT_COLOR_MAX) << ".";
 					g_gui.PopupDialog(this, "Error", response, wxOK);
@@ -829,19 +817,19 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))
 			}
 
 			// Done validating, set the values.
-			if(edit_item->canHoldDescription()) {
+			if (edit_item->canHoldDescription()) {
 				edit_item->setText(new_desc);
 			}
-			if(edit_item->isStackable() || edit_item->isCharged()) {
+			if (edit_item->isStackable() || edit_item->isCharged()) {
 				edit_item->setSubtype(new_count);
 			}
-			if(door) {
+			if (door) {
 				door->setDoorID(new_door_id);
 			}
-			if(teleport) {
+			if (teleport) {
 				teleport->setDestination(new_dest);
 			}
-			if(podium) {
+			if (podium) {
 				podium->setShowOutfit(show_outfit->GetValue());
 				podium->setShowMount(show_mount->GetValue());
 				podium->setShowPlatform(show_platform->GetValue());
@@ -857,34 +845,33 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))
 			edit_item->setActionID(new_aid);
 			edit_item->setTier(new_tier);
 		}
-	} else if(edit_creature) {
+	} else if (edit_creature) {
 		int new_spawntime = count_field->GetValue();
 		edit_creature->setSpawnTime(new_spawntime);
 
 		int* new_dir = reinterpret_cast<int*>(direction_field->GetClientData(
-			direction_field->GetSelection()));
+			direction_field->GetSelection()
+		));
 
-		if(new_dir) {
+		if (new_dir) {
 			edit_creature->setDirection((Direction)*new_dir);
 		}
-	} else if(edit_spawn) {
+	} else if (edit_spawn) {
 		int new_spawnsize = count_field->GetValue();
 		edit_spawn->setSize(new_spawnsize);
 	}
 	EndModal(1);
 }
 
-void OldPropertiesWindow::OnClickCancel(wxCommandEvent& WXUNUSED(event))
-{
+void OldPropertiesWindow::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
 	// Just close this window
 	EndModal(0);
 }
 
-void OldPropertiesWindow::Update()
-{
+void OldPropertiesWindow::Update() {
 	Container* container = dynamic_cast<Container*>(edit_item);
-	if(container) {
-		for(uint32_t i = 0; i < container->getVolume(); ++i) {
+	if (container) {
+		for (uint32_t i = 0; i < container->getVolume(); ++i) {
 			container_items[i]->setItem(container->getItem(i));
 		}
 	}

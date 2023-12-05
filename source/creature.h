@@ -20,8 +20,7 @@
 
 #include "creatures.h"
 
-enum Direction
-{
+enum Direction {
 	NORTH = 0,
 	EAST = 1,
 	SOUTH = 2,
@@ -45,26 +44,40 @@ public:
 
 	Creature* deepCopy() const;
 
-	const Outfit& getLookType() const;
+	const Outfit &getLookType() const;
 
 	bool isSaved();
 	void save();
 	void reset();
 
-	bool isSelected() const {return selected;}
-	void deselect() {selected = false;}
-	void select() {selected = true;}
+	bool isSelected() const {
+		return selected;
+	}
+	void deselect() {
+		selected = false;
+	}
+	void select() {
+		selected = true;
+	}
 
 	bool isNpc() const;
 
 	std::string getName() const;
 	CreatureBrush* getBrush() const;
 
-	int getSpawnTime() const {return spawntime;}
-	void setSpawnTime(int spawntime) {this->spawntime = spawntime;}
+	int getSpawnTime() const {
+		return spawntime;
+	}
+	void setSpawnTime(int spawntime) {
+		this->spawntime = spawntime;
+	}
 
-	Direction getDirection() const { return direction; }
-	void setDirection(Direction direction) { this->direction = direction; }
+	Direction getDirection() const {
+		return direction;
+	}
+	void setDirection(Direction direction) {
+		this->direction = direction;
+	}
 
 protected:
 	std::string type_name;
@@ -88,7 +101,7 @@ inline bool Creature::isSaved() {
 
 inline bool Creature::isNpc() const {
 	CreatureType* type = g_creatures[type_name];
-	if(type) {
+	if (type) {
 		return type->isNpc;
 	}
 	return false;
@@ -96,14 +109,14 @@ inline bool Creature::isNpc() const {
 
 inline std::string Creature::getName() const {
 	CreatureType* type = g_creatures[type_name];
-	if(type) {
+	if (type) {
 		return type->name;
 	}
 	return "";
 }
 inline CreatureBrush* Creature::getBrush() const {
 	CreatureType* type = g_creatures[type_name];
-	if(type) {
+	if (type) {
 		return type->brush;
 	}
 	return nullptr;

@@ -25,17 +25,17 @@
 class ContainerItemButton;
 class ContainerItemPopupMenu;
 
-class AddTilesetWindow : public ObjectPropertiesWindowBase
-{
+class AddTilesetWindow : public ObjectPropertiesWindowBase {
 public:
 	AddTilesetWindow(wxWindow* parent, TilesetCategoryType categoryType, wxPoint = wxDefaultPosition);
 
-	void OnItemClicked(wxMouseEvent& event);
+	void OnItemClicked(wxMouseEvent &event);
 	void SetItemIdToItemButton(uint16_t id);
-	void OnChangeItemId(wxCommandEvent& WXUNUSED(event));
+	void OnChangeItemId(wxCommandEvent &WXUNUSED(event));
 
-	void OnClickOK(wxCommandEvent&);
-	void OnClickCancel(wxCommandEvent&);
+	void OnClickOK(wxCommandEvent &);
+	void OnClickCancel(wxCommandEvent &);
+
 protected:
 	wxTextCtrl* tileset_name_field;
 	wxSpinCtrl* item_id_field;
@@ -50,4 +50,3 @@ protected:
 };
 
 #endif
-

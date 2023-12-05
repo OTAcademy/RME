@@ -20,8 +20,7 @@
 
 #include "client_version.h"
 
-enum ImportType
-{
+enum ImportType {
 	IMPORT_DONT,
 	IMPORT_MERGE,
 	IMPORT_SMART_MERGE,
@@ -30,31 +29,34 @@ enum ImportType
 
 class Map;
 
-class IOMap
-{
+class IOMap {
 protected:
 	wxArrayString warnings;
 	wxString errorstr;
 
-	bool queryUser(const wxString& title, const wxString& format);
+	bool queryUser(const wxString &title, const wxString &format);
 	void warning(const wxString format, ...);
 	void error(const wxString format, ...);
+
 public:
 	IOMap() {
 		version.otbm = MAP_OTBM_1;
 		version.client = CLIENT_VERSION_NONE;
 	}
-	virtual ~IOMap() {}
+	virtual ~IOMap() { }
 
 	MapVersion version;
 
-	wxArrayString& getWarnings() {return warnings;}
-	wxString& getError() {return errorstr;}
+	wxArrayString &getWarnings() {
+		return warnings;
+	}
+	wxString &getError() {
+		return errorstr;
+	}
 
-	virtual bool loadMap(Map& map, const FileName& identifier) = 0;
-	virtual bool saveMap(Map& map, const FileName& identifier) = 0;
+	virtual bool loadMap(Map &map, const FileName &identifier) = 0;
+	virtual bool saveMap(Map &map, const FileName &identifier) = 0;
 };
-
 
 class VirtualIOMap : public IOMap {
 public:
@@ -62,8 +64,12 @@ public:
 		version = v;
 	}
 
-	virtual bool loadMap(Map& map, const FileName& identifier) {return false;}
-	virtual bool saveMap(Map& map, const FileName& identifier) {return false;}
+	virtual bool loadMap(Map &map, const FileName &identifier) {
+		return false;
+	}
+	virtual bool saveMap(Map &map, const FileName &identifier) {
+		return false;
+	}
 };
 
 #endif

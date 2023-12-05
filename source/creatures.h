@@ -28,8 +28,7 @@ class CreatureBrush;
 
 typedef std::map<std::string, CreatureType*> CreatureMap;
 
-class CreatureDatabase
-{
+class CreatureDatabase {
 protected:
 	CreatureMap creature_map;
 
@@ -42,25 +41,29 @@ public:
 
 	void clear();
 
-	CreatureType* operator[](const std::string& name);
-	CreatureType* addMissingCreatureType(const std::string& name, bool isNpc);
-	CreatureType* addCreatureType(const std::string& name, bool isNpc, const Outfit& outfit);
+	CreatureType* operator[](const std::string &name);
+	CreatureType* addMissingCreatureType(const std::string &name, bool isNpc);
+	CreatureType* addCreatureType(const std::string &name, bool isNpc, const Outfit &outfit);
 
 	bool hasMissing() const;
-	iterator begin() {return creature_map.begin();}
-	iterator end() {return creature_map.end();}
+	iterator begin() {
+		return creature_map.begin();
+	}
+	iterator end() {
+		return creature_map.end();
+	}
 
-	bool loadFromXML(const FileName& filename, bool standard, wxString& error, wxArrayString& warnings);
-	bool importXMLFromOT(const FileName& filename, wxString& error, wxArrayString& warnings);
+	bool loadFromXML(const FileName &filename, bool standard, wxString &error, wxArrayString &warnings);
+	bool importXMLFromOT(const FileName &filename, wxString &error, wxArrayString &warnings);
 
-	bool saveToXML(const FileName& filename);
+	bool saveToXML(const FileName &filename);
 };
 
 class CreatureType {
 public:
 	CreatureType();
-	CreatureType(const CreatureType& ct);
-	CreatureType& operator=(const CreatureType& ct);
+	CreatureType(const CreatureType &ct);
+	CreatureType &operator=(const CreatureType &ct);
 	~CreatureType();
 
 	bool isNpc;
@@ -71,8 +74,8 @@ public:
 	Outfit outfit;
 	CreatureBrush* brush;
 
-	static CreatureType* loadFromXML(pugi::xml_node node, wxArrayString& warnings);
-	static CreatureType* loadFromOTXML(const FileName& filename, pugi::xml_document& node, wxArrayString& warnings);
+	static CreatureType* loadFromXML(pugi::xml_node node, wxArrayString &warnings);
+	static CreatureType* loadFromOTXML(const FileName &filename, pugi::xml_document &node, wxArrayString &warnings);
 };
 
 extern CreatureDatabase g_creatures;

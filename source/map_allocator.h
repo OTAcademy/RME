@@ -23,12 +23,11 @@
 
 class BaseMap;
 
-class MapAllocator
-{
+class MapAllocator {
 
 public:
-	MapAllocator() {}
-	~MapAllocator() {}
+	MapAllocator() { }
+	~MapAllocator() { }
 
 	// shorthands for tiles
 	Tile* operator()(TileLocation* location) {
@@ -56,7 +55,7 @@ public:
 	}
 
 	//
-	QTreeNode* allocateNode(BaseMap& map) {
+	QTreeNode* allocateNode(BaseMap &map) {
 		return newd QTreeNode(map);
 	}
 	void freeNode(QTreeNode* qt) {

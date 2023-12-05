@@ -42,7 +42,7 @@ public:
 
 	Brush* brush;
 
-	void OnKey(wxKeyEvent& event);
+	void OnKey(wxKeyEvent &event);
 
 	DECLARE_EVENT_TABLE()
 };
@@ -87,9 +87,10 @@ public:
 	// Called sometimes
 	virtual void OnUpdate();
 	// When the palette should do a delayed refresh (necessary for multiple palettes)
-	void OnRefreshTimer(wxTimerEvent&);
+	void OnRefreshTimer(wxTimerEvent &);
 
 	void RefreshOtherPalettes();
+
 protected:
 	typedef std::vector<PalettePanel*> ToolBarList;
 	ToolBarList tool_bars;
@@ -102,8 +103,7 @@ protected:
 class BrushSizePanel : public PalettePanel {
 public:
 	BrushSizePanel(wxWindow* parent);
-	~BrushSizePanel() {}
-
+	~BrushSizePanel() { }
 
 	// Interface
 	// Flushes this panel and consequent views will feature reloaded data
@@ -122,17 +122,31 @@ public:
 	void OnSwitchIn();
 
 	// wxWidgets event handling
-	void OnClickSquareBrush(wxCommandEvent& event);
-	void OnClickCircleBrush(wxCommandEvent& event);
+	void OnClickSquareBrush(wxCommandEvent &event);
+	void OnClickCircleBrush(wxCommandEvent &event);
 
 	void OnClickBrushSize(int which);
-	void OnClickBrushSize0(wxCommandEvent& event) {OnClickBrushSize(0);}
-	void OnClickBrushSize1(wxCommandEvent& event) {OnClickBrushSize(1);}
-	void OnClickBrushSize2(wxCommandEvent& event) {OnClickBrushSize(2);}
-	void OnClickBrushSize4(wxCommandEvent& event) {OnClickBrushSize(4);}
-	void OnClickBrushSize6(wxCommandEvent& event) {OnClickBrushSize(6);}
-	void OnClickBrushSize8(wxCommandEvent& event) {OnClickBrushSize(8);}
-	void OnClickBrushSize11(wxCommandEvent& event){OnClickBrushSize(11);}
+	void OnClickBrushSize0(wxCommandEvent &event) {
+		OnClickBrushSize(0);
+	}
+	void OnClickBrushSize1(wxCommandEvent &event) {
+		OnClickBrushSize(1);
+	}
+	void OnClickBrushSize2(wxCommandEvent &event) {
+		OnClickBrushSize(2);
+	}
+	void OnClickBrushSize4(wxCommandEvent &event) {
+		OnClickBrushSize(4);
+	}
+	void OnClickBrushSize6(wxCommandEvent &event) {
+		OnClickBrushSize(6);
+	}
+	void OnClickBrushSize8(wxCommandEvent &event) {
+		OnClickBrushSize(8);
+	}
+	void OnClickBrushSize11(wxCommandEvent &event) {
+		OnClickBrushSize(11);
+	}
 
 protected:
 	bool loaded;
@@ -177,24 +191,25 @@ public:
 	void OnSwitchIn();
 
 	// wxWidgets event handling
-	void OnClickGravelButton(wxCommandEvent& event);
-	void OnClickEraserButton(wxCommandEvent& event);
+	void OnClickGravelButton(wxCommandEvent &event);
+	void OnClickEraserButton(wxCommandEvent &event);
 	// ----
-	void OnClickNormalDoorButton(wxCommandEvent& event);
-	void OnClickLockedDoorButton(wxCommandEvent& event);
-	void OnClickMagicDoorButton(wxCommandEvent& event);
-	void OnClickQuestDoorButton(wxCommandEvent& event);
-	void OnClickHatchDoorButton(wxCommandEvent& event);
-	void OnClickWindowDoorButton(wxCommandEvent& event);
-	void OnClickNormalAltDoorButton(wxCommandEvent& event);
-	void OnClickArchwayDoorButton(wxCommandEvent& event);
+	void OnClickNormalDoorButton(wxCommandEvent &event);
+	void OnClickLockedDoorButton(wxCommandEvent &event);
+	void OnClickMagicDoorButton(wxCommandEvent &event);
+	void OnClickQuestDoorButton(wxCommandEvent &event);
+	void OnClickHatchDoorButton(wxCommandEvent &event);
+	void OnClickWindowDoorButton(wxCommandEvent &event);
+	void OnClickNormalAltDoorButton(wxCommandEvent &event);
+	void OnClickArchwayDoorButton(wxCommandEvent &event);
 	// ----
-	void OnClickPZBrushButton(wxCommandEvent& event);
-	void OnClickNOPVPBrushButton(wxCommandEvent& event);
-	void OnClickNoLogoutBrushButton(wxCommandEvent& event);
-	void OnClickPVPZoneBrushButton(wxCommandEvent& event);
+	void OnClickPZBrushButton(wxCommandEvent &event);
+	void OnClickNOPVPBrushButton(wxCommandEvent &event);
+	void OnClickNoLogoutBrushButton(wxCommandEvent &event);
+	void OnClickPVPZoneBrushButton(wxCommandEvent &event);
 	// ----
-	void OnClickLockDoorCheckbox(wxCommandEvent& event);
+	void OnClickLockDoorCheckbox(wxCommandEvent &event);
+
 public:
 	void DeselectAll();
 
@@ -235,8 +250,9 @@ public:
 	void OnSwitchIn();
 
 	// wxWidgets event handling
-	void OnScroll(wxScrollEvent& event);
-	void OnClickCustomThickness(wxCommandEvent& event);
+	void OnScroll(wxScrollEvent &event);
+	void OnClickCustomThickness(wxCommandEvent &event);
+
 public:
 	wxSlider* slider;
 	wxCheckBox* use_button;

@@ -48,8 +48,7 @@ static constexpr int OUTFIT_COLOR_MAX = 133;
 TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* tile_parent, Item* item, wxPoint pos) :
 	ObjectPropertiesWindowBase(win_parent, "Move to Tileset", map, tile_parent, item, pos),
 	palette_field(nullptr),
-	tileset_field(nullptr)
-{
+	tileset_field(nullptr) {
 	ASSERT(edit_item);
 
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
@@ -98,8 +97,7 @@ TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* t
 	Centre(wxBOTH);
 }
 
-void TilesetWindow::OnChangePalette(wxCommandEvent& WXUNUSED(event))
-{
+void TilesetWindow::OnChangePalette(wxCommandEvent &WXUNUSED(event)) {
 	tileset_field->Clear();
 
 	for (TilesetContainer::iterator iter = g_materials.tilesets.begin(); iter != g_materials.tilesets.end(); ++iter) {
@@ -111,8 +109,7 @@ void TilesetWindow::OnChangePalette(wxCommandEvent& WXUNUSED(event))
 	tileset_field->SetSelection(0);
 }
 
-void TilesetWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))
-{
+void TilesetWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 	if (edit_item) {
 		TilesetCategoryType categoryType = TilesetCategoryType(*reinterpret_cast<int*>(palette_field->GetClientData(palette_field->GetSelection())));
 		std::string tilesetName = *static_cast<std::string*>(tileset_field->GetClientData(tileset_field->GetSelection()));
@@ -123,8 +120,7 @@ void TilesetWindow::OnClickOK(wxCommandEvent& WXUNUSED(event))
 	EndModal(1);
 }
 
-void TilesetWindow::OnClickCancel(wxCommandEvent& WXUNUSED(event))
-{
+void TilesetWindow::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
 	// Just close this window
 	EndModal(0);
 }

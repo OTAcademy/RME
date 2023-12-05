@@ -23,33 +23,42 @@
 //=============================================================================
 // Doodadbrush, add doodads!
 
-typedef std::vector<std::pair<Position, ItemVector> > CompositeTileList;
+typedef std::vector<std::pair<Position, ItemVector>> CompositeTileList;
 
-class DoodadBrush : public Brush
-{
+class DoodadBrush : public Brush {
 public:
 	DoodadBrush();
 	virtual ~DoodadBrush();
 
-	bool isDoodad() const { return true; }
-	DoodadBrush* asDoodad() { return static_cast<DoodadBrush*>(this); }
+	bool isDoodad() const {
+		return true;
+	}
+	DoodadBrush* asDoodad() {
+		return static_cast<DoodadBrush*>(this);
+	}
 
 protected:
 	struct AlternativeBlock;
 
 public:
-	bool loadAlternative(pugi::xml_node node, wxArrayString& warnings, AlternativeBlock* which = nullptr);
-	virtual bool load(pugi::xml_node node, wxArrayString& warnings);
+	bool loadAlternative(pugi::xml_node node, wxArrayString &warnings, AlternativeBlock* which = nullptr);
+	virtual bool load(pugi::xml_node node, wxArrayString &warnings);
 
-	virtual bool canDraw(BaseMap* map, const Position& position) const { return true; }
+	virtual bool canDraw(BaseMap* map, const Position &position) const {
+		return true;
+	}
 	virtual void draw(BaseMap* map, Tile* tile, void* parameter);
-	const CompositeTileList& getComposite(int variation) const;
+	const CompositeTileList &getComposite(int variation) const;
 	virtual void undraw(BaseMap* map, Tile* tile);
 
 	bool isEmpty(int variation) const;
 
-	int getThickness() const {return thickness;}
-	int getThicknessCeiling() const {return thickness_ceiling;}
+	int getThickness() const {
+		return thickness;
+	}
+	int getThicknessCeiling() const {
+		return thickness_ceiling;
+	}
 
 	int getCompositeChance(int variation) const;
 	int getSingleChance(int variation) const;
@@ -58,18 +67,38 @@ public:
 	bool hasSingleObjects(int variation) const;
 	bool hasCompositeObjects(int variation) const;
 
-	bool placeOnBlocking() const { return on_blocking; }
-	bool placeOnDuplicate() const { return on_duplicate; }
-	bool doNewBorders() const { return do_new_borders; }
+	bool placeOnBlocking() const {
+		return on_blocking;
+	}
+	bool placeOnDuplicate() const {
+		return on_duplicate;
+	}
+	bool doNewBorders() const {
+		return do_new_borders;
+	}
 	bool ownsItem(Item* item) const;
 
-	virtual bool canSmear() const { return draggable; }
-	virtual bool canDrag() const { return false; }
-	virtual bool oneSizeFitsAll() const { return one_size; }
-	virtual int getLookID() const { return look_id; }
-	virtual int getMaxVariation() const { return alternatives.size(); }
-	virtual std::string getName() const { return name; }
-	virtual void setName(const std::string& newName) { name = newName; }
+	virtual bool canSmear() const {
+		return draggable;
+	}
+	virtual bool canDrag() const {
+		return false;
+	}
+	virtual bool oneSizeFitsAll() const {
+		return one_size;
+	}
+	virtual int getLookID() const {
+		return look_id;
+	}
+	virtual int getMaxVariation() const {
+		return alternatives.size();
+	}
+	virtual std::string getName() const {
+		return name;
+	}
+	virtual void setName(const std::string &newName) {
+		name = newName;
+	}
 
 protected:
 	std::string name;

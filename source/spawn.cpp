@@ -20,18 +20,15 @@
 #include "tile.h"
 #include "spawn.h"
 
-Spawns::Spawns()
-{
+Spawns::Spawns() {
 	////
 }
 
-Spawns::~Spawns()
-{
+Spawns::~Spawns() {
 	////
 }
 
-void Spawns::addSpawn(Tile* tile)
-{
+void Spawns::addSpawn(Tile* tile) {
 	ASSERT(tile->spawn);
 
 	auto it = spawns.insert(tile->getPosition());
@@ -54,7 +51,7 @@ void Spawns::removeSpawn(Tile* tile) {
 #endif
 }
 
-std::ostream& operator<<(std::ostream& os, const Spawn& spawn) {
+std::ostream &operator<<(std::ostream &os, const Spawn &spawn) {
 	os << &spawn << ":: -> " << spawn.getSize() << std::endl;
 	return os;
 }

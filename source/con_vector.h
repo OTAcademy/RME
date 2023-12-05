@@ -22,7 +22,9 @@
 
 template <class T> // This only really works with pointers.. hrhr "T" might be abit misleading.. :o
 class contigous_vector {
-	T __pointer_check(T t) {return *t;} // If this fails, you have tried using this class with a non-pointer type, DONT
+	T __pointer_check(T t) {
+		return *t;
+	} // If this fails, you have tried using this class with a non-pointer type, DONT
 public:
 	contigous_vector(size_t start_size = 7) {
 		start = reinterpret_cast<T*>(malloc(sizeof(T) * start_size));
@@ -43,16 +45,16 @@ public:
 		return sz;
 	}
 
-	T& locate(size_t index) {
+	T &locate(size_t index) {
 		// Masterly inefficient!
-		while(index >= sz) {
-			resize(sz+REALLOC_INCREASE);
+		while (index >= sz) {
+			resize(sz + REALLOC_INCREASE);
 		}
 		return start[index];
 	}
 
 	T at(size_t index) const {
-		if(index >= sz) {
+		if (index >= sz) {
 			return nullptr;
 		}
 		return start[index];
@@ -62,8 +64,13 @@ public:
 		locate(index) = value;
 	}
 
-	T operator[](size_t index) {return at(index);}
-	const T operator[](size_t index) const {return at(index);}
+	T operator[](size_t index) {
+		return at(index);
+	}
+	const T operator[](size_t index) const {
+		return at(index);
+	}
+
 private:
 	T* start;
 	size_t sz;

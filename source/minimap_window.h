@@ -23,18 +23,19 @@ public:
 	MinimapWindow(wxWindow* parent);
 	virtual ~MinimapWindow();
 
-	void OnPaint(wxPaintEvent&);
-	void OnEraseBackground(wxEraseEvent&) {}
-	void OnMouseClick(wxMouseEvent&);
-	void OnSize(wxSizeEvent&);
-	void OnClose(wxCloseEvent&);
+	void OnPaint(wxPaintEvent &);
+	void OnEraseBackground(wxEraseEvent &) { }
+	void OnMouseClick(wxMouseEvent &);
+	void OnSize(wxSizeEvent &);
+	void OnClose(wxCloseEvent &);
 
 	void DelayedUpdate();
-	void OnDelayedUpdate(wxTimerEvent& event);
-	void OnKey(wxKeyEvent& event);
+	void OnDelayedUpdate(wxTimerEvent &event);
+	void OnKey(wxKeyEvent &event);
+
 protected:
 	wxPen* pens[256];
-	wxTimer	update_timer;
+	wxTimer update_timer;
 	int last_start_x;
 	int last_start_y;
 

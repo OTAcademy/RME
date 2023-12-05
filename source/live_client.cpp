@@ -24,39 +24,36 @@
 
 #include <wx/event.h>
 
-LiveClient::LiveClient() : LiveSocket(),
+LiveClient::LiveClient() :
+	LiveSocket(),
 	readMessage(), queryNodeList(), currentOperation(),
-	resolver(nullptr), socket(nullptr), editor(nullptr), stopped(false)
-{
+	resolver(nullptr), socket(nullptr), editor(nullptr), stopped(false) {
 	//
 }
 
-LiveClient::~LiveClient()
-{
+LiveClient::~LiveClient() {
 	//
 }
 
-bool LiveClient::connect(const std::string& address, uint16_t port)
-{
-	NetworkConnection& connection = NetworkConnection::getInstance();
-	if(!connection.start()) {
+bool LiveClient::connect(const std::string &address, uint16_t port) {
+	NetworkConnection &connection = NetworkConnection::getInstance();
+	if (!connection.start()) {
 		setLastError("The previous connection has not been terminated yet.");
 		return false;
 	}
 
-	auto& service = connection.get_service();
-	if(!resolver) {
+	auto &service = connection.get_service();
+	if (!resolver) {
 		resolver = std::make_shared<boost::asio::ip::tcp::resolver>(service);
 	}
 
-	if(!socket) {
+	if (!socket) {
 		socket = std::make_shared<boost::asio::ip::tcp::socket>(service);
 	}
 
 	boost::asio::ip::tcp::resolver::query query(address, std::to_string(port));
-	resolver->async_resolve(query, [this](const boost::system::error_code& error, boost::asio::ip::tcp::resolver::iterator endpoint_iterator) -> void
-	{
-		if(error) {
+	resolver->async_resolve(query, [this](const boost::system::error_code &error, boost::asio::ip::tcp::resolver::iterator endpoint_iterator) -> void {
+		if (error) {
 			logMessage("Error: " + error.message());
 		} else {
 			tryConnect(endpoint_iterator);
@@ -90,24 +87,22 @@ bool LiveClient::connect(const std::string& address, uint16_t port)
 	return true;
 }
 
-void LiveClient::tryConnect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
-{
-	if(stopped) {
+void LiveClient::tryConnect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator) {
+	if (stopped) {
 		return;
 	}
 
-	if(endpoint_iterator == boost::asio::ip::tcp::resolver::iterator()) {
+	if (endpoint_iterator == boost::asio::ip::tcp::resolver::iterator()) {
 		return;
 	}
 
 	logMessage("Joining server " + endpoint_iterator->host_name() + ":" + endpoint_iterator->service_name() + "...");
 
-	boost::asio::async_connect(*socket, endpoint_iterator, [this](boost::system::error_code error, boost::asio::ip::tcp::resolver::iterator endpoint_iterator) -> void
-	{
-		if(!socket->is_open()) {
+	boost::asio::async_connect(*socket, endpoint_iterator, [this](boost::system::error_code error, boost::asio::ip::tcp::resolver::iterator endpoint_iterator) -> void {
+		if (!socket->is_open()) {
 			tryConnect(++endpoint_iterator);
-		} else if(error) {
-			if(handleError(error)) {
+		} else if (error) {
+			if (handleError(error)) {
 				tryConnect(++endpoint_iterator);
 			} else {
 				wxTheApp->CallAfter([this]() {
@@ -117,7 +112,7 @@ void LiveClient::tryConnect(boost::asio::ip::tcp::resolver::iterator endpoint_it
 			}
 		} else {
 			socket->set_option(boost::asio::ip::tcp::no_delay(true), error);
-			if(error) {
+			if (error) {
 				wxTheApp->CallAfter([this]() {
 					close();
 				});
@@ -129,17 +124,16 @@ void LiveClient::tryConnect(boost::asio::ip::tcp::resolver::iterator endpoint_it
 	});
 }
 
-void LiveClient::close()
-{
-	if(resolver) {
+void LiveClient::close() {
+	if (resolver) {
 		resolver->cancel();
 	}
 
-	if(socket) {
+	if (socket) {
 		socket->close();
 	}
 
-	if(log) {
+	if (log) {
 		log->Message("Disconnected from server.");
 		log->Disconnect();
 		log = nullptr;
@@ -148,85 +142,70 @@ void LiveClient::close()
 	stopped = true;
 }
 
-bool LiveClient::handleError(const boost::system::error_code& error)
-{
-	if(error == boost::asio::error::eof || error == boost::asio::error::connection_reset) {
+bool LiveClient::handleError(const boost::system::error_code &error) {
+	if (error == boost::asio::error::eof || error == boost::asio::error::connection_reset) {
 		wxTheApp->CallAfter([this]() {
 			log->Message(wxString() + getHostName() + ": disconnected.");
 			close();
 		});
 		return true;
-	} else if(error == boost::asio::error::connection_aborted) {
+	} else if (error == boost::asio::error::connection_aborted) {
 		logMessage("You have left the server.");
 		return true;
 	}
 	return false;
 }
 
-std::string LiveClient::getHostName() const
-{
-	if(!socket) {
+std::string LiveClient::getHostName() const {
+	if (!socket) {
 		return "not connected";
 	}
 	return socket->remote_endpoint().address().to_string();
 }
 
-void LiveClient::receiveHeader()
-{
+void LiveClient::receiveHeader() {
 	readMessage.position = 0;
-	boost::asio::async_read(*socket,
-		boost::asio::buffer(readMessage.buffer, 4),
-		[this](const boost::system::error_code& error, size_t bytesReceived) -> void {
-			if(error) {
-				if(!handleError(error)) {
-					logMessage(wxString() + getHostName() + ": " + error.message());
-				}
-			} else if(bytesReceived < 4) {
-				logMessage(wxString() + getHostName() + ": Could not receive header[size: " + std::to_string(bytesReceived) + "], disconnecting client.");
-			} else {
-				receive(readMessage.read<uint32_t>());
-			}
-		}
-	);
-}
-
-void LiveClient::receive(uint32_t packetSize)
-{
-	readMessage.buffer.resize(readMessage.position + packetSize);
-	boost::asio::async_read(*socket,
-		boost::asio::buffer(&readMessage.buffer[readMessage.position], packetSize),
-		[this](const boost::system::error_code& error, size_t bytesReceived) -> void {
-			if(error) {
-				if(!handleError(error)) {
-					logMessage(wxString() + getHostName() + ": " + error.message());
-				}
-			} else if(bytesReceived < readMessage.buffer.size() - 4) {
-				logMessage(wxString() + getHostName() + ": Could not receive packet[size: " + std::to_string(bytesReceived) + "], disconnecting client.");
-			} else {
-				wxTheApp->CallAfter([this]() {
-					parsePacket(std::move(readMessage));
-					receiveHeader();
-				});
-			}
-		}
-	);
-}
-
-void LiveClient::send(NetworkMessage& message)
-{
-	memcpy(&message.buffer[0], &message.size, 4);
-	boost::asio::async_write(*socket,
-		boost::asio::buffer(message.buffer, message.size + 4),
-		[this](const boost::system::error_code& error, size_t bytesTransferred) -> void {
-			if(error) {
+	boost::asio::async_read(*socket, boost::asio::buffer(readMessage.buffer, 4), [this](const boost::system::error_code &error, size_t bytesReceived) -> void {
+		if (error) {
+			if (!handleError(error)) {
 				logMessage(wxString() + getHostName() + ": " + error.message());
 			}
+		} else if (bytesReceived < 4) {
+			logMessage(wxString() + getHostName() + ": Could not receive header[size: " + std::to_string(bytesReceived) + "], disconnecting client.");
+		} else {
+			receive(readMessage.read<uint32_t>());
 		}
-	);
+	});
 }
 
-void LiveClient::updateCursor(const Position& position)
-{
+void LiveClient::receive(uint32_t packetSize) {
+	readMessage.buffer.resize(readMessage.position + packetSize);
+	boost::asio::async_read(*socket, boost::asio::buffer(&readMessage.buffer[readMessage.position], packetSize), [this](const boost::system::error_code &error, size_t bytesReceived) -> void {
+		if (error) {
+			if (!handleError(error)) {
+				logMessage(wxString() + getHostName() + ": " + error.message());
+			}
+		} else if (bytesReceived < readMessage.buffer.size() - 4) {
+			logMessage(wxString() + getHostName() + ": Could not receive packet[size: " + std::to_string(bytesReceived) + "], disconnecting client.");
+		} else {
+			wxTheApp->CallAfter([this]() {
+				parsePacket(std::move(readMessage));
+				receiveHeader();
+			});
+		}
+	});
+}
+
+void LiveClient::send(NetworkMessage &message) {
+	memcpy(&message.buffer[0], &message.size, 4);
+	boost::asio::async_write(*socket, boost::asio::buffer(message.buffer, message.size + 4), [this](const boost::system::error_code &error, size_t bytesTransferred) -> void {
+		if (error) {
+			logMessage(wxString() + getHostName() + ": " + error.message());
+		}
+	});
+}
+
+void LiveClient::updateCursor(const Position &position) {
 	LiveCursor cursor;
 	cursor.id = 77; // Unimportant, server fixes it for us
 	cursor.pos = position;
@@ -244,8 +223,7 @@ void LiveClient::updateCursor(const Position& position)
 	send(message);
 }
 
-LiveLogTab* LiveClient::createLogWindow(wxWindow* parent)
-{
+LiveLogTab* LiveClient::createLogWindow(wxWindow* parent) {
 	MapTabbook* mtb = dynamic_cast<MapTabbook*>(parent);
 	ASSERT(mtb);
 
@@ -255,8 +233,7 @@ LiveLogTab* LiveClient::createLogWindow(wxWindow* parent)
 	return log;
 }
 
-MapTab* LiveClient::createEditorWindow()
-{
+MapTab* LiveClient::createEditorWindow() {
 	MapTabbook* mtb = dynamic_cast<MapTabbook*>(g_gui.tabbook);
 	ASSERT(mtb);
 
@@ -266,8 +243,7 @@ MapTab* LiveClient::createEditorWindow()
 	return edit;
 }
 
-void LiveClient::sendHello()
-{
+void LiveClient::sendHello() {
 	NetworkMessage message;
 	message.write<uint8_t>(PACKET_HELLO_FROM_CLIENT);
 	message.write<uint32_t>(__RME_VERSION_ID__);
@@ -279,9 +255,8 @@ void LiveClient::sendHello()
 	send(message);
 }
 
-void LiveClient::sendNodeRequests()
-{
-	if(queryNodeList.empty()) {
+void LiveClient::sendNodeRequests() {
+	if (queryNodeList.empty()) {
 		return;
 	}
 
@@ -289,7 +264,7 @@ void LiveClient::sendNodeRequests()
 	message.write<uint8_t>(PACKET_REQUEST_NODES);
 
 	message.write<uint32_t>(queryNodeList.size());
-	for(uint32_t node : queryNodeList) {
+	for (uint32_t node : queryNodeList) {
 		message.write<uint32_t>(node);
 	}
 
@@ -297,18 +272,17 @@ void LiveClient::sendNodeRequests()
 	queryNodeList.clear();
 }
 
-void LiveClient::sendChanges(DirtyList& dirtyList)
-{
-	ChangeList& changeList = dirtyList.GetChanges();
-	if(changeList.empty()) {
+void LiveClient::sendChanges(DirtyList &dirtyList) {
+	ChangeList &changeList = dirtyList.GetChanges();
+	if (changeList.empty()) {
 		return;
 	}
 
 	mapWriter.reset();
-	for(Change* change : changeList) {
+	for (Change* change : changeList) {
 		switch (change->getType()) {
 			case CHANGE_TILE: {
-				const Position& position = static_cast<Tile*>(change->getData())->getPosition();
+				const Position &position = static_cast<Tile*>(change->getData())->getPosition();
 				sendTile(mapWriter, editor->map.getTile(position), &position);
 				break;
 			}
@@ -327,23 +301,20 @@ void LiveClient::sendChanges(DirtyList& dirtyList)
 	send(message);
 }
 
-void LiveClient::sendChat(const wxString& chatMessage)
-{
+void LiveClient::sendChat(const wxString &chatMessage) {
 	NetworkMessage message;
 	message.write<uint8_t>(PACKET_CLIENT_TALK);
 	message.write<std::string>(nstr(chatMessage));
 	send(message);
 }
 
-void LiveClient::sendReady()
-{
+void LiveClient::sendReady() {
 	NetworkMessage message;
 	message.write<uint8_t>(PACKET_READY_CLIENT);
 	send(message);
 }
 
-void LiveClient::queryNode(int32_t ndx, int32_t ndy, bool underground)
-{
+void LiveClient::queryNode(int32_t ndx, int32_t ndy, bool underground) {
 	uint32_t nd = 0;
 	nd |= ((ndx >> 2) << 18);
 	nd |= ((ndy >> 2) << 4);
@@ -351,10 +322,9 @@ void LiveClient::queryNode(int32_t ndx, int32_t ndy, bool underground)
 	queryNodeList.insert(nd);
 }
 
-void LiveClient::parsePacket(NetworkMessage message)
-{
+void LiveClient::parsePacket(NetworkMessage message) {
 	uint8_t packetType;
-	while(message.position < message.buffer.size()) {
+	while (message.position < message.buffer.size()) {
 		packetType = message.read<uint8_t>();
 		switch (packetType) {
 			case PACKET_HELLO_FROM_SERVER:
@@ -393,12 +363,11 @@ void LiveClient::parsePacket(NetworkMessage message)
 	}
 }
 
-void LiveClient::parseHello(NetworkMessage& message)
-{
+void LiveClient::parseHello(NetworkMessage &message) {
 	ASSERT(editor == nullptr);
 	editor = newd Editor(g_gui.copybuffer, this);
 
-	Map& map = editor->map;
+	Map &map = editor->map;
 	map.setName("Live Map - " + message.read<std::string>());
 	map.setWidth(message.read<uint16_t>());
 	map.setHeight(message.read<uint16_t>());
@@ -406,23 +375,20 @@ void LiveClient::parseHello(NetworkMessage& message)
 	createEditorWindow();
 }
 
-void LiveClient::parseKick(NetworkMessage& message)
-{
-	const std::string& kickMessage = message.read<std::string>();
+void LiveClient::parseKick(NetworkMessage &message) {
+	const std::string &kickMessage = message.read<std::string>();
 	close();
 
 	g_gui.PopupDialog("Disconnected", wxstr(kickMessage), wxOK);
 }
 
-void LiveClient::parseClientAccepted(NetworkMessage& message)
-{
+void LiveClient::parseClientAccepted(NetworkMessage &message) {
 	sendReady();
 }
 
-void LiveClient::parseChangeClientVersion(NetworkMessage& message)
-{
+void LiveClient::parseChangeClientVersion(NetworkMessage &message) {
 	ClientVersionID clientVersion = static_cast<ClientVersionID>(message.read<uint32_t>());
-	if(!g_gui.CloseAllEditors()) {
+	if (!g_gui.CloseAllEditors()) {
 		close();
 		return;
 	}
@@ -434,18 +400,16 @@ void LiveClient::parseChangeClientVersion(NetworkMessage& message)
 	sendReady();
 }
 
-void LiveClient::parseServerTalk(NetworkMessage& message)
-{
-	const std::string& speaker = message.read<std::string>();
-	const std::string& chatMessage = message.read<std::string>();
+void LiveClient::parseServerTalk(NetworkMessage &message) {
+	const std::string &speaker = message.read<std::string>();
+	const std::string &chatMessage = message.read<std::string>();
 	log->Chat(
 		wxstr(speaker),
 		wxstr(chatMessage)
 	);
 }
 
-void LiveClient::parseNode(NetworkMessage& message)
-{
+void LiveClient::parseNode(NetworkMessage &message) {
 	uint32_t ind = message.read<uint32_t>();
 
 	// Extract node position
@@ -461,26 +425,23 @@ void LiveClient::parseNode(NetworkMessage& message)
 	g_gui.UpdateMinimap();
 }
 
-void LiveClient::parseCursorUpdate(NetworkMessage& message)
-{
+void LiveClient::parseCursorUpdate(NetworkMessage &message) {
 	LiveCursor cursor = readCursor(message);
 	cursors[cursor.id] = cursor;
 
 	g_gui.RefreshView();
 }
 
-void LiveClient::parseStartOperation(NetworkMessage& message)
-{
-	const std::string& operation = message.read<std::string>();
+void LiveClient::parseStartOperation(NetworkMessage &message) {
+	const std::string &operation = message.read<std::string>();
 
 	currentOperation = wxstr(operation);
 	g_gui.SetStatusText("Server Operation in Progress: " + currentOperation + "... (0%)");
 }
 
-void LiveClient::parseUpdateOperation(NetworkMessage& message)
-{
+void LiveClient::parseUpdateOperation(NetworkMessage &message) {
 	int32_t percent = message.read<uint32_t>();
-	if(percent >= 100) {
+	if (percent >= 100) {
 		g_gui.SetStatusText("Server Operation Finished.");
 	} else {
 		g_gui.SetStatusText("Server Operation in Progress: " + currentOperation + "... (" + std::to_string(percent) + "%)");

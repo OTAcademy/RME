@@ -30,8 +30,11 @@ enum BrushListType {
 
 class BrushBoxInterface {
 public:
-	BrushBoxInterface(const TilesetCategory* _tileset) : tileset(_tileset), loaded(false) {ASSERT(tileset);}
-	virtual ~BrushBoxInterface() {}
+	BrushBoxInterface(const TilesetCategory* _tileset) :
+		tileset(_tileset), loaded(false) {
+		ASSERT(tileset);
+	}
+	virtual ~BrushBoxInterface() { }
 
 	virtual wxWindow* GetSelfWindow() = 0;
 
@@ -41,6 +44,7 @@ public:
 	virtual Brush* GetSelectedBrush() const = 0;
 	// Select the brush in the parameter, this only changes the look of the panel
 	virtual bool SelectBrush(const Brush* brush) = 0;
+
 protected:
 	const TilesetCategory* const tileset;
 	bool loaded;
@@ -51,7 +55,9 @@ public:
 	BrushListBox(wxWindow* parent, const TilesetCategory* _tileset);
 	~BrushListBox();
 
-	wxWindow* GetSelfWindow() {return this;}
+	wxWindow* GetSelfWindow() {
+		return this;
+	}
 
 	// Select the first brush
 	void SelectFirstBrush();
@@ -61,10 +67,10 @@ public:
 	bool SelectBrush(const Brush* brush);
 
 	// Event handlers
-    virtual void OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const;
+	virtual void OnDrawItem(wxDC &dc, const wxRect &rect, size_t n) const;
 	virtual wxCoord OnMeasureItem(size_t n) const;
 
-	void OnKey(wxKeyEvent& event);
+	void OnKey(wxKeyEvent &event);
 
 	DECLARE_EVENT_TABLE();
 };
@@ -74,7 +80,9 @@ public:
 	BrushIconBox(wxWindow* parent, const TilesetCategory* _tileset, RenderSize rsz);
 	~BrushIconBox();
 
-	wxWindow* GetSelfWindow() {return this;}
+	wxWindow* GetSelfWindow() {
+		return this;
+	}
 
 	// Scrolls the window to the position of the named brush button
 	void EnsureVisible(BrushButton* btn);
@@ -88,10 +96,12 @@ public:
 	bool SelectBrush(const Brush* brush);
 
 	// Event handling...
-	void OnClickBrushButton(wxCommandEvent& event);
+	void OnClickBrushButton(wxCommandEvent &event);
+
 protected:
 	// Used internally to deselect all buttons before selecting a newd one.
 	void DeselectAll();
+
 protected:
 	std::vector<BrushButton*> brush_buttons;
 	RenderSize icon_size;
@@ -135,7 +145,7 @@ public:
 	void OnSwitchOut();
 
 	// wxWidgets event handlers
-	void OnClickListBoxRow(wxCommandEvent& event);
+	void OnClickListBoxRow(wxCommandEvent &event);
 
 protected:
 	const TilesetCategory* tileset;
@@ -149,7 +159,7 @@ protected:
 
 class BrushPalettePanel : public PalettePanel {
 public:
-	BrushPalettePanel(wxWindow* parent, const TilesetContainer& tilesets, TilesetCategoryType category, wxWindowID id = wxID_ANY);
+	BrushPalettePanel(wxWindow* parent, const TilesetContainer &tilesets, TilesetCategoryType category, wxWindowID id = wxID_ANY);
 	~BrushPalettePanel();
 
 	// Interface
@@ -177,10 +187,11 @@ public:
 	void OnSwitchIn();
 
 	// Event handler for child window
-	void OnSwitchingPage(wxChoicebookEvent& event);
-	void OnPageChanged(wxChoicebookEvent& event);
-	void OnClickAddTileset(wxCommandEvent& WXUNUSED(event));
-	void OnClickAddItemToTileset(wxCommandEvent& WXUNUSED(event));
+	void OnSwitchingPage(wxChoicebookEvent &event);
+	void OnPageChanged(wxChoicebookEvent &event);
+	void OnClickAddTileset(wxCommandEvent &WXUNUSED(event));
+	void OnClickAddItemToTileset(wxCommandEvent &WXUNUSED(event));
+
 protected:
 	PaletteType palette_type;
 	wxChoicebook* choicebook;

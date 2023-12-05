@@ -44,15 +44,20 @@ private:
 	void* data;
 
 	Change();
+
 public:
 	Change(Tile* tile);
-	static Change* Create(House* house, const Position& where);
-	static Change* Create(Waypoint* wp, const Position& where);
+	static Change* Create(House* house, const Position &where);
+	static Change* Create(Waypoint* wp, const Position &where);
 	~Change();
 	void clear();
 
-	ChangeType getType() const {return type;}
-	void* getData() const {return data;}
+	ChangeType getType() const {
+		return type;
+	}
+	void* getData() const {
+		return data;
+	}
 
 	// Get memory footprint
 	uint32_t memsize() const;
@@ -77,26 +82,26 @@ public:
 
 protected:
 	struct Comparator {
-		bool operator()(const ValueType& a, const ValueType& b) const {
+		bool operator()(const ValueType &a, const ValueType &b) const {
 			return a.pos < b.pos;
 		}
 	};
-public:
 
+public:
 	typedef std::set<ValueType, Comparator> SetType;
 
 	void AddPosition(int x, int y, int z);
 	void AddChange(Change* c);
-	bool Empty() const {return iset.empty() && ichanges.empty();}
-	SetType& GetPosList();
-	ChangeList& GetChanges();
+	bool Empty() const {
+		return iset.empty() && ichanges.empty();
+	}
+	SetType &GetPosList();
+	ChangeList &GetChanges();
 
 protected:
 	SetType iset;
 	ChangeList ichanges;
 };
-
-
 
 enum ActionIdentifier {
 	ACTION_MOVE,
@@ -125,21 +130,28 @@ public:
 	// Get memory footprint
 	size_t approx_memsize() const;
 	size_t memsize() const;
-	size_t size() const {return changes.size();}
-	ActionIdentifier getType() const {return type;}
+	size_t size() const {
+		return changes.size();
+	}
+	ActionIdentifier getType() const {
+		return type;
+	}
 
 	void commit(DirtyList* dirty_list);
-	bool isCommited() const {return commited;}
+	bool isCommited() const {
+		return commited;
+	}
 	void undo(DirtyList* dirty_list);
-	void redo(DirtyList* dirty_list) {commit(dirty_list);}
-
+	void redo(DirtyList* dirty_list) {
+		commit(dirty_list);
+	}
 
 protected:
-	Action(Editor& editor, ActionIdentifier ident);
+	Action(Editor &editor, ActionIdentifier ident);
 
 	bool commited;
 	ChangeList changes;
-	Editor& editor;
+	Editor &editor;
 	ActionIdentifier type;
 
 	friend class ActionQueue;
@@ -151,19 +163,24 @@ class BatchAction {
 public:
 	virtual ~BatchAction();
 
-	void resetTimer() {timestamp = 0;}
+	void resetTimer() {
+		timestamp = 0;
+	}
 
 	// Get memory footprint
 	size_t memsize(bool resize = false) const;
-	size_t size() const {return batch.size();}
-	ActionIdentifier getType() const {return type;}
+	size_t size() const {
+		return batch.size();
+	}
+	ActionIdentifier getType() const {
+		return type;
+	}
 
 	virtual void addAction(Action* action);
 	virtual void addAndCommitAction(Action* action);
 
-
 protected:
-	BatchAction(Editor& editor, ActionIdentifier ident);
+	BatchAction(Editor &editor, ActionIdentifier ident);
 
 	virtual void commit();
 	virtual void undo();
@@ -171,7 +188,7 @@ protected:
 
 	void merge(BatchAction* other);
 
-	Editor& editor;
+	Editor &editor;
 	int timestamp;
 	uint32_t memory_size;
 	ActionIdentifier type;
@@ -182,7 +199,7 @@ protected:
 
 class ActionQueue {
 public:
-	ActionQueue(Editor& editor);
+	ActionQueue(Editor &editor);
 	virtual ~ActionQueue();
 
 	typedef std::deque<BatchAction*> ActionList;
@@ -200,13 +217,17 @@ public:
 	void redo();
 	void clear();
 
-	bool canUndo() {return current > 0;}
-	bool canRedo() {return current < actions.size();}
+	bool canUndo() {
+		return current > 0;
+	}
+	bool canRedo() {
+		return current < actions.size();
+	}
 
 protected:
 	size_t current;
 	size_t memory_size;
-	Editor& editor;
+	Editor &editor;
 	ActionList actions;
 };
 

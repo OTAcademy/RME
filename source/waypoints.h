@@ -29,12 +29,15 @@ public:
 typedef std::map<std::string, Waypoint*> WaypointMap;
 
 class Waypoints {
-	Map& map;
+	Map &map;
+
 public:
-	Waypoints(Map& map) : map(map) {}
+	Waypoints(Map &map) :
+		map(map) { }
 	~Waypoints() {
-		for(WaypointMap::iterator iter = waypoints.begin(); iter != waypoints.end(); ++iter)
+		for (WaypointMap::iterator iter = waypoints.begin(); iter != waypoints.end(); ++iter) {
 			delete iter->second;
+		}
 	}
 
 	void addWaypoint(Waypoint* wp);
@@ -44,10 +47,18 @@ public:
 
 	WaypointMap waypoints;
 
-	WaypointMap::iterator begin() {return waypoints.begin();}
-	WaypointMap::const_iterator begin() const {return waypoints.begin();}
-	WaypointMap::iterator end() {return waypoints.end();}
-	WaypointMap::const_iterator end() const {return waypoints.end();}
+	WaypointMap::iterator begin() {
+		return waypoints.begin();
+	}
+	WaypointMap::const_iterator begin() const {
+		return waypoints.begin();
+	}
+	WaypointMap::iterator end() {
+		return waypoints.end();
+	}
+	WaypointMap::const_iterator end() const {
+		return waypoints.end();
+	}
 };
 
 #endif

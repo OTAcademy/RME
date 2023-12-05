@@ -27,7 +27,7 @@ class WaypointPalettePanel;
 
 class PaletteWindow : public wxPanel {
 public:
-	PaletteWindow(wxWindow* parent, const TilesetContainer& tilesets);
+	PaletteWindow(wxWindow* parent, const TilesetContainer &tilesets);
 	~PaletteWindow();
 
 	// Interface
@@ -56,20 +56,21 @@ public:
 	virtual void OnUpdate(Map* map);
 
 	// wxWidgets Event Handlers
-	void OnSwitchingPage(wxChoicebookEvent& event);
-	void OnPageChanged(wxChoicebookEvent& event);
+	void OnSwitchingPage(wxChoicebookEvent &event);
+	void OnPageChanged(wxChoicebookEvent &event);
 	// Forward key events to the parent window (The Map Window)
-	void OnKey(wxKeyEvent& event);
-	void OnClose(wxCloseEvent&);
+	void OnKey(wxKeyEvent &event);
+	void OnClose(wxCloseEvent &);
+
 protected:
-	static PalettePanel* CreateTerrainPalette(wxWindow* parent, const TilesetContainer& tilesets);
-	static PalettePanel* CreateDoodadPalette(wxWindow* parent, const TilesetContainer& tilesets);
-	static PalettePanel* CreateItemPalette(wxWindow* parent, const TilesetContainer& tilesets);
-	static PalettePanel* CreateCollectionPalette(wxWindow* parent, const TilesetContainer& tilesets);
-	static PalettePanel* CreateCreaturePalette(wxWindow* parent, const TilesetContainer& tilesets);
-	static PalettePanel* CreateHousePalette(wxWindow* parent, const TilesetContainer& tilesets);
-	static PalettePanel* CreateWaypointPalette(wxWindow* parent, const TilesetContainer& tilesets);
-	static PalettePanel* CreateRAWPalette(wxWindow* parent, const TilesetContainer& tilesets);
+	static PalettePanel* CreateTerrainPalette(wxWindow* parent, const TilesetContainer &tilesets);
+	static PalettePanel* CreateDoodadPalette(wxWindow* parent, const TilesetContainer &tilesets);
+	static PalettePanel* CreateItemPalette(wxWindow* parent, const TilesetContainer &tilesets);
+	static PalettePanel* CreateCollectionPalette(wxWindow* parent, const TilesetContainer &tilesets);
+	static PalettePanel* CreateCreaturePalette(wxWindow* parent, const TilesetContainer &tilesets);
+	static PalettePanel* CreateHousePalette(wxWindow* parent, const TilesetContainer &tilesets);
+	static PalettePanel* CreateWaypointPalette(wxWindow* parent, const TilesetContainer &tilesets);
+	static PalettePanel* CreateRAWPalette(wxWindow* parent, const TilesetContainer &tilesets);
 
 	wxChoicebook* choicebook;
 

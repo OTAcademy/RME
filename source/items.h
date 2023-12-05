@@ -111,7 +111,7 @@ enum WeaponType_t : uint8_t {
 
 /////////OTB specific//////////////
 
-enum rootattrib_t{
+enum rootattrib_t {
 	ROOT_ATTR_VERSION = 0x01
 };
 
@@ -139,7 +139,7 @@ enum itemattrib_t {
 	ITEM_ATTR_08,
 	ITEM_ATTR_LIGHT,
 
-	//1-byte aligned
+	// 1-byte aligned
 	ITEM_ATTR_DECAY2,
 	ITEM_ATTR_WEAPON2,
 	ITEM_ATTR_AMU2,
@@ -182,7 +182,7 @@ enum itemflags_t {
 	FLAG_IGNORE_LOOK = 1 << 23
 };
 
-enum slotsOTB_t{
+enum slotsOTB_t {
 	OTB_SLOT_DEFAULT,
 	OTB_SLOT_HEAD,
 	OTB_SLOT_BODY,
@@ -197,26 +197,26 @@ enum slotsOTB_t{
 };
 
 enum ShootTypeOtb_t {
-	OTB_SHOOT_NONE          = 0,
-	OTB_SHOOT_BOLT          = 1,
-	OTB_SHOOT_ARROW         = 2,
-	OTB_SHOOT_FIRE          = 3,
-	OTB_SHOOT_ENERGY        = 4,
-	OTB_SHOOT_POISONARROW   = 5,
-	OTB_SHOOT_BURSTARROW    = 6,
-	OTB_SHOOT_THROWINGSTAR  = 7,
+	OTB_SHOOT_NONE = 0,
+	OTB_SHOOT_BOLT = 1,
+	OTB_SHOOT_ARROW = 2,
+	OTB_SHOOT_FIRE = 3,
+	OTB_SHOOT_ENERGY = 4,
+	OTB_SHOOT_POISONARROW = 5,
+	OTB_SHOOT_BURSTARROW = 6,
+	OTB_SHOOT_THROWINGSTAR = 7,
 	OTB_SHOOT_THROWINGKNIFE = 8,
-	OTB_SHOOT_SMALLSTONE    = 9,
-	OTB_SHOOT_SUDDENDEATH   = 10,
-	OTB_SHOOT_LARGEROCK     = 11,
-	OTB_SHOOT_SNOWBALL      = 12,
-	OTB_SHOOT_POWERBOLT     = 13,
-	OTB_SHOOT_SPEAR         = 14,
-	OTB_SHOOT_POISONFIELD   = 15,
-	OTB_SHOOT_INFERNALBOLT  = 16
+	OTB_SHOOT_SMALLSTONE = 9,
+	OTB_SHOOT_SUDDENDEATH = 10,
+	OTB_SHOOT_LARGEROCK = 11,
+	OTB_SHOOT_SNOWBALL = 12,
+	OTB_SHOOT_POWERBOLT = 13,
+	OTB_SHOOT_SPEAR = 14,
+	OTB_SHOOT_POISONFIELD = 15,
+	OTB_SHOOT_INFERNALBOLT = 16
 };
 
-//1-byte aligned structs
+// 1-byte aligned structs
 #pragma pack(1)
 
 struct VERSIONINFO {
@@ -269,32 +269,66 @@ struct writeableBlock3 {
 
 class ItemType {
 private:
-	ItemType(const ItemType&) {}
+	ItemType(const ItemType &) { }
 
 public:
 	ItemType();
 	~ItemType();
 
-	bool isGroundTile() const { return (group == ITEM_GROUP_GROUND); }
-	bool isSplash() const { return (group == ITEM_GROUP_SPLASH); }
-	bool isFluidContainer() const { return (group == ITEM_GROUP_FLUID); }
+	bool isGroundTile() const {
+		return (group == ITEM_GROUP_GROUND);
+	}
+	bool isSplash() const {
+		return (group == ITEM_GROUP_SPLASH);
+	}
+	bool isFluidContainer() const {
+		return (group == ITEM_GROUP_FLUID);
+	}
 
-	bool isClientCharged() const { return client_chargeable; }
-	bool isExtraCharged() const { return !client_chargeable && extra_chargeable; }
+	bool isClientCharged() const {
+		return client_chargeable;
+	}
+	bool isExtraCharged() const {
+		return !client_chargeable && extra_chargeable;
+	}
 
-	bool isDepot() const { return (type == ITEM_TYPE_DEPOT); }
-	bool isMailbox() const { return (type == ITEM_TYPE_MAILBOX); }
-	bool isTrashHolder() const { return (type == ITEM_TYPE_TRASHHOLDER); }
-	bool isContainer() const { return (type == ITEM_TYPE_CONTAINER); }
-	bool isDoor() const { return (type == ITEM_TYPE_DOOR); }
-	bool isMagicField() const { return (type == ITEM_TYPE_MAGICFIELD); }
-	bool isTeleport() const { return (type == ITEM_TYPE_TELEPORT); }
-	bool isBed() const { return (type == ITEM_TYPE_BED); }
-	bool isKey() const { return (type == ITEM_TYPE_KEY); }
-	bool isPodium() const { return (type == ITEM_TYPE_PODIUM); }
+	bool isDepot() const {
+		return (type == ITEM_TYPE_DEPOT);
+	}
+	bool isMailbox() const {
+		return (type == ITEM_TYPE_MAILBOX);
+	}
+	bool isTrashHolder() const {
+		return (type == ITEM_TYPE_TRASHHOLDER);
+	}
+	bool isContainer() const {
+		return (type == ITEM_TYPE_CONTAINER);
+	}
+	bool isDoor() const {
+		return (type == ITEM_TYPE_DOOR);
+	}
+	bool isMagicField() const {
+		return (type == ITEM_TYPE_MAGICFIELD);
+	}
+	bool isTeleport() const {
+		return (type == ITEM_TYPE_TELEPORT);
+	}
+	bool isBed() const {
+		return (type == ITEM_TYPE_BED);
+	}
+	bool isKey() const {
+		return (type == ITEM_TYPE_KEY);
+	}
+	bool isPodium() const {
+		return (type == ITEM_TYPE_PODIUM);
+	}
 
-	bool isStackable() const { return stackable; }
-	bool isMetaItem() const { return is_metaitem; }
+	bool isStackable() const {
+		return stackable;
+	}
+	bool isMetaItem() const {
+		return is_metaitem;
+	}
 
 	bool isFloorChange() const;
 
@@ -317,7 +351,7 @@ public:
 
 	uint16_t volume;
 	uint16_t maxTextLen;
-	//uint16_t writeOnceItemId;
+	// uint16_t writeOnceItemId;
 	uint16_t slot_position;
 	uint8_t weapon_type;
 	uint8_t classification = 0; // 12.81
@@ -381,27 +415,30 @@ public:
 	BorderType border_alignment;
 };
 
-class ItemDatabase
-{
+class ItemDatabase {
 public:
 	ItemDatabase();
 	~ItemDatabase();
 
 	void clear();
 
-	ItemType& operator[](size_t id) {return getItemType(id);}
-	uint16_t getMaxID() const {return max_item_id;}
+	ItemType &operator[](size_t id) {
+		return getItemType(id);
+	}
+	uint16_t getMaxID() const {
+		return max_item_id;
+	}
 
 	bool typeExists(int id) const;
-	ItemType& getItemType(int id);
-	ItemType& getItemIdByClientID(int spriteId);
+	ItemType &getItemType(int id);
+	ItemType &getItemIdByClientID(int spriteId);
 
-	bool loadFromOtb(const FileName& datafile, wxString& error, wxArrayString& warnings);
-	bool loadFromGameXml(const FileName& datafile, wxString& error, wxArrayString& warnings);
+	bool loadFromOtb(const FileName &datafile, wxString &error, wxArrayString &warnings);
+	bool loadFromGameXml(const FileName &datafile, wxString &error, wxArrayString &warnings);
 	bool loadItemFromGameXml(pugi::xml_node itemNode, int id);
 	bool loadMetaItem(pugi::xml_node node);
 
-	//typedef std::map<int32_t, ItemType*> ItemMap;
+	// typedef std::map<int32_t, ItemType*> ItemMap;
 	typedef contigous_vector<ItemType*> ItemMap;
 	typedef std::map<std::string, ItemType*> ItemNameMap;
 	ItemMap items;
@@ -412,9 +449,9 @@ public:
 	uint32_t BuildNumber;
 
 protected:
-	bool loadFromOtbVer1(BinaryNode* itemNode, wxString& error, wxArrayString& warnings);
-	bool loadFromOtbVer2(BinaryNode* itemNode, wxString& error, wxArrayString& warnings);
-	bool loadFromOtbVer3(BinaryNode* itemNode, wxString& error, wxArrayString& warnings);
+	bool loadFromOtbVer1(BinaryNode* itemNode, wxString &error, wxArrayString &warnings);
+	bool loadFromOtbVer2(BinaryNode* itemNode, wxString &error, wxArrayString &warnings);
+	bool loadFromOtbVer3(BinaryNode* itemNode, wxString &error, wxArrayString &warnings);
 
 protected:
 	// Count of GameSprite types

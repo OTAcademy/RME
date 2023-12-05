@@ -18,9 +18,7 @@
 #ifndef LIVE_PACKETS_H
 #define LIVE_PACKETS_H
 
-
-enum LivePacketType
-{
+enum LivePacketType {
 	PACKET_HELLO_FROM_CLIENT = 0x10,
 	PACKET_READY_CLIENT = 0x11,
 

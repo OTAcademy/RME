@@ -25,16 +25,15 @@
 
 class Editor;
 
-class CopyBuffer
-{
+class CopyBuffer {
 public:
 	CopyBuffer();
 	virtual ~CopyBuffer();
 
 	// In-editor implantation
-	void copy(Editor& editor, int floor);
-	void cut(Editor& editor, int floor);
-	void paste(Editor& editor, const Position& toPosition);
+	void copy(Editor &editor, int floor);
+	void cut(Editor &editor, int floor);
+	void paste(Editor &editor, const Position &toPosition);
 	bool canPaste() const;
 	// Returns the upper-left corner of the copybuffer
 	Position getPosition() const;
@@ -44,7 +43,8 @@ public:
 
 	size_t GetTileCount();
 
-	BaseMap& getBufferMap();
+	BaseMap &getBufferMap();
+
 private:
 	Position copyPos;
 	BaseMap* tiles;

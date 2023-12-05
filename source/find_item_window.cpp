@@ -24,18 +24,17 @@
 #include "raw_brush.h"
 
 BEGIN_EVENT_TABLE(FindItemDialog, wxDialog)
-	EVT_TIMER(wxID_ANY, FindItemDialog::OnInputTimer)
-	EVT_BUTTON(wxID_OK, FindItemDialog::OnClickOK)
-	EVT_BUTTON(wxID_CANCEL, FindItemDialog::OnClickCancel)
+EVT_TIMER(wxID_ANY, FindItemDialog::OnInputTimer)
+EVT_BUTTON(wxID_OK, FindItemDialog::OnClickOK)
+EVT_BUTTON(wxID_CANCEL, FindItemDialog::OnClickCancel)
 END_EVENT_TABLE()
 
-FindItemDialog::FindItemDialog(wxWindow* parent, const wxString& title, bool onlyPickupables/* = false*/) :
+FindItemDialog::FindItemDialog(wxWindow* parent, const wxString &title, bool onlyPickupables /* = false*/) :
 	wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxSize(800, 600), wxDEFAULT_DIALOG_STYLE),
 	input_timer(this),
 	result_brush(nullptr),
 	result_id(0),
-	only_pickupables(onlyPickupables)
-{
+	only_pickupables(onlyPickupables) {
 	this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 
 	wxBoxSizer* box_sizer = newd wxBoxSizer(wxHORIZONTAL);
@@ -206,8 +205,7 @@ FindItemDialog::FindItemDialog(wxWindow* parent, const wxString& title, bool onl
 	invalid_item->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
 }
 
-FindItemDialog::~FindItemDialog()
-{
+FindItemDialog::~FindItemDialog() {
 	// Disconnect Events
 	options_radio_box->Disconnect(wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler(FindItemDialog::OnOptionChange), NULL, this);
 	server_id_spin->Disconnect(wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler(FindItemDialog::OnServerIdChange), NULL, this);
@@ -235,15 +233,14 @@ FindItemDialog::~FindItemDialog()
 	floor_change->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
 }
 
-FindItemDialog::SearchMode FindItemDialog::getSearchMode() const
-{
+FindItemDialog::SearchMode FindItemDialog::getSearchMode() const {
 	return (SearchMode)options_radio_box->GetSelection();
 }
 
-void FindItemDialog::setSearchMode(FindItemDialog::SearchMode mode)
-{
-	if((SearchMode)options_radio_box->GetSelection() != mode)
+void FindItemDialog::setSearchMode(FindItemDialog::SearchMode mode) {
+	if ((SearchMode)options_radio_box->GetSelection() != mode) {
 		options_radio_box->SetSelection(mode);
+	}
 
 	server_id_spin->Enable(mode == SearchMode::ServerIDs);
 	invalid_item->Enable(mode == SearchMode::ServerIDs);
@@ -253,19 +250,18 @@ void FindItemDialog::setSearchMode(FindItemDialog::SearchMode mode)
 	EnableProperties(mode == SearchMode::Properties);
 	RefreshContentsInternal();
 
-	if(mode == SearchMode::ServerIDs) {
+	if (mode == SearchMode::ServerIDs) {
 		server_id_spin->SetFocus();
 		server_id_spin->SetSelection(-1, -1);
-	} else if(mode == SearchMode::ClientIDs) {
+	} else if (mode == SearchMode::ClientIDs) {
 		client_id_spin->SetFocus();
 		client_id_spin->SetSelection(-1, -1);
-	} else if(mode == SearchMode::Names) {
+	} else if (mode == SearchMode::Names) {
 		name_text_input->SetFocus();
 	}
 }
 
-void FindItemDialog::EnableProperties(bool enable)
-{
+void FindItemDialog::EnableProperties(bool enable) {
 	unpassable->Enable(enable);
 	unmovable->Enable(enable);
 	block_missiles->Enable(enable);
@@ -283,19 +279,18 @@ void FindItemDialog::EnableProperties(bool enable)
 	floor_change->Enable(enable);
 }
 
-void FindItemDialog::RefreshContentsInternal()
-{
+void FindItemDialog::RefreshContentsInternal() {
 	items_list->Clear();
 	ok_button->Enable(false);
 
 	SearchMode selection = (SearchMode)options_radio_box->GetSelection();
 	bool found_search_results = false;
 
-	if(selection == SearchMode::ServerIDs) {
+	if (selection == SearchMode::ServerIDs) {
 		result_id = std::min(server_id_spin->GetValue(), 0xFFFF);
 		uint16_t serverID = static_cast<uint16_t>(result_id);
 		if (serverID <= g_items.getMaxID()) {
-			ItemType& item = g_items.getItemType(serverID);
+			ItemType &item = g_items.getItemType(serverID);
 			RAWBrush* raw_brush = item.raw_brush;
 			if (raw_brush) {
 				if (only_pickupables) {
@@ -313,117 +308,92 @@ void FindItemDialog::RefreshContentsInternal()
 		if (invalid_item->GetValue()) {
 			found_search_results = true;
 		}
-	} else if(selection == SearchMode::ClientIDs) {
+	} else if (selection == SearchMode::ClientIDs) {
 		uint16_t clientID = (uint16_t)client_id_spin->GetValue();
 		for (int id = 100; id <= g_items.getMaxID(); ++id) {
-			ItemType& item = g_items.getItemType(id);
-			if (item.id == 0 || item.clientID != clientID)
+			ItemType &item = g_items.getItemType(id);
+			if (item.id == 0 || item.clientID != clientID) {
 				continue;
+			}
 
 			RAWBrush* raw_brush = item.raw_brush;
-			if (!raw_brush)
+			if (!raw_brush) {
 				continue;
+			}
 
-			if(only_pickupables && !item.pickupable)
+			if (only_pickupables && !item.pickupable) {
 				continue;
+			}
 
 			found_search_results = true;
 			items_list->AddBrush(raw_brush);
 		}
-	} else if(selection == SearchMode::Names) {
+	} else if (selection == SearchMode::Names) {
 		std::string search_string = as_lower_str(nstr(name_text_input->GetValue()));
-		if(search_string.size() >= 2) {
-			for(int id = 100; id <= g_items.getMaxID(); ++id) {
-				ItemType& item = g_items.getItemType(id);
-				if(item.id == 0)
+		if (search_string.size() >= 2) {
+			for (int id = 100; id <= g_items.getMaxID(); ++id) {
+				ItemType &item = g_items.getItemType(id);
+				if (item.id == 0) {
 					continue;
+				}
 
 				RAWBrush* raw_brush = item.raw_brush;
-				if(!raw_brush)
+				if (!raw_brush) {
 					continue;
+				}
 
-				if(only_pickupables && !item.pickupable)
+				if (only_pickupables && !item.pickupable) {
 					continue;
+				}
 
-				if(as_lower_str(raw_brush->getName()).find(search_string) == std::string::npos)
+				if (as_lower_str(raw_brush->getName()).find(search_string) == std::string::npos) {
 					continue;
+				}
 
 				found_search_results = true;
 				items_list->AddBrush(raw_brush);
 			}
 		}
-	} else if(selection == SearchMode::Types) {
-		for(int id = 100; id <= g_items.getMaxID(); ++id) {
-			ItemType& item = g_items.getItemType(id);
-			if (item.id == 0)
+	} else if (selection == SearchMode::Types) {
+		for (int id = 100; id <= g_items.getMaxID(); ++id) {
+			ItemType &item = g_items.getItemType(id);
+			if (item.id == 0) {
 				continue;
+			}
 
 			RAWBrush* raw_brush = item.raw_brush;
-			if(!raw_brush)
+			if (!raw_brush) {
 				continue;
+			}
 
-			if(only_pickupables && !item.pickupable)
+			if (only_pickupables && !item.pickupable) {
 				continue;
+			}
 
 			SearchItemType selection = (SearchItemType)types_radio_box->GetSelection();
-			if ((selection == SearchItemType::Depot && !item.isDepot()) ||
-				(selection == SearchItemType::Mailbox && !item.isMailbox()) ||
-				(selection == SearchItemType::TrashHolder && !item.isTrashHolder()) ||
-				(selection == SearchItemType::Container && !item.isContainer()) ||
-				(selection == SearchItemType::Door && !item.isDoor()) ||
-				(selection == SearchItemType::MagicField && !item.isMagicField()) ||
-				(selection == SearchItemType::Teleport && !item.isTeleport()) ||
-				(selection == SearchItemType::Bed && !item.isBed()) ||
-				(selection == SearchItemType::Key && !item.isKey()) ||
-				(selection == SearchItemType::Podium && !item.isPodium())) {
+			if ((selection == SearchItemType::Depot && !item.isDepot()) || (selection == SearchItemType::Mailbox && !item.isMailbox()) || (selection == SearchItemType::TrashHolder && !item.isTrashHolder()) || (selection == SearchItemType::Container && !item.isContainer()) || (selection == SearchItemType::Door && !item.isDoor()) || (selection == SearchItemType::MagicField && !item.isMagicField()) || (selection == SearchItemType::Teleport && !item.isTeleport()) || (selection == SearchItemType::Bed && !item.isBed()) || (selection == SearchItemType::Key && !item.isKey()) || (selection == SearchItemType::Podium && !item.isPodium())) {
 				continue;
 			}
 
 			found_search_results = true;
 			items_list->AddBrush(raw_brush);
 		}
-	} else if(selection == SearchMode::Properties) {
-		bool has_selected = (unpassable->GetValue() ||
-			unmovable->GetValue() ||
-			block_missiles->GetValue() ||
-			block_pathfinder->GetValue() ||
-			readable->GetValue() ||
-			writeable->GetValue() ||
-			pickupable->GetValue() ||
-			stackable->GetValue() ||
-			rotatable->GetValue() ||
-			hangable->GetValue() ||
-			hook_east->GetValue() ||
-			hook_south->GetValue() ||
-			has_elevation->GetValue() ||
-			ignore_look->GetValue() ||
-			floor_change->GetValue());
+	} else if (selection == SearchMode::Properties) {
+		bool has_selected = (unpassable->GetValue() || unmovable->GetValue() || block_missiles->GetValue() || block_pathfinder->GetValue() || readable->GetValue() || writeable->GetValue() || pickupable->GetValue() || stackable->GetValue() || rotatable->GetValue() || hangable->GetValue() || hook_east->GetValue() || hook_south->GetValue() || has_elevation->GetValue() || ignore_look->GetValue() || floor_change->GetValue());
 
-		if(has_selected) {
-			for(int id = 100; id <= g_items.getMaxID(); ++id) {
-				ItemType& item = g_items.getItemType(id);
-				if(item.id == 0)
+		if (has_selected) {
+			for (int id = 100; id <= g_items.getMaxID(); ++id) {
+				ItemType &item = g_items.getItemType(id);
+				if (item.id == 0) {
 					continue;
+				}
 
 				RAWBrush* raw_brush = item.raw_brush;
-				if(!raw_brush)
+				if (!raw_brush) {
 					continue;
+				}
 
-				if((unpassable->GetValue() && !item.unpassable) ||
-					(unmovable->GetValue() && item.moveable) ||
-					(block_missiles->GetValue() && !item.blockMissiles) ||
-					(block_pathfinder->GetValue() && !item.blockPathfinder) ||
-					(readable->GetValue() && !item.canReadText) ||
-					(writeable->GetValue() && !item.canWriteText) ||
-					(pickupable->GetValue() && !item.pickupable) ||
-					(stackable->GetValue() && !item.stackable) ||
-					(rotatable->GetValue() && !item.rotable) ||
-					(hangable->GetValue() && !item.isHangable) ||
-					(hook_east->GetValue() && !item.hookEast) ||
-					(hook_south->GetValue() && !item.hookSouth) ||
-					(has_elevation->GetValue() && !item.hasElevation) ||
-					(ignore_look->GetValue() && !item.ignoreLook) ||
-					(floor_change->GetValue() && !item.isFloorChange())) {
+				if ((unpassable->GetValue() && !item.unpassable) || (unmovable->GetValue() && item.moveable) || (block_missiles->GetValue() && !item.blockMissiles) || (block_pathfinder->GetValue() && !item.blockPathfinder) || (readable->GetValue() && !item.canReadText) || (writeable->GetValue() && !item.canWriteText) || (pickupable->GetValue() && !item.pickupable) || (stackable->GetValue() && !item.stackable) || (rotatable->GetValue() && !item.rotable) || (hangable->GetValue() && !item.isHangable) || (hook_east->GetValue() && !item.hookEast) || (hook_south->GetValue() && !item.hookSouth) || (has_elevation->GetValue() && !item.hasElevation) || (ignore_look->GetValue() && !item.ignoreLook) || (floor_change->GetValue() && !item.isFloorChange())) {
 					continue;
 				}
 
@@ -433,60 +403,53 @@ void FindItemDialog::RefreshContentsInternal()
 		}
 	}
 
-	if(found_search_results) {
+	if (found_search_results) {
 		items_list->SetSelection(0);
 		ok_button->Enable(true);
-	} else
+	} else {
 		items_list->SetNoMatches();
+	}
 
 	items_list->Refresh();
 }
 
-void FindItemDialog::OnOptionChange(wxCommandEvent& WXUNUSED(event))
-{
+void FindItemDialog::OnOptionChange(wxCommandEvent &WXUNUSED(event)) {
 	setSearchMode((SearchMode)options_radio_box->GetSelection());
 }
 
-void FindItemDialog::OnServerIdChange(wxCommandEvent& WXUNUSED(event))
-{
+void FindItemDialog::OnServerIdChange(wxCommandEvent &WXUNUSED(event)) {
 	RefreshContentsInternal();
 }
 
-void FindItemDialog::OnClientIdChange(wxCommandEvent& WXUNUSED(event))
-{
+void FindItemDialog::OnClientIdChange(wxCommandEvent &WXUNUSED(event)) {
 	RefreshContentsInternal();
 }
 
-void FindItemDialog::OnText(wxCommandEvent& WXUNUSED(event))
-{
+void FindItemDialog::OnText(wxCommandEvent &WXUNUSED(event)) {
 	input_timer.Start(800, true);
 }
 
-void FindItemDialog::OnTypeChange(wxCommandEvent& WXUNUSED(event))
-{
+void FindItemDialog::OnTypeChange(wxCommandEvent &WXUNUSED(event)) {
 	RefreshContentsInternal();
 }
 
-void FindItemDialog::OnPropertyChange(wxCommandEvent& WXUNUSED(event))
-{
+void FindItemDialog::OnPropertyChange(wxCommandEvent &WXUNUSED(event)) {
 	RefreshContentsInternal();
 }
 
-void FindItemDialog::OnInputTimer(wxTimerEvent& WXUNUSED(event))
-{
+void FindItemDialog::OnInputTimer(wxTimerEvent &WXUNUSED(event)) {
 	RefreshContentsInternal();
 }
 
-void FindItemDialog::OnClickOK(wxCommandEvent& WXUNUSED(event))
-{
+void FindItemDialog::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 	if (invalid_item->GetValue() && (SearchMode)options_radio_box->GetSelection() == SearchMode::ServerIDs && result_id != 0) {
 		EndModal(wxID_OK);
 		return;
 	}
 
-	if(items_list->GetItemCount() != 0) {
+	if (items_list->GetItemCount() != 0) {
 		Brush* brush = items_list->GetSelectedBrush();
-		if(brush) {
+		if (brush) {
 			result_brush = brush;
 			result_id = brush->asRaw()->getItemID();
 			EndModal(wxID_OK);
@@ -494,7 +457,6 @@ void FindItemDialog::OnClickOK(wxCommandEvent& WXUNUSED(event))
 	}
 }
 
-void FindItemDialog::OnClickCancel(wxCommandEvent& WXUNUSED(event))
-{
+void FindItemDialog::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
 	EndModal(wxID_CANCEL);
 }

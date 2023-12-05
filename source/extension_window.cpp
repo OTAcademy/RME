@@ -25,14 +25,13 @@
 extern Materials g_materials;
 
 BEGIN_EVENT_TABLE(ExtensionsDialog, wxDialog)
-	EVT_HTML_LINK_CLICKED(wxID_ANY, ExtensionsDialog::OnClickLink)
-	EVT_BUTTON(wxID_OK, ExtensionsDialog::OnClickOK)
-	EVT_BUTTON(EXTENSIONS_OPEN_FOLDER_BUTTON, ExtensionsDialog::OnClickOpenFolder)
+EVT_HTML_LINK_CLICKED(wxID_ANY, ExtensionsDialog::OnClickLink)
+EVT_BUTTON(wxID_OK, ExtensionsDialog::OnClickOK)
+EVT_BUTTON(EXTENSIONS_OPEN_FOLDER_BUTTON, ExtensionsDialog::OnClickOpenFolder)
 END_EVENT_TABLE()
 
 ExtensionsDialog::ExtensionsDialog(wxWindow* parent) :
-	wxDialog(parent, wxID_ANY, "Extensions", wxDefaultPosition, wxSize(600, 500), wxRESIZE_BORDER | wxCAPTION)
-{
+	wxDialog(parent, wxID_ANY, "Extensions", wxDefaultPosition, wxSize(600, 500), wxRESIZE_BORDER | wxCAPTION) {
 	wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxHtmlWindow* htmlWindow = new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, wxSize(550, 400));
@@ -48,33 +47,29 @@ ExtensionsDialog::ExtensionsDialog(wxWindow* parent) :
 	Centre(wxBOTH);
 }
 
-ExtensionsDialog::~ExtensionsDialog()
-{
+ExtensionsDialog::~ExtensionsDialog() {
 	////
 }
 
-void ExtensionsDialog::OnClickLink(wxHtmlLinkEvent& evt)
-{
+void ExtensionsDialog::OnClickLink(wxHtmlLinkEvent &evt) {
 	::wxLaunchDefaultBrowser(evt.GetLinkInfo().GetHref(), wxBROWSER_NEW_WINDOW);
 }
 
-void ExtensionsDialog::OnClickOK(wxCommandEvent& evt)
-{
+void ExtensionsDialog::OnClickOK(wxCommandEvent &evt) {
 	EndModal(0);
 }
 
-void ExtensionsDialog::OnClickOpenFolder(wxCommandEvent& evt)
-{
+void ExtensionsDialog::OnClickOpenFolder(wxCommandEvent &evt) {
 	wxString cmd, extensionsDir = g_gui.GetExtensionsDirectory();
 #if defined __WINDOWS__
 	cmd << "explorer";
 #elif defined __APPLE__
 	cmd << "open";
-	extensionsDir.Replace(" ", "\\ "); //Escape spaces
+	extensionsDir.Replace(" ", "\\ "); // Escape spaces
 #elif defined __linux
 	cmd << "xdg-open";
 #else
-#error "NOT IMPLEMENTED"
+	#error "NOT IMPLEMENTED"
 #endif
 
 	cmd << " " << extensionsDir;
@@ -82,18 +77,16 @@ void ExtensionsDialog::OnClickOpenFolder(wxCommandEvent& evt)
 	wxExecute(cmd);
 }
 
-wxString ExtensionsDialog::HTML() const
-{
+wxString ExtensionsDialog::HTML() const {
 	wxString markup;
-	for(MaterialsExtensionList::const_iterator me = g_materials.getExtensions().begin(); me != g_materials.getExtensions().end(); ++me) {
+	for (MaterialsExtensionList::const_iterator me = g_materials.getExtensions().begin(); me != g_materials.getExtensions().end(); ++me) {
 		markup << HTMLForExtension(*me);
 		markup << "<hr>";
 	}
 	return markup;
 }
 
-wxString ExtensionsDialog::HTMLForExtension(MaterialsExtension* me) const
-{
+wxString ExtensionsDialog::HTMLForExtension(MaterialsExtension* me) const {
 	wxString markup;
 	markup
 		<< "<table>"
@@ -102,10 +95,11 @@ wxString ExtensionsDialog::HTMLForExtension(MaterialsExtension* me) const
 		<< "<td width='100px'><b>Extension</b></td>"
 		<< "<td>";
 
-	if(me->url.empty())
+	if (me->url.empty()) {
 		markup << me->name;
-	else
+	} else {
 		markup << "<a href='" << me->url << "'>" << me->name << "</a>";
+	}
 
 	markup
 		<< "</td>"
@@ -115,10 +109,11 @@ wxString ExtensionsDialog::HTMLForExtension(MaterialsExtension* me) const
 		<< "<td width='100px'><b>Author</b></td>"
 		<< "<td>";
 
-	if(me->author_url.empty())
+	if (me->author_url.empty()) {
 		markup << me->author;
-	else
+	} else {
 		markup << "<a href='" << me->author_url << "'>" << me->author << "</a>";
+	}
 
 	markup
 		<< "</td>"
@@ -134,8 +129,7 @@ wxString ExtensionsDialog::HTMLForExtension(MaterialsExtension* me) const
 		<< "<td>" << me->getVersionString() << "</td>"
 		<< "</tr>"
 
-		<< "</table>"
-	;
+		<< "</table>";
 
 	return markup;
 }

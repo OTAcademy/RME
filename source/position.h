@@ -32,34 +32,40 @@ public:
 	// cases
 	int x, y, z;
 
-	Position() : x(0), y(0), z(0) {}
-	Position(int _x, int _y, int _z) : x(_x), y(_y), z(_z) {}
+	Position() :
+		x(0), y(0), z(0) { }
+	Position(int _x, int _y, int _z) :
+		x(_x), y(_y), z(_z) { }
 
-	bool operator<(const Position& p) const {
-		if(z < p.z)
+	bool operator<(const Position &p) const {
+		if (z < p.z) {
 			return true;
-		if(z > p.z)
+		}
+		if (z > p.z) {
 			return false;
+		}
 
-		if(y < p.y)
+		if (y < p.y) {
 			return true;
-		if(y > p.y)
+		}
+		if (y > p.y) {
 			return false;
+		}
 
-		if(x < p.x)
+		if (x < p.x) {
 			return true;
-		//if(x > p.x)
+		}
+		// if(x > p.x)
 		//	return false;
-
 
 		return false;
 	}
 
-	bool operator>(const Position& p) const {
+	bool operator>(const Position &p) const {
 		return !(*this < p);
 	}
 
-	Position operator-(const Position& p) const {
+	Position operator-(const Position &p) const {
 		Position newpos;
 		newpos.x = x - p.x;
 		newpos.y = y - p.y;
@@ -67,7 +73,7 @@ public:
 		return newpos;
 	}
 
-	Position operator+(const Position& p) const {
+	Position operator+(const Position &p) const {
 		Position newpos;
 		newpos.x = x + p.x;
 		newpos.y = y + p.y;
@@ -75,40 +81,50 @@ public:
 		return newpos;
 	}
 
-	Position& operator+=(const Position& p) {
+	Position &operator+=(const Position &p) {
 		*this = *this + p;
 		return *this;
 	}
 
-	bool operator==(const Position& p) const {
+	bool operator==(const Position &p) const {
 		return p.x == x && p.y == y && p.z == z;
 	}
 
-	bool operator!=(const Position& p) const {
-		return ! (*this == p);
+	bool operator!=(const Position &p) const {
+		return !(*this == p);
 	}
 
 	bool isValid() const;
 };
 
-inline std::ostream& operator<<(std::ostream& os, const Position& pos) {
+inline std::ostream &operator<<(std::ostream &os, const Position &pos) {
 	os << pos.x << ':' << pos.y << ':' << pos.z;
 	return os;
 }
 
-inline std::istream& operator>>(std::istream& is, Position& pos) {
+inline std::istream &operator>>(std::istream &is, Position &pos) {
 	char a, b;
 	int x, y, z;
 	is >> x;
-	if(!is) return is;
+	if (!is) {
+		return is;
+	}
 	is >> a;
-	if(!is || a != ':') return is;
+	if (!is || a != ':') {
+		return is;
+	}
 	is >> y;
-	if(!is) return is;
+	if (!is) {
+		return is;
+	}
 	is >> b;
-	if(!is || b != ':') return is;
+	if (!is || b != ':') {
+		return is;
+	}
 	is >> z;
-	if(!is) return is;
+	if (!is) {
+		return is;
+	}
 
 	pos.x = x;
 	pos.y = y;
@@ -121,7 +137,7 @@ inline bool Position::isValid() const {
 	return x >= 0 && x <= MAP_MAX_WIDTH && y >= 0 && y <= MAP_MAX_HEIGHT && z >= 0 && z <= MAP_MAX_LAYER;
 }
 
-inline Position abs(const Position& position) {
+inline Position abs(const Position &position) {
 	return Position(
 		std::abs(position.x),
 		std::abs(position.y),

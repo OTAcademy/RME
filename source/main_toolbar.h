@@ -25,13 +25,12 @@
 #include "gui_ids.h"
 #include "numbertextctrl.h"
 
-class MainToolBar : public wxEvtHandler
-{
+class MainToolBar : public wxEvtHandler {
 public:
 	MainToolBar(wxWindow* parent, wxAuiManager* manager);
 	~MainToolBar();
 
-	wxAuiPaneInfo& GetPane(ToolBarID id);
+	wxAuiPaneInfo &GetPane(ToolBarID id);
 	void UpdateButtons();
 	void UpdateBrushButtons();
 	void UpdateBrushSize(BrushShape shape, int size);
@@ -40,12 +39,12 @@ public:
 	void LoadPerspective();
 	void SavePerspective();
 
-	void OnStandardButtonClick(wxCommandEvent& event);
-	void OnBrushesButtonClick(wxCommandEvent& event);
-	void OnPositionButtonClick(wxCommandEvent& event);
-	void OnPositionKeyUp(wxKeyEvent& event);
-	void OnPastePositionText(wxClipboardTextEvent& event);
-	void OnSizesButtonClick(wxCommandEvent& event);
+	void OnStandardButtonClick(wxCommandEvent &event);
+	void OnBrushesButtonClick(wxCommandEvent &event);
+	void OnPositionButtonClick(wxCommandEvent &event);
+	void OnPositionKeyUp(wxKeyEvent &event);
+	void OnPastePositionText(wxClipboardTextEvent &event);
+	void OnSizesButtonClick(wxCommandEvent &event);
 
 private:
 	static const wxString STANDARD_BAR_NAME;
