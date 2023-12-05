@@ -8,12 +8,12 @@ on:
 
     paths:
       - .clang-format
-      - src/**
+      - source/**
 
   pull_request:
     paths:
       - .clang-format
-      - src/**
+      - source/**
 
 jobs:
   check-format:
@@ -25,4 +25,4 @@ jobs:
         run: sudo apt update -q && sudo apt install -yq clang-format
 
       - name: Check code style
-        run: clang-format -n -style=file --Werror src/*.{cpp,h}
+        run: clang-format -n -style=file --Werror source/*.{cpp,h}
