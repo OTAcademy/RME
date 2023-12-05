@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<creatures>
+	<creature name="Lava Lurker Attendant" type="monster" looktype="1041"/>
+	<creature name="Dark Knight" type="monster" lookhead="95" looklegs="95" lookaddon="3" looktype="131" lookfeet="95" lookbody="95"/>
+	<creature name="Troll" type="monster" looktype="15"/>
+	<creature name="Twisted Shaper" type="monster" lookhead="105" lookaddon="1" looktype="932" lookfeet="94"/>
+	<creature name="Deepsea Blood Crab" type="monster" looktype="200"/>
+	<creature name="Quara Hydromancer Scout" type="monster" looktype="47"/>
+	<creature name="Rage Squid" type="monster" lookhead="94" looklegs="79" looktype="1059" lookfeet="57" lookbody="78"/>
+	<creature name="Deepling Scout" type="monster" looktype="413"/>
+	<creature name="Orc" type="monster" looktype="5"/>
+	<creature name="Badger" type="monster" looktype="105"/>
+	<creature name="Stalker" type="monster" lookhead="97" looklegs="95" looktype="128" lookfeet="95" lookbody="116"/>
+	<creature name="Dragon Lord" type="monster" looktype="39"/>
+	<creature name="Swamp Troll" type="monster" looktype="76"/>
+	<creature name="Golden Servant" type="monster" looktype="396"/>
+	<creature name="Serpent Spawn" type="monster" looktype="220"/>
+	<creature name="Orc Cult Fanatic" type="monster" looktype="59"/>
+	<creature name="Askarak Prince" type="monster" looktype="419"/>
+	<creature name="Corym Vanguard" type="monster" looklegs="121" looktype="534" lookbody="19"/>
+	<creature name="Dog" type="monster" looktype="32"/>
+	<creature name="Nightstalker" type="monster" looktype="320"/>
+	<creature name="Armadile" type="monster" looktype="487"/>
+	<creature name="Noble Lion" type="monster" looktype="570"/>
+	<creature name="Massive Water Elemental" type="monster" looktype="11"/>
+	<creature name="Orc Cult Minion" type="monster" looktype="50"/>
+	<creature name="Grave Robber" type="monster" lookhead="57" looklegs="57" lookaddon="3" looktype="146" lookfeet="19" lookbody="95"/>
+	<creature name="Scarab" type="monster" looktype="83"/>
+	<creature name="Frost Flower Asura" type="monster" lookaddon="3" looktype="150" lookfeet="86"/>
+	<creature name="Crab" type="monster" looktype="112"/>
+	<creature name="Mutated Rat" type="monster" looktype="305"/>
+	<creature name="Infernalist" type="monster" lookhead="78" looklegs="94" lookaddon="2" looktype="130" lookfeet="39" lookbody="76"/>
+	<creature name="Nightmare" type="monster" looktype="245"/>
+	<creature name="Wild Horse" type="monster" looktype="393"/>
+	<creature name="Minotaur Guard" type="monster" looktype="29"/>
+	<creature name="Penguin" type="monster" looktype="250"/>
+	<creature name="Spider" type="monster" looktype="30"/>
+	<creature name="Slug" type="monster" looktype="407"/>
+	<creature name="Frost Dragon" type="monster" looktype="248"/>
+	<creature name="King Zelos" type="monster" looktype="1224"/>
+	<creature name="Frost Troll" type="monster" looktype="53"/>
+	<creature name="Rorc" type="monster" looktype="550"/>
+	<creature name="Demon Outcast" type="monster" looktype="590"/>
+	<creature name="Slime" type="monster" looktype="19"/>
+	<creature name="Chicken" type="monster" looktype="111"/>
+	<creature name="Deepling Guard" type="monster" looktype="442"/>
+	<creature name="Lizard Chosen" type="monster" looktype="344"/>
+	<creature name="Skeleton Elite Warrior" type="monster" looktype="298"/>
+	<creature name="Monsters" type="monster" looktype="1143"/>
+	<creature name="Energy Elemental" type="monster" looktype="293"/>
+	<creature name="Lizard Noble" type="monster" looktype="115"/>
+	<creature name="Dwarf Henchman" type="monster" lookhead="115" looklegs="93" looktype="160" lookfeet="114" lookbody="77"/>
+	<creature name="Urmahlullu The Weakened" type="monster" looktype="1197"/>
+	<creature name="Butterfly" type="monster" looktype="213"/>
+	<creature name="Phantasm" type="monster" lookhead="20" looktype="241"/>
+	<creature name="Defiler" type="monster" looktype="238"/>
+	<creature name="Barbarian Skullhunter" type="monster" looklegs="96" looktype="254" lookfeet="114" lookbody="77"/>
+	<creature name="Ogre Shaman" type="monster" looktype="859"/>
+	<creature name="Acid Blob" type="monster" looktype="314"/>
+	<creature name="Burning Book" type="monster" lookhead="79" looklegs="78" looktype="1061" lookfeet="112" lookbody="113"/>
+	<creature name="Dark Sorcerer" type="monster" lookhead="95" looklegs="95" lookaddon="3" looktype="130" lookfeet="95" lookbody="95"/>
+	<creature name="Insect Swarm" type="monster" looktype="349"/>
+	<creature name="Deepling Tyrant" type="monster" looktype="442"/>
+	<creature name="Forest Fury" type="monster" looktype="569"/>
+	<creature name="Dire Penguin" type="monster" looktype="250"/>
+	<creature name="Shock Head" type="monster" looktype="579"/>
+	<creature name="Undead Gladiator" type="monster" looktype="306"/>
+	<creature name="Moohtant" type="monster" looktype="607"/>
+	<creature name="Swampling" type="monster" looktype="535"/>
+	<creature name="Waspoid" type="monster" looktype="462"/>
+	<creature name="Sibang" type="monster" looktype="118"/>
+	<creature name="Energuardian Of Tales" type="monster" lookhead="86" looklegs="82" lookaddon="3" looktype="1063" lookfeet="93" lookbody="85"/>
+	<creature name="Elf Overseer" type="monster" lookhead="21" looklegs="95" looktype="159" lookfeet="116" lookbody="76"/>
+	<creature name="Undead Jester" type="monster" looklegs="114" lookaddon="2" looktype="273"/>
+	<creature name="Blood Priest" type="monster" looktype="553"/>
+	<creature name="Silencer" type="monster" looktype="585"/>
+	<creature name="Gladiator" type="monster" lookhead="78" looklegs="79" looktype="131" lookfeet="114" lookbody="3"/>
+	<creature name="Dwarf Geomancer" type="monster" looktype="66"/>
+	<creature name="Deepworm" type="monster" looktype="1033"/>
+	<creature name="Ghoulish Hyaena" type="monster" looktype="94"/>
+	<creature name="Falcon Paladin" type="monster" lookhead="57" looklegs="38" lookaddon="2" looktype="1071" lookfeet="105" lookbody="96"/>
+	<creature name="Ghost Wolf" type="monster" looktype="730"/>
+	<creature name="Broken Shaper" type="monster" lookhead="94" lookaddon="1" looktype="932" lookfeet="82" lookbody="76"/>
+	<creature name="Hand of Cursed Fate" type="monster" looktype="230"/>
+	<creature name="Horse" type="monster" looktype="436"/>
+	<creature name="Lich" type="monster" looktype="99"/>
+	<creature name="Orc Cultist" type="monster" looktype="7"/>
+	<creature name="Crimson Frog" type="monster" lookhead="94" looklegs="77" looktype="226" lookfeet="112" lookbody="78"/>
+	<creature name="Acolyte of the Cult" type="monster" lookhead="95" looklegs="100" looktype="194" lookfeet="19" lookbody="100"/>
+	<creature name="Quara Predator" type="monster" looktype="20"/>
+	<creature name="Gloom Wolf" type="monster" looktype="716"/>
+	<creature name="Island Troll" type="monster" looktype="282"/>
+	<creature name="Stone Rhino" type="monster" looktype="936"/>
+	<creature name="Soulless Minion" type="monster" looktype="68"/>
+	<creature name="Lizard Legionnaire" type="monster" looktype="338"/>
+	<creature name="Feversleep" type="monster" looktype="593"/>
+	<creature name="Betrayed Wraith" type="monster" looktype="233"/>
+	<creature name="Animated Feather" type="monster" looktype="1058"/>
+	<creature name="Cyclops" type="monster" looktype="22"/>
+	<creature name="Tortoise" type="monster" looktype="197"/>
+	<creature name="Plaguesmith" type="monster" looktype="247"/>
+	<creature name="Fire Devil" type="monster" looktype="40"/>
+	<creature name="Sparkion" type="monster" looktype="877"/>
+	<creature name="Gravedigger" type="monster" looktype="558"/>
+	<creature name="Shadow Pupil" type="monster" looktype="551"/>
+	<creature name="Grimeleech" type="monster" lookaddon="1" looktype="855"/>
+	<creature name="Boar" type="monster" looktype="380"/>
+	<creature name="Troll Guard" type="monster" looktype="281"/>
+	<creature name="White Shade" type="monster" looktype="560"/>
+	<creature name="White Lion" type="monster" looktype="1290"/>
+	<creature name="Earth Elemental" type="monster" looktype="301"/>
+	<creature name="Ferumbras" type="monster" looktype="229"/>
+	<creature name="Tiger" type="monster" looktype="125"/>
+	<creature name="Cobra" type="monster" looktype="81"/>
+	<creature name="Minotaur Hunter" type="monster" looktype="612"/>
+	<creature name="Evil Sheep Lord" type="monster" looktype="13"/>
+	<creature name="Calamary" type="monster" looktype="451"/>
+	<creature name="Infernal Frog" type="monster" lookhead="69" looklegs="69" looktype="224" lookfeet="66" lookbody="66"/>
+	<creature name="Seagull" type="monster" looktype="223"/>
+	<creature name="Green Frog" type="monster" looktype="224"/>
+	<creature name="Bad Dream" type="monster" lookitem="22444"/>
+	<creature name="Terramite" type="monster" looktype="346"/>
+	<creature name="Rot Elemental" type="monster" looktype="615"/>
+	<creature name="Quara Hydromancer" type="monster" looktype="47"/>
+	<creature name="Pigeon" type="monster" looktype="531"/>
+	<creature name="Knowledge Elemental" type="monster" looktype="1065"/>
+	<creature name="Ghastly Dragon" type="monster" looktype="351"/>
+	<creature name="Elder Wyrm" type="monster" looktype="561"/>
+	<creature name="Stone Golem" type="monster" looktype="67"/>
+	<creature name="Massive Earth Elemental" type="monster" looktype="285"/>
+	<creature name="Ice Golem" type="monster" looktype="261"/>
+	<creature name="Shaburak Prince" type="monster" looktype="418"/>
+	<creature name="Panda" type="monster" looktype="123"/>
+	<creature name="Grynch Clan Goblin" type="monster" looktype="61"/>
+	<creature name="Troll Legionnaire" type="monster" looktype="53"/>
+	<creature name="War Wolf" type="monster" looktype="3"/>
+	<creature name="Drillworm" type="monster" looktype="527"/>
+	<creature name="Pig" type="monster" looktype="60"/>
+	<creature name="Diremaw" type="monster" looktype="1034"/>
+	<creature name="Spidris Elite" type="monster" looktype="457"/>
+	<creature name="Lost Husher" type="monster" looktype="537"/>
+	<creature name="Raxias" type="monster"/>
+	<creature name="Spit Nettle" type="monster" looktype="221"/>
+	<creature name="True Frost Flower Asura" type="monster" lookhead="9" looklegs="86" looktype="1068" lookfeet="9"/>
+	<creature name="Little Corym Charlatan" type="monster" looklegs="80" looktype="532" lookbody="79"/>
+	<creature name="Amazon" type="monster" lookhead="113" looklegs="95" looktype="137" lookfeet="115" lookbody="120"/>
+	<creature name="Dark Paladin" type="monster" lookhead="95" looklegs="95" lookaddon="1" looktype="129" lookfeet="95" lookbody="95"/>
+	<creature name="Shaper Matriarch" type="monster" looktype="933"/>
+	<creature name="Shaburak Lord" type="monster" looktype="409"/>
+	<creature name="Dromedary" type="monster" looktype="404"/>
+	<creature name="Fetter" type="monster" looktype="235"/>
+	<creature name="Mooh'Tah Warrior" type="monster" looktype="611"/>
+	<creature name="Ogre Brute" type="monster" looktype="857"/>
+	<creature name="Minotaur Mage" type="monster" looktype="23"/>
+	<creature name="Orc Shaman" type="monster" looktype="6"/>
+	<creature name="Swarmer" type="monster" looktype="460"/>
+	<creature name="Salamander" type="monster" looktype="529"/>
+	<creature name="Hunter" type="monster" lookhead="95" looklegs="120" looktype="129" lookfeet="115" lookbody="116"/>
+	<creature name="Crazed Beggar" type="monster" lookhead="21" looklegs="97" lookaddon="3" looktype="153" lookfeet="19" lookbody="40"/>
+	<creature name="Fire Elemental" type="monster" looktype="49"/>
+	<creature name="Dark Monk" type="monster" looktype="225"/>
+	<creature name="Quara Pincher" type="monster" looktype="77"/>
+	<creature name="Braindeath" type="monster" looktype="256"/>
+	<creature name="Training Monk" type="monster" looktype="225"/>
+	<creature name="Tomb Servant" type="monster" looktype="100"/>
+	<creature name="Orc Marauder" type="monster" looktype="342"/>
+	<creature name="Bear" type="monster" looktype="16"/>
+	<creature name="Dworc Fleshhunter" type="monster" looktype="215"/>
+	<creature name="Quara Constrictor" type="monster" looktype="46"/>
+	<creature name="Yielothax" type="monster" looktype="408"/>
+	<creature name="Goblin" type="monster" looktype="61"/>
+	<creature name="Elder Mummy" type="monster" lookhead="20" looklegs="40" looktype="65" lookfeet="50" lookbody="30"/>
+	<creature name="Orc Warrior" type="monster" looktype="7"/>
+	<creature name="Terror Bird" type="monster" looktype="218"/>
+	<creature name="Berserker Chicken" type="monster" looktype="111"/>
+	<creature name="Grim Reaper" type="monster" looktype="300"/>
+	<creature name="Adventurer" type="monster" lookhead="93" looklegs="72" looktype="129" lookfeet="80" lookbody="15"/>
+	<creature name="Modified Gnarlhound" type="monster" looktype="515"/>
+	<creature name="Blightwalker" type="monster" looktype="246"/>
+	<creature name="Ogre Rowdy" type="monster" looktype="1213"/>
+	<creature name="Orclops Doomhauler" type="monster" looktype="934"/>
+	<creature name="Cave Rat" type="monster" looktype="56"/>
+	<creature name="Destroyer" type="monster" looktype="236"/>
+	<creature name="Orc Warlord" type="monster" looktype="2"/>
+	<creature name="Herald of Gloom" type="monster" looktype="320"/>
+	<creature name="Wisdom Of Urmahlullu" type="monster" lookhead="57" looklegs="38" looktype="1200" lookfeet="86" lookbody="75"/>
+	<creature name="Chakoya Toolshaper" type="monster" looktype="259"/>
+	<creature name="Killer Rabbit" type="monster" looktype="74"/>
+	<creature name="Poacher" type="monster" lookhead="60" looklegs="118" lookaddon="1" looktype="129" lookfeet="116" lookbody="118"/>
+	<creature name="Minotaur" type="monster" looktype="25"/>
+	<creature name="Merlkin" type="monster" looktype="117"/>
+	<creature name="Renegade Knight" type="monster" lookhead="97" looklegs="76" lookaddon="2" looktype="268" lookfeet="98" lookbody="113"/>
+	<creature name="Spitter" type="monster" looktype="461"/>
+	<creature name="Goblin Leader" type="monster" looktype="61"/>
+	<creature name="Lizard Sentinel" type="monster" looktype="114"/>
+	<creature name="Polar Bear" type="monster" looktype="42"/>
+	<creature name="Arctic Faun" type="monster" lookhead="85" looktype="980" lookfeet="85"/>
+	<creature name="Novice of the Cult" type="monster" lookhead="114" looklegs="76" looktype="133" lookfeet="114" lookbody="114"/>
+	<creature name="Dawnfire Asura" type="monster" lookhead="114" looklegs="78" lookaddon="1" looktype="150" lookfeet="79" lookbody="94"/>
+	<creature name="Haunted Treeling" type="monster" looktype="310"/>
+	<creature name="Sun-Marked Goanna" type="monster" looktype="1195"/>
+	<creature name="Tarnished Spirit" type="monster" looktype="566"/>
+	<creature name="Brain Squid" type="monster" lookhead="17" looklegs="77" looktype="1059" lookfeet="57" lookbody="41"/>
+	<creature name="Barbarian Bloodwalker" type="monster" lookhead="114" looklegs="132" looktype="255" lookfeet="94" lookbody="113"/>
+	<creature name="Lamassu" type="monster" lookhead="50" looktype="1190" lookfeet="76" lookbody="2"/>
+	<creature name="Dragonling" type="monster" looktype="505"/>
+	<creature name="Smuggler" type="monster" lookhead="95" looklegs="113" looktype="134" lookfeet="115"/>
+	<creature name="Coral Frog" type="monster" lookhead="114" looklegs="78" looktype="226" lookfeet="114" lookbody="79"/>
+	<creature name="Orc Leader" type="monster" looktype="59"/>
+	<creature name="Mushroom Sniffer" type="monster" looktype="60"/>
+	<creature name="Lizard High Guard" type="monster" looktype="337"/>
+	<creature name="Vicious Squire" type="monster" lookhead="97" looklegs="73" lookaddon="1" looktype="131" lookfeet="116" lookbody="24"/>
+	<creature name="Dwarf Guard" type="monster" looktype="70"/>
+	<creature name="Blue Djinn" type="monster" looktype="80"/>
+	<creature name="True Dawnfire Asura" type="monster" lookhead="114" looklegs="79" lookaddon="1" looktype="1068" lookfeet="121" lookbody="94"/>
+	<creature name="Vicious Manbat" type="monster" looktype="554"/>
+	<creature name="Custodian" type="monster" lookhead="1" looklegs="19" lookaddon="1" looktype="1217" lookfeet="19" lookbody="1"/>
+	<creature name="Crystal Spider" type="monster" looktype="263"/>
+	<creature name="Eternal Guardian" type="monster" looktype="345"/>
+	<creature name="Damaged Crystal Golem" type="monster" looktype="508"/>
+	<creature name="Elf Arcanist" type="monster" looktype="63"/>
+	<creature name="Test" type="monster" lookhead="87" looklegs="79" looktype="1061" lookbody="85"/>
+	<creature name="Metal Gargoyle" type="monster" looktype="601"/>
+	<creature name="Skeleton Warrior" type="monster" looktype="298"/>
+	<creature name="Squirrel" type="monster" looktype="274"/>
+	<creature name="Crustacea Gigantica" type="monster" looktype="383"/>
+	<creature name="Leaf Golem" type="monster" looktype="567"/>
+	<creature name="Silver Rabbit" type="monster" looktype="262"/>
+	<creature name="Orc Cult Inquisitor" type="monster" looktype="8"/>
+	<creature name="Gryphon" type="monster" looktype="1220"/>
+	<creature name="Stone Devourer" type="monster" looktype="486"/>
+	<creature name="Cobra Assassin" type="monster" lookhead="2" looklegs="77" lookaddon="1" looktype="1217" lookfeet="19" lookbody="2"/>
+	<creature name="Dark Magician" type="monster" lookhead="58" looklegs="51" lookaddon="2" looktype="133" lookfeet="131" lookbody="95"/>
+	<creature name="Dworc Voodoomaster" type="monster" looktype="214"/>
+	<creature name="Quara Constrictor Scout" type="monster" looktype="46"/>
+	<creature name="Cart Packed With Gold" type="monster" looktype="1175"/>
+	<creature name="Damaged Worker Golem" type="monster" looktype="304"/>
+	<creature name="Midnight Spawn" type="monster" looktype="315"/>
+	<creature name="Furious Troll" type="monster" looktype="15"/>
+	<creature name="Quara Mantassin Scout" type="monster" looktype="72"/>
+	<creature name="Hydra" type="monster" looktype="121"/>
+	<creature name="Bog Frog" type="monster" looktype="412"/>
+	<creature name="Lost Basher" type="monster" looktype="538"/>
+	<creature name="Necromancer" type="monster" looktype="9"/>
+	<creature name="Carrion Worm" type="monster" looktype="192"/>
+	<creature name="Energetic Book" type="monster" lookhead="15" looklegs="85" looktype="1061" lookbody="91"/>
+	<creature name="Warlock" type="monster" looklegs="128" lookaddon="1" looktype="130" lookfeet="95" lookbody="52"/>
+	<creature name="Vampiric Blood" type="monster" looktype="1041"/>
+	<creature name="Crystal Wolf" type="monster" looktype="391"/>
+	<creature name="Cliff Strider" type="monster" looktype="497"/>
+	<creature name="Spiky Carnivor" type="monster" lookhead="79" looklegs="23" lookaddon="1" looktype="1139" lookfeet="86" lookbody="121"/>
+	<creature name="Toad" type="monster" looktype="222"/>
+	<creature name="Weeper" type="monster" looktype="489"/>
+	<creature name="Chakoya Windcaller" type="monster" looktype="260"/>
+	<creature name="Evil Sheep" type="monster" looktype="14"/>
+	<creature name="Souleater" type="monster" looktype="355"/>
+	<creature name="Wilting Leaf Golem" type="monster" looktype="573"/>
+	<creature name="Parrot" type="monster" looktype="217"/>
+	<creature name="Starving Wolf" type="monster" looktype="27"/>
+	<creature name="Nomad" type="monster" lookhead="97" looklegs="40" lookaddon="3" looktype="146" lookfeet="3" lookbody="39"/>
+	<creature name="Nightmare Scion" type="monster" looktype="321"/>
+	<creature name="Thornback Tortoise" type="monster" looktype="198"/>
+	<creature name="Adept of the Cult" type="monster" lookhead="95" looklegs="94" looktype="194" lookfeet="19" lookbody="94"/>
+	<creature name="Walker" type="monster" looktype="605"/>
+	<creature name="Gazer" type="monster" looktype="109"/>
+	<creature name="Ladybug" type="monster" looktype="448"/>
+	<creature name="Behemoth" type="monster" looktype="55"/>
+	<creature name="Crypt Shambler" type="monster" looktype="100"/>
+	<creature name="Stampor" type="monster" looktype="381"/>
+	<creature name="Cursed Book" type="monster" lookhead="79" looklegs="93" looktype="1061" lookbody="81"/>
+	<creature name="Squire Of Nictros" type="monster" looktype="306"/>
+	<creature name="Undead Cavebear" type="monster" looktype="384"/>
+	<creature name="Elephant" type="monster" looktype="211"/>
+	<creature name="Channeling Earl Osam" type="monster" lookhead="95" looklegs="60" looktype="1223" lookfeet="76" lookbody="38"/>
+	<creature name="Elf" type="monster" looktype="62"/>
+	<creature name="Quara Predator Scout" type="monster" looktype="20"/>
+	<creature name="White Deer" type="monster" looktype="400"/>
+	<creature name="Sandcrawler" type="monster" looktype="350"/>
+	<creature name="Crystalcrusher" type="monster" looktype="511"/>
+	<creature name="Bane Bringer" type="monster" looktype="310"/>
+	<creature name="Flamingo" type="monster" looktype="212"/>
+	<creature name="Centipede" type="monster" looktype="124"/>
+	<creature name="Dragon Hatchling" type="monster" looktype="271"/>
+	<creature name="Urmahlullu The Tamed" type="monster" looktype="1197"/>
+	<creature name="Deer" type="monster" looktype="31"/>
+	<creature name="Enlightened of the Cult" type="monster" looktype="193"/>
+	<creature name="Husky" type="monster" looktype="258"/>
+	<creature name="Magma Crawler" type="monster" looktype="492"/>
+	<creature name="Sandstone Scorpion" type="monster" looktype="398"/>
+	<creature name="Rabbit" type="monster" looktype="74"/>
+	<creature name="Icecold Book" type="monster" lookhead="87" looklegs="79" looktype="1061" lookbody="85"/>
+	<creature name="Barbarian Brutetamer" type="monster" lookhead="78" looklegs="95" looktype="264" lookfeet="121" lookbody="97"/>
+	<creature name="Jellyfish" type="monster" looktype="452"/>
+	<creature name="Dragon Lord Hatchling" type="monster" looktype="272"/>
+	<creature name="Ripper Spectre" type="monster" lookhead="81" looklegs="61" looktype="1122" lookfeet="94" lookbody="78"/>
+	<creature name="Marid" type="monster" looktype="104"/>
+	<creature name="Ink Blob" type="monster" looktype="1064"/>
+	<creature name="Pirate Marauder" type="monster" looktype="93"/>
+	<creature name="Ravenous Lava Lurker" type="monster" looktype="1041"/>
+	<creature name="Enraged Crystal Golem" type="monster" looktype="508"/>
+	<creature name="Death Blob" type="monster" looktype="315"/>
+	<creature name="Lava Golem" type="monster" looktype="491"/>
+	<creature name="Midnight Asura" type="monster" looklegs="90" lookaddon="1" looktype="150" lookfeet="90" lookbody="114"/>
+	<creature name="Squid Warden" type="monster" lookhead="9" looklegs="3" looktype="1059" lookfeet="57" lookbody="21"/>
+	<creature name="Tarantula" type="monster" looktype="219"/>
+	<creature name="Troll Champion" type="monster" looktype="281"/>
+	<creature name="Cyclops Smith" type="monster" looktype="277"/>
+	<creature name="Orchid Frog" type="monster" lookhead="71" looklegs="71" looktype="226" lookfeet="70" lookbody="14"/>
+	<creature name="Black Sphinx Acolyte" type="monster" lookhead="95" looklegs="94" looktype="1200" lookfeet="95" lookbody="95"/>
+	<creature name="Ghoul" type="monster" looktype="18"/>
+	<creature name="Deepling Elite" type="monster" looktype="441"/>
+	<creature name="Terrorsleep" type="monster" looktype="593"/>
+	<creature name="Draken Spellweaver" type="monster" looktype="340"/>
+	<creature name="Deepling Spellsinger" type="monster" looktype="443"/>
+	<creature name="Zombie" type="monster" looktype="311"/>
+	<creature name="Yeti" type="monster" looktype="110"/>
+	<creature name="Carniphila" type="monster" looktype="120"/>
+	<creature name="Manta Ray" type="monster" looktype="449"/>
+	<creature name="Sight of Surrender" type="monster" looktype="583"/>
+	<creature name="Witch" type="monster" looktype="54"/>
+	<creature name="Worm Priestess" type="monster" looktype="613"/>
+	<creature name="Doom Deer" type="monster" looktype="31"/>
+	<creature name="Larva" type="monster" looktype="82"/>
+	<creature name="Pirate Corsair" type="monster" looktype="98"/>
+	<creature name="Pirate Skeleton" type="monster" looktype="195"/>
+	<creature name="Cult Enforcer" type="monster" lookhead="114" looklegs="76" lookaddon="1" looktype="134" lookfeet="76" lookbody="19"/>
+	<creature name="Demon Skeleton" type="monster" looktype="37"/>
+	<creature name="Brimstone Bug" type="monster" looktype="352"/>
+	<creature name="Deepling Brawler" type="monster" looktype="470"/>
+	<creature name="Hellhound" type="monster" looktype="240"/>
+	<creature name="Green Djinn" type="monster" looktype="51"/>
+	<creature name="Elder Forest Fury" type="monster" looktype="569"/>
+	<creature name="Emerald Damselfly" type="monster" looktype="528"/>
+	<creature name="Insectoid Scout" type="monster" looktype="403"/>
+	<creature name="Filth Toad" type="monster" looktype="222"/>
+	<creature name="Vampire Bride" type="monster" looktype="312"/>
+	<creature name="Rustheap Golem" type="monster" looktype="603"/>
+	<creature name="Lizard Zaogun" type="monster" looktype="343"/>
+	<creature name="Lizard Snakecharmer" type="monster" looktype="115"/>
+	<creature name="Clay Guardian" type="monster" looktype="333"/>
+	<creature name="Manticore" type="monster" lookhead="116" looklegs="113" lookaddon="1" looktype="1189" lookfeet="20" lookbody="97"/>
+	<creature name="Stonerefiner" type="monster" looktype="1032"/>
+	<creature name="Diabolic Imp" type="monster" looktype="237"/>
+	<creature name="Killer Caiman" type="monster" looktype="358"/>
+	<creature name="Bog Raider" type="monster" looktype="299"/>
+	<creature name="The Count" type="monster" looktype="287"/>
+	<creature name="Snake" type="monster" looktype="28"/>
+	<creature name="Ugly Monster" type="monster" looktype="1218"/>
+	<creature name="Training" type="monster" looktype="225"/>
+	<creature name="Minotaur Amazon" type="monster" looktype="608"/>
+	<creature name="Cyclops Drone" type="monster" looktype="280"/>
+	<creature name="Draken Abomination" type="monster" looktype="357"/>
+	<creature name="Frost Dragon Hatchling" type="monster" looktype="283"/>
+	<creature name="Minotaur Archer" type="monster" looktype="24"/>
+	<creature name="Priestess" type="monster" looktype="58"/>
+	<creature name="Elder Bonelord" type="monster" looktype="108"/>
+	<creature name="Orc Berserker" type="monster" looktype="8"/>
+	<creature name="Ogre Ruffian" type="monster" looktype="1212"/>
+	<creature name="Sea Serpent" type="monster" looktype="275"/>
+	<creature name="Glooth Brigand" type="monster" lookhead="114" looklegs="110" looktype="137" lookfeet="114" lookbody="114"/>
+	<creature name="Gozzler" type="monster" looktype="313"/>
+	<creature name="Anomaly" type="monster" lookhead="38" looklegs="76" lookaddon="1" looktype="876" lookfeet="79" lookbody="79"/>
+	<creature name="Cobra Scout" type="monster" lookhead="1" looklegs="102" lookaddon="2" looktype="1217" lookfeet="78" lookbody="1"/>
+	<creature name="Young Sea Serpent" type="monster" looktype="317"/>
+	<creature name="Young Goanna" type="monster" looktype="1196"/>
+	<creature name="Xogixath" type="monster" lookhead="3" looklegs="75" lookaddon="2" looktype="842" lookfeet="19" lookbody="16"/>
+	<creature name="Honour Guard" type="monster" looktype="298"/>
+	<creature name="Execowtioner" type="monster" looktype="609"/>
+	<creature name="Efreet" type="monster" looktype="103"/>
+	<creature name="Ancient Scarab" type="monster" looktype="79"/>
+	<creature name="Dworc Venomsniper" type="monster" looktype="216"/>
+	<creature name="Shadow Hound" type="monster" looktype="322"/>
+	<creature name="Wyrm" type="monster" looktype="291"/>
+	<creature name="Worker Golem" type="monster" looktype="304"/>
+	<creature name="Wolf" type="monster" looktype="27"/>
+	<creature name="Wisp" type="monster" looktype="294"/>
+	<creature name="Gazer Spectre" type="monster" lookhead="94" looklegs="77" looktype="1122" lookfeet="78" lookbody="21"/>
+	<creature name="War Golem" type="monster" looktype="326"/>
+	<creature name="Deathling Scout" type="monster" looktype="1073"/>
+	<creature name="Kongra" type="monster" looktype="116"/>
+	<creature name="Wild Warrior" type="monster" lookhead="38" looklegs="38" looktype="131" lookfeet="38" lookbody="38"/>
+	<creature name="Wiggler" type="monster" looktype="510"/>
+	<creature name="Werewolf" type="monster" looktype="308"/>
+	<creature name="Werelioness" type="monster" lookhead="58" looklegs="94" looktype="1301" lookfeet="94" lookbody="2"/>
+	<creature name="Werelion" type="monster" lookhead="58" looklegs="94" lookaddon="3" looktype="1301" lookbody="2"/>
+	<creature name="Werehyaena Shaman" type="monster" looklegs="94" looktype="1300" lookfeet="95"/>
+	<creature name="Dryad" type="monster" lookhead="99" looklegs="5" lookaddon="3" looktype="137" lookfeet="102" lookbody="41"/>
+	<creature name="Frost Giantess" type="monster" looktype="265"/>
+	<creature name="Feverish Citizen" type="monster" lookaddon="2" looktype="425"/>
+	<creature name="Water Elemental" type="monster" looktype="286"/>
+	<creature name="Hyaena" type="monster" looktype="94"/>
+	<creature name="Wasp" type="monster" looktype="44"/>
+	<creature name="Wailing Widow" type="monster" looktype="347"/>
+	<creature name="Vulcongra" type="monster" looktype="509"/>
+	<creature name="Vile Grandmaster" type="monster" lookhead="59" looklegs="95" lookaddon="1" looktype="268" lookfeet="94" lookbody="19"/>
+	<creature name="Vexclaw" type="monster" looktype="854"/>
+	<creature name="Vampire Viscount" type="monster" looktype="555"/>
+	<creature name="Vampire Pig" type="monster" looktype="60"/>
+	<creature name="Massive Fire Elemental" type="monster" looktype="242"/>
+	<creature name="Draken Warmaster" type="monster" looktype="334"/>
+	<creature name="Neutral Deepling Warrior" type="monster" looktype="441"/>
+	<creature name="Death Priest" type="monster" lookhead="95" looklegs="119" looktype="99" lookfeet="115" lookbody="116"/>
+	<creature name="Urmahlullu The Immaculate" type="monster" looktype="1197"/>
+	<creature name="Northern Pike" type="monster" looktype="454"/>
+	<creature name="Thornfire Wolf" type="monster" looktype="414"/>
+	<creature name="Undead Prospector" type="monster" looktype="18"/>
+	<creature name="Undead Mine Worker" type="monster" looktype="33"/>
+	<creature name="Undead Elite Gladiator" type="monster" looktype="306"/>
+	<creature name="Dwarf Soldier" type="monster" looktype="71"/>
+	<creature name="Undead Dragon" type="monster" looktype="231"/>
+	<creature name="Glooth Golem" type="monster" looktype="600"/>
+	<creature name="Falcon Knight" type="monster" lookhead="57" looklegs="38" lookaddon="1" looktype="1071" lookfeet="105" lookbody="96"/>
+	<creature name="Guzzlemaw" type="monster" looktype="584"/>
+	<creature name="Bonebeast" type="monster" looktype="101"/>
+	<creature name="Floating Savant" type="monster" lookhead="113" looklegs="78" looktype="1063" lookfeet="78" lookbody="94"/>
+	<creature name="Biting Book" type="monster" looktype="1066"/>
+	<creature name="Gang Member" type="monster" lookhead="114" looklegs="23" looktype="151" lookfeet="40" lookbody="19"/>
+	<creature name="Winter Wolf" type="monster" looktype="52"/>
+	<creature name="Fury" type="monster" lookhead="94" looklegs="78" lookaddon="1" looktype="149" lookfeet="79" lookbody="77"/>
+	<creature name="Monk" type="monster" looktype="57"/>
+	<creature name="Deepling Master Librarian" type="monster" looktype="443"/>
+	<creature name="Hive Overseer" type="monster" looktype="458"/>
+	<creature name="Mutated Tiger" type="monster" looktype="318"/>
+	<creature name="Blood Hand" type="monster" looktype="552"/>
+	<creature name="Quara Pincher Scout" type="monster" looktype="77"/>
+	<creature name="Crocodile" type="monster" looktype="119"/>
+	<creature name="Grave Guard" type="monster" looktype="234"/>
+	<creature name="Bonelord" type="monster" looktype="17"/>
+	<creature name="Deepling Worker" type="monster" looktype="470"/>
+	<creature name="Azure Frog" type="monster" lookhead="87" looklegs="85" looktype="226" lookfeet="87" lookbody="85"/>
+	<creature name="Lost Thrower" type="monster" looktype="539"/>
+	<creature name="Goblin Assassin" type="monster" looktype="296"/>
+	<creature name="Quara Mantassin" type="monster" looktype="72"/>
+	<creature name="Black Sheep" type="monster" looktype="13"/>
+	<creature name="Guard Captain Quaid" type="monster" lookhead="38" looklegs="21" lookaddon="2" looktype="1217" lookfeet="2" lookbody="57"/>
+	<creature name="Werehyaena" type="monster" lookhead="57" looklegs="1" looktype="1300" lookfeet="1" lookbody="77"/>
+	<creature name="Earworm" type="monster" looktype="26"/>
+	<creature name="Deathling Spellsinger" type="monster" looktype="1088"/>
+	<creature name="Spidris" type="monster" looktype="457"/>
+	<creature name="Rat" type="monster" looktype="21"/>
+	<creature name="Pirate Cutthroat" type="monster" looktype="96"/>
+	<creature name="Iron Servant" type="monster" looktype="395"/>
+	<creature name="Pirate Buccaneer" type="monster" looktype="97"/>
+	<creature name="Crypt Warden" type="monster" lookhead="41" looktype="1190" lookbody="38"/>
+	<creature name="Sheep" type="monster" looktype="14"/>
+	<creature name="Barbarian Headsplitter" type="monster" lookhead="115" looklegs="119" looktype="253" lookfeet="113" lookbody="86"/>
+	<creature name="Mammoth" type="monster" looktype="199"/>
+	<creature name="Draptor" type="monster" looktype="382"/>
+	<creature name="Ghost" type="monster" looktype="48"/>
+	<creature name="Cat" type="monster" looktype="276"/>
+	<creature name="Condensed Sin" type="monster" looktype="315"/>
+	<creature name="Bandit" type="monster" lookhead="58" looklegs="24" looktype="129" lookfeet="95" lookbody="40"/>
+	<creature name="Burning Gladiator" type="monster" lookhead="95" looklegs="3" lookaddon="1" looktype="541" lookfeet="3" lookbody="113"/>
+	<creature name="Demon" type="monster" looktype="35"/>
+	<creature name="Nightfiend" type="monster" looktype="568"/>
+	<creature name="Gaffir" type="monster" lookhead="34" looklegs="113" looktype="1217" lookfeet="19" lookbody="129"/>
+	<creature name="Dark Druid" type="monster" lookhead="95" looklegs="95" lookaddon="1" looktype="144" lookfeet="95" lookbody="95"/>
+	<creature name="Glooth Bandit" type="monster" lookhead="115" looklegs="114" looktype="129" lookfeet="114" lookbody="80"/>
+	<creature name="Mercury Blob" type="monster" looktype="316"/>
+	<creature name="Menacing Carnivor" type="monster" lookhead="86" looklegs="83" lookaddon="3" looktype="1138" lookfeet="91" lookbody="51"/>
+	<creature name="Juggernaut" type="monster" looktype="244"/>
+	<creature name="Priestess Of The Wild Sun" type="monster" lookhead="95" looklegs="94" looktype="1199" lookfeet="3" lookbody="78"/>
+	<creature name="Ogre Sage" type="monster" looktype="1214"/>
+	<creature name="Hellspawn" type="monster" looktype="322"/>
+	<creature name="Elf Scout" type="monster" looktype="64"/>
+	<creature name="Demon Parrot" type="monster" looktype="217"/>
+	<creature name="Corym Charlatan" type="monster" looklegs="59" looktype="532" lookbody="78"/>
+	<creature name="Hideous Fungus" type="monster" looktype="499"/>
+	<creature name="Poison Spider" type="monster" looktype="36"/>
+	<creature name="Cult Believer" type="monster" lookhead="98" looklegs="39" lookaddon="1" looktype="132" lookfeet="57" lookbody="77"/>
+	<creature name="Firestarter" type="monster" lookhead="94" looklegs="78" looktype="159" lookfeet="79" lookbody="77"/>
+	<creature name="Scorpion" type="monster" looktype="43"/>
+	<creature name="Crypt Defiler" type="monster" lookhead="62" looklegs="42" lookaddon="3" looktype="146" lookfeet="75" lookbody="132"/>
+	<creature name="Banshee" type="monster" looktype="78"/>
+	<creature name="Risen Soldier" type="monster" looktype="306"/>
+	<creature name="Lancer Beetle" type="monster" looktype="348"/>
+	<creature name="Dragon" type="monster" looktype="34"/>
+	<creature name="Orewalker" type="monster" looktype="490"/>
+	<creature name="Goblin Scavenger" type="monster" looktype="297"/>
+	<creature name="Valkyrie" type="monster" lookhead="113" looklegs="76" looktype="139" lookfeet="96" lookbody="38"/>
+	<creature name="Crawler" type="monster" looktype="456"/>
+	<creature name="Dark Torturer" type="monster" looktype="234"/>
+	<creature name="Dwarf" type="monster" looktype="69"/>
+	<creature name="Infected Weeper" type="monster" looktype="489"/>
+	<creature name="Duke Krule" type="monster" lookhead="19" lookaddon="3" looktype="1221"/>
+	<creature name="Hellfire Fighter" type="monster" looktype="243"/>
+	<creature name="Mummy" type="monster" looktype="65"/>
+	<creature name="Bat" type="monster" looktype="122"/>
+	<creature name="Water Buffalo" type="monster" looktype="523"/>
+	<creature name="Insectoid Worker" type="monster" looktype="403"/>
+	<creature name="Feral Sphinx" type="monster" lookhead="76" looklegs="57" lookaddon="2" looktype="1188" lookbody="75"/>
+	<creature name="Assassin" type="monster" lookhead="95" looklegs="95" lookaddon="3" looktype="152" lookfeet="95" lookbody="95"/>
+	<creature name="Sir Nictros" type="monster" lookhead="19" lookaddon="3" looktype="1222"/>
+	<creature name="Midnight Panther" type="monster" looktype="385"/>
+	<creature name="Guardian Of Tales" type="monster" lookhead="92" lookaddon="3" looktype="1063" lookfeet="79" lookbody="52"/>
+	<creature name="Glooth Anemone" type="monster" looktype="604"/>
+	<creature name="Corym Skirmisher" type="monster" looklegs="83" looktype="533" lookbody="76"/>
+	<creature name="Draken Elite" type="monster" looktype="362"/>
+	<creature name="Ice Witch" type="monster" looklegs="86" looktype="149" lookfeet="86" lookbody="9"/>
+	<creature name="Cobra Vizier" type="monster" lookhead="19" looklegs="67" looktype="1217" lookfeet="78" lookbody="19"/>
+	<creature name="Bug" type="monster" looktype="45"/>
+	<creature name="Hot Dog" type="monster" looktype="32"/>
+	<creature name="Gargoyle" type="monster" looktype="95"/>
+	<creature name="Kollos" type="monster" looktype="458"/>
+	<creature name="Giant Spider" type="monster" looktype="38"/>
+	<creature name="Wildness Of Urmahlullu" type="monster" looktype="570"/>
+	<creature name="Shark" type="monster" looktype="453"/>
+	<creature name="Askarak Demon" type="monster" looktype="420"/>
+	<creature name="Lizard Templar" type="monster" looktype="113"/>
+	<creature name="Massive Energy Elemental" type="monster" looktype="290"/>
+	<creature name="Marsh Stalker" type="monster" looktype="530"/>
+	<creature name="Frost Giant" type="monster" looktype="257"/>
+	<creature name="Diamond Servant" type="monster" looktype="397"/>
+	<creature name="Lost Soul" type="monster" looktype="232"/>
+	<creature name="Lost Berserker" type="monster" looktype="496"/>
+	<creature name="Lumbering Carnivor" type="monster" looklegs="67" looktype="1133" lookfeet="85" lookbody="59"/>
+	<creature name="Choking Fear" type="monster" looktype="586"/>
+	<creature name="Wyvern" type="monster" looktype="239"/>
+	<creature name="Scarlett Etzel" type="monster" looktype="1201"/>
+	<creature name="Arachnophobica" type="monster" looktype="1135"/>
+	<creature name="Vampire" type="monster" looktype="68"/>
+	<creature name="Medusa" type="monster" looktype="330"/>
+	<creature name="Mad Scientist" type="monster" lookhead="39" looklegs="19" lookaddon="1" looktype="133" lookfeet="20"/>
+	<creature name="Lizard Magistratus" type="monster" looktype="115"/>
+	<creature name="Askarak Lord" type="monster" looktype="410"/>
+	<creature name="Enslaved Dwarf" type="monster" looktype="494"/>
+	<creature name="Ogre Savage" type="monster" looktype="858"/>
+	<creature name="Mozradek" type="monster" looktype="240"/>
+	<creature name="Ironblight" type="monster" looktype="498"/>
+	<creature name="Mutated Bat" type="monster" looktype="307"/>
+	<creature name="Hero" type="monster" looktype="73"/>
+	<creature name="Orc Cult Priest" type="monster" looktype="6"/>
+	<creature name="Humongous Fungus" type="monster" looktype="488"/>
+	<creature name="Flying Book" type="monster" looktype="1060"/>
+	<creature name="Orc Rider" type="monster" looktype="4"/>
+	<creature name="Spectre" type="monster" lookhead="20" looktype="235"/>
+	<creature name="Gnarlhound" type="monster" looktype="341"/>
+	<creature name="Chakoya Tribewarden" type="monster" looktype="259"/>
+	<creature name="Hellflayer" type="monster" looktype="856"/>
+	<creature name="Lion" type="monster" looktype="41"/>
+	<creature name="Mutated Human" type="monster" looktype="323"/>
+	<creature name="Sir Baeloc" type="monster" lookhead="19" lookaddon="1" looktype="1222"/>
+	<creature name="Glooth Blob" type="monster" looktype="614"/>
+	<creature name="Pirate Ghost" type="monster" looktype="196"/>
+	<creature name="Adult Goanna" type="monster" looktype="1195"/>
+	<creature name="Deepling Warrior" type="monster" looktype="441"/>
+	<creature name="Frazzlemaw" type="monster" looktype="594"/>
+	<creature name="Retching Horror" type="monster" looktype="588"/>
+	<creature name="Roaring Lion" type="monster" looktype="570"/>
+	<creature name="Rotworm Queen" type="monster" looktype="295"/>
+	<creature name="Sacred Spider" type="monster" looktype="219"/>
+	<creature name="Orc Spearman" type="monster" looktype="50"/>
+	<creature name="Cult Scholar" type="monster" looklegs="21" lookaddon="1" looktype="145" lookfeet="21" lookbody="77"/>
+	<creature name="Shaburak Demon" type="monster" looktype="417"/>
+	<creature name="Fish" type="monster" looktype="455"/>
+	<creature name="Rotworm" type="monster" looktype="26"/>
+	<creature name="Blood Beast" type="monster" looktype="602"/>
+	<creature name="True Midnight Asura" type="monster" looklegs="53" lookaddon="1" looktype="1068" lookbody="76"/>
+	<creature name="Skeleton" type="monster" looktype="33"/>
+	<creature name="Skunk" type="monster" looktype="106"/>
+	<creature name="Son of Verminor" type="monster" looktype="19"/>
+	<creature name="Lord Azaram" type="monster" looklegs="94" lookaddon="3" looktype="1223" lookfeet="82" lookbody="38"/>
+	<creature name="Lizard Dragon Priest" type="monster" looktype="339"/>
+	<creature name="Sphinx" type="monster" lookaddon="1" looktype="1188" lookfeet="3" lookbody="39"/>
+	<creature name="Dark Apprentice" type="monster" lookhead="78" looklegs="95" lookaddon="1" looktype="133" lookfeet="115" lookbody="57"/>
+	<creature name="Squidgy Slime" type="monster" looktype="19"/>
+	<creature name="Blood Crab" type="monster" looktype="200"/>
+	<creature name="Terrified Elephant" type="monster" looktype="211"/>
+</creatures>
