@@ -32,7 +32,7 @@ RMEProcessServer::~RMEProcessServer() {
 	////
 }
 
-wxConnectionBase* RMEProcessServer::OnAcceptConnection(const wxString &topic) {
+wxConnectionBase* RMEProcessServer::OnAcceptConnection(const wxString& topic) {
 	if (topic.Lower() == "rme_talk") {
 		g_gui.root->Iconize(false); // Show application if minimized
 		g_gui.root->Raise(); // Request the window manager to raise this application to the top of Z-order
@@ -67,7 +67,7 @@ RMEProcessConnection::~RMEProcessConnection() {
 	////
 }
 
-bool RMEProcessConnection::OnExec(const wxString &topic, const wxString &fileName) {
+bool RMEProcessConnection::OnExec(const wxString& topic, const wxString& fileName) {
 	if (topic.Lower() == "rme_talk" && fileName != wxEmptyString) {
 		g_gui.LoadMap(FileName(fileName));
 		return true;

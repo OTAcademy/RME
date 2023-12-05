@@ -73,13 +73,13 @@ public:
 	IOMapOTMM();
 	~IOMapOTMM();
 
-	virtual MapVersion getVersionInfo(const FileName &identifier);
+	virtual MapVersion getVersionInfo(const FileName& identifier);
 
-	virtual bool loadMap(Map &map, NodeFileReadHandle &handle, const FileName &identifier, bool showdialog);
-	virtual bool loadMap(Map &map, const FileName &identifier, bool showdialog);
+	virtual bool loadMap(Map& map, NodeFileReadHandle& handle, const FileName& identifier, bool showdialog);
+	virtual bool loadMap(Map& map, const FileName& identifier, bool showdialog);
 
-	virtual bool saveMap(Map &map, NodeFileWriteHandle &handle, const FileName &identifier, bool showdialog);
-	virtual bool saveMap(Map &map, const FileName &identifier, bool showdialog);
+	virtual bool saveMap(Map& map, NodeFileWriteHandle& handle, const FileName& identifier, bool showdialog);
+	virtual bool saveMap(Map& map, const FileName& identifier, bool showdialog);
 };
 
 #endif

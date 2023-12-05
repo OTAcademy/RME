@@ -39,7 +39,7 @@ public:
 		return static_cast<GroundBrush*>(this);
 	}
 
-	virtual bool load(pugi::xml_node node, wxArrayString &warnings);
+	virtual bool load(pugi::xml_node node, wxArrayString& warnings);
 
 	virtual void draw(BaseMap* map, Tile* tile, void* parameter);
 	virtual void undraw(BaseMap* map, Tile* tile);
@@ -113,7 +113,7 @@ protected: // Members
 		int32_t z;
 		const AutoBorder* border;
 
-		bool operator<(const BorderCluster &other) const {
+		bool operator<(const BorderCluster& other) const {
 			return other.z > z;
 		}
 	};

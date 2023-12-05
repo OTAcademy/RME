@@ -20,7 +20,7 @@
 #include "live_action.h"
 #include "editor.h"
 
-NetworkedAction::NetworkedAction(Editor &editor, ActionIdentifier ident) :
+NetworkedAction::NetworkedAction(Editor& editor, ActionIdentifier ident) :
 	Action(editor, ident),
 	owner(0) {
 	;
@@ -30,7 +30,7 @@ NetworkedAction::~NetworkedAction() {
 	;
 }
 
-NetworkedBatchAction::NetworkedBatchAction(Editor &editor, NetworkedActionQueue &queue, ActionIdentifier ident) :
+NetworkedBatchAction::NetworkedBatchAction(Editor& editor, NetworkedActionQueue& queue, ActionIdentifier ident) :
 	BatchAction(editor, ident),
 	queue(queue) {
 	;
@@ -98,7 +98,7 @@ void NetworkedBatchAction::redo() {
 //===================
 // Action queue
 
-NetworkedActionQueue::NetworkedActionQueue(Editor &editor) :
+NetworkedActionQueue::NetworkedActionQueue(Editor& editor) :
 	ActionQueue(editor) {
 }
 
@@ -113,6 +113,6 @@ BatchAction* NetworkedActionQueue::createBatch(ActionIdentifier ident) {
 	return newd NetworkedBatchAction(editor, *this, ident);
 }
 
-void NetworkedActionQueue::broadcast(DirtyList &dirty_list) {
+void NetworkedActionQueue::broadcast(DirtyList& dirty_list) {
 	editor.BroadcastNodes(dirty_list);
 }

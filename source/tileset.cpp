@@ -23,7 +23,7 @@
 #include "items.h"
 #include "raw_brush.h"
 
-Tileset::Tileset(Brushes &brushes, const std::string &name) :
+Tileset::Tileset(Brushes& brushes, const std::string& name) :
 	name(name),
 	brushes(brushes) {
 	////
@@ -83,11 +83,11 @@ const TilesetCategory* Tileset::getCategory(TilesetCategoryType type) const {
 	return nullptr;
 }
 
-void Tileset::loadCategory(pugi::xml_node node, wxArrayString &warnings) {
+void Tileset::loadCategory(pugi::xml_node node, wxArrayString& warnings) {
 	TilesetCategory* category = nullptr;
 	TilesetCategory* subCategory = nullptr;
 
-	const std::string &nodeName = as_lower_str(node.name());
+	const std::string& nodeName = as_lower_str(node.name());
 	if (nodeName == "terrain") {
 		category = getCategory(TILESET_TERRAIN);
 	} else if (nodeName == "collections") {
@@ -116,7 +116,7 @@ void Tileset::loadCategory(pugi::xml_node node, wxArrayString &warnings) {
 	} else if (nodeName == "creatures") {
 		category = getCategory(TILESET_CREATURE);
 		for (pugi::xml_node brushNode = node.first_child(); brushNode; brushNode = brushNode.next_sibling()) {
-			const std::string &brushName = as_lower_str(brushNode.name());
+			const std::string& brushName = as_lower_str(brushNode.name());
 			if (brushName != "creature") {
 				continue;
 			}
@@ -127,7 +127,7 @@ void Tileset::loadCategory(pugi::xml_node node, wxArrayString &warnings) {
 				continue;
 			}
 
-			const std::string &creatureName = attribute.as_string();
+			const std::string& creatureName = attribute.as_string();
 			CreatureType* ctype = g_creatures[creatureName];
 			if (ctype) {
 				CreatureBrush* brush;
@@ -159,7 +159,7 @@ void Tileset::loadCategory(pugi::xml_node node, wxArrayString &warnings) {
 
 //
 
-TilesetCategory::TilesetCategory(Tileset &parent, TilesetCategoryType type) :
+TilesetCategory::TilesetCategory(Tileset& parent, TilesetCategoryType type) :
 	type(type), tileset(parent) {
 	ASSERT(type >= TILESET_UNKNOWN && type <= TILESET_HOUSE);
 }
@@ -172,18 +172,18 @@ bool TilesetCategory::isTrivial() const {
 	return (type == TILESET_ITEM) || (type == TILESET_RAW);
 }
 
-void TilesetCategory::loadBrush(pugi::xml_node node, wxArrayString &warnings) {
+void TilesetCategory::loadBrush(pugi::xml_node node, wxArrayString& warnings) {
 	pugi::xml_attribute attribute;
 
 	std::string brushName = node.attribute("after").as_string();
 	if ((attribute = node.attribute("afteritem"))) {
-		ItemType &it = g_items[attribute.as_ushort()];
+		ItemType& it = g_items[attribute.as_ushort()];
 		if (it.id != 0) {
 			brushName = it.raw_brush ? it.raw_brush->getName() : std::string();
 		}
 	}
 
-	const std::string &nodeName = as_lower_str(node.name());
+	const std::string& nodeName = as_lower_str(node.name());
 	if (nodeName == "brush") {
 		if (!(attribute = node.attribute("name"))) {
 			return;
@@ -223,7 +223,7 @@ void TilesetCategory::loadBrush(pugi::xml_node node, wxArrayString &warnings) {
 
 		std::vector<Brush*> tempBrushVector;
 		for (uint16_t id = fromId; id <= toId; ++id) {
-			ItemType &it = g_items[id];
+			ItemType& it = g_items[id];
 			if (it.id == 0) {
 				warnings.push_back(wxString::Format("Tileset: %s, Brush: %s, Previous %d, From: %d, To: %d", wxstr(tileset.name), wxstr(brushName), tileset.previousId, fromId, toId));
 				warnings.push_back("Unknown item id #" + std::to_string(id) + ".");

@@ -26,7 +26,7 @@ public:
 	MaterialsExtension(std::string name, std::string author, std::string description);
 	~MaterialsExtension();
 
-	void addVersion(const std::string &versionString);
+	void addVersion(const std::string& versionString);
 	bool isForVersion(uint16_t versionId);
 	std::string getVersionString();
 
@@ -39,8 +39,8 @@ public:
 	ClientVersionList version_list;
 
 private:
-	MaterialsExtension(const MaterialsExtension &);
-	MaterialsExtension &operator=(const MaterialsExtension &);
+	MaterialsExtension(const MaterialsExtension&);
+	MaterialsExtension& operator=(const MaterialsExtension&);
 };
 
 typedef std::vector<MaterialsExtension*> MaterialsExtensionList;

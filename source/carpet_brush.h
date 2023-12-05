@@ -38,9 +38,9 @@ public:
 		return static_cast<CarpetBrush*>(this);
 	}
 
-	virtual bool load(pugi::xml_node node, wxArrayString &warnings);
+	virtual bool load(pugi::xml_node node, wxArrayString& warnings);
 
-	virtual bool canDraw(BaseMap* map, const Position &position) const;
+	virtual bool canDraw(BaseMap* map, const Position& position) const;
 	virtual void draw(BaseMap* map, Tile* tile, void* parameter);
 	virtual void undraw(BaseMap* map, Tile* tile);
 
@@ -60,7 +60,7 @@ public:
 	virtual std::string getName() const {
 		return name;
 	}
-	virtual void setName(const std::string &newName) {
+	virtual void setName(const std::string& newName) {
 		name = newName;
 	}
 

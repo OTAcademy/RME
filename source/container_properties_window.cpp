@@ -55,7 +55,7 @@ ContainerItemButton::~ContainerItemButton() {
 	////
 }
 
-void ContainerItemButton::OnMouseDoubleLeftClick(wxMouseEvent &WXUNUSED(event)) {
+void ContainerItemButton::OnMouseDoubleLeftClick(wxMouseEvent& WXUNUSED(event)) {
 	wxCommandEvent dummy;
 
 	if (edit_item) {
@@ -69,7 +69,7 @@ void ContainerItemButton::OnMouseDoubleLeftClick(wxMouseEvent &WXUNUSED(event)) 
 	}
 }
 
-void ContainerItemButton::OnMouseRightRelease(wxMouseEvent &WXUNUSED(event)) {
+void ContainerItemButton::OnMouseRightRelease(wxMouseEvent& WXUNUSED(event)) {
 	if (!popup_menu) {
 		popup_menu.reset(newd ContainerItemPopupMenu);
 	}
@@ -78,12 +78,12 @@ void ContainerItemButton::OnMouseRightRelease(wxMouseEvent &WXUNUSED(event)) {
 	PopupMenu(popup_menu.get());
 }
 
-void ContainerItemButton::OnAddItem(wxCommandEvent &WXUNUSED(event)) {
+void ContainerItemButton::OnAddItem(wxCommandEvent& WXUNUSED(event)) {
 	FindItemDialog dialog(GetParent(), "Choose Item to add", true);
 
 	if (dialog.ShowModal() == wxID_OK) {
 		Container* container = getParentContainer();
-		ItemVector &itemVector = container->getVector();
+		ItemVector& itemVector = container->getVector();
 
 		Item* item = Item::Create(dialog.getResultID());
 		if (index < itemVector.size()) {
@@ -100,7 +100,7 @@ void ContainerItemButton::OnAddItem(wxCommandEvent &WXUNUSED(event)) {
 	dialog.Destroy();
 }
 
-void ContainerItemButton::OnEditItem(wxCommandEvent &WXUNUSED(event)) {
+void ContainerItemButton::OnEditItem(wxCommandEvent& WXUNUSED(event)) {
 	ASSERT(edit_item);
 
 	wxPoint newDialogAt;
@@ -126,7 +126,7 @@ void ContainerItemButton::OnEditItem(wxCommandEvent &WXUNUSED(event)) {
 	d->Destroy();
 }
 
-void ContainerItemButton::OnRemoveItem(wxCommandEvent &WXUNUSED(event)) {
+void ContainerItemButton::OnRemoveItem(wxCommandEvent& WXUNUSED(event)) {
 	ASSERT(edit_item);
 	int32_t ret = g_gui.PopupDialog(GetParent(), "Remove Item", "Are you sure you want to remove this item from the container?", wxYES | wxNO);
 
@@ -135,7 +135,7 @@ void ContainerItemButton::OnRemoveItem(wxCommandEvent &WXUNUSED(event)) {
 	}
 
 	Container* container = getParentContainer();
-	ItemVector &itemVector = container->getVector();
+	ItemVector& itemVector = container->getVector();
 
 	auto it = itemVector.begin();
 	for (; it != itemVector.end(); ++it) {

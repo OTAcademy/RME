@@ -26,7 +26,7 @@
 #include <algorithm>
 
 // random generator
-std::mt19937 &getRandomGenerator() {
+std::mt19937& getRandomGenerator() {
 	static std::random_device rd;
 	static std::mt19937 generator(rd());
 	return generator;
@@ -97,7 +97,7 @@ double ws2f(const wxString s) {
 	return 0.0;
 }
 
-void replaceString(std::string &str, const std::string sought, const std::string replacement) {
+void replaceString(std::string& str, const std::string sought, const std::string replacement) {
 	size_t pos = 0;
 	size_t start = 0;
 	size_t soughtLen = sought.length();
@@ -108,42 +108,42 @@ void replaceString(std::string &str, const std::string sought, const std::string
 	}
 }
 
-void trim_right(std::string &source, const std::string &t) {
+void trim_right(std::string& source, const std::string& t) {
 	source.erase(source.find_last_not_of(t) + 1);
 }
 
-void trim_left(std::string &source, const std::string &t) {
+void trim_left(std::string& source, const std::string& t) {
 	source.erase(0, source.find_first_not_of(t));
 }
 
-void to_lower_str(std::string &source) {
+void to_lower_str(std::string& source) {
 	std::transform(source.begin(), source.end(), source.begin(), tolower);
 }
 
-void to_upper_str(std::string &source) {
+void to_upper_str(std::string& source) {
 	std::transform(source.begin(), source.end(), source.begin(), toupper);
 }
 
-std::string as_lower_str(const std::string &other) {
+std::string as_lower_str(const std::string& other) {
 	std::string ret = other;
 	to_lower_str(ret);
 	return ret;
 }
 
-std::string as_upper_str(const std::string &other) {
+std::string as_upper_str(const std::string& other) {
 	std::string ret = other;
 	to_upper_str(ret);
 	return ret;
 }
 
-bool isFalseString(std::string &str) {
+bool isFalseString(std::string& str) {
 	if (str == "false" || str == "0" || str == "" || str == "no" || str == "not") {
 		return true;
 	}
 	return false;
 }
 
-bool isTrueString(std::string &str) {
+bool isTrueString(std::string& str) {
 	return !isFalseString(str);
 }
 
@@ -166,17 +166,17 @@ int random(int high) {
 	return random(0, high);
 }
 
-std::wstring string2wstring(const std::string &utf8string) {
+std::wstring string2wstring(const std::string& utf8string) {
 	wxString s(utf8string.c_str(), wxConvUTF8);
 	return std::wstring((const wchar_t*)s.c_str());
 }
 
-std::string wstring2string(const std::wstring &widestring) {
+std::string wstring2string(const std::wstring& widestring) {
 	wxString s(widestring.c_str());
 	return std::string((const char*)s.mb_str(wxConvUTF8));
 }
 
-bool posFromClipboard(Position &position, const int mapWidth /* = MAP_MAX_WIDTH */, const int mapHeight /* = MAP_MAX_HEIGHT */) {
+bool posFromClipboard(Position& position, const int mapWidth /* = MAP_MAX_WIDTH */, const int mapHeight /* = MAP_MAX_HEIGHT */) {
 	if (!wxTheClipboard->Open()) {
 		return false;
 	}
@@ -211,7 +211,7 @@ bool posFromClipboard(Position &position, const int mapWidth /* = MAP_MAX_WIDTH 
 				position.z = tmpZ;
 				done = true;
 			}
-		} catch (const std::out_of_range &) { }
+		} catch (const std::out_of_range&) { }
 	}
 
 	wxTheClipboard->Close();

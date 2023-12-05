@@ -30,7 +30,7 @@ public:
 		wxGrid(parent, id, pos, size) { }
 	virtual ~myGrid() { }
 
-	void DrawCellHighlight(wxDC &dc, const wxGridCellAttr* attr) {
+	void DrawCellHighlight(wxDC& dc, const wxGridCellAttr* attr) {
 		// wxGrid::DrawCellHighlight(dc, attr);
 	}
 
@@ -147,7 +147,7 @@ wxString format00(wxDateTime::wxDateTime_t t) {
 	return str;
 }
 
-void LiveLogTab::Message(const wxString &str) {
+void LiveLogTab::Message(const wxString& str) {
 	wxDateTime t = wxDateTime::Now();
 	wxString time, speaker;
 	time << format00(t.GetHour()) << ":"
@@ -163,7 +163,7 @@ void LiveLogTab::Message(const wxString &str) {
 	log->SetCellValue(n, 2, str);
 }
 
-void LiveLogTab::Chat(const wxString &speaker, const wxString &str) {
+void LiveLogTab::Chat(const wxString& speaker, const wxString& str) {
 	wxDateTime t = wxDateTime::Now();
 	wxString time;
 	time << format00(t.GetHour()) << ":"
@@ -177,25 +177,25 @@ void LiveLogTab::Chat(const wxString &speaker, const wxString &str) {
 	log->SetCellValue(n, 2, str);
 }
 
-void LiveLogTab::OnChat(wxCommandEvent &evt) {
+void LiveLogTab::OnChat(wxCommandEvent& evt) {
 }
 
-void LiveLogTab::OnResizeChat(wxSizeEvent &evt) {
+void LiveLogTab::OnResizeChat(wxSizeEvent& evt) {
 	log->SetColSize(2, log->GetSize().GetWidth() - 160);
 }
 
-void LiveLogTab::OnResizeClientList(wxSizeEvent &evt) {
+void LiveLogTab::OnResizeClientList(wxSizeEvent& evt) {
 }
 
-void LiveLogTab::OnSelectChatbox(wxFocusEvent &evt) {
+void LiveLogTab::OnSelectChatbox(wxFocusEvent& evt) {
 	g_gui.DisableHotkeys();
 }
 
-void LiveLogTab::OnDeselectChatbox(wxFocusEvent &evt) {
+void LiveLogTab::OnDeselectChatbox(wxFocusEvent& evt) {
 	g_gui.EnableHotkeys();
 }
 
-void LiveLogTab::UpdateClientList(const std::unordered_map<uint32_t, LivePeer*> &updatedClients) {
+void LiveLogTab::UpdateClientList(const std::unordered_map<uint32_t, LivePeer*>& updatedClients) {
 	// Delete old rows
 	if (user_list->GetNumberRows() > 0) {
 		user_list->DeleteRows(0, user_list->GetNumberRows());
@@ -205,7 +205,7 @@ void LiveLogTab::UpdateClientList(const std::unordered_map<uint32_t, LivePeer*> 
 	user_list->AppendRows(clients.size());
 
 	int32_t i = 0;
-	for (auto &clientEntry : clients) {
+	for (auto& clientEntry : clients) {
 		LivePeer* peer = clientEntry.second;
 		user_list->SetCellBackgroundColour(i, 0, peer->getUsedColor());
 		user_list->SetCellValue(i, 1, i2ws((peer->getClientId() >> 1) + 1));

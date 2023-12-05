@@ -41,7 +41,7 @@ public:
 	bool exportMinimap(FileName filename, int floor = GROUND_LAYER, bool showdialog = false);
 	//
 	bool convert(MapVersion to, bool showdialog = false);
-	bool convert(const ConversionMap &cm, bool showdialog = false);
+	bool convert(const ConversionMap& cm, bool showdialog = false);
 
 	// Query information about the map
 
@@ -57,7 +57,7 @@ public:
 	bool hasWarnings() const {
 		return warnings.size() != 0;
 	}
-	const wxArrayString &getWarnings() const {
+	const wxArrayString& getWarnings() const {
 		return warnings;
 	}
 	bool hasError() const {
@@ -70,13 +70,13 @@ public:
 	// Mess with spawns
 	bool addSpawn(Tile* spawn);
 	void removeSpawn(Tile* tile);
-	void removeSpawn(const Position &position) {
+	void removeSpawn(const Position& position) {
 		removeSpawn(getTile(position));
 	}
 
 	// Returns all possible spawns on the target tile
 	SpawnList getSpawnList(Tile* t);
-	SpawnList getSpawnList(const Position &position) {
+	SpawnList getSpawnList(const Position& position) {
 		return getSpawnList(getTile(position));
 	}
 	SpawnList getSpawnList(int32_t x, int32_t y, int32_t z) {
@@ -92,7 +92,7 @@ public:
 	std::string getName() const {
 		return name;
 	}
-	void setName(const std::string &n) {
+	void setName(const std::string& n) {
 		name = n;
 	}
 
@@ -116,9 +116,9 @@ public:
 	// Set some map data
 	void setWidth(int new_width);
 	void setHeight(int new_height);
-	void setMapDescription(const std::string &new_description);
-	void setHouseFilename(const std::string &new_housefile);
-	void setSpawnFilename(const std::string &new_spawnfile);
+	void setMapDescription(const std::string& new_description);
+	void setHouseFilename(const std::string& new_housefile);
+	void setSpawnFilename(const std::string& new_spawnfile);
 
 	void flagAsNamed() {
 		unnamed = false;
@@ -165,7 +165,7 @@ public:
 };
 
 template <typename ForeachType>
-inline void foreach_ItemOnMap(Map &map, ForeachType &foreach, bool selectedTiles) {
+inline void foreach_ItemOnMap(Map& map, ForeachType& foreach, bool selectedTiles) {
 	MapIterator tileiter = map.begin();
 	MapIterator end = map.end();
 	long long done = 0;
@@ -194,7 +194,7 @@ inline void foreach_ItemOnMap(Map &map, ForeachType &foreach, bool selectedTiles
 
 				do {
 					container = containers.front();
-					ItemVector &v = container->getVector();
+					ItemVector& v = container->getVector();
 					for (ItemVector::iterator containeriter = v.begin(); containeriter != v.end(); ++containeriter) {
 						Item* i = *containeriter;
 						Container* c = dynamic_cast<Container*>(i);
@@ -213,7 +213,7 @@ inline void foreach_ItemOnMap(Map &map, ForeachType &foreach, bool selectedTiles
 }
 
 template <typename ForeachType>
-inline void foreach_TileOnMap(Map &map, ForeachType &foreach) {
+inline void foreach_TileOnMap(Map& map, ForeachType& foreach) {
 	MapIterator tileiter = map.begin();
 	MapIterator end = map.end();
 	long long done = 0;
@@ -225,7 +225,7 @@ inline void foreach_TileOnMap(Map &map, ForeachType &foreach) {
 }
 
 template <typename RemoveIfType>
-inline long long remove_if_TileOnMap(Map &map, RemoveIfType &remove_if) {
+inline long long remove_if_TileOnMap(Map& map, RemoveIfType& remove_if) {
 	MapIterator tileiter = map.begin();
 	MapIterator end = map.end();
 	long long done = 0;
@@ -246,7 +246,7 @@ inline long long remove_if_TileOnMap(Map &map, RemoveIfType &remove_if) {
 }
 
 template <typename RemoveIfType>
-inline int64_t RemoveItemOnMap(Map &map, RemoveIfType &condition, bool selectedOnly) {
+inline int64_t RemoveItemOnMap(Map& map, RemoveIfType& condition, bool selectedOnly) {
 	int64_t done = 0;
 	int64_t removed = 0;
 

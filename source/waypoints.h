@@ -29,10 +29,10 @@ public:
 typedef std::map<std::string, Waypoint*> WaypointMap;
 
 class Waypoints {
-	Map &map;
+	Map& map;
 
 public:
-	Waypoints(Map &map) :
+	Waypoints(Map& map) :
 		map(map) { }
 	~Waypoints() {
 		for (WaypointMap::iterator iter = waypoints.begin(); iter != waypoints.end(); ++iter) {

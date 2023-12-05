@@ -22,7 +22,7 @@
 #include "tile.h"
 #include "map.h"
 
-Houses::Houses(Map &map) :
+Houses::Houses(Map& map) :
 	map(map),
 	max_house_id(0) {
 	////
@@ -100,7 +100,7 @@ const House* Houses::getHouse(uint32_t houseid) const {
 	return nullptr;
 }
 
-House::House(Map &map) :
+House::House(Map& map) :
 	id(0),
 	rent(0),
 	townid(0),
@@ -200,7 +200,7 @@ std::string House::getDescription() {
 	return os.str();
 }
 
-void House::setExit(Map* targetmap, const Position &pos) {
+void House::setExit(Map* targetmap, const Position& pos) {
 	// This might fail when the user decides to put an exit at 0,0,0, let's just hope noone does (Noone SHOULD, so there is no problem? Hm?)
 	if (pos == exit || pos == Position()) {
 		return;
@@ -223,6 +223,6 @@ void House::setExit(Map* targetmap, const Position &pos) {
 	exit = pos;
 }
 
-void House::setExit(const Position &pos) {
+void House::setExit(const Position& pos) {
 	setExit(map, pos);
 }

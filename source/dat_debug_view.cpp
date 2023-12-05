@@ -30,7 +30,7 @@ public:
 	DatDebugViewListBox(wxWindow* parent, wxWindowID id);
 	~DatDebugViewListBox();
 
-	void OnDrawItem(wxDC &dc, const wxRect &rect, size_t index) const;
+	void OnDrawItem(wxDC& dc, const wxRect& rect, size_t index) const;
 	wxCoord OnMeasureItem(size_t index) const;
 
 protected:
@@ -55,7 +55,7 @@ DatDebugViewListBox::~DatDebugViewListBox() {
 	////
 }
 
-void DatDebugViewListBox::OnDrawItem(wxDC &dc, const wxRect &rect, size_t n) const {
+void DatDebugViewListBox::OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const {
 	SpriteMap::const_iterator spr_iter = sprites.find(int(n));
 	if (spr_iter != sprites.end()) {
 		spr_iter->second->DrawTo(&dc, SPRITE_SIZE_32x32, rect.GetX(), rect.GetY(), rect.GetWidth(), rect.GetHeight());
@@ -106,10 +106,10 @@ DatDebugView::~DatDebugView() {
 	////
 }
 
-void DatDebugView::OnTextChange(wxCommandEvent &evt) {
+void DatDebugView::OnTextChange(wxCommandEvent& evt) {
 	////
 }
 
-void DatDebugView::OnClickList(wxCommandEvent &evt) {
+void DatDebugView::OnClickList(wxCommandEvent& evt) {
 	////
 }

@@ -22,7 +22,7 @@
 #include "sprites.h"
 #include "editor.h"
 
-MapWindow::MapWindow(wxWindow* parent, Editor &editor) :
+MapWindow::MapWindow(wxWindow* parent, Editor& editor) :
 	wxPanel(parent, PANE_MAIN),
 	editor(editor),
 	replaceItemsDialog(nullptr) {
@@ -70,7 +70,7 @@ void MapWindow::CloseReplaceItemsDialog() {
 	}
 }
 
-void MapWindow::OnReplaceItemsDialogClose(wxCloseEvent &event) {
+void MapWindow::OnReplaceItemsDialogClose(wxCloseEvent& event) {
 	if (replaceItemsDialog) {
 		replaceItemsDialog->Disconnect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler(MapWindow::OnReplaceItemsDialogClose), NULL, this);
 		replaceItemsDialog->Destroy();
@@ -126,7 +126,7 @@ Position MapWindow::GetScreenCenterPosition() {
 	return Position(x, y, canvas->GetFloor());
 }
 
-void MapWindow::SetScreenCenterPosition(const Position &position) {
+void MapWindow::SetScreenCenterPosition(const Position& position) {
 	if (position == Position()) {
 		return;
 	}
@@ -139,7 +139,7 @@ void MapWindow::SetScreenCenterPosition(const Position &position) {
 		y -= (GROUND_LAYER - position.z) * TileSize;
 	}
 
-	const Position &center = GetScreenCenterPosition();
+	const Position& center = GetScreenCenterPosition();
 	if (previous_position != center) {
 		previous_position.x = center.x;
 		previous_position.y = center.y;
@@ -174,20 +174,20 @@ void MapWindow::ScrollRelative(int x, int y) {
 	g_gui.UpdateMinimap();
 }
 
-void MapWindow::OnGem(wxCommandEvent &WXUNUSED(event)) {
+void MapWindow::OnGem(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.SwitchMode();
 }
 
-void MapWindow::OnSize(wxSizeEvent &event) {
+void MapWindow::OnSize(wxSizeEvent& event) {
 	UpdateScrollbars(event.GetSize().GetWidth(), event.GetSize().GetHeight());
 	event.Skip();
 }
 
-void MapWindow::OnScroll(wxScrollEvent &event) {
+void MapWindow::OnScroll(wxScrollEvent& event) {
 	Refresh();
 }
 
-void MapWindow::OnScrollLineDown(wxScrollEvent &event) {
+void MapWindow::OnScrollLineDown(wxScrollEvent& event) {
 	if (event.GetOrientation() == wxHORIZONTAL) {
 		ScrollRelative(96, 0);
 	} else {
@@ -196,7 +196,7 @@ void MapWindow::OnScrollLineDown(wxScrollEvent &event) {
 	Refresh();
 }
 
-void MapWindow::OnScrollLineUp(wxScrollEvent &event) {
+void MapWindow::OnScrollLineUp(wxScrollEvent& event) {
 	if (event.GetOrientation() == wxHORIZONTAL) {
 		ScrollRelative(-96, 0);
 	} else {
@@ -205,7 +205,7 @@ void MapWindow::OnScrollLineUp(wxScrollEvent &event) {
 	Refresh();
 }
 
-void MapWindow::OnScrollPageDown(wxScrollEvent &event) {
+void MapWindow::OnScrollPageDown(wxScrollEvent& event) {
 	if (event.GetOrientation() == wxHORIZONTAL) {
 		ScrollRelative(5 * 96, 0);
 	} else {
@@ -214,7 +214,7 @@ void MapWindow::OnScrollPageDown(wxScrollEvent &event) {
 	Refresh();
 }
 
-void MapWindow::OnScrollPageUp(wxScrollEvent &event) {
+void MapWindow::OnScrollPageUp(wxScrollEvent& event) {
 	if (event.GetOrientation() == wxHORIZONTAL) {
 		ScrollRelative(-5 * 96, 0);
 	} else {

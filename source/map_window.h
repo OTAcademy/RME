@@ -30,17 +30,17 @@ class DCButton;
 // MapCanvas does that. (mapdisplay.h)
 class MapWindow : public wxPanel {
 public:
-	MapWindow(wxWindow* parent, Editor &editor);
+	MapWindow(wxWindow* parent, Editor& editor);
 	virtual ~MapWindow();
 
 	// Event handlers
-	void OnSize(wxSizeEvent &event);
-	void OnScroll(wxScrollEvent &event);
-	void OnScrollLineDown(wxScrollEvent &event);
-	void OnScrollLineUp(wxScrollEvent &event);
-	void OnScrollPageDown(wxScrollEvent &event);
-	void OnScrollPageUp(wxScrollEvent &event);
-	void OnGem(wxCommandEvent &event);
+	void OnSize(wxSizeEvent& event);
+	void OnScroll(wxScrollEvent& event);
+	void OnScrollLineDown(wxScrollEvent& event);
+	void OnScrollLineUp(wxScrollEvent& event);
+	void OnScrollPageDown(wxScrollEvent& event);
+	void OnScrollPageUp(wxScrollEvent& event);
+	void OnGem(wxCommandEvent& event);
 
 	// Custom interface for MapWindow
 
@@ -66,7 +66,7 @@ public:
 
 	// Screen position.
 	Position GetScreenCenterPosition();
-	void SetScreenCenterPosition(const Position &position);
+	void SetScreenCenterPosition(const Position& position);
 	void GoToPreviousCenterPosition();
 
 	// Return the containing canvas
@@ -76,7 +76,7 @@ public:
 
 	void ShowReplaceItemsDialog(bool selectionOnly);
 	void CloseReplaceItemsDialog();
-	void OnReplaceItemsDialogClose(wxCloseEvent &event);
+	void OnReplaceItemsDialogClose(wxCloseEvent& event);
 
 protected:
 	// For internal use, call to resize the scrollbars with
@@ -85,7 +85,7 @@ protected:
 	void UpdateDialogs(bool show);
 
 protected:
-	Editor &editor;
+	Editor& editor;
 	DCButton* gem;
 	MapCanvas* canvas;
 	wxScrollBar* hScroll;
@@ -110,13 +110,13 @@ public:
 		wxScrollBar(parent, id, wxDefaultPosition, wxDefaultSize, style), canvas(canvas) { }
 	virtual ~MapScrollBar() { }
 
-	void OnKey(wxKeyEvent &event) {
+	void OnKey(wxKeyEvent& event) {
 		canvas->GetEventHandler()->AddPendingEvent(event);
 	}
-	void OnWheel(wxMouseEvent &event) {
+	void OnWheel(wxMouseEvent& event) {
 		canvas->GetEventHandler()->AddPendingEvent(event);
 	}
-	void OnFocus(wxFocusEvent &event) {
+	void OnFocus(wxFocusEvent& event) {
 		canvas->SetFocus();
 	}
 

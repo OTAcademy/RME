@@ -30,8 +30,8 @@ class TileLocation {
 public:
 	~TileLocation();
 
-	TileLocation(const TileLocation &) = delete;
-	TileLocation &operator=(const TileLocation &) = delete;
+	TileLocation(const TileLocation&) = delete;
+	TileLocation& operator=(const TileLocation&) = delete;
 
 protected:
 	Tile* tile;
@@ -119,11 +119,11 @@ public:
 // This is not a QuadTree, but a HexTree (16 child nodes to every node), so the name is abit misleading
 class QTreeNode {
 public:
-	QTreeNode(BaseMap &map);
+	QTreeNode(BaseMap& map);
 	virtual ~QTreeNode();
 
-	QTreeNode(const QTreeNode &) = delete;
-	QTreeNode &operator=(const QTreeNode &) = delete;
+	QTreeNode(const QTreeNode&) = delete;
+	QTreeNode& operator=(const QTreeNode&) = delete;
 
 	QTreeNode* getLeaf(int x, int y); // Might return nullptr
 	QTreeNode* getLeafForce(int x, int y); // Will never return nullptr, it will create the node if it's not there
@@ -153,7 +153,7 @@ public:
 	bool isRequested(bool underground);
 
 protected:
-	BaseMap &map;
+	BaseMap& map;
 	uint32_t visible;
 
 	bool isLeaf;

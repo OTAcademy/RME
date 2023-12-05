@@ -25,9 +25,9 @@ public:
 	ExtensionsDialog(wxWindow* parent);
 	virtual ~ExtensionsDialog();
 
-	void OnClickOK(wxCommandEvent &evt);
-	void OnClickOpenFolder(wxCommandEvent &evt);
-	void OnClickLink(wxHtmlLinkEvent &evt);
+	void OnClickOK(wxCommandEvent& evt);
+	void OnClickOpenFolder(wxCommandEvent& evt);
+	void OnClickLink(wxHtmlLinkEvent& evt);
 
 	DECLARE_EVENT_TABLE();
 

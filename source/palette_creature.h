@@ -50,13 +50,13 @@ protected:
 
 public:
 	// Event handling
-	void OnChangeSpawnTime(wxSpinEvent &event);
-	void OnChangeSpawnSize(wxSpinEvent &event);
+	void OnChangeSpawnTime(wxSpinEvent& event);
+	void OnChangeSpawnSize(wxSpinEvent& event);
 
-	void OnTilesetChange(wxCommandEvent &event);
-	void OnListBoxChange(wxCommandEvent &event);
-	void OnClickCreatureBrushButton(wxCommandEvent &event);
-	void OnClickSpawnBrushButton(wxCommandEvent &event);
+	void OnTilesetChange(wxCommandEvent& event);
+	void OnListBoxChange(wxCommandEvent& event);
+	void OnClickCreatureBrushButton(wxCommandEvent& event);
+	void OnClickSpawnBrushButton(wxCommandEvent& event);
 
 protected:
 	void SelectCreatureBrush();

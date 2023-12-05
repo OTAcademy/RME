@@ -24,7 +24,7 @@
 #include "editor.h"
 #include "gui.h"
 
-Selection::Selection(Editor &editor) :
+Selection::Selection(Editor& editor) :
 	busy(false),
 	editor(editor),
 	session(nullptr),
@@ -293,7 +293,7 @@ void Selection::join(SelectionThread* thread) {
 	delete thread;
 }
 
-SelectionThread::SelectionThread(Editor &editor, Position start, Position end) :
+SelectionThread::SelectionThread(Editor& editor, Position start, Position end) :
 	wxThread(wxTHREAD_JOINABLE),
 	editor(editor),
 	start(start),

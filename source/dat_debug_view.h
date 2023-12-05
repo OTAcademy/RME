@@ -25,8 +25,8 @@ public:
 	DatDebugView(wxWindow* parent);
 	~DatDebugView();
 
-	void OnTextChange(wxCommandEvent &);
-	void OnClickList(wxCommandEvent &);
+	void OnTextChange(wxCommandEvent&);
+	void OnClickList(wxCommandEvent&);
 
 protected:
 	DatDebugViewListBox* item_list;

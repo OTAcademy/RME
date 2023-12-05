@@ -49,11 +49,11 @@ public:
 
 public:
 	// wxWidgets event handling
-	void OnClickWaypoint(wxListEvent &event);
-	void OnBeginEditWaypointLabel(wxListEvent &event);
-	void OnEditWaypointLabel(wxListEvent &event);
-	void OnClickAddWaypoint(wxCommandEvent &event);
-	void OnClickRemoveWaypoint(wxCommandEvent &event);
+	void OnClickWaypoint(wxListEvent& event);
+	void OnBeginEditWaypointLabel(wxListEvent& event);
+	void OnEditWaypointLabel(wxListEvent& event);
+	void OnClickAddWaypoint(wxCommandEvent& event);
+	void OnClickRemoveWaypoint(wxCommandEvent& event);
 
 	void SetMap(Map* map);
 

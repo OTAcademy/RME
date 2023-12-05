@@ -24,7 +24,7 @@
 
 #include "editor.h"
 
-LiveServer::LiveServer(Editor &editor) :
+LiveServer::LiveServer(Editor& editor) :
 	LiveSocket(),
 	clients(), acceptor(nullptr), socket(nullptr), editor(&editor),
 	clientIds(0), port(0), stopped(false) {
@@ -36,13 +36,13 @@ LiveServer::~LiveServer() {
 }
 
 bool LiveServer::bind() {
-	NetworkConnection &connection = NetworkConnection::getInstance();
+	NetworkConnection& connection = NetworkConnection::getInstance();
 	if (!connection.start()) {
 		setLastError("The previous connection has not been terminated yet.");
 		return false;
 	}
 
-	auto &service = connection.get_service();
+	auto& service = connection.get_service();
 	acceptor = std::make_shared<boost::asio::ip::tcp::acceptor>(service);
 
 	boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), port);
@@ -63,7 +63,7 @@ bool LiveServer::bind() {
 }
 
 void LiveServer::close() {
-	for (auto &clientEntry : clients) {
+	for (auto& clientEntry : clients) {
 		delete clientEntry.second;
 	}
 	clients.clear();
@@ -96,7 +96,7 @@ void LiveServer::acceptClient() {
 		);
 	}
 
-	acceptor->async_accept(*socket, [this](const boost::system::error_code &error) -> void {
+	acceptor->async_accept(*socket, [this](const boost::system::error_code& error) -> void {
 		if (error) {
 			//
 		} else {
@@ -126,7 +126,7 @@ void LiveServer::removeClient(uint32_t id) {
 	updateClientList();
 }
 
-void LiveServer::updateCursor(const Position &position) {
+void LiveServer::updateCursor(const Position& position) {
 	LiveCursor cursor;
 	cursor.id = 0;
 	cursor.pos = position;
@@ -174,12 +174,12 @@ std::string LiveServer::getHostName() const {
 	return "localhost";
 }
 
-void LiveServer::broadcastNodes(DirtyList &dirtyList) {
+void LiveServer::broadcastNodes(DirtyList& dirtyList) {
 	if (dirtyList.Empty()) {
 		return;
 	}
 
-	for (const auto &ind : dirtyList.GetPosList()) {
+	for (const auto& ind : dirtyList.GetPosList()) {
 		int32_t ndx = ind.pos >> 18;
 		int32_t ndy = (ind.pos >> 4) & 0x3FFF;
 		uint32_t floors = ind.floors;
@@ -189,7 +189,7 @@ void LiveServer::broadcastNodes(DirtyList &dirtyList) {
 			continue;
 		}
 
-		for (auto &clientEntry : clients) {
+		for (auto& clientEntry : clients) {
 			LivePeer* peer = clientEntry.second;
 
 			const uint32_t clientId = peer->getClientId();
@@ -208,7 +208,7 @@ void LiveServer::broadcastNodes(DirtyList &dirtyList) {
 	}
 }
 
-void LiveServer::broadcastCursor(const LiveCursor &cursor) {
+void LiveServer::broadcastCursor(const LiveCursor& cursor) {
 	if (clients.empty()) {
 		return;
 	}
@@ -221,7 +221,7 @@ void LiveServer::broadcastCursor(const LiveCursor &cursor) {
 	message.write<uint8_t>(PACKET_CURSOR_UPDATE);
 	writeCursor(message, cursor);
 
-	for (auto &clientEntry : clients) {
+	for (auto& clientEntry : clients) {
 		LivePeer* peer = clientEntry.second;
 		if (peer->getClientId() != cursor.id) {
 			peer->send(message);
@@ -229,7 +229,7 @@ void LiveServer::broadcastCursor(const LiveCursor &cursor) {
 	}
 }
 
-void LiveServer::broadcastChat(const wxString &speaker, const wxString &chatMessage) {
+void LiveServer::broadcastChat(const wxString& speaker, const wxString& chatMessage) {
 	if (clients.empty()) {
 		return;
 	}
@@ -239,14 +239,14 @@ void LiveServer::broadcastChat(const wxString &speaker, const wxString &chatMess
 	message.write<std::string>(nstr(speaker));
 	message.write<std::string>(nstr(chatMessage));
 
-	for (auto &clientEntry : clients) {
+	for (auto& clientEntry : clients) {
 		clientEntry.second->send(message);
 	}
 
 	log->Chat(name, chatMessage);
 }
 
-void LiveServer::startOperation(const wxString &operationMessage) {
+void LiveServer::startOperation(const wxString& operationMessage) {
 	if (clients.empty()) {
 		return;
 	}
@@ -255,7 +255,7 @@ void LiveServer::startOperation(const wxString &operationMessage) {
 	message.write<uint8_t>(PACKET_START_OPERATION);
 	message.write<std::string>(nstr(operationMessage));
 
-	for (auto &clientEntry : clients) {
+	for (auto& clientEntry : clients) {
 		clientEntry.second->send(message);
 	}
 }
@@ -269,7 +269,7 @@ void LiveServer::updateOperation(int32_t percent) {
 	message.write<uint8_t>(PACKET_UPDATE_OPERATION);
 	message.write<uint32_t>(percent);
 
-	for (auto &clientEntry : clients) {
+	for (auto& clientEntry : clients) {
 		clientEntry.second->send(message);
 	}
 }

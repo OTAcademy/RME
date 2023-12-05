@@ -33,7 +33,7 @@ public:
 	BrowseTileListBox(wxWindow* parent, wxWindowID id, Tile* tile);
 	~BrowseTileListBox();
 
-	void OnDrawItem(wxDC &dc, const wxRect &rect, size_t index) const;
+	void OnDrawItem(wxDC& dc, const wxRect& rect, size_t index) const;
 	wxCoord OnMeasureItem(size_t index) const;
 	Item* GetSelectedItem();
 	void RemoveSelected();
@@ -55,7 +55,7 @@ BrowseTileListBox::~BrowseTileListBox() {
 	////
 }
 
-void BrowseTileListBox::OnDrawItem(wxDC &dc, const wxRect &rect, size_t n) const {
+void BrowseTileListBox::OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const {
 	ItemsMap::const_iterator item_iterator = items.find(int(n));
 	Item* item = item_iterator->second;
 
@@ -183,18 +183,18 @@ BrowseTileWindow::~BrowseTileWindow() {
 	item_list->Disconnect(wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler(BrowseTileWindow::OnItemSelected), NULL, this);
 }
 
-void BrowseTileWindow::OnItemSelected(wxCommandEvent &WXUNUSED(event)) {
+void BrowseTileWindow::OnItemSelected(wxCommandEvent& WXUNUSED(event)) {
 	const size_t count = item_list->GetSelectedCount();
 	delete_button->Enable(count != 0);
 	select_raw_button->Enable(count == 1);
 }
 
-void BrowseTileWindow::OnClickDelete(wxCommandEvent &WXUNUSED(event)) {
+void BrowseTileWindow::OnClickDelete(wxCommandEvent& WXUNUSED(event)) {
 	item_list->RemoveSelected();
 	item_count_txt->SetLabelText("Item count:  " + i2ws(item_list->GetItemCount()));
 }
 
-void BrowseTileWindow::OnClickSelectRaw(wxCommandEvent &WXUNUSED(event)) {
+void BrowseTileWindow::OnClickSelectRaw(wxCommandEvent& WXUNUSED(event)) {
 	Item* item = item_list->GetSelectedItem();
 	if (item && item->getRAWBrush()) {
 		g_gui.SelectBrush(item->getRAWBrush(), TILESET_RAW);
@@ -203,10 +203,10 @@ void BrowseTileWindow::OnClickSelectRaw(wxCommandEvent &WXUNUSED(event)) {
 	EndModal(1);
 }
 
-void BrowseTileWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
+void BrowseTileWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	EndModal(1);
 }
 
-void BrowseTileWindow::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
+void BrowseTileWindow::OnClickCancel(wxCommandEvent& WXUNUSED(event)) {
 	EndModal(0);
 }

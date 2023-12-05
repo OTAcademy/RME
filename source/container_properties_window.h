@@ -39,12 +39,12 @@ public:
 	ContainerItemButton(wxWindow* parent, bool large, int index, const Map* map, Item* item);
 	~ContainerItemButton();
 
-	void OnMouseDoubleLeftClick(wxMouseEvent &event);
-	void OnMouseRightRelease(wxMouseEvent &event);
+	void OnMouseDoubleLeftClick(wxMouseEvent& event);
+	void OnMouseRightRelease(wxMouseEvent& event);
 
-	void OnAddItem(wxCommandEvent &event);
-	void OnEditItem(wxCommandEvent &event);
-	void OnRemoveItem(wxCommandEvent &event);
+	void OnAddItem(wxCommandEvent& event);
+	void OnEditItem(wxCommandEvent& event);
+	void OnRemoveItem(wxCommandEvent& event);
 
 	ObjectPropertiesWindowBase* getParentContainerWindow();
 	Container* getParentContainer();

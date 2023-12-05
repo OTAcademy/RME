@@ -45,10 +45,10 @@ public:
 	}
 
 	// Does not compare selection!
-	bool operator==(const Spawn &other) {
+	bool operator==(const Spawn& other) {
 		return size == other.size;
 	}
-	bool operator!=(const Spawn &other) {
+	bool operator!=(const Spawn& other) {
 		return size != other.size;
 	}
 
@@ -91,7 +91,7 @@ public:
 	void erase(SpawnPositionList::iterator iter) {
 		spawns.erase(iter);
 	}
-	SpawnPositionList::iterator find(Position &pos) {
+	SpawnPositionList::iterator find(Position& pos) {
 		return spawns.find(pos);
 	}
 

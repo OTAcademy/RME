@@ -20,7 +20,7 @@
 #include "numbertextctrl.h"
 #include "position.h"
 
-PositionCtrl::PositionCtrl(wxWindow* parent, const wxString &label, int x, int y, int z, int maxx /*= MAP_MAX_WIDTH*/, int maxy /*= MAP_MAX_HEIGHT*/, int maxz /*= MAP_MAX_LAYER*/) :
+PositionCtrl::PositionCtrl(wxWindow* parent, const wxString& label, int x, int y, int z, int maxx /*= MAP_MAX_WIDTH*/, int maxy /*= MAP_MAX_HEIGHT*/, int maxz /*= MAP_MAX_LAYER*/) :
 	wxStaticBoxSizer(wxHORIZONTAL, parent, label) {
 	x_field = newd NumberTextCtrl(parent, wxID_ANY, x, 0, maxx, wxTE_PROCESS_ENTER, "X", wxDefaultPosition, wxSize(60, 20));
 	x_field->Bind(wxEVT_TEXT_PASTE, &PositionCtrl::OnClipboardText, this);
@@ -60,7 +60,7 @@ bool PositionCtrl::Enable(bool enable) {
 	return (x_field->Enable(enable) && y_field->Enable(enable) && z_field->Enable(enable));
 }
 
-void PositionCtrl::OnClipboardText(wxClipboardTextEvent &evt) {
+void PositionCtrl::OnClipboardText(wxClipboardTextEvent& evt) {
 	Position position;
 	if (posFromClipboard(position, maxWidth, maxHeight)) {
 		x_field->SetIntValue(position.x);

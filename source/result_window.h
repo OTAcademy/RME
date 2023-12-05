@@ -28,9 +28,9 @@ public:
 	void Clear();
 	void AddPosition(wxString description, Position pos);
 
-	void OnClickResult(wxCommandEvent &);
-	void OnClickExport(wxCommandEvent &);
-	void OnClickClear(wxCommandEvent &);
+	void OnClickResult(wxCommandEvent&);
+	void OnClickExport(wxCommandEvent&);
+	void OnClickClear(wxCommandEvent&);
 
 protected:
 	wxListBox* result_list;

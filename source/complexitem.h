@@ -47,13 +47,13 @@ public:
 		return g_items[id].volume;
 	}
 
-	ItemVector &getVector() {
+	ItemVector& getVector() {
 		return contents;
 	}
 	double getWeight();
 
-	virtual bool unserializeItemNode_OTBM(const IOMap &maphandle, BinaryNode* node);
-	virtual bool serializeItemNode_OTBM(const IOMap &maphandle, NodeFileWriteHandle &f) const;
+	virtual bool unserializeItemNode_OTBM(const IOMap& maphandle, BinaryNode* node);
+	virtual bool serializeItemNode_OTBM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
 	// virtual bool unserializeItemNode_OTMM(const IOMap& maphandle, BinaryNode* node);
 	// virtual bool serializeItemNode_OTMM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
 
@@ -67,8 +67,8 @@ public:
 
 	Item* deepCopy() const;
 
-	virtual void serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWriteHandle &f) const;
-	virtual bool readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute attr, BinaryNode* node);
+	virtual void serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
+	virtual bool readItemAttribute_OTBM(const IOMap& maphandle, OTBM_ItemAttribute attr, BinaryNode* node);
 	// virtual void serializeItemAttributes_OTMM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
 	// virtual bool readItemAttribute_OTMM(const IOMap& maphandle, OTMM_ItemAttribute attr, BinaryNode* node);
 
@@ -85,7 +85,7 @@ public:
 	Position getDestination() const {
 		return destination;
 	}
-	void setDestination(const Position &position) {
+	void setDestination(const Position& position) {
 		destination = position;
 	}
 
@@ -109,8 +109,8 @@ public:
 	uint8_t getDoorID() const;
 	void setDoorID(uint8_t id);
 
-	virtual void serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWriteHandle &f) const;
-	virtual bool readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute attr, BinaryNode* node);
+	virtual void serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
+	virtual bool readItemAttribute_OTBM(const IOMap& maphandle, OTBM_ItemAttribute attr, BinaryNode* node);
 	// virtual void serializeItemAttributes_OTMM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
 	// virtual bool readItemAttribute_OTMM(const IOMap& maphandle, OTMM_ItemAttribute attr, BinaryNode* node);
 
@@ -134,8 +134,8 @@ public:
 		depotId = id;
 	}
 
-	virtual void serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWriteHandle &f) const;
-	virtual bool readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute attr, BinaryNode* node);
+	virtual void serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
+	virtual bool readItemAttribute_OTBM(const IOMap& maphandle, OTBM_ItemAttribute attr, BinaryNode* node);
 	// virtual void serializeItemAttributes_OTMM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
 	// virtual bool readItemAttribute_OTMM(const IOMap& maphandle, OTMM_ItemAttribute attr, BinaryNode* node);
 
@@ -149,10 +149,10 @@ public:
 
 	Item* deepCopy() const;
 
-	const Outfit &getOutfit() const {
+	const Outfit& getOutfit() const {
 		return outfit;
 	}
-	void setOutfit(Outfit &newOutfit) {
+	void setOutfit(Outfit& newOutfit) {
 		outfit = newOutfit;
 	}
 
@@ -183,8 +183,8 @@ public:
 		showPlatform = newState;
 	}
 
-	virtual void serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWriteHandle &f) const;
-	virtual bool readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute attr, BinaryNode* node);
+	virtual void serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
+	virtual bool readItemAttribute_OTBM(const IOMap& maphandle, OTBM_ItemAttribute attr, BinaryNode* node);
 
 protected:
 	Outfit outfit;

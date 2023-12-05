@@ -35,7 +35,7 @@ public:
 		return static_cast<RAWBrush*>(this);
 	}
 
-	virtual bool canDraw(BaseMap* map, const Position &position) const {
+	virtual bool canDraw(BaseMap* map, const Position& position) const {
 		return true;
 	}
 	virtual void draw(BaseMap* map, Tile* tile, void* parameter);

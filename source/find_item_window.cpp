@@ -29,7 +29,7 @@ EVT_BUTTON(wxID_OK, FindItemDialog::OnClickOK)
 EVT_BUTTON(wxID_CANCEL, FindItemDialog::OnClickCancel)
 END_EVENT_TABLE()
 
-FindItemDialog::FindItemDialog(wxWindow* parent, const wxString &title, bool onlyPickupables /* = false*/) :
+FindItemDialog::FindItemDialog(wxWindow* parent, const wxString& title, bool onlyPickupables /* = false*/) :
 	wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxSize(800, 600), wxDEFAULT_DIALOG_STYLE),
 	input_timer(this),
 	result_brush(nullptr),
@@ -290,7 +290,7 @@ void FindItemDialog::RefreshContentsInternal() {
 		result_id = std::min(server_id_spin->GetValue(), 0xFFFF);
 		uint16_t serverID = static_cast<uint16_t>(result_id);
 		if (serverID <= g_items.getMaxID()) {
-			ItemType &item = g_items.getItemType(serverID);
+			ItemType& item = g_items.getItemType(serverID);
 			RAWBrush* raw_brush = item.raw_brush;
 			if (raw_brush) {
 				if (only_pickupables) {
@@ -311,7 +311,7 @@ void FindItemDialog::RefreshContentsInternal() {
 	} else if (selection == SearchMode::ClientIDs) {
 		uint16_t clientID = (uint16_t)client_id_spin->GetValue();
 		for (int id = 100; id <= g_items.getMaxID(); ++id) {
-			ItemType &item = g_items.getItemType(id);
+			ItemType& item = g_items.getItemType(id);
 			if (item.id == 0 || item.clientID != clientID) {
 				continue;
 			}
@@ -332,7 +332,7 @@ void FindItemDialog::RefreshContentsInternal() {
 		std::string search_string = as_lower_str(nstr(name_text_input->GetValue()));
 		if (search_string.size() >= 2) {
 			for (int id = 100; id <= g_items.getMaxID(); ++id) {
-				ItemType &item = g_items.getItemType(id);
+				ItemType& item = g_items.getItemType(id);
 				if (item.id == 0) {
 					continue;
 				}
@@ -356,7 +356,7 @@ void FindItemDialog::RefreshContentsInternal() {
 		}
 	} else if (selection == SearchMode::Types) {
 		for (int id = 100; id <= g_items.getMaxID(); ++id) {
-			ItemType &item = g_items.getItemType(id);
+			ItemType& item = g_items.getItemType(id);
 			if (item.id == 0) {
 				continue;
 			}
@@ -383,7 +383,7 @@ void FindItemDialog::RefreshContentsInternal() {
 
 		if (has_selected) {
 			for (int id = 100; id <= g_items.getMaxID(); ++id) {
-				ItemType &item = g_items.getItemType(id);
+				ItemType& item = g_items.getItemType(id);
 				if (item.id == 0) {
 					continue;
 				}
@@ -413,35 +413,35 @@ void FindItemDialog::RefreshContentsInternal() {
 	items_list->Refresh();
 }
 
-void FindItemDialog::OnOptionChange(wxCommandEvent &WXUNUSED(event)) {
+void FindItemDialog::OnOptionChange(wxCommandEvent& WXUNUSED(event)) {
 	setSearchMode((SearchMode)options_radio_box->GetSelection());
 }
 
-void FindItemDialog::OnServerIdChange(wxCommandEvent &WXUNUSED(event)) {
+void FindItemDialog::OnServerIdChange(wxCommandEvent& WXUNUSED(event)) {
 	RefreshContentsInternal();
 }
 
-void FindItemDialog::OnClientIdChange(wxCommandEvent &WXUNUSED(event)) {
+void FindItemDialog::OnClientIdChange(wxCommandEvent& WXUNUSED(event)) {
 	RefreshContentsInternal();
 }
 
-void FindItemDialog::OnText(wxCommandEvent &WXUNUSED(event)) {
+void FindItemDialog::OnText(wxCommandEvent& WXUNUSED(event)) {
 	input_timer.Start(800, true);
 }
 
-void FindItemDialog::OnTypeChange(wxCommandEvent &WXUNUSED(event)) {
+void FindItemDialog::OnTypeChange(wxCommandEvent& WXUNUSED(event)) {
 	RefreshContentsInternal();
 }
 
-void FindItemDialog::OnPropertyChange(wxCommandEvent &WXUNUSED(event)) {
+void FindItemDialog::OnPropertyChange(wxCommandEvent& WXUNUSED(event)) {
 	RefreshContentsInternal();
 }
 
-void FindItemDialog::OnInputTimer(wxTimerEvent &WXUNUSED(event)) {
+void FindItemDialog::OnInputTimer(wxTimerEvent& WXUNUSED(event)) {
 	RefreshContentsInternal();
 }
 
-void FindItemDialog::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
+void FindItemDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	if (invalid_item->GetValue() && (SearchMode)options_radio_box->GetSelection() == SearchMode::ServerIDs && result_id != 0) {
 		EndModal(wxID_OK);
 		return;
@@ -457,6 +457,6 @@ void FindItemDialog::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void FindItemDialog::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
+void FindItemDialog::OnClickCancel(wxCommandEvent& WXUNUSED(event)) {
 	EndModal(wxID_CANCEL);
 }

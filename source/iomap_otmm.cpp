@@ -28,7 +28,7 @@
 // ============================================================================
 // Item
 
-Item* Item::Create_OTMM(const IOMap &maphandle, BinaryNode* stream) {
+Item* Item::Create_OTMM(const IOMap& maphandle, BinaryNode* stream) {
 	uint16_t _id;
 	if (!stream->getU16(_id)) {
 		return nullptr;
@@ -37,7 +37,7 @@ Item* Item::Create_OTMM(const IOMap &maphandle, BinaryNode* stream) {
 	return Item::Create(_id);
 }
 
-bool Item::readItemAttribute_OTMM(const IOMap &maphandle, OTMM_ItemAttribute attr, BinaryNode* stream) {
+bool Item::readItemAttribute_OTMM(const IOMap& maphandle, OTMM_ItemAttribute attr, BinaryNode* stream) {
 	switch (attr) {
 		case OTMM_ATTR_SUBTYPE: {
 			uint16_t subtype;
@@ -97,7 +97,7 @@ bool Item::readItemAttribute_OTMM(const IOMap &maphandle, OTMM_ItemAttribute att
 	return true;
 }
 
-bool Item::unserializeAttributes_OTMM(const IOMap &maphandle, BinaryNode* stream) {
+bool Item::unserializeAttributes_OTMM(const IOMap& maphandle, BinaryNode* stream) {
 	uint8_t attribute;
 	while (stream->getU8(attribute)) {
 		if (!readItemAttribute_OTMM(maphandle, OTMM_ItemAttribute(attribute), stream)) {
@@ -107,11 +107,11 @@ bool Item::unserializeAttributes_OTMM(const IOMap &maphandle, BinaryNode* stream
 	return true;
 }
 
-bool Item::unserializeItemNode_OTMM(const IOMap &maphandle, BinaryNode* node) {
+bool Item::unserializeItemNode_OTMM(const IOMap& maphandle, BinaryNode* node) {
 	return unserializeAttributes_OTMM(maphandle, node);
 }
 
-void Item::serializeItemAttributes_OTMM(const IOMap &maphandle, NodeFileWriteHandle &stream) const {
+void Item::serializeItemAttributes_OTMM(const IOMap& maphandle, NodeFileWriteHandle& stream) const {
 	if (getSubtype() > 0) {
 		stream.addU8(OTMM_ATTR_SUBTYPE);
 		stream.addU16(getSubtype());
@@ -133,11 +133,11 @@ void Item::serializeItemAttributes_OTMM(const IOMap &maphandle, NodeFileWriteHan
 	}
 }
 
-void Item::serializeItemCompact_OTMM(const IOMap &maphandle, NodeFileWriteHandle &stream) const {
+void Item::serializeItemCompact_OTMM(const IOMap& maphandle, NodeFileWriteHandle& stream) const {
 	stream.addU16(id);
 }
 
-bool Item::serializeItemNode_OTMM(const IOMap &maphandle, NodeFileWriteHandle &f) const {
+bool Item::serializeItemNode_OTMM(const IOMap& maphandle, NodeFileWriteHandle& f) const {
 	f.addNode(OTMM_ITEM);
 	f.addU16(id);
 	serializeItemAttributes_OTMM(maphandle, f);
@@ -149,7 +149,7 @@ bool Item::serializeItemNode_OTMM(const IOMap &maphandle, NodeFileWriteHandle &f
 // ============================================================================
 // Teleport
 
-bool Teleport::readItemAttribute_OTMM(const IOMap &maphandle, OTMM_ItemAttribute attribute, BinaryNode* stream) {
+bool Teleport::readItemAttribute_OTMM(const IOMap& maphandle, OTMM_ItemAttribute attribute, BinaryNode* stream) {
 	if (attribute == OTMM_ATTR_TELE_DEST) {
 		uint16_t x = 0;
 		uint16_t y = 0;
@@ -165,7 +165,7 @@ bool Teleport::readItemAttribute_OTMM(const IOMap &maphandle, OTMM_ItemAttribute
 	}
 }
 
-void Teleport::serializeItemAttributes_OTMM(const IOMap &maphandle, NodeFileWriteHandle &stream) const {
+void Teleport::serializeItemAttributes_OTMM(const IOMap& maphandle, NodeFileWriteHandle& stream) const {
 	Item::serializeItemAttributes_OTMM(maphandle, stream);
 
 	stream.addByte(OTMM_ATTR_TELE_DEST);
@@ -177,7 +177,7 @@ void Teleport::serializeItemAttributes_OTMM(const IOMap &maphandle, NodeFileWrit
 // ============================================================================
 // Door
 
-bool Door::readItemAttribute_OTMM(const IOMap &maphandle, OTMM_ItemAttribute attribute, BinaryNode* stream) {
+bool Door::readItemAttribute_OTMM(const IOMap& maphandle, OTMM_ItemAttribute attribute, BinaryNode* stream) {
 	if (attribute == OTMM_ATTR_DOOR_ID) {
 		uint8_t id = 0;
 		if (!stream->getU8(id)) {
@@ -190,7 +190,7 @@ bool Door::readItemAttribute_OTMM(const IOMap &maphandle, OTMM_ItemAttribute att
 	}
 }
 
-void Door::serializeItemAttributes_OTMM(const IOMap &maphandle, NodeFileWriteHandle &stream) const {
+void Door::serializeItemAttributes_OTMM(const IOMap& maphandle, NodeFileWriteHandle& stream) const {
 	Item::serializeItemAttributes_OTMM(maphandle, stream);
 	if (doorid) {
 		stream.addByte(OTMM_ATTR_DOOR_ID);
@@ -201,7 +201,7 @@ void Door::serializeItemAttributes_OTMM(const IOMap &maphandle, NodeFileWriteHan
 // ============================================================================
 // Depots
 
-bool Depot::readItemAttribute_OTMM(const IOMap &maphandle, OTMM_ItemAttribute attribute, BinaryNode* stream) {
+bool Depot::readItemAttribute_OTMM(const IOMap& maphandle, OTMM_ItemAttribute attribute, BinaryNode* stream) {
 	if (attribute == OTMM_ATTR_DEPOT_ID) {
 		uint16_t id = 0;
 		if (!stream->getU16(id)) {
@@ -214,7 +214,7 @@ bool Depot::readItemAttribute_OTMM(const IOMap &maphandle, OTMM_ItemAttribute at
 	}
 }
 
-void Depot::serializeItemAttributes_OTMM(const IOMap &maphandle, NodeFileWriteHandle &stream) const {
+void Depot::serializeItemAttributes_OTMM(const IOMap& maphandle, NodeFileWriteHandle& stream) const {
 	Item::serializeItemAttributes_OTMM(maphandle, stream);
 	if (depotid) {
 		stream.addByte(OTMM_ATTR_DEPOT_ID);
@@ -225,7 +225,7 @@ void Depot::serializeItemAttributes_OTMM(const IOMap &maphandle, NodeFileWriteHa
 // ============================================================================
 // Container
 
-bool Container::unserializeItemNode_OTMM(const IOMap &maphandle, BinaryNode* node) {
+bool Container::unserializeItemNode_OTMM(const IOMap& maphandle, BinaryNode* node) {
 	bool ret = Item::unserializeAttributes_OTMM(maphandle, node);
 
 	if (ret) {
@@ -258,7 +258,7 @@ bool Container::unserializeItemNode_OTMM(const IOMap &maphandle, BinaryNode* nod
 	return false;
 }
 
-bool Container::serializeItemNode_OTMM(const IOMap &maphandle, NodeFileWriteHandle &f) const {
+bool Container::serializeItemNode_OTMM(const IOMap& maphandle, NodeFileWriteHandle& f) const {
 	f.addNode(OTMM_ITEM);
 
 	f.addU16(id);
@@ -277,7 +277,7 @@ IOMapOTMM::IOMapOTMM() {
 IOMapOTMM::~IOMapOTMM() {
 }
 
-ClientVersionID IOMapOTMM::getVersionInfo(const FileName &filename) {
+ClientVersionID IOMapOTMM::getVersionInfo(const FileName& filename) {
 	wxString wpath = filename.GetFullPath();
 	DiskNodeFileReadHandle f((const char*)wpath.mb_str(wxConvUTF8));
 	if (f.isOk() == false) {
@@ -307,7 +307,7 @@ ClientVersionID IOMapOTMM::getVersionInfo(const FileName &filename) {
 	return CLIENT_VERSION_NONE;
 }
 
-bool IOMapOTMM::loadMap(Map &map, const FileName &identifier, bool showdialog) {
+bool IOMapOTMM::loadMap(Map& map, const FileName& identifier, bool showdialog) {
 	if (showdialog) {
 		g_gui.CreateLoadBar("Loading OTMM map...");
 	}
@@ -326,7 +326,7 @@ bool IOMapOTMM::loadMap(Map &map, const FileName &identifier, bool showdialog) {
 	return ret;
 }
 
-bool IOMapOTMM::loadMap(Map &map, NodeFileReadHandle &f, const FileName &identifier, bool showdialog) {
+bool IOMapOTMM::loadMap(Map& map, NodeFileReadHandle& f, const FileName& identifier, bool showdialog) {
 	BinaryNode* root = f.getRootNode();
 	if (!root) {
 		error("Could not read root node.");
@@ -739,7 +739,7 @@ bool IOMapOTMM::loadMap(Map &map, NodeFileReadHandle &f, const FileName &identif
 	return true;
 }
 
-bool IOMapOTMM::saveMap(Map &map, const FileName &identifier, bool showdialog) {
+bool IOMapOTMM::saveMap(Map& map, const FileName& identifier, bool showdialog) {
 	DiskNodeFileWriteHandle f(std::string(identifier.GetFullPath().mb_str(wxConvUTF8)));
 
 	if (f.isOk() == false) {
@@ -758,7 +758,7 @@ bool IOMapOTMM::saveMap(Map &map, const FileName &identifier, bool showdialog) {
 	return ret;
 }
 
-bool IOMapOTMM::saveMap(Map &map, NodeFileWriteHandle &f, const FileName &identifier, bool showdialog) {
+bool IOMapOTMM::saveMap(Map& map, NodeFileWriteHandle& f, const FileName& identifier, bool showdialog) {
 	/* STOP!
 	 * Before you even think about modifying this, please reconsider.
 	 * while adding stuff to the binary format may be "cool", you'll
@@ -807,7 +807,7 @@ bool IOMapOTMM::saveMap(Map &map, NodeFileWriteHandle &f, const FileName &identi
 
 					// Get tile
 					const Tile* save_tile = *map_iterator;
-					const Position &pos = save_tile->getPosition();
+					const Position& pos = save_tile->getPosition();
 
 					// Is it an empty tile that we can skip? (Leftovers...)
 					if (save_tile->size() == 0) {
@@ -874,7 +874,7 @@ bool IOMapOTMM::saveMap(Map &map, NodeFileWriteHandle &f, const FileName &identi
 
 			f.addNode(OTMM_SPAWN_DATA);
 			{
-				Spawns &spawns = map.spawns;
+				Spawns& spawns = map.spawns;
 				CreatureList creature_list;
 				for (SpawnPositionList::const_iterator piter = spawns.begin(); piter != spawns.end(); ++piter) {
 					const Tile* tile = map.getTile(*piter);

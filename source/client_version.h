@@ -205,13 +205,13 @@ public:
 	static ClientVersionList getAllVersionsSupportedForClientVersion(ClientVersion* v);
 	static ClientVersion* getLatestVersion();
 
-	bool operator==(const ClientVersion &o) const {
+	bool operator==(const ClientVersion& o) const {
 		return otb.id == o.otb.id;
 	}
 
 	bool hasValidPaths();
 	bool loadValidPaths();
-	void setClientPath(const FileName &dir);
+	void setClientPath(const FileName& dir);
 
 	bool isVisible() const;
 	std::string getName() const;

@@ -92,7 +92,7 @@ class LightDrawer;
 
 class MapDrawer {
 	MapCanvas* canvas;
-	Editor &editor;
+	Editor& editor;
 	DrawingOptions options;
 	std::shared_ptr<LightDrawer> light_drawer;
 
@@ -138,25 +138,25 @@ public:
 
 	void TakeScreenshot(uint8_t* screenshot_buffer);
 
-	DrawingOptions &getOptions() {
+	DrawingOptions& getOptions() {
 		return options;
 	}
 
 protected:
-	void BlitItem(int &screenx, int &screeny, const Tile* tile, Item* item, bool ephemeral = false, int red = 255, int green = 255, int blue = 255, int alpha = 255);
-	void BlitItem(int &screenx, int &screeny, const Position &pos, Item* item, bool ephemeral = false, int red = 255, int green = 255, int blue = 255, int alpha = 255, const Tile* tile = nullptr);
+	void BlitItem(int& screenx, int& screeny, const Tile* tile, Item* item, bool ephemeral = false, int red = 255, int green = 255, int blue = 255, int alpha = 255);
+	void BlitItem(int& screenx, int& screeny, const Position& pos, Item* item, bool ephemeral = false, int red = 255, int green = 255, int blue = 255, int alpha = 255, const Tile* tile = nullptr);
 	void BlitSpriteType(int screenx, int screeny, uint32_t spriteid, int red = 255, int green = 255, int blue = 255, int alpha = 255);
 	void BlitSpriteType(int screenx, int screeny, GameSprite* spr, int red = 255, int green = 255, int blue = 255, int alpha = 255);
 	void BlitCreature(int screenx, int screeny, const Creature* c, int red = 255, int green = 255, int blue = 255, int alpha = 255);
-	void BlitCreature(int screenx, int screeny, const Outfit &outfit, Direction dir, int red = 255, int green = 255, int blue = 255, int alpha = 255);
+	void BlitCreature(int screenx, int screeny, const Outfit& outfit, Direction dir, int red = 255, int green = 255, int blue = 255, int alpha = 255);
 	void BlitSquare(int sx, int sy, int red, int green, int blue, int alpha, int size = 0);
 	void DrawRawBrush(int screenx, int screeny, ItemType* itemType, uint8_t r, uint8_t g, uint8_t b, uint8_t alpha);
 	void DrawTile(TileLocation* tile);
 	void DrawBrushIndicator(int x, int y, Brush* brush, uint8_t r, uint8_t g, uint8_t b);
-	void DrawHookIndicator(int x, int y, const ItemType &type);
-	void WriteTooltip(Item* item, std::ostringstream &stream, bool isHouseTile = false);
-	void WriteTooltip(Waypoint* item, std::ostringstream &stream);
-	void MakeTooltip(int screenx, int screeny, const std::string &text, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255);
+	void DrawHookIndicator(int x, int y, const ItemType& type);
+	void WriteTooltip(Item* item, std::ostringstream& stream, bool isHouseTile = false);
+	void WriteTooltip(Waypoint* item, std::ostringstream& stream);
+	void MakeTooltip(int screenx, int screeny, const std::string& text, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255);
 	void AddLight(TileLocation* location);
 
 	enum BrushColor {
@@ -170,14 +170,14 @@ protected:
 		COLOR_BLANK,
 	};
 
-	void getColor(Brush* brush, const Position &position, uint8_t &r, uint8_t &g, uint8_t &b);
+	void getColor(Brush* brush, const Position& position, uint8_t& r, uint8_t& g, uint8_t& b);
 	void glBlitTexture(int sx, int sy, int texture_number, int red, int green, int blue, int alpha);
 	void glBlitSquare(int sx, int sy, int red, int green, int blue, int alpha, int size = 0);
 	void glColor(wxColor color);
 	void glColor(BrushColor color);
-	void glColorCheck(Brush* brush, const Position &pos);
-	void drawRect(int x, int y, int w, int h, const wxColor &color, int width = 1);
-	void drawFilledRect(int x, int y, int w, int h, const wxColor &color);
+	void glColorCheck(Brush* brush, const Position& pos);
+	void drawRect(int x, int y, int w, int h, const wxColor& color, int width = 1);
+	void drawFilledRect(int x, int y, int w, int h, const wxColor& color);
 };
 
 #endif

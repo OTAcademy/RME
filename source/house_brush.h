@@ -39,12 +39,12 @@ public:
 	}
 
 	// Not used
-	virtual bool load(pugi::xml_node node, wxArrayString &warnings) {
+	virtual bool load(pugi::xml_node node, wxArrayString& warnings) {
 		return true;
 	}
 
 	// You can always draw house tiles!
-	virtual bool canDraw(BaseMap* map, const Position &position) const {
+	virtual bool canDraw(BaseMap* map, const Position& position) const {
 		return true;
 	}
 	// Draw the shit!

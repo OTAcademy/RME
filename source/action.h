@@ -47,8 +47,8 @@ private:
 
 public:
 	Change(Tile* tile);
-	static Change* Create(House* house, const Position &where);
-	static Change* Create(Waypoint* wp, const Position &where);
+	static Change* Create(House* house, const Position& where);
+	static Change* Create(Waypoint* wp, const Position& where);
 	~Change();
 	void clear();
 
@@ -82,7 +82,7 @@ public:
 
 protected:
 	struct Comparator {
-		bool operator()(const ValueType &a, const ValueType &b) const {
+		bool operator()(const ValueType& a, const ValueType& b) const {
 			return a.pos < b.pos;
 		}
 	};
@@ -95,8 +95,8 @@ public:
 	bool Empty() const {
 		return iset.empty() && ichanges.empty();
 	}
-	SetType &GetPosList();
-	ChangeList &GetChanges();
+	SetType& GetPosList();
+	ChangeList& GetChanges();
 
 protected:
 	SetType iset;
@@ -147,11 +147,11 @@ public:
 	}
 
 protected:
-	Action(Editor &editor, ActionIdentifier ident);
+	Action(Editor& editor, ActionIdentifier ident);
 
 	bool commited;
 	ChangeList changes;
-	Editor &editor;
+	Editor& editor;
 	ActionIdentifier type;
 
 	friend class ActionQueue;
@@ -180,7 +180,7 @@ public:
 	virtual void addAndCommitAction(Action* action);
 
 protected:
-	BatchAction(Editor &editor, ActionIdentifier ident);
+	BatchAction(Editor& editor, ActionIdentifier ident);
 
 	virtual void commit();
 	virtual void undo();
@@ -188,7 +188,7 @@ protected:
 
 	void merge(BatchAction* other);
 
-	Editor &editor;
+	Editor& editor;
 	int timestamp;
 	uint32_t memory_size;
 	ActionIdentifier type;
@@ -199,7 +199,7 @@ protected:
 
 class ActionQueue {
 public:
-	ActionQueue(Editor &editor);
+	ActionQueue(Editor& editor);
 	virtual ~ActionQueue();
 
 	typedef std::deque<BatchAction*> ActionList;
@@ -227,7 +227,7 @@ public:
 protected:
 	size_t current;
 	size_t memory_size;
-	Editor &editor;
+	Editor& editor;
 	ActionList actions;
 };
 

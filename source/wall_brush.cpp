@@ -35,7 +35,7 @@ WallBrush::~WallBrush() {
 	////
 }
 
-bool WallBrush::load(pugi::xml_node node, wxArrayString &warnings) {
+bool WallBrush::load(pugi::xml_node node, wxArrayString& warnings) {
 	pugi::xml_attribute attribute;
 	if ((attribute = node.attribute("lookid"))) {
 		look_id = attribute.as_ushort();
@@ -46,9 +46,9 @@ bool WallBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 	}
 
 	for (pugi::xml_node childNode = node.first_child(); childNode; childNode = childNode.next_sibling()) {
-		const std::string &childName = as_lower_str(childNode.name());
+		const std::string& childName = as_lower_str(childNode.name());
 		if (childName == "wall") {
-			const std::string &typeString = childNode.attribute("type").as_string();
+			const std::string& typeString = childNode.attribute("type").as_string();
 			if (typeString.empty()) {
 				warnings.push_back("Could not read type tag of wall node\n");
 				continue;
@@ -97,7 +97,7 @@ bool WallBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 			}
 
 			for (pugi::xml_node subChildNode = childNode.first_child(); subChildNode; subChildNode = subChildNode.next_sibling()) {
-				const std::string &subChildName = as_lower_str(subChildNode.name());
+				const std::string& subChildName = as_lower_str(subChildNode.name());
 				if (subChildName == "item") {
 					uint16_t id = subChildNode.attribute("id").as_ushort();
 					if (id == 0) {
@@ -105,7 +105,7 @@ bool WallBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 						break;
 					}
 
-					ItemType &it = g_items[id];
+					ItemType& it = g_items[id];
 					if (it.id == 0) {
 						warnings.push_back("There is no itemtype with id " + std::to_string(id));
 						return false;
@@ -132,7 +132,7 @@ bool WallBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 						break;
 					}
 
-					const std::string &type = subChildNode.attribute("type").as_string();
+					const std::string& type = subChildNode.attribute("type").as_string();
 					if (type.empty()) {
 						warnings.push_back("Could not read type tag of door node\n");
 						continue;
@@ -159,7 +159,7 @@ bool WallBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 						isLocked = false;
 					}
 
-					ItemType &it = g_items[id];
+					ItemType& it = g_items[id];
 					if (it.id == 0) {
 						warnings.push_back("There is no itemtype with id " + std::to_string(id));
 						return false;
@@ -239,7 +239,7 @@ bool WallBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 				}
 			}
 		} else if (childName == "friend") {
-			const std::string &name = childNode.attribute("name").as_string();
+			const std::string& name = childNode.attribute("name").as_string();
 			if (name.empty()) {
 				continue;
 			}
@@ -300,7 +300,7 @@ void WallBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 							if (i == 16) {
 								i = 0;
 							}
-							WallNode &wn = try_brush->wall_items[i];
+							WallNode& wn = try_brush->wall_items[i];
 							if (wn.total_chance <= 0) {
 								continue;
 							}
@@ -345,7 +345,7 @@ void WallBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 		}
 
 		for (int i = 0; i < 16; ++i) {
-			WallNode &wn = try_brush->wall_items[i];
+			WallNode& wn = try_brush->wall_items[i];
 			if (wn.total_chance <= 0) {
 				continue;
 			}
@@ -498,7 +498,7 @@ void WallBrush::doWalls(BaseMap* map, Tile* tile) {
 						}
 						// Not the same alignment, create newd item with correct alignment
 						uint16_t id = 0;
-						WallNode &wn = brush->wall_items[int(bt)];
+						WallNode& wn = brush->wall_items[int(bt)];
 						if (wn.total_chance <= 0) {
 							if (wn.items.size() == 0) {
 								++it;
@@ -542,7 +542,7 @@ void WallBrush::doWalls(BaseMap* map, Tile* tile) {
 						break;
 					}
 
-					WallNode &wn = try_brush->wall_items[int(bt)];
+					WallNode& wn = try_brush->wall_items[int(bt)];
 					if (wn.total_chance <= 0) {
 						if (wn.items.size() == 0) {
 							try_brush = try_brush->redirect_to;
@@ -594,7 +594,7 @@ void WallBrush::doWalls(BaseMap* map, Tile* tile) {
 					if (brush && brush->isWallDecoration()) {
 						// We know we have changed alignment, so no need to check for it again.
 						uint16_t id = 0;
-						WallNode &wn = brush->wall_items[int(bt)];
+						WallNode& wn = brush->wall_items[int(bt)];
 						if (wn.total_chance <= 0) {
 							if (wn.items.size() == 0) {
 								++it;
@@ -725,10 +725,10 @@ void WallDecorationBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 				for (std::vector<WallBrush::DoorType>::iterator door_iter = door_items[wall_alignment].begin();
 					 door_iter != door_items[wall_alignment].end();
 					 ++door_iter) {
-					WallBrush::DoorType &dt = *door_iter;
+					WallBrush::DoorType& dt = *door_iter;
 					if (dt.type == doortype) {
 						ASSERT(dt.id);
-						ItemType &it = g_items[dt.id];
+						ItemType& it = g_items[dt.id];
 						ASSERT(it.id != 0);
 
 						if (it.isOpen == open) {

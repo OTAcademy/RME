@@ -41,9 +41,9 @@ public:
 	EditorTab* GetTab(int idx);
 
 	// Events
-	void OnAllowNotebookDND(wxAuiNotebookEvent &evt);
-	void OnNotebookPageClose(wxAuiNotebookEvent &evt);
-	void OnNotebookPageChanged(wxAuiNotebookEvent &evt);
+	void OnAllowNotebookDND(wxAuiNotebookEvent& evt);
+	void OnNotebookPageClose(wxAuiNotebookEvent& evt);
+	void OnNotebookPageChanged(wxAuiNotebookEvent& evt);
 	void OnSwitchEditorMode(EditorMode mode);
 
 protected:

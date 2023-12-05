@@ -37,9 +37,9 @@ public:
 		return static_cast<WallBrush*>(this);
 	}
 
-	virtual bool load(pugi::xml_node node, wxArrayString &warnings);
+	virtual bool load(pugi::xml_node node, wxArrayString& warnings);
 
-	virtual bool canDraw(BaseMap* map, const Position &position) const {
+	virtual bool canDraw(BaseMap* map, const Position& position) const {
 		return true;
 	}
 

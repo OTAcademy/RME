@@ -163,7 +163,7 @@ void PalettePanel::RefreshOtherPalettes() {
 	refresh_timer.Start(100, true);
 }
 
-void PalettePanel::OnRefreshTimer(wxTimerEvent &) {
+void PalettePanel::OnRefreshTimer(wxTimerEvent&) {
 	g_gui.RefreshOtherPalettes(GetParentPalette());
 }
 
@@ -366,12 +366,12 @@ void BrushSizePanel::OnUpdateBrushSize(BrushShape shape, int size) {
 	}
 }
 
-void BrushSizePanel::OnClickCircleBrush(wxCommandEvent &event) {
+void BrushSizePanel::OnClickCircleBrush(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SetBrushShape(BRUSHSHAPE_CIRCLE);
 }
 
-void BrushSizePanel::OnClickSquareBrush(wxCommandEvent &event) {
+void BrushSizePanel::OnClickSquareBrush(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SetBrushShape(BRUSHSHAPE_SQUARE);
 }
@@ -733,17 +733,17 @@ void BrushToolPanel::OnSwitchIn() {
 	LoadCurrentContents();
 }
 
-void BrushToolPanel::OnClickGravelButton(wxCommandEvent &event) {
+void BrushToolPanel::OnClickGravelButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.optional_brush);
 }
 
-void BrushToolPanel::OnClickEraserButton(wxCommandEvent &event) {
+void BrushToolPanel::OnClickEraserButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.eraser);
 }
 
-void BrushToolPanel::OnClickNormalDoorButton(wxCommandEvent &event) {
+void BrushToolPanel::OnClickNormalDoorButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.normal_door_brush);
 
@@ -751,7 +751,7 @@ void BrushToolPanel::OnClickNormalDoorButton(wxCommandEvent &event) {
 	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
-void BrushToolPanel::OnClickLockedDoorButton(wxCommandEvent &event) {
+void BrushToolPanel::OnClickLockedDoorButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.locked_door_brush);
 
@@ -759,7 +759,7 @@ void BrushToolPanel::OnClickLockedDoorButton(wxCommandEvent &event) {
 	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
-void BrushToolPanel::OnClickMagicDoorButton(wxCommandEvent &event) {
+void BrushToolPanel::OnClickMagicDoorButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.magic_door_brush);
 
@@ -767,7 +767,7 @@ void BrushToolPanel::OnClickMagicDoorButton(wxCommandEvent &event) {
 	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
-void BrushToolPanel::OnClickQuestDoorButton(wxCommandEvent &event) {
+void BrushToolPanel::OnClickQuestDoorButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.quest_door_brush);
 
@@ -775,7 +775,7 @@ void BrushToolPanel::OnClickQuestDoorButton(wxCommandEvent &event) {
 	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
-void BrushToolPanel::OnClickHatchDoorButton(wxCommandEvent &event) {
+void BrushToolPanel::OnClickHatchDoorButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.hatch_door_brush);
 
@@ -783,7 +783,7 @@ void BrushToolPanel::OnClickHatchDoorButton(wxCommandEvent &event) {
 	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
-void BrushToolPanel::OnClickWindowDoorButton(wxCommandEvent &event) {
+void BrushToolPanel::OnClickWindowDoorButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.window_door_brush);
 
@@ -791,7 +791,7 @@ void BrushToolPanel::OnClickWindowDoorButton(wxCommandEvent &event) {
 	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
-void BrushToolPanel::OnClickNormalAltDoorButton(wxCommandEvent &event) {
+void BrushToolPanel::OnClickNormalAltDoorButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.normal_door_alt_brush);
 
@@ -799,7 +799,7 @@ void BrushToolPanel::OnClickNormalAltDoorButton(wxCommandEvent &event) {
 	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
-void BrushToolPanel::OnClickArchwayDoorButton(wxCommandEvent &event) {
+void BrushToolPanel::OnClickArchwayDoorButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.archway_door_brush);
 
@@ -807,27 +807,27 @@ void BrushToolPanel::OnClickArchwayDoorButton(wxCommandEvent &event) {
 	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
-void BrushToolPanel::OnClickPZBrushButton(wxCommandEvent &event) {
+void BrushToolPanel::OnClickPZBrushButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.pz_brush);
 }
 
-void BrushToolPanel::OnClickNOPVPBrushButton(wxCommandEvent &event) {
+void BrushToolPanel::OnClickNOPVPBrushButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.rook_brush);
 }
 
-void BrushToolPanel::OnClickNoLogoutBrushButton(wxCommandEvent &event) {
+void BrushToolPanel::OnClickNoLogoutBrushButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.nolog_brush);
 }
 
-void BrushToolPanel::OnClickPVPZoneBrushButton(wxCommandEvent &event) {
+void BrushToolPanel::OnClickPVPZoneBrushButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.pvp_brush);
 }
 
-void BrushToolPanel::OnClickLockDoorCheckbox(wxCommandEvent &event) {
+void BrushToolPanel::OnClickLockDoorCheckbox(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 
 	// apply to current brush
@@ -857,7 +857,7 @@ BrushButton::~BrushButton() {
 	////
 }
 
-void BrushButton::OnKey(wxKeyEvent &event) {
+void BrushButton::OnKey(wxKeyEvent& event) {
 	g_gui.AddPendingCanvasEvent(event);
 }
 
@@ -905,7 +905,7 @@ wxString BrushThicknessPanel::GetName() const {
 	return "Brush Thickness";
 }
 
-void BrushThicknessPanel::OnScroll(wxScrollEvent &event) {
+void BrushThicknessPanel::OnScroll(wxScrollEvent& event) {
 	static const int lookup_table[10] = { 1, 2, 3, 5, 8, 13, 23, 35, 50, 80 };
 	use_button->SetValue(true);
 
@@ -917,7 +917,7 @@ void BrushThicknessPanel::OnScroll(wxScrollEvent &event) {
 	g_gui.SetBrushThickness(true, lookup_table[event.GetPosition() - 1], 100);
 }
 
-void BrushThicknessPanel::OnClickCustomThickness(wxCommandEvent &event) {
+void BrushThicknessPanel::OnClickCustomThickness(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SetBrushThickness(event.IsChecked());
 }

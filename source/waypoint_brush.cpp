@@ -45,7 +45,7 @@ std::string WaypointBrush::getWaypoint() const {
 	return waypoint_name;
 }
 
-bool WaypointBrush::canDraw(BaseMap* map, const Position &position) const {
+bool WaypointBrush::canDraw(BaseMap* map, const Position& position) const {
 	return map->getTile(position) != nullptr;
 }
 

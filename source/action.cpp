@@ -34,7 +34,7 @@ Change::Change(Tile* t) :
 	data = t;
 }
 
-Change* Change::Create(House* house, const Position &where) {
+Change* Change::Create(House* house, const Position& where) {
 	Change* c = newd Change();
 	c->type = CHANGE_MOVE_HOUSE_EXIT;
 	std::pair<uint32_t, Position>* p = newd std::pair<uint32_t, Position>;
@@ -44,7 +44,7 @@ Change* Change::Create(House* house, const Position &where) {
 	return c;
 }
 
-Change* Change::Create(Waypoint* wp, const Position &where) {
+Change* Change::Create(Waypoint* wp, const Position& where) {
 	Change* c = newd Change();
 	c->type = CHANGE_MOVE_WAYPOINT;
 	std::pair<std::string, Position>* p = newd std::pair<std::string, Position>;
@@ -99,7 +99,7 @@ uint32_t Change::memsize() const {
 	return mem;
 }
 
-Action::Action(Editor &editor, ActionIdentifier ident) :
+Action::Action(Editor& editor, ActionIdentifier ident) :
 	commited(false),
 	editor(editor),
 	type(ident) {
@@ -413,7 +413,7 @@ void Action::undo(DirtyList* dirty_list) {
 	commited = false;
 }
 
-BatchAction::BatchAction(Editor &editor, ActionIdentifier ident) :
+BatchAction::BatchAction(Editor& editor, ActionIdentifier ident) :
 	editor(editor),
 	timestamp(0),
 	memory_size(0),
@@ -512,7 +512,7 @@ void BatchAction::merge(BatchAction* other) {
 	other->batch.clear();
 }
 
-ActionQueue::ActionQueue(Editor &editor) :
+ActionQueue::ActionQueue(Editor& editor) :
 	current(0), memory_size(0), editor(editor) {
 	////
 }
@@ -667,10 +667,10 @@ void DirtyList::AddChange(Change* c) {
 	ichanges.push_back(c);
 }
 
-DirtyList::SetType &DirtyList::GetPosList() {
+DirtyList::SetType& DirtyList::GetPosList() {
 	return iset;
 }
 
-ChangeList &DirtyList::GetChanges() {
+ChangeList& DirtyList::GetChanges() {
 	return ichanges;
 }

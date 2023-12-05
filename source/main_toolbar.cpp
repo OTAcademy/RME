@@ -316,7 +316,7 @@ void MainToolBar::UpdateBrushSize(BrushShape shape, int size) {
 void MainToolBar::Show(ToolBarID id, bool show) {
 	wxAuiManager* manager = g_gui.GetAuiManager();
 	if (manager) {
-		wxAuiPaneInfo &pane = GetPane(id);
+		wxAuiPaneInfo& pane = GetPane(id);
 		if (pane.IsOk()) {
 			pane.Show(show);
 			manager->Update();
@@ -330,7 +330,7 @@ void MainToolBar::HideAll(bool update) {
 		return;
 	}
 
-	wxAuiPaneInfoArray &panes = manager->GetAllPanes();
+	wxAuiPaneInfoArray& panes = manager->GetAllPanes();
 	for (int i = 0, count = panes.GetCount(); i < count; ++i) {
 		if (!panes.Item(i).IsToolbar()) {
 			panes.Item(i).Hide();
@@ -418,7 +418,7 @@ void MainToolBar::SavePerspective() {
 	}
 }
 
-void MainToolBar::OnStandardButtonClick(wxCommandEvent &event) {
+void MainToolBar::OnStandardButtonClick(wxCommandEvent& event) {
 	switch (event.GetId()) {
 		case wxID_NEW:
 			g_gui.NewMap();
@@ -452,7 +452,7 @@ void MainToolBar::OnStandardButtonClick(wxCommandEvent &event) {
 	}
 }
 
-void MainToolBar::OnBrushesButtonClick(wxCommandEvent &event) {
+void MainToolBar::OnBrushesButtonClick(wxCommandEvent& event) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -505,7 +505,7 @@ void MainToolBar::OnBrushesButtonClick(wxCommandEvent &event) {
 	}
 }
 
-void MainToolBar::OnPositionButtonClick(wxCommandEvent &event) {
+void MainToolBar::OnPositionButtonClick(wxCommandEvent& event) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -518,7 +518,7 @@ void MainToolBar::OnPositionButtonClick(wxCommandEvent &event) {
 	}
 }
 
-void MainToolBar::OnPositionKeyUp(wxKeyEvent &event) {
+void MainToolBar::OnPositionKeyUp(wxKeyEvent& event) {
 	if (event.GetKeyCode() == WXK_TAB) {
 		if (x_control->HasFocus()) {
 			y_control->SelectAll();
@@ -538,9 +538,9 @@ void MainToolBar::OnPositionKeyUp(wxKeyEvent &event) {
 	event.Skip();
 }
 
-void MainToolBar::OnPastePositionText(wxClipboardTextEvent &event) {
+void MainToolBar::OnPastePositionText(wxClipboardTextEvent& event) {
 	Position position;
-	const Map &currentMap = g_gui.GetCurrentMap();
+	const Map& currentMap = g_gui.GetCurrentMap();
 	if (posFromClipboard(position, currentMap.getWidth(), currentMap.getHeight())) {
 		x_control->SetIntValue(position.x);
 		y_control->SetIntValue(position.y);
@@ -550,7 +550,7 @@ void MainToolBar::OnPastePositionText(wxClipboardTextEvent &event) {
 	}
 }
 
-void MainToolBar::OnSizesButtonClick(wxCommandEvent &event) {
+void MainToolBar::OnSizesButtonClick(wxCommandEvent& event) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -588,7 +588,7 @@ void MainToolBar::OnSizesButtonClick(wxCommandEvent &event) {
 	}
 }
 
-wxAuiPaneInfo &MainToolBar::GetPane(ToolBarID id) {
+wxAuiPaneInfo& MainToolBar::GetPane(ToolBarID id) {
 	wxAuiManager* manager = g_gui.GetAuiManager();
 	if (!manager) {
 		return wxAuiNullPaneInfo;

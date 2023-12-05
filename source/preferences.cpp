@@ -338,7 +338,7 @@ wxNotebookPage* PreferencesWindow::CreateGraphicsPage() {
 	return graphics_page;
 }
 
-wxChoice* PreferencesWindow::AddPaletteStyleChoice(wxWindow* parent, wxSizer* sizer, const wxString &short_description, const wxString &description, const std::string &setting) {
+wxChoice* PreferencesWindow::AddPaletteStyleChoice(wxWindow* parent, wxSizer* sizer, const wxString& short_description, const wxString& description, const std::string& setting) {
 	wxStaticText* text;
 	sizer->Add(text = newd wxStaticText(parent, wxID_ANY, short_description), 0);
 
@@ -558,20 +558,20 @@ wxNotebookPage* PreferencesWindow::CreateClientPage() {
 
 // Event handlers!
 
-void PreferencesWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
+void PreferencesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	Apply();
 	EndModal(0);
 }
 
-void PreferencesWindow::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
+void PreferencesWindow::OnClickCancel(wxCommandEvent& WXUNUSED(event)) {
 	EndModal(0);
 }
 
-void PreferencesWindow::OnClickApply(wxCommandEvent &WXUNUSED(event)) {
+void PreferencesWindow::OnClickApply(wxCommandEvent& WXUNUSED(event)) {
 	Apply();
 }
 
-void PreferencesWindow::OnCollapsiblePane(wxCollapsiblePaneEvent &event) {
+void PreferencesWindow::OnCollapsiblePane(wxCollapsiblePaneEvent& event) {
 	auto* win = (wxWindow*)event.GetEventObject();
 	win->GetParent()->Fit();
 }

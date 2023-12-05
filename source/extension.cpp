@@ -31,7 +31,7 @@ MaterialsExtension::~MaterialsExtension() {
 	////
 }
 
-void MaterialsExtension::addVersion(const std::string &versionString) {
+void MaterialsExtension::addVersion(const std::string& versionString) {
 	if (versionString == "all") {
 		for_all_versions = true;
 	} else {

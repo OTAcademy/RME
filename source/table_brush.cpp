@@ -36,7 +36,7 @@ TableBrush::~TableBrush() {
 	////
 }
 
-bool TableBrush::load(pugi::xml_node node, wxArrayString &warnings) {
+bool TableBrush::load(pugi::xml_node node, wxArrayString& warnings) {
 	if (const pugi::xml_attribute attribute = node.attribute("server_lookid")) {
 		look_id = g_items[attribute.as_ushort()].clientID;
 	}
@@ -50,7 +50,7 @@ bool TableBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 			continue;
 		}
 
-		const std::string &alignString = childNode.attribute("align").as_string();
+		const std::string& alignString = childNode.attribute("align").as_string();
 		if (alignString.empty()) {
 			warnings.push_back("Could not read type tag of table node\n");
 			continue;
@@ -87,7 +87,7 @@ bool TableBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 				break;
 			}
 
-			ItemType &it = g_items[id];
+			ItemType& it = g_items[id];
 			if (it.id == 0) {
 				warnings.push_back("There is no itemtype with id " + std::to_string(id));
 				return false;
@@ -110,7 +110,7 @@ bool TableBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 	return true;
 }
 
-bool TableBrush::canDraw(BaseMap* map, const Position &position) const {
+bool TableBrush::canDraw(BaseMap* map, const Position& position) const {
 	return true;
 }
 
@@ -134,7 +134,7 @@ void TableBrush::undraw(BaseMap* map, Tile* t) {
 void TableBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 	undraw(map, tile); // Remove old
 
-	TableNode &tn = table_items[0];
+	TableNode& tn = table_items[0];
 	if (tn.total_chance <= 0) {
 		return;
 	}
@@ -177,7 +177,7 @@ void TableBrush::doTables(BaseMap* map, Tile* tile) {
 		return;
 	}
 
-	const Position &position = tile->getPosition();
+	const Position& position = tile->getPosition();
 
 	int32_t x = position.x;
 	int32_t y = position.y;
@@ -241,7 +241,7 @@ void TableBrush::doTables(BaseMap* map, Tile* tile) {
 		}
 
 		BorderType bt = static_cast<BorderType>(table_types[tiledata]);
-		TableNode &tn = table_brush->table_items[static_cast<int32_t>(bt)];
+		TableNode& tn = table_brush->table_items[static_cast<int32_t>(bt)];
 		if (tn.total_chance == 0) {
 			return;
 		}
@@ -249,7 +249,7 @@ void TableBrush::doTables(BaseMap* map, Tile* tile) {
 		int32_t chance = random(1, tn.total_chance);
 		uint16_t id = 0;
 
-		for (const TableType &tableType : tn.items) {
+		for (const TableType& tableType : tn.items) {
 			if (chance <= tableType.chance) {
 				id = tableType.item_id;
 				break;

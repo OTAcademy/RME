@@ -28,7 +28,7 @@ public:
 	~LivePeer();
 
 	void close();
-	bool handleError(const boost::system::error_code &error);
+	bool handleError(const boost::system::error_code& error);
 
 	//
 	uint32_t getId() const {
@@ -43,34 +43,34 @@ public:
 	wxColor getUsedColor() const {
 		return color;
 	}
-	void setUsedColor(const wxColor &newColor) {
+	void setUsedColor(const wxColor& newColor) {
 		color = newColor;
 	}
 
 	//
 	void receiveHeader();
 	void receive(uint32_t packetSize);
-	void send(NetworkMessage &message);
+	void send(NetworkMessage& message);
 
 	//
-	void updateCursor(const Position &position) { }
+	void updateCursor(const Position& position) { }
 
 protected:
 	void parseLoginPacket(NetworkMessage message);
 	void parseEditorPacket(NetworkMessage message);
 
 	// login packets
-	void parseHello(NetworkMessage &message);
-	void parseReady(NetworkMessage &message);
+	void parseHello(NetworkMessage& message);
+	void parseReady(NetworkMessage& message);
 
 	// editor packets
-	void parseNodeRequest(NetworkMessage &message);
-	void parseReceiveChanges(NetworkMessage &message);
-	void parseAddHouse(NetworkMessage &message);
-	void parseEditHouse(NetworkMessage &message);
-	void parseRemoveHouse(NetworkMessage &message);
-	void parseCursorUpdate(NetworkMessage &message);
-	void parseChatMessage(NetworkMessage &message);
+	void parseNodeRequest(NetworkMessage& message);
+	void parseReceiveChanges(NetworkMessage& message);
+	void parseAddHouse(NetworkMessage& message);
+	void parseEditHouse(NetworkMessage& message);
+	void parseRemoveHouse(NetworkMessage& message);
+	void parseCursorUpdate(NetworkMessage& message);
+	void parseChatMessage(NetworkMessage& message);
 
 	//
 	NetworkMessage readMessage;

@@ -34,9 +34,9 @@ class LiveSocket;
 
 class Editor {
 public:
-	Editor(CopyBuffer &copybuffer, LiveClient* client);
-	Editor(CopyBuffer &copybuffer, const FileName &fn);
-	Editor(CopyBuffer &copybuffer);
+	Editor(CopyBuffer& copybuffer, LiveClient* client);
+	Editor(CopyBuffer& copybuffer, const FileName& fn);
+	Editor(CopyBuffer& copybuffer);
 	~Editor();
 
 protected:
@@ -48,7 +48,7 @@ public:
 	// Public members
 	ActionQueue* actionQueue;
 	Selection selection;
-	CopyBuffer &copybuffer;
+	CopyBuffer& copybuffer;
 	GroundBrush* replace_brush;
 	Map map; // The map that is being edited
 
@@ -56,7 +56,7 @@ public: // Functions
 	// Live Server handling
 	LiveClient* GetLiveClient() const;
 	LiveServer* GetLiveServer() const;
-	LiveSocket &GetLive() const;
+	LiveSocket& GetLive() const;
 	bool CanEdit() const {
 		return true;
 	}
@@ -68,7 +68,7 @@ public: // Functions
 	// Server side
 	LiveServer* StartLiveServer();
 	void CloseLiveServer();
-	void BroadcastNodes(DirtyList &dirty_list);
+	void BroadcastNodes(DirtyList& dirty_list);
 
 	// Client side
 	void QueryNode(int ndx, int ndy, bool underground);
@@ -121,38 +121,38 @@ public: // Functions
 
 	// Draw using the current brush to the target position
 	// alt is whether the ALT key is pressed
-	void draw(const Position &offset, bool alt);
-	void undraw(const Position &offset, bool alt);
-	void draw(const PositionVector &posvec, bool alt);
-	void draw(const PositionVector &todraw, PositionVector &toborder, bool alt);
-	void undraw(const PositionVector &posvec, bool alt);
-	void undraw(const PositionVector &todraw, PositionVector &toborder, bool alt);
+	void draw(const Position& offset, bool alt);
+	void undraw(const Position& offset, bool alt);
+	void draw(const PositionVector& posvec, bool alt);
+	void draw(const PositionVector& todraw, PositionVector& toborder, bool alt);
+	void undraw(const PositionVector& posvec, bool alt);
+	void undraw(const PositionVector& todraw, PositionVector& toborder, bool alt);
 
 protected:
 	void drawInternal(const Position offset, bool alt, bool dodraw);
-	void drawInternal(const PositionVector &posvec, bool alt, bool dodraw);
-	void drawInternal(const PositionVector &todraw, PositionVector &toborder, bool alt, bool dodraw);
+	void drawInternal(const PositionVector& posvec, bool alt, bool dodraw);
+	void drawInternal(const PositionVector& todraw, PositionVector& toborder, bool alt, bool dodraw);
 
-	Editor(const Editor &);
-	Editor &operator=(const Editor &);
+	Editor(const Editor&);
+	Editor& operator=(const Editor&);
 };
 
-inline void Editor::draw(const Position &offset, bool alt) {
+inline void Editor::draw(const Position& offset, bool alt) {
 	drawInternal(offset, alt, true);
 }
-inline void Editor::undraw(const Position &offset, bool alt) {
+inline void Editor::undraw(const Position& offset, bool alt) {
 	drawInternal(offset, alt, false);
 }
-inline void Editor::draw(const PositionVector &posvec, bool alt) {
+inline void Editor::draw(const PositionVector& posvec, bool alt) {
 	drawInternal(posvec, alt, true);
 }
-inline void Editor::draw(const PositionVector &todraw, PositionVector &toborder, bool alt) {
+inline void Editor::draw(const PositionVector& todraw, PositionVector& toborder, bool alt) {
 	drawInternal(todraw, toborder, alt, true);
 }
-inline void Editor::undraw(const PositionVector &posvec, bool alt) {
+inline void Editor::undraw(const PositionVector& posvec, bool alt) {
 	drawInternal(posvec, alt, false);
 }
-inline void Editor::undraw(const PositionVector &todraw, PositionVector &toborder, bool alt) {
+inline void Editor::undraw(const PositionVector& todraw, PositionVector& toborder, bool alt) {
 	drawInternal(todraw, toborder, alt, false);
 }
 

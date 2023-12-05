@@ -28,7 +28,7 @@ class Houses;
 
 class House {
 public:
-	House(Map &map);
+	House(Map& map);
 	~House();
 
 	uint32_t getID() const {
@@ -50,8 +50,8 @@ public:
 	uint32_t townid;
 	bool guildhall;
 
-	void setExit(const Position &pos);
-	void setExit(Map* map, const Position &pos);
+	void setExit(const Position& pos);
+	void setExit(Map* map, const Position& pos);
 	Position getExit() const {
 		return exit;
 	}
@@ -73,7 +73,7 @@ typedef std::map<uint32_t, House*> HouseMap;
 
 class Houses {
 public:
-	Houses(Map &map);
+	Houses(Map& map);
 	~Houses();
 
 	uint32_t count() const {
@@ -113,7 +113,7 @@ public:
 	uint32_t getEmptyID();
 
 protected:
-	Map &map;
+	Map& map;
 	uint32_t max_house_id;
 	HouseMap houses;
 };

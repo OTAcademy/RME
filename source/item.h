@@ -79,7 +79,7 @@ public:
 	// Factory member to create item of right type based on type
 	static Item* Create(uint16_t _type, uint16_t _subtype = 0xFFFF);
 	static Item* Create(pugi::xml_node);
-	static Item* Create_OTBM(const IOMap &maphandle, BinaryNode* stream);
+	static Item* Create_OTBM(const IOMap& maphandle, BinaryNode* stream);
 	// static Item* Create_OTMM(const IOMap& maphandle, BinaryNode* stream);
 
 protected:
@@ -112,15 +112,15 @@ public:
 	// OTBM map interface
 	// Serialize and unserialize (for save/load)
 	// Used internally
-	virtual bool readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute attr, BinaryNode* stream);
-	virtual bool unserializeAttributes_OTBM(const IOMap &maphandle, BinaryNode* stream);
-	virtual bool unserializeItemNode_OTBM(const IOMap &maphandle, BinaryNode* node);
+	virtual bool readItemAttribute_OTBM(const IOMap& maphandle, OTBM_ItemAttribute attr, BinaryNode* stream);
+	virtual bool unserializeAttributes_OTBM(const IOMap& maphandle, BinaryNode* stream);
+	virtual bool unserializeItemNode_OTBM(const IOMap& maphandle, BinaryNode* node);
 
 	// Will return a node containing this item
-	virtual bool serializeItemNode_OTBM(const IOMap &maphandle, NodeFileWriteHandle &f) const;
+	virtual bool serializeItemNode_OTBM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
 	// Will write this item to the stream supplied in the argument
-	virtual void serializeItemCompact_OTBM(const IOMap &maphandle, NodeFileWriteHandle &f) const;
-	virtual void serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWriteHandle &f) const;
+	virtual void serializeItemCompact_OTBM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
+	virtual void serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
 
 	// OTMM map interface
 	/*
@@ -274,7 +274,7 @@ public:
 		return g_items[id].isHangable;
 	}
 	bool isRoteable() const {
-		const ItemType &it = g_items[id];
+		const ItemType& it = g_items[id];
 		return it.rotable && it.rotateTo;
 	}
 	void doRotate() {
@@ -385,11 +385,11 @@ public:
 	uint16_t getTier() const;
 
 	// Text
-	void setText(const std::string &str);
+	void setText(const std::string& str);
 	std::string getText() const;
 
 	// Description
-	void setDescription(const std::string &str);
+	void setDescription(const std::string& str);
 	std::string getDescription() const;
 
 	void animate();
@@ -405,9 +405,9 @@ protected:
 	int frame;
 
 private:
-	Item &operator=(const Item &i); // Can't copy
-	Item(const Item &i); // Can't copy-construct
-	Item &operator==(const Item &i); // Can't compare
+	Item& operator=(const Item& i); // Can't copy
+	Item(const Item& i); // Can't copy-construct
+	Item& operator==(const Item& i); // Can't compare
 };
 
 typedef std::vector<Item*> ItemVector;

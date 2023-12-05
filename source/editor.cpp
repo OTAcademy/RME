@@ -39,7 +39,7 @@
 #include "live_client.h"
 #include "live_action.h"
 
-Editor::Editor(CopyBuffer &copybuffer) :
+Editor::Editor(CopyBuffer& copybuffer) :
 	live_server(nullptr),
 	live_client(nullptr),
 	actionQueue(newd ActionQueue(*this)),
@@ -90,7 +90,7 @@ Editor::Editor(CopyBuffer &copybuffer) :
 	map.doChange();
 }
 
-Editor::Editor(CopyBuffer &copybuffer, const FileName &fn) :
+Editor::Editor(CopyBuffer& copybuffer, const FileName& fn) :
 	live_server(nullptr),
 	live_client(nullptr),
 	actionQueue(newd ActionQueue(*this)),
@@ -145,7 +145,7 @@ Editor::Editor(CopyBuffer &copybuffer, const FileName &fn) :
 	}
 }
 
-Editor::Editor(CopyBuffer &copybuffer, LiveClient* client) :
+Editor::Editor(CopyBuffer& copybuffer, LiveClient* client) :
 	live_server(nullptr),
 	live_client(client),
 	actionQueue(newd NetworkedActionQueue(*this)),
@@ -388,7 +388,7 @@ bool Editor::exportSelectionAsMiniMap(FileName directory, wxString fileName) {
 	int min_x = MAP_MAX_WIDTH + 1, min_y = MAP_MAX_HEIGHT + 1, min_z = MAP_MAX_LAYER + 1;
 	int max_x = 0, max_y = 0, max_z = 0;
 
-	const TileSet &tiles = selection.getTiles();
+	const TileSet& tiles = selection.getTiles();
 	for (Tile* tile : tiles) {
 		if (tile->empty()) {
 			continue;
@@ -930,7 +930,7 @@ void Editor::clearInvalidHouseTiles(bool showdialog) {
 		g_gui.CreateLoadBar("Clearing invalid house tiles...");
 	}
 
-	Houses &houses = map.houses;
+	Houses& houses = map.houses;
 
 	HouseMap::iterator iter = houses.begin();
 	while (iter != houses.end()) {
@@ -1345,7 +1345,7 @@ void Editor::destroySelection() {
 }
 
 // Macro to avoid useless code repetition
-void doSurroundingBorders(DoodadBrush* doodad_brush, PositionList &tilestoborder, Tile* buffer_tile, Tile* new_tile) {
+void doSurroundingBorders(DoodadBrush* doodad_brush, PositionList& tilestoborder, Tile* buffer_tile, Tile* new_tile) {
 	if (doodad_brush->doNewBorders() && g_settings.getInteger(Config::USE_AUTOMAGIC)) {
 		tilestoborder.push_back(Position(new_tile->getPosition().x, new_tile->getPosition().y, new_tile->getPosition().z));
 		if (buffer_tile->hasGround()) {
@@ -1542,7 +1542,7 @@ void Editor::drawInternal(Position offset, bool alt, bool dodraw) {
 	}
 }
 
-void Editor::drawInternal(const PositionVector &tilestodraw, bool alt, bool dodraw) {
+void Editor::drawInternal(const PositionVector& tilestodraw, bool alt, bool dodraw) {
 	Brush* brush = g_gui.GetCurrentBrush();
 	if (!brush) {
 		return;
@@ -1608,7 +1608,7 @@ void Editor::drawInternal(const PositionVector &tilestodraw, bool alt, bool dodr
 	addAction(action, 2);
 }
 
-void Editor::drawInternal(const PositionVector &tilestodraw, PositionVector &tilestoborder, bool alt, bool dodraw) {
+void Editor::drawInternal(const PositionVector& tilestodraw, PositionVector& tilestoborder, bool alt, bool dodraw) {
 	Brush* brush = g_gui.GetCurrentBrush();
 	if (!brush) {
 		return;
@@ -1920,7 +1920,7 @@ LiveServer* Editor::GetLiveServer() const {
 	return live_server;
 }
 
-LiveSocket &Editor::GetLive() const {
+LiveSocket& Editor::GetLive() const {
 	if (live_server) {
 		return *live_server;
 	}
@@ -1937,7 +1937,7 @@ LiveServer* Editor::StartLiveServer() {
 	return live_server;
 }
 
-void Editor::BroadcastNodes(DirtyList &dirtyList) {
+void Editor::BroadcastNodes(DirtyList& dirtyList) {
 	if (IsLiveClient()) {
 		live_client->sendChanges(dirtyList);
 	} else {
@@ -1964,7 +1964,7 @@ void Editor::CloseLiveServer() {
 		actionQueue = newd ActionQueue(*this);
 	}
 
-	NetworkConnection &connection = NetworkConnection::getInstance();
+	NetworkConnection& connection = NetworkConnection::getInstance();
 	connection.stop();
 }
 

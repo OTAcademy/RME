@@ -58,7 +58,7 @@ Tile* BaseMap::createTile(int x, int y, int z) {
 	return t;
 }
 
-Tile* BaseMap::getOrCreateTile(const Position &pos) {
+Tile* BaseMap::getOrCreateTile(const Position& pos) {
 	if (Tile* t = getTile(pos)) {
 		return t;
 	}
@@ -87,11 +87,11 @@ const TileLocation* BaseMap::getTileL(int x, int y, int z) const {
 	return self->getTileL(x, y, z);
 }
 
-TileLocation* BaseMap::getTileL(const Position &pos) {
+TileLocation* BaseMap::getTileL(const Position& pos) {
 	return getTileL(pos.x, pos.y, pos.z);
 }
 
-const TileLocation* BaseMap::getTileL(const Position &pos) const {
+const TileLocation* BaseMap::getTileL(const Position& pos) const {
 	return getTileL(pos.x, pos.y, pos.z);
 }
 
@@ -106,7 +106,7 @@ TileLocation* BaseMap::createTileL(int x, int y, int z) {
 	return &floor->locs[offsetX * 4 + offsetY];
 }
 
-TileLocation* BaseMap::createTileL(const Position &pos) {
+TileLocation* BaseMap::createTileL(const Position& pos) {
 	return createTileL(pos.x, pos.y, pos.z);
 }
 
@@ -146,7 +146,7 @@ MapIterator::~MapIterator() {
 	////
 }
 
-MapIterator::MapIterator(const MapIterator &other) {
+MapIterator::MapIterator(const MapIterator& other) {
 	for (std::vector<MapIterator::NodeIndex>::const_iterator it = other.nodestack.begin(); it != other.nodestack.end(); it++) {
 		nodestack.push_back(MapIterator::NodeIndex(*it));
 	}
@@ -161,9 +161,9 @@ MapIterator BaseMap::begin() {
 	it.nodestack.push_back(MapIterator::NodeIndex(&root));
 
 	while (true) {
-		MapIterator::NodeIndex &current = it.nodestack.back();
+		MapIterator::NodeIndex& current = it.nodestack.back();
 		QTreeNode* node = current.node;
-		int &index = current.index;
+		int& index = current.index;
 		// printf("Contemplating %p of %p (stack size %d)\n", node, this, it.nodestack.size());
 
 		bool unwind = false;
@@ -177,7 +177,7 @@ MapIterator BaseMap::begin() {
 						if (Floor* floor = leaf->array[it.local_z]) {
 							for (it.local_i = 0; it.local_i < MAP_LAYERS; ++it.local_i) {
 								// printf("\tit(%d;%d;%d)\n", it.local_x, it.local_y, it.local_z);
-								TileLocation &t = floor->locs[it.local_i];
+								TileLocation& t = floor->locs[it.local_i];
 								if (t.get()) {
 									// printf("return it\n");
 									it.current_tile = &t;
@@ -223,14 +223,14 @@ TileLocation* MapIterator::operator->() {
 	return current_tile;
 }
 
-MapIterator &MapIterator::operator++() {
+MapIterator& MapIterator::operator++() {
 	// printf("MapIterator::operator++");
 	bool increased = false;
 	bool first = true;
 	while (true) {
-		MapIterator::NodeIndex &current = nodestack.back();
+		MapIterator::NodeIndex& current = nodestack.back();
 		QTreeNode* node = current.node;
-		int &index = current.index;
+		int& index = current.index;
 		// printf("Contemplating %p (stack size %d)\n", node, nodestack.size());
 
 		bool unwind = false;
@@ -246,7 +246,7 @@ MapIterator &MapIterator::operator++() {
 							// printf("\n");
 							for (; local_i < MAP_LAYERS; ++local_i) {
 								// printf("\t\tIterating over Y:%d of %p\n", local_y, child);
-								TileLocation &t = floor->locs[local_i];
+								TileLocation& t = floor->locs[local_i];
 								if (t.get()) {
 									if (increased) {
 										// printf("Modified %p to %p\n", current_tile, t);

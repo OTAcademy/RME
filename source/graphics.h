@@ -59,8 +59,8 @@ public:
 	virtual void unloadDC() = 0;
 
 private:
-	Sprite(const Sprite &);
-	Sprite &operator=(const Sprite &);
+	Sprite(const Sprite&);
+	Sprite& operator=(const Sprite&);
 };
 
 class EditorSprite : public Sprite {
@@ -82,7 +82,7 @@ public:
 
 	int getIndex(int width, int height, int layer, int pattern_x, int pattern_y, int pattern_z, int frame) const;
 	GLuint getHardwareID(int _x, int _y, int _layer, int _subtype, int _pattern_x, int _pattern_y, int _pattern_z, int _frame);
-	GLuint getHardwareID(int _x, int _y, int _dir, int _addon, int _pattern_z, const Outfit &_outfit, int _frame); // CreatureDatabase
+	GLuint getHardwareID(int _x, int _y, int _dir, int _addon, int _pattern_z, const Outfit& _outfit, int _frame); // CreatureDatabase
 	virtual void DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width = -1, int height = -1);
 
 	virtual void unloadDC();
@@ -96,7 +96,7 @@ public:
 	bool hasLight() const noexcept {
 		return has_light;
 	}
-	const SpriteLight &getLight() const noexcept {
+	const SpriteLight& getLight() const noexcept {
 		return light;
 	}
 
@@ -106,7 +106,7 @@ protected:
 	class TemplateImage;
 
 	wxMemoryDC* getDC(SpriteSize size);
-	TemplateImage* getTemplateImage(int sprite_index, const Outfit &outfit);
+	TemplateImage* getTemplateImage(int sprite_index, const Outfit& outfit);
 
 	class Image {
 	public:
@@ -153,7 +153,7 @@ protected:
 
 	class TemplateImage : public Image {
 	public:
-		TemplateImage(GameSprite* parent, int v, const Outfit &outfit);
+		TemplateImage(GameSprite* parent, int v, const Outfit& outfit);
 		virtual ~TemplateImage();
 
 		virtual GLuint getHardwareID();
@@ -169,7 +169,7 @@ protected:
 		uint8_t lookFeet;
 
 	protected:
-		void colorizePixel(uint8_t color, uint8_t &r, uint8_t &b, uint8_t &g);
+		void colorizePixel(uint8_t color, uint8_t& r, uint8_t& b, uint8_t& g);
 
 		virtual void createGLTexture(GLuint ignored = 0);
 		virtual void unloadGLTexture(GLuint ignored = 0);
@@ -288,10 +288,10 @@ public:
 	bool loadEditorSprites();
 	// Metadata should be loaded first
 	// This fills the item / creature adress space
-	bool loadOTFI(const FileName &filename, wxString &error, wxArrayString &warnings);
-	bool loadSpriteMetadata(const FileName &datafile, wxString &error, wxArrayString &warnings);
-	bool loadSpriteMetadataFlags(FileReadHandle &file, GameSprite* sType, wxString &error, wxArrayString &warnings);
-	bool loadSpriteData(const FileName &datafile, wxString &error, wxArrayString &warnings);
+	bool loadOTFI(const FileName& filename, wxString& error, wxArrayString& warnings);
+	bool loadSpriteMetadata(const FileName& datafile, wxString& error, wxArrayString& warnings);
+	bool loadSpriteMetadataFlags(FileReadHandle& file, GameSprite* sType, wxString& error, wxArrayString& warnings);
+	bool loadSpriteData(const FileName& datafile, wxString& error, wxArrayString& warnings);
 
 	// Cleans old & unused textures according to config settings
 	void garbageCollection();
@@ -313,7 +313,7 @@ private:
 	bool unloaded;
 	// This is used if memcaching is NOT on
 	std::string spritefile;
-	bool loadSpriteDump(uint8_t*&target, uint16_t &size, int sprite_id);
+	bool loadSpriteDump(uint8_t*& target, uint16_t& size, int sprite_id);
 
 	typedef std::map<int, Sprite*> SpriteMap;
 	SpriteMap sprite_space;

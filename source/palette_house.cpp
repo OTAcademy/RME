@@ -118,7 +118,7 @@ void HousePalettePanel::OnSwitchIn() {
 	}
 }
 
-void HousePalettePanel::OnLayoutFixTimer(wxTimerEvent &WXUNUSED(event)) {
+void HousePalettePanel::OnLayoutFixTimer(wxTimerEvent& WXUNUSED(event)) {
 	wxWindow* w = this;
 	while ((w = w->GetParent()) && dynamic_cast<PaletteWindow*>(w) == nullptr)
 		;
@@ -308,17 +308,17 @@ void HousePalettePanel::OnUpdate() {
 	}
 }
 
-void HousePalettePanel::OnTownChange(wxCommandEvent &event) {
+void HousePalettePanel::OnTownChange(wxCommandEvent& event) {
 	SelectTown(event.GetSelection());
 	g_gui.SelectBrush();
 }
 
-void HousePalettePanel::OnListBoxChange(wxCommandEvent &event) {
+void HousePalettePanel::OnListBoxChange(wxCommandEvent& event) {
 	SelectHouse(event.GetSelection());
 	g_gui.SelectBrush();
 }
 
-void HousePalettePanel::OnListBoxDoubleClick(wxCommandEvent &event) {
+void HousePalettePanel::OnListBoxDoubleClick(wxCommandEvent& event) {
 	House* house = reinterpret_cast<House*>(event.GetClientData());
 	// I find it extremly unlikely that one actually wants the exit at 0,0,0, so just treat it as the null value
 	if (house && house->getExit() != Position(0, 0, 0)) {
@@ -326,17 +326,17 @@ void HousePalettePanel::OnListBoxDoubleClick(wxCommandEvent &event) {
 	}
 }
 
-void HousePalettePanel::OnClickHouseBrushButton(wxCommandEvent &event) {
+void HousePalettePanel::OnClickHouseBrushButton(wxCommandEvent& event) {
 	SelectHouseBrush();
 	g_gui.SelectBrush();
 }
 
-void HousePalettePanel::OnClickSelectExitButton(wxCommandEvent &event) {
+void HousePalettePanel::OnClickSelectExitButton(wxCommandEvent& event) {
 	SelectExitBrush();
 	g_gui.SelectBrush();
 }
 
-void HousePalettePanel::OnClickAddHouse(wxCommandEvent &event) {
+void HousePalettePanel::OnClickAddHouse(wxCommandEvent& event) {
 	if (map == nullptr) {
 		return;
 	}
@@ -359,7 +359,7 @@ void HousePalettePanel::OnClickAddHouse(wxCommandEvent &event) {
 	refresh_timer.Start(300, true);
 }
 
-void HousePalettePanel::OnClickEditHouse(wxCommandEvent &event) {
+void HousePalettePanel::OnClickEditHouse(wxCommandEvent& event) {
 	if (house_list->GetCount() == 0) {
 		return;
 	}
@@ -384,7 +384,7 @@ void HousePalettePanel::OnClickEditHouse(wxCommandEvent &event) {
 	}
 }
 
-void HousePalettePanel::OnClickRemoveHouse(wxCommandEvent &event) {
+void HousePalettePanel::OnClickRemoveHouse(wxCommandEvent& event) {
 	int selection = house_list->GetSelection();
 	if (selection != wxNOT_FOUND) {
 		House* house = reinterpret_cast<House*>(house_list->GetClientData(selection));
@@ -415,7 +415,7 @@ void HousePalettePanel::OnClickRemoveHouse(wxCommandEvent &event) {
 // On wxMac it is possible to deselect a wxListBox. (Unlike on the other platforms)
 // EVT_LISTBOX is not triggered when the deselection is happening. http://trac.wxwidgets.org/ticket/15603
 // Here we find out if the listbox was deselected using a normal mouse up event so we know when to disable the buttons and brushes.
-void HousePalettePanel::OnListBoxClick(wxMouseEvent &event) {
+void HousePalettePanel::OnListBoxClick(wxMouseEvent& event) {
 	if (house_list->GetSelection() == wxNOT_FOUND) {
 		select_position_button->Enable(false);
 		select_position_button->SetValue(false);
@@ -466,7 +466,7 @@ EditHouseDialog::EditHouseDialog(wxWindow* parent, Map* map, House* house) :
 	// Town selection menu
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Town:"), wxSizerFlags(0).Border(wxLEFT, 5));
 
-	const Towns &towns = map->towns;
+	const Towns& towns = map->towns;
 
 	town_id_field = newd wxChoice(this, wxID_ANY);
 	int to_select_index = 0;
@@ -541,7 +541,7 @@ EditHouseDialog::~EditHouseDialog() {
 	////
 }
 
-void EditHouseDialog::OnFocusChange(wxFocusEvent &event) {
+void EditHouseDialog::OnFocusChange(wxFocusEvent& event) {
 	wxWindow* win = event.GetWindow();
 	if (wxSpinCtrl* spin = dynamic_cast<wxSpinCtrl*>(win)) {
 		spin->SetSelection(-1, -1);
@@ -550,7 +550,7 @@ void EditHouseDialog::OnFocusChange(wxFocusEvent &event) {
 	}
 }
 
-void EditHouseDialog::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
+void EditHouseDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	if (Validate() && TransferDataFromWindow()) {
 		// Verify the new rent information
 		long new_house_rent;
@@ -574,7 +574,7 @@ void EditHouseDialog::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 		}
 
 		if (g_settings.getInteger(Config::WARN_FOR_DUPLICATE_ID)) {
-			Houses &houses = map->houses;
+			Houses& houses = map->houses;
 			for (HouseMap::const_iterator house_iter = houses.begin(); house_iter != houses.end(); ++house_iter) {
 				House* house = house_iter->second;
 				ASSERT(house);
@@ -617,7 +617,7 @@ void EditHouseDialog::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void EditHouseDialog::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
+void EditHouseDialog::OnClickCancel(wxCommandEvent& WXUNUSED(event)) {
 	// Just close this window
 	EndModal(0);
 }

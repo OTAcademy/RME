@@ -56,14 +56,14 @@ public: // Members
 
 public:
 	// ALWAYS use this constructor if the Tile is EVER going to be placed on a map
-	Tile(TileLocation &location);
+	Tile(TileLocation& location);
 	// Use this when the tile is only used internally by the editor (like in certain brushes)
 	Tile(int x, int y, int z);
 
 	~Tile();
 
 	// Argument is a the map to allocate the tile from
-	Tile* deepCopy(BaseMap &map);
+	Tile* deepCopy(BaseMap& map);
 
 	// The location of the tile
 	// Stores state that remains between the tile being moved (like house exits)
@@ -229,7 +229,7 @@ public: // Functions
 	void addHouseExit(House* h);
 	void removeHouseExit(House* h);
 	bool isHouseExit() const;
-	bool isTownExit(Map &map) const;
+	bool isTownExit(Map& map) const;
 	const HouseExitList* getHouseExits() const;
 	HouseExitList* getHouseExits();
 	bool hasHouseExit(uint32_t exit) const;
@@ -257,9 +257,9 @@ protected:
 private:
 	uint8_t minimapColor;
 
-	Tile(const Tile &tile); // No copy
-	Tile &operator=(const Tile &i); // Can't copy
-	Tile &operator==(const Tile &i); // Can't compare
+	Tile(const Tile& tile); // No copy
+	Tile& operator=(const Tile& i); // Can't copy
+	Tile& operator==(const Tile& i); // Can't compare
 };
 
 bool tilePositionLessThan(const Tile* a, const Tile* b);

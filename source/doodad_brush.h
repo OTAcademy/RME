@@ -41,14 +41,14 @@ protected:
 	struct AlternativeBlock;
 
 public:
-	bool loadAlternative(pugi::xml_node node, wxArrayString &warnings, AlternativeBlock* which = nullptr);
-	virtual bool load(pugi::xml_node node, wxArrayString &warnings);
+	bool loadAlternative(pugi::xml_node node, wxArrayString& warnings, AlternativeBlock* which = nullptr);
+	virtual bool load(pugi::xml_node node, wxArrayString& warnings);
 
-	virtual bool canDraw(BaseMap* map, const Position &position) const {
+	virtual bool canDraw(BaseMap* map, const Position& position) const {
 		return true;
 	}
 	virtual void draw(BaseMap* map, Tile* tile, void* parameter);
-	const CompositeTileList &getComposite(int variation) const;
+	const CompositeTileList& getComposite(int variation) const;
 	virtual void undraw(BaseMap* map, Tile* tile);
 
 	bool isEmpty(int variation) const;
@@ -96,7 +96,7 @@ public:
 	virtual std::string getName() const {
 		return name;
 	}
-	virtual void setName(const std::string &newName) {
+	virtual void setName(const std::string& newName) {
 		name = newName;
 	}
 

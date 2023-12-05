@@ -241,7 +241,7 @@ namespace OnMapRemoveItems {
 
 		uint16_t itemId;
 
-		bool operator()(Map &map, Item* item, int64_t removed, int64_t done) {
+		bool operator()(Map& map, Item* item, int64_t removed, int64_t done) {
 			if (done % 0x8000 == 0) {
 				g_gui.SetLoadDone((uint32_t)(100 * done / map.getTileCount()));
 			}
@@ -256,7 +256,7 @@ void MainMenuBar::EnableItem(MenuBar::ActionID id, bool enable) {
 		return;
 	}
 
-	std::list<wxMenuItem*> &li = fi->second;
+	std::list<wxMenuItem*>& li = fi->second;
 
 	for (std::list<wxMenuItem*>::iterator i = li.begin(); i != li.end(); ++i) {
 		(*i)->Enable(enable);
@@ -269,7 +269,7 @@ void MainMenuBar::CheckItem(MenuBar::ActionID id, bool enable) {
 		return;
 	}
 
-	std::list<wxMenuItem*> &li = fi->second;
+	std::list<wxMenuItem*>& li = fi->second;
 
 	checking_programmaticly = true;
 	for (std::list<wxMenuItem*>::iterator i = li.begin(); i != li.end(); ++i) {
@@ -284,7 +284,7 @@ bool MainMenuBar::IsItemChecked(MenuBar::ActionID id) const {
 		return false;
 	}
 
-	const std::list<wxMenuItem*> &li = fi->second;
+	const std::list<wxMenuItem*>& li = fi->second;
 
 	for (std::list<wxMenuItem*>::const_iterator i = li.begin(); i != li.end(); ++i) {
 		if ((*i)->IsChecked()) {
@@ -503,7 +503,7 @@ void MainMenuBar::UpdateFloorMenu() {
 	}
 }
 
-bool MainMenuBar::Load(const FileName &path, wxArrayString &warnings, wxString &error) {
+bool MainMenuBar::Load(const FileName& path, wxArrayString& warnings, wxString& error) {
 	// Open the XML file
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(path.GetFullPath().mb_str());
@@ -611,10 +611,10 @@ bool MainMenuBar::Load(const FileName &path, wxArrayString &warnings, wxString &
 	return true;
 }
 
-wxObject* MainMenuBar::LoadItem(pugi::xml_node node, wxMenu* parent, wxArrayString &warnings, wxString &error) {
+wxObject* MainMenuBar::LoadItem(pugi::xml_node node, wxMenu* parent, wxArrayString& warnings, wxString& error) {
 	pugi::xml_attribute attribute;
 
-	const std::string &nodeName = as_lower_str(node.name());
+	const std::string& nodeName = as_lower_str(node.name());
 	if (nodeName == "menu") {
 		if (!(attribute = node.attribute("name"))) {
 			return nullptr;
@@ -656,13 +656,13 @@ wxObject* MainMenuBar::LoadItem(pugi::xml_node node, wxMenu* parent, wxArrayStri
 			return nullptr;
 		}
 
-		const std::string &action = attribute.as_string();
+		const std::string& action = attribute.as_string();
 		std::string hotkey = node.attribute("hotkey").as_string();
 		if (!hotkey.empty()) {
 			hotkey = '\t' + hotkey;
 		}
 
-		const std::string &help = node.attribute("help").as_string();
+		const std::string& help = node.attribute("help").as_string();
 		name += hotkey;
 
 		auto it = actions.find(action);
@@ -671,7 +671,7 @@ wxObject* MainMenuBar::LoadItem(pugi::xml_node node, wxMenu* parent, wxArrayStri
 			return nullptr;
 		}
 
-		const MenuBar::Action &act = *it->second;
+		const MenuBar::Action& act = *it->second;
 		wxAcceleratorEntry* entry = wxAcceleratorEntry::Create(wxstr(hotkey));
 		if (entry) {
 			delete entry; // accelerators.push_back(entry);
@@ -697,11 +697,11 @@ wxObject* MainMenuBar::LoadItem(pugi::xml_node node, wxMenu* parent, wxArrayStri
 	return nullptr;
 }
 
-void MainMenuBar::OnNew(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnNew(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.NewMap();
 }
 
-void MainMenuBar::OnGenerateMap(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnGenerateMap(wxCommandEvent& WXUNUSED(event)) {
 	/*
 	if(!DoQuerySave()) return;
 
@@ -722,34 +722,34 @@ void MainMenuBar::OnGenerateMap(wxCommandEvent &WXUNUSED(event)) {
 	*/
 }
 
-void MainMenuBar::OnOpenRecent(wxCommandEvent &event) {
+void MainMenuBar::OnOpenRecent(wxCommandEvent& event) {
 	FileName fn(recentFiles.GetHistoryFile(event.GetId() - recentFiles.GetBaseId()));
 	frame->LoadMap(fn);
 }
 
-void MainMenuBar::OnOpen(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnOpen(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.OpenMap();
 }
 
-void MainMenuBar::OnClose(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnClose(wxCommandEvent& WXUNUSED(event)) {
 	frame->DoQuerySave(true); // It closes the editor too
 }
 
-void MainMenuBar::OnSave(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSave(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.SaveMap();
 }
 
-void MainMenuBar::OnSaveAs(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSaveAs(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.SaveMapAs();
 }
 
-void MainMenuBar::OnPreferences(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnPreferences(wxCommandEvent& WXUNUSED(event)) {
 	PreferencesWindow dialog(frame);
 	dialog.ShowModal();
 	dialog.Destroy();
 }
 
-void MainMenuBar::OnQuit(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnQuit(wxCommandEvent& WXUNUSED(event)) {
 	/*
 	while(g_gui.IsEditorOpen())
 		if(!frame->DoQuerySave(true))
@@ -759,13 +759,13 @@ void MainMenuBar::OnQuit(wxCommandEvent &WXUNUSED(event)) {
 	g_gui.root->Close();
 }
 
-void MainMenuBar::OnImportMap(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnImportMap(wxCommandEvent& WXUNUSED(event)) {
 	ASSERT(g_gui.GetCurrentEditor());
 	wxDialog* importmap = newd ImportMapWindow(frame, *g_gui.GetCurrentEditor());
 	importmap->ShowModal();
 }
 
-void MainMenuBar::OnImportMonsterData(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnImportMonsterData(wxCommandEvent& WXUNUSED(event)) {
 	wxFileDialog dlg(g_gui.root, "Import monster/npc file", "", "", "*.xml", wxFD_OPEN | wxFD_MULTIPLE | wxFD_FILE_MUST_EXIST);
 	if (dlg.ShowModal() == wxID_OK) {
 		wxArrayString paths;
@@ -783,13 +783,13 @@ void MainMenuBar::OnImportMonsterData(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MainMenuBar::OnImportMinimap(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnImportMinimap(wxCommandEvent& WXUNUSED(event)) {
 	ASSERT(g_gui.IsEditorOpen());
 	// wxDialog* importmap = newd ImportMapWindow();
 	// importmap->ShowModal();
 }
 
-void MainMenuBar::OnExportMinimap(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnExportMinimap(wxCommandEvent& WXUNUSED(event)) {
 	if (g_gui.GetCurrentEditor()) {
 		ExportMiniMapWindow dlg(frame, *g_gui.GetCurrentEditor());
 		dlg.ShowModal();
@@ -797,7 +797,7 @@ void MainMenuBar::OnExportMinimap(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MainMenuBar::OnExportTilesets(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnExportTilesets(wxCommandEvent& WXUNUSED(event)) {
 	if (g_gui.GetCurrentEditor()) {
 		ExportTilesetsWindow dlg(frame, *g_gui.GetCurrentEditor());
 		dlg.ShowModal();
@@ -805,13 +805,13 @@ void MainMenuBar::OnExportTilesets(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MainMenuBar::OnDebugViewDat(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnDebugViewDat(wxCommandEvent& WXUNUSED(event)) {
 	wxDialog dlg(frame, wxID_ANY, "Debug .dat file", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	new DatDebugView(&dlg);
 	dlg.ShowModal();
 }
 
-void MainMenuBar::OnReloadDataFiles(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnReloadDataFiles(wxCommandEvent& WXUNUSED(event)) {
 	wxString error;
 	wxArrayString warnings;
 	g_gui.LoadVersion(g_gui.GetCurrentVersionID(), error, warnings, true);
@@ -819,25 +819,25 @@ void MainMenuBar::OnReloadDataFiles(wxCommandEvent &WXUNUSED(event)) {
 	g_gui.ListDialog("Warnings", warnings);
 }
 
-void MainMenuBar::OnListExtensions(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnListExtensions(wxCommandEvent& WXUNUSED(event)) {
 	ExtensionsDialog exts(frame);
 	exts.ShowModal();
 }
 
-void MainMenuBar::OnGotoWebsite(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnGotoWebsite(wxCommandEvent& WXUNUSED(event)) {
 	::wxLaunchDefaultBrowser(__SITE_URL__, wxBROWSER_NEW_WINDOW);
 }
 
-void MainMenuBar::OnAbout(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnAbout(wxCommandEvent& WXUNUSED(event)) {
 	AboutWindow about(frame);
 	about.ShowModal();
 }
 
-void MainMenuBar::OnUndo(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnUndo(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.DoUndo();
 }
 
-void MainMenuBar::OnRedo(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnRedo(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.DoRedo();
 }
 
@@ -854,7 +854,7 @@ namespace OnSearchForItem {
 			return result.size() >= (size_t)maxCount;
 		}
 
-		void operator()(Map &map, Tile* tile, Item* item, long long done) {
+		void operator()(Map& map, Tile* tile, Item* item, long long done) {
 			if (result.size() >= (size_t)maxCount) {
 				return;
 			}
@@ -870,7 +870,7 @@ namespace OnSearchForItem {
 	};
 }
 
-void MainMenuBar::OnSearchForItem(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSearchForItem(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -882,7 +882,7 @@ void MainMenuBar::OnSearchForItem(wxCommandEvent &WXUNUSED(event)) {
 		g_gui.CreateLoadBar("Searching map...");
 
 		foreach_ItemOnMap(g_gui.GetCurrentMap(), finder, false);
-		std::vector<std::pair<Tile*, Item*>> &result = finder.result;
+		std::vector<std::pair<Tile*, Item*>>& result = finder.result;
 
 		g_gui.DestroyLoadBar();
 
@@ -905,7 +905,7 @@ void MainMenuBar::OnSearchForItem(wxCommandEvent &WXUNUSED(event)) {
 	dialog.Destroy();
 }
 
-void MainMenuBar::OnReplaceItems(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnReplaceItems(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsVersionLoaded()) {
 		return;
 	}
@@ -931,7 +931,7 @@ namespace OnSearchForStuff {
 		bool search_writeable;
 		std::vector<std::pair<Tile*, Item*>> found;
 
-		void operator()(Map &map, Tile* tile, Item* item, long long done) {
+		void operator()(Map& map, Tile* tile, Item* item, long long done) {
 			if (done % 0x8000 == 0) {
 				g_gui.SetLoadDone((unsigned int)(100 * done / map.getTileCount()));
 			}
@@ -970,7 +970,7 @@ namespace OnSearchForStuff {
 			}
 		}
 
-		static bool compare(const std::pair<Tile*, Item*> &pair1, const std::pair<Tile*, Item*> &pair2) {
+		static bool compare(const std::pair<Tile*, Item*>& pair1, const std::pair<Tile*, Item*>& pair2) {
 			const Item* item1 = pair1.second;
 			const Item* item2 = pair2.second;
 
@@ -985,47 +985,47 @@ namespace OnSearchForStuff {
 	};
 }
 
-void MainMenuBar::OnSearchForStuffOnMap(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSearchForStuffOnMap(wxCommandEvent& WXUNUSED(event)) {
 	SearchItems(true, true, true, true);
 }
 
-void MainMenuBar::OnSearchForUniqueOnMap(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSearchForUniqueOnMap(wxCommandEvent& WXUNUSED(event)) {
 	SearchItems(true, false, false, false);
 }
 
-void MainMenuBar::OnSearchForActionOnMap(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSearchForActionOnMap(wxCommandEvent& WXUNUSED(event)) {
 	SearchItems(false, true, false, false);
 }
 
-void MainMenuBar::OnSearchForContainerOnMap(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSearchForContainerOnMap(wxCommandEvent& WXUNUSED(event)) {
 	SearchItems(false, false, true, false);
 }
 
-void MainMenuBar::OnSearchForWriteableOnMap(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSearchForWriteableOnMap(wxCommandEvent& WXUNUSED(event)) {
 	SearchItems(false, false, false, true);
 }
 
-void MainMenuBar::OnSearchForStuffOnSelection(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSearchForStuffOnSelection(wxCommandEvent& WXUNUSED(event)) {
 	SearchItems(true, true, true, true, true);
 }
 
-void MainMenuBar::OnSearchForUniqueOnSelection(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSearchForUniqueOnSelection(wxCommandEvent& WXUNUSED(event)) {
 	SearchItems(true, false, false, false, true);
 }
 
-void MainMenuBar::OnSearchForActionOnSelection(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSearchForActionOnSelection(wxCommandEvent& WXUNUSED(event)) {
 	SearchItems(false, true, false, false, true);
 }
 
-void MainMenuBar::OnSearchForContainerOnSelection(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSearchForContainerOnSelection(wxCommandEvent& WXUNUSED(event)) {
 	SearchItems(false, false, true, false, true);
 }
 
-void MainMenuBar::OnSearchForWriteableOnSelection(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSearchForWriteableOnSelection(wxCommandEvent& WXUNUSED(event)) {
 	SearchItems(false, false, false, true, true);
 }
 
-void MainMenuBar::OnSearchForItemOnSelection(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSearchForItemOnSelection(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -1037,7 +1037,7 @@ void MainMenuBar::OnSearchForItemOnSelection(wxCommandEvent &WXUNUSED(event)) {
 		g_gui.CreateLoadBar("Searching on selected area...");
 
 		foreach_ItemOnMap(g_gui.GetCurrentMap(), finder, true);
-		std::vector<std::pair<Tile*, Item*>> &result = finder.result;
+		std::vector<std::pair<Tile*, Item*>>& result = finder.result;
 
 		g_gui.DestroyLoadBar();
 
@@ -1061,7 +1061,7 @@ void MainMenuBar::OnSearchForItemOnSelection(wxCommandEvent &WXUNUSED(event)) {
 	dialog.Destroy();
 }
 
-void MainMenuBar::OnReplaceItemsOnSelection(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnReplaceItemsOnSelection(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsVersionLoaded()) {
 		return;
 	}
@@ -1073,7 +1073,7 @@ void MainMenuBar::OnReplaceItemsOnSelection(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MainMenuBar::OnRemoveItemOnSelection(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnRemoveItemOnSelection(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -1095,7 +1095,7 @@ void MainMenuBar::OnRemoveItemOnSelection(wxCommandEvent &WXUNUSED(event)) {
 	dialog.Destroy();
 }
 
-void MainMenuBar::OnSelectionTypeChange(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSelectionTypeChange(wxCommandEvent& WXUNUSED(event)) {
 	g_settings.setInteger(Config::COMPENSATED_SELECT, IsItemChecked(MenuBar::SELECT_MODE_COMPENSATE));
 
 	if (IsItemChecked(MenuBar::SELECT_MODE_CURRENT)) {
@@ -1107,19 +1107,19 @@ void MainMenuBar::OnSelectionTypeChange(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MainMenuBar::OnCopy(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnCopy(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.DoCopy();
 }
 
-void MainMenuBar::OnCut(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnCut(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.DoCut();
 }
 
-void MainMenuBar::OnPaste(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnPaste(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.PreparePaste();
 }
 
-void MainMenuBar::OnToggleAutomagic(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnToggleAutomagic(wxCommandEvent& WXUNUSED(event)) {
 	g_settings.setInteger(Config::USE_AUTOMAGIC, IsItemChecked(MenuBar::AUTOMAGIC));
 	g_settings.setInteger(Config::BORDER_IS_GROUND, IsItemChecked(MenuBar::AUTOMAGIC));
 	if (g_settings.getInteger(Config::USE_AUTOMAGIC)) {
@@ -1129,7 +1129,7 @@ void MainMenuBar::OnToggleAutomagic(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MainMenuBar::OnBorderizeSelection(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnBorderizeSelection(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -1138,7 +1138,7 @@ void MainMenuBar::OnBorderizeSelection(wxCommandEvent &WXUNUSED(event)) {
 	g_gui.RefreshView();
 }
 
-void MainMenuBar::OnBorderizeMap(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnBorderizeMap(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -1151,7 +1151,7 @@ void MainMenuBar::OnBorderizeMap(wxCommandEvent &WXUNUSED(event)) {
 	g_gui.RefreshView();
 }
 
-void MainMenuBar::OnRandomizeSelection(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnRandomizeSelection(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -1160,7 +1160,7 @@ void MainMenuBar::OnRandomizeSelection(wxCommandEvent &WXUNUSED(event)) {
 	g_gui.RefreshView();
 }
 
-void MainMenuBar::OnRandomizeMap(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnRandomizeMap(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -1173,7 +1173,7 @@ void MainMenuBar::OnRandomizeMap(wxCommandEvent &WXUNUSED(event)) {
 	g_gui.RefreshView();
 }
 
-void MainMenuBar::OnJumpToBrush(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnJumpToBrush(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsVersionLoaded()) {
 		return;
 	}
@@ -1192,7 +1192,7 @@ void MainMenuBar::OnJumpToBrush(wxCommandEvent &WXUNUSED(event)) {
 	delete dlg;
 }
 
-void MainMenuBar::OnJumpToItemBrush(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnJumpToItemBrush(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsVersionLoaded()) {
 		return;
 	}
@@ -1211,14 +1211,14 @@ void MainMenuBar::OnJumpToItemBrush(wxCommandEvent &WXUNUSED(event)) {
 	dialog.Destroy();
 }
 
-void MainMenuBar::OnGotoPreviousPosition(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnGotoPreviousPosition(wxCommandEvent& WXUNUSED(event)) {
 	MapTab* mapTab = g_gui.GetCurrentMapTab();
 	if (mapTab) {
 		mapTab->GoToPreviousCenterPosition();
 	}
 }
 
-void MainMenuBar::OnGotoPosition(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnGotoPosition(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -1228,7 +1228,7 @@ void MainMenuBar::OnGotoPosition(wxCommandEvent &WXUNUSED(event)) {
 	dlg.ShowModal();
 }
 
-void MainMenuBar::OnMapRemoveItems(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnMapRemoveItems(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -1261,7 +1261,7 @@ namespace OnMapRemoveCorpses {
 	struct condition {
 		condition() { }
 
-		bool operator()(Map &map, Item* item, long long removed, long long done) {
+		bool operator()(Map& map, Item* item, long long removed, long long done) {
 			if (done % 0x800 == 0) {
 				g_gui.SetLoadDone((unsigned int)(100 * done / map.getTileCount()));
 			}
@@ -1271,7 +1271,7 @@ namespace OnMapRemoveCorpses {
 	};
 }
 
-void MainMenuBar::OnMapRemoveCorpses(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnMapRemoveCorpses(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -1310,7 +1310,7 @@ namespace OnMapRemoveUnreachable {
 			return false;
 		}
 
-		bool operator()(Map &map, Tile* tile, long long removed, long long done, long long total) {
+		bool operator()(Map& map, Tile* tile, long long removed, long long done, long long total) {
 			if (done % 0x1000 == 0) {
 				g_gui.SetLoadDone((unsigned int)(100 * done / total));
 			}
@@ -1345,7 +1345,7 @@ namespace OnMapRemoveUnreachable {
 	};
 }
 
-void MainMenuBar::OnMapRemoveUnreachable(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnMapRemoveUnreachable(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -1372,7 +1372,7 @@ void MainMenuBar::OnMapRemoveUnreachable(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MainMenuBar::OnClearHouseTiles(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnClearHouseTiles(wxCommandEvent& WXUNUSED(event)) {
 	Editor* editor = g_gui.GetCurrentEditor();
 	if (!editor) {
 		return;
@@ -1392,7 +1392,7 @@ void MainMenuBar::OnClearHouseTiles(wxCommandEvent &WXUNUSED(event)) {
 	g_gui.RefreshView();
 }
 
-void MainMenuBar::OnClearModifiedState(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnClearModifiedState(wxCommandEvent& WXUNUSED(event)) {
 	Editor* editor = g_gui.GetCurrentEditor();
 	if (!editor) {
 		return;
@@ -1412,7 +1412,7 @@ void MainMenuBar::OnClearModifiedState(wxCommandEvent &WXUNUSED(event)) {
 	g_gui.RefreshView();
 }
 
-void MainMenuBar::OnMapCleanHouseItems(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnMapCleanHouseItems(wxCommandEvent& WXUNUSED(event)) {
 	Editor* editor = g_gui.GetCurrentEditor();
 	if (!editor) {
 		return;
@@ -1432,7 +1432,7 @@ void MainMenuBar::OnMapCleanHouseItems(wxCommandEvent &WXUNUSED(event)) {
 	g_gui.RefreshView();
 }
 
-void MainMenuBar::OnMapEditTowns(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnMapEditTowns(wxCommandEvent& WXUNUSED(event)) {
 	if (g_gui.GetCurrentEditor()) {
 		wxDialog* town_dialog = newd EditTownsDialog(frame, *g_gui.GetCurrentEditor());
 		town_dialog->ShowModal();
@@ -1440,15 +1440,15 @@ void MainMenuBar::OnMapEditTowns(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MainMenuBar::OnMapEditItems(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnMapEditItems(wxCommandEvent& WXUNUSED(event)) {
 	;
 }
 
-void MainMenuBar::OnMapEditMonsters(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnMapEditMonsters(wxCommandEvent& WXUNUSED(event)) {
 	;
 }
 
-void MainMenuBar::OnMapStatistics(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnMapStatistics(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -1506,7 +1506,7 @@ void MainMenuBar::OnMapStatistics(wxCommandEvent &WXUNUSED(event)) {
 		item_count += 1;                                            \
 		if (!(_item)->isGroundTile() && !(_item)->isBorder()) {     \
 			is_detailed = true;                                     \
-			ItemType &it = g_items[(_item)->getID()];               \
+			ItemType& it = g_items[(_item)->getID()];               \
 			if (it.moveable) {                                      \
 				loose_item_count += 1;                              \
 			}                                                       \
@@ -1563,7 +1563,7 @@ void MainMenuBar::OnMapStatistics(wxCommandEvent &WXUNUSED(event)) {
 	percent_detailed = 100.0 * (tile_count != 0 ? double(detailed_tile_count) / double(tile_count) : -1.0);
 
 	load_counter = 0;
-	Houses &houses = map->houses;
+	Houses& houses = map->houses;
 	for (HouseMap::const_iterator hit = houses.begin(); hit != houses.end(); ++hit) {
 		const House* house = hit->second;
 
@@ -1583,7 +1583,7 @@ void MainMenuBar::OnMapStatistics(wxCommandEvent &WXUNUSED(event)) {
 	sqm_per_house = (house_count != 0 ? double(total_house_sqm) / double(house_count) : -1.0);
 	sqm_per_town = (town_count != 0 ? double(total_house_sqm) / double(town_count) : -1.0);
 
-	Towns &towns = map->towns;
+	Towns& towns = map->towns;
 	for (std::map<uint32_t, uint32_t>::iterator town_iter = town_sqm_count.begin();
 		 town_iter != town_sqm_count.end();
 		 ++town_iter) {
@@ -1680,7 +1680,7 @@ void MainMenuBar::OnMapStatistics(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MainMenuBar::OnMapCleanup(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnMapCleanup(wxCommandEvent& WXUNUSED(event)) {
 	int ok = g_gui.PopupDialog("Clean map", "Do you want to remove all invalid items from the map?", wxYES | wxNO);
 
 	if (ok == wxID_YES) {
@@ -1688,7 +1688,7 @@ void MainMenuBar::OnMapCleanup(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MainMenuBar::OnMapProperties(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnMapProperties(wxCommandEvent& WXUNUSED(event)) {
 	wxDialog* properties = newd MapPropertiesWindow(
 		frame,
 		static_cast<MapTab*>(g_gui.GetCurrentTab()),
@@ -1702,7 +1702,7 @@ void MainMenuBar::OnMapProperties(wxCommandEvent &WXUNUSED(event)) {
 	properties->Destroy();
 }
 
-void MainMenuBar::OnToolbars(wxCommandEvent &event) {
+void MainMenuBar::OnToolbars(wxCommandEvent& event) {
 	using namespace MenuBar;
 
 	ActionID id = static_cast<ActionID>(event.GetId() - (wxID_HIGHEST + 1));
@@ -1728,11 +1728,11 @@ void MainMenuBar::OnToolbars(wxCommandEvent &event) {
 	}
 }
 
-void MainMenuBar::OnNewView(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnNewView(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.NewMapView();
 }
 
-void MainMenuBar::OnToggleFullscreen(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnToggleFullscreen(wxCommandEvent& WXUNUSED(event)) {
 	if (frame->IsFullScreen()) {
 		frame->ShowFullScreen(false);
 	} else {
@@ -1740,7 +1740,7 @@ void MainMenuBar::OnToggleFullscreen(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MainMenuBar::OnTakeScreenshot(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnTakeScreenshot(wxCommandEvent& WXUNUSED(event)) {
 	wxString path = wxstr(g_settings.getString(Config::SCREENSHOT_DIRECTORY));
 	if (path.size() > 0 && (path.Last() == '/' || path.Last() == '\\')) {
 		path = path + "/";
@@ -1751,21 +1751,21 @@ void MainMenuBar::OnTakeScreenshot(wxCommandEvent &WXUNUSED(event)) {
 	);
 }
 
-void MainMenuBar::OnZoomIn(wxCommandEvent &event) {
+void MainMenuBar::OnZoomIn(wxCommandEvent& event) {
 	double zoom = g_gui.GetCurrentZoom();
 	g_gui.SetCurrentZoom(zoom - 0.1);
 }
 
-void MainMenuBar::OnZoomOut(wxCommandEvent &event) {
+void MainMenuBar::OnZoomOut(wxCommandEvent& event) {
 	double zoom = g_gui.GetCurrentZoom();
 	g_gui.SetCurrentZoom(zoom + 0.1);
 }
 
-void MainMenuBar::OnZoomNormal(wxCommandEvent &event) {
+void MainMenuBar::OnZoomNormal(wxCommandEvent& event) {
 	g_gui.SetCurrentZoom(1.0);
 }
 
-void MainMenuBar::OnChangeViewSettings(wxCommandEvent &event) {
+void MainMenuBar::OnChangeViewSettings(wxCommandEvent& event) {
 	g_settings.setInteger(Config::SHOW_ALL_FLOORS, IsItemChecked(MenuBar::SHOW_ALL_FLOORS));
 	if (IsItemChecked(MenuBar::SHOW_ALL_FLOORS)) {
 		EnableItem(MenuBar::SELECT_MODE_VISIBLE, true);
@@ -1809,7 +1809,7 @@ void MainMenuBar::OnChangeViewSettings(wxCommandEvent &event) {
 	g_gui.RefreshView();
 }
 
-void MainMenuBar::OnChangeFloor(wxCommandEvent &event) {
+void MainMenuBar::OnChangeFloor(wxCommandEvent& event) {
 	// Workaround to stop events from looping
 	if (checking_programmaticly) {
 		return;
@@ -1826,47 +1826,47 @@ void MainMenuBar::OnChangeFloor(wxCommandEvent &event) {
 	}
 }
 
-void MainMenuBar::OnMinimapWindow(wxCommandEvent &event) {
+void MainMenuBar::OnMinimapWindow(wxCommandEvent& event) {
 	g_gui.CreateMinimap();
 }
 
-void MainMenuBar::OnNewPalette(wxCommandEvent &event) {
+void MainMenuBar::OnNewPalette(wxCommandEvent& event) {
 	g_gui.NewPalette();
 }
 
-void MainMenuBar::OnSelectTerrainPalette(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSelectTerrainPalette(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.SelectPalettePage(TILESET_TERRAIN);
 }
 
-void MainMenuBar::OnSelectDoodadPalette(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSelectDoodadPalette(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.SelectPalettePage(TILESET_DOODAD);
 }
 
-void MainMenuBar::OnSelectItemPalette(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSelectItemPalette(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.SelectPalettePage(TILESET_ITEM);
 }
 
-void MainMenuBar::OnSelectCollectionPalette(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSelectCollectionPalette(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.SelectPalettePage(TILESET_COLLECTION);
 }
 
-void MainMenuBar::OnSelectHousePalette(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSelectHousePalette(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.SelectPalettePage(TILESET_HOUSE);
 }
 
-void MainMenuBar::OnSelectCreaturePalette(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSelectCreaturePalette(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.SelectPalettePage(TILESET_CREATURE);
 }
 
-void MainMenuBar::OnSelectWaypointPalette(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSelectWaypointPalette(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.SelectPalettePage(TILESET_WAYPOINT);
 }
 
-void MainMenuBar::OnSelectRawPalette(wxCommandEvent &WXUNUSED(event)) {
+void MainMenuBar::OnSelectRawPalette(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.SelectPalettePage(TILESET_RAW);
 }
 
-void MainMenuBar::OnStartLive(wxCommandEvent &event) {
+void MainMenuBar::OnStartLive(wxCommandEvent& event) {
 	Editor* editor = g_gui.GetCurrentEditor();
 	if (!editor) {
 		g_gui.PopupDialog("Error", "You need to have a map open to start a live mapping session.", wxOK);
@@ -1919,7 +1919,7 @@ void MainMenuBar::OnStartLive(wxCommandEvent &event) {
 			liveServer->setPassword(password->GetValue());
 			liveServer->setPort(port->GetValue());
 
-			const wxString &error = liveServer->getLastError();
+			const wxString& error = liveServer->getLastError();
 			if (!error.empty()) {
 				g_gui.PopupDialog(live_host_dlg, "Error", error, wxOK);
 				editor->CloseLiveServer();
@@ -1941,7 +1941,7 @@ void MainMenuBar::OnStartLive(wxCommandEvent &event) {
 	Update();
 }
 
-void MainMenuBar::OnJoinLive(wxCommandEvent &event) {
+void MainMenuBar::OnJoinLive(wxCommandEvent& event) {
 	wxDialog* live_join_dlg = newd wxDialog(frame, wxID_ANY, "Join Live Server", wxDefaultPosition, wxDefaultSize);
 
 	wxSizer* top_sizer = newd wxBoxSizer(wxVERTICAL);
@@ -1988,14 +1988,14 @@ void MainMenuBar::OnJoinLive(wxCommandEvent &event) {
 			}
 			liveClient->setName(tmp);
 
-			const wxString &error = liveClient->getLastError();
+			const wxString& error = liveClient->getLastError();
 			if (!error.empty()) {
 				g_gui.PopupDialog(live_join_dlg, "Error", error, wxOK);
 				delete liveClient;
 				continue;
 			}
 
-			const wxString &address = ip->GetValue();
+			const wxString& address = ip->GetValue();
 			int32_t portNumber = port->GetValue();
 
 			liveClient->createLogWindow(g_gui.tabbook);
@@ -2013,7 +2013,7 @@ void MainMenuBar::OnJoinLive(wxCommandEvent &event) {
 	Update();
 }
 
-void MainMenuBar::OnCloseLive(wxCommandEvent &event) {
+void MainMenuBar::OnCloseLive(wxCommandEvent& event) {
 	Editor* editor = g_gui.GetCurrentEditor();
 	if (editor && editor->IsLive()) {
 		g_gui.CloseLiveEditors(&editor->GetLive());
@@ -2045,7 +2045,7 @@ void MainMenuBar::SearchItems(bool unique, bool action, bool container, bool wri
 
 	foreach_ItemOnMap(g_gui.GetCurrentMap(), searcher, onSelection);
 	searcher.sort();
-	std::vector<std::pair<Tile*, Item*>> &found = searcher.found;
+	std::vector<std::pair<Tile*, Item*>>& found = searcher.found;
 
 	g_gui.DestroyLoadBar();
 

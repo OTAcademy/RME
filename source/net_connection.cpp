@@ -53,7 +53,7 @@ Position NetworkMessage::read<Position>() {
 }
 
 template <>
-void NetworkMessage::write<std::string>(const std::string &value) {
+void NetworkMessage::write<std::string>(const std::string& value) {
 	const size_t length = value.length();
 	write<uint16_t>(length);
 
@@ -63,7 +63,7 @@ void NetworkMessage::write<std::string>(const std::string &value) {
 }
 
 template <>
-void NetworkMessage::write<Position>(const Position &value) {
+void NetworkMessage::write<Position>(const Position& value) {
 	write<uint16_t>(value.x);
 	write<uint16_t>(value.y);
 	write<uint8_t>(value.z);
@@ -79,7 +79,7 @@ NetworkConnection::~NetworkConnection() {
 	stop();
 }
 
-NetworkConnection &NetworkConnection::getInstance() {
+NetworkConnection& NetworkConnection::getInstance() {
 	static NetworkConnection connection;
 	return connection;
 }
@@ -98,13 +98,13 @@ bool NetworkConnection::start() {
 	}
 
 	thread = std::thread([this]() -> void {
-		boost::asio::io_service &serviceRef = *service;
+		boost::asio::io_service& serviceRef = *service;
 		try {
 			while (!stopped) {
 				serviceRef.run_one();
 				serviceRef.reset();
 			}
-		} catch (std::exception &e) {
+		} catch (std::exception& e) {
 			std::cout << e.what() << std::endl;
 		}
 	});
@@ -124,6 +124,6 @@ void NetworkConnection::stop() {
 	service = nullptr;
 }
 
-boost::asio::io_service &NetworkConnection::get_service() {
+boost::asio::io_service& NetworkConnection::get_service() {
 	return *service;
 }

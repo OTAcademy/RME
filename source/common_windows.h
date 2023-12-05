@@ -52,19 +52,19 @@ public:
  */
 class MapPropertiesWindow : public wxDialog {
 public:
-	MapPropertiesWindow(wxWindow* parent, MapTab* tab, Editor &editor);
+	MapPropertiesWindow(wxWindow* parent, MapTab* tab, Editor& editor);
 	virtual ~MapPropertiesWindow();
 
-	void OnChangeVersion(wxCommandEvent &);
+	void OnChangeVersion(wxCommandEvent&);
 
-	void OnClickOK(wxCommandEvent &);
-	void OnClickCancel(wxCommandEvent &);
+	void OnClickOK(wxCommandEvent&);
+	void OnClickCancel(wxCommandEvent&);
 
 protected:
 	void UpdateProtocolList();
 
 	MapTab* view;
-	Editor &editor;
+	Editor& editor;
 	wxSpinCtrl* height_spin;
 	wxSpinCtrl* width_spin;
 	wxChoice* version_choice;
@@ -82,15 +82,15 @@ protected:
  */
 class ImportMapWindow : public wxDialog {
 public:
-	ImportMapWindow(wxWindow* parent, Editor &editor);
+	ImportMapWindow(wxWindow* parent, Editor& editor);
 	virtual ~ImportMapWindow();
 
-	void OnClickBrowse(wxCommandEvent &);
-	void OnClickOK(wxCommandEvent &);
-	void OnClickCancel(wxCommandEvent &);
+	void OnClickBrowse(wxCommandEvent&);
+	void OnClickOK(wxCommandEvent&);
+	void OnClickCancel(wxCommandEvent&);
 
 protected:
-	Editor &editor;
+	Editor& editor;
 
 	wxTextCtrl* file_text_field;
 	wxSpinCtrl* x_offset_ctrl;
@@ -107,20 +107,20 @@ protected:
  */
 class ExportMiniMapWindow : public wxDialog {
 public:
-	ExportMiniMapWindow(wxWindow* parent, Editor &editor);
+	ExportMiniMapWindow(wxWindow* parent, Editor& editor);
 	virtual ~ExportMiniMapWindow();
 
-	void OnClickBrowse(wxCommandEvent &);
-	void OnDirectoryChanged(wxKeyEvent &);
-	void OnFileNameChanged(wxKeyEvent &);
-	void OnClickOK(wxCommandEvent &);
-	void OnClickCancel(wxCommandEvent &);
-	void OnExportTypeChange(wxCommandEvent &);
+	void OnClickBrowse(wxCommandEvent&);
+	void OnDirectoryChanged(wxKeyEvent&);
+	void OnFileNameChanged(wxKeyEvent&);
+	void OnClickOK(wxCommandEvent&);
+	void OnClickCancel(wxCommandEvent&);
+	void OnExportTypeChange(wxCommandEvent&);
 
 protected:
 	void CheckValues();
 
-	Editor &editor;
+	Editor& editor;
 
 	wxStaticText* error_field;
 	wxTextCtrl* directory_text_field;
@@ -137,19 +137,19 @@ protected:
  */
 class ExportTilesetsWindow : public wxDialog {
 public:
-	ExportTilesetsWindow(wxWindow* parent, Editor &editor);
+	ExportTilesetsWindow(wxWindow* parent, Editor& editor);
 	virtual ~ExportTilesetsWindow();
 
-	void OnClickBrowse(wxCommandEvent &);
-	void OnDirectoryChanged(wxKeyEvent &);
-	void OnFileNameChanged(wxKeyEvent &);
-	void OnClickOK(wxCommandEvent &);
-	void OnClickCancel(wxCommandEvent &);
+	void OnClickBrowse(wxCommandEvent&);
+	void OnDirectoryChanged(wxKeyEvent&);
+	void OnFileNameChanged(wxKeyEvent&);
+	void OnClickOK(wxCommandEvent&);
+	void OnClickCancel(wxCommandEvent&);
 
 protected:
 	void CheckValues();
 
-	Editor &editor;
+	Editor& editor;
 
 	wxStaticText* error_field;
 	wxTextCtrl* directory_text_field;
@@ -164,11 +164,11 @@ protected:
  */
 class KeyForwardingTextCtrl : public wxTextCtrl {
 public:
-	KeyForwardingTextCtrl(wxWindow* parent, wxWindowID id, const wxString &value = "", const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = 0, const wxValidator &validator = wxDefaultValidator, const wxString &name = wxTextCtrlNameStr) :
+	KeyForwardingTextCtrl(wxWindow* parent, wxWindowID id, const wxString& value = "", const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxTextCtrlNameStr) :
 		wxTextCtrl(parent, id, value, pos, size, style, validator, name) { }
 	~KeyForwardingTextCtrl() { }
 
-	void OnKeyDown(wxKeyEvent &);
+	void OnKeyDown(wxKeyEvent&);
 
 	DECLARE_EVENT_TABLE()
 };
@@ -187,7 +187,7 @@ public:
 	void AddBrush(Brush*);
 	Brush* GetSelectedBrush();
 
-	void OnDrawItem(wxDC &dc, const wxRect &rect, size_t index) const;
+	void OnDrawItem(wxDC& dc, const wxRect& rect, size_t index) const;
 	wxCoord OnMeasureItem(size_t index) const;
 
 protected:
@@ -202,7 +202,7 @@ protected:
  */
 class SortableListBox : public wxListBox {
 public:
-	SortableListBox(wxWindow* parent, wxWindowID id, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize);
+	SortableListBox(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize);
 	~SortableListBox();
 	void Sort();
 
@@ -220,12 +220,12 @@ public:
 	FindDialog(wxWindow* parent, wxString title);
 	virtual ~FindDialog();
 
-	void OnKeyDown(wxKeyEvent &);
-	void OnTextChange(wxCommandEvent &);
-	void OnTextIdle(wxTimerEvent &);
-	void OnClickList(wxCommandEvent &);
-	void OnClickOK(wxCommandEvent &);
-	void OnClickCancel(wxCommandEvent &);
+	void OnKeyDown(wxKeyEvent&);
+	void OnTextChange(wxCommandEvent&);
+	void OnTextIdle(wxTimerEvent&);
+	void OnClickList(wxCommandEvent&);
+	void OnClickOK(wxCommandEvent&);
+	void OnClickCancel(wxCommandEvent&);
 
 	void RefreshContents();
 	virtual const Brush* getResult() const {
@@ -237,7 +237,7 @@ public:
 
 protected:
 	virtual void RefreshContentsInternal() = 0;
-	virtual void OnClickListInternal(wxCommandEvent &) = 0;
+	virtual void OnClickListInternal(wxCommandEvent&) = 0;
 	virtual void OnClickOKInternal() = 0;
 
 	FindDialogListBox* item_list;
@@ -259,7 +259,7 @@ public:
 	virtual ~FindBrushDialog();
 
 	virtual void RefreshContentsInternal();
-	virtual void OnClickListInternal(wxCommandEvent &);
+	virtual void OnClickListInternal(wxCommandEvent&);
 	virtual void OnClickOKInternal();
 };
 
@@ -269,14 +269,14 @@ public:
  */
 class GotoPositionDialog : public wxDialog {
 public:
-	GotoPositionDialog(wxWindow* parent, Editor &editor);
+	GotoPositionDialog(wxWindow* parent, Editor& editor);
 	~GotoPositionDialog() { }
 
-	void OnClickOK(wxCommandEvent &);
-	void OnClickCancel(wxCommandEvent &);
+	void OnClickOK(wxCommandEvent&);
+	void OnClickCancel(wxCommandEvent&);
 
 protected:
-	Editor &editor;
+	Editor& editor;
 	PositionCtrl* posctrl;
 
 	DECLARE_EVENT_TABLE();
@@ -325,21 +325,21 @@ protected:
  */
 class EditTownsDialog : public wxDialog {
 public:
-	EditTownsDialog(wxWindow* parent, Editor &editor);
+	EditTownsDialog(wxWindow* parent, Editor& editor);
 	virtual ~EditTownsDialog();
 
-	void OnListBoxChange(wxCommandEvent &);
-	void OnClickSelectTemplePosition(wxCommandEvent &);
-	void OnClickAdd(wxCommandEvent &);
-	void OnClickRemove(wxCommandEvent &);
-	void OnClickOK(wxCommandEvent &);
-	void OnClickCancel(wxCommandEvent &);
+	void OnListBoxChange(wxCommandEvent&);
+	void OnClickSelectTemplePosition(wxCommandEvent&);
+	void OnClickAdd(wxCommandEvent&);
+	void OnClickRemove(wxCommandEvent&);
+	void OnClickOK(wxCommandEvent&);
+	void OnClickCancel(wxCommandEvent&);
 
 protected:
 	void BuildListBox(bool doselect);
 	void UpdateSelection(int new_selection);
 
-	Editor &editor;
+	Editor& editor;
 
 	std::vector<Town*> town_list;
 	uint32_t max_town_id;

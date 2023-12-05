@@ -27,11 +27,11 @@ public:
 	AboutWindow(wxWindow* parent);
 	~AboutWindow();
 
-	void OnClickOK(wxCommandEvent &);
-	void OnClickLicense(wxCommandEvent &);
+	void OnClickOK(wxCommandEvent&);
+	void OnClickLicense(wxCommandEvent&);
 
-	void OnTetris(wxCommandEvent &);
-	void OnSnake(wxCommandEvent &);
+	void OnTetris(wxCommandEvent&);
+	void OnSnake(wxCommandEvent&);
 
 private:
 	wxSizer* topsizer;

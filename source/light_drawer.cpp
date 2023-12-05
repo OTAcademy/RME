@@ -51,7 +51,7 @@ void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x,
 			buffer[color_index + 2] = global_color.Blue();
 			buffer[color_index + 3] = 140; // global_color.Alpha();
 
-			for (auto &light : lights) {
+			for (auto& light : lights) {
 				float intensity = calculateIntensity(mx, my, light);
 				if (intensity == 0.f) {
 					continue;
@@ -115,7 +115,7 @@ void LightDrawer::setGlobalLightColor(uint8_t color) {
 	global_color = colorFromEightBit(color);
 }
 
-void LightDrawer::addLight(int map_x, int map_y, int map_z, const SpriteLight &light) {
+void LightDrawer::addLight(int map_x, int map_y, int map_z, const SpriteLight& light) {
 	if (map_z <= GROUND_LAYER) {
 		map_x -= (GROUND_LAYER - map_z);
 		map_y -= (GROUND_LAYER - map_z);
@@ -128,7 +128,7 @@ void LightDrawer::addLight(int map_x, int map_y, int map_z, const SpriteLight &l
 	uint8_t intensity = std::min(light.intensity, static_cast<uint8_t>(MaxLightIntensity));
 
 	if (!lights.empty()) {
-		Light &previous = lights.back();
+		Light& previous = lights.back();
 		if (previous.map_x == map_x && previous.map_y == map_y && previous.color == light.color) {
 			previous.intensity = std::max(previous.intensity, intensity);
 			return;

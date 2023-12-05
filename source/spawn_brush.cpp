@@ -41,7 +41,7 @@ std::string SpawnBrush::getName() const {
 	return "Spawn Brush";
 }
 
-bool SpawnBrush::canDraw(BaseMap* map, const Position &position) const {
+bool SpawnBrush::canDraw(BaseMap* map, const Position& position) const {
 	Tile* tile = map->getTile(position);
 	if (tile) {
 		if (tile->spawn) {

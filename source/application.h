@@ -40,7 +40,7 @@ public:
 	~Application();
 	virtual bool OnInit();
 	virtual void OnEventLoopEnter(wxEventLoopBase* loop);
-	virtual void MacOpenFiles(const wxArrayString &fileNames);
+	virtual void MacOpenFiles(const wxArrayString& fileNames);
 	virtual int OnExit();
 	void Unload();
 
@@ -48,7 +48,7 @@ private:
 	bool m_startup;
 	wxString m_file_to_open;
 	void FixVersionDiscrapencies();
-	bool ParseCommandLineMap(wxString &fileName);
+	bool ParseCommandLineMap(wxString& fileName);
 
 	virtual void OnFatalException();
 
@@ -62,7 +62,7 @@ class MainMenuBar;
 
 class MainFrame : public wxFrame {
 public:
-	MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
+	MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
 	~MainFrame();
 
 	void UpdateMenubar();
@@ -72,7 +72,7 @@ public:
 	bool DoQueryImportCreatures();
 	bool LoadMap(FileName name);
 
-	void AddRecentFile(const FileName &file);
+	void AddRecentFile(const FileName& file);
 	void LoadRecentFiles();
 	void SaveRecentFiles();
 	std::vector<wxString> GetRecentFiles();
@@ -81,20 +81,20 @@ public:
 		return tool_bar;
 	}
 
-	void OnUpdateMenus(wxCommandEvent &event);
+	void OnUpdateMenus(wxCommandEvent& event);
 	void UpdateFloorMenu();
-	void OnIdle(wxIdleEvent &event);
-	void OnExit(wxCloseEvent &event);
+	void OnIdle(wxIdleEvent& event);
+	void OnExit(wxCloseEvent& event);
 
 #ifdef _USE_UPDATER_
-	void OnUpdateReceived(wxCommandEvent &event);
+	void OnUpdateReceived(wxCommandEvent& event);
 #endif
 
 #ifdef __WINDOWS__
 	virtual bool MSWTranslateMessage(WXMSG* msg);
 #endif
 
-	void PrepareDC(wxDC &dc);
+	void PrepareDC(wxDC& dc);
 
 protected:
 	MainMenuBar* menu_bar;

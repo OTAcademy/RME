@@ -52,7 +52,7 @@ void Materials::clear() {
 	extensions.clear();
 }
 
-const MaterialsExtensionList &Materials::getExtensions() {
+const MaterialsExtensionList& Materials::getExtensions() {
 	return extensions;
 }
 
@@ -66,7 +66,7 @@ MaterialsExtensionList Materials::getExtensionsByVersion(uint16_t version_id) {
 	return ret_list;
 }
 
-bool Materials::loadMaterials(const FileName &identifier, wxString &error, wxArrayString &warnings) {
+bool Materials::loadMaterials(const FileName& identifier, wxString& error, wxArrayString& warnings) {
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(identifier.GetFullPath().mb_str());
 	if (!result) {
@@ -84,7 +84,7 @@ bool Materials::loadMaterials(const FileName &identifier, wxString &error, wxArr
 	return true;
 }
 
-bool Materials::loadExtensions(FileName directoryName, wxString &error, wxArrayString &warnings) {
+bool Materials::loadExtensions(FileName directoryName, wxString& error, wxArrayString& warnings) {
 	directoryName.Mkdir(0755, wxPATH_MKDIR_FULL); // Create if it doesn't exist
 
 	wxDir ext_dir(directoryName.GetPath());
@@ -127,19 +127,19 @@ bool Materials::loadExtensions(FileName directoryName, wxString &error, wxArrayS
 			continue;
 		}
 
-		const std::string &extensionName = attribute.as_string();
+		const std::string& extensionName = attribute.as_string();
 		if (!(attribute = extensionNode.attribute("author"))) {
 			warnings.push_back(filename + ": Couldn't read extension name.");
 			continue;
 		}
 
-		const std::string &extensionAuthor = attribute.as_string();
+		const std::string& extensionAuthor = attribute.as_string();
 		if (!(attribute = extensionNode.attribute("description"))) {
 			warnings.push_back(filename + ": Couldn't read extension name.");
 			continue;
 		}
 
-		const std::string &extensionDescription = attribute.as_string();
+		const std::string& extensionDescription = attribute.as_string();
 		if (extensionName.empty() || extensionAuthor.empty() || extensionDescription.empty()) {
 			warnings.push_back(filename + ": Couldn't read extension attributes (name, author, description).");
 			continue;
@@ -157,7 +157,7 @@ bool Materials::loadExtensions(FileName directoryName, wxString &error, wxArrayS
 
 		if ((attribute = extensionNode.attribute("client"))) {
 			clientVersions.clear();
-			const std::string &extensionClientString = attribute.as_string();
+			const std::string& extensionClientString = attribute.as_string();
 
 			size_t lastPosition = 0;
 			size_t position = extensionClientString.find(';');
@@ -168,7 +168,7 @@ bool Materials::loadExtensions(FileName directoryName, wxString &error, wxArrayS
 			}
 
 			clientVersions.push_back(extensionClientString.substr(lastPosition));
-			for (const std::string &version : clientVersions) {
+			for (const std::string& version : clientVersions) {
 				materialExtension->addVersion(version);
 			}
 
@@ -192,11 +192,11 @@ bool Materials::loadExtensions(FileName directoryName, wxString &error, wxArrayS
 	return true;
 }
 
-bool Materials::unserializeMaterials(const FileName &filename, pugi::xml_node node, wxString &error, wxArrayString &warnings) {
+bool Materials::unserializeMaterials(const FileName& filename, pugi::xml_node node, wxString& error, wxArrayString& warnings) {
 	wxString warning;
 	pugi::xml_attribute attribute;
 	for (pugi::xml_node childNode = node.first_child(); childNode; childNode = childNode.next_sibling()) {
-		const std::string &childName = as_lower_str(childNode.name());
+		const std::string& childName = as_lower_str(childNode.name());
 		if (childName == "include") {
 			if (!(attribute = childNode.attribute("file"))) {
 				continue;
@@ -251,7 +251,7 @@ void Materials::createOtherTileset() {
 
 	// There should really be an iterator to do this
 	for (int32_t id = 0; id <= g_items.getMaxID(); ++id) {
-		ItemType &it = g_items[id];
+		ItemType& it = g_items[id];
 		if (it.id == 0) {
 			continue;
 		}
@@ -299,14 +299,14 @@ void Materials::createOtherTileset() {
 	}
 }
 
-bool Materials::unserializeTileset(pugi::xml_node node, wxArrayString &warnings) {
+bool Materials::unserializeTileset(pugi::xml_node node, wxArrayString& warnings) {
 	pugi::xml_attribute attribute;
 	if (!(attribute = node.attribute("name"))) {
 		warnings.push_back("Couldn't read tileset name");
 		return false;
 	}
 
-	const std::string &name = attribute.as_string();
+	const std::string& name = attribute.as_string();
 
 	Tileset* tileset;
 	auto it = tilesets.find(name);
@@ -324,7 +324,7 @@ bool Materials::unserializeTileset(pugi::xml_node node, wxArrayString &warnings)
 }
 
 void Materials::addToTileset(std::string tilesetName, int itemId, TilesetCategoryType categoryType) {
-	ItemType &it = g_items[itemId];
+	ItemType& it = g_items[itemId];
 
 	if (it.id == 0) {
 		return;
@@ -361,7 +361,7 @@ void Materials::addToTileset(std::string tilesetName, int itemId, TilesetCategor
 }
 
 bool Materials::isInTileset(Item* item, std::string tilesetName) const {
-	const ItemType &it = g_items[item->getID()];
+	const ItemType& it = g_items[item->getID()];
 
 	return it.id != 0 && (isInTileset(it.brush, tilesetName) || isInTileset(it.doodad_brush, tilesetName) || isInTileset(it.raw_brush, tilesetName)) || isInTileset(it.collection_brush, tilesetName);
 }

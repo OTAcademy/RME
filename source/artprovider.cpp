@@ -44,7 +44,7 @@
 #include "../brushes/door_normal_alt_small.xpm"
 #include "../brushes/door_archway_small.xpm"
 
-wxBitmap ArtProvider::CreateBitmap(const wxArtID &id, const wxArtClient &client, const wxSize &WXUNUSED(size)) {
+wxBitmap ArtProvider::CreateBitmap(const wxArtID& id, const wxArtClient& client, const wxSize& WXUNUSED(size)) {
 	if (client == wxART_TOOLBAR) {
 		if (id == ART_CIRCULAR) {
 			return wxBitmap(circular_4_xpm);

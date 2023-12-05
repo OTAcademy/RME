@@ -43,7 +43,7 @@ Tile::Tile(int x, int y, int z) :
 	////
 }
 
-Tile::Tile(TileLocation &loc) :
+Tile::Tile(TileLocation& loc) :
 	location(&loc),
 	ground(nullptr),
 	creature(nullptr),
@@ -66,7 +66,7 @@ Tile::~Tile() {
 	delete spawn;
 }
 
-Tile* Tile::deepCopy(BaseMap &map) {
+Tile* Tile::deepCopy(BaseMap& map) {
 	Tile* copy = map.allocator.allocateTile(location);
 	copy->flags = flags;
 	copy->house_id = house_id;
@@ -494,7 +494,7 @@ void Tile::update() {
 			minimapColor = i->getMiniMapColor();
 		}
 
-		ItemType &it = g_items[i->getID()];
+		ItemType& it = g_items[i->getID()];
 		if (it.unpassable) {
 			statflags |= TILESTATE_BLOCKING;
 		}
@@ -705,7 +705,7 @@ void Tile::setHouseID(uint32_t newHouseId) {
 	house_id = newHouseId;
 }
 
-bool Tile::isTownExit(Map &map) const {
+bool Tile::isTownExit(Map& map) const {
 	return location->getTownCount() > 0;
 }
 

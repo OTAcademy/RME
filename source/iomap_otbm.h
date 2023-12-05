@@ -130,29 +130,29 @@ public:
 	}
 	~IOMapOTBM() { }
 
-	static bool getVersionInfo(const FileName &identifier, MapVersion &out_ver);
+	static bool getVersionInfo(const FileName& identifier, MapVersion& out_ver);
 
-	virtual bool loadMap(Map &map, const FileName &identifier);
-	virtual bool saveMap(Map &map, const FileName &identifier);
+	virtual bool loadMap(Map& map, const FileName& identifier);
+	virtual bool saveMap(Map& map, const FileName& identifier);
 
 protected:
-	static bool getVersionInfo(NodeFileReadHandle* f, MapVersion &out_ver);
+	static bool getVersionInfo(NodeFileReadHandle* f, MapVersion& out_ver);
 
-	virtual bool loadMap(Map &map, NodeFileReadHandle &handle);
-	bool loadSpawns(Map &map, const FileName &dir);
-	bool loadSpawns(Map &map, pugi::xml_document &doc);
-	bool loadHouses(Map &map, const FileName &dir);
-	bool loadHouses(Map &map, pugi::xml_document &doc);
-	bool loadWaypoints(Map &map, const FileName &dir);
-	bool loadWaypoints(Map &map, pugi::xml_document &doc);
+	virtual bool loadMap(Map& map, NodeFileReadHandle& handle);
+	bool loadSpawns(Map& map, const FileName& dir);
+	bool loadSpawns(Map& map, pugi::xml_document& doc);
+	bool loadHouses(Map& map, const FileName& dir);
+	bool loadHouses(Map& map, pugi::xml_document& doc);
+	bool loadWaypoints(Map& map, const FileName& dir);
+	bool loadWaypoints(Map& map, pugi::xml_document& doc);
 
-	virtual bool saveMap(Map &map, NodeFileWriteHandle &handle);
-	bool saveSpawns(Map &map, const FileName &dir);
-	bool saveSpawns(Map &map, pugi::xml_document &doc);
-	bool saveHouses(Map &map, const FileName &dir);
-	bool saveHouses(Map &map, pugi::xml_document &doc);
-	bool saveWaypoints(Map &map, const FileName &dir);
-	bool saveWaypoints(Map &map, pugi::xml_document &doc);
+	virtual bool saveMap(Map& map, NodeFileWriteHandle& handle);
+	bool saveSpawns(Map& map, const FileName& dir);
+	bool saveSpawns(Map& map, pugi::xml_document& doc);
+	bool saveHouses(Map& map, const FileName& dir);
+	bool saveHouses(Map& map, pugi::xml_document& doc);
+	bool saveWaypoints(Map& map, const FileName& dir);
+	bool saveWaypoints(Map& map, pugi::xml_document& doc);
 };
 
 #endif

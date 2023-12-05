@@ -36,7 +36,7 @@ Item* Item::Create(uint16_t _type, uint16_t _subtype /*= 0xFFFF*/) {
 	}
 	Item* newItem = nullptr;
 
-	const ItemType &it = g_items[_type];
+	const ItemType& it = g_items[_type];
 
 	if (it.id != 0) {
 		if (it.isDepot()) {
@@ -127,7 +127,7 @@ Item* transformItem(Item* old_item, uint16_t new_id, Tile* parent) {
 
 		while (containers.size() != 0) {
 			Container* container = containers.front();
-			ItemVector &v = container->getVector();
+			ItemVector& v = container->getVector();
 			for (ItemVector::iterator item_iter = v.begin(); item_iter != v.end(); ++item_iter) {
 				Item* i = *item_iter;
 				Container* c = dynamic_cast<Container*>(i);
@@ -164,7 +164,7 @@ void Item::setSubtype(uint16_t n) {
 }
 
 bool Item::hasSubtype() const {
-	const ItemType &it = g_items[id];
+	const ItemType& it = g_items[id];
 	return (it.isFluidContainer() || it.isSplash() || isCharged() || it.stackable || it.charges != 0);
 }
 
@@ -176,7 +176,7 @@ uint16_t Item::getSubtype() const {
 }
 
 bool Item::hasProperty(enum ITEMPROPERTY prop) const {
-	const ItemType &it = g_items[id];
+	const ItemType& it = g_items[id];
 	switch (prop) {
 		case BLOCKSOLID:
 			if (it.unpassable) {
@@ -232,7 +232,7 @@ bool Item::hasProperty(enum ITEMPROPERTY prop) const {
 }
 
 std::pair<int, int> Item::getDrawOffset() const {
-	ItemType &it = g_items[id];
+	ItemType& it = g_items[id];
 	if (it.sprite != nullptr) {
 		return it.sprite->getDrawOffset();
 	}
@@ -240,7 +240,7 @@ std::pair<int, int> Item::getDrawOffset() const {
 }
 
 bool Item::hasLight() const {
-	const ItemType &type = g_items.getItemType(id);
+	const ItemType& type = g_items.getItemType(id);
 	if (type.sprite) {
 		return type.sprite->hasLight();
 	}
@@ -248,7 +248,7 @@ bool Item::hasLight() const {
 }
 
 SpriteLight Item::getLight() const {
-	const ItemType &type = g_items.getItemType(id);
+	const ItemType& type = g_items.getItemType(id);
 	if (type.sprite) {
 		return type.sprite->getLight();
 	}
@@ -256,7 +256,7 @@ SpriteLight Item::getLight() const {
 }
 
 double Item::getWeight() const {
-	ItemType &it = g_items[id];
+	ItemType& it = g_items[id];
 	if (it.stackable) {
 		return it.weight * std::max(1, (int)subtype);
 	}
@@ -272,11 +272,11 @@ void Item::setActionID(unsigned short n) {
 	setAttribute("aid", n);
 }
 
-void Item::setText(const std::string &str) {
+void Item::setText(const std::string& str) {
 	setAttribute("text", str);
 }
 
-void Item::setDescription(const std::string &str) {
+void Item::setDescription(const std::string& str) {
 	setAttribute("desc", str);
 }
 
@@ -285,7 +285,7 @@ void Item::setTier(unsigned short n) {
 }
 
 double Item::getWeight() {
-	ItemType &it = g_items[id];
+	ItemType& it = g_items[id];
 	if (it.isStackable()) {
 		return it.weight * subtype;
 	}
@@ -309,7 +309,7 @@ uint8_t Item::getMiniMapColor() const {
 }
 
 GroundBrush* Item::getGroundBrush() const {
-	ItemType &item_type = g_items.getItemType(id);
+	ItemType& item_type = g_items.getItemType(id);
 	if (item_type.isGroundTile() && item_type.brush && item_type.brush->isGround()) {
 		return item_type.brush->asGround();
 	}
@@ -317,7 +317,7 @@ GroundBrush* Item::getGroundBrush() const {
 }
 
 TableBrush* Item::getTableBrush() const {
-	ItemType &item_type = g_items.getItemType(id);
+	ItemType& item_type = g_items.getItemType(id);
 	if (item_type.isTable && item_type.brush && item_type.brush->isTable()) {
 		return item_type.brush->asTable();
 	}
@@ -325,7 +325,7 @@ TableBrush* Item::getTableBrush() const {
 }
 
 CarpetBrush* Item::getCarpetBrush() const {
-	ItemType &item_type = g_items.getItemType(id);
+	ItemType& item_type = g_items.getItemType(id);
 	if (item_type.isCarpet && item_type.brush && item_type.brush->isCarpet()) {
 		return item_type.brush->asCarpet();
 	}
@@ -333,7 +333,7 @@ CarpetBrush* Item::getCarpetBrush() const {
 }
 
 DoorBrush* Item::getDoorBrush() const {
-	ItemType &item_type = g_items.getItemType(id);
+	ItemType& item_type = g_items.getItemType(id);
 	if (!item_type.isWall || !item_type.isBrushDoor || !item_type.brush || !item_type.brush->isWall()) {
 		return nullptr;
 	}
@@ -382,7 +382,7 @@ DoorBrush* Item::getDoorBrush() const {
 }
 
 WallBrush* Item::getWallBrush() const {
-	ItemType &item_type = g_items.getItemType(id);
+	ItemType& item_type = g_items.getItemType(id);
 	if (item_type.isWall && item_type.brush && item_type.brush->isWall()) {
 		return item_type.brush->asWall();
 	}
@@ -390,7 +390,7 @@ WallBrush* Item::getWallBrush() const {
 }
 
 BorderType Item::getWallAlignment() const {
-	ItemType &it = g_items[id];
+	ItemType& it = g_items[id];
 	if (!it.isWall) {
 		return BORDER_NONE;
 	}
@@ -398,12 +398,12 @@ BorderType Item::getWallAlignment() const {
 }
 
 BorderType Item::getBorderAlignment() const {
-	ItemType &it = g_items[id];
+	ItemType& it = g_items[id];
 	return it.border_alignment;
 }
 
 void Item::animate() {
-	ItemType &type = g_items[id];
+	ItemType& type = g_items[id];
 	GameSprite* sprite = type.sprite;
 	if (!sprite || !sprite->animator) {
 		return;

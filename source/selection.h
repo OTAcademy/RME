@@ -28,7 +28,7 @@ class SelectionThread;
 
 class Selection {
 public:
-	Selection(Editor &editor);
+	Selection(Editor& editor);
 	~Selection();
 
 	// Selects the items on the tile/tiles
@@ -90,7 +90,7 @@ public:
 	TileSet::iterator end() {
 		return tiles.end();
 	}
-	TileSet &getTiles() {
+	TileSet& getTiles() {
 		return tiles;
 	}
 	Tile* getSelectedTile() {
@@ -100,7 +100,7 @@ public:
 
 private:
 	bool busy;
-	Editor &editor;
+	Editor& editor;
 	BatchAction* session;
 	Action* subsession;
 
@@ -111,13 +111,13 @@ private:
 
 class SelectionThread : public wxThread {
 public:
-	SelectionThread(Editor &editor, Position start, Position end);
+	SelectionThread(Editor& editor, Position start, Position end);
 	virtual ~SelectionThread();
 
 	void Execute(); // Calls "Create" and then "Run"
 protected:
 	virtual ExitCode Entry();
-	Editor &editor;
+	Editor& editor;
 	Position start, end;
 	Selection selection;
 	Action* result;

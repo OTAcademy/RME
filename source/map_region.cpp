@@ -65,7 +65,7 @@ Floor::Floor(int sx, int sy, int z) {
 
 //**************** QTreeNode **********************
 
-QTreeNode::QTreeNode(BaseMap &map) :
+QTreeNode::QTreeNode(BaseMap& map) :
 	map(map),
 	visible(0),
 	isLeaf(false) {
@@ -114,7 +114,7 @@ QTreeNode* QTreeNode::getLeafForce(int x, int y) {
 	while (node) {
 		uint32_t index = ((cx & 0xC000) >> 14) | ((cy & 0xC000) >> 12);
 
-		QTreeNode*&qt = node->child[index];
+		QTreeNode*& qt = node->child[index];
 		if (qt) {
 			if (qt->isLeaf) {
 				return qt;

@@ -35,8 +35,8 @@ public:
 	LiveLogTab(MapTabbook* aui, LiveSocket* socket);
 	~LiveLogTab();
 
-	void Message(const wxString &str);
-	void Chat(const wxString &speaker, const wxString &str);
+	void Message(const wxString& str);
+	void Chat(const wxString& speaker, const wxString& str);
 
 	virtual wxWindow* GetWindow() const {
 		return (wxPanel*)this;
@@ -52,14 +52,14 @@ public:
 		return socket;
 	}
 
-	void UpdateClientList(const std::unordered_map<uint32_t, LivePeer*> &updatedClients);
+	void UpdateClientList(const std::unordered_map<uint32_t, LivePeer*>& updatedClients);
 
-	void OnSelectChatbox(wxFocusEvent &evt);
-	void OnDeselectChatbox(wxFocusEvent &evt);
+	void OnSelectChatbox(wxFocusEvent& evt);
+	void OnDeselectChatbox(wxFocusEvent& evt);
 
-	void OnChat(wxCommandEvent &evt);
-	void OnResizeChat(wxSizeEvent &evt);
-	void OnResizeClientList(wxSizeEvent &evt);
+	void OnChat(wxCommandEvent& evt);
+	void OnResizeChat(wxSizeEvent& evt);
+	void OnResizeClientList(wxSizeEvent& evt);
 
 protected:
 	MapTabbook* aui;

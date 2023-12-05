@@ -57,7 +57,7 @@
 
 class ArtProvider : public wxArtProvider {
 protected:
-	virtual wxBitmap CreateBitmap(const wxArtID &id, const wxArtClient &client, const wxSize &size) override;
+	virtual wxBitmap CreateBitmap(const wxArtID& id, const wxArtClient& client, const wxSize& size) override;
 };
 
 #endif // RME_ART_PROVIDER_H_

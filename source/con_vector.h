@@ -45,7 +45,7 @@ public:
 		return sz;
 	}
 
-	T &locate(size_t index) {
+	T& locate(size_t index) {
 		// Masterly inefficient!
 		while (index >= sz) {
 			resize(sz + REALLOC_INCREASE);

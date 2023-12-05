@@ -35,7 +35,7 @@ EVT_CHOICEBOOK_PAGE_CHANGING(wxID_ANY, BrushPalettePanel::OnSwitchingPage)
 EVT_CHOICEBOOK_PAGE_CHANGED(wxID_ANY, BrushPalettePanel::OnPageChanged)
 END_EVENT_TABLE()
 
-BrushPalettePanel::BrushPalettePanel(wxWindow* parent, const TilesetContainer &tilesets, TilesetCategoryType category, wxWindowID id) :
+BrushPalettePanel::BrushPalettePanel(wxWindow* parent, const TilesetContainer& tilesets, TilesetCategoryType category, wxWindowID id) :
 	PalettePanel(parent, id),
 	palette_type(category),
 	choicebook(nullptr),
@@ -195,7 +195,7 @@ bool BrushPalettePanel::SelectBrush(const Brush* whatbrush) {
 	return false;
 }
 
-void BrushPalettePanel::OnSwitchingPage(wxChoicebookEvent &event) {
+void BrushPalettePanel::OnSwitchingPage(wxChoicebookEvent& event) {
 	event.Skip();
 	if (!choicebook) {
 		return;
@@ -221,7 +221,7 @@ void BrushPalettePanel::OnSwitchingPage(wxChoicebookEvent &event) {
 	}
 }
 
-void BrushPalettePanel::OnPageChanged(wxChoicebookEvent &event) {
+void BrushPalettePanel::OnPageChanged(wxChoicebookEvent& event) {
 	if (!choicebook) {
 		return;
 	}
@@ -236,7 +236,7 @@ void BrushPalettePanel::OnSwitchIn() {
 	OnUpdateBrushSize(g_gui.GetBrushShape(), last_brush_size);
 }
 
-void BrushPalettePanel::OnClickAddTileset(wxCommandEvent &WXUNUSED(event)) {
+void BrushPalettePanel::OnClickAddTileset(wxCommandEvent& WXUNUSED(event)) {
 	if (!choicebook) {
 		return;
 	}
@@ -251,7 +251,7 @@ void BrushPalettePanel::OnClickAddTileset(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void BrushPalettePanel::OnClickAddItemToTileset(wxCommandEvent &WXUNUSED(event)) {
+void BrushPalettePanel::OnClickAddItemToTileset(wxCommandEvent& WXUNUSED(event)) {
 	if (!choicebook) {
 		return;
 	}
@@ -393,7 +393,7 @@ void BrushPanel::OnSwitchOut() {
 	////
 }
 
-void BrushPanel::OnClickListBoxRow(wxCommandEvent &event) {
+void BrushPanel::OnClickListBoxRow(wxCommandEvent& event) {
 	ASSERT(tileset->getType() >= TILESET_UNKNOWN && tileset->getType() <= TILESET_HOUSE);
 	// We just notify the GUI of the action, it will take care of everything else
 	ASSERT(brushbox);
@@ -534,7 +534,7 @@ void BrushIconBox::EnsureVisible(size_t n) {
 	EnsureVisible(brush_buttons[n]);
 }
 
-void BrushIconBox::OnClickBrushButton(wxCommandEvent &event) {
+void BrushIconBox::OnClickBrushButton(wxCommandEvent& event) {
 	wxObject* obj = event.GetEventObject();
 	BrushButton* btn = dynamic_cast<BrushButton*>(obj);
 	if (btn) {
@@ -594,7 +594,7 @@ bool BrushListBox::SelectBrush(const Brush* whatbrush) {
 	return false;
 }
 
-void BrushListBox::OnDrawItem(wxDC &dc, const wxRect &rect, size_t n) const {
+void BrushListBox::OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const {
 	ASSERT(n < tileset->size());
 	Sprite* spr = g_gui.gfx.getSprite(tileset->brushlist[n]->getLookID());
 	if (spr) {
@@ -616,7 +616,7 @@ wxCoord BrushListBox::OnMeasureItem(size_t n) const {
 	return 32;
 }
 
-void BrushListBox::OnKey(wxKeyEvent &event) {
+void BrushListBox::OnKey(wxKeyEvent& event) {
 	switch (event.GetKeyCode()) {
 		case WXK_UP:
 		case WXK_DOWN:

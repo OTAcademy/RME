@@ -31,14 +31,14 @@ public:
 	PropertiesWindow(wxWindow* parent, const Map* map, const Tile* tile, Item* item, wxPoint position = wxDefaultPosition);
 	~PropertiesWindow();
 
-	void OnClickOK(wxCommandEvent &);
-	void OnClickCancel(wxCommandEvent &);
-	void OnClickAddAttribute(wxCommandEvent &);
-	void OnClickRemoveAttribute(wxCommandEvent &);
+	void OnClickOK(wxCommandEvent&);
+	void OnClickCancel(wxCommandEvent&);
+	void OnClickAddAttribute(wxCommandEvent&);
+	void OnClickRemoveAttribute(wxCommandEvent&);
 
-	void OnResize(wxSizeEvent &);
-	void OnNotebookPageChanged(wxNotebookEvent &);
-	void OnGridValueChanged(wxGridEvent &);
+	void OnResize(wxSizeEvent&);
+	void OnNotebookPageChanged(wxNotebookEvent&);
+	void OnGridValueChanged(wxGridEvent&);
 
 	void Update();
 
@@ -56,7 +56,7 @@ protected:
 	wxGrid* attributesGrid;
 	wxWindow* createAttributesPanel(wxWindow* parent);
 	void saveAttributesPanel();
-	void SetGridValue(wxGrid* grid, int rowIndex, std::string name, const ItemAttribute &attr);
+	void SetGridValue(wxGrid* grid, int rowIndex, std::string name, const ItemAttribute& attr);
 
 protected:
 	wxNotebook* notebook;

@@ -58,7 +58,7 @@ uint32_t Towns::getEmptyID() {
 	return empty + 1;
 }
 
-Town* Towns::getTown(std::string &name) {
+Town* Towns::getTown(std::string& name) {
 	for (TownMap::iterator it = begin(); it != end(); ++it) {
 		if (it->second->getName() == name) {
 			return it->second;
@@ -75,6 +75,6 @@ Town* Towns::getTown(uint32_t id) {
 	return nullptr;
 }
 
-void Town::setTemplePosition(const Position &pos) {
+void Town::setTemplePosition(const Position& pos) {
 	templepos = pos;
 }

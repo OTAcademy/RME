@@ -89,7 +89,7 @@ bool DCButton::GetValue() const {
 	return state;
 }
 
-void DCButton::OnPaint(wxPaintEvent &event) {
+void DCButton::OnPaint(wxPaintEvent& event) {
 	wxBufferedPaintDC pdc(this);
 
 	if (g_gui.gfx.isUnloaded()) {
@@ -175,7 +175,7 @@ void DCButton::OnPaint(wxPaintEvent &event) {
 	}
 }
 
-void DCButton::OnClick(wxMouseEvent &WXUNUSED(evt)) {
+void DCButton::OnClick(wxMouseEvent& WXUNUSED(evt)) {
 	wxCommandEvent event(type == DC_BTN_TOGGLE ? wxEVT_COMMAND_TOGGLEBUTTON_CLICKED : wxEVT_COMMAND_BUTTON_CLICKED, GetId());
 	event.SetEventObject(this);
 

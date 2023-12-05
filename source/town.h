@@ -24,21 +24,21 @@ class Town {
 public:
 	Town(uint32_t _id) :
 		id(_id), name("") { }
-	Town(const Town &copy) :
+	Town(const Town& copy) :
 		id(copy.id), name(copy.name), templepos(copy.templepos) { }
 	~Town() { }
 
-	const std::string &getName() const {
+	const std::string& getName() const {
 		return name;
 	}
-	void setName(const std::string &newName) {
+	void setName(const std::string& newName) {
 		name = newName;
 	}
 
-	const Position &getTemplePosition() const {
+	const Position& getTemplePosition() const {
 		return templepos;
 	}
-	void setTemplePosition(const Position &_pos);
+	void setTemplePosition(const Position& _pos);
 
 	uint32_t getID() const {
 		return id;
@@ -70,7 +70,7 @@ public:
 	bool addTown(Town* town);
 	uint32_t getEmptyID();
 
-	Town* getTown(std::string &townname);
+	Town* getTown(std::string& townname);
 	Town* getTown(uint32_t _townid);
 
 	TownMap::const_iterator begin() const {

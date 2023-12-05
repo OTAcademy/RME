@@ -32,11 +32,11 @@ public:
 	~LiveClient();
 
 	//
-	bool connect(const std::string &address, uint16_t port);
+	bool connect(const std::string& address, uint16_t port);
 	void tryConnect(boost::asio::ip::tcp::resolver::iterator endpoint);
 
 	void close();
-	bool handleError(const boost::system::error_code &error);
+	bool handleError(const boost::system::error_code& error);
 
 	//
 	std::string getHostName() const;
@@ -44,10 +44,10 @@ public:
 	//
 	void receiveHeader();
 	void receive(uint32_t packetSize);
-	void send(NetworkMessage &message);
+	void send(NetworkMessage& message);
 
 	//
-	void updateCursor(const Position &position);
+	void updateCursor(const Position& position);
 
 	LiveLogTab* createLogWindow(wxWindow* parent);
 	MapTab* createEditorWindow();
@@ -55,8 +55,8 @@ public:
 	// send packets
 	void sendHello();
 	void sendNodeRequests();
-	void sendChanges(DirtyList &dirtyList);
-	void sendChat(const wxString &chatMessage);
+	void sendChanges(DirtyList& dirtyList);
+	void sendChat(const wxString& chatMessage);
 	void sendReady();
 
 	// Flags a node as queried and stores it, need to call SendNodeRequest to send it to server
@@ -66,15 +66,15 @@ protected:
 	void parsePacket(NetworkMessage message);
 
 	// parse packets
-	void parseHello(NetworkMessage &message);
-	void parseKick(NetworkMessage &message);
-	void parseClientAccepted(NetworkMessage &message);
-	void parseChangeClientVersion(NetworkMessage &message);
-	void parseServerTalk(NetworkMessage &message);
-	void parseNode(NetworkMessage &message);
-	void parseCursorUpdate(NetworkMessage &message);
-	void parseStartOperation(NetworkMessage &message);
-	void parseUpdateOperation(NetworkMessage &message);
+	void parseHello(NetworkMessage& message);
+	void parseKick(NetworkMessage& message);
+	void parseClientAccepted(NetworkMessage& message);
+	void parseChangeClientVersion(NetworkMessage& message);
+	void parseServerTalk(NetworkMessage& message);
+	void parseNode(NetworkMessage& message);
+	void parseCursorUpdate(NetworkMessage& message);
+	void parseStartOperation(NetworkMessage& message);
+	void parseUpdateOperation(NetworkMessage& message);
 
 	//
 	NetworkMessage readMessage;

@@ -55,7 +55,7 @@ public:
 	}
 
 	//
-	QTreeNode* allocateNode(BaseMap &map) {
+	QTreeNode* allocateNode(BaseMap& map) {
 		return newd QTreeNode(map);
 	}
 	void freeNode(QTreeNode* qt) {

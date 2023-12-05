@@ -94,8 +94,8 @@ AddItemWindow::AddItemWindow(wxWindow* win_parent, TilesetCategoryType categoryT
 	item_button->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(AddItemWindow::OnItemClicked), NULL, this);
 }
 
-void AddItemWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
-	const ItemType &it = g_items.getItemType(item_id_field->GetValue());
+void AddItemWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
+	const ItemType& it = g_items.getItemType(item_id_field->GetValue());
 	if (it.id != 0) {
 		g_materials.addToTileset(tileset_item->name, it.id, category_type);
 		g_materials.modify();
@@ -107,14 +107,14 @@ void AddItemWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void AddItemWindow::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
+void AddItemWindow::OnClickCancel(wxCommandEvent& WXUNUSED(event)) {
 	// Just close this window
 	EndModal(0);
 }
 
-void AddItemWindow::OnChangeItemId(wxCommandEvent &WXUNUSED(event)) {
+void AddItemWindow::OnChangeItemId(wxCommandEvent& WXUNUSED(event)) {
 	uint16_t itemId = item_id_field->GetValue();
-	ItemType &it = g_items[itemId];
+	ItemType& it = g_items[itemId];
 	if (it.id != 0) {
 		item_id_label->SetLabelText("ID " + i2ws(it.id));
 		item_name_label->SetLabelText("\"" + wxstr(it.name) + "\"");
@@ -125,7 +125,7 @@ void AddItemWindow::OnChangeItemId(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void AddItemWindow::OnItemClicked(wxMouseEvent &WXUNUSED(event)) {
+void AddItemWindow::OnItemClicked(wxMouseEvent& WXUNUSED(event)) {
 	FindItemDialog dialog(this, "Item");
 	if (dialog.ShowModal() == wxID_OK) {
 		uint16_t id = dialog.getResultID();
@@ -140,7 +140,7 @@ void AddItemWindow::SetItemIdToItemButton(uint16_t id) {
 	}
 
 	if (id != 0) {
-		const ItemType &it = g_items.getItemType(id);
+		const ItemType& it = g_items.getItemType(id);
 		if (it.id != 0) {
 			item_id_field->SetValue(it.id);
 			item_id_label->SetLabelText("ID " + i2ws(it.id));

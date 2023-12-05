@@ -425,7 +425,7 @@ bool GraphicManager::loadEditorSprites() {
 	return true;
 }
 
-bool GraphicManager::loadOTFI(const FileName &filename, wxString &error, wxArrayString &warnings) {
+bool GraphicManager::loadOTFI(const FileName& filename, wxString& error, wxArrayString& warnings) {
 	wxDir dir(filename.GetFullPath());
 	wxString otfi_file;
 
@@ -463,7 +463,7 @@ bool GraphicManager::loadOTFI(const FileName &filename, wxString &error, wxArray
 	return true;
 }
 
-bool GraphicManager::loadSpriteMetadata(const FileName &datafile, wxString &error, wxArrayString &warnings) {
+bool GraphicManager::loadSpriteMetadata(const FileName& datafile, wxString& error, wxArrayString& warnings) {
 	// items.otb has most of the info we need. This only loads the GameSprite metadata
 	FileReadHandle file(nstr(datafile.GetFullPath()));
 
@@ -590,7 +590,7 @@ bool GraphicManager::loadSpriteMetadata(const FileName &datafile, wxString &erro
 	return true;
 }
 
-bool GraphicManager::loadSpriteMetadataFlags(FileReadHandle &file, GameSprite* sType, wxString &error, wxArrayString &warnings) {
+bool GraphicManager::loadSpriteMetadataFlags(FileReadHandle& file, GameSprite* sType, wxString& error, wxArrayString& warnings) {
 	uint8_t prev_flag = 0;
 	uint8_t flag = DatFlagLast;
 
@@ -775,7 +775,7 @@ bool GraphicManager::loadSpriteMetadataFlags(FileReadHandle &file, GameSprite* s
 	return true;
 }
 
-bool GraphicManager::loadSpriteData(const FileName &datafile, wxString &error, wxArrayString &warnings) {
+bool GraphicManager::loadSpriteData(const FileName& datafile, wxString& error, wxArrayString& warnings) {
 	FileReadHandle fh(nstr(datafile.GetFullPath()));
 
 	if (!fh.isOk()) {
@@ -852,7 +852,7 @@ bool GraphicManager::loadSpriteData(const FileName &datafile, wxString &error, w
 	return true;
 }
 
-bool GraphicManager::loadSpriteDump(uint8_t*&target, uint16_t &size, int sprite_id) {
+bool GraphicManager::loadSpriteDump(uint8_t*& target, uint16_t& size, int sprite_id) {
 	if (g_settings.getInteger(Config::USE_MEMCACHED_SPRITES)) {
 		return false;
 	}
@@ -1023,7 +1023,7 @@ GLuint GameSprite::getHardwareID(int _x, int _y, int _layer, int _count, int _pa
 	return spriteList[v]->getHardwareID();
 }
 
-GameSprite::TemplateImage* GameSprite::getTemplateImage(int sprite_index, const Outfit &outfit) {
+GameSprite::TemplateImage* GameSprite::getTemplateImage(int sprite_index, const Outfit& outfit) {
 	if (instanced_templates.empty()) {
 		TemplateImage* img = newd TemplateImage(this, sprite_index, outfit);
 		instanced_templates.push_back(img);
@@ -1044,7 +1044,7 @@ GameSprite::TemplateImage* GameSprite::getTemplateImage(int sprite_index, const 
 	return img;
 }
 
-GLuint GameSprite::getHardwareID(int _x, int _y, int _dir, int _addon, int _pattern_z, const Outfit &_outfit, int _frame) {
+GLuint GameSprite::getHardwareID(int _x, int _y, int _dir, int _addon, int _pattern_z, const Outfit& _outfit, int _frame) {
 	uint32_t v = getIndex(_x, _y, 0, _dir, _addon, _pattern_z, _frame);
 	if (v >= numsprites) {
 		if (numsprites == 1) {
@@ -1112,7 +1112,7 @@ void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int w
 	if (sdc) {
 		dc->Blit(start_x, start_y, width, height, sdc, 0, 0, wxCOPY, true);
 	} else {
-		const wxBrush &b = dc->GetBrush();
+		const wxBrush& b = dc->GetBrush();
 		dc->SetBrush(*wxRED_BRUSH);
 		dc->DrawRectangle(start_x, start_y, width, height);
 		dc->SetBrush(b);
@@ -1307,7 +1307,7 @@ void GameSprite::NormalImage::unloadGLTexture(GLuint ignored) {
 	Image::unloadGLTexture(id);
 }
 
-GameSprite::TemplateImage::TemplateImage(GameSprite* parent, int v, const Outfit &outfit) :
+GameSprite::TemplateImage::TemplateImage(GameSprite* parent, int v, const Outfit& outfit) :
 	gl_tid(0),
 	parent(parent),
 	sprite_index(v),
@@ -1322,7 +1322,7 @@ GameSprite::TemplateImage::~TemplateImage() {
 	////
 }
 
-void GameSprite::TemplateImage::colorizePixel(uint8_t color, uint8_t &red, uint8_t &green, uint8_t &blue) {
+void GameSprite::TemplateImage::colorizePixel(uint8_t color, uint8_t& red, uint8_t& green, uint8_t& blue) {
 	// Thanks! Khaos, or was it mips? Hmmm... =)
 	uint8_t ro = (TemplateOutfitLookupTable[color] & 0xFF0000) >> 16; // rgb outfit
 	uint8_t go = (TemplateOutfitLookupTable[color] & 0xFF00) >> 8;
@@ -1360,13 +1360,13 @@ uint8_t* GameSprite::TemplateImage::getRGBData() {
 
 	for (int y = 0; y < SPRITE_PIXELS; ++y) {
 		for (int x = 0; x < SPRITE_PIXELS; ++x) {
-			uint8_t &red = rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 0];
-			uint8_t &green = rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 1];
-			uint8_t &blue = rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 2];
+			uint8_t& red = rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 0];
+			uint8_t& green = rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 1];
+			uint8_t& blue = rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 2];
 
-			uint8_t &tred = template_rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 0];
-			uint8_t &tgreen = template_rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 1];
-			uint8_t &tblue = template_rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 2];
+			uint8_t& tred = template_rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 0];
+			uint8_t& tgreen = template_rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 1];
+			uint8_t& tblue = template_rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 2];
 
 			if (tred && tgreen && !tblue) { // yellow => head
 				colorizePixel(lookHead, red, green, blue);
@@ -1411,13 +1411,13 @@ uint8_t* GameSprite::TemplateImage::getRGBAData() {
 
 	for (int y = 0; y < SPRITE_PIXELS; ++y) {
 		for (int x = 0; x < SPRITE_PIXELS; ++x) {
-			uint8_t &red = rgbadata[y * SPRITE_PIXELS * 4 + x * 4 + 0];
-			uint8_t &green = rgbadata[y * SPRITE_PIXELS * 4 + x * 4 + 1];
-			uint8_t &blue = rgbadata[y * SPRITE_PIXELS * 4 + x * 4 + 2];
+			uint8_t& red = rgbadata[y * SPRITE_PIXELS * 4 + x * 4 + 0];
+			uint8_t& green = rgbadata[y * SPRITE_PIXELS * 4 + x * 4 + 1];
+			uint8_t& blue = rgbadata[y * SPRITE_PIXELS * 4 + x * 4 + 2];
 
-			uint8_t &tred = template_rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 0];
-			uint8_t &tgreen = template_rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 1];
-			uint8_t &tblue = template_rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 2];
+			uint8_t& tred = template_rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 0];
+			uint8_t& tgreen = template_rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 1];
+			uint8_t& tblue = template_rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 2];
 
 			if (tred && tgreen && !tblue) { // yellow => head
 				colorizePixel(lookHead, red, green, blue);

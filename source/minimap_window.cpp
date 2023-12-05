@@ -49,11 +49,11 @@ MinimapWindow::~MinimapWindow() {
 	}
 }
 
-void MinimapWindow::OnSize(wxSizeEvent &event) {
+void MinimapWindow::OnSize(wxSizeEvent& event) {
 	Refresh();
 }
 
-void MinimapWindow::OnClose(wxCloseEvent &) {
+void MinimapWindow::OnClose(wxCloseEvent&) {
 	g_gui.DestroyMinimap();
 }
 
@@ -63,11 +63,11 @@ void MinimapWindow::DelayedUpdate() {
 	update_timer.Start(g_settings.getInteger(Config::MINIMAP_UPDATE_DELAY), true);
 }
 
-void MinimapWindow::OnDelayedUpdate(wxTimerEvent &event) {
+void MinimapWindow::OnDelayedUpdate(wxTimerEvent& event) {
 	Refresh();
 }
 
-void MinimapWindow::OnPaint(wxPaintEvent &event) {
+void MinimapWindow::OnPaint(wxPaintEvent& event) {
 	wxBufferedPaintDC pdc(this);
 
 	pdc.SetBackground(*wxBLACK_BRUSH);
@@ -76,7 +76,7 @@ void MinimapWindow::OnPaint(wxPaintEvent &event) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
-	Editor &editor = *g_gui.GetCurrentEditor();
+	Editor& editor = *g_gui.GetCurrentEditor();
 
 	int window_width = GetSize().GetWidth();
 	int window_height = GetSize().GetHeight();
@@ -174,7 +174,7 @@ void MinimapWindow::OnPaint(wxPaintEvent &event) {
 	}
 }
 
-void MinimapWindow::OnMouseClick(wxMouseEvent &event) {
+void MinimapWindow::OnMouseClick(wxMouseEvent& event) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
@@ -185,7 +185,7 @@ void MinimapWindow::OnMouseClick(wxMouseEvent &event) {
 	g_gui.RefreshView();
 }
 
-void MinimapWindow::OnKey(wxKeyEvent &event) {
+void MinimapWindow::OnKey(wxKeyEvent& event) {
 	if (g_gui.GetCurrentTab() != nullptr) {
 		g_gui.GetCurrentMapTab()->GetEventHandler()->AddPendingEvent(event);
 	}

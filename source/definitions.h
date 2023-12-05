@@ -155,20 +155,20 @@ constexpr int PixelFormatRGBA = 4;
 // increment & decrement definitions
 #define IMPLEMENT_INCREMENT_OP(Type)                     \
 	namespace {                                          \
-		Type &operator++(Type &type) {                   \
+		Type& operator++(Type& type) {                   \
 			return (type = static_cast<Type>(type + 1)); \
 		}                                                \
-		Type operator++(Type &type, int) {               \
+		Type operator++(Type& type, int) {               \
 			return static_cast<Type>((++type) - 1);      \
 		}                                                \
 	}
 
 #define IMPLEMENT_DECREMENT_OP(Type)                     \
 	namespace {                                          \
-		Type &operator--(Type &type) {                   \
+		Type& operator--(Type& type) {                   \
 			return (type = static_cast<Type>(type - 1)); \
 		}                                                \
-		Type operator--(Type &type, int) {               \
+		Type operator--(Type& type, int) {               \
 			return static_cast<Type>((--type) + 1);      \
 		}                                                \
 	}

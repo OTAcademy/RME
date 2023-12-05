@@ -46,7 +46,7 @@ Settings::~Settings() {
 	////
 }
 
-wxConfigBase &Settings::getConfigObject() {
+wxConfigBase& Settings::getConfigObject() {
 	return *dynamic_cast<wxConfigBase*>(wxConfig::Get());
 }
 
@@ -55,7 +55,7 @@ bool Settings::getBoolean(uint32_t key) const {
 		return false;
 	}
 
-	const DynamicValue &dv = store[key];
+	const DynamicValue& dv = store[key];
 	if (dv.type == TYPE_INT) {
 		return dv.intval != 0;
 	}
@@ -66,7 +66,7 @@ int Settings::getInteger(uint32_t key) const {
 	if (key > Config::LAST) {
 		return 0;
 	}
-	const DynamicValue &dv = store[key];
+	const DynamicValue& dv = store[key];
 	if (dv.type == TYPE_INT) {
 		return dv.intval;
 	}
@@ -77,7 +77,7 @@ float Settings::getFloat(uint32_t key) const {
 	if (key > Config::LAST) {
 		return 0.0;
 	}
-	const DynamicValue &dv = store[key];
+	const DynamicValue& dv = store[key];
 	if (dv.type == TYPE_FLOAT) {
 		return dv.floatval;
 	}
@@ -88,7 +88,7 @@ std::string Settings::getString(uint32_t key) const {
 	if (key > Config::LAST) {
 		return "";
 	}
-	const DynamicValue &dv = store[key];
+	const DynamicValue& dv = store[key];
 	if (dv.type == TYPE_STR && dv.strval != nullptr) {
 		return *dv.strval;
 	}
@@ -99,7 +99,7 @@ void Settings::setInteger(uint32_t key, int newval) {
 	if (key > Config::LAST) {
 		return;
 	}
-	DynamicValue &dv = store[key];
+	DynamicValue& dv = store[key];
 	if (dv.type == TYPE_INT) {
 		dv.intval = newval;
 	} else if (dv.type == TYPE_NONE) {
@@ -112,7 +112,7 @@ void Settings::setFloat(uint32_t key, float newval) {
 	if (key > Config::LAST) {
 		return;
 	}
-	DynamicValue &dv = store[key];
+	DynamicValue& dv = store[key];
 	if (dv.type == TYPE_FLOAT) {
 		dv.floatval = newval;
 	} else if (dv.type == TYPE_NONE) {
@@ -125,7 +125,7 @@ void Settings::setString(uint32_t key, std::string newval) {
 	if (key > Config::LAST) {
 		return;
 	}
-	DynamicValue &dv = store[key];
+	DynamicValue& dv = store[key];
 	if (dv.type == TYPE_STR) {
 		delete dv.strval;
 		dv.strval = newd std::string(newval);

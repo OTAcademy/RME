@@ -168,7 +168,7 @@ wxWindow* PropertiesWindow::createAttributesPanel(wxWindow* parent) {
 	return panel;
 }
 
-void PropertiesWindow::SetGridValue(wxGrid* grid, int rowIndex, std::string label, const ItemAttribute &attr) {
+void PropertiesWindow::SetGridValue(wxGrid* grid, int rowIndex, std::string label, const ItemAttribute& attr) {
 	wxArrayString types;
 	types.Add("Number");
 	types.Add("Float");
@@ -216,7 +216,7 @@ void PropertiesWindow::SetGridValue(wxGrid* grid, int rowIndex, std::string labe
 	grid->SetCellEditor(rowIndex, 1, new wxGridCellChoiceEditor(types));
 }
 
-void PropertiesWindow::OnResize(wxSizeEvent &evt) {
+void PropertiesWindow::OnResize(wxSizeEvent& evt) {
 	/*
 	if(wxGrid* grid = (wxGrid*)currentPanel->FindWindowByName("AdvancedGrid")) {
 		int tWidth = 0;
@@ -230,7 +230,7 @@ void PropertiesWindow::OnResize(wxSizeEvent &evt) {
 	*/
 }
 
-void PropertiesWindow::OnNotebookPageChanged(wxNotebookEvent &evt) {
+void PropertiesWindow::OnNotebookPageChanged(wxNotebookEvent& evt) {
 	wxWindow* page = notebook->GetCurrentPage();
 
 	// TODO: Save
@@ -283,7 +283,7 @@ void PropertiesWindow::saveAttributesPanel() {
 	}
 }
 
-void PropertiesWindow::OnGridValueChanged(wxGridEvent &event) {
+void PropertiesWindow::OnGridValueChanged(wxGridEvent& event) {
 	if (event.GetCol() == 1) {
 		wxString newType = attributesGrid->GetCellValue(event.GetRow(), 1);
 		if (newType == event.GetString()) {
@@ -304,18 +304,18 @@ void PropertiesWindow::OnGridValueChanged(wxGridEvent &event) {
 	}
 }
 
-void PropertiesWindow::OnClickOK(wxCommandEvent &) {
+void PropertiesWindow::OnClickOK(wxCommandEvent&) {
 	saveAttributesPanel();
 	EndModal(1);
 }
 
-void PropertiesWindow::OnClickAddAttribute(wxCommandEvent &) {
+void PropertiesWindow::OnClickAddAttribute(wxCommandEvent&) {
 	attributesGrid->AppendRows(1);
 	ItemAttribute attr(0);
 	SetGridValue(attributesGrid, attributesGrid->GetNumberRows() - 1, "", attr);
 }
 
-void PropertiesWindow::OnClickRemoveAttribute(wxCommandEvent &) {
+void PropertiesWindow::OnClickRemoveAttribute(wxCommandEvent&) {
 	wxArrayInt rowIndexes = attributesGrid->GetSelectedRows();
 	if (rowIndexes.Count() != 1) {
 		return;
@@ -325,6 +325,6 @@ void PropertiesWindow::OnClickRemoveAttribute(wxCommandEvent &) {
 	attributesGrid->DeleteRows(rowIndex, 1);
 }
 
-void PropertiesWindow::OnClickCancel(wxCommandEvent &) {
+void PropertiesWindow::OnClickCancel(wxCommandEvent&) {
 	EndModal(0);
 }

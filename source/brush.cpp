@@ -91,14 +91,14 @@ void Brushes::init() {
 	CarpetBrush::init();
 }
 
-bool Brushes::unserializeBrush(pugi::xml_node node, wxArrayString &warnings) {
+bool Brushes::unserializeBrush(pugi::xml_node node, wxArrayString& warnings) {
 	pugi::xml_attribute attribute;
 	if (!(attribute = node.attribute("name"))) {
 		warnings.push_back("Brush node without name.");
 		return false;
 	}
 
-	const std::string &brushName = attribute.as_string();
+	const std::string& brushName = attribute.as_string();
 	if (brushName == "all" || brushName == "none") {
 		warnings.push_back(wxString("Using reserved brushname \"") << wxstr(brushName) << "\".");
 		return false;
@@ -166,7 +166,7 @@ bool Brushes::unserializeBrush(pugi::xml_node node, wxArrayString &warnings) {
 	return true;
 }
 
-bool Brushes::unserializeBorder(pugi::xml_node node, wxArrayString &warnings) {
+bool Brushes::unserializeBorder(pugi::xml_node node, wxArrayString& warnings) {
 	pugi::xml_attribute attribute = node.attribute("id");
 	if (!attribute) {
 		warnings.push_back("Couldn't read border id node");
@@ -189,7 +189,7 @@ void Brushes::addBrush(Brush* brush) {
 	brushes.insert(std::make_pair(brush->getName(), brush));
 }
 
-Brush* Brushes::getBrush(const std::string &name) const {
+Brush* Brushes::getBrush(const std::string& name) const {
 	auto it = brushes.find(name);
 	if (it != brushes.end()) {
 		return it->second;
@@ -274,7 +274,7 @@ int FlagBrush::getLookID() const {
 	return 0;
 }
 
-bool FlagBrush::canDraw(BaseMap* map, const Position &position) const {
+bool FlagBrush::canDraw(BaseMap* map, const Position& position) const {
 	Tile* tile = map->getTile(position);
 	return tile && tile->hasGround();
 }
@@ -368,10 +368,10 @@ void DoorBrush::switchDoor(Item* item) {
 	bool prefLocked = g_gui.HasDoorLocked();
 
 	for (std::vector<WallBrush::DoorType>::iterator iter = wb->door_items[wall_alignment].begin(); iter != wb->door_items[wall_alignment].end(); ++iter) {
-		WallBrush::DoorType &dt = *iter;
+		WallBrush::DoorType& dt = *iter;
 		if (dt.type == doortype) {
 			ASSERT(dt.id);
-			ItemType &it = g_items[dt.id];
+			ItemType& it = g_items[dt.id];
 			ASSERT(it.id != 0);
 
 			if (it.isOpen == new_open) {
@@ -390,7 +390,7 @@ void DoorBrush::switchDoor(Item* item) {
 	}
 }
 
-bool DoorBrush::canDraw(BaseMap* map, const Position &position) const {
+bool DoorBrush::canDraw(BaseMap* map, const Position& position) const {
 	Tile* tile = map->getTile(position);
 	if (!tile) {
 		return false;
@@ -423,10 +423,10 @@ bool DoorBrush::canDraw(BaseMap* map, const Position &position) const {
 		for (std::vector<WallBrush::DoorType>::iterator iter = test_brush->door_items[wall_alignment].begin();
 			 iter != test_brush->door_items[wall_alignment].end();
 			 ++iter) {
-			WallBrush::DoorType &dt = *iter;
+			WallBrush::DoorType& dt = *iter;
 			if (dt.type == doortype) {
 				ASSERT(dt.id);
-				ItemType &it = g_items[dt.id];
+				ItemType& it = g_items[dt.id];
 				ASSERT(it.id != 0);
 
 				if (it.isOpen == open) {
@@ -502,10 +502,10 @@ void DoorBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 			for (std::vector<WallBrush::DoorType>::iterator iter = test_brush->door_items[wall_alignment].begin();
 				 iter != test_brush->door_items[wall_alignment].end();
 				 ++iter) {
-				WallBrush::DoorType &dt = *iter;
+				WallBrush::DoorType& dt = *iter;
 				if (dt.type == doortype) {
 					ASSERT(dt.id);
-					ItemType &it = g_items[dt.id];
+					ItemType& it = g_items[dt.id];
 					ASSERT(it.id != 0);
 
 					if (it.isOpen == open) {
@@ -575,10 +575,10 @@ void DoorBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 				if (brush && brush->isWallDecoration()) {
 					// We got a decoration!
 					for (std::vector<WallBrush::DoorType>::iterator it = brush->door_items[wall_alignment].begin(); it != brush->door_items[wall_alignment].end(); ++it) {
-						WallBrush::DoorType &dt = (*it);
+						WallBrush::DoorType& dt = (*it);
 						if (dt.type == doortype) {
 							ASSERT(dt.id);
-							ItemType &it = g_items[dt.id];
+							ItemType& it = g_items[dt.id];
 							ASSERT(it.id != 0);
 
 							if (it.isOpen == open) {
@@ -632,7 +632,7 @@ int OptionalBorderBrush::getLookID() const {
 	return EDITOR_SPRITE_OPTIONAL_BORDER_TOOL;
 }
 
-bool OptionalBorderBrush::canDraw(BaseMap* map, const Position &position) const {
+bool OptionalBorderBrush::canDraw(BaseMap* map, const Position& position) const {
 	Tile* tile = map->getTile(position);
 
 	// You can't do gravel on a mountain tile

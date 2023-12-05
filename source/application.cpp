@@ -289,7 +289,7 @@ void Application::OnEventLoopEnter(wxEventLoopBase* loop) {
 	}
 }
 
-void Application::MacOpenFiles(const wxArrayString &fileNames) {
+void Application::MacOpenFiles(const wxArrayString& fileNames) {
 	if (!fileNames.IsEmpty()) {
 		g_gui.LoadMap(FileName(fileNames.Item(0)));
 	}
@@ -342,7 +342,7 @@ void Application::OnFatalException() {
 	////
 }
 
-bool Application::ParseCommandLineMap(wxString &fileName) {
+bool Application::ParseCommandLineMap(wxString& fileName) {
 	if (argc == 2) {
 		fileName = wxString(argv[1]);
 		return true;
@@ -354,7 +354,7 @@ bool Application::ParseCommandLineMap(wxString &fileName) {
 	return false;
 }
 
-MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size) :
+MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size) :
 	wxFrame((wxFrame*)nullptr, -1, title, pos, size, wxDEFAULT_FRAME_STYLE) {
 	// Receive idle events
 	SetExtraStyle(wxWS_EX_PROCESS_IDLE);
@@ -397,12 +397,12 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 
 MainFrame::~MainFrame() = default;
 
-void MainFrame::OnIdle(wxIdleEvent &event) {
+void MainFrame::OnIdle(wxIdleEvent& event) {
 	////
 }
 
 #ifdef _USE_UPDATER_
-void MainFrame::OnUpdateReceived(wxCommandEvent &event) {
+void MainFrame::OnUpdateReceived(wxCommandEvent& event) {
 	std::string data = *(std::string*)event.GetClientData();
 	delete (std::string*)event.GetClientData();
 	size_t first_colon = data.find(':');
@@ -431,7 +431,7 @@ void MainFrame::OnUpdateReceived(wxCommandEvent &event) {
 }
 #endif
 
-void MainFrame::OnUpdateMenus(wxCommandEvent &) {
+void MainFrame::OnUpdateMenus(wxCommandEvent&) {
 	UpdateMenubar();
 	g_gui.UpdateMinimap(true);
 	g_gui.UpdateTitle();
@@ -516,7 +516,7 @@ bool MainFrame::DoQuerySave(bool doclose) {
 		return false;
 	}
 
-	Editor &editor = *g_gui.GetCurrentEditor();
+	Editor& editor = *g_gui.GetCurrentEditor();
 	if (editor.IsLiveClient()) {
 		long ret = g_gui.PopupDialog(
 			"Disconnect",
@@ -612,7 +612,7 @@ bool MainFrame::LoadMap(FileName name) {
 	return g_gui.LoadMap(name);
 }
 
-void MainFrame::OnExit(wxCloseEvent &event) {
+void MainFrame::OnExit(wxCloseEvent& event) {
 	// clicking 'x' button
 
 	// do you want to save map changes?
@@ -627,7 +627,7 @@ void MainFrame::OnExit(wxCloseEvent &event) {
 		}
 	}
 	g_gui.aui_manager->UnInit();
-	((Application &)wxGetApp()).Unload();
+	((Application&)wxGetApp()).Unload();
 #ifdef __RELEASE__
 	// Hack, "crash" gracefully in release builds, let OS handle cleanup of windows
 	exit(0);
@@ -635,7 +635,7 @@ void MainFrame::OnExit(wxCloseEvent &event) {
 	Destroy();
 }
 
-void MainFrame::AddRecentFile(const FileName &file) {
+void MainFrame::AddRecentFile(const FileName& file) {
 	menu_bar->AddRecentFile(file);
 }
 
@@ -651,7 +651,7 @@ std::vector<wxString> MainFrame::GetRecentFiles() {
 	return menu_bar->GetRecentFiles();
 }
 
-void MainFrame::PrepareDC(wxDC &dc) {
+void MainFrame::PrepareDC(wxDC& dc) {
 	dc.SetLogicalOrigin(0, 0);
 	dc.SetAxisOrientation(1, 0);
 	dc.SetUserScale(1.0, 1.0);

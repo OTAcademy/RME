@@ -34,7 +34,7 @@ protected:
 	wxArrayString warnings;
 	wxString errorstr;
 
-	bool queryUser(const wxString &title, const wxString &format);
+	bool queryUser(const wxString& title, const wxString& format);
 	void warning(const wxString format, ...);
 	void error(const wxString format, ...);
 
@@ -47,15 +47,15 @@ public:
 
 	MapVersion version;
 
-	wxArrayString &getWarnings() {
+	wxArrayString& getWarnings() {
 		return warnings;
 	}
-	wxString &getError() {
+	wxString& getError() {
 		return errorstr;
 	}
 
-	virtual bool loadMap(Map &map, const FileName &identifier) = 0;
-	virtual bool saveMap(Map &map, const FileName &identifier) = 0;
+	virtual bool loadMap(Map& map, const FileName& identifier) = 0;
+	virtual bool saveMap(Map& map, const FileName& identifier) = 0;
 };
 
 class VirtualIOMap : public IOMap {
@@ -64,10 +64,10 @@ public:
 		version = v;
 	}
 
-	virtual bool loadMap(Map &map, const FileName &identifier) {
+	virtual bool loadMap(Map& map, const FileName& identifier) {
 		return false;
 	}
-	virtual bool saveMap(Map &map, const FileName &identifier) {
+	virtual bool saveMap(Map& map, const FileName& identifier) {
 		return false;
 	}
 };

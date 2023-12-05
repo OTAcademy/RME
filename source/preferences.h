@@ -30,12 +30,12 @@ public:
 	PreferencesWindow(wxWindow* parent, bool clientVersionSelected);
 	virtual ~PreferencesWindow();
 
-	void OnClickDefaults(wxCommandEvent &);
-	void OnClickApply(wxCommandEvent &);
-	void OnClickOK(wxCommandEvent &);
-	void OnClickCancel(wxCommandEvent &);
+	void OnClickDefaults(wxCommandEvent&);
+	void OnClickApply(wxCommandEvent&);
+	void OnClickOK(wxCommandEvent&);
+	void OnClickCancel(wxCommandEvent&);
 
-	void OnCollapsiblePane(wxCollapsiblePaneEvent &);
+	void OnCollapsiblePane(wxCollapsiblePaneEvent&);
 
 protected:
 	void SetDefaults();
@@ -114,7 +114,7 @@ protected:
 	wxCheckBox* check_sigs_chkbox;
 
 	// Create controls
-	wxChoice* AddPaletteStyleChoice(wxWindow* parent, wxSizer* sizer, const wxString &short_description, const wxString &description, const std::string &setting);
+	wxChoice* AddPaletteStyleChoice(wxWindow* parent, wxSizer* sizer, const wxString& short_description, const wxString& description, const std::string& setting);
 	void SetPaletteStyleChoice(wxChoice* ctrl, int key);
 
 	// Create windows

@@ -44,7 +44,7 @@ public:
 
 	Creature* deepCopy() const;
 
-	const Outfit &getLookType() const;
+	const Outfit& getLookType() const;
 
 	bool isSaved();
 	void save();

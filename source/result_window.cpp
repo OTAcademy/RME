@@ -55,14 +55,14 @@ void SearchResultWindow::AddPosition(wxString description, Position pos) {
 	result_list->Append(description << " (" << pos.x << "," << pos.y << "," << pos.z << ")", newd Position(pos));
 }
 
-void SearchResultWindow::OnClickResult(wxCommandEvent &event) {
+void SearchResultWindow::OnClickResult(wxCommandEvent& event) {
 	Position* pos = reinterpret_cast<Position*>(event.GetClientData());
 	if (pos) {
 		g_gui.SetScreenCenterPosition(*pos);
 	}
 }
 
-void SearchResultWindow::OnClickExport(wxCommandEvent &WXUNUSED(event)) {
+void SearchResultWindow::OnClickExport(wxCommandEvent& WXUNUSED(event)) {
 	wxFileDialog dialog(this, "Save file...", "", "", "Text Documents (*.txt) | *.txt", wxFD_SAVE);
 	if (dialog.ShowModal() == wxID_OK) {
 		wxFile file(dialog.GetPath(), wxFile::write);
@@ -84,6 +84,6 @@ void SearchResultWindow::OnClickExport(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void SearchResultWindow::OnClickClear(wxCommandEvent &WXUNUSED(event)) {
+void SearchResultWindow::OnClickClear(wxCommandEvent& WXUNUSED(event)) {
 	Clear();
 }

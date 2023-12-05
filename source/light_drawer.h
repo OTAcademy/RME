@@ -36,14 +36,14 @@ public:
 	void draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog);
 
 	void setGlobalLightColor(uint8_t color);
-	void addLight(int map_x, int map_y, int map_z, const SpriteLight &light);
+	void addLight(int map_x, int map_y, int map_z, const SpriteLight& light);
 	void clear() noexcept;
 
 private:
 	void createGLTexture();
 	void unloadGLTexture();
 
-	inline float calculateIntensity(int map_x, int map_y, const Light &light) {
+	inline float calculateIntensity(int map_x, int map_y, const Light& light) {
 		int dx = map_x - light.map_x;
 		int dy = map_y - light.map_y;
 		float distance = std::sqrt(dx * dx + dy * dy);

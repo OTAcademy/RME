@@ -35,13 +35,13 @@ struct NetworkMessage {
 	//
 	template <typename T>
 	T read() {
-		T &value = *reinterpret_cast<T*>(&buffer[position]);
+		T& value = *reinterpret_cast<T*>(&buffer[position]);
 		position += sizeof(T);
 		return value;
 	}
 
 	template <typename T>
-	void write(const T &value) {
+	void write(const T& value) {
 		expand(sizeof(T));
 		memcpy(&buffer[position], &value, sizeof(T));
 		position += sizeof(T);
@@ -58,24 +58,24 @@ std::string NetworkMessage::read<std::string>();
 template <>
 Position NetworkMessage::read<Position>();
 template <>
-void NetworkMessage::write<std::string>(const std::string &value);
+void NetworkMessage::write<std::string>(const std::string& value);
 template <>
-void NetworkMessage::write<Position>(const Position &value);
+void NetworkMessage::write<Position>(const Position& value);
 
 class NetworkConnection {
 private:
 	NetworkConnection();
-	NetworkConnection(const NetworkConnection &copy) = delete;
+	NetworkConnection(const NetworkConnection& copy) = delete;
 
 public:
 	~NetworkConnection();
 
-	static NetworkConnection &getInstance();
+	static NetworkConnection& getInstance();
 
 	bool start();
 	void stop();
 
-	boost::asio::io_service &get_service();
+	boost::asio::io_service& get_service();
 
 private:
 	boost::asio::io_service* service;

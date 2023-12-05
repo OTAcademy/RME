@@ -35,7 +35,7 @@ CreatureType::CreatureType() :
 	////
 }
 
-CreatureType::CreatureType(const CreatureType &ct) :
+CreatureType::CreatureType(const CreatureType& ct) :
 	isNpc(ct.isNpc),
 	missing(ct.missing),
 	in_other_tileset(ct.in_other_tileset),
@@ -46,7 +46,7 @@ CreatureType::CreatureType(const CreatureType &ct) :
 	////
 }
 
-CreatureType &CreatureType::operator=(const CreatureType &ct) {
+CreatureType& CreatureType::operator=(const CreatureType& ct) {
 	isNpc = ct.isNpc;
 	missing = ct.missing;
 	in_other_tileset = ct.in_other_tileset;
@@ -61,14 +61,14 @@ CreatureType::~CreatureType() {
 	////
 }
 
-CreatureType* CreatureType::loadFromXML(pugi::xml_node node, wxArrayString &warnings) {
+CreatureType* CreatureType::loadFromXML(pugi::xml_node node, wxArrayString& warnings) {
 	pugi::xml_attribute attribute;
 	if (!(attribute = node.attribute("type"))) {
 		warnings.push_back("Couldn't read type tag of creature node.");
 		return nullptr;
 	}
 
-	const std::string &tmpType = attribute.as_string();
+	const std::string& tmpType = attribute.as_string();
 	if (tmpType != "monster" && tmpType != "npc") {
 		warnings.push_back("Invalid type tag of creature node \"" + wxstr(tmpType) + "\"");
 		return nullptr;
@@ -137,7 +137,7 @@ CreatureType* CreatureType::loadFromXML(pugi::xml_node node, wxArrayString &warn
 	return ct;
 }
 
-CreatureType* CreatureType::loadFromOTXML(const FileName &filename, pugi::xml_document &doc, wxArrayString &warnings) {
+CreatureType* CreatureType::loadFromOTXML(const FileName& filename, pugi::xml_document& doc, wxArrayString& warnings) {
 	ASSERT(doc != nullptr);
 
 	bool isNpc;
@@ -236,7 +236,7 @@ void CreatureDatabase::clear() {
 	creature_map.clear();
 }
 
-CreatureType* CreatureDatabase::operator[](const std::string &name) {
+CreatureType* CreatureDatabase::operator[](const std::string& name) {
 	CreatureMap::iterator iter = creature_map.find(as_lower_str(name));
 	if (iter != creature_map.end()) {
 		return iter->second;
@@ -244,7 +244,7 @@ CreatureType* CreatureDatabase::operator[](const std::string &name) {
 	return nullptr;
 }
 
-CreatureType* CreatureDatabase::addMissingCreatureType(const std::string &name, bool isNpc) {
+CreatureType* CreatureDatabase::addMissingCreatureType(const std::string& name, bool isNpc) {
 	assert((*this)[name] == nullptr);
 
 	CreatureType* ct = newd CreatureType();
@@ -257,7 +257,7 @@ CreatureType* CreatureDatabase::addMissingCreatureType(const std::string &name, 
 	return ct;
 }
 
-CreatureType* CreatureDatabase::addCreatureType(const std::string &name, bool isNpc, const Outfit &outfit) {
+CreatureType* CreatureDatabase::addCreatureType(const std::string& name, bool isNpc, const Outfit& outfit) {
 	assert((*this)[name] == nullptr);
 
 	CreatureType* ct = newd CreatureType();
@@ -279,7 +279,7 @@ bool CreatureDatabase::hasMissing() const {
 	return false;
 }
 
-bool CreatureDatabase::loadFromXML(const FileName &filename, bool standard, wxString &error, wxArrayString &warnings) {
+bool CreatureDatabase::loadFromXML(const FileName& filename, bool standard, wxString& error, wxArrayString& warnings) {
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(filename.GetFullPath().mb_str());
 	if (!result) {
@@ -312,7 +312,7 @@ bool CreatureDatabase::loadFromXML(const FileName &filename, bool standard, wxSt
 	return true;
 }
 
-bool CreatureDatabase::importXMLFromOT(const FileName &filename, wxString &error, wxArrayString &warnings) {
+bool CreatureDatabase::importXMLFromOT(const FileName& filename, wxString& error, wxArrayString& warnings) {
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(filename.GetFullPath().mb_str());
 	if (!result) {
@@ -399,14 +399,14 @@ bool CreatureDatabase::importXMLFromOT(const FileName &filename, wxString &error
 	return true;
 }
 
-bool CreatureDatabase::saveToXML(const FileName &filename) {
+bool CreatureDatabase::saveToXML(const FileName& filename) {
 	pugi::xml_document doc;
 
 	pugi::xml_node decl = doc.prepend_child(pugi::node_declaration);
 	decl.append_attribute("version") = "1.0";
 
 	pugi::xml_node creatureNodes = doc.append_child("creatures");
-	for (const auto &creatureEntry : creature_map) {
+	for (const auto& creatureEntry : creature_map) {
 		CreatureType* creatureType = creatureEntry.second;
 		if (!creatureType->standard) {
 			pugi::xml_node creatureNode = creatureNodes.append_child("creature");
@@ -414,7 +414,7 @@ bool CreatureDatabase::saveToXML(const FileName &filename) {
 			creatureNode.append_attribute("name") = creatureType->name.c_str();
 			creatureNode.append_attribute("type") = creatureType->isNpc ? "npc" : "monster";
 
-			const Outfit &outfit = creatureType->outfit;
+			const Outfit& outfit = creatureType->outfit;
 			creatureNode.append_attribute("looktype") = outfit.lookType;
 			creatureNode.append_attribute("lookitem") = outfit.lookItem;
 			creatureNode.append_attribute("lookmount") = outfit.lookMount;

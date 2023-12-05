@@ -23,13 +23,13 @@ EVT_KILL_FOCUS(NumberTextCtrl::OnKillFocus)
 EVT_TEXT_ENTER(wxID_ANY, NumberTextCtrl::OnTextEnter)
 END_EVENT_TABLE()
 
-NumberTextCtrl::NumberTextCtrl(wxWindow* parent, wxWindowID id, long value, long minvalue, long maxvalue, const wxPoint &pos, const wxSize &sz, long style, const wxString &name) :
+NumberTextCtrl::NumberTextCtrl(wxWindow* parent, wxWindowID id, long value, long minvalue, long maxvalue, const wxPoint& pos, const wxSize& sz, long style, const wxString& name) :
 	wxTextCtrl(parent, id, (wxString() << value), pos, sz, style, wxTextValidator(wxFILTER_NUMERIC), name),
 	minval(minvalue), maxval(maxvalue), lastval(value) {
 	////
 }
 
-NumberTextCtrl::NumberTextCtrl(wxWindow* parent, wxWindowID id, long value, long minvalue, long maxvalue, long style, const wxString &name, const wxPoint &pos, const wxSize &sz) :
+NumberTextCtrl::NumberTextCtrl(wxWindow* parent, wxWindowID id, long value, long minvalue, long maxvalue, long style, const wxString& name, const wxPoint& pos, const wxSize& sz) :
 	wxTextCtrl(parent, id, (wxString() << value), pos, sz, style, wxTextValidator(wxFILTER_NUMERIC), name),
 	minval(minvalue), maxval(maxvalue), lastval(value) {
 	////
@@ -39,12 +39,12 @@ NumberTextCtrl::~NumberTextCtrl() {
 	////
 }
 
-void NumberTextCtrl::OnKillFocus(wxFocusEvent &evt) {
+void NumberTextCtrl::OnKillFocus(wxFocusEvent& evt) {
 	CheckRange();
 	evt.Skip();
 }
 
-void NumberTextCtrl::OnTextEnter(wxCommandEvent &evt) {
+void NumberTextCtrl::OnTextEnter(wxCommandEvent& evt) {
 	CheckRange();
 }
 

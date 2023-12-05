@@ -101,12 +101,12 @@ private:
 	Position pos;
 	std::string brushname;
 
-	friend std::ostream &operator<<(std::ostream &os, const Hotkey &hotkey);
-	friend std::istream &operator>>(std::istream &os, Hotkey &hotkey);
+	friend std::ostream& operator<<(std::ostream& os, const Hotkey& hotkey);
+	friend std::istream& operator>>(std::istream& os, Hotkey& hotkey);
 };
 
-std::ostream &operator<<(std::ostream &os, const Hotkey &hotkey);
-std::istream &operator>>(std::istream &os, Hotkey &hotkey);
+std::ostream& operator<<(std::ostream& os, const Hotkey& hotkey);
+std::istream& operator>>(std::istream& os, Hotkey& hotkey);
 
 class GUI {
 public: // dtor and ctor
@@ -114,9 +114,9 @@ public: // dtor and ctor
 	~GUI();
 
 private:
-	GUI(const GUI &g_gui); // Don't copy me
-	GUI &operator=(const GUI &g_gui); // Don't assign me
-	bool operator==(const GUI &g_gui); // Don't compare me
+	GUI(const GUI& g_gui); // Don't copy me
+	GUI& operator=(const GUI& g_gui); // Don't assign me
+	bool operator==(const GUI& g_gui); // Don't compare me
 
 public:
 	/**
@@ -142,7 +142,7 @@ public:
 	 * If this returns false, the user has hit the quit button and you should
 	 * abort the loading.
 	 */
-	bool SetLoadDone(int32_t done, const wxString &newMessage = "");
+	bool SetLoadDone(int32_t done, const wxString& newMessage = "");
 
 	/**
 	 * Sets the scale of the loading bar.
@@ -151,7 +151,7 @@ public:
 	 */
 	void SetLoadScale(int32_t from, int32_t to);
 
-	void ShowWelcomeDialog(const wxBitmap &icon);
+	void ShowWelcomeDialog(const wxBitmap& icon);
 	void FinishWelcomeDialog();
 	bool IsWelcomeDialogShown();
 
@@ -171,10 +171,10 @@ public:
 	bool AreHotkeysEnabled() const;
 
 	// This sends the event to the main window (redirecting from other controls)
-	void AddPendingCanvasEvent(wxEvent &event);
+	void AddPendingCanvasEvent(wxEvent& event);
 
-	void OnWelcomeDialogClosed(wxCloseEvent &event);
-	void OnWelcomeDialogAction(wxCommandEvent &event);
+	void OnWelcomeDialogClosed(wxCloseEvent& event);
+	void OnWelcomeDialogAction(wxCommandEvent& event);
 
 protected:
 	void DisableRendering() {
@@ -194,13 +194,13 @@ public:
 	long PopupDialog(wxWindow* parent, wxString title, wxString text, long style, wxString configsavename = wxEmptyString, uint32_t configsavevalue = 0);
 	long PopupDialog(wxString title, wxString text, long style, wxString configsavename = wxEmptyString, uint32_t configsavevalue = 0);
 
-	void ListDialog(wxWindow* parent, wxString title, const wxArrayString &vec);
-	void ListDialog(const wxString &title, const wxArrayString &vec) {
+	void ListDialog(wxWindow* parent, wxString title, const wxArrayString& vec);
+	void ListDialog(const wxString& title, const wxArrayString& vec) {
 		ListDialog(nullptr, title, vec);
 	}
 
 	void ShowTextBox(wxWindow* parent, wxString title, wxString contents);
-	void ShowTextBox(const wxString &title, const wxString &contents) {
+	void ShowTextBox(const wxString& title, const wxString& contents) {
 		ShowTextBox(nullptr, title, contents);
 	}
 
@@ -235,8 +235,8 @@ public:
 		return mode == DRAWING_MODE;
 	}
 
-	void SetHotkey(int index, Hotkey &hotkey);
-	const Hotkey &GetHotkey(int index) const;
+	void SetHotkey(int index, Hotkey& hotkey);
+	const Hotkey& GetHotkey(int index) const;
 	void SaveHotkeys() const;
 	void LoadHotkeys();
 
@@ -282,16 +282,16 @@ public:
 	static wxString GetLocalDirectory();
 	static wxString GetExtensionsDirectory();
 
-	void discoverDataDirectory(const wxString &existentFile);
+	void discoverDataDirectory(const wxString& existentFile);
 	wxString getFoundDataDirectory() {
 		return m_dataDirectory;
 	}
 
 	// Load/unload a client version (takes care of dialogs aswell)
 	void UnloadVersion();
-	bool LoadVersion(ClientVersionID ver, wxString &error, wxArrayString &warnings, bool force = false);
+	bool LoadVersion(ClientVersionID ver, wxString& error, wxArrayString& warnings, bool force = false);
 	// The current version loaded (returns CLIENT_VERSION_NONE if no version is loaded)
-	const ClientVersion &GetCurrentVersion() const;
+	const ClientVersion& GetCurrentVersion() const;
 	ClientVersionID GetCurrentVersionID() const;
 	// If any version is loaded at all
 	bool IsVersionLoaded() const {
@@ -339,7 +339,7 @@ public:
 	void NewMapView();
 
 	// Map
-	Map &GetCurrentMap();
+	Map& GetCurrentMap();
 	int GetOpenMapCount();
 	bool ShouldSave();
 	void SaveCurrentMap(FileName filename, bool showdialog); // "" means default filename
@@ -350,10 +350,10 @@ public:
 	void OpenMap();
 	void SaveMap();
 	void SaveMapAs();
-	bool LoadMap(const FileName &fileName);
+	bool LoadMap(const FileName& fileName);
 
 protected:
-	bool LoadDataFiles(wxString &error, wxArrayString &warnings);
+	bool LoadDataFiles(wxString& error, wxArrayString& warnings);
 	ClientVersion* getLoadedVersion() const {
 		return loaded_version == CLIENT_VERSION_NONE ? nullptr : ClientVersion::get(loaded_version);
 	}
@@ -380,7 +380,7 @@ public:
 	// Returns primary palette
 	PaletteWindow* GetPalette();
 	// Returns list of all palette, first in the list is primary
-	const std::list<PaletteWindow*> &GetPalettes();
+	const std::list<PaletteWindow*>& GetPalettes();
 
 	void DestroyPalettes();
 	// Hidden from public view
@@ -510,7 +510,7 @@ public:
 		g_gui.DestroyLoadBar();
 	}
 
-	void SetLoadDone(int32_t done, const wxString &newmessage = wxEmptyString) {
+	void SetLoadDone(int32_t done, const wxString& newmessage = wxEmptyString) {
 		g_gui.SetLoadDone(done, newmessage);
 	}
 
@@ -521,7 +521,7 @@ public:
 
 #define UnnamedRenderingLock() RenderingLock __unnamed_rendering_lock_##__LINE__
 
-void SetWindowToolTip(wxWindow* a, const wxString &tip);
-void SetWindowToolTip(wxWindow* a, wxWindow* b, const wxString &tip);
+void SetWindowToolTip(wxWindow* a, const wxString& tip);
+void SetWindowToolTip(wxWindow* a, wxWindow* b, const wxString& tip);
 
 #endif

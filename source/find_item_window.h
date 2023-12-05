@@ -52,7 +52,7 @@ public:
 		Podium
 	};
 
-	FindItemDialog(wxWindow* parent, const wxString &title, bool onlyPickupables = false);
+	FindItemDialog(wxWindow* parent, const wxString& title, bool onlyPickupables = false);
 	~FindItemDialog();
 
 	Brush* getResult() const {
@@ -69,15 +69,15 @@ private:
 	void EnableProperties(bool enable);
 	void RefreshContentsInternal();
 
-	void OnOptionChange(wxCommandEvent &event);
-	void OnServerIdChange(wxCommandEvent &event);
-	void OnClientIdChange(wxCommandEvent &event);
-	void OnText(wxCommandEvent &event);
-	void OnTypeChange(wxCommandEvent &event);
-	void OnPropertyChange(wxCommandEvent &event);
-	void OnInputTimer(wxTimerEvent &event);
-	void OnClickOK(wxCommandEvent &event);
-	void OnClickCancel(wxCommandEvent &event);
+	void OnOptionChange(wxCommandEvent& event);
+	void OnServerIdChange(wxCommandEvent& event);
+	void OnClientIdChange(wxCommandEvent& event);
+	void OnText(wxCommandEvent& event);
+	void OnTypeChange(wxCommandEvent& event);
+	void OnPropertyChange(wxCommandEvent& event);
+	void OnInputTimer(wxTimerEvent& event);
+	void OnClickOK(wxCommandEvent& event);
+	void OnClickCancel(wxCommandEvent& event);
 
 	wxRadioBox* options_radio_box;
 

@@ -63,7 +63,7 @@ void MapTabbook::CycleTab(bool forward) {
 	notebook->SetSelection(selection);
 }
 
-void MapTabbook::OnNotebookPageClose(wxAuiNotebookEvent &evt) {
+void MapTabbook::OnNotebookPageClose(wxAuiNotebookEvent& evt) {
 	EditorTab* editorTab = GetTab(evt.GetInt());
 
 	MapTab* mapTab = dynamic_cast<MapTab*>(editorTab);
@@ -92,7 +92,7 @@ void MapTabbook::OnNotebookPageClose(wxAuiNotebookEvent &evt) {
 	}
 }
 
-void MapTabbook::OnNotebookPageChanged(wxAuiNotebookEvent &evt) {
+void MapTabbook::OnNotebookPageChanged(wxAuiNotebookEvent& evt) {
 	g_gui.UpdateMinimap();
 
 	int32_t oldSelection = evt.GetOldSelection();
@@ -127,7 +127,7 @@ void MapTabbook::OnNotebookPageChanged(wxAuiNotebookEvent &evt) {
 	}
 }
 
-void MapTabbook::OnAllowNotebookDND(wxAuiNotebookEvent &evt) {
+void MapTabbook::OnAllowNotebookDND(wxAuiNotebookEvent& evt) {
 	evt.Allow();
 }
 

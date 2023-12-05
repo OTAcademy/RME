@@ -42,7 +42,7 @@ EVT_CLOSE(PaletteWindow::OnClose)
 EVT_KEY_DOWN(PaletteWindow::OnKey)
 END_EVENT_TABLE()
 
-PaletteWindow::PaletteWindow(wxWindow* parent, const TilesetContainer &tilesets) :
+PaletteWindow::PaletteWindow(wxWindow* parent, const TilesetContainer& tilesets) :
 	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(230, 250)),
 	choicebook(nullptr),
 	terrain_palette(nullptr),
@@ -98,7 +98,7 @@ PaletteWindow::~PaletteWindow() {
 	////
 }
 
-PalettePanel* PaletteWindow::CreateTerrainPalette(wxWindow* parent, const TilesetContainer &tilesets) {
+PalettePanel* PaletteWindow::CreateTerrainPalette(wxWindow* parent, const TilesetContainer& tilesets) {
 	BrushPalettePanel* panel = newd BrushPalettePanel(parent, tilesets, TILESET_TERRAIN);
 	panel->SetListType(wxstr(g_settings.getString(Config::PALETTE_TERRAIN_STYLE)));
 
@@ -113,7 +113,7 @@ PalettePanel* PaletteWindow::CreateTerrainPalette(wxWindow* parent, const Tilese
 	return panel;
 }
 
-PalettePanel* PaletteWindow::CreateCollectionPalette(wxWindow* parent, const TilesetContainer &tilesets) {
+PalettePanel* PaletteWindow::CreateCollectionPalette(wxWindow* parent, const TilesetContainer& tilesets) {
 	BrushPalettePanel* panel = newd BrushPalettePanel(parent, tilesets, TILESET_COLLECTION);
 	panel->SetListType(wxstr(g_settings.getString(Config::PALETTE_COLLECTION_STYLE)));
 
@@ -133,7 +133,7 @@ PalettePanel* PaletteWindow::CreateCollectionPalette(wxWindow* parent, const Til
 	return panel;
 }
 
-PalettePanel* PaletteWindow::CreateDoodadPalette(wxWindow* parent, const TilesetContainer &tilesets) {
+PalettePanel* PaletteWindow::CreateDoodadPalette(wxWindow* parent, const TilesetContainer& tilesets) {
 	BrushPalettePanel* panel = newd BrushPalettePanel(parent, tilesets, TILESET_DOODAD);
 	panel->SetListType(wxstr(g_settings.getString(Config::PALETTE_DOODAD_STYLE)));
 
@@ -146,7 +146,7 @@ PalettePanel* PaletteWindow::CreateDoodadPalette(wxWindow* parent, const Tileset
 	return panel;
 }
 
-PalettePanel* PaletteWindow::CreateItemPalette(wxWindow* parent, const TilesetContainer &tilesets) {
+PalettePanel* PaletteWindow::CreateItemPalette(wxWindow* parent, const TilesetContainer& tilesets) {
 	BrushPalettePanel* panel = newd BrushPalettePanel(parent, tilesets, TILESET_ITEM);
 	panel->SetListType(wxstr(g_settings.getString(Config::PALETTE_ITEM_STYLE)));
 
@@ -156,7 +156,7 @@ PalettePanel* PaletteWindow::CreateItemPalette(wxWindow* parent, const TilesetCo
 	return panel;
 }
 
-PalettePanel* PaletteWindow::CreateHousePalette(wxWindow* parent, const TilesetContainer &tilesets) {
+PalettePanel* PaletteWindow::CreateHousePalette(wxWindow* parent, const TilesetContainer& tilesets) {
 	HousePalettePanel* panel = newd HousePalettePanel(parent);
 
 	BrushSizePanel* size_panel = newd BrushSizePanel(panel);
@@ -165,17 +165,17 @@ PalettePanel* PaletteWindow::CreateHousePalette(wxWindow* parent, const TilesetC
 	return panel;
 }
 
-PalettePanel* PaletteWindow::CreateWaypointPalette(wxWindow* parent, const TilesetContainer &tilesets) {
+PalettePanel* PaletteWindow::CreateWaypointPalette(wxWindow* parent, const TilesetContainer& tilesets) {
 	WaypointPalettePanel* panel = newd WaypointPalettePanel(parent);
 	return panel;
 }
 
-PalettePanel* PaletteWindow::CreateCreaturePalette(wxWindow* parent, const TilesetContainer &tilesets) {
+PalettePanel* PaletteWindow::CreateCreaturePalette(wxWindow* parent, const TilesetContainer& tilesets) {
 	CreaturePalettePanel* panel = newd CreaturePalettePanel(parent);
 	return panel;
 }
 
-PalettePanel* PaletteWindow::CreateRAWPalette(wxWindow* parent, const TilesetContainer &tilesets) {
+PalettePanel* PaletteWindow::CreateRAWPalette(wxWindow* parent, const TilesetContainer& tilesets) {
 	BrushPalettePanel* panel = newd BrushPalettePanel(parent, tilesets, TILESET_RAW);
 	panel->SetListType(wxstr(g_settings.getString(Config::PALETTE_RAW_STYLE)));
 
@@ -387,7 +387,7 @@ bool PaletteWindow::OnSelectBrush(const Brush* whatbrush, PaletteType primary) {
 	return false;
 }
 
-void PaletteWindow::OnSwitchingPage(wxChoicebookEvent &event) {
+void PaletteWindow::OnSwitchingPage(wxChoicebookEvent& event) {
 	event.Skip();
 	if (!choicebook) {
 		return;
@@ -406,7 +406,7 @@ void PaletteWindow::OnSwitchingPage(wxChoicebookEvent &event) {
 	}
 }
 
-void PaletteWindow::OnPageChanged(wxChoicebookEvent &event) {
+void PaletteWindow::OnPageChanged(wxChoicebookEvent& event) {
 	if (!choicebook) {
 		return;
 	}
@@ -435,13 +435,13 @@ void PaletteWindow::OnUpdate(Map* map) {
 	}
 }
 
-void PaletteWindow::OnKey(wxKeyEvent &event) {
+void PaletteWindow::OnKey(wxKeyEvent& event) {
 	if (g_gui.GetCurrentTab() != nullptr) {
 		g_gui.GetCurrentMapTab()->GetEventHandler()->AddPendingEvent(event);
 	}
 }
 
-void PaletteWindow::OnClose(wxCloseEvent &event) {
+void PaletteWindow::OnClose(wxCloseEvent& event) {
 	if (!event.CanVeto()) {
 		// We can't do anything! This sucks!
 		// (application is closed, we have to destroy ourselves)

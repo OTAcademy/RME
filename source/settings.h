@@ -200,7 +200,7 @@ public:
 	void setFloat(uint32_t key, float newval);
 	void setString(uint32_t key, std::string newval);
 
-	wxConfigBase &getConfigObject();
+	wxConfigBase& getConfigObject();
 	void setDefaults() {
 		IO(DEFAULT);
 	}
@@ -237,7 +237,7 @@ public:
 				delete strval;
 			}
 		}
-		DynamicValue(const DynamicValue &dv) :
+		DynamicValue(const DynamicValue& dv) :
 			type(dv.type) {
 			if (dv.type == TYPE_STR) {
 				strval = newd std::string(*dv.strval);

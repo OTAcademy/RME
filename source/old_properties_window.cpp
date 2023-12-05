@@ -176,7 +176,7 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 		}
 
 		if (item->getSubtype()) {
-			const std::string &what = Item::LiquidID2Name(item->getSubtype());
+			const std::string& what = Item::LiquidID2Name(item->getSubtype());
 			if (what == "Unknown") {
 				splash_type_field->Append(wxstr(Item::LiquidID2Name(LIQUID_NONE)), newd int32_t(LIQUID_NONE));
 			}
@@ -209,7 +209,7 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 		subsizer->Add(newd wxStaticText(this, wxID_ANY, "ID " + i2ws(item->getID())));
 		subsizer->Add(newd wxStaticText(this, wxID_ANY, "\"" + wxstr(item->getName()) + "\""));
 
-		const Towns &towns = map->towns;
+		const Towns& towns = map->towns;
 		subsizer->Add(newd wxStaticText(this, wxID_ANY, "Depot ID"));
 		depot_id_field = newd wxChoice(this, wxID_ANY);
 		int to_select_index = 0;
@@ -376,7 +376,7 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 
 			// outfit container
 			wxFlexGridSizer* outfitContainer = newd wxFlexGridSizer(2, 10, 10);
-			const Outfit &outfit = podium->getOutfit();
+			const Outfit& outfit = podium->getOutfit();
 
 			outfitContainer->Add(newd wxStaticText(this, wxID_ANY, "Outfit"));
 			outfitContainer->Add(newd wxStaticText(this, wxID_ANY, ""));
@@ -587,7 +587,7 @@ OldPropertiesWindow::~OldPropertiesWindow() {
 	}
 }
 
-void OldPropertiesWindow::OnFocusChange(wxFocusEvent &event) {
+void OldPropertiesWindow::OnFocusChange(wxFocusEvent& event) {
 	wxWindow* win = event.GetWindow();
 	if (wxSpinCtrl* spin = dynamic_cast<wxSpinCtrl*>(win)) {
 		spin->SetSelection(-1, -1);
@@ -596,7 +596,7 @@ void OldPropertiesWindow::OnFocusChange(wxFocusEvent &event) {
 	}
 }
 
-void OldPropertiesWindow::OnChar(wxKeyEvent &evt) {
+void OldPropertiesWindow::OnChar(wxKeyEvent& evt) {
 	if (evt.GetKeyCode() == WXK_CONTROL_V) {
 		Position position;
 		const Editor* const editor = g_gui.GetCurrentEditor();
@@ -611,7 +611,7 @@ void OldPropertiesWindow::OnChar(wxKeyEvent &evt) {
 	evt.Skip();
 }
 
-void OldPropertiesWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
+void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	if (edit_item) {
 		if (dynamic_cast<Container*>(edit_item)) {
 			// Container
@@ -771,7 +771,7 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 				}
 			}
 
-			Outfit &newOutfit = Outfit();
+			Outfit& newOutfit = Outfit();
 			if (podium) {
 				int newLookType = look_type->GetValue();
 				int newMount = look_mount->GetValue();
@@ -863,7 +863,7 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 	EndModal(1);
 }
 
-void OldPropertiesWindow::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
+void OldPropertiesWindow::OnClickCancel(wxCommandEvent& WXUNUSED(event)) {
 	// Just close this window
 	EndModal(0);
 }

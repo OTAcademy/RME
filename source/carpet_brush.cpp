@@ -36,7 +36,7 @@ CarpetBrush::~CarpetBrush() {
 	////
 }
 
-bool CarpetBrush::load(pugi::xml_node node, wxArrayString &warnings) {
+bool CarpetBrush::load(pugi::xml_node node, wxArrayString& warnings) {
 	pugi::xml_attribute attribute;
 	if ((attribute = node.attribute("lookid"))) {
 		look_id = attribute.as_ushort();
@@ -53,7 +53,7 @@ bool CarpetBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 
 		uint32_t alignment;
 		if ((attribute = childNode.attribute("align"))) {
-			const std::string &alignString = attribute.as_string();
+			const std::string& alignString = attribute.as_string();
 			alignment = AutoBorder::edgeNameToID(alignString);
 			if (alignment == BORDER_NONE) {
 				if (alignString == "center") {
@@ -88,7 +88,7 @@ bool CarpetBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 
 			int32_t chance = attribute.as_int();
 
-			ItemType &it = g_items[id];
+			ItemType& it = g_items[id];
 			if (it.id == 0) {
 				warnings.push_back("There is no itemtype with id " + std::to_string(id));
 				continue;
@@ -100,7 +100,7 @@ bool CarpetBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 			it.isCarpet = true;
 			it.brush = this;
 
-			auto &alignItem = carpet_items[alignment];
+			auto& alignItem = carpet_items[alignment];
 			alignItem.total_chance += chance;
 
 			CarpetType t;
@@ -118,7 +118,7 @@ bool CarpetBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 
 			uint16_t id = attribute.as_ushort();
 
-			ItemType &it = g_items[id];
+			ItemType& it = g_items[id];
 			if (it.id == 0) {
 				warnings.push_back("There is no itemtype with id " + std::to_string(id));
 				return false;
@@ -130,7 +130,7 @@ bool CarpetBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 			it.isCarpet = true;
 			it.brush = this;
 
-			auto &alignItem = carpet_items[alignment];
+			auto& alignItem = carpet_items[alignment];
 			alignItem.total_chance = 1;
 
 			CarpetType carpetType;
@@ -143,7 +143,7 @@ bool CarpetBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 	return true;
 }
 
-bool CarpetBrush::canDraw(BaseMap* map, const Position &position) const {
+bool CarpetBrush::canDraw(BaseMap* map, const Position& position) const {
 	return true;
 }
 
@@ -153,7 +153,7 @@ void CarpetBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 }
 
 void CarpetBrush::undraw(BaseMap* map, Tile* tile) {
-	auto &items = tile->items;
+	auto& items = tile->items;
 	for (auto it = items.begin(); it != items.end();) {
 		Item* item = *it;
 		if (item->isCarpet()) {
@@ -190,7 +190,7 @@ void CarpetBrush::doCarpets(BaseMap* map, Tile* tile) {
 		return;
 	}
 
-	const Position &position = tile->getPosition();
+	const Position& position = tile->getPosition();
 	uint32_t x = position.x;
 	uint32_t y = position.y;
 	uint32_t z = position.z;
@@ -270,9 +270,9 @@ void CarpetBrush::doCarpets(BaseMap* map, Tile* tile) {
 }
 
 uint16_t CarpetBrush::getRandomCarpet(BorderType alignment) {
-	static const auto findRandomCarpet = [](const CarpetNode &node) -> uint16_t {
+	static const auto findRandomCarpet = [](const CarpetNode& node) -> uint16_t {
 		int32_t chance = random(1, node.total_chance);
-		for (const CarpetType &carpetType : node.items) {
+		for (const CarpetType& carpetType : node.items) {
 			if (chance <= carpetType.chance) {
 				return carpetType.id;
 			}

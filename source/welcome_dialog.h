@@ -26,10 +26,10 @@ class WelcomeDialogPanel;
 
 class WelcomeDialog : public wxDialog {
 public:
-	WelcomeDialog(const wxString &titleText, const wxString &versionText, const wxSize &size, const wxBitmap &rmeLogo, const std::vector<wxString> &recentFiles);
-	void OnButtonClicked(const wxMouseEvent &event);
-	void OnCheckboxClicked(const wxCommandEvent &event);
-	void OnRecentItemClicked(const wxMouseEvent &event);
+	WelcomeDialog(const wxString& titleText, const wxString& versionText, const wxSize& size, const wxBitmap& rmeLogo, const std::vector<wxString>& recentFiles);
+	void OnButtonClicked(const wxMouseEvent& event);
+	void OnCheckboxClicked(const wxCommandEvent& event);
+	void OnRecentItemClicked(const wxMouseEvent& event);
 
 private:
 	WelcomeDialogPanel* m_welcome_dialog_panel;
@@ -37,8 +37,8 @@ private:
 
 class WelcomeDialogPanel : public wxPanel {
 public:
-	WelcomeDialogPanel(WelcomeDialog* parent, const wxSize &size, const wxString &title_text, const wxString &version_text, const wxColour &base_colour, const wxBitmap &rme_logo, const std::vector<wxString> &recent_files);
-	void OnPaint(const wxPaintEvent &event);
+	WelcomeDialogPanel(WelcomeDialog* parent, const wxSize& size, const wxString& title_text, const wxString& version_text, const wxColour& base_colour, const wxBitmap& rme_logo, const std::vector<wxString>& recent_files);
+	void OnPaint(const wxPaintEvent& event);
 	void updateInputs();
 
 private:
@@ -52,10 +52,10 @@ private:
 
 class WelcomeDialogButton : public wxPanel {
 public:
-	WelcomeDialogButton(wxWindow* parent, const wxPoint &pos, const wxSize &size, const wxColour &base_colour, const wxString &text);
-	void OnPaint(const wxPaintEvent &event);
-	void OnMouseEnter(const wxMouseEvent &event);
-	void OnMouseLeave(const wxMouseEvent &event);
+	WelcomeDialogButton(wxWindow* parent, const wxPoint& pos, const wxSize& size, const wxColour& base_colour, const wxString& text);
+	void OnPaint(const wxPaintEvent& event);
+	void OnMouseEnter(const wxMouseEvent& event);
+	void OnMouseLeave(const wxMouseEvent& event);
 	wxStandardID GetAction() {
 		return m_action;
 	};
@@ -74,15 +74,15 @@ private:
 
 class RecentMapsPanel : public wxPanel {
 public:
-	RecentMapsPanel(wxWindow* parent, WelcomeDialog* dialog, const wxColour &base_colour, const std::vector<wxString> &recent_files);
+	RecentMapsPanel(wxWindow* parent, WelcomeDialog* dialog, const wxColour& base_colour, const std::vector<wxString>& recent_files);
 };
 
 class RecentItem : public wxPanel {
 public:
-	RecentItem(wxWindow* parent, const wxColour &base_colour, const wxString &item_name);
-	void OnMouseEnter(const wxMouseEvent &event);
-	void OnMouseLeave(const wxMouseEvent &event);
-	void PropagateItemClicked(wxMouseEvent &event);
+	RecentItem(wxWindow* parent, const wxColour& base_colour, const wxString& item_name);
+	void OnMouseEnter(const wxMouseEvent& event);
+	void OnMouseLeave(const wxMouseEvent& event);
+	void PropagateItemClicked(wxMouseEvent& event);
 	wxString GetText() {
 		return m_item_text;
 	};

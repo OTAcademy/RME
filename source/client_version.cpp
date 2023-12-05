@@ -78,7 +78,7 @@ void ClientVersion::loadVersions() {
 		}
 
 		for (pugi::xml_node childNode = node.first_child(); childNode; childNode = childNode.next_sibling()) {
-			const std::string &childName = as_lower_str(childNode.name());
+			const std::string& childName = as_lower_str(childNode.name());
 			if (childName == "otbs") {
 				for (pugi::xml_node otbNode = childNode.first_child(); otbNode; otbNode = otbNode.next_sibling()) {
 					if (as_lower_str(otbNode.name()) == "otb") {
@@ -116,16 +116,16 @@ void ClientVersion::loadVersions() {
 	try {
 		json::mValue read_obj;
 		json::read_or_throw(g_settings.getString(Config::ASSETS_DATA_DIRS), read_obj);
-		json::mArray &vers_obj = read_obj.get_array();
+		json::mArray& vers_obj = read_obj.get_array();
 		for (json::mArray::iterator ver_iter = vers_obj.begin(); ver_iter != vers_obj.end(); ++ver_iter) {
-			json::mObject &ver_obj = ver_iter->get_obj();
+			json::mObject& ver_obj = ver_iter->get_obj();
 			ClientVersion* version = get(ver_obj["id"].get_str());
 			if (version == nullptr) {
 				continue;
 			}
 			version->setClientPath(wxstr(ver_obj["path"].get_str()));
 		}
-	} catch (std::runtime_error &) {
+	} catch (std::runtime_error&) {
 		// pass
 		;
 	}
@@ -181,19 +181,19 @@ void ClientVersion::loadVersion(pugi::xml_node versionNode) {
 		return;
 	}
 
-	const std::string &versionName = attribute.as_string();
+	const std::string& versionName = attribute.as_string();
 	if (!(attribute = versionNode.attribute("data_directory"))) {
 		wxLogError("Node 'client' must contain 'name', 'data_directory' and 'otb' tags.");
 		return;
 	}
 
-	const std::string &dataPath = attribute.as_string();
+	const std::string& dataPath = attribute.as_string();
 	if (!(attribute = versionNode.attribute("otb"))) {
 		wxLogError("Node 'client' must contain 'name', 'data_directory' and 'otb' tags.");
 		return;
 	}
 
-	const std::string &otbVersionName = attribute.as_string();
+	const std::string& otbVersionName = attribute.as_string();
 	if (otb_versions.find(otbVersionName) == otb_versions.end()) {
 		wxLogError("Node 'client' 'otb' tag is invalid (couldn't find this otb version).");
 		return;
@@ -205,7 +205,7 @@ void ClientVersion::loadVersion(pugi::xml_node versionNode) {
 	version->visible = versionNode.attribute("visible").as_bool();
 
 	for (pugi::xml_node childNode = versionNode.first_child(); childNode; childNode = childNode.next_sibling()) {
-		const std::string &childName = as_lower_str(childNode.name());
+		const std::string& childName = as_lower_str(childNode.name());
 		if (childName == "otbm") {
 			if (!(attribute = childNode.attribute("version"))) {
 				wxLogError("Node 'otbm' missing version.");
@@ -231,7 +231,7 @@ void ClientVersion::loadVersion(pugi::xml_node versionNode) {
 				continue;
 			}
 
-			const std::string &format = attribute.as_string();
+			const std::string& format = attribute.as_string();
 			ClientData client_data = { DAT_FORMAT_74, 0, 0 };
 			if (format == "7.4") {
 				client_data.datFormat = DAT_FORMAT_74;
@@ -298,8 +298,8 @@ void ClientVersion::loadVersionExtensions(pugi::xml_node versionNode) {
 			continue;
 		}
 
-		const std::string &from = childNode.attribute("from").as_string();
-		const std::string &to = childNode.attribute("to").as_string();
+		const std::string& from = childNode.attribute("from").as_string();
+		const std::string& to = childNode.attribute("to").as_string();
 
 		ClientVersion* fromVersion = get(from);
 		ClientVersion* toVersion = get(to);
@@ -317,7 +317,7 @@ void ClientVersion::loadVersionExtensions(pugi::xml_node versionNode) {
 			toVersion = client_versions.rbegin()->second;
 		}
 
-		for (const auto &versionEntry : client_versions) {
+		for (const auto& versionEntry : client_versions) {
 			ClientVersion* version = versionEntry.second;
 			if (version->getID() >= fromVersion->getID() && version->getID() <= toVersion->getID()) {
 				version->extension_versions.push_back(version);
@@ -472,7 +472,7 @@ bool ClientVersion::hasValidPaths() {
 	spr_file.getU32(sprSignature);
 	spr_file.close();
 
-	for (const auto &clientData : data_versions) {
+	for (const auto& clientData : data_versions) {
 		if (clientData.sprSignature == sprSignature && clientData.datSignature == datSignature) {
 			return true;
 		}
@@ -530,7 +530,7 @@ bool ClientVersion::isVisible() const {
 	return visible;
 }
 
-void ClientVersion::setClientPath(const FileName &dir) {
+void ClientVersion::setClientPath(const FileName& dir) {
 	client_path.Assign(dir);
 }
 
@@ -548,7 +548,7 @@ ClientVersionList ClientVersion::getExtensionsSupported() const {
 
 ClientVersionList ClientVersion::getAllVersionsSupportedForClientVersion(ClientVersion* clientVersion) {
 	ClientVersionList versionList;
-	for (const auto &versionEntry : client_versions) {
+	for (const auto& versionEntry : client_versions) {
 		ClientVersion* version = versionEntry.second;
 		for (ClientVersion* checkVersion : version->getExtensionsSupported()) {
 			if (clientVersion == checkVersion) {

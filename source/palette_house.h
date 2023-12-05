@@ -43,7 +43,7 @@ public:
 	// Called when this page is about to be displayed
 	void OnSwitchIn();
 
-	void OnLayoutFixTimer(wxTimerEvent &event);
+	void OnLayoutFixTimer(wxTimerEvent& event);
 
 	void SetMap(Map* map);
 
@@ -60,18 +60,18 @@ protected:
 
 public:
 	// wxWidgets event handling
-	void OnTownChange(wxCommandEvent &event);
-	void OnListBoxChange(wxCommandEvent &event);
-	void OnListBoxDoubleClick(wxCommandEvent &event);
-	void OnClickHouseBrushButton(wxCommandEvent &event);
-	void OnClickSelectExitButton(wxCommandEvent &event);
-	void OnClickAddHouse(wxCommandEvent &event);
-	void OnClickEditHouse(wxCommandEvent &event);
-	void OnClickRemoveHouse(wxCommandEvent &event);
+	void OnTownChange(wxCommandEvent& event);
+	void OnListBoxChange(wxCommandEvent& event);
+	void OnListBoxDoubleClick(wxCommandEvent& event);
+	void OnClickHouseBrushButton(wxCommandEvent& event);
+	void OnClickSelectExitButton(wxCommandEvent& event);
+	void OnClickAddHouse(wxCommandEvent& event);
+	void OnClickEditHouse(wxCommandEvent& event);
+	void OnClickRemoveHouse(wxCommandEvent& event);
 
 #ifdef __APPLE__
 	// Used for detecting a deselect
-	void OnListBoxClick(wxMouseEvent &event);
+	void OnListBoxClick(wxMouseEvent& event);
 #endif
 
 protected:
@@ -96,10 +96,10 @@ public:
 	EditHouseDialog(wxWindow* parent, Map* map, House* house);
 	virtual ~EditHouseDialog();
 
-	void OnFocusChange(wxFocusEvent &);
+	void OnFocusChange(wxFocusEvent&);
 
-	void OnClickOK(wxCommandEvent &);
-	void OnClickCancel(wxCommandEvent &);
+	void OnClickOK(wxCommandEvent&);
+	void OnClickCancel(wxCommandEvent&);
 
 protected:
 	Map* map;

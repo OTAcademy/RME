@@ -63,7 +63,7 @@ void reform(Map* map, Tile* tile, Item* item) {
 // ============================================================================
 // Item
 
-Item* Item::Create_OTBM(const IOMap &maphandle, BinaryNode* stream) {
+Item* Item::Create_OTBM(const IOMap& maphandle, BinaryNode* stream) {
 	uint16_t _id;
 	if (!stream->getU16(_id)) {
 		return nullptr;
@@ -71,7 +71,7 @@ Item* Item::Create_OTBM(const IOMap &maphandle, BinaryNode* stream) {
 
 	uint8_t _count = 0;
 
-	const ItemType &iType = g_items[_id];
+	const ItemType& iType = g_items[_id];
 	if (maphandle.version.otbm == MAP_OTBM_1) {
 		if (iType.stackable || iType.isSplash() || iType.isFluidContainer()) {
 			stream->getU8(_count);
@@ -80,7 +80,7 @@ Item* Item::Create_OTBM(const IOMap &maphandle, BinaryNode* stream) {
 	return Item::Create(_id, _count);
 }
 
-bool Item::readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute attr, BinaryNode* stream) {
+bool Item::readItemAttribute_OTBM(const IOMap& maphandle, OTBM_ItemAttribute attr, BinaryNode* stream) {
 	switch (attr) {
 		case OTBM_ATTR_COUNT: {
 			uint8_t subtype;
@@ -164,7 +164,7 @@ bool Item::readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute att
 	return true;
 }
 
-bool Item::unserializeAttributes_OTBM(const IOMap &maphandle, BinaryNode* stream) {
+bool Item::unserializeAttributes_OTBM(const IOMap& maphandle, BinaryNode* stream) {
 	uint8_t attribute;
 	while (stream->getU8(attribute)) {
 		if (attribute == OTBM_ATTR_ATTRIBUTE_MAP) {
@@ -178,13 +178,13 @@ bool Item::unserializeAttributes_OTBM(const IOMap &maphandle, BinaryNode* stream
 	return true;
 }
 
-bool Item::unserializeItemNode_OTBM(const IOMap &maphandle, BinaryNode* node) {
+bool Item::unserializeItemNode_OTBM(const IOMap& maphandle, BinaryNode* node) {
 	return unserializeAttributes_OTBM(maphandle, node);
 }
 
-void Item::serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWriteHandle &stream) const {
+void Item::serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHandle& stream) const {
 	if (maphandle.version.otbm >= MAP_OTBM_2) {
-		const ItemType &iType = g_items[id];
+		const ItemType& iType = g_items[id];
 		if (iType.stackable || iType.isSplash() || iType.isFluidContainer()) {
 			stream.addU8(OTBM_ATTR_COUNT);
 			stream.addU8(getSubtype());
@@ -214,13 +214,13 @@ void Item::serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWriteHan
 			stream.addU16(uniqueId);
 		}
 
-		const std::string &text = getText();
+		const std::string& text = getText();
 		if (!text.empty()) {
 			stream.addU8(OTBM_ATTR_TEXT);
 			stream.addString(text);
 		}
 
-		const std::string &description = getDescription();
+		const std::string& description = getDescription();
 		if (!description.empty()) {
 			stream.addU8(OTBM_ATTR_DESC);
 			stream.addString(description);
@@ -234,7 +234,7 @@ void Item::serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWriteHan
 	}
 }
 
-void Item::serializeItemCompact_OTBM(const IOMap &maphandle, NodeFileWriteHandle &stream) const {
+void Item::serializeItemCompact_OTBM(const IOMap& maphandle, NodeFileWriteHandle& stream) const {
 	stream.addU16(id);
 
 	/* This is impossible
@@ -246,11 +246,11 @@ void Item::serializeItemCompact_OTBM(const IOMap &maphandle, NodeFileWriteHandle
 	*/
 }
 
-bool Item::serializeItemNode_OTBM(const IOMap &maphandle, NodeFileWriteHandle &file) const {
+bool Item::serializeItemNode_OTBM(const IOMap& maphandle, NodeFileWriteHandle& file) const {
 	file.addNode(OTBM_ITEM);
 	file.addU16(id);
 	if (maphandle.version.otbm == MAP_OTBM_1) {
-		const ItemType &iType = g_items[id];
+		const ItemType& iType = g_items[id];
 		if (iType.stackable || iType.isSplash() || iType.isFluidContainer()) {
 			file.addU8(getSubtype());
 		}
@@ -263,7 +263,7 @@ bool Item::serializeItemNode_OTBM(const IOMap &maphandle, NodeFileWriteHandle &f
 // ============================================================================
 // Teleport
 
-bool Teleport::readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute attribute, BinaryNode* stream) {
+bool Teleport::readItemAttribute_OTBM(const IOMap& maphandle, OTBM_ItemAttribute attribute, BinaryNode* stream) {
 	if (OTBM_ATTR_TELE_DEST == attribute) {
 		uint16_t x, y;
 		uint8_t z;
@@ -277,7 +277,7 @@ bool Teleport::readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute
 	}
 }
 
-void Teleport::serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWriteHandle &stream) const {
+void Teleport::serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHandle& stream) const {
 	Item::serializeItemAttributes_OTBM(maphandle, stream);
 
 	stream.addByte(OTBM_ATTR_TELE_DEST);
@@ -289,7 +289,7 @@ void Teleport::serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWrit
 // ============================================================================
 // Door
 
-bool Door::readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute attribute, BinaryNode* stream) {
+bool Door::readItemAttribute_OTBM(const IOMap& maphandle, OTBM_ItemAttribute attribute, BinaryNode* stream) {
 	if (OTBM_ATTR_HOUSEDOORID == attribute) {
 		uint8_t id = 0;
 		if (!stream->getU8(id)) {
@@ -302,7 +302,7 @@ bool Door::readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute att
 	}
 }
 
-void Door::serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWriteHandle &stream) const {
+void Door::serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHandle& stream) const {
 	Item::serializeItemAttributes_OTBM(maphandle, stream);
 	if (doorId) {
 		stream.addByte(OTBM_ATTR_HOUSEDOORID);
@@ -320,7 +320,7 @@ DoorType Door::getDoorType() const {
 }
 
 bool Door::isRealDoor() const {
-	const DoorType &dt = getDoorType();
+	const DoorType& dt = getDoorType();
 	// doors with no wallbrush will appear as WALL_UNDEFINED
 	// this is for compatibility
 	return dt == WALL_UNDEFINED || dt == WALL_DOOR_NORMAL || dt == WALL_DOOR_LOCKED || dt == WALL_DOOR_QUEST || dt == WALL_DOOR_MAGIC || dt == WALL_DOOR_NORMAL_ALT;
@@ -337,7 +337,7 @@ void Door::setDoorID(uint8_t id) {
 // ============================================================================
 // Depots
 
-bool Depot::readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute attribute, BinaryNode* stream) {
+bool Depot::readItemAttribute_OTBM(const IOMap& maphandle, OTBM_ItemAttribute attribute, BinaryNode* stream) {
 	if (OTBM_ATTR_DEPOT_ID == attribute) {
 		uint16_t id = 0;
 		if (!stream->getU16(id)) {
@@ -350,7 +350,7 @@ bool Depot::readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute at
 	}
 }
 
-void Depot::serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWriteHandle &stream) const {
+void Depot::serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHandle& stream) const {
 	Item::serializeItemAttributes_OTBM(maphandle, stream);
 	if (depotId) {
 		stream.addByte(OTBM_ATTR_DEPOT_ID);
@@ -361,7 +361,7 @@ void Depot::serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWriteHa
 // ============================================================================
 // Container
 
-bool Container::unserializeItemNode_OTBM(const IOMap &maphandle, BinaryNode* node) {
+bool Container::unserializeItemNode_OTBM(const IOMap& maphandle, BinaryNode* node) {
 	if (!Item::unserializeAttributes_OTBM(maphandle, node)) {
 		return false;
 	}
@@ -394,12 +394,12 @@ bool Container::unserializeItemNode_OTBM(const IOMap &maphandle, BinaryNode* nod
 	return true;
 }
 
-bool Container::serializeItemNode_OTBM(const IOMap &maphandle, NodeFileWriteHandle &file) const {
+bool Container::serializeItemNode_OTBM(const IOMap& maphandle, NodeFileWriteHandle& file) const {
 	file.addNode(OTBM_ITEM);
 	file.addU16(id);
 	if (maphandle.version.otbm == MAP_OTBM_1) {
 		// In the ludicrous event that an item is a container AND stackable, we have to do this. :p
-		const ItemType &iType = g_items[id];
+		const ItemType& iType = g_items[id];
 		if (iType.stackable || iType.isSplash() || iType.isFluidContainer()) {
 			file.addU8(getSubtype());
 		}
@@ -417,7 +417,7 @@ bool Container::serializeItemNode_OTBM(const IOMap &maphandle, NodeFileWriteHand
 // ============================================================================
 // Podium
 
-bool Podium::readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute attribute, BinaryNode* stream) {
+bool Podium::readItemAttribute_OTBM(const IOMap& maphandle, OTBM_ItemAttribute attribute, BinaryNode* stream) {
 	if (OTBM_ATTR_PODIUMOUTFIT == attribute) {
 		uint8_t flags;
 		uint8_t direction;
@@ -473,7 +473,7 @@ bool Podium::readItemAttribute_OTBM(const IOMap &maphandle, OTBM_ItemAttribute a
 	}
 }
 
-void Podium::serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWriteHandle &stream) const {
+void Podium::serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHandle& stream) const {
 	Item::serializeItemAttributes_OTBM(maphandle, stream);
 
 	uint8_t flags = PODIUM_SHOW_OUTFIT * static_cast<uint8_t>(showOutfit) + PODIUM_SHOW_MOUNT * static_cast<uint8_t>(showMount) + PODIUM_SHOW_PLATFORM * static_cast<uint8_t>(showPlatform);
@@ -517,7 +517,7 @@ void Podium::serializeItemAttributes_OTBM(const IOMap &maphandle, NodeFileWriteH
 	|--- OTBM_ITEM_DEF (not implemented)
 */
 
-bool IOMapOTBM::getVersionInfo(const FileName &filename, MapVersion &out_ver) {
+bool IOMapOTBM::getVersionInfo(const FileName& filename, MapVersion& out_ver) {
 #ifdef OTGZ_SUPPORT
 	if (filename.GetExt() == "otgz") {
 		// Open the archive
@@ -567,7 +567,7 @@ bool IOMapOTBM::getVersionInfo(const FileName &filename, MapVersion &out_ver) {
 	return getVersionInfo(&f, out_ver);
 }
 
-bool IOMapOTBM::getVersionInfo(NodeFileReadHandle* f, MapVersion &out_ver) {
+bool IOMapOTBM::getVersionInfo(NodeFileReadHandle* f, MapVersion& out_ver) {
 	BinaryNode* root = f->getRootNode();
 	if (!root) {
 		return false;
@@ -595,7 +595,7 @@ bool IOMapOTBM::getVersionInfo(NodeFileReadHandle* f, MapVersion &out_ver) {
 	return true;
 }
 
-bool IOMapOTBM::loadMap(Map &map, const FileName &filename) {
+bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
 #ifdef OTGZ_SUPPORT
 	if (filename.GetExt() == "otgz") {
 		// Open the archive
@@ -744,7 +744,7 @@ bool IOMapOTBM::loadMap(Map &map, const FileName &filename) {
 	return true;
 }
 
-bool IOMapOTBM::loadMap(Map &map, NodeFileReadHandle &f) {
+bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 	BinaryNode* root = f.getRootNode();
 	if (!root) {
 		error("Could not read root node.");
@@ -1058,7 +1058,7 @@ bool IOMapOTBM::loadMap(Map &map, NodeFileReadHandle &f) {
 	return true;
 }
 
-bool IOMapOTBM::loadSpawns(Map &map, const FileName &dir) {
+bool IOMapOTBM::loadSpawns(Map& map, const FileName& dir) {
 	std::string fn = (const char*)(dir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME).mb_str(wxConvUTF8));
 	fn += map.spawnfile;
 
@@ -1080,7 +1080,7 @@ bool IOMapOTBM::loadSpawns(Map &map, const FileName &dir) {
 	return loadSpawns(map, doc);
 }
 
-bool IOMapOTBM::loadSpawns(Map &map, pugi::xml_document &doc) {
+bool IOMapOTBM::loadSpawns(Map& map, pugi::xml_document& doc) {
 	pugi::xml_node node = doc.child("spawns");
 	if (!node) {
 		warnings.push_back("IOMapOTBM::loadSpawns: Invalid rootheader.");
@@ -1124,13 +1124,13 @@ bool IOMapOTBM::loadSpawns(Map &map, pugi::xml_document &doc) {
 		map.addSpawn(tile);
 
 		for (pugi::xml_node creatureNode = spawnNode.first_child(); creatureNode; creatureNode = creatureNode.next_sibling()) {
-			const std::string &creatureNodeName = as_lower_str(creatureNode.name());
+			const std::string& creatureNodeName = as_lower_str(creatureNode.name());
 			if (creatureNodeName != "monster" && creatureNodeName != "npc") {
 				continue;
 			}
 
 			bool isNpc = creatureNodeName == "npc";
-			const std::string &name = creatureNode.attribute("name").as_string();
+			const std::string& name = creatureNode.attribute("name").as_string();
 			if (name.empty()) {
 				wxString err;
 				err << "Bad creature position data, discarding creature at spawn " << spawnPosition.x << ":" << spawnPosition.y << ":" << spawnPosition.z << " due missing name.";
@@ -1210,7 +1210,7 @@ bool IOMapOTBM::loadSpawns(Map &map, pugi::xml_document &doc) {
 	return true;
 }
 
-bool IOMapOTBM::loadHouses(Map &map, const FileName &dir) {
+bool IOMapOTBM::loadHouses(Map& map, const FileName& dir) {
 	std::string fn = (const char*)(dir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME).mb_str(wxConvUTF8));
 	fn += map.housefile;
 
@@ -1232,7 +1232,7 @@ bool IOMapOTBM::loadHouses(Map &map, const FileName &dir) {
 	return loadHouses(map, doc);
 }
 
-bool IOMapOTBM::loadHouses(Map &map, pugi::xml_document &doc) {
+bool IOMapOTBM::loadHouses(Map& map, pugi::xml_document& doc) {
 	pugi::xml_node node = doc.child("houses");
 	if (!node) {
 		warnings.push_back("IOMapOTBM::loadHouses: Invalid rootheader.");
@@ -1286,7 +1286,7 @@ bool IOMapOTBM::loadHouses(Map &map, pugi::xml_document &doc) {
 	return true;
 }
 
-bool IOMapOTBM::loadWaypoints(Map &map, const FileName &dir) {
+bool IOMapOTBM::loadWaypoints(Map& map, const FileName& dir) {
 	std::string fn = (const char*)(dir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME).mb_str(wxConvUTF8));
 	fn += map.waypointfile;
 	FileName filename(wxstr(fn));
@@ -1301,11 +1301,11 @@ bool IOMapOTBM::loadWaypoints(Map &map, const FileName &dir) {
 	}
 	return loadWaypoints(map, doc);
 };
-bool IOMapOTBM::loadWaypoints(Map &map, pugi::xml_document &doc) {
+bool IOMapOTBM::loadWaypoints(Map& map, pugi::xml_document& doc) {
 	return true;
 };
 
-bool IOMapOTBM::saveMap(Map &map, const FileName &identifier) {
+bool IOMapOTBM::saveMap(Map& map, const FileName& identifier) {
 #ifdef OTGZ_SUPPORT
 	if (identifier.GetExt() == "otgz") {
 		// Create the archive
@@ -1448,7 +1448,7 @@ bool IOMapOTBM::saveMap(Map &map, const FileName &identifier) {
 	return true;
 }
 
-bool IOMapOTBM::saveMap(Map &map, NodeFileWriteHandle &f) {
+bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f) {
 	/* STOP!
 	 * Before you even think about modifying this, please reconsider.
 	 * while adding stuff to the binary format may be "cool", you'll
@@ -1462,7 +1462,7 @@ bool IOMapOTBM::saveMap(Map &map, NodeFileWriteHandle &f) {
 
 	bool waypointsWarning = false;
 
-	const IOMapOTBM &self = *this;
+	const IOMapOTBM& self = *this;
 
 	FileName tmpName;
 	MapVersion mapVersion = map.getVersion();
@@ -1517,7 +1517,7 @@ bool IOMapOTBM::saveMap(Map &map, NodeFileWriteHandle &f) {
 					continue;
 				}
 
-				const Position &pos = save_tile->getPosition();
+				const Position& pos = save_tile->getPosition();
 
 				// Decide if newd node should be created
 				if (pos.x < local_x || pos.x >= local_x + 256 || pos.y < local_y || pos.y >= local_y + 256 || pos.z != local_z) {
@@ -1589,9 +1589,9 @@ bool IOMapOTBM::saveMap(Map &map, NodeFileWriteHandle &f) {
 			}
 
 			f.addNode(OTBM_TOWNS);
-			for (const auto &townEntry : map.towns) {
+			for (const auto& townEntry : map.towns) {
 				Town* town = townEntry.second;
-				const Position &townPosition = town->getTemplePosition();
+				const Position& townPosition = town->getTemplePosition();
 				f.addNode(OTBM_TOWN);
 				f.addU32(town->getID());
 				f.addString(town->getName());
@@ -1609,7 +1609,7 @@ bool IOMapOTBM::saveMap(Map &map, NodeFileWriteHandle &f) {
 				}
 
 				f.addNode(OTBM_WAYPOINTS);
-				for (const auto &waypointEntry : map.waypoints) {
+				for (const auto& waypointEntry : map.waypoints) {
 					Waypoint* waypoint = waypointEntry.second;
 					f.addNode(OTBM_WAYPOINT);
 					f.addString(waypoint->name);
@@ -1631,7 +1631,7 @@ bool IOMapOTBM::saveMap(Map &map, NodeFileWriteHandle &f) {
 	return true;
 }
 
-bool IOMapOTBM::saveSpawns(Map &map, const FileName &dir) {
+bool IOMapOTBM::saveSpawns(Map& map, const FileName& dir) {
 	wxString filepath = dir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME);
 	filepath += wxString(map.spawnfile.c_str(), wxConvUTF8);
 
@@ -1643,7 +1643,7 @@ bool IOMapOTBM::saveSpawns(Map &map, const FileName &dir) {
 	return false;
 }
 
-bool IOMapOTBM::saveSpawns(Map &map, pugi::xml_document &doc) {
+bool IOMapOTBM::saveSpawns(Map& map, pugi::xml_document& doc) {
 	pugi::xml_node decl = doc.prepend_child(pugi::node_declaration);
 	if (!decl) {
 		return false;
@@ -1654,7 +1654,7 @@ bool IOMapOTBM::saveSpawns(Map &map, pugi::xml_document &doc) {
 	CreatureList creatureList;
 
 	pugi::xml_node spawnNodes = doc.append_child("spawns");
-	for (const auto &spawnPosition : map.spawns) {
+	for (const auto& spawnPosition : map.spawns) {
 		Tile* tile = map.getTile(spawnPosition);
 		if (tile == nullptr) {
 			continue;
@@ -1704,7 +1704,7 @@ bool IOMapOTBM::saveSpawns(Map &map, pugi::xml_document &doc) {
 	return true;
 }
 
-bool IOMapOTBM::saveHouses(Map &map, const FileName &dir) {
+bool IOMapOTBM::saveHouses(Map& map, const FileName& dir) {
 	wxString filepath = dir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME);
 	filepath += wxString(map.housefile.c_str(), wxConvUTF8);
 
@@ -1716,7 +1716,7 @@ bool IOMapOTBM::saveHouses(Map &map, const FileName &dir) {
 	return false;
 }
 
-bool IOMapOTBM::saveHouses(Map &map, pugi::xml_document &doc) {
+bool IOMapOTBM::saveHouses(Map& map, pugi::xml_document& doc) {
 	pugi::xml_node decl = doc.prepend_child(pugi::node_declaration);
 	if (!decl) {
 		return false;
@@ -1725,14 +1725,14 @@ bool IOMapOTBM::saveHouses(Map &map, pugi::xml_document &doc) {
 	decl.append_attribute("version") = "1.0";
 
 	pugi::xml_node houseNodes = doc.append_child("houses");
-	for (const auto &houseEntry : map.houses) {
+	for (const auto& houseEntry : map.houses) {
 		const House* house = houseEntry.second;
 		pugi::xml_node houseNode = houseNodes.append_child("house");
 
 		houseNode.append_attribute("name") = house->name.c_str();
 		houseNode.append_attribute("houseid") = house->getID();
 
-		const Position &exitPosition = house->getExit();
+		const Position& exitPosition = house->getExit();
 		houseNode.append_attribute("entryx") = exitPosition.x;
 		houseNode.append_attribute("entryy") = exitPosition.y;
 		houseNode.append_attribute("entryz") = exitPosition.z;
@@ -1748,7 +1748,7 @@ bool IOMapOTBM::saveHouses(Map &map, pugi::xml_document &doc) {
 	return true;
 }
 
-bool IOMapOTBM::saveWaypoints(Map &map, const FileName &dir) {
+bool IOMapOTBM::saveWaypoints(Map& map, const FileName& dir) {
 	wxString filepath = dir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME);
 	filepath += wxString(map.waypointfile.c_str(), wxConvUTF8);
 
@@ -1760,7 +1760,7 @@ bool IOMapOTBM::saveWaypoints(Map &map, const FileName &dir) {
 	return false;
 }
 
-bool IOMapOTBM::saveWaypoints(Map &map, pugi::xml_document &doc) {
+bool IOMapOTBM::saveWaypoints(Map& map, pugi::xml_document& doc) {
 	pugi::xml_node decl = doc.prepend_child(pugi::node_declaration);
 	if (!decl) {
 		return false;
@@ -1769,7 +1769,7 @@ bool IOMapOTBM::saveWaypoints(Map &map, pugi::xml_document &doc) {
 	decl.append_attribute("version") = "1.0";
 
 	pugi::xml_node houseNodes = doc.append_child("waypoints");
-	for (const auto &houseEntry : map.houses) {
+	for (const auto& houseEntry : map.houses) {
 		const House* house = houseEntry.second;
 		pugi::xml_node houseNode = houseNodes.append_child("waypoint");
 
@@ -1777,7 +1777,7 @@ bool IOMapOTBM::saveWaypoints(Map &map, pugi::xml_document &doc) {
 		houseNode.append_attribute("id") = house->getID();
 		houseNode.append_attribute("icon") = house->getID();
 
-		const Position &exitPosition = house->getExit();
+		const Position& exitPosition = house->getExit();
 		houseNode.append_attribute("x") = exitPosition.x;
 		houseNode.append_attribute("y") = exitPosition.y;
 		houseNode.append_attribute("z") = exitPosition.z;

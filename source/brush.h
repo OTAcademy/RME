@@ -65,14 +65,14 @@ public:
 	void init();
 	void clear();
 
-	Brush* getBrush(const std::string &name) const;
+	Brush* getBrush(const std::string& name) const;
 
 	void addBrush(Brush* brush);
 
-	bool unserializeBorder(pugi::xml_node node, wxArrayString &warnings);
-	bool unserializeBrush(pugi::xml_node node, wxArrayString &warnings);
+	bool unserializeBorder(pugi::xml_node node, wxArrayString& warnings);
+	bool unserializeBrush(pugi::xml_node node, wxArrayString& warnings);
 
-	const BrushMap &getMap() const {
+	const BrushMap& getMap() const {
 		return brushes;
 	}
 
@@ -95,13 +95,13 @@ public:
 	Brush();
 	virtual ~Brush();
 
-	virtual bool load(pugi::xml_node node, wxArrayString &warnings) {
+	virtual bool load(pugi::xml_node node, wxArrayString& warnings) {
 		return true;
 	}
 
 	virtual void draw(BaseMap* map, Tile* tile, void* parameter = nullptr) = 0;
 	virtual void undraw(BaseMap* map, Tile* tile) = 0;
-	virtual bool canDraw(BaseMap* map, const Position &position) const = 0;
+	virtual bool canDraw(BaseMap* map, const Position& position) const = 0;
 
 	//
 	uint32_t getID() const {
@@ -109,7 +109,7 @@ public:
 	}
 
 	virtual std::string getName() const = 0;
-	virtual void setName(const std::string &newName) {
+	virtual void setName(const std::string& newName) {
 		ASSERT(_MSG("setName attempted on nameless brush!"));
 	}
 
@@ -274,14 +274,14 @@ public:
 		return static_cast<TerrainBrush*>(this);
 	}
 
-	virtual bool canDraw(BaseMap* map, const Position &position) const {
+	virtual bool canDraw(BaseMap* map, const Position& position) const {
 		return true;
 	}
 
 	virtual std::string getName() const {
 		return name;
 	}
-	virtual void setName(const std::string &newName) {
+	virtual void setName(const std::string& newName) {
 		name = newName;
 	}
 
@@ -323,7 +323,7 @@ public:
 		return static_cast<FlagBrush*>(this);
 	}
 
-	virtual bool canDraw(BaseMap* map, const Position &position) const;
+	virtual bool canDraw(BaseMap* map, const Position& position) const;
 	virtual void draw(BaseMap* map, Tile* tile, void* parameter);
 	virtual void undraw(BaseMap* map, Tile* tile);
 
@@ -354,7 +354,7 @@ public:
 
 	static void switchDoor(Item* door);
 
-	virtual bool canDraw(BaseMap* map, const Position &position) const;
+	virtual bool canDraw(BaseMap* map, const Position& position) const;
 	virtual void draw(BaseMap* map, Tile* tile, void* parameter);
 	virtual void undraw(BaseMap* map, Tile* tile);
 
@@ -383,7 +383,7 @@ public:
 		return static_cast<OptionalBorderBrush*>(this);
 	}
 
-	virtual bool canDraw(BaseMap* map, const Position &position) const;
+	virtual bool canDraw(BaseMap* map, const Position& position) const;
 	virtual void draw(BaseMap* map, Tile* tile, void* parameter);
 	virtual void undraw(BaseMap* map, Tile* tile);
 
@@ -409,7 +409,7 @@ public:
 		return static_cast<EraserBrush*>(this);
 	}
 
-	virtual bool canDraw(BaseMap* map, const Position &position) const;
+	virtual bool canDraw(BaseMap* map, const Position& position) const;
 	virtual void draw(BaseMap* map, Tile* tile, void* parameter);
 	virtual void undraw(BaseMap* map, Tile* tile);
 
@@ -436,8 +436,8 @@ public:
 	}
 	~AutoBorder() { }
 
-	static int edgeNameToID(const std::string &edgename);
-	bool load(pugi::xml_node node, wxArrayString &warnings, GroundBrush* owner = nullptr, uint16_t ground_equivalent = 0);
+	static int edgeNameToID(const std::string& edgename);
+	bool load(pugi::xml_node node, wxArrayString& warnings, GroundBrush* owner = nullptr, uint16_t ground_equivalent = 0);
 
 	uint32_t tiles[13];
 	uint32_t id;

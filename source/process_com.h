@@ -27,7 +27,7 @@ public:
 	RMEProcessConnection();
 	~RMEProcessConnection();
 
-	bool OnExec(const wxString &topic, const wxString &fileName);
+	bool OnExec(const wxString& topic, const wxString& fileName);
 };
 
 class RMEProcessServer : public wxServer {
@@ -35,7 +35,7 @@ public:
 	RMEProcessServer();
 	~RMEProcessServer();
 
-	wxConnectionBase* OnAcceptConnection(const wxString &topic);
+	wxConnectionBase* OnAcceptConnection(const wxString& topic);
 };
 
 class RMEProcessClient : public wxClient {

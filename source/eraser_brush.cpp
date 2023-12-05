@@ -41,7 +41,7 @@ int EraserBrush::getLookID() const {
 	return EDITOR_SPRITE_ERASER;
 }
 
-bool EraserBrush::canDraw(BaseMap* map, const Position &position) const {
+bool EraserBrush::canDraw(BaseMap* map, const Position& position) const {
 	return true;
 }
 

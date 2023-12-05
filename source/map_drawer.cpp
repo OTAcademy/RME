@@ -674,8 +674,8 @@ void MapDrawer::DrawLiveCursors() {
 		return;
 	}
 
-	LiveSocket &live = editor.GetLive();
-	for (LiveCursor &cursor : live.getCursorList()) {
+	LiveSocket& live = editor.GetLive();
+	for (LiveCursor& cursor : live.getCursorList()) {
 		if (cursor.pos.z <= GROUND_LAYER && floor > GROUND_LAYER) {
 			continue;
 		}
@@ -1050,13 +1050,13 @@ void MapDrawer::DrawBrush() {
 	}
 }
 
-void MapDrawer::BlitItem(int &draw_x, int &draw_y, const Tile* tile, Item* item, bool ephemeral, int red, int green, int blue, int alpha) {
-	const Position &pos = tile->getPosition();
+void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Tile* tile, Item* item, bool ephemeral, int red, int green, int blue, int alpha) {
+	const Position& pos = tile->getPosition();
 	BlitItem(draw_x, draw_y, pos, item, ephemeral, red, green, blue, alpha, tile);
 }
 
-void MapDrawer::BlitItem(int &draw_x, int &draw_y, const Position &pos, Item* item, bool ephemeral, int red, int green, int blue, int alpha, const Tile* tile) {
-	ItemType &it = g_items[item->getID()];
+void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Position& pos, Item* item, bool ephemeral, int red, int green, int blue, int alpha, const Tile* tile) {
+	ItemType& it = g_items[item->getID()];
 
 	// Locked door indicator
 	if (!options.ingame && options.highlight_locked_doors && it.isDoor() && it.isLocked) {
@@ -1218,7 +1218,7 @@ void MapDrawer::BlitItem(int &draw_x, int &draw_y, const Position &pos, Item* it
 
 	// draw light color indicator
 	if (!options.ingame && options.show_light_str) {
-		const SpriteLight &light = item->getLight();
+		const SpriteLight& light = item->getLight();
 		if (light.intensity > 0) {
 			wxColor lightColor = colorFromEightBit(light.color);
 			uint8_t byteR = lightColor.Red();
@@ -1275,9 +1275,9 @@ void MapDrawer::BlitSpriteType(int screenx, int screeny, GameSprite* spr, int re
 	}
 }
 
-void MapDrawer::BlitCreature(int screenx, int screeny, const Outfit &outfit, Direction dir, int red, int green, int blue, int alpha) {
+void MapDrawer::BlitCreature(int screenx, int screeny, const Outfit& outfit, Direction dir, int red, int green, int blue, int alpha) {
 	if (outfit.lookItem != 0) {
-		ItemType &it = g_items[outfit.lookItem];
+		ItemType& it = g_items[outfit.lookItem];
 		BlitSpriteType(screenx, screeny, it.sprite, red, green, blue, alpha);
 	} else {
 		// get outfit sprite
@@ -1409,7 +1409,7 @@ void MapDrawer::DrawRawBrush(int screenx, int screeny, ItemType* itemType, uint8
 	BlitSpriteType(screenx, screeny, spr, r, g, b, alpha);
 }
 
-void MapDrawer::WriteTooltip(Item* item, std::ostringstream &stream, bool isHouseTile) {
+void MapDrawer::WriteTooltip(Item* item, std::ostringstream& stream, bool isHouseTile) {
 	if (item == nullptr) {
 		return;
 	}
@@ -1421,7 +1421,7 @@ void MapDrawer::WriteTooltip(Item* item, std::ostringstream &stream, bool isHous
 
 	const uint16_t unique = item->getUniqueID();
 	const uint16_t action = item->getActionID();
-	const std::string &text = item->getText();
+	const std::string& text = item->getText();
 	uint8_t doorId = 0;
 
 	if (isHouseTile && item->isDoor()) {
@@ -1456,12 +1456,12 @@ void MapDrawer::WriteTooltip(Item* item, std::ostringstream &stream, bool isHous
 		stream << "text: " << text << "\n";
 	}
 	if (tp) {
-		Position &dest = tp->getDestination();
+		Position& dest = tp->getDestination();
 		stream << "destination: " << dest.x << ", " << dest.y << ", " << dest.z << "\n";
 	}
 }
 
-void MapDrawer::WriteTooltip(Waypoint* waypoint, std::ostringstream &stream) {
+void MapDrawer::WriteTooltip(Waypoint* waypoint, std::ostringstream& stream) {
 	if (stream.tellp() > 0) {
 		stream << "\n";
 	}
@@ -1716,7 +1716,7 @@ void MapDrawer::DrawBrushIndicator(int x, int y, Brush* brush, uint8_t r, uint8_
 	glEnd();
 }
 
-void MapDrawer::DrawHookIndicator(int x, int y, const ItemType &type) {
+void MapDrawer::DrawHookIndicator(int x, int y, const ItemType& type) {
 	glDisable(GL_TEXTURE_2D);
 	glColor4ub(uint8_t(0), uint8_t(0), uint8_t(255), uint8_t(200));
 	glBegin(GL_QUADS);
@@ -1850,7 +1850,7 @@ void MapDrawer::DrawLight() {
 	light_drawer->draw(start_x, start_y, end_x, end_y, view_scroll_x, view_scroll_y, options.experimental_fog);
 }
 
-void MapDrawer::MakeTooltip(int screenx, int screeny, const std::string &text, uint8_t r, uint8_t g, uint8_t b) {
+void MapDrawer::MakeTooltip(int screenx, int screeny, const std::string& text, uint8_t r, uint8_t g, uint8_t b) {
 	if (text.empty()) {
 		return;
 	}
@@ -1870,7 +1870,7 @@ void MapDrawer::AddLight(TileLocation* location) {
 		return;
 	}
 
-	auto &position = location->getPosition();
+	auto& position = location->getPosition();
 
 	if (tile->ground) {
 		if (tile->ground->hasLight()) {
@@ -1888,7 +1888,7 @@ void MapDrawer::AddLight(TileLocation* location) {
 	}
 }
 
-void MapDrawer::getColor(Brush* brush, const Position &position, uint8_t &r, uint8_t &g, uint8_t &b) {
+void MapDrawer::getColor(Brush* brush, const Position& position, uint8_t& r, uint8_t& g, uint8_t& b) {
 	if (brush->canDraw(&editor.map, position)) {
 		if (brush->isWaypoint()) {
 			r = 0x00;
@@ -1991,7 +1991,7 @@ void MapDrawer::glColor(MapDrawer::BrushColor color) {
 	}
 }
 
-void MapDrawer::glColorCheck(Brush* brush, const Position &pos) {
+void MapDrawer::glColorCheck(Brush* brush, const Position& pos) {
 	if (brush->canDraw(&editor.map, pos)) {
 		glColor(COLOR_VALID);
 	} else {
@@ -1999,7 +1999,7 @@ void MapDrawer::glColorCheck(Brush* brush, const Position &pos) {
 	}
 }
 
-void MapDrawer::drawRect(int x, int y, int w, int h, const wxColor &color, int width) {
+void MapDrawer::drawRect(int x, int y, int w, int h, const wxColor& color, int width) {
 	glLineWidth(width);
 	glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
 	glBegin(GL_LINE_STRIP);
@@ -2011,7 +2011,7 @@ void MapDrawer::drawRect(int x, int y, int w, int h, const wxColor &color, int w
 	glEnd();
 }
 
-void MapDrawer::drawFilledRect(int x, int y, int w, int h, const wxColor &color) {
+void MapDrawer::drawFilledRect(int x, int y, int w, int h, const wxColor& color) {
 	glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
 	glBegin(GL_QUADS);
 	glVertex2f(x, y);

@@ -28,7 +28,7 @@ class QTreeNode;
 
 class LiveServer : public LiveSocket {
 public:
-	LiveServer(Editor &editor);
+	LiveServer(Editor& editor);
 	~LiveServer();
 
 	//
@@ -41,10 +41,10 @@ public:
 	//
 	void receiveHeader() { }
 	void receive(uint32_t packetSize) { }
-	void send(NetworkMessage &message) { }
+	void send(NetworkMessage& message) { }
 
 	//
-	void updateCursor(const Position &position);
+	void updateCursor(const Position& position);
 	void updateClientList() const;
 
 	//
@@ -62,11 +62,11 @@ public:
 	std::string getHostName() const;
 
 	//
-	void broadcastNodes(DirtyList &dirtyList);
-	void broadcastChat(const wxString &speaker, const wxString &chatMessage);
-	void broadcastCursor(const LiveCursor &cursor);
+	void broadcastNodes(DirtyList& dirtyList);
+	void broadcastChat(const wxString& speaker, const wxString& chatMessage);
+	void broadcastCursor(const LiveCursor& cursor);
 
-	void startOperation(const wxString &operationMessage);
+	void startOperation(const wxString& operationMessage);
 	void updateOperation(int32_t percent);
 
 protected:

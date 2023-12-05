@@ -105,7 +105,7 @@ END_EVENT_TABLE()
 
 bool MapCanvas::processed[] = { 0 };
 
-MapCanvas::MapCanvas(MapWindow* parent, Editor &editor, int* attriblist) :
+MapCanvas::MapCanvas(MapWindow* parent, Editor& editor, int* attriblist) :
 	wxGLCanvas(parent, wxID_ANY, nullptr, wxDefaultPosition, wxDefaultSize, wxWANTS_CHARS),
 	editor(editor),
 	floor(GROUND_LAYER),
@@ -187,11 +187,11 @@ void MapCanvas::GetViewBox(int* view_scroll_x, int* view_scroll_y, int* screensi
 	static_cast<MapWindow*>(GetParent())->GetViewStart(view_scroll_x, view_scroll_y);
 }
 
-void MapCanvas::OnPaint(wxPaintEvent &event) {
+void MapCanvas::OnPaint(wxPaintEvent& event) {
 	SetCurrent(*g_gui.GetGLContext(this));
 
 	if (g_gui.IsRenderingEnabled()) {
-		DrawingOptions &options = drawer->getOptions();
+		DrawingOptions& options = drawer->getOptions();
 		if (screenshot_buffer) {
 			options.SetIngame();
 		} else {
@@ -430,7 +430,7 @@ void MapCanvas::UpdateZoomStatus() {
 	g_gui.root->SetStatusText(ss, 3);
 }
 
-void MapCanvas::OnMouseMove(wxMouseEvent &event) {
+void MapCanvas::OnMouseMove(wxMouseEvent& event) {
 	if (screendragging) {
 		static_cast<MapWindow*>(GetParent())->ScrollRelative(int(g_settings.getFloat(Config::SCROLL_SPEED) * zoom * (event.GetX() - cursor_x)), int(g_settings.getFloat(Config::SCROLL_SPEED) * zoom * (event.GetY() - cursor_y)));
 		Refresh();
@@ -565,15 +565,15 @@ void MapCanvas::OnMouseMove(wxMouseEvent &event) {
 	}
 }
 
-void MapCanvas::OnMouseLeftRelease(wxMouseEvent &event) {
+void MapCanvas::OnMouseLeftRelease(wxMouseEvent& event) {
 	OnMouseActionRelease(event);
 }
 
-void MapCanvas::OnMouseLeftClick(wxMouseEvent &event) {
+void MapCanvas::OnMouseLeftClick(wxMouseEvent& event) {
 	OnMouseActionClick(event);
 }
 
-void MapCanvas::OnMouseLeftDoubleClick(wxMouseEvent &event) {
+void MapCanvas::OnMouseLeftDoubleClick(wxMouseEvent& event) {
 	if (g_settings.getInteger(Config::DOUBLECLICK_PROPERTIES)) {
 		int mouse_map_x, mouse_map_y;
 		ScreenToMap(event.GetX(), event.GetY(), &mouse_map_x, &mouse_map_y);
@@ -610,7 +610,7 @@ void MapCanvas::OnMouseLeftDoubleClick(wxMouseEvent &event) {
 	}
 }
 
-void MapCanvas::OnMouseCenterClick(wxMouseEvent &event) {
+void MapCanvas::OnMouseCenterClick(wxMouseEvent& event) {
 	if (g_settings.getInteger(Config::SWITCH_MOUSEBUTTONS)) {
 		OnMousePropertiesClick(event);
 	} else {
@@ -618,7 +618,7 @@ void MapCanvas::OnMouseCenterClick(wxMouseEvent &event) {
 	}
 }
 
-void MapCanvas::OnMouseCenterRelease(wxMouseEvent &event) {
+void MapCanvas::OnMouseCenterRelease(wxMouseEvent& event) {
 	if (g_settings.getInteger(Config::SWITCH_MOUSEBUTTONS)) {
 		OnMousePropertiesRelease(event);
 	} else {
@@ -626,7 +626,7 @@ void MapCanvas::OnMouseCenterRelease(wxMouseEvent &event) {
 	}
 }
 
-void MapCanvas::OnMouseRightClick(wxMouseEvent &event) {
+void MapCanvas::OnMouseRightClick(wxMouseEvent& event) {
 	if (g_settings.getInteger(Config::SWITCH_MOUSEBUTTONS)) {
 		OnMouseCameraClick(event);
 	} else {
@@ -634,7 +634,7 @@ void MapCanvas::OnMouseRightClick(wxMouseEvent &event) {
 	}
 }
 
-void MapCanvas::OnMouseRightRelease(wxMouseEvent &event) {
+void MapCanvas::OnMouseRightRelease(wxMouseEvent& event) {
 	if (g_settings.getInteger(Config::SWITCH_MOUSEBUTTONS)) {
 		OnMouseCameraRelease(event);
 	} else {
@@ -642,7 +642,7 @@ void MapCanvas::OnMouseRightRelease(wxMouseEvent &event) {
 	}
 }
 
-void MapCanvas::OnMouseActionClick(wxMouseEvent &event) {
+void MapCanvas::OnMouseActionClick(wxMouseEvent& event) {
 	SetFocus();
 
 	int mouse_map_x, mouse_map_y;
@@ -915,7 +915,7 @@ void MapCanvas::OnMouseActionClick(wxMouseEvent &event) {
 	g_gui.UpdateMinimap();
 }
 
-void MapCanvas::OnMouseActionRelease(wxMouseEvent &event) {
+void MapCanvas::OnMouseActionRelease(wxMouseEvent& event) {
 	int mouse_map_x, mouse_map_y;
 	ScreenToMap(event.GetX(), event.GetY(), &mouse_map_x, &mouse_map_y);
 
@@ -1209,7 +1209,7 @@ void MapCanvas::OnMouseActionRelease(wxMouseEvent &event) {
 	g_gui.UpdateMinimap();
 }
 
-void MapCanvas::OnMouseCameraClick(wxMouseEvent &event) {
+void MapCanvas::OnMouseCameraClick(wxMouseEvent& event) {
 	SetFocus();
 
 	last_mmb_click_x = event.GetX();
@@ -1226,7 +1226,7 @@ void MapCanvas::OnMouseCameraClick(wxMouseEvent &event) {
 	}
 }
 
-void MapCanvas::OnMouseCameraRelease(wxMouseEvent &event) {
+void MapCanvas::OnMouseCameraRelease(wxMouseEvent& event) {
 	SetFocus();
 	screendragging = false;
 	if (event.ControlDown()) {
@@ -1240,7 +1240,7 @@ void MapCanvas::OnMouseCameraRelease(wxMouseEvent &event) {
 	}
 }
 
-void MapCanvas::OnMousePropertiesClick(wxMouseEvent &event) {
+void MapCanvas::OnMousePropertiesClick(wxMouseEvent& event) {
 	SetFocus();
 
 	int mouse_map_x, mouse_map_y;
@@ -1301,7 +1301,7 @@ void MapCanvas::OnMousePropertiesClick(wxMouseEvent &event) {
 	g_gui.RefreshView();
 }
 
-void MapCanvas::OnMousePropertiesRelease(wxMouseEvent &event) {
+void MapCanvas::OnMousePropertiesRelease(wxMouseEvent& event) {
 	int mouse_map_x, mouse_map_y;
 	ScreenToMap(event.GetX(), event.GetY(), &mouse_map_x, &mouse_map_y);
 
@@ -1452,7 +1452,7 @@ void MapCanvas::OnMousePropertiesRelease(wxMouseEvent &event) {
 	g_gui.RefreshView();
 }
 
-void MapCanvas::OnWheel(wxMouseEvent &event) {
+void MapCanvas::OnWheel(wxMouseEvent& event) {
 	if (event.ControlDown()) {
 		static double diff = 0.0;
 		diff += event.GetWheelRotation();
@@ -1505,11 +1505,11 @@ void MapCanvas::OnWheel(wxMouseEvent &event) {
 	Refresh();
 }
 
-void MapCanvas::OnLoseMouse(wxMouseEvent &event) {
+void MapCanvas::OnLoseMouse(wxMouseEvent& event) {
 	Refresh();
 }
 
-void MapCanvas::OnGainMouse(wxMouseEvent &event) {
+void MapCanvas::OnGainMouse(wxMouseEvent& event) {
 	if (!event.LeftIsDown()) {
 		dragging = false;
 		boundbox_selection = false;
@@ -1522,7 +1522,7 @@ void MapCanvas::OnGainMouse(wxMouseEvent &event) {
 	Refresh();
 }
 
-void MapCanvas::OnKeyDown(wxKeyEvent &event) {
+void MapCanvas::OnKeyDown(wxKeyEvent& event) {
 	// char keycode = event.GetKeyCode();
 	//  std::cout << "Keycode " << keycode << std::endl;
 	switch (event.GetKeyCode()) {
@@ -1798,34 +1798,34 @@ void MapCanvas::OnKeyDown(wxKeyEvent &event) {
 	}
 }
 
-void MapCanvas::OnKeyUp(wxKeyEvent &event) {
+void MapCanvas::OnKeyUp(wxKeyEvent& event) {
 	keyCode = WXK_NONE;
 }
 
-void MapCanvas::OnCopy(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnCopy(wxCommandEvent& WXUNUSED(event)) {
 	if (g_gui.IsSelectionMode()) {
 		editor.copybuffer.copy(editor, GetFloor());
 	}
 }
 
-void MapCanvas::OnCut(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnCut(wxCommandEvent& WXUNUSED(event)) {
 	if (g_gui.IsSelectionMode()) {
 		editor.copybuffer.cut(editor, GetFloor());
 	}
 	g_gui.RefreshView();
 }
 
-void MapCanvas::OnPaste(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnPaste(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.DoPaste();
 	g_gui.RefreshView();
 }
 
-void MapCanvas::OnDelete(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnDelete(wxCommandEvent& WXUNUSED(event)) {
 	editor.destroySelection();
 	g_gui.RefreshView();
 }
 
-void MapCanvas::OnCopyPosition(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnCopyPosition(wxCommandEvent& WXUNUSED(event)) {
 	if (editor.selection.size() == 0) {
 		return;
 	}
@@ -1876,7 +1876,7 @@ void MapCanvas::OnCopyPosition(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnCopyServerId(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnCopyServerId(wxCommandEvent& WXUNUSED(event)) {
 	ASSERT(editor.selection.size() == 1);
 
 	if (wxTheClipboard->Open()) {
@@ -1894,7 +1894,7 @@ void MapCanvas::OnCopyServerId(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnCopyClientId(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnCopyClientId(wxCommandEvent& WXUNUSED(event)) {
 	ASSERT(editor.selection.size() == 1);
 
 	if (wxTheClipboard->Open()) {
@@ -1912,7 +1912,7 @@ void MapCanvas::OnCopyClientId(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnCopyName(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnCopyName(wxCommandEvent& WXUNUSED(event)) {
 	ASSERT(editor.selection.size() == 1);
 
 	if (wxTheClipboard->Open()) {
@@ -1930,7 +1930,7 @@ void MapCanvas::OnCopyName(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnBrowseTile(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnBrowseTile(wxCommandEvent& WXUNUSED(event)) {
 	if (editor.selection.size() != 1) {
 		return;
 	}
@@ -1957,7 +1957,7 @@ void MapCanvas::OnBrowseTile(wxCommandEvent &WXUNUSED(event)) {
 	w->Destroy();
 }
 
-void MapCanvas::OnRotateItem(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnRotateItem(wxCommandEvent& WXUNUSED(event)) {
 	Tile* tile = editor.selection.getSelectedTile();
 
 	Action* action = editor.actionQueue->createAction(ACTION_ROTATE_ITEM);
@@ -1975,7 +1975,7 @@ void MapCanvas::OnRotateItem(wxCommandEvent &WXUNUSED(event)) {
 	g_gui.RefreshView();
 }
 
-void MapCanvas::OnGotoDestination(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnGotoDestination(wxCommandEvent& WXUNUSED(event)) {
 	Tile* tile = editor.selection.getSelectedTile();
 	ItemVector selected_items = tile->getSelectedItems();
 	ASSERT(selected_items.size() > 0);
@@ -1986,7 +1986,7 @@ void MapCanvas::OnGotoDestination(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnSwitchDoor(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnSwitchDoor(wxCommandEvent& WXUNUSED(event)) {
 	Tile* tile = editor.selection.getSelectedTile();
 
 	Action* action = editor.actionQueue->createAction(ACTION_SWITCHDOOR);
@@ -2004,7 +2004,7 @@ void MapCanvas::OnSwitchDoor(wxCommandEvent &WXUNUSED(event)) {
 	g_gui.RefreshView();
 }
 
-void MapCanvas::OnSelectRAWBrush(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnSelectRAWBrush(wxCommandEvent& WXUNUSED(event)) {
 	if (editor.selection.size() != 1) {
 		return;
 	}
@@ -2019,7 +2019,7 @@ void MapCanvas::OnSelectRAWBrush(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnSelectGroundBrush(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnSelectGroundBrush(wxCommandEvent& WXUNUSED(event)) {
 	if (editor.selection.size() != 1) {
 		return;
 	}
@@ -2034,7 +2034,7 @@ void MapCanvas::OnSelectGroundBrush(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnSelectDoodadBrush(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnSelectDoodadBrush(wxCommandEvent& WXUNUSED(event)) {
 	if (editor.selection.size() != 1) {
 		return;
 	}
@@ -2049,7 +2049,7 @@ void MapCanvas::OnSelectDoodadBrush(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnSelectDoorBrush(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnSelectDoorBrush(wxCommandEvent& WXUNUSED(event)) {
 	if (editor.selection.size() != 1) {
 		return;
 	}
@@ -2064,7 +2064,7 @@ void MapCanvas::OnSelectDoorBrush(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnSelectWallBrush(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnSelectWallBrush(wxCommandEvent& WXUNUSED(event)) {
 	if (editor.selection.size() != 1) {
 		return;
 	}
@@ -2080,7 +2080,7 @@ void MapCanvas::OnSelectWallBrush(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnSelectCarpetBrush(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnSelectCarpetBrush(wxCommandEvent& WXUNUSED(event)) {
 	if (editor.selection.size() != 1) {
 		return;
 	}
@@ -2096,7 +2096,7 @@ void MapCanvas::OnSelectCarpetBrush(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnSelectTableBrush(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnSelectTableBrush(wxCommandEvent& WXUNUSED(event)) {
 	if (editor.selection.size() != 1) {
 		return;
 	}
@@ -2112,7 +2112,7 @@ void MapCanvas::OnSelectTableBrush(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnSelectHouseBrush(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnSelectHouseBrush(wxCommandEvent& WXUNUSED(event)) {
 	Tile* tile = editor.selection.getSelectedTile();
 	if (!tile) {
 		return;
@@ -2127,7 +2127,7 @@ void MapCanvas::OnSelectHouseBrush(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnSelectCollectionBrush(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnSelectCollectionBrush(wxCommandEvent& WXUNUSED(event)) {
 	Tile* tile = editor.selection.getSelectedTile();
 	if (!tile) {
 		return;
@@ -2176,7 +2176,7 @@ void MapCanvas::OnSelectCollectionBrush(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnSelectCreatureBrush(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnSelectCreatureBrush(wxCommandEvent& WXUNUSED(event)) {
 	Tile* tile = editor.selection.getSelectedTile();
 	if (!tile) {
 		return;
@@ -2187,11 +2187,11 @@ void MapCanvas::OnSelectCreatureBrush(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void MapCanvas::OnSelectSpawnBrush(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnSelectSpawnBrush(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.SelectBrush(g_gui.spawn_brush, TILESET_CREATURE);
 }
 
-void MapCanvas::OnSelectMoveTo(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnSelectMoveTo(wxCommandEvent& WXUNUSED(event)) {
 	if (editor.selection.size() != 1) {
 		return;
 	}
@@ -2236,7 +2236,7 @@ void MapCanvas::OnSelectMoveTo(wxCommandEvent &WXUNUSED(event)) {
 	w->Destroy();
 }
 
-void MapCanvas::OnProperties(wxCommandEvent &WXUNUSED(event)) {
+void MapCanvas::OnProperties(wxCommandEvent& WXUNUSED(event)) {
 	if (editor.selection.size() != 1) {
 		return;
 	}
@@ -2359,7 +2359,7 @@ void MapCanvas::Reset() {
 	editor.actionQueue->clear();
 }
 
-MapPopupMenu::MapPopupMenu(Editor &editor) :
+MapPopupMenu::MapPopupMenu(Editor& editor) :
 	wxMenu(""), editor(editor) {
 	////
 }
@@ -2625,7 +2625,7 @@ void MapCanvas::getTilesToDraw(int mouse_map_x, int mouse_map_y, int floor, Posi
 	}
 }
 
-bool MapCanvas::floodFill(Map* map, const Position &center, int x, int y, GroundBrush* brush, PositionVector* positions) {
+bool MapCanvas::floodFill(Map* map, const Position& center, int x, int y, GroundBrush* brush, PositionVector* positions) {
 	countMaxFills++;
 	if (countMaxFills > (BLOCK_SIZE * 4 * 4)) {
 		countMaxFills = 0;

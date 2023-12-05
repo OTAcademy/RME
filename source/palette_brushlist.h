@@ -67,10 +67,10 @@ public:
 	bool SelectBrush(const Brush* brush);
 
 	// Event handlers
-	virtual void OnDrawItem(wxDC &dc, const wxRect &rect, size_t n) const;
+	virtual void OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const;
 	virtual wxCoord OnMeasureItem(size_t n) const;
 
-	void OnKey(wxKeyEvent &event);
+	void OnKey(wxKeyEvent& event);
 
 	DECLARE_EVENT_TABLE();
 };
@@ -96,7 +96,7 @@ public:
 	bool SelectBrush(const Brush* brush);
 
 	// Event handling...
-	void OnClickBrushButton(wxCommandEvent &event);
+	void OnClickBrushButton(wxCommandEvent& event);
 
 protected:
 	// Used internally to deselect all buttons before selecting a newd one.
@@ -145,7 +145,7 @@ public:
 	void OnSwitchOut();
 
 	// wxWidgets event handlers
-	void OnClickListBoxRow(wxCommandEvent &event);
+	void OnClickListBoxRow(wxCommandEvent& event);
 
 protected:
 	const TilesetCategory* tileset;
@@ -159,7 +159,7 @@ protected:
 
 class BrushPalettePanel : public PalettePanel {
 public:
-	BrushPalettePanel(wxWindow* parent, const TilesetContainer &tilesets, TilesetCategoryType category, wxWindowID id = wxID_ANY);
+	BrushPalettePanel(wxWindow* parent, const TilesetContainer& tilesets, TilesetCategoryType category, wxWindowID id = wxID_ANY);
 	~BrushPalettePanel();
 
 	// Interface
@@ -187,10 +187,10 @@ public:
 	void OnSwitchIn();
 
 	// Event handler for child window
-	void OnSwitchingPage(wxChoicebookEvent &event);
-	void OnPageChanged(wxChoicebookEvent &event);
-	void OnClickAddTileset(wxCommandEvent &WXUNUSED(event));
-	void OnClickAddItemToTileset(wxCommandEvent &WXUNUSED(event));
+	void OnSwitchingPage(wxChoicebookEvent& event);
+	void OnPageChanged(wxChoicebookEvent& event);
+	void OnClickAddTileset(wxCommandEvent& WXUNUSED(event));
+	void OnClickAddItemToTileset(wxCommandEvent& WXUNUSED(event));
 
 protected:
 	PaletteType palette_type;

@@ -31,7 +31,7 @@ size_t CopyBuffer::GetTileCount() {
 	return tiles ? (size_t)tiles->size() : 0;
 }
 
-BaseMap &CopyBuffer::getBufferMap() {
+BaseMap& CopyBuffer::getBufferMap() {
 	ASSERT(tiles);
 	return *tiles;
 }
@@ -50,7 +50,7 @@ void CopyBuffer::clear() {
 	tiles = nullptr;
 }
 
-void CopyBuffer::copy(Editor &editor, int floor) {
+void CopyBuffer::copy(Editor& editor, int floor) {
 	if (editor.selection.size() == 0) {
 		g_gui.SetStatusText("No tiles to copy.");
 		return;
@@ -105,7 +105,7 @@ void CopyBuffer::copy(Editor &editor, int floor) {
 	g_gui.SetStatusText(wxstr(ss.str()));
 }
 
-void CopyBuffer::cut(Editor &editor, int floor) {
+void CopyBuffer::cut(Editor& editor, int floor) {
 	if (editor.selection.size() == 0) {
 		g_gui.SetStatusText("No tiles to cut.");
 		return;
@@ -209,7 +209,7 @@ void CopyBuffer::cut(Editor &editor, int floor) {
 	g_gui.SetStatusText(wxstr(ss.str()));
 }
 
-void CopyBuffer::paste(Editor &editor, const Position &toPosition) {
+void CopyBuffer::paste(Editor& editor, const Position& toPosition) {
 	if (!tiles) {
 		return;
 	}
@@ -260,7 +260,7 @@ void CopyBuffer::paste(Editor &editor, const Position &toPosition) {
 	if (g_settings.getInteger(Config::USE_AUTOMAGIC) && g_settings.getInteger(Config::BORDERIZE_PASTE)) {
 		action = editor.actionQueue->createAction(batchAction);
 		TileList borderize_tiles;
-		Map &map = editor.map;
+		Map& map = editor.map;
 
 		// Go through all modified (selected) tiles (might be slow)
 		for (MapIterator it = tiles->begin(); it != tiles->end(); ++it) {

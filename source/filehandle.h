@@ -74,31 +74,31 @@ public:
 
 class FileReadHandle : public FileHandle {
 public:
-	explicit FileReadHandle(const std::string &name);
+	explicit FileReadHandle(const std::string& name);
 	virtual ~FileReadHandle();
 
-	FORCEINLINE bool getU8(uint8_t &u8) {
+	FORCEINLINE bool getU8(uint8_t& u8) {
 		return getType(u8);
 	}
-	FORCEINLINE bool getByte(uint8_t &u8) {
+	FORCEINLINE bool getByte(uint8_t& u8) {
 		return getType(u8);
 	}
-	FORCEINLINE bool getSByte(int8_t &i8) {
+	FORCEINLINE bool getSByte(int8_t& i8) {
 		return getType(i8);
 	}
-	FORCEINLINE bool getU16(uint16_t &u16) {
+	FORCEINLINE bool getU16(uint16_t& u16) {
 		return getType(u16);
 	}
-	FORCEINLINE bool getU32(uint32_t &u32) {
+	FORCEINLINE bool getU32(uint32_t& u32) {
 		return getType(u32);
 	}
-	FORCEINLINE bool get32(int32_t &i32) {
+	FORCEINLINE bool get32(int32_t& i32) {
 		return getType(i32);
 	}
 	bool getRAW(uint8_t* ptr, size_t sz);
-	bool getRAW(std::string &str, size_t sz);
-	bool getString(std::string &str);
-	bool getLongString(std::string &str);
+	bool getRAW(std::string& str, size_t sz);
+	bool getString(std::string& str);
+	bool getLongString(std::string& str);
 
 	virtual void close();
 	bool seek(size_t offset);
@@ -120,7 +120,7 @@ protected:
 	size_t file_size;
 
 	template <class T>
-	bool getType(T &ref) {
+	bool getType(T& ref) {
 		fread(&ref, sizeof(ref), 1, file);
 		return ferror(file) == 0;
 	}
@@ -135,19 +135,19 @@ public:
 	BinaryNode(NodeFileReadHandle* file, BinaryNode* parent);
 	~BinaryNode();
 
-	FORCEINLINE bool getU8(uint8_t &u8) {
+	FORCEINLINE bool getU8(uint8_t& u8) {
 		return getType(u8);
 	}
-	FORCEINLINE bool getByte(uint8_t &u8) {
+	FORCEINLINE bool getByte(uint8_t& u8) {
 		return getType(u8);
 	}
-	FORCEINLINE bool getU16(uint16_t &u16) {
+	FORCEINLINE bool getU16(uint16_t& u16) {
 		return getType(u16);
 	}
-	FORCEINLINE bool getU32(uint32_t &u32) {
+	FORCEINLINE bool getU32(uint32_t& u32) {
 		return getType(u32);
 	}
-	FORCEINLINE bool getU64(uint64_t &u64) {
+	FORCEINLINE bool getU64(uint64_t& u64) {
 		return getType(u64);
 	}
 	FORCEINLINE bool skip(size_t sz) {
@@ -159,9 +159,9 @@ public:
 		return true;
 	}
 	bool getRAW(uint8_t* ptr, size_t sz);
-	bool getRAW(std::string &str, size_t sz);
-	bool getString(std::string &str);
-	bool getLongString(std::string &str);
+	bool getRAW(std::string& str, size_t sz);
+	bool getString(std::string& str);
+	bool getLongString(std::string& str);
 
 	BinaryNode* getChild();
 	// Returns this on success, nullptr on failure
@@ -169,7 +169,7 @@ public:
 
 protected:
 	template <class T>
-	bool getType(T &ref) {
+	bool getType(T& ref) {
 		if (read_offset + sizeof(ref) > data.size()) {
 			read_offset = data.size();
 			return false;
@@ -222,7 +222,7 @@ protected:
 
 class DiskNodeFileReadHandle : public NodeFileReadHandle {
 public:
-	DiskNodeFileReadHandle(const std::string &name, const std::vector<std::string> &acceptable_identifiers);
+	DiskNodeFileReadHandle(const std::string& name, const std::vector<std::string>& acceptable_identifiers);
 	virtual ~DiskNodeFileReadHandle();
 
 	virtual void close();
@@ -273,7 +273,7 @@ protected:
 
 class FileWriteHandle : public FileHandle {
 public:
-	explicit FileWriteHandle(const std::string &name);
+	explicit FileWriteHandle(const std::string& name);
 	virtual ~FileWriteHandle();
 
 	FORCEINLINE bool addU8(uint8_t u8) {
@@ -291,10 +291,10 @@ public:
 	FORCEINLINE bool addU64(uint64_t u64) {
 		return addType(u64);
 	}
-	bool addString(const std::string &str);
+	bool addString(const std::string& str);
 	bool addString(const char* str);
-	bool addLongString(const std::string &str);
-	bool addRAW(const std::string &str);
+	bool addLongString(const std::string& str);
+	bool addRAW(const std::string& str);
 	bool addRAW(const uint8_t* ptr, size_t sz);
 	bool addRAW(const char* c) {
 		return addRAW(reinterpret_cast<const uint8_t*>(c), strlen(c));
@@ -321,9 +321,9 @@ public:
 	bool addU16(uint16_t u16);
 	bool addU32(uint32_t u32);
 	bool addU64(uint64_t u64);
-	bool addString(const std::string &str);
-	bool addLongString(const std::string &str);
-	bool addRAW(std::string &str);
+	bool addString(const std::string& str);
+	bool addLongString(const std::string& str);
+	bool addRAW(std::string& str);
 	bool addRAW(const uint8_t* ptr, size_t sz);
 	bool addRAW(const char* c) {
 		return addRAW(reinterpret_cast<const uint8_t*>(c), strlen(c));
@@ -362,7 +362,7 @@ protected:
 
 class DiskNodeFileWriteHandle : public NodeFileWriteHandle {
 public:
-	DiskNodeFileWriteHandle(const std::string &name, const std::string &identifier);
+	DiskNodeFileWriteHandle(const std::string& name, const std::string& identifier);
 	virtual ~DiskNodeFileWriteHandle();
 
 	virtual void close();

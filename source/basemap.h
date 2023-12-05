@@ -36,13 +36,13 @@ class MapIterator {
 public:
 	MapIterator(BaseMap* _map = nullptr);
 	~MapIterator();
-	MapIterator(const MapIterator &other);
+	MapIterator(const MapIterator& other);
 
 	TileLocation* operator*();
 	TileLocation* operator->();
-	MapIterator &operator++();
+	MapIterator& operator++();
 	MapIterator operator++(int);
-	bool operator==(const MapIterator &other) const {
+	bool operator==(const MapIterator& other) const {
 		if (other.local_z != local_z) {
 			return false;
 		}
@@ -57,19 +57,19 @@ public:
 		}
 		return false;
 	}
-	bool operator!=(const MapIterator &other) const {
+	bool operator!=(const MapIterator& other) const {
 		return !(other == *this);
 	}
 
 	struct NodeIndex {
 		NodeIndex(QTreeNode* _node) :
 			index(0), node(_node) { }
-		NodeIndex(const NodeIndex &other) :
+		NodeIndex(const NodeIndex& other) :
 			index(other.index), node(other.node) { }
 		int index;
 		QTreeNode* node;
 
-		bool operator==(const NodeIndex &n) const {
+		bool operator==(const NodeIndex& n) const {
 			return n.node == node && n.index == index;
 		}
 	};
@@ -99,16 +99,16 @@ public:
 	// these functions take a position and returns a tile on the map
 	Tile* createTile(int x, int y, int z);
 	Tile* getTile(int x, int y, int z);
-	Tile* getTile(const Position &pos);
-	Tile* getOrCreateTile(const Position &pos);
+	Tile* getTile(const Position& pos);
+	Tile* getOrCreateTile(const Position& pos);
 	const Tile* getTile(int x, int y, int z) const;
-	const Tile* getTile(const Position &pos) const;
+	const Tile* getTile(const Position& pos) const;
 	TileLocation* getTileL(int x, int y, int z);
-	TileLocation* getTileL(const Position &pos);
+	TileLocation* getTileL(const Position& pos);
 	TileLocation* createTileL(int x, int y, int z);
-	TileLocation* createTileL(const Position &pos);
+	TileLocation* createTileL(const Position& pos);
 	const TileLocation* getTileL(int x, int y, int z) const;
-	const TileLocation* getTileL(const Position &pos) const;
+	const TileLocation* getTileL(const Position& pos) const;
 
 	// Get a Quad Tree Leaf from the map
 	QTreeNode* getLeaf(int x, int y) {
@@ -120,7 +120,7 @@ public:
 
 	// Assigns a tile, it might seem pointless to provide position, but it is not, as the passed tile may be nullptr
 	void setTile(int _x, int _y, int _z, Tile* newtile, bool remove = false);
-	void setTile(const Position &pos, Tile* newtile, bool remove = false) {
+	void setTile(const Position& pos, Tile* newtile, bool remove = false) {
 		setTile(pos.x, pos.y, pos.z, newtile, remove);
 	}
 	void setTile(Tile* newtile, bool remove = false) {
@@ -128,7 +128,7 @@ public:
 	}
 	// Replaces a tile and returns the old one
 	Tile* swapTile(int _x, int _y, int _z, Tile* newtile);
-	Tile* swapTile(const Position &pos, Tile* newtile) {
+	Tile* swapTile(const Position& pos, Tile* newtile) {
 		return swapTile(pos.x, pos.y, pos.z, newtile);
 	}
 
@@ -155,7 +155,7 @@ inline Tile* BaseMap::getTile(int x, int y, int z) {
 	return l ? l->get() : nullptr;
 }
 
-inline Tile* BaseMap::getTile(const Position &pos) {
+inline Tile* BaseMap::getTile(const Position& pos) {
 	TileLocation* l = getTileL(pos);
 	return l ? l->get() : nullptr;
 }
@@ -165,7 +165,7 @@ inline const Tile* BaseMap::getTile(int x, int y, int z) const {
 	return l ? l->get() : nullptr;
 }
 
-inline const Tile* BaseMap::getTile(const Position &pos) const {
+inline const Tile* BaseMap::getTile(const Position& pos) const {
 	const TileLocation* l = getTileL(pos);
 	return l ? l->get() : nullptr;
 }

@@ -44,8 +44,8 @@ public:
 
 	void SetSprite(int id);
 
-	void OnPaint(wxPaintEvent &);
-	void OnClick(wxMouseEvent &);
+	void OnPaint(wxPaintEvent&);
+	void OnClick(wxMouseEvent&);
 
 protected:
 	void SetOverlay(Sprite* espr);

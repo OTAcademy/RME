@@ -29,10 +29,10 @@ class TilesetWindow : public ObjectPropertiesWindowBase {
 public:
 	TilesetWindow(wxWindow* parent, const Map* map, const Tile* tile, Item* item, wxPoint = wxDefaultPosition);
 
-	void OnChangePalette(wxCommandEvent &event);
+	void OnChangePalette(wxCommandEvent& event);
 
-	void OnClickOK(wxCommandEvent &);
-	void OnClickCancel(wxCommandEvent &);
+	void OnClickOK(wxCommandEvent&);
+	void OnClickCancel(wxCommandEvent&);
 
 protected:
 	// tileset

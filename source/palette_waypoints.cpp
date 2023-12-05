@@ -118,7 +118,7 @@ void WaypointPalettePanel::OnUpdate() {
 		add_waypoint_button->Enable(true);
 		remove_waypoint_button->Enable(true);
 
-		Waypoints &waypoints = map->waypoints;
+		Waypoints& waypoints = map->waypoints;
 
 		for (WaypointMap::const_iterator iter = waypoints.begin(); iter != waypoints.end(); ++iter) {
 			waypoint_list->InsertItem(0, wxstr(iter->second->name));
@@ -126,7 +126,7 @@ void WaypointPalettePanel::OnUpdate() {
 	}
 }
 
-void WaypointPalettePanel::OnClickWaypoint(wxListEvent &event) {
+void WaypointPalettePanel::OnClickWaypoint(wxListEvent& event) {
 	if (!map) {
 		return;
 	}
@@ -139,12 +139,12 @@ void WaypointPalettePanel::OnClickWaypoint(wxListEvent &event) {
 	}
 }
 
-void WaypointPalettePanel::OnBeginEditWaypointLabel(wxListEvent &event) {
+void WaypointPalettePanel::OnBeginEditWaypointLabel(wxListEvent& event) {
 	// We need to disable all hotkeys, so we can type properly
 	g_gui.DisableHotkeys();
 }
 
-void WaypointPalettePanel::OnEditWaypointLabel(wxListEvent &event) {
+void WaypointPalettePanel::OnEditWaypointLabel(wxListEvent& event) {
 	std::string wpname = nstr(event.GetLabel());
 	std::string oldwpname = nstr(waypoint_list->GetItemText(event.GetIndex()));
 	Waypoint* wp = map->waypoints.getWaypoint(oldwpname);
@@ -194,7 +194,7 @@ void WaypointPalettePanel::OnEditWaypointLabel(wxListEvent &event) {
 	}
 }
 
-void WaypointPalettePanel::OnClickAddWaypoint(wxCommandEvent &event) {
+void WaypointPalettePanel::OnClickAddWaypoint(wxCommandEvent& event) {
 	if (map) {
 		map->waypoints.addWaypoint(newd Waypoint());
 		long i = waypoint_list->InsertItem(0, "");
@@ -204,7 +204,7 @@ void WaypointPalettePanel::OnClickAddWaypoint(wxCommandEvent &event) {
 	}
 }
 
-void WaypointPalettePanel::OnClickRemoveWaypoint(wxCommandEvent &event) {
+void WaypointPalettePanel::OnClickRemoveWaypoint(wxCommandEvent& event) {
 	if (!map) {
 		return;
 	}

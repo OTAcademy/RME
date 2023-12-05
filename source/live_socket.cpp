@@ -37,7 +37,7 @@ wxString LiveSocket::getName() const {
 	return name;
 }
 
-bool LiveSocket::setName(const wxString &newName) {
+bool LiveSocket::setName(const wxString& newName) {
 	if (newName.empty()) {
 		setLastError("Must provide a name.");
 		return false;
@@ -53,7 +53,7 @@ wxString LiveSocket::getPassword() const {
 	return password;
 }
 
-bool LiveSocket::setPassword(const wxString &newPassword) {
+bool LiveSocket::setPassword(const wxString& newPassword) {
 	if (newPassword.length() > 32) {
 		setLastError("Password is too long.");
 		return false;
@@ -66,7 +66,7 @@ wxString LiveSocket::getLastError() const {
 	return lastError;
 }
 
-void LiveSocket::setLastError(const wxString &error) {
+void LiveSocket::setLastError(const wxString& error) {
 	lastError = error;
 }
 
@@ -76,13 +76,13 @@ std::string LiveSocket::getHostName() const {
 
 std::vector<LiveCursor> LiveSocket::getCursorList() const {
 	std::vector<LiveCursor> cursorList;
-	for (auto &cursorEntry : cursors) {
+	for (auto& cursorEntry : cursors) {
 		cursorList.push_back(cursorEntry.second);
 	}
 	return cursorList;
 }
 
-void LiveSocket::logMessage(const wxString &message) {
+void LiveSocket::logMessage(const wxString& message) {
 	wxTheApp->CallAfter([this, message]() {
 		if (log) {
 			log->Message(message);
@@ -90,7 +90,7 @@ void LiveSocket::logMessage(const wxString &message) {
 	});
 }
 
-void LiveSocket::receiveNode(NetworkMessage &message, Editor &editor, Action* action, int32_t ndx, int32_t ndy, bool underground) {
+void LiveSocket::receiveNode(NetworkMessage& message, Editor& editor, Action* action, int32_t ndx, int32_t ndy, bool underground) {
 	QTreeNode* node = editor.map.getLeaf(ndx * 4, ndy * 4);
 	if (!node) {
 		log->Message("Warning: Received update for unknown tile (" + std::to_string(ndx * 4) + "/" + std::to_string(ndy * 4) + "/" + (underground ? "true" : "false") + ")");
@@ -155,8 +155,8 @@ void LiveSocket::sendNode(uint32_t clientId, QTreeNode* node, int32_t ndx, int32
 	send(message);
 }
 
-void LiveSocket::receiveFloor(NetworkMessage &message, Editor &editor, Action* action, int32_t ndx, int32_t ndy, int32_t z, QTreeNode* node, Floor* floor) {
-	Map &map = editor.map;
+void LiveSocket::receiveFloor(NetworkMessage& message, Editor& editor, Action* action, int32_t ndx, int32_t ndy, int32_t z, QTreeNode* node, Floor* floor) {
+	Map& map = editor.map;
 
 	uint16_t tileBits = message.read<uint16_t>();
 	if (tileBits == 0) {
@@ -169,7 +169,7 @@ void LiveSocket::receiveFloor(NetworkMessage &message, Editor &editor, Action* a
 	}
 
 	// -1 on address since we skip the first START_NODE when sending
-	const std::string &data = message.read<std::string>();
+	const std::string& data = message.read<std::string>();
 	mapReader.assign(reinterpret_cast<const uint8_t*>(data.c_str() - 1), data.size());
 
 	BinaryNode* rootNode = mapReader.getRootNode();
@@ -192,7 +192,7 @@ void LiveSocket::receiveFloor(NetworkMessage &message, Editor &editor, Action* a
 	mapReader.close();
 }
 
-void LiveSocket::sendFloor(NetworkMessage &message, Floor* floor) {
+void LiveSocket::sendFloor(NetworkMessage& message, Floor* floor) {
 	uint16_t tileBits = 0;
 	for (uint_fast8_t x = 0; x < 4; ++x) {
 		for (uint_fast8_t y = 0; y < 4; ++y) {
@@ -228,7 +228,7 @@ void LiveSocket::sendFloor(NetworkMessage &message, Floor* floor) {
 	message.write<std::string>(stream);
 }
 
-void LiveSocket::receiveTile(BinaryNode* node, Editor &editor, Action* action, const Position* position) {
+void LiveSocket::receiveTile(BinaryNode* node, Editor& editor, Action* action, const Position* position) {
 	ASSERT(node != nullptr);
 
 	Tile* tile = readTile(node, editor, position);
@@ -237,7 +237,7 @@ void LiveSocket::receiveTile(BinaryNode* node, Editor &editor, Action* action, c
 	}
 }
 
-void LiveSocket::sendTile(MemoryNodeFileWriteHandle &writer, Tile* tile, const Position* position) {
+void LiveSocket::sendTile(MemoryNodeFileWriteHandle& writer, Tile* tile, const Position* position) {
 	writer.addNode(tile->isHouseTile() ? OTBM_HOUSETILE : OTBM_TILE);
 	if (position) {
 		writer.addU16(position->x);
@@ -271,10 +271,10 @@ void LiveSocket::sendTile(MemoryNodeFileWriteHandle &writer, Tile* tile, const P
 	writer.endNode();
 }
 
-Tile* LiveSocket::readTile(BinaryNode* node, Editor &editor, const Position* position) {
+Tile* LiveSocket::readTile(BinaryNode* node, Editor& editor, const Position* position) {
 	ASSERT(node != nullptr);
 
-	Map &map = editor.map;
+	Map& map = editor.map;
 
 	uint8_t tileType;
 	node->getByte(tileType);
@@ -374,7 +374,7 @@ Tile* LiveSocket::readTile(BinaryNode* node, Editor &editor, const Position* pos
 	return tile;
 }
 
-LiveCursor LiveSocket::readCursor(NetworkMessage &message) {
+LiveCursor LiveSocket::readCursor(NetworkMessage& message) {
 	LiveCursor cursor;
 	cursor.id = message.read<uint32_t>();
 
@@ -388,7 +388,7 @@ LiveCursor LiveSocket::readCursor(NetworkMessage &message) {
 	return cursor;
 }
 
-void LiveSocket::writeCursor(NetworkMessage &message, const LiveCursor &cursor) {
+void LiveSocket::writeCursor(NetworkMessage& message, const LiveCursor& cursor) {
 	message.write<uint32_t>(cursor.id);
 	message.write<uint8_t>(cursor.color.Red());
 	message.write<uint8_t>(cursor.color.Green());

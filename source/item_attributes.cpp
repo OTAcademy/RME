@@ -25,7 +25,7 @@ ItemAttributes::ItemAttributes() :
 	////
 }
 
-ItemAttributes::ItemAttributes(const ItemAttributes &o) {
+ItemAttributes::ItemAttributes(const ItemAttributes& o) {
 	if (o.attributes) {
 		attributes = newd ItemAttributeMap(*o.attributes);
 	}
@@ -55,32 +55,32 @@ ItemAttributeMap ItemAttributes::getAttributes() const {
 	return ItemAttributeMap();
 }
 
-void ItemAttributes::setAttribute(const std::string &key, const ItemAttribute &value) {
+void ItemAttributes::setAttribute(const std::string& key, const ItemAttribute& value) {
 	createAttributes();
 	(*attributes)[key] = value;
 }
 
-void ItemAttributes::setAttribute(const std::string &key, const std::string &value) {
+void ItemAttributes::setAttribute(const std::string& key, const std::string& value) {
 	createAttributes();
 	(*attributes)[key].set(value);
 }
 
-void ItemAttributes::setAttribute(const std::string &key, int32_t value) {
+void ItemAttributes::setAttribute(const std::string& key, int32_t value) {
 	createAttributes();
 	(*attributes)[key].set(value);
 }
 
-void ItemAttributes::setAttribute(const std::string &key, double value) {
+void ItemAttributes::setAttribute(const std::string& key, double value) {
 	createAttributes();
 	(*attributes)[key].set(value);
 }
 
-void ItemAttributes::setAttribute(const std::string &key, bool value) {
+void ItemAttributes::setAttribute(const std::string& key, bool value) {
 	createAttributes();
 	(*attributes)[key].set(value);
 }
 
-void ItemAttributes::eraseAttribute(const std::string &key) {
+void ItemAttributes::eraseAttribute(const std::string& key) {
 	if (!attributes) {
 		return;
 	}
@@ -92,7 +92,7 @@ void ItemAttributes::eraseAttribute(const std::string &key) {
 	}
 }
 
-const std::string* ItemAttributes::getStringAttribute(const std::string &key) const {
+const std::string* ItemAttributes::getStringAttribute(const std::string& key) const {
 	if (!attributes) {
 		return nullptr;
 	}
@@ -104,7 +104,7 @@ const std::string* ItemAttributes::getStringAttribute(const std::string &key) co
 	return nullptr;
 }
 
-const int32_t* ItemAttributes::getIntegerAttribute(const std::string &key) const {
+const int32_t* ItemAttributes::getIntegerAttribute(const std::string& key) const {
 	if (!attributes) {
 		return nullptr;
 	}
@@ -116,7 +116,7 @@ const int32_t* ItemAttributes::getIntegerAttribute(const std::string &key) const
 	return nullptr;
 }
 
-const double* ItemAttributes::getFloatAttribute(const std::string &key) const {
+const double* ItemAttributes::getFloatAttribute(const std::string& key) const {
 	if (!attributes) {
 		return nullptr;
 	}
@@ -128,7 +128,7 @@ const double* ItemAttributes::getFloatAttribute(const std::string &key) const {
 	return nullptr;
 }
 
-const bool* ItemAttributes::getBooleanAttribute(const std::string &key) const {
+const bool* ItemAttributes::getBooleanAttribute(const std::string& key) const {
 	if (!attributes) {
 		return nullptr;
 	}
@@ -140,19 +140,19 @@ const bool* ItemAttributes::getBooleanAttribute(const std::string &key) const {
 	return nullptr;
 }
 
-bool ItemAttributes::hasStringAttribute(const std::string &key) const {
+bool ItemAttributes::hasStringAttribute(const std::string& key) const {
 	return getStringAttribute(key) != nullptr;
 }
 
-bool ItemAttributes::hasIntegerAttribute(const std::string &key) const {
+bool ItemAttributes::hasIntegerAttribute(const std::string& key) const {
 	return getIntegerAttribute(key) != nullptr;
 }
 
-bool ItemAttributes::hasFloatAttribute(const std::string &key) const {
+bool ItemAttributes::hasFloatAttribute(const std::string& key) const {
 	return getFloatAttribute(key) != nullptr;
 }
 
-bool ItemAttributes::hasBooleanAttribute(const std::string &key) const {
+bool ItemAttributes::hasBooleanAttribute(const std::string& key) const {
 	return getBooleanAttribute(key) != nullptr;
 }
 
@@ -165,7 +165,7 @@ ItemAttribute::ItemAttribute() :
 	////
 }
 
-ItemAttribute::ItemAttribute(const std::string &str) :
+ItemAttribute::ItemAttribute(const std::string& str) :
 	type(ItemAttribute::STRING) {
 	new (data) std::string(str);
 }
@@ -184,12 +184,12 @@ ItemAttribute::ItemAttribute(bool b) {
 	*reinterpret_cast<bool*>(data) = b;
 }
 
-ItemAttribute::ItemAttribute(const ItemAttribute &o) :
+ItemAttribute::ItemAttribute(const ItemAttribute& o) :
 	type(ItemAttribute::NONE) {
 	*this = o;
 }
 
-ItemAttribute &ItemAttribute::operator=(const ItemAttribute &o) {
+ItemAttribute& ItemAttribute::operator=(const ItemAttribute& o) {
 	if (&o == this) {
 		return *this;
 	}
@@ -224,7 +224,7 @@ void ItemAttribute::clear() {
 	}
 }
 
-void ItemAttribute::set(const std::string &str) {
+void ItemAttribute::set(const std::string& str) {
 	clear();
 	type = STRING;
 	new (data) std::string(str);
@@ -276,7 +276,7 @@ const bool* ItemAttribute::getBoolean() const {
 	return nullptr;
 }
 
-bool ItemAttributes::unserializeAttributeMap(const IOMap &maphandle, BinaryNode* stream) {
+bool ItemAttributes::unserializeAttributeMap(const IOMap& maphandle, BinaryNode* stream) {
 	uint16_t n;
 	if (stream->getU16(n)) {
 		createAttributes();
@@ -297,14 +297,14 @@ bool ItemAttributes::unserializeAttributeMap(const IOMap &maphandle, BinaryNode*
 	return true;
 }
 
-void ItemAttributes::serializeAttributeMap(const IOMap &maphandle, NodeFileWriteHandle &f) const {
+void ItemAttributes::serializeAttributeMap(const IOMap& maphandle, NodeFileWriteHandle& f) const {
 	// Maximum of 65535 attributes per item
 	f.addU16(std::min((size_t)0xFFFF, attributes->size()));
 
 	ItemAttributeMap::const_iterator attribute = attributes->begin();
 	int i = 0;
 	while (attribute != attributes->end() && i <= 0xFFFF) {
-		const std::string &key = attribute->first;
+		const std::string& key = attribute->first;
 		if (key.size() > 0xFFFF) {
 			f.addString(key.substr(0, 65535));
 		} else {
@@ -316,7 +316,7 @@ void ItemAttributes::serializeAttributeMap(const IOMap &maphandle, NodeFileWrite
 	}
 }
 
-bool ItemAttribute::unserialize(const IOMap &maphandle, BinaryNode* stream) {
+bool ItemAttribute::unserialize(const IOMap& maphandle, BinaryNode* stream) {
 	// Read type
 	uint8_t rtype;
 	stream->getU8(rtype);
@@ -368,7 +368,7 @@ bool ItemAttribute::unserialize(const IOMap &maphandle, BinaryNode* stream) {
 	return true;
 }
 
-void ItemAttribute::serialize(const IOMap &maphandle, NodeFileWriteHandle &f) const {
+void ItemAttribute::serialize(const IOMap& maphandle, NodeFileWriteHandle& f) const {
 	// Write type
 	f.addU8((uint8_t)(type));
 

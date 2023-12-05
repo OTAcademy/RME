@@ -46,12 +46,12 @@ EVT_BUTTON(wxID_OK, MapPropertiesWindow::OnClickOK)
 EVT_BUTTON(wxID_CANCEL, MapPropertiesWindow::OnClickCancel)
 END_EVENT_TABLE()
 
-MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor &editor) :
+MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor& editor) :
 	wxDialog(parent, wxID_ANY, "Map Properties", wxDefaultPosition, wxSize(300, 200), wxRESIZE_BORDER | wxCAPTION),
 	view(view),
 	editor(editor) {
 	// Setup data variabels
-	Map &map = editor.map;
+	Map& map = editor.map;
 
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
 
@@ -173,7 +173,7 @@ void MapPropertiesWindow::UpdateProtocolList() {
 	protocol_choice->SetStringSelection(client);
 }
 
-void MapPropertiesWindow::OnChangeVersion(wxCommandEvent &) {
+void MapPropertiesWindow::OnChangeVersion(wxCommandEvent&) {
 	UpdateProtocolList();
 }
 
@@ -186,7 +186,7 @@ struct MapConversionContext {
 	typedef std::map<std::string, CreatureInfo> CreatureMap;
 	CreatureMap creature_types;
 
-	void operator()(Map &map, Tile* tile, long long done) {
+	void operator()(Map& map, Tile* tile, long long done) {
 		if (tile->creature) {
 			CreatureMap::iterator f = creature_types.find(tile->creature->getName());
 			if (f == creature_types.end()) {
@@ -201,8 +201,8 @@ struct MapConversionContext {
 	}
 };
 
-void MapPropertiesWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
-	Map &map = editor.map;
+void MapPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
+	Map& map = editor.map;
 
 	MapVersion old_ver = map.getVersion();
 	MapVersion new_ver;
@@ -309,7 +309,7 @@ void MapPropertiesWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 	EndModal(1);
 }
 
-void MapPropertiesWindow::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
+void MapPropertiesWindow::OnClickCancel(wxCommandEvent& WXUNUSED(event)) {
 	// Just close this window
 	EndModal(1);
 }
@@ -325,7 +325,7 @@ EVT_BUTTON(wxID_OK, ImportMapWindow::OnClickOK)
 EVT_BUTTON(wxID_CANCEL, ImportMapWindow::OnClickCancel)
 END_EVENT_TABLE()
 
-ImportMapWindow::ImportMapWindow(wxWindow* parent, Editor &editor) :
+ImportMapWindow::ImportMapWindow(wxWindow* parent, Editor& editor) :
 	wxDialog(parent, wxID_ANY, "Import Map", wxDefaultPosition, wxSize(350, 315)),
 	editor(editor) {
 	wxBoxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
@@ -388,7 +388,7 @@ ImportMapWindow::ImportMapWindow(wxWindow* parent, Editor &editor) :
 
 ImportMapWindow::~ImportMapWindow() = default;
 
-void ImportMapWindow::OnClickBrowse(wxCommandEvent &WXUNUSED(event)) {
+void ImportMapWindow::OnClickBrowse(wxCommandEvent& WXUNUSED(event)) {
 	wxFileDialog dialog(this, "Import...", "", "", "*.otbm", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 	int ok = dialog.ShowModal();
 
@@ -397,7 +397,7 @@ void ImportMapWindow::OnClickBrowse(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void ImportMapWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
+void ImportMapWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	if (Validate() && TransferDataFromWindow()) {
 		wxFileName fn = file_text_field->GetValue();
 		if (!fn.FileExists()) {
@@ -438,7 +438,7 @@ void ImportMapWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void ImportMapWindow::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
+void ImportMapWindow::OnClickCancel(wxCommandEvent& WXUNUSED(event)) {
 	// Just close this window
 	EndModal(0);
 }
@@ -453,7 +453,7 @@ EVT_BUTTON(wxID_CANCEL, ExportMiniMapWindow::OnClickCancel)
 EVT_CHOICE(wxID_ANY, ExportMiniMapWindow::OnExportTypeChange)
 END_EVENT_TABLE()
 
-ExportMiniMapWindow::ExportMiniMapWindow(wxWindow* parent, Editor &editor) :
+ExportMiniMapWindow::ExportMiniMapWindow(wxWindow* parent, Editor& editor) :
 	wxDialog(parent, wxID_ANY, "Export Minimap", wxDefaultPosition, wxSize(400, 300)),
 	editor(editor) {
 	wxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
@@ -517,30 +517,30 @@ ExportMiniMapWindow::ExportMiniMapWindow(wxWindow* parent, Editor &editor) :
 
 ExportMiniMapWindow::~ExportMiniMapWindow() = default;
 
-void ExportMiniMapWindow::OnExportTypeChange(wxCommandEvent &event) {
+void ExportMiniMapWindow::OnExportTypeChange(wxCommandEvent& event) {
 	floor_number->Enable(event.GetSelection() == 2);
 }
 
-void ExportMiniMapWindow::OnClickBrowse(wxCommandEvent &WXUNUSED(event)) {
+void ExportMiniMapWindow::OnClickBrowse(wxCommandEvent& WXUNUSED(event)) {
 	wxDirDialog dialog(NULL, "Select the output folder", "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
 	if (dialog.ShowModal() == wxID_OK) {
-		const wxString &directory = dialog.GetPath();
+		const wxString& directory = dialog.GetPath();
 		directory_text_field->ChangeValue(directory);
 	}
 	CheckValues();
 }
 
-void ExportMiniMapWindow::OnDirectoryChanged(wxKeyEvent &event) {
+void ExportMiniMapWindow::OnDirectoryChanged(wxKeyEvent& event) {
 	CheckValues();
 	event.Skip();
 }
 
-void ExportMiniMapWindow::OnFileNameChanged(wxKeyEvent &event) {
+void ExportMiniMapWindow::OnFileNameChanged(wxKeyEvent& event) {
 	CheckValues();
 	event.Skip();
 }
 
-void ExportMiniMapWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
+void ExportMiniMapWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.CreateLoadBar("Exporting minimap");
 
 	try {
@@ -578,7 +578,7 @@ void ExportMiniMapWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 				break;
 			}
 		}
-	} catch (std::bad_alloc &) {
+	} catch (std::bad_alloc&) {
 		g_gui.PopupDialog("Error", "There is not enough memory available to complete the operation.", wxOK);
 	}
 
@@ -586,7 +586,7 @@ void ExportMiniMapWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 	EndModal(1);
 }
 
-void ExportMiniMapWindow::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
+void ExportMiniMapWindow::OnClickCancel(wxCommandEvent& WXUNUSED(event)) {
 	// Just close this window
 	EndModal(0);
 }
@@ -631,7 +631,7 @@ EVT_BUTTON(wxID_OK, ExportTilesetsWindow::OnClickOK)
 EVT_BUTTON(wxID_CANCEL, ExportTilesetsWindow::OnClickCancel)
 END_EVENT_TABLE()
 
-ExportTilesetsWindow::ExportTilesetsWindow(wxWindow* parent, Editor &editor) :
+ExportTilesetsWindow::ExportTilesetsWindow(wxWindow* parent, Editor& editor) :
 	wxDialog(parent, wxID_ANY, "Export Tilesets", wxDefaultPosition, wxSize(400, 230)),
 	editor(editor) {
 	wxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
@@ -674,26 +674,26 @@ ExportTilesetsWindow::ExportTilesetsWindow(wxWindow* parent, Editor &editor) :
 
 ExportTilesetsWindow::~ExportTilesetsWindow() = default;
 
-void ExportTilesetsWindow::OnClickBrowse(wxCommandEvent &WXUNUSED(event)) {
+void ExportTilesetsWindow::OnClickBrowse(wxCommandEvent& WXUNUSED(event)) {
 	wxDirDialog dialog(NULL, "Select the output folder", "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
 	if (dialog.ShowModal() == wxID_OK) {
-		const wxString &directory = dialog.GetPath();
+		const wxString& directory = dialog.GetPath();
 		directory_text_field->ChangeValue(directory);
 	}
 	CheckValues();
 }
 
-void ExportTilesetsWindow::OnDirectoryChanged(wxKeyEvent &event) {
+void ExportTilesetsWindow::OnDirectoryChanged(wxKeyEvent& event) {
 	CheckValues();
 	event.Skip();
 }
 
-void ExportTilesetsWindow::OnFileNameChanged(wxKeyEvent &event) {
+void ExportTilesetsWindow::OnFileNameChanged(wxKeyEvent& event) {
 	CheckValues();
 	event.Skip();
 }
 
-void ExportTilesetsWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
+void ExportTilesetsWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.CreateLoadBar("Exporting Tilesets");
 
 	try {
@@ -719,7 +719,7 @@ void ExportTilesetsWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 			if (_data == "others") {
 				bool blocked = 1;
 
-				for (const auto &kv : palettes) {
+				for (const auto& kv : palettes) {
 					TilesetCategory* tilesetCategory = iter->second->getCategory(kv.second);
 
 					if (kv.second != TILESET_RAW && tilesetCategory->brushlist.size() > 0) {
@@ -735,7 +735,7 @@ void ExportTilesetsWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 			pugi::xml_node tileset = node.append_child("tileset");
 			tileset.append_attribute("name") = iter->second->name.c_str();
 
-			for (const auto &kv : palettes) {
+			for (const auto& kv : palettes) {
 				TilesetCategory* tilesetCategory = iter->second->getCategory(kv.second);
 
 				if (tilesetCategory->brushlist.size() > 0) {
@@ -748,7 +748,7 @@ void ExportTilesetsWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 							pugi::xml_node brush = palette.append_child("brush");
 							brush.append_attribute("name") = (*_iter)->getName().c_str();
 						} else {
-							ItemType &it = g_items[(*_iter)->asRaw()->getItemID()];
+							ItemType& it = g_items[(*_iter)->asRaw()->getItemID()];
 							if (it.id != 0) {
 								pugi::xml_node item = palette.append_child("item");
 								item.append_attribute("id") = it.id;
@@ -767,7 +767,7 @@ void ExportTilesetsWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 		doc.save_file(file.GetFullPath().mb_str());
 		g_gui.PopupDialog("Successfully saved Tilesets", "Saved tilesets to '" + std::string(file.GetFullPath().mb_str()) + "'", wxOK);
 		g_materials.modify(false);
-	} catch (std::bad_alloc &) {
+	} catch (std::bad_alloc&) {
 		g_gui.PopupDialog("Error", "There is not enough memory available to complete the operation.", wxOK);
 	}
 
@@ -775,7 +775,7 @@ void ExportTilesetsWindow::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 	EndModal(1);
 }
 
-void ExportTilesetsWindow::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
+void ExportTilesetsWindow::OnClickCancel(wxCommandEvent& WXUNUSED(event)) {
 	// Just close this window
 	EndModal(0);
 }
@@ -818,7 +818,7 @@ BEGIN_EVENT_TABLE(KeyForwardingTextCtrl, wxTextCtrl)
 EVT_KEY_DOWN(KeyForwardingTextCtrl::OnKeyDown)
 END_EVENT_TABLE()
 
-void KeyForwardingTextCtrl::OnKeyDown(wxKeyEvent &event) {
+void KeyForwardingTextCtrl::OnKeyDown(wxKeyEvent& event) {
 	if (event.GetKeyCode() == WXK_UP || event.GetKeyCode() == WXK_DOWN || event.GetKeyCode() == WXK_PAGEDOWN || event.GetKeyCode() == WXK_PAGEUP) {
 		GetParent()->GetEventHandler()->AddPendingEvent(event);
 	} else {
@@ -867,7 +867,7 @@ FindDialog::FindDialog(wxWindow* parent, wxString title) :
 
 FindDialog::~FindDialog() = default;
 
-void FindDialog::OnKeyDown(wxKeyEvent &event) {
+void FindDialog::OnKeyDown(wxKeyEvent& event) {
 	int w, h;
 	item_list->GetSize(&w, &h);
 	size_t amount = 1;
@@ -916,24 +916,24 @@ void FindDialog::OnKeyDown(wxKeyEvent &event) {
 	}
 }
 
-void FindDialog::OnTextIdle(wxTimerEvent &WXUNUSED(event)) {
+void FindDialog::OnTextIdle(wxTimerEvent& WXUNUSED(event)) {
 	RefreshContents();
 }
 
-void FindDialog::OnTextChange(wxCommandEvent &WXUNUSED(event)) {
+void FindDialog::OnTextChange(wxCommandEvent& WXUNUSED(event)) {
 	idle_input_timer.Start(800, true);
 }
 
-void FindDialog::OnClickList(wxCommandEvent &event) {
+void FindDialog::OnClickList(wxCommandEvent& event) {
 	OnClickListInternal(event);
 }
 
-void FindDialog::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
+void FindDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	// This is to get virtual callback
 	OnClickOKInternal();
 }
 
-void FindDialog::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
+void FindDialog::OnClickCancel(wxCommandEvent& WXUNUSED(event)) {
 	EndModal(0);
 }
 
@@ -952,7 +952,7 @@ FindBrushDialog::FindBrushDialog(wxWindow* parent, wxString title) :
 
 FindBrushDialog::~FindBrushDialog() = default;
 
-void FindBrushDialog::OnClickListInternal(wxCommandEvent &event) {
+void FindBrushDialog::OnClickListInternal(wxCommandEvent& event) {
 	Brush* brush = item_list->GetSelectedBrush();
 	if (brush) {
 		result_brush = brush;
@@ -974,7 +974,7 @@ void FindBrushDialog::OnClickOKInternal() {
 			bool do_search = (search_string.size() >= 2);
 
 			if (do_search) {
-				const BrushMap &map = g_brushes.getMap();
+				const BrushMap& map = g_brushes.getMap();
 				for (BrushMap::const_iterator iter = map.begin(); iter != map.end(); ++iter) {
 					const Brush* brush = iter->second;
 					if (as_lower_str(brush->getName()).find(search_string) == std::string::npos) {
@@ -995,7 +995,7 @@ void FindBrushDialog::OnClickOKInternal() {
 				if (!result_brush) {
 					// Then let's search the RAWs
 					for (int id = 0; id <= g_items.getMaxID(); ++id) {
-						ItemType &it = g_items[id];
+						ItemType& it = g_items[id];
 						if (it.id == 0) {
 							continue;
 						}
@@ -1033,7 +1033,7 @@ void FindBrushDialog::RefreshContentsInternal() {
 
 		bool found_search_results = false;
 
-		const BrushMap &brushes_map = g_brushes.getMap();
+		const BrushMap& brushes_map = g_brushes.getMap();
 
 		// We store the raws so they display last of all results
 		std::deque<const RAWBrush*> raws;
@@ -1054,7 +1054,7 @@ void FindBrushDialog::RefreshContentsInternal() {
 		}
 
 		for (int id = 0; id <= g_items.getMaxID(); ++id) {
-			ItemType &it = g_items[id];
+			ItemType& it = g_items[id];
 			if (it.id == 0) {
 				continue;
 			}
@@ -1134,7 +1134,7 @@ Brush* FindDialogListBox::GetSelectedBrush() {
 	return brushlist[n];
 }
 
-void FindDialogListBox::OnDrawItem(wxDC &dc, const wxRect &rect, size_t n) const {
+void FindDialogListBox::OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const {
 	if (no_matches) {
 		dc.DrawText("No matches for your search.", rect.GetX() + 40, rect.GetY() + 6);
 	} else if (cleared) {
@@ -1167,7 +1167,7 @@ wxCoord FindDialogListBox::OnMeasureItem(size_t n) const {
 // ============================================================================
 // wxListBox that can be sorted
 
-SortableListBox::SortableListBox(wxWindow* parent, wxWindowID id, const wxPoint &pos, const wxSize &size) :
+SortableListBox::SortableListBox(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size) :
 	wxListBox(parent, id, pos, size, 0, nullptr, wxLB_SINGLE | wxLB_NEEDED_SB) { }
 
 SortableListBox::~SortableListBox() { }
@@ -1292,10 +1292,10 @@ EVT_BUTTON(wxID_OK, EditTownsDialog::OnClickOK)
 EVT_BUTTON(wxID_CANCEL, EditTownsDialog::OnClickCancel)
 END_EVENT_TABLE()
 
-EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor &editor) :
+EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 	wxDialog(parent, wxID_ANY, "Towns", wxDefaultPosition, wxSize(280, 330)),
 	editor(editor) {
-	Map &map = editor.map;
+	Map& map = editor.map;
 
 	// Create topsizer
 	wxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
@@ -1463,16 +1463,16 @@ void EditTownsDialog::UpdateSelection(int new_selection) {
 	Refresh();
 }
 
-void EditTownsDialog::OnListBoxChange(wxCommandEvent &event) {
+void EditTownsDialog::OnListBoxChange(wxCommandEvent& event) {
 	UpdateSelection(event.GetSelection());
 }
 
-void EditTownsDialog::OnClickSelectTemplePosition(wxCommandEvent &WXUNUSED(event)) {
+void EditTownsDialog::OnClickSelectTemplePosition(wxCommandEvent& WXUNUSED(event)) {
 	Position templepos = temple_position->GetPosition();
 	g_gui.SetScreenCenterPosition(templepos);
 }
 
-void EditTownsDialog::OnClickAdd(wxCommandEvent &WXUNUSED(event)) {
+void EditTownsDialog::OnClickAdd(wxCommandEvent& WXUNUSED(event)) {
 	Town* new_town = newd Town(++max_town_id);
 	new_town->setName("Unnamed Town");
 	new_town->setTemplePosition(Position(0, 0, 0));
@@ -1485,7 +1485,7 @@ void EditTownsDialog::OnClickAdd(wxCommandEvent &WXUNUSED(event)) {
 	town_listbox->SetSelection(town_list.size() - 1);
 }
 
-void EditTownsDialog::OnClickRemove(wxCommandEvent &WXUNUSED(event)) {
+void EditTownsDialog::OnClickRemove(wxCommandEvent& WXUNUSED(event)) {
 	long tmplong;
 	if (id_field->GetValue().ToLong(&tmplong)) {
 		uint32_t old_town_id = tmplong;
@@ -1507,7 +1507,7 @@ void EditTownsDialog::OnClickRemove(wxCommandEvent &WXUNUSED(event)) {
 			return;
 		}
 
-		Map &map = editor.map;
+		Map& map = editor.map;
 		for (HouseMap::iterator house_iter = map.houses.begin(); house_iter != map.houses.end(); ++house_iter) {
 			House* house = house_iter->second;
 			if (house->townid == town->getID()) {
@@ -1527,7 +1527,7 @@ void EditTownsDialog::OnClickRemove(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void EditTownsDialog::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
+void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	long tmplong = 0;
 
 	if (Validate() && TransferDataFromWindow()) {
@@ -1566,7 +1566,7 @@ void EditTownsDialog::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 			}
 		}
 
-		Towns &towns = editor.map.towns;
+		Towns& towns = editor.map.towns;
 
 		// Verify the newd information
 		for (std::vector<Town*>::iterator town_iter = town_list.begin(); town_iter != town_list.end(); ++town_iter) {
@@ -1598,7 +1598,7 @@ void EditTownsDialog::OnClickOK(wxCommandEvent &WXUNUSED(event)) {
 	}
 }
 
-void EditTownsDialog::OnClickCancel(wxCommandEvent &WXUNUSED(event)) {
+void EditTownsDialog::OnClickCancel(wxCommandEvent& WXUNUSED(event)) {
 	// Just close this window
 	EndModal(0);
 }
@@ -1612,10 +1612,10 @@ EVT_BUTTON(wxID_OK, GotoPositionDialog::OnClickOK)
 EVT_BUTTON(wxID_CANCEL, GotoPositionDialog::OnClickCancel)
 END_EVENT_TABLE()
 
-GotoPositionDialog::GotoPositionDialog(wxWindow* parent, Editor &editor) :
+GotoPositionDialog::GotoPositionDialog(wxWindow* parent, Editor& editor) :
 	wxDialog(parent, wxID_ANY, "Go To Position", wxDefaultPosition, wxDefaultSize),
 	editor(editor) {
-	Map &map = editor.map;
+	Map& map = editor.map;
 
 	// create topsizer
 	wxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
@@ -1633,11 +1633,11 @@ GotoPositionDialog::GotoPositionDialog(wxWindow* parent, Editor &editor) :
 	Centre(wxBOTH);
 }
 
-void GotoPositionDialog::OnClickCancel(wxCommandEvent &) {
+void GotoPositionDialog::OnClickCancel(wxCommandEvent&) {
 	EndModal(0);
 }
 
-void GotoPositionDialog::OnClickOK(wxCommandEvent &) {
+void GotoPositionDialog::OnClickOK(wxCommandEvent&) {
 	g_gui.SetScreenCenterPosition(posctrl->GetPosition());
 	EndModal(1);
 }

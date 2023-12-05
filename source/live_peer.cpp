@@ -40,7 +40,7 @@ void LivePeer::close() {
 	server->removeClient(id);
 }
 
-bool LivePeer::handleError(const boost::system::error_code &error) {
+bool LivePeer::handleError(const boost::system::error_code& error) {
 	if (error == boost::asio::error::eof || error == boost::asio::error::connection_reset) {
 		logMessage(wxString() + getHostName() + ": disconnected.");
 		close();
@@ -58,7 +58,7 @@ std::string LivePeer::getHostName() const {
 
 void LivePeer::receiveHeader() {
 	readMessage.position = 0;
-	boost::asio::async_read(socket, boost::asio::buffer(readMessage.buffer, 4), [this](const boost::system::error_code &error, size_t bytesReceived) -> void {
+	boost::asio::async_read(socket, boost::asio::buffer(readMessage.buffer, 4), [this](const boost::system::error_code& error, size_t bytesReceived) -> void {
 		if (error) {
 			if (!handleError(error)) {
 				logMessage(wxString() + getHostName() + ": " + error.message());
@@ -73,7 +73,7 @@ void LivePeer::receiveHeader() {
 
 void LivePeer::receive(uint32_t packetSize) {
 	readMessage.buffer.resize(readMessage.position + packetSize);
-	boost::asio::async_read(socket, boost::asio::buffer(&readMessage.buffer[readMessage.position], packetSize), [this](const boost::system::error_code &error, size_t bytesReceived) -> void {
+	boost::asio::async_read(socket, boost::asio::buffer(&readMessage.buffer[readMessage.position], packetSize), [this](const boost::system::error_code& error, size_t bytesReceived) -> void {
 		if (error) {
 			if (!handleError(error)) {
 				logMessage(wxString() + getHostName() + ": " + error.message());
@@ -93,9 +93,9 @@ void LivePeer::receive(uint32_t packetSize) {
 	});
 }
 
-void LivePeer::send(NetworkMessage &message) {
+void LivePeer::send(NetworkMessage& message) {
 	memcpy(&message.buffer[0], &message.size, 4);
-	boost::asio::async_write(socket, boost::asio::buffer(message.buffer, message.size + 4), [this](const boost::system::error_code &error, size_t bytesTransferred) -> void {
+	boost::asio::async_write(socket, boost::asio::buffer(message.buffer, message.size + 4), [this](const boost::system::error_code& error, size_t bytesTransferred) -> void {
 		if (error) {
 			logMessage(wxString() + getHostName() + ": " + error.message());
 		}
@@ -157,7 +157,7 @@ void LivePeer::parseEditorPacket(NetworkMessage message) {
 	}
 }
 
-void LivePeer::parseHello(NetworkMessage &message) {
+void LivePeer::parseHello(NetworkMessage& message) {
 	if (connected) {
 		close();
 		return;
@@ -208,7 +208,7 @@ void LivePeer::parseHello(NetworkMessage &message) {
 	send(outMessage);
 }
 
-void LivePeer::parseReady(NetworkMessage &message) {
+void LivePeer::parseReady(NetworkMessage& message) {
 	if (connected) {
 		close();
 		return;
@@ -234,7 +234,7 @@ void LivePeer::parseReady(NetworkMessage &message) {
 	NetworkMessage outMessage;
 	outMessage.write<uint8_t>(PACKET_HELLO_FROM_SERVER);
 
-	Map &map = server->getEditor()->map;
+	Map& map = server->getEditor()->map;
 	outMessage.write<std::string>(map.getName());
 	outMessage.write<uint16_t>(map.getWidth());
 	outMessage.write<uint16_t>(map.getHeight());
@@ -242,8 +242,8 @@ void LivePeer::parseReady(NetworkMessage &message) {
 	send(outMessage);
 }
 
-void LivePeer::parseNodeRequest(NetworkMessage &message) {
-	Map &map = server->getEditor()->map;
+void LivePeer::parseNodeRequest(NetworkMessage& message) {
+	Map& map = server->getEditor()->map;
 	for (uint32_t nodes = message.read<uint32_t>(); nodes != 0; --nodes) {
 		uint32_t ind = message.read<uint32_t>();
 
@@ -258,11 +258,11 @@ void LivePeer::parseNodeRequest(NetworkMessage &message) {
 	}
 }
 
-void LivePeer::parseReceiveChanges(NetworkMessage &message) {
-	Editor &editor = *server->getEditor();
+void LivePeer::parseReceiveChanges(NetworkMessage& message) {
+	Editor& editor = *server->getEditor();
 
 	// -1 on address since we skip the first START_NODE when sending
-	const std::string &data = message.read<std::string>();
+	const std::string& data = message.read<std::string>();
 	mapReader.assign(reinterpret_cast<const uint8_t*>(data.c_str() - 1), data.size());
 
 	BinaryNode* rootNode = mapReader.getRootNode();
@@ -287,16 +287,16 @@ void LivePeer::parseReceiveChanges(NetworkMessage &message) {
 	g_gui.UpdateMinimap();
 }
 
-void LivePeer::parseAddHouse(NetworkMessage &message) {
+void LivePeer::parseAddHouse(NetworkMessage& message) {
 }
 
-void LivePeer::parseEditHouse(NetworkMessage &message) {
+void LivePeer::parseEditHouse(NetworkMessage& message) {
 }
 
-void LivePeer::parseRemoveHouse(NetworkMessage &message) {
+void LivePeer::parseRemoveHouse(NetworkMessage& message) {
 }
 
-void LivePeer::parseCursorUpdate(NetworkMessage &message) {
+void LivePeer::parseCursorUpdate(NetworkMessage& message) {
 	LiveCursor cursor = readCursor(message);
 	cursor.id = clientId;
 
@@ -309,7 +309,7 @@ void LivePeer::parseCursorUpdate(NetworkMessage &message) {
 	g_gui.RefreshView();
 }
 
-void LivePeer::parseChatMessage(NetworkMessage &message) {
-	const std::string &chatMessage = message.read<std::string>();
+void LivePeer::parseChatMessage(NetworkMessage& message) {
+	const std::string& chatMessage = message.read<std::string>();
 	server->broadcastChat(name, wxstr(chatMessage));
 }

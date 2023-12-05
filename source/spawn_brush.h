@@ -35,7 +35,7 @@ public:
 		return static_cast<SpawnBrush*>(this);
 	}
 
-	virtual bool canDraw(BaseMap* map, const Position &position) const;
+	virtual bool canDraw(BaseMap* map, const Position& position) const;
 	virtual void draw(BaseMap* map, Tile* tile, void* parameter); // parameter is brush size
 	virtual void undraw(BaseMap* map, Tile* tile);
 
