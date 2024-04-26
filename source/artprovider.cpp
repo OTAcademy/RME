@@ -30,6 +30,7 @@
 #include "../icons/position_go.xpm"
 #include "../icons/protected_zone.xpm"
 #include "../icons/pvp_zone.xpm"
+#include "../icons/refresh.xpm"
 #include "../icons/rectangular_1.xpm"
 #include "../icons/rectangular_2.xpm"
 #include "../icons/rectangular_3.xpm"
@@ -66,6 +67,8 @@ wxBitmap ArtProvider::CreateBitmap(const wxArtID& id, const wxArtClient& client,
 			return wxBitmap(nologout_zone_xpm);
 		} else if (id == ART_NOPVP_BRUSH) {
 			return wxBitmap(nopvp_zone_xpm);
+		} else if (id == ART_REFRESH_BRUSH) {
+			return wxBitmap(refresh_xpm);
 		} else if (id == ART_POSITION_GO) {
 			return wxBitmap(position_go_xpm);
 		} else if (id == ART_PVP_BRUSH) {

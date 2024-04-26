@@ -84,6 +84,7 @@ void Brushes::init() {
 	addBrush(g_gui.rook_brush = newd FlagBrush(TILESTATE_NOPVP));
 	addBrush(g_gui.nolog_brush = newd FlagBrush(TILESTATE_NOLOGOUT));
 	addBrush(g_gui.pvp_brush = newd FlagBrush(TILESTATE_PVPZONE));
+	addBrush(g_gui.refresh_brush = newd FlagBrush(TILESTATE_REFRESH));
 
 	GroundBrush::init();
 	WallBrush::init();
@@ -256,6 +257,8 @@ std::string FlagBrush::getName() const {
 			return "No logout zone brush (0x08)";
 		case TILESTATE_PVPZONE:
 			return "PVP Zone brush (0x10)";
+		case TILESTATE_REFRESH:
+			return "Refresh Zone brush (0x20)";
 	}
 	return "Unknown flag brush";
 }
@@ -270,6 +273,8 @@ int FlagBrush::getLookID() const {
 			return EDITOR_SPRITE_NOLOG_TOOL;
 		case TILESTATE_PVPZONE:
 			return EDITOR_SPRITE_PVPZ_TOOL;
+		case TILESTATE_REFRESH:
+			return EDITOR_SPRITE_REFRESH_TOOL;
 	}
 	return 0;
 }

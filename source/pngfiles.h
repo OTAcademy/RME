@@ -68,6 +68,8 @@ extern unsigned char rectangular_6_png[600];
 extern unsigned char rectangular_6_small_png[431];
 extern unsigned char rectangular_7_png[697];
 extern unsigned char rectangular_7_small_png[429];
+extern unsigned char refresh_png[595];
+extern unsigned char refresh_small_png[563];
 extern unsigned char window_hatch_png[910];
 extern unsigned char window_hatch_small_png[641];
 extern unsigned char window_normal_png[947];
