@@ -34,8 +34,14 @@ Download
 
 You can find official releases at this repository [releases page](https://github.com/OTAcademy/RME/releases).
 
-Compiling
+Compiling using automatic libs installation with vcpkg manifest
 =========
+required only vcpkg setup: [https://github.com/microsoft/vcpkg](https://github.com/microsoft/vcpkg)
+
+Compiling using manual libs installation
+=========
+required vcpkg setup: [https://github.com/microsoft/vcpkg](https://github.com/microsoft/vcpkg)
+
 Required libraries:
 * wxWidgets >= 3.0
 * Boost >= 1.55.0
