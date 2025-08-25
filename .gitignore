@@ -46,6 +46,7 @@ vcproj/Installer/Beta Release/
 vcproj/Installer/Debug/
 vcproj/Installer/Release/
 .vscode/
+.vs/
 
 # Xcode
 xcuserdata
@@ -57,3 +58,5 @@ cmake-build-debug/
 
 # Notepad++
 *.bak
+/vcpkg_installed/x64-windows
+/vcpkg_installed/x86-windows
