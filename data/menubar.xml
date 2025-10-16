@@ -71,7 +71,7 @@
 			<item name="Randomize Map" action="RANDOMIZE_MAP" help="Randomizes all tiles of the entire map."/>
 		</menu>
 		<menu name="Other Options">
-			<item name="Remove Items by ID..." action="MAP_REMOVE_ITEMS" help="Removes all items with the selected ID from the map."/>
+			<item name="Remove Items by ID..." hotkey="Ctrl+Shift+R" action="MAP_REMOVE_ITEMS" help="Removes all items with the selected ID from the map."/>
 			<item name="Remove all Corpses..." action="MAP_REMOVE_CORPSES" help="Removes all corpses from the map."/>
 			<item name="Remove all Unreachable Tiles..." action="MAP_REMOVE_UNREACHABLE_TILES" help="Removes all tiles that cannot be reached (or seen) by the player from the map."/>
 			<item name="Clear Invalid Houses" action="CLEAR_INVALID_HOUSES" help="Clears house tiles not belonging to any house."/>
