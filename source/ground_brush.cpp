@@ -975,6 +975,7 @@ void GroundBrush::doBorders(BaseMap* map, Tile* tile) {
 				while (it != tileItems.end()) {
 					Item* item = *it;
 					if (!item->isBorder()) {
+						++it;
 						continue;
 					}
 
