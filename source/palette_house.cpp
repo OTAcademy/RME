@@ -607,6 +607,10 @@ void EditHouseDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 
 		// Transfer to house
 		int* new_town_id = reinterpret_cast<int*>(town_id_field->GetClientData(town_id_field->GetSelection()));
+		if (!new_town_id) {
+			g_gui.PopupDialog(this, "Error", "Invalid town selected.", wxOK);
+			return;
+		}
 
 		what_house->name = nstr(house_name);
 		what_house->rent = new_house_rent;
