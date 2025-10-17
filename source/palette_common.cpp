@@ -401,6 +401,7 @@ EVT_TOGGLEBUTTON(PALETTE_TERRAIN_PZ_TOOL, BrushToolPanel::OnClickPZBrushButton)
 EVT_TOGGLEBUTTON(PALETTE_TERRAIN_NOPVP_TOOL, BrushToolPanel::OnClickNOPVPBrushButton)
 EVT_TOGGLEBUTTON(PALETTE_TERRAIN_NOLOGOUT_TOOL, BrushToolPanel::OnClickNoLogoutBrushButton)
 EVT_TOGGLEBUTTON(PALETTE_TERRAIN_PVPZONE_TOOL, BrushToolPanel::OnClickPVPZoneBrushButton)
+EVT_TOGGLEBUTTON(PALETTE_TERRAIN_REFRESH_TOOL, BrushToolPanel::OnClickRefreshBrushButton)
 
 EVT_CHECKBOX(PALETTE_TERRAIN_LOCK_DOOR, BrushToolPanel::OnClickLockDoorCheckbox)
 END_EVENT_TABLE()
@@ -422,7 +423,8 @@ BrushToolPanel::BrushToolPanel(wxWindow* parent) :
 	pzBrushButton(nullptr),
 	nopvpBrushButton(nullptr),
 	nologBrushButton(nullptr),
-	pvpzoneBrushButton(nullptr) {
+	pvpzoneBrushButton(nullptr),
+	refreshBrushButton(nullptr) {
 	////
 }
 
@@ -489,6 +491,14 @@ void BrushToolPanel::LoadAllContents() {
 		ASSERT(g_gui.pvp_brush);
 		sub_sizer->Add(pvpzoneBrushButton = newd BrushButton(this, g_gui.pvp_brush, RENDER_SIZE_32x32, PALETTE_TERRAIN_PVPZONE_TOOL));
 		pvpzoneBrushButton->SetToolTip("PVP Zone Tool");
+
+		// New row
+		size_sizer->Add(sub_sizer);
+		sub_sizer = newd wxBoxSizer(wxHORIZONTAL);
+
+		ASSERT(g_gui.refresh_brush);
+		sub_sizer->Add(refreshBrushButton = newd BrushButton(this, g_gui.refresh_brush, RENDER_SIZE_32x32, PALETTE_TERRAIN_REFRESH_TOOL));
+		refreshBrushButton->SetToolTip("Refresh Zone Tool");
 
 		// New row
 		size_sizer->Add(sub_sizer);
@@ -593,6 +603,10 @@ void BrushToolPanel::LoadAllContents() {
 		ASSERT(g_gui.pvp_brush);
 		sub_sizer->Add(pvpzoneBrushButton = newd BrushButton(this, g_gui.pvp_brush, RENDER_SIZE_16x16, PALETTE_TERRAIN_PVPZONE_TOOL));
 		pvpzoneBrushButton->SetToolTip("PVP Zone Tool");
+
+		ASSERT(g_gui.refresh_brush);
+		sub_sizer->Add(refreshBrushButton = newd BrushButton(this, g_gui.refresh_brush, RENDER_SIZE_16x16, PALETTE_TERRAIN_REFRESH_TOOL));
+		refreshBrushButton->SetToolTip("Refresh Zone Tool");
 	}
 
 	sub_sizer->AddSpacer(large_icons ? 42 : 24);
@@ -639,6 +653,7 @@ void BrushToolPanel::DeselectAll() {
 		nopvpBrushButton->SetValue(false);
 		nologBrushButton->SetValue(false);
 		pvpzoneBrushButton->SetValue(false);
+		refreshBrushButton->SetValue(false);
 	}
 }
 
@@ -685,6 +700,9 @@ Brush* BrushToolPanel::GetSelectedBrush() const {
 	if (pvpzoneBrushButton->GetValue()) {
 		return g_gui.pvp_brush;
 	}
+	if (refreshBrushButton->GetValue()) {
+		return g_gui.refresh_brush;
+	}
 	return nullptr;
 }
 
@@ -718,6 +736,8 @@ bool BrushToolPanel::SelectBrush(const Brush* whatbrush) {
 		button = nologBrushButton;
 	} else if (whatbrush == g_gui.pvp_brush) {
 		button = pvpzoneBrushButton;
+	} else if (whatbrush == g_gui.refresh_brush) {
+		button = refreshBrushButton;
 	}
 
 	DeselectAll();
@@ -825,6 +845,11 @@ void BrushToolPanel::OnClickNoLogoutBrushButton(wxCommandEvent& event) {
 void BrushToolPanel::OnClickPVPZoneBrushButton(wxCommandEvent& event) {
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SelectBrush(g_gui.pvp_brush);
+}
+
+void BrushToolPanel::OnClickRefreshBrushButton(wxCommandEvent& event) {
+	g_gui.ActivatePalette(GetParentPalette());
+	g_gui.SelectBrush(g_gui.refresh_brush);
 }
 
 void BrushToolPanel::OnClickLockDoorCheckbox(wxCommandEvent& event) {
