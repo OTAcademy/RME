@@ -943,12 +943,20 @@ namespace OnSearchForStuff {
 
 		wxString desc(Item* item) {
 			wxString label;
-			if (item->getUniqueID() > 0) {
-				label << "UID:" << item->getUniqueID() << " ";
-			}
-
-			if (item->getActionID() > 0) {
-				label << "AID:" << item->getActionID() << " ";
+			if (search_action) {
+				if (item->getActionID() > 0) {
+					label << "AID:" << item->getActionID() << " ";
+				}
+				if (item->getUniqueID() > 0) {
+					label << "UID:" << item->getUniqueID() << " ";
+				}
+			} else {
+				if (item->getUniqueID() > 0) {
+					label << "UID:" << item->getUniqueID() << " ";
+				}
+				if (item->getActionID() > 0) {
+					label << "AID:" << item->getActionID() << " ";
+				}
 			}
 
 			label << wxstr(item->getName());
@@ -965,7 +973,31 @@ namespace OnSearchForStuff {
 		}
 
 		void sort() {
-			if (search_unique || search_action) {
+			if (search_unique && !search_action) {
+				std::sort(found.begin(), found.end(), [](const std::pair<Tile*, Item*>& pair1, const std::pair<Tile*, Item*>& pair2) {
+					const Item* item1 = pair1.second;
+					const Item* item2 = pair2.second;
+
+					uint16_t u1 = item1->getUniqueID();
+					uint16_t u2 = item2->getUniqueID();
+					if (u1 != u2) {
+						return u1 < u2;
+					}
+					return item1->getActionID() < item2->getActionID();
+				});
+			} else if (search_action && !search_unique) {
+				std::sort(found.begin(), found.end(), [](const std::pair<Tile*, Item*>& pair1, const std::pair<Tile*, Item*>& pair2) {
+					const Item* item1 = pair1.second;
+					const Item* item2 = pair2.second;
+
+					uint16_t a1 = item1->getActionID();
+					uint16_t a2 = item2->getActionID();
+					if (a1 != a2) {
+						return a1 < a2;
+					}
+					return item1->getUniqueID() < item2->getUniqueID();
+				});
+			} else if (search_unique || search_action) {
 				std::sort(found.begin(), found.end(), Searcher::compare);
 			}
 		}
