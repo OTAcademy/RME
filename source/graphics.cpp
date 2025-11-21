@@ -380,6 +380,11 @@ bool GraphicManager::loadEditorSprites() {
 		loadPNGFile(no_pvp_png)
 	);
 
+	sprite_space[EDITOR_SPRITE_REFRESH_TOOL] = newd EditorSprite(
+		loadPNGFile(refresh_small_png),
+		loadPNGFile(refresh_png)
+	);
+
 	sprite_space[EDITOR_SPRITE_DOOR_NORMAL] = newd EditorSprite(
 		newd wxBitmap(door_normal_small_xpm),
 		newd wxBitmap(door_normal_xpm)
