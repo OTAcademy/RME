@@ -1456,7 +1456,7 @@ void MapDrawer::WriteTooltip(Item* item, std::ostringstream& stream, bool isHous
 		stream << "text: " << text << "\n";
 	}
 	if (tp) {
-		Position& dest = tp->getDestination();
+		const Position& dest = tp->getDestination();
 		stream << "destination: " << dest.x << ", " << dest.y << ", " << dest.z << "\n";
 	}
 }
@@ -1870,7 +1870,7 @@ void MapDrawer::AddLight(TileLocation* location) {
 		return;
 	}
 
-	auto& position = location->getPosition();
+	const auto& position = location->getPosition();
 
 	if (tile->ground) {
 		if (tile->ground->hasLight()) {
