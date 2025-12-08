@@ -771,7 +771,7 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 				}
 			}
 
-			Outfit& newOutfit = Outfit();
+			Outfit newOutfit;
 			if (podium) {
 				int newLookType = look_type->GetValue();
 				int newMount = look_mount->GetValue();
