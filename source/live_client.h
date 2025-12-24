@@ -33,7 +33,7 @@ public:
 
 	//
 	bool connect(const std::string& address, uint16_t port);
-	void tryConnect(boost::asio::ip::tcp::resolver::iterator endpoint);
+	void tryConnect(boost::asio::ip::tcp::resolver::results_type endpoints);
 
 	void close();
 	bool handleError(const boost::system::error_code& error);
