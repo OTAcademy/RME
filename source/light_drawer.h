@@ -37,7 +37,7 @@ public:
 
 	void setGlobalLightColor(uint8_t color);
 	void addLight(int map_x, int map_y, int map_z, const SpriteLight& light);
-	void clear() noexcept;
+	void clear();
 
 private:
 	void createGLTexture();
@@ -57,6 +57,28 @@ private:
 		return std::min(intensity, 1.f);
 	}
 
+	// Light caching
+	bool dirty_ = true;
+	int last_view_x_ = -1;
+	int last_view_y_ = -1;
+	int last_floor_ = -1;
+
+public:
+	void invalidate() {
+		dirty_ = true;
+	}
+	bool needsUpdate(int vx, int vy, int flr) {
+		if (dirty_ || vx != last_view_x_ || vy != last_view_y_ || flr != last_floor_) {
+			last_view_x_ = vx;
+			last_view_y_ = vy;
+			last_floor_ = flr;
+			dirty_ = false;
+			return true;
+		}
+		return false;
+	}
+
+private:
 	GLuint texture;
 	std::vector<Light> lights;
 	std::vector<uint8_t> buffer;

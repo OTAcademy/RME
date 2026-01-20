@@ -180,6 +180,9 @@ namespace Config {
 		ALWAYS_SHOW_ZONES,
 		EXT_HOUSE_SHADER,
 
+		FRAME_RATE_LIMIT,
+		SHOW_FPS_COUNTER,
+
 		LAST,
 	};
 }

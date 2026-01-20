@@ -333,6 +333,23 @@ wxNotebookPage* PreferencesWindow::CreateGraphicsPage() {
 	sizer->Add(pane, 0);
 	*/
 
+	// FPS Settings
+	sizer->AddSpacer(10);
+	auto* fps_sizer = newd wxFlexGridSizer(2, 10, 10);
+	fps_sizer->AddGrowableCol(1);
+
+	fps_sizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "FPS Limit (0 = unlimited): "), 0);
+	fps_limit_spin = newd wxSpinCtrl(graphics_page, wxID_ANY, i2ws(g_settings.getInteger(Config::FRAME_RATE_LIMIT)), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 300);
+	fps_sizer->Add(fps_limit_spin, 0);
+	SetWindowToolTip(fps_limit_spin, tmp, "Limits the frame rate to save power. Set to 0 for unlimited.");
+
+	sizer->Add(fps_sizer, 0, wxALL, 5);
+
+	show_fps_chkbox = newd wxCheckBox(graphics_page, wxID_ANY, "Show FPS Counter");
+	show_fps_chkbox->SetValue(g_settings.getBoolean(Config::SHOW_FPS_COUNTER));
+	sizer->Add(show_fps_chkbox, 0, wxLEFT | wxTOP, 5);
+	SetWindowToolTip(show_fps_chkbox, "Displays the current frame rate in the status bar.");
+
 	graphics_page->SetSizerAndFit(sizer);
 
 	return graphics_page;
@@ -666,8 +683,13 @@ void PreferencesWindow::Apply() {
 	g_settings.setInteger(Config::TEXTURE_LONGEVITY, texture_longevity_spin->GetValue());
 	g_settings.setInteger(Config::TEXTURE_CLEAN_THRESHOLD, texture_threshold_spin->GetValue());
 	g_settings.setInteger(Config::SOFTWARE_CLEAN_THRESHOLD, software_threshold_spin->GetValue());
+	g_settings.setInteger(Config::SOFTWARE_CLEAN_THRESHOLD, software_threshold_spin->GetValue());
 	g_settings.setInteger(Config::SOFTWARE_CLEAN_SIZE, software_clean_amount_spin->GetValue());
 	*/
+
+	// FPS
+	g_settings.setInteger(Config::FRAME_RATE_LIMIT, fps_limit_spin->GetValue());
+	g_settings.setInteger(Config::SHOW_FPS_COUNTER, show_fps_chkbox->GetValue());
 
 	// Interface
 	SetPaletteStyleChoice(terrain_palette_style_choice, Config::PALETTE_TERRAIN_STYLE);

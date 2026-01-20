@@ -162,6 +162,9 @@ void MapDrawer::SetupVars() {
 }
 
 void MapDrawer::SetupGL() {
+	// Reset texture cache at the start of each frame
+	last_bound_texture_ = 0;
+
 	glViewport(0, 0, screensize_x, screensize_y);
 
 	// Enable 2D mode
@@ -501,21 +504,19 @@ void MapDrawer::DrawIngameBox() {
 }
 
 void MapDrawer::DrawGrid() {
+	glColor4ub(255, 255, 255, 128);
+	glBegin(GL_LINES);
+	// Batch all horizontal lines
 	for (int y = start_y; y < end_y; ++y) {
-		glColor4ub(255, 255, 255, 128);
-		glBegin(GL_LINES);
 		glVertex2f(start_x * TileSize - view_scroll_x, y * TileSize - view_scroll_y);
 		glVertex2f(end_x * TileSize - view_scroll_x, y * TileSize - view_scroll_y);
-		glEnd();
 	}
-
+	// Batch all vertical lines
 	for (int x = start_x; x < end_x; ++x) {
-		glColor4ub(255, 255, 255, 128);
-		glBegin(GL_LINES);
 		glVertex2f(x * TileSize - view_scroll_x, start_y * TileSize - view_scroll_y);
 		glVertex2f(x * TileSize - view_scroll_x, end_y * TileSize - view_scroll_y);
-		glEnd();
 	}
+	glEnd();
 }
 
 void MapDrawer::DrawDraggingShadow() {
@@ -1486,6 +1487,17 @@ void MapDrawer::DrawTile(TileLocation* location) {
 	int map_y = location->getY();
 	int map_z = location->getZ();
 
+	// Early viewport culling - skip tiles that are completely off-screen
+	int offset = (map_z <= GROUND_LAYER)
+		? (GROUND_LAYER - map_z) * TileSize
+		: TileSize * (floor - map_z);
+	int screen_x = (map_x * TileSize) - view_scroll_x - offset;
+	int screen_y = (map_y * TileSize) - view_scroll_y - offset;
+	int margin = TileSize * 3; // Account for large sprites
+	if (screen_x < -margin || screen_x > screensize_x * zoom + margin || screen_y < -margin || screen_y > screensize_y * zoom + margin) {
+		return;
+	}
+
 	Waypoint* waypoint = canvas->editor.map.waypoints.getWaypoint(location);
 	if (options.show_tooltips && location->getWaypointCount() > 0) {
 		if (waypoint) {
@@ -1496,15 +1508,8 @@ void MapDrawer::DrawTile(TileLocation* location) {
 	bool as_minimap = options.show_as_minimap;
 	bool only_colors = as_minimap || options.show_only_colors;
 
-	int offset;
-	if (map_z <= GROUND_LAYER) {
-		offset = (GROUND_LAYER - map_z) * TileSize;
-	} else {
-		offset = TileSize * (floor - map_z);
-	}
-
-	int draw_x = ((map_x * TileSize) - view_scroll_x) - offset;
-	int draw_y = ((map_y * TileSize) - view_scroll_y) - offset;
+	int draw_x = screen_x;
+	int draw_y = screen_y;
 
 	uint8_t r = 255, g = 255, b = 255;
 
@@ -1915,7 +1920,11 @@ void MapDrawer::TakeScreenshot(uint8_t* screenshot_buffer) {
 
 void MapDrawer::glBlitTexture(int sx, int sy, int texture_number, int red, int green, int blue, int alpha) {
 	if (texture_number != 0) {
-		glBindTexture(GL_TEXTURE_2D, texture_number);
+		// Cache texture binding to avoid redundant calls
+		if (static_cast<GLuint>(texture_number) != last_bound_texture_) {
+			glBindTexture(GL_TEXTURE_2D, texture_number);
+			last_bound_texture_ = texture_number;
+		}
 		glColor4ub(uint8_t(red), uint8_t(green), uint8_t(blue), uint8_t(alpha));
 		glBegin(GL_QUADS);
 		glTexCoord2f(0.f, 0.f);

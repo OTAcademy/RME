@@ -138,8 +138,9 @@ void LightDrawer::addLight(int map_x, int map_y, int map_z, const SpriteLight& l
 	lights.push_back(Light { static_cast<uint16_t>(map_x), static_cast<uint16_t>(map_y), light.color, intensity });
 }
 
-void LightDrawer::clear() noexcept {
+void LightDrawer::clear() {
 	lights.clear();
+	dirty_ = true;
 }
 
 void LightDrawer::createGLTexture() {

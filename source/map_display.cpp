@@ -19,6 +19,8 @@
 
 #include <sstream>
 #include <time.h>
+#include <thread>
+#include <chrono>
 #include <wx/wfstream.h>
 
 #include "gui.h"
@@ -252,6 +254,45 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 
 	// Swap buffer
 	SwapBuffers();
+
+	// FPS tracking and limiting
+	static auto last_frame_time = std::chrono::steady_clock::now();
+	static int frame_count = 0;
+	static int current_fps = 0;
+	static auto last_fps_update = std::chrono::steady_clock::now();
+
+	auto now = std::chrono::steady_clock::now();
+	frame_count++;
+
+	// Update FPS counter every second
+	auto fps_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_fps_update);
+	if (fps_elapsed.count() >= 1000) {
+		current_fps = frame_count;
+		frame_count = 0;
+		last_fps_update = now;
+	}
+
+	// FPS limiting
+	int fps_limit = g_settings.getInteger(Config::FRAME_RATE_LIMIT);
+	if (fps_limit > 0) {
+		auto target_frame_duration = std::chrono::microseconds(1000000 / fps_limit);
+		auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - last_frame_time);
+		if (elapsed < target_frame_duration) {
+			std::this_thread::sleep_for(target_frame_duration - elapsed);
+		}
+	}
+	last_frame_time = std::chrono::steady_clock::now();
+
+	// Display FPS on status bar if enabled
+	if (g_settings.getBoolean(Config::SHOW_FPS_COUNTER)) {
+		static int last_displayed_fps = -1;
+		if (current_fps != last_displayed_fps) {
+			wxString fps_text;
+			fps_text.Printf("FPS: %d", current_fps);
+			g_gui.root->SetStatusText(fps_text, 0);
+			last_displayed_fps = current_fps;
+		}
+	}
 
 	// Send newd node requests
 	editor.SendNodeRequests();

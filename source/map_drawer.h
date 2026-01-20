@@ -108,6 +108,9 @@ class MapDrawer {
 	int tile_size;
 	int floor;
 
+	// Texture bind caching for performance
+	GLuint last_bound_texture_ = 0;
+
 protected:
 	std::vector<MapTooltip*> tooltips;
 	std::ostringstream tooltip;

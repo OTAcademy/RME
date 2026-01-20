@@ -297,6 +297,8 @@ void Settings::IO(IOMode mode) {
 	Int(MINIMAP_VIEW_BOX, 1);
 	String(MINIMAP_EXPORT_DIR, "");
 	String(TILESET_EXPORT_DIR, "");
+	Int(FRAME_RATE_LIMIT, 144);
+	Int(SHOW_FPS_COUNTER, 0);
 
 	Int(CURSOR_RED, 0);
 	Int(CURSOR_GREEN, 166);
