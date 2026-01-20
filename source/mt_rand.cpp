@@ -43,7 +43,7 @@ mt_get(void* vstate) {
 	unsigned long k;
 	unsigned long int* const mt = state->mt;
 
-#define MAGIC(y) (((y) & 0x1) ? 0x9908b0dfUL : 0)
+#define MAGIC(y) (((y)&0x1) ? 0x9908b0dfUL : 0)
 
 	if (state->mti >= N) { /* generate N words at one time */
 		int kk;
