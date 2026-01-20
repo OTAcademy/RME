@@ -38,7 +38,11 @@ find_package(wxWidgets COMPONENTS html aui gl adv core net base REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(ZLIB REQUIRED)
 
-include(${wxWidgets_USE_FILE})
+# wxWidgets_USE_FILE is set by vcpkg/system wxWidgets, but empty with Conan
+if(wxWidgets_USE_FILE)
+	include(${wxWidgets_USE_FILE})
+endif()
+
 include(source/CMakeLists.txt)
 if(WIN32)
 	add_executable(rme WIN32 ${rme_H} ${rme_SRC})
@@ -49,5 +53,48 @@ endif()
 set_target_properties(rme PROPERTIES CXX_STANDARD 20)
 set_target_properties(rme PROPERTIES CXX_STANDARD_REQUIRED ON)
 
-include_directories(${Boost_INCLUDE_DIRS} ${LibArchive_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${GLUT_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIR})
-target_link_libraries(rme ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} ${LibArchive_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${ZLIB_LIBRARIES})
+
+# Link against wxWidgets (works with both vcpkg and Conan)
+if(TARGET wxWidgets::wxWidgets)
+	# Conan provides a single wxWidgets::wxWidgets target
+	target_link_libraries(rme PRIVATE wxWidgets::wxWidgets)
+else()
+	# vcpkg/system provides wxWidgets_LIBRARIES variable
+	target_link_libraries(rme PRIVATE ${wxWidgets_LIBRARIES})
+endif()
+
+# Include directories (for legacy find modules)
+target_include_directories(rme PRIVATE
+	${Boost_INCLUDE_DIRS}
+	${LibArchive_INCLUDE_DIRS}
+	${OPENGL_INCLUDE_DIR}
+	${GLUT_INCLUDE_DIRS}
+	${ZLIB_INCLUDE_DIR}
+)
+
+# Link other libraries (works with both vcpkg targets and Conan targets)
+if(TARGET Boost::boost)
+	target_link_libraries(rme PRIVATE Boost::boost Boost::thread Boost::system)
+else()
+	target_link_libraries(rme PRIVATE ${Boost_LIBRARIES})
+endif()
+
+if(TARGET LibArchive::LibArchive)
+	target_link_libraries(rme PRIVATE LibArchive::LibArchive)
+else()
+	target_link_libraries(rme PRIVATE ${LibArchive_LIBRARIES})
+endif()
+
+if(TARGET GLUT::GLUT)
+	target_link_libraries(rme PRIVATE GLUT::GLUT)
+else()
+	target_link_libraries(rme PRIVATE ${GLUT_LIBRARIES})
+endif()
+
+if(TARGET ZLIB::ZLIB)
+	target_link_libraries(rme PRIVATE ZLIB::ZLIB)
+else()
+	target_link_libraries(rme PRIVATE ${ZLIB_LIBRARIES})
+endif()
+
+target_link_libraries(rme PRIVATE ${OPENGL_LIBRARIES})

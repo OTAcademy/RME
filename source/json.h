@@ -18,10 +18,9 @@
 #ifndef RME_JSON_H_
 #define RME_JSON_H_
 
-#include "json/json_spirit.h"
+#include <nlohmann/json.hpp>
 
-namespace json {
-	using namespace json_spirit;
-}
+// Provide 'json' namespace alias for nlohmann::json
+namespace json = nlohmann;
 
 #endif
