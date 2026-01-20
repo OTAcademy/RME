@@ -1,5 +1,5 @@
 /* XPM */
-static char * door_normal_alt_xpm[] = {
+static const char * door_normal_alt_xpm[] = {
 "32 32 165 2",
 "  	c #999999",
 ". 	c #FFFFFF",

@@ -1,5 +1,5 @@
 /* XPM */
-static char * door_archway_xpm[] = {
+static const char * door_archway_xpm[] = {
 "32 32 45 1",
 " 	c #999999",
 ".	c #FFFFFF",

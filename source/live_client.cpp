@@ -51,12 +51,11 @@ bool LiveClient::connect(const std::string& address, uint16_t port) {
 		socket = std::make_shared<boost::asio::ip::tcp::socket>(service);
 	}
 
-	boost::asio::ip::tcp::resolver::query query(address, std::to_string(port));
-	resolver->async_resolve(query, [this](const boost::system::error_code& error, boost::asio::ip::tcp::resolver::iterator endpoint_iterator) -> void {
+	resolver->async_resolve(address, std::to_string(port), [this](const boost::system::error_code& error, boost::asio::ip::tcp::resolver::results_type endpoints) -> void {
 		if (error) {
 			logMessage("Error: " + error.message());
 		} else {
-			tryConnect(endpoint_iterator);
+			tryConnect(endpoints);
 		}
 	});
 
@@ -87,24 +86,27 @@ bool LiveClient::connect(const std::string& address, uint16_t port) {
 	return true;
 }
 
-void LiveClient::tryConnect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator) {
+void LiveClient::tryConnect(boost::asio::ip::tcp::resolver::results_type endpoints) {
 	if (stopped) {
 		return;
 	}
 
-	if (endpoint_iterator == boost::asio::ip::tcp::resolver::iterator()) {
+	if (endpoints.empty()) {
+		logMessage("No endpoints available to connect.");
 		return;
 	}
 
-	logMessage("Joining server " + endpoint_iterator->host_name() + ":" + endpoint_iterator->service_name() + "...");
+	logMessage("Joining server...");
 
-	boost::asio::async_connect(*socket, endpoint_iterator, [this](boost::system::error_code error, boost::asio::ip::tcp::resolver::iterator endpoint_iterator) -> void {
+	boost::asio::async_connect(*socket, endpoints, [this](boost::system::error_code error, boost::asio::ip::tcp::endpoint endpoint) -> void {
 		if (!socket->is_open()) {
-			tryConnect(++endpoint_iterator);
+			logMessage("Socket not open after connection attempt.");
+			wxTheApp->CallAfter([this]() {
+				close();
+				g_gui.CloseLiveEditors(this);
+			});
 		} else if (error) {
-			if (handleError(error)) {
-				tryConnect(++endpoint_iterator);
-			} else {
+			if (!handleError(error)) {
 				wxTheApp->CallAfter([this]() {
 					close();
 					g_gui.CloseLiveEditors(this);
