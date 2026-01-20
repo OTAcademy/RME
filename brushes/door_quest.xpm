@@ -1,5 +1,5 @@
 /* XPM */
-static char * door_quest_xpm[] = {
+static const char * door_quest_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "32 32 69 1",
 " 	c #999999",

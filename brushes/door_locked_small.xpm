@@ -1,5 +1,5 @@
 /* XPM */
-static char * door_locked_small_xpm[] = {
+static const char * door_locked_small_xpm[] = {
 "16 16 69 1",
 " 	c #999999",
 ".	c #ECECEC",

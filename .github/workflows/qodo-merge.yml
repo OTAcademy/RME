@@ -1,0 +1,63 @@
+name: Qodo Merge
+
+# =============================================================================
+# Trigger Configuration
+# =============================================================================
+# This workflow runs on:
+# 1. New/updated PRs (automatic review, describe, improve)
+# 2. PR comments containing commands like /review, /describe, /improve, /ask
+# =============================================================================
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  pr_agent_job:
+    # Skip bot-generated events to avoid infinite loops
+    if: ${{ github.event.sender.type != 'Bot' }}
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: write
+    name: Run Qodo Merge
+    steps:
+      - name: PR Agent action step
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+          # --- Model Configuration ---
+          # MiniMax via OpenAI-compatible endpoint
+          config.model: "openai/MiniMax-M2.1"
+          config.fallback_models: '["openai/MiniMax-M2.1"]'
+          
+          # --- MiniMax (via OpenAI-compatible Protocol) ---
+          OPENAI_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+          OPENAI_API_BASE: "https://api.minimax.io/v1"
+          
+          # --- PR Agent Tool Configuration ---
+          # Enable automatic tools on PR events
+          github_action_config.auto_review: "true"
+          github_action_config.auto_describe: "true"
+          github_action_config.auto_improve: "true"
+          
+          # Which PR events trigger automation
+          github_action_config.pr_actions: '["opened", "reopened", "ready_for_review", "review_requested"]'
+          
+          # Command sequence to run on PR open (describe -> review -> improve)
+          pr_commands: '["/describe", "/review", "/improve"]'
+
+# =============================================================================
+# Available Commands (use in PR comments)
+# =============================================================================
+# /review     - Run AI code review
+# /describe   - Generate/update PR description
+# /improve    - Get code improvement suggestions
+# /ask <question> - Ask a question about the PR
+# /update_changelog - Update CHANGELOG.md
+# /add_docs   - Add documentation to code
+# /help       - List all available commands
+# =============================================================================
