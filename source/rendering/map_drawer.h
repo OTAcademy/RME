@@ -23,49 +23,10 @@ class GameSprite;
 class TooltipDrawer;
 
 // Storage during drawing, for option caching
-struct DrawingOptions {
-	DrawingOptions();
+#include "rendering/drawing_options.h"
+#include "rendering/render_view.h"
 
-	void SetIngame();
-	void SetDefault();
-	bool isDrawLight() const noexcept;
-
-	bool transparent_floors;
-	bool transparent_items;
-	bool show_ingame_box;
-	bool show_lights;
-	bool show_light_str;
-	bool show_tech_items;
-	bool show_waypoints;
-	bool ingame;
-	bool dragging;
-
-	int show_grid;
-	bool show_all_floors;
-	bool show_creatures;
-	bool show_spawns;
-	bool show_houses;
-	bool show_shade;
-	bool show_special_tiles;
-	bool show_items;
-
-	bool highlight_items;
-	bool highlight_locked_doors;
-	bool show_blocking;
-	bool show_tooltips;
-
-	bool show_as_minimap;
-	bool show_only_colors;
-	bool show_only_modified;
-	bool show_preview;
-	bool show_hooks;
-	bool hide_items_when_zoomed;
-	bool show_towns;
-	bool always_show_zones;
-	bool extended_house_shader;
-
-	bool experimental_fog;
-};
+class GridDrawer;
 
 class MapCanvas;
 class LightDrawer;
@@ -74,20 +35,12 @@ class MapDrawer {
 	MapCanvas* canvas;
 	Editor& editor;
 	DrawingOptions options;
+	RenderView view;
 	std::shared_ptr<LightDrawer> light_drawer;
 	std::unique_ptr<TooltipDrawer> tooltip_drawer;
-
-	float zoom;
+	std::unique_ptr<GridDrawer> grid_drawer;
 
 	uint32_t current_house_id;
-
-	int mouse_map_x, mouse_map_y;
-	int start_x, start_y, start_z;
-	int end_x, end_y, end_z, superend_z;
-	int view_scroll_x, view_scroll_y;
-	int screensize_x, screensize_y;
-	int tile_size;
-	int floor;
 
 	// Texture bind caching for performance
 	GLuint last_bound_texture_ = 0;
@@ -157,8 +110,6 @@ protected:
 	void glColor(wxColor color);
 	void glColor(BrushColor color);
 	void glColorCheck(Brush* brush, const Position& pos);
-	void drawRect(int x, int y, int w, int h, const wxColor& color, int width = 1);
-	void drawFilledRect(int x, int y, int w, int h, const wxColor& color);
 };
 
 #endif
