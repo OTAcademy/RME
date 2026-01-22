@@ -43,6 +43,9 @@ class FloorDrawer;
 class SpriteDrawer;
 class ItemDrawer;
 class CreatureDrawer;
+class MarkerDrawer;
+class PreviewDrawer;
+class ShadeDrawer;
 
 class MapDrawer {
 	MapCanvas* canvas;
@@ -61,6 +64,9 @@ class MapDrawer {
 	std::unique_ptr<SpriteDrawer> sprite_drawer;
 	std::unique_ptr<CreatureDrawer> creature_drawer;
 	std::unique_ptr<ItemDrawer> item_drawer;
+	std::unique_ptr<MarkerDrawer> marker_drawer;
+	std::unique_ptr<PreviewDrawer> preview_drawer;
+	std::unique_ptr<ShadeDrawer> shade_drawer;
 
 	uint32_t current_house_id;
 

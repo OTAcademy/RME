@@ -72,6 +72,9 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/floor_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/sprite_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/creature_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/item_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/marker_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/preview_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/shade_drawer.h
 
 
 ${CMAKE_CURRENT_LIST_DIR}/map_region.h
@@ -190,6 +193,9 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/floor_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/sprite_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/creature_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/item_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/marker_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/preview_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/shade_drawer.cpp
 
 
 ${CMAKE_CURRENT_LIST_DIR}/map_region.cpp

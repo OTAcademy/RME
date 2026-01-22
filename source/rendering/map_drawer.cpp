@@ -56,6 +56,9 @@
 #include "rendering/sprite_drawer.h"
 #include "rendering/item_drawer.h"
 #include "rendering/creature_drawer.h"
+#include "rendering/marker_drawer.h"
+#include "rendering/preview_drawer.h"
+#include "rendering/shade_drawer.h"
 
 MapDrawer::MapDrawer(MapCanvas* canvas) :
 	canvas(canvas), editor(canvas->editor) {
@@ -71,6 +74,9 @@ MapDrawer::MapDrawer(MapCanvas* canvas) :
 	sprite_drawer = std::make_unique<SpriteDrawer>();
 	creature_drawer = std::make_unique<CreatureDrawer>();
 	item_drawer = std::make_unique<ItemDrawer>();
+	marker_drawer = std::make_unique<MarkerDrawer>();
+	preview_drawer = std::make_unique<PreviewDrawer>();
+	shade_drawer = std::make_unique<ShadeDrawer>();
 }
 
 MapDrawer::~MapDrawer() {
@@ -190,23 +196,8 @@ void MapDrawer::DrawMap() {
 	}
 
 	for (int map_z = view.start_z; map_z >= view.superend_z; map_z--) {
-		if (map_z == view.end_z && view.start_z != view.end_z && options.show_shade) {
-			// Draw shade
-			if (!only_colors) {
-				glDisable(GL_TEXTURE_2D);
-			}
-
-			glColor4ub(0, 0, 0, 128);
-			glBegin(GL_QUADS);
-			glVertex2f(0, int(view.screensize_y * view.zoom));
-			glVertex2f(int(view.screensize_x * view.zoom), int(view.screensize_y * view.zoom));
-			glVertex2f(int(view.screensize_x * view.zoom), 0);
-			glVertex2f(0, 0);
-			glEnd();
-
-			if (!only_colors) {
-				glEnable(GL_TEXTURE_2D);
-			}
+		if (map_z == view.end_z && view.start_z != view.end_z) {
+			shade_drawer->draw(view, options);
 		}
 
 		if (map_z >= view.end_z) {
@@ -263,88 +254,7 @@ void MapDrawer::DrawMap() {
 			glEnable(GL_TEXTURE_2D);
 		}
 
-		// Draws the doodad preview or the paste preview (or import preview)
-		if (g_gui.secondary_map != nullptr && !options.ingame) {
-			Position normalPos;
-			Position to(view.mouse_map_x, view.mouse_map_y, view.floor);
-
-			if (canvas->isPasting()) {
-				normalPos = editor.copybuffer.getPosition();
-			} else if (brush && brush->isDoodad()) {
-				normalPos = Position(0x8000, 0x8000, 0x8);
-			}
-
-			for (int map_x = view.start_x; map_x <= view.end_x; map_x++) {
-				for (int map_y = view.start_y; map_y <= view.end_y; map_y++) {
-					Position final(map_x, map_y, map_z);
-					Position pos = normalPos + final - to;
-					// Position pos = topos + copypos - Position(map_x, map_y, map_z);
-					if (pos.z >= MAP_LAYERS || pos.z < 0) {
-						continue;
-					}
-
-					Tile* tile = g_gui.secondary_map->getTile(pos);
-					if (tile) {
-						// Compensate for underground/overground
-						int offset;
-						if (map_z <= GROUND_LAYER) {
-							offset = (GROUND_LAYER - map_z) * TileSize;
-						} else {
-							offset = TileSize * (view.floor - map_z);
-						}
-
-						int draw_x = ((map_x * TileSize) - view.view_scroll_x) - offset;
-						int draw_y = ((map_y * TileSize) - view.view_scroll_y) - offset;
-
-						// Draw ground
-						uint8_t r = 160, g = 160, b = 160;
-						if (tile->ground) {
-							if (tile->isBlocking() && options.show_blocking) {
-								g = g / 3 * 2;
-								b = b / 3 * 2;
-							}
-							if (tile->isHouseTile() && options.show_houses) {
-								if ((int)tile->getHouseID() == current_house_id) {
-									r /= 2;
-								} else {
-									r /= 2;
-									g /= 2;
-								}
-							} else if (options.show_special_tiles && tile->isPZ()) {
-								r /= 2;
-								b /= 2;
-							}
-							if (options.show_special_tiles && tile->getMapFlags() & TILESTATE_PVPZONE) {
-								r = r / 3 * 2;
-								b = r / 3 * 2;
-							}
-							if (options.show_special_tiles && tile->getMapFlags() & TILESTATE_NOLOGOUT) {
-								b /= 2;
-							}
-							if (options.show_special_tiles && tile->getMapFlags() & TILESTATE_NOPVP) {
-								g /= 2;
-							}
-							item_drawer->BlitItem(sprite_drawer.get(), creature_drawer.get(), draw_x, draw_y, tile, tile->ground, options, true, r, g, b, 160);
-						}
-
-						// Draw items on the tile
-						if (view.zoom <= 10.0 || !options.hide_items_when_zoomed) {
-							ItemVector::iterator it;
-							for (it = tile->items.begin(); it != tile->items.end(); it++) {
-								if ((*it)->isBorder()) {
-									item_drawer->BlitItem(sprite_drawer.get(), creature_drawer.get(), draw_x, draw_y, tile, *it, options, true, 160, r, g, b);
-								} else {
-									item_drawer->BlitItem(sprite_drawer.get(), creature_drawer.get(), draw_x, draw_y, tile, *it, options, true, 160, 160, 160, 160);
-								}
-							}
-							if (tile->creature && options.show_creatures) {
-								creature_drawer->BlitCreature(sprite_drawer.get(), draw_x, draw_y, tile->creature);
-							}
-						}
-					}
-				}
-			}
-		}
+		preview_drawer->draw(canvas, view, map_z, options, editor, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), current_house_id);
 
 		--view.start_x;
 		--view.start_y;
@@ -527,33 +437,8 @@ void MapDrawer::DrawTile(TileLocation* location) {
 		}
 
 		if (view.zoom < 10.0) {
-			// waypoint (blue flame)
-			if (!options.ingame && waypoint && options.show_waypoints) {
-				sprite_drawer->BlitSprite(draw_x, draw_y, SPRITE_WAYPOINT, 64, 64, 255);
-			}
-
-			// house exit (blue splash)
-			if (tile->isHouseExit() && options.show_houses) {
-				if (tile->hasHouseExit(current_house_id)) {
-					sprite_drawer->BlitSprite(draw_x, draw_y, SPRITE_HOUSE_EXIT, 64, 255, 255);
-				} else {
-					sprite_drawer->BlitSprite(draw_x, draw_y, SPRITE_HOUSE_EXIT, 64, 64, 255);
-				}
-			}
-
-			// town temple (gray flag)
-			if (options.show_towns && tile->isTownExit(editor.map)) {
-				sprite_drawer->BlitSprite(draw_x, draw_y, SPRITE_TOWN_TEMPLE, 255, 255, 64, 170);
-			}
-
-			// spawn (purple flame)
-			if (tile->spawn && options.show_spawns) {
-				if (tile->spawn->isSelected()) {
-					sprite_drawer->BlitSprite(draw_x, draw_y, SPRITE_SPAWN, 128, 128, 128);
-				} else {
-					sprite_drawer->BlitSprite(draw_x, draw_y, SPRITE_SPAWN, 255, 255, 255);
-				}
-			}
+			// markers (waypoint, house exit, town temple, spawn)
+			marker_drawer->draw(sprite_drawer.get(), draw_x, draw_y, tile, waypoint, current_house_id, editor, options);
 
 			// tooltips
 			if (options.show_tooltips) {

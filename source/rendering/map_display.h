@@ -190,6 +190,7 @@ private:
 	friend class SelectionDrawer;
 	friend class BrushOverlayDrawer;
 	friend class DragShadowDrawer;
+	friend class PreviewDrawer;
 
 	DECLARE_EVENT_TABLE()
 };
