@@ -59,6 +59,7 @@ ${CMAKE_CURRENT_LIST_DIR}/map.h
 ${CMAKE_CURRENT_LIST_DIR}/map_allocator.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/map_display.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/map_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/tooltip_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/map_region.h
 ${CMAKE_CURRENT_LIST_DIR}/map_tab.h
 ${CMAKE_CURRENT_LIST_DIR}/map_window.h
@@ -162,6 +163,7 @@ ${CMAKE_CURRENT_LIST_DIR}/main_toolbar.cpp
 ${CMAKE_CURRENT_LIST_DIR}/map.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/map_display.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/map_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/tooltip_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/map_region.cpp
 ${CMAKE_CURRENT_LIST_DIR}/map_tab.cpp
 ${CMAKE_CURRENT_LIST_DIR}/map_window.cpp

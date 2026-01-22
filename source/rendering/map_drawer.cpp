@@ -43,6 +43,7 @@
 #include "table_brush.h"
 #include "waypoint_brush.h"
 #include "rendering/light_drawer.h"
+#include "rendering/tooltip_drawer.h"
 
 DrawingOptions::DrawingOptions() {
 	SetDefault();
@@ -119,6 +120,7 @@ bool DrawingOptions::isDrawLight() const noexcept {
 MapDrawer::MapDrawer(MapCanvas* canvas) :
 	canvas(canvas), editor(canvas->editor) {
 	light_drawer = std::make_shared<LightDrawer>();
+	tooltip_drawer = std::make_unique<TooltipDrawer>();
 }
 
 MapDrawer::~MapDrawer() {
@@ -184,10 +186,7 @@ void MapDrawer::SetupGL() {
 }
 
 void MapDrawer::Release() {
-	for (std::vector<MapTooltip*>::const_iterator it = tooltips.begin(); it != tooltips.end(); ++it) {
-		delete *it;
-	}
-	tooltips.clear();
+	tooltip_drawer->clear();
 
 	if (light_drawer) {
 		light_drawer->clear();
@@ -1410,65 +1409,6 @@ void MapDrawer::DrawRawBrush(int screenx, int screeny, ItemType* itemType, uint8
 	BlitSpriteType(screenx, screeny, spr, r, g, b, alpha);
 }
 
-void MapDrawer::WriteTooltip(Item* item, std::ostringstream& stream, bool isHouseTile) {
-	if (item == nullptr) {
-		return;
-	}
-
-	const uint16_t id = item->getID();
-	if (id < 100) {
-		return;
-	}
-
-	const uint16_t unique = item->getUniqueID();
-	const uint16_t action = item->getActionID();
-	const std::string& text = item->getText();
-	uint8_t doorId = 0;
-
-	if (isHouseTile && item->isDoor()) {
-		if (Door* door = dynamic_cast<Door*>(item)) {
-			if (door->isRealDoor()) {
-				doorId = door->getDoorID();
-			}
-		}
-	}
-
-	Teleport* tp = dynamic_cast<Teleport*>(item);
-	if (unique == 0 && action == 0 && doorId == 0 && text.empty() && !tp) {
-		return;
-	}
-
-	if (stream.tellp() > 0) {
-		stream << "\n";
-	}
-
-	stream << "id: " << id << "\n";
-
-	if (action > 0) {
-		stream << "aid: " << action << "\n";
-	}
-	if (unique > 0) {
-		stream << "uid: " << unique << "\n";
-	}
-	if (doorId > 0) {
-		stream << "door id: " << static_cast<int>(doorId) << "\n";
-	}
-	if (!text.empty()) {
-		stream << "text: " << text << "\n";
-	}
-	if (tp) {
-		const Position& dest = tp->getDestination();
-		stream << "destination: " << dest.x << ", " << dest.y << ", " << dest.z << "\n";
-	}
-}
-
-void MapDrawer::WriteTooltip(Waypoint* waypoint, std::ostringstream& stream) {
-	if (stream.tellp() > 0) {
-		stream << "\n";
-	}
-	stream << "wp: " << waypoint->name << "\n";
-}
-
 void MapDrawer::DrawTile(TileLocation* location) {
 	if (!location) {
 		return;
@@ -1501,7 +1441,7 @@ void MapDrawer::DrawTile(TileLocation* location) {
 	Waypoint* waypoint = canvas->editor.map.waypoints.getWaypoint(location);
 	if (options.show_tooltips && location->getWaypointCount() > 0) {
 		if (waypoint) {
-			WriteTooltip(waypoint, tooltip);
+			tooltip_drawer->writeTooltip(waypoint, tooltip);
 		}
 	}
 
@@ -1588,8 +1528,9 @@ void MapDrawer::DrawTile(TileLocation* location) {
 	}
 
 	if (options.show_tooltips && map_z == floor && tile->ground) {
-		WriteTooltip(tile->ground, tooltip);
+		tooltip_drawer->writeTooltip(tile->ground, tooltip, false);
 	}
+
 	// end filters for ground tile
 
 	if (!only_colors) {
@@ -1598,7 +1539,7 @@ void MapDrawer::DrawTile(TileLocation* location) {
 			for (ItemVector::iterator it = tile->items.begin(); it != tile->items.end(); it++) {
 				// item tooltip
 				if (options.show_tooltips && map_z == floor) {
-					WriteTooltip(*it, tooltip, tile->isHouseTile());
+					tooltip_drawer->writeTooltip(*it, tooltip, tile->isHouseTile());
 				}
 
 				// item animation
@@ -1661,11 +1602,12 @@ void MapDrawer::DrawTile(TileLocation* location) {
 			// tooltips
 			if (options.show_tooltips) {
 				if (location->getWaypointCount() > 0) {
-					MakeTooltip(draw_x, draw_y, tooltip.str(), 0, 255, 0);
+					tooltip_drawer->addTooltip(draw_x, draw_y, tooltip.str(), 0, 255, 0);
 				} else {
-					MakeTooltip(draw_x, draw_y, tooltip.str());
+					tooltip_drawer->addTooltip(draw_x, draw_y, tooltip.str());
 				}
 			}
+
 			tooltip.str("");
 		}
 	}
@@ -1745,124 +1687,12 @@ void MapDrawer::DrawHookIndicator(int x, int y, const ItemType& type) {
 }
 
 void MapDrawer::DrawTooltips() {
-	for (std::vector<MapTooltip*>::const_iterator it = tooltips.begin(); it != tooltips.end(); ++it) {
-		MapTooltip* tooltip = (*it);
-		const char* text = tooltip->text.c_str();
-		float line_width = 0.0f;
-		float width = 2.0f;
-		float height = 14.0f;
-		int char_count = 0;
-		int line_char_count = 0;
-
-		for (const char* c = text; *c != '\0'; c++) {
-			if (*c == '\n' || (line_char_count >= MapTooltip::MAX_CHARS_PER_LINE && *c == ' ')) {
-				height += 14.0f;
-				line_width = 0.0f;
-				line_char_count = 0;
-			} else {
-				line_width += glutBitmapWidth(GLUT_BITMAP_HELVETICA_12, *c);
-			}
-			width = std::max<float>(width, line_width);
-			char_count++;
-			line_char_count++;
-
-			if (tooltip->ellipsis && char_count > (MapTooltip::MAX_CHARS + 3)) {
-				break;
-			}
-		}
-
-		float scale = zoom < 1.0f ? zoom : 1.0f;
-
-		width = (width + 8.0f) * scale;
-		height = (height + 4.0f) * scale;
-
-		float x = tooltip->x + (TileSize / 2.0f);
-		float y = tooltip->y;
-		float center = width / 2.0f;
-		float space = (7.0f * scale);
-		float startx = x - center;
-		float endx = x + center;
-		float starty = y - (height + space);
-		float endy = y - space;
-
-		// 7----0----1
-		// |         |
-		// 6--5  3--2
-		//     \/
-		//     4
-		float vertexes[9][2] = {
-			{ x, starty }, // 0
-			{ endx, starty }, // 1
-			{ endx, endy }, // 2
-			{ x + space, endy }, // 3
-			{ x, y }, // 4
-			{ x - space, endy }, // 5
-			{ startx, endy }, // 6
-			{ startx, starty }, // 7
-			{ x, starty }, // 0
-		};
-
-		// background
-		glColor4ub(tooltip->r, tooltip->g, tooltip->b, 255);
-		glBegin(GL_POLYGON);
-		for (int i = 0; i < 8; ++i) {
-			glVertex2f(vertexes[i][0], vertexes[i][1]);
-		}
-		glEnd();
-
-		// borders
-		glColor4ub(0, 0, 0, 255);
-		glLineWidth(1.0);
-		glBegin(GL_LINES);
-		for (int i = 0; i < 8; ++i) {
-			glVertex2f(vertexes[i][0], vertexes[i][1]);
-			glVertex2f(vertexes[i + 1][0], vertexes[i + 1][1]);
-		}
-		glEnd();
-
-		// text
-		if (zoom <= 1.0) {
-			startx += (3.0f * scale);
-			starty += (14.0f * scale);
-			glColor4ub(0, 0, 0, 255);
-			glRasterPos2f(startx, starty);
-			char_count = 0;
-			line_char_count = 0;
-			for (const char* c = text; *c != '\0'; c++) {
-				if (*c == '\n' || (line_char_count >= MapTooltip::MAX_CHARS_PER_LINE && *c == ' ')) {
-					starty += (14.0f * scale);
-					glRasterPos2f(startx, starty);
-					line_char_count = 0;
-				}
-				char_count++;
-				line_char_count++;
-
-				if (tooltip->ellipsis && char_count >= MapTooltip::MAX_CHARS) {
-					glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, '.');
-					if (char_count >= (MapTooltip::MAX_CHARS + 2)) {
-						break;
-					}
-				} else if (!iscntrl(*c)) {
-					glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
-				}
-			}
-		}
-	}
+	tooltip_drawer->draw(zoom, TileSize);
 }
 
 void MapDrawer::DrawLight() {
 	// draw in-game light
 	light_drawer->draw(start_x, start_y, end_x, end_y, view_scroll_x, view_scroll_y, options.experimental_fog);
-}
-
-void MapDrawer::MakeTooltip(int screenx, int screeny, const std::string& text, uint8_t r, uint8_t g, uint8_t b) {
-	if (text.empty()) {
-		return;
-	}
-
-	MapTooltip* tooltip = newd MapTooltip(screenx, screeny, text, r, g, b);
-	tooltip->checkLineEnding();
-	tooltips.push_back(tooltip);
 }
 
 void MapDrawer::AddLight(TileLocation* location) {
