@@ -74,7 +74,7 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, Sprite
 		brushColor = COLOR_ERASER;
 	}
 
-	if (drawer->dragging_draw) {
+	if (drawer->canvas->dragging_draw) {
 		ASSERT(brush->canDrag());
 
 		if (brush->isWall()) {

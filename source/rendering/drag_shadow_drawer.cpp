@@ -40,7 +40,7 @@ void DragShadowDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, SpriteDr
 	glEnable(GL_TEXTURE_2D);
 
 	// Draw dragging shadow
-	if (!drawer->editor.selection.isBusy() && drawer->dragging && !options.ingame) {
+	if (!drawer->editor.selection.isBusy() && options.dragging && !options.ingame) {
 		for (TileSet::iterator tit = drawer->editor.selection.begin(); tit != drawer->editor.selection.end(); tit++) {
 			Tile* tile = *tit;
 			Position pos = tile->getPosition();

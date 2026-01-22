@@ -61,6 +61,14 @@ bool RenderView::IsTileVisible(int map_x, int map_y, int map_z) const {
 	return true;
 }
 
+void RenderView::getScreenPosition(int map_x, int map_y, int map_z, int& out_x, int& out_y) const {
+	int offset = (map_z <= GROUND_LAYER)
+		? (GROUND_LAYER - map_z) * TileSize
+		: TileSize * (floor - map_z);
+	out_x = (map_x * TileSize) - view_scroll_x - offset;
+	out_y = (map_y * TileSize) - view_scroll_y - offset;
+}
+
 #ifdef __APPLE__
 	#include <GLUT/glut.h>
 #else

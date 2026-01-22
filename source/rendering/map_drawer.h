@@ -46,6 +46,7 @@ class CreatureDrawer;
 class MarkerDrawer;
 class PreviewDrawer;
 class ShadeDrawer;
+class TileRenderer;
 
 class MapDrawer {
 	MapCanvas* canvas;
@@ -67,6 +68,7 @@ class MapDrawer {
 	std::unique_ptr<MarkerDrawer> marker_drawer;
 	std::unique_ptr<PreviewDrawer> preview_drawer;
 	std::unique_ptr<ShadeDrawer> shade_drawer;
+	std::unique_ptr<TileRenderer> tile_renderer;
 
 	uint32_t current_house_id;
 
@@ -80,9 +82,6 @@ protected:
 public:
 	MapDrawer(MapCanvas* canvas);
 	~MapDrawer();
-
-	bool dragging;
-	bool dragging_draw;
 
 	void SetupVars();
 	void SetupGL();
@@ -104,10 +103,6 @@ public:
 	DrawingOptions& getOptions() {
 		return options;
 	}
-
-protected:
-	void DrawTile(TileLocation* tile);
-	void AddLight(TileLocation* location);
 };
 
 #endif

@@ -61,6 +61,7 @@
 #include "rendering/shade_drawer.h"
 #include "rendering/tile_color_calculator.h"
 #include "rendering/screen_capture.h"
+#include "rendering/tile_renderer.h"
 
 MapDrawer::MapDrawer(MapCanvas* canvas) :
 	canvas(canvas), editor(canvas->editor) {
@@ -79,6 +80,7 @@ MapDrawer::MapDrawer(MapCanvas* canvas) :
 	marker_drawer = std::make_unique<MarkerDrawer>();
 	preview_drawer = std::make_unique<PreviewDrawer>();
 	shade_drawer = std::make_unique<ShadeDrawer>();
+	tile_renderer = std::make_unique<TileRenderer>(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), floor_drawer.get(), marker_drawer.get(), tooltip_drawer.get(), light_drawer.get(), &editor);
 }
 
 MapDrawer::~MapDrawer() {
@@ -87,8 +89,6 @@ MapDrawer::~MapDrawer() {
 
 void MapDrawer::SetupVars() {
 	view.Setup(canvas, options);
-	dragging = canvas->dragging;
-	dragging_draw = canvas->dragging_draw;
 }
 
 void MapDrawer::SetupGL() {
@@ -139,14 +139,6 @@ void MapDrawer::DrawBackground() {
 }
 
 void MapDrawer::DrawMap() {
-	int center_x = view.start_x + int(view.screensize_x * view.zoom / 64);
-	int center_y = view.start_y + int(view.screensize_y * view.zoom / 64);
-	int offset_y = 2;
-	int box_start_map_x = center_x - view.view_scroll_x;
-	int box_start_map_y = center_y - view.view_scroll_x + offset_y;
-	int box_end_map_x = center_x + ClientMapWidth;
-	int box_end_map_y = center_y + ClientMapHeight + offset_y;
-
 	bool live_client = editor.IsLiveClient();
 
 	Brush* brush = g_gui.GetCurrentBrush();
@@ -195,10 +187,10 @@ void MapDrawer::DrawMap() {
 						for (int map_x = 0; map_x < 4; ++map_x) {
 							for (int map_y = 0; map_y < 4; ++map_y) {
 								TileLocation* location = nd->getTile(map_x, map_y, map_z);
-								DrawTile(location);
+								tile_renderer->DrawTile(location, view, options, current_house_id, tooltip);
 								// draw light, but only if not zoomed too far
 								if (location && options.isDrawLight() && view.zoom <= 10.0) {
-									AddLight(location);
+									tile_renderer->AddLight(location, view, options);
 								}
 							}
 						}
@@ -239,136 +231,6 @@ void MapDrawer::DrawGrid() {
 	grid_drawer->DrawGrid(view, options);
 }
 
-void MapDrawer::DrawTile(TileLocation* location) {
-	if (!location) {
-		return;
-	}
-	Tile* tile = location->get();
-
-	if (!tile) {
-		return;
-	}
-
-	if (options.show_only_modified && !tile->isModified()) {
-		return;
-	}
-
-	int map_x = location->getX();
-	int map_y = location->getY();
-	int map_z = location->getZ();
-
-	// Early viewport culling - skip tiles that are completely off-screen
-	if (!view.IsTileVisible(map_x, map_y, map_z)) {
-		return;
-	}
-
-	int offset = (map_z <= GROUND_LAYER)
-		? (GROUND_LAYER - map_z) * TileSize
-		: TileSize * (view.floor - map_z);
-	int screen_x = (map_x * TileSize) - view.view_scroll_x - offset;
-	int screen_y = (map_y * TileSize) - view.view_scroll_y - offset;
-
-	Waypoint* waypoint = canvas->editor.map.waypoints.getWaypoint(location);
-	if (options.show_tooltips && location->getWaypointCount() > 0) {
-		if (waypoint) {
-			tooltip_drawer->writeTooltip(waypoint, tooltip);
-		}
-	}
-
-	bool as_minimap = options.show_as_minimap;
-	bool only_colors = as_minimap || options.show_only_colors;
-
-	int draw_x = screen_x;
-	int draw_y = screen_y;
-
-	uint8_t r = 255, g = 255, b = 255;
-
-	// begin filters for ground tile
-	// begin filters for ground tile
-	if (!as_minimap) {
-		TileColorCalculator::Calculate(tile, options, current_house_id, location->getSpawnCount(), r, g, b);
-	}
-
-	if (only_colors) {
-		if (as_minimap) {
-			TileColorCalculator::GetMinimapColor(tile, r, g, b);
-			sprite_drawer->glBlitSquare(draw_x, draw_y, r, g, b, 255);
-		} else if (r != 255 || g != 255 || b != 255) {
-			sprite_drawer->glBlitSquare(draw_x, draw_y, r, g, b, 128);
-		}
-	} else {
-		if (tile->ground) {
-			if (options.show_preview && view.zoom <= 2.0) {
-				tile->ground->animate();
-			}
-
-			item_drawer->BlitItem(sprite_drawer.get(), creature_drawer.get(), draw_x, draw_y, tile, tile->ground, options, false, r, g, b);
-		} else if (options.always_show_zones && (r != 255 || g != 255 || b != 255)) {
-			item_drawer->DrawRawBrush(sprite_drawer.get(), draw_x, draw_y, &g_items[SPRITE_ZONE], r, g, b, 60);
-		}
-	}
-
-	if (options.show_tooltips && map_z == view.floor && tile->ground) {
-		tooltip_drawer->writeTooltip(tile->ground, tooltip, false);
-	}
-
-	// end filters for ground tile
-
-	if (!only_colors) {
-		if (view.zoom < 10.0 || !options.hide_items_when_zoomed) {
-			// items on tile
-			for (ItemVector::iterator it = tile->items.begin(); it != tile->items.end(); it++) {
-				// item tooltip
-				if (options.show_tooltips && map_z == view.floor) {
-					tooltip_drawer->writeTooltip(*it, tooltip, tile->isHouseTile());
-				}
-
-				// item animation
-				if (options.show_preview && view.zoom <= 2.0) {
-					(*it)->animate();
-				}
-
-				// item sprite
-				if ((*it)->isBorder()) {
-					item_drawer->BlitItem(sprite_drawer.get(), creature_drawer.get(), draw_x, draw_y, tile, *it, options, false, r, g, b);
-				} else {
-					r = 255, g = 255, b = 255;
-
-					if (options.extended_house_shader && options.show_houses && tile->isHouseTile()) {
-						if ((int)tile->getHouseID() == current_house_id) {
-							r /= 2;
-						} else {
-							r /= 2;
-							g /= 2;
-						}
-					}
-					item_drawer->BlitItem(sprite_drawer.get(), creature_drawer.get(), draw_x, draw_y, tile, *it, options, false, r, g, b);
-				}
-			}
-			// monster/npc on tile
-			if (tile->creature && options.show_creatures) {
-				creature_drawer->BlitCreature(sprite_drawer.get(), draw_x, draw_y, tile->creature);
-			}
-		}
-
-		if (view.zoom < 10.0) {
-			// markers (waypoint, house exit, town temple, spawn)
-			marker_drawer->draw(sprite_drawer.get(), draw_x, draw_y, tile, waypoint, current_house_id, editor, options);
-
-			// tooltips
-			if (options.show_tooltips) {
-				if (location->getWaypointCount() > 0) {
-					tooltip_drawer->addTooltip(draw_x, draw_y, tooltip.str(), 0, 255, 0);
-				} else {
-					tooltip_drawer->addTooltip(draw_x, draw_y, tooltip.str());
-				}
-			}
-
-			tooltip.str("");
-		}
-	}
-}
-
 void MapDrawer::DrawTooltips() {
 	tooltip_drawer->draw(view.zoom, TileSize);
 }
@@ -376,19 +238,6 @@ void MapDrawer::DrawTooltips() {
 void MapDrawer::DrawLight() {
 	// draw in-game light
 	light_drawer->draw(view.start_x, view.start_y, view.end_x, view.end_y, view.view_scroll_x, view.view_scroll_y, options.experimental_fog);
-}
-
-void MapDrawer::AddLight(TileLocation* location) {
-	if (!options.isDrawLight() || !location) {
-		return;
-	}
-
-	auto tile = location->get();
-	if (!tile) {
-		return;
-	}
-
-	light_drawer->CollectLights(location, view.zoom, options);
 }
 
 void MapDrawer::TakeScreenshot(uint8_t* screenshot_buffer) {
