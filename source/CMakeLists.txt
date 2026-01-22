@@ -62,6 +62,9 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/map_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/tooltip_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawing_options.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/grid_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/live_cursor_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/selection_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/brush_cursor_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/render_view.h
 
 ${CMAKE_CURRENT_LIST_DIR}/map_region.h
@@ -170,6 +173,9 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/map_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/tooltip_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawing_options.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/grid_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/live_cursor_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/selection_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/brush_cursor_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/render_view.cpp
 
 ${CMAKE_CURRENT_LIST_DIR}/map_region.cpp

@@ -24,7 +24,7 @@
 #include "definitions.h"
 
 class Item;
-struct Waypoint;
+class Waypoint;
 
 struct MapTooltip {
 	enum TextLength {

@@ -47,12 +47,18 @@
 #include "rendering/drawing_options.h"
 #include "rendering/render_view.h"
 #include "rendering/grid_drawer.h"
+#include "rendering/live_cursor_drawer.h"
+#include "rendering/selection_drawer.h"
+#include "rendering/brush_cursor_drawer.h"
 
 MapDrawer::MapDrawer(MapCanvas* canvas) :
 	canvas(canvas), editor(canvas->editor) {
 	light_drawer = std::make_shared<LightDrawer>();
 	tooltip_drawer = std::make_unique<TooltipDrawer>();
 	grid_drawer = std::make_unique<GridDrawer>();
+	live_cursor_drawer = std::make_unique<LiveCursorDrawer>();
+	selection_drawer = std::make_unique<SelectionDrawer>();
+	brush_cursor_drawer = std::make_unique<BrushCursorDrawer>();
 }
 
 MapDrawer::~MapDrawer() {
@@ -109,10 +115,11 @@ void MapDrawer::Draw() {
 	}
 	DrawDraggingShadow();
 	DrawHigherFloors();
+	DrawHigherFloors();
 	if (options.dragging) {
-		DrawSelectionBox();
+		selection_drawer->draw(view, canvas, options);
 	}
-	DrawLiveCursors();
+	live_cursor_drawer->draw(view, editor, options);
 	DrawBrush();
 	if (options.show_grid) {
 		DrawGrid();
@@ -449,97 +456,6 @@ void MapDrawer::DrawHigherFloors() {
 	glDisable(GL_TEXTURE_2D);
 }
 
-void MapDrawer::DrawSelectionBox() {
-	if (options.ingame) {
-		return;
-	}
-
-	// Draw bounding box
-
-	int last_click_rx = canvas->last_click_abs_x - view.view_scroll_x;
-	int last_click_ry = canvas->last_click_abs_y - view.view_scroll_y;
-	double cursor_rx = canvas->cursor_x * view.zoom;
-	double cursor_ry = canvas->cursor_y * view.zoom;
-
-	double lines[4][4];
-
-	lines[0][0] = last_click_rx;
-	lines[0][1] = last_click_ry;
-	lines[0][2] = cursor_rx;
-	lines[0][3] = last_click_ry;
-
-	lines[1][0] = cursor_rx;
-	lines[1][1] = last_click_ry;
-	lines[1][2] = cursor_rx;
-	lines[1][3] = cursor_ry;
-
-	lines[2][0] = cursor_rx;
-	lines[2][1] = cursor_ry;
-	lines[2][2] = last_click_rx;
-	lines[2][3] = cursor_ry;
-
-	lines[3][0] = last_click_rx;
-	lines[3][1] = cursor_ry;
-	lines[3][2] = last_click_rx;
-	lines[3][3] = last_click_ry;
-
-	glEnable(GL_LINE_STIPPLE);
-	glLineStipple(1, 0xf0);
-	glLineWidth(1.0);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glBegin(GL_LINES);
-	for (int i = 0; i < 4; i++) {
-		glVertex2f(lines[i][0], lines[i][1]);
-		glVertex2f(lines[i][2], lines[i][3]);
-	}
-	glEnd();
-	glDisable(GL_LINE_STIPPLE);
-}
-
-void MapDrawer::DrawLiveCursors() {
-	if (options.ingame || !editor.IsLive()) {
-		return;
-	}
-
-	LiveSocket& live = editor.GetLive();
-	for (LiveCursor& cursor : live.getCursorList()) {
-		if (cursor.pos.z <= GROUND_LAYER && view.floor > GROUND_LAYER) {
-			continue;
-		}
-
-		if (cursor.pos.z > GROUND_LAYER && view.floor <= 8) {
-			continue;
-		}
-
-		if (cursor.pos.z < view.floor) {
-			cursor.color = wxColor(
-				cursor.color.Red(),
-				cursor.color.Green(),
-				cursor.color.Blue(),
-				std::max<uint8_t>(cursor.color.Alpha() / 2, 64)
-			);
-		}
-
-		int offset;
-		if (cursor.pos.z <= GROUND_LAYER) {
-			offset = (GROUND_LAYER - cursor.pos.z) * TileSize;
-		} else {
-			offset = TileSize * (view.floor - cursor.pos.z);
-		}
-
-		float draw_x = ((cursor.pos.x * TileSize) - view.view_scroll_x) - offset;
-		float draw_y = ((cursor.pos.y * TileSize) - view.view_scroll_y) - offset;
-
-		glColor(cursor.color);
-		glBegin(GL_QUADS);
-		glVertex2f(draw_x, draw_y);
-		glVertex2f(draw_x + TileSize, draw_y);
-		glVertex2f(draw_x + TileSize, draw_y + TileSize);
-		glVertex2f(draw_x, draw_y + TileSize);
-		glEnd();
-	}
-}
-
 void MapDrawer::DrawBrush() {
 	if (!g_gui.IsDrawingMode()) {
 		return;
@@ -823,7 +739,7 @@ void MapDrawer::DrawBrush() {
 								if (brush->isWaypoint()) {
 									uint8_t r, g, b;
 									getColor(brush, Position(view.mouse_map_x + x, view.mouse_map_y + y, view.floor), r, g, b);
-									DrawBrushIndicator(cx, cy, brush, r, g, b);
+									brush_cursor_drawer->draw(cx, cy, brush, r, g, b);
 								} else {
 									if (brush->isHouseExit() || brush->isOptionalBorder()) {
 										glColorCheck(brush, Position(view.mouse_map_x + x, view.mouse_map_y + y, view.floor));
@@ -849,7 +765,7 @@ void MapDrawer::DrawBrush() {
 								if (brush->isWaypoint()) {
 									uint8_t r, g, b;
 									getColor(brush, Position(view.mouse_map_x + x, view.mouse_map_y + y, view.floor), r, g, b);
-									DrawBrushIndicator(cx, cy, brush, r, g, b);
+									brush_cursor_drawer->draw(cx, cy, brush, r, g, b);
 								} else {
 									if (brush->isHouseExit() || brush->isOptionalBorder()) {
 										glColorCheck(brush, Position(view.mouse_map_x + x, view.mouse_map_y + y, view.floor));
@@ -1438,56 +1354,6 @@ void MapDrawer::DrawTile(TileLocation* location) {
 			tooltip.str("");
 		}
 	}
-}
-
-void MapDrawer::DrawBrushIndicator(int x, int y, Brush* brush, uint8_t r, uint8_t g, uint8_t b) {
-	x += (TileSize / 2);
-	y += (TileSize / 2);
-
-	// 7----0----1
-	// |         |
-	// 6--5  3--2
-	//     \/
-	//     4
-	static int vertexes[9][2] = {
-		{ -15, -20 }, // 0
-		{ 15, -20 }, // 1
-		{ 15, -5 }, // 2
-		{ 5, -5 }, // 3
-		{ 0, 0 }, // 4
-		{ -5, -5 }, // 5
-		{ -15, -5 }, // 6
-		{ -15, -20 }, // 7
-		{ -15, -20 }, // 0
-	};
-
-	// circle
-	glBegin(GL_TRIANGLE_FAN);
-	glColor4ub(0x00, 0x00, 0x00, 0x50);
-	glVertex2i(x, y);
-	for (int i = 0; i <= 30; i++) {
-		float angle = i * 2.0f * PI / 30;
-		glVertex2f(cos(angle) * (TileSize / 2) + x, sin(angle) * (TileSize / 2) + y);
-	}
-	glEnd();
-
-	// background
-	glColor4ub(r, g, b, 0xB4);
-	glBegin(GL_POLYGON);
-	for (int i = 0; i < 8; ++i) {
-		glVertex2i(vertexes[i][0] + x, vertexes[i][1] + y);
-	}
-	glEnd();
-
-	// borders
-	glColor4ub(0x00, 0x00, 0x00, 0xB4);
-	glLineWidth(1.0);
-	glBegin(GL_LINES);
-	for (int i = 0; i < 8; ++i) {
-		glVertex2i(vertexes[i][0] + x, vertexes[i][1] + y);
-		glVertex2i(vertexes[i + 1][0] + x, vertexes[i + 1][1] + y);
-	}
-	glEnd();
 }
 
 void MapDrawer::DrawHookIndicator(int x, int y, const ItemType& type) {

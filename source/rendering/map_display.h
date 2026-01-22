@@ -187,6 +187,7 @@ private:
 	AnimationTimer* animation_timer;
 
 	friend class MapDrawer;
+	friend class SelectionDrawer;
 
 	DECLARE_EVENT_TABLE()
 };

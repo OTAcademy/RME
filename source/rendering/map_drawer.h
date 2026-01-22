@@ -30,6 +30,9 @@ class GridDrawer;
 
 class MapCanvas;
 class LightDrawer;
+class LiveCursorDrawer;
+class SelectionDrawer;
+class BrushCursorDrawer;
 
 class MapDrawer {
 	MapCanvas* canvas;
@@ -39,6 +42,9 @@ class MapDrawer {
 	std::shared_ptr<LightDrawer> light_drawer;
 	std::unique_ptr<TooltipDrawer> tooltip_drawer;
 	std::unique_ptr<GridDrawer> grid_drawer;
+	std::unique_ptr<LiveCursorDrawer> live_cursor_drawer;
+	std::unique_ptr<SelectionDrawer> selection_drawer;
+	std::unique_ptr<BrushCursorDrawer> brush_cursor_drawer;
 
 	uint32_t current_house_id;
 
@@ -64,7 +70,6 @@ public:
 	void DrawMap();
 	void DrawDraggingShadow();
 	void DrawHigherFloors();
-	void DrawSelectionBox();
 	void DrawLiveCursors();
 	void DrawBrush();
 	void DrawIngameBox();
@@ -89,7 +94,6 @@ protected:
 	void BlitSquare(int sx, int sy, int red, int green, int blue, int alpha, int size = 0);
 	void DrawRawBrush(int screenx, int screeny, ItemType* itemType, uint8_t r, uint8_t g, uint8_t b, uint8_t alpha);
 	void DrawTile(TileLocation* tile);
-	void DrawBrushIndicator(int x, int y, Brush* brush, uint8_t r, uint8_t g, uint8_t b);
 	void DrawHookIndicator(int x, int y, const ItemType& type);
 	void AddLight(TileLocation* location);
 
