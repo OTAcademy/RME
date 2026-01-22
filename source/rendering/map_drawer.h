@@ -24,6 +24,10 @@ class TooltipDrawer;
 
 // Storage during drawing, for option caching
 #include "rendering/drawing_options.h"
+#include "definitions.h"
+#include "outfit.h"
+#include "creature.h"
+
 #include "rendering/render_view.h"
 
 class GridDrawer;
@@ -33,6 +37,9 @@ class LightDrawer;
 class LiveCursorDrawer;
 class SelectionDrawer;
 class BrushCursorDrawer;
+class BrushOverlayDrawer;
+class DragShadowDrawer;
+class FloorDrawer;
 
 class MapDrawer {
 	MapCanvas* canvas;
@@ -45,6 +52,9 @@ class MapDrawer {
 	std::unique_ptr<LiveCursorDrawer> live_cursor_drawer;
 	std::unique_ptr<SelectionDrawer> selection_drawer;
 	std::unique_ptr<BrushCursorDrawer> brush_cursor_drawer;
+	std::unique_ptr<BrushOverlayDrawer> brush_overlay_drawer;
+	std::unique_ptr<DragShadowDrawer> drag_shadow_drawer;
+	std::unique_ptr<FloorDrawer> floor_drawer;
 
 	uint32_t current_house_id;
 
@@ -53,6 +63,10 @@ class MapDrawer {
 
 protected:
 	std::ostringstream tooltip;
+
+	friend class BrushOverlayDrawer;
+	friend class DragShadowDrawer;
+	friend class FloorDrawer;
 
 public:
 	MapDrawer(MapCanvas* canvas);
@@ -68,11 +82,9 @@ public:
 	void Draw();
 	void DrawBackground();
 	void DrawMap();
-	void DrawDraggingShadow();
-	void DrawHigherFloors();
 	void DrawLiveCursors();
-	void DrawBrush();
 	void DrawIngameBox();
+
 	void DrawGrid();
 	void DrawTooltips();
 
@@ -97,23 +109,9 @@ protected:
 	void DrawHookIndicator(int x, int y, const ItemType& type);
 	void AddLight(TileLocation* location);
 
-	enum BrushColor {
-		COLOR_BRUSH,
-		COLOR_HOUSE_BRUSH,
-		COLOR_FLAG_BRUSH,
-		COLOR_SPAWN_BRUSH,
-		COLOR_ERASER,
-		COLOR_VALID,
-		COLOR_INVALID,
-		COLOR_BLANK,
-	};
-
-	void getColor(Brush* brush, const Position& position, uint8_t& r, uint8_t& g, uint8_t& b);
 	void glBlitTexture(int sx, int sy, int texture_number, int red, int green, int blue, int alpha);
 	void glBlitSquare(int sx, int sy, int red, int green, int blue, int alpha, int size = 0);
 	void glColor(wxColor color);
-	void glColor(BrushColor color);
-	void glColorCheck(Brush* brush, const Position& pos);
 };
 
 #endif

@@ -188,6 +188,8 @@ private:
 
 	friend class MapDrawer;
 	friend class SelectionDrawer;
+	friend class BrushOverlayDrawer;
+	friend class DragShadowDrawer;
 
 	DECLARE_EVENT_TABLE()
 };
