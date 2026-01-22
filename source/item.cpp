@@ -18,7 +18,7 @@
 #include "main.h"
 
 #include "brush.h"
-#include "graphics.h"
+#include "rendering/graphics.h"
 #include "gui.h"
 #include "tile.h"
 #include "complexitem.h"

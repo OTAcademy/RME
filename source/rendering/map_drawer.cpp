@@ -26,11 +26,11 @@
 #include "editor.h"
 #include "gui.h"
 #include "sprites.h"
-#include "map_drawer.h"
-#include "map_display.h"
+#include "rendering/map_drawer.h"
+#include "rendering/map_display.h"
 #include "copybuffer.h"
 #include "live_socket.h"
-#include "graphics.h"
+#include "rendering/graphics.h"
 
 #include "doodad_brush.h"
 #include "creature_brush.h"
@@ -42,7 +42,7 @@
 #include "raw_brush.h"
 #include "table_brush.h"
 #include "waypoint_brush.h"
-#include "light_drawer.h"
+#include "rendering/light_drawer.h"
 
 DrawingOptions::DrawingOptions() {
 	SetDefault();

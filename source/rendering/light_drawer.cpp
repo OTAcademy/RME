@@ -16,7 +16,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "main.h"
-#include "light_drawer.h"
+#include "rendering/light_drawer.h"
 
 LightDrawer::LightDrawer() {
 	texture = 0;

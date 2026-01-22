@@ -70,6 +70,7 @@ target_include_directories(rme PRIVATE
 	${OPENGL_INCLUDE_DIR}
 	${GLUT_INCLUDE_DIRS}
 	${ZLIB_INCLUDE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/source
 )
 
 # Link other libraries (works with both vcpkg targets and Conan targets)

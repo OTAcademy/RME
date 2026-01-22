@@ -23,7 +23,7 @@
 #include "complexitem.h"
 #include "settings.h"
 #include "gui.h"
-#include "map_display.h"
+#include "rendering/map_display.h"
 #include "brush.h"
 #include "ground_brush.h"
 #include "wall_brush.h"

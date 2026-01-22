@@ -18,7 +18,7 @@
 #ifndef RME_GUI_H_
 #define RME_GUI_H_
 
-#include "graphics.h"
+#include "rendering/graphics.h"
 #include "position.h"
 
 #include "copybuffer.h"

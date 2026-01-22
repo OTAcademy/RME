@@ -17,13 +17,13 @@
 
 #include "main.h"
 
-#include "graphics.h"
+#include "rendering/graphics.h"
 #include "editor.h"
 #include "map.h"
 
 #include "gui.h"
-#include "map_display.h"
-#include "minimap_window.h"
+#include "rendering/map_display.h"
+#include "rendering/minimap_window.h"
 
 BEGIN_EVENT_TABLE(MinimapWindow, wxPanel)
 EVT_LEFT_DOWN(MinimapWindow::OnMouseClick)

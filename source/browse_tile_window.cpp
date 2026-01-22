@@ -21,7 +21,7 @@
 #include "gui.h"
 #include "raw_brush.h"
 #include "tile.h"
-#include "graphics.h"
+#include "rendering/graphics.h"
 #include "gui.h"
 #include "browse_tile_window.h"
 

@@ -19,7 +19,7 @@
 
 #include "dat_debug_view.h"
 
-#include "graphics.h"
+#include "rendering/graphics.h"
 #include "gui.h"
 
 // ============================================================================

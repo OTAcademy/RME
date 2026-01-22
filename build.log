@@ -1,6 +1,6 @@
 ======================================== 
  RME Windows Build Script 
- Started: wt. 20.01.2026 22:35:56,30 
+ Started: czw. 22.01.2026 16:53:01,84 
 ======================================== 
 [1/3] Configuring CMake... 
 -- Running vcpkg install
@@ -88,25 +88,6 @@ The following packages are already installed:
     wxwidgets[core,debug-support,sound]:x64-windows@3.3.1
   * zlib:x64-windows@1.3.1
   * zstd:x64-windows@1.5.7
-The following packages will be removed:
-    boost-endian:x64-windows
-    boost-phoenix:x64-windows
-    boost-proto:x64-windows
-    boost-spirit:x64-windows
-    boost-type-index:x64-windows
-    boost-variant:x64-windows
-Removing 1/6 boost-spirit:x64-windows
-Elapsed time to handle boost-spirit:x64-windows: 147 ms
-Removing 2/6 boost-endian:x64-windows
-Elapsed time to handle boost-endian:x64-windows: 4.9 ms
-Removing 3/6 boost-phoenix:x64-windows
-Elapsed time to handle boost-phoenix:x64-windows: 49.2 ms
-Removing 4/6 boost-proto:x64-windows
-Elapsed time to handle boost-proto:x64-windows: 78.9 ms
-Removing 5/6 boost-variant:x64-windows
-Elapsed time to handle boost-variant:x64-windows: 7.64 ms
-Removing 6/6 boost-type-index:x64-windows
-Elapsed time to handle boost-type-index:x64-windows: 5.4 ms
 asio provides CMake targets:
 
   # this is heuristically generated, and may not be correct
@@ -186,10 +167,10 @@ The package wxwidgets provides CMake targets:
     find_package(wxWidgets CONFIG REQUIRED)
     target_link_libraries(main PRIVATE wx::core wx::base)
 
-All requested installations completed successfully in: 298 ms
+All requested installations completed successfully in: 1.48 ms
 -- Running vcpkg install - done
 -- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
--- Configuring done (4.0s)
+-- Configuring done (4.7s)
 -- Generating done (0.1s)
 CMake Warning:
   Manually-specified variables were not used by the project:
@@ -201,203 +182,206 @@ CMake Warning:
 [2/3] Building Release... 
 Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
 
+  1>Checking Build System
+  Building Custom Rule C:/Users/karol/Documents/GitHub/RME_v2/CMakeLists.txt
   Trwa skanowanie źródeł pod kątem zależności modułów...
-  add_tileset_window.cpp
-  brush_tables.cpp
-  complexitem.cpp
-  action.cpp
-  application.cpp
-  brush.cpp
-  add_item_window.cpp
-  common_windows.cpp
   about_window.cpp
-  client_version.cpp
-  positionctrl.cpp
+  brush_tables.cpp
   basemap.cpp
-  common.cpp
-  carpet_brush.cpp
   artprovider.cpp
+  common.cpp
+  add_tileset_window.cpp
+  positionctrl.cpp
+  common_windows.cpp
+  add_item_window.cpp
+  carpet_brush.cpp
   browse_tile_window.cpp
-  copybuffer.cpp
-  graphics.cpp
-  creature.cpp
-  dat_debug_view.cpp
-  dcbutton.cpp
-  creatures.cpp
-  doodad_brush.cpp
-  container_properties_window.cpp
+  application.cpp
+  client_version.cpp
+  brush.cpp
+  action.cpp
+  complexitem.cpp
   editor.cpp
+  container_properties_window.cpp
+  extension.cpp
+  dat_debug_view.cpp
+  creature.cpp
+  dcbutton.cpp
+  editor_tabs.cpp
   eraser_brush.cpp
-  find_item_window.cpp
+  copybuffer.cpp
   creature_brush.cpp
   filehandle.cpp
-  editor_tabs.cpp
-  extension.cpp
+  find_item_window.cpp
+  doodad_brush.cpp
+  creatures.cpp
+  graphics.cpp
   extension_window.cpp
-  item.cpp
-  house.cpp
-  house_brush.cpp
   ground_brush.cpp
+  gui.cpp
+  house_brush.cpp
+  house.cpp
+  items.cpp
   house_exit_brush.cpp
   iomap_otbm.cpp
-  items.cpp
-  live_client.cpp
-  light_drawer.cpp
-  live_socket.cpp
-  item_attributes.cpp
-  gui.cpp
-  live_peer.cpp
-  iomap.cpp
-  live_server.cpp
   live_action.cpp
-  main_menubar.cpp
-  main_toolbar.cpp
-  map_display.cpp
+  live_client.cpp
+  item.cpp
+  live_socket.cpp
+  iomap.cpp
+  light_drawer.cpp
+  item_attributes.cpp
+  live_peer.cpp
+  live_server.cpp
   live_tab.cpp
-  minimap_window.cpp
+  main_toolbar.cpp
+  main_menubar.cpp
+  map.cpp
+  map_display.cpp
   map_drawer.cpp
-  materials.cpp
   map_region.cpp
+  net_connection.cpp
+  map_window.cpp
+  mkpch.cpp
+  materials.cpp
   numbertextctrl.cpp
   map_tab.cpp
-  map.cpp
-  mkpch.cpp
-  mt_rand.cpp
-  net_connection.cpp
   old_properties_window.cpp
-  map_window.cpp
+  mt_rand.cpp
+  minimap_window.cpp
   palette_brushlist.cpp
+  palette_creature.cpp
   palette_common.cpp
   palette_house.cpp
-  preferences.cpp
   palette_waypoints.cpp
-  pngfiles.cpp
   palette_window.cpp
+  preferences.cpp
+  pngfiles.cpp
+  process_com.cpp
+  replace_items_window.cpp
+  properties_window.cpp
   selection.cpp
-  settings.cpp
-  palette_creature.cpp
-  result_window.cpp
   rme_net.cpp
   raw_brush.cpp
-  properties_window.cpp
-  replace_items_window.cpp
-  process_com.cpp
+  result_window.cpp
+  settings.cpp
+  spawn.cpp
+  table_brush.cpp
   spawn_brush.cpp
   templatemap76-74.cpp
-  table_brush.cpp
-  spawn.cpp
-  templatemap854.cpp
   templatemap81.cpp
-  templatemapclassic.cpp
+  templatemap854.cpp
   tile.cpp
-  tileset_window.cpp
-  updater.cpp
-  town.cpp
-  wall_brush.cpp
-  waypoints.cpp
-  welcome_dialog.cpp
+  templatemapclassic.cpp
   tileset.cpp
+  tileset_window.cpp
   waypoint_brush.cpp
+  town.cpp
+  wall_brush.cpp
+  updater.cpp
+  welcome_dialog.cpp
+  waypoints.cpp
   Trwa kompilowanie…
-  brush.cpp
-  complexitem.cpp
-  add_tileset_window.cpp
-  basemap.cpp
-  add_item_window.cpp
-  carpet_brush.cpp
-  action.cpp
   application.cpp
-  browse_tile_window.cpp
-  brush_tables.cpp
-  positionctrl.cpp
+  basemap.cpp
   about_window.cpp
   artprovider.cpp
-  client_version.cpp
+  complexitem.cpp
+  add_tileset_window.cpp
+  add_item_window.cpp
+  carpet_brush.cpp
   common_windows.cpp
+  brush.cpp
   common.cpp
+  action.cpp
+  positionctrl.cpp
+  client_version.cpp
+  browse_tile_window.cpp
+  brush_tables.cpp
+  container_properties_window.cpp
   creature_brush.cpp
+  creatures.cpp
   copybuffer.cpp
   creature.cpp
-  container_properties_window.cpp
-  creatures.cpp
-  dcbutton.cpp
   dat_debug_view.cpp
-  editor_tabs.cpp
-  extension.cpp
-  doodad_brush.cpp
-  graphics.cpp
-  extension_window.cpp
-  find_item_window.cpp
-  eraser_brush.cpp
+  dcbutton.cpp
   editor.cpp
+  extension_window.cpp
+  extension.cpp
+  editor_tabs.cpp
+  eraser_brush.cpp
+  doodad_brush.cpp
+  find_item_window.cpp
+  graphics.cpp
   filehandle.cpp
-  ground_brush.cpp
-  gui.cpp
-  house_brush.cpp
-  house_exit_brush.cpp
-  house.cpp
   iomap.cpp
+  house_brush.cpp
+  house.cpp
+  house_exit_brush.cpp
+  gui.cpp
+  ground_brush.cpp
   iomap_otbm.cpp
-  item_attributes.cpp
-  live_client.cpp
-  live_action.cpp
   item.cpp
   light_drawer.cpp
-  live_socket.cpp
+  item_attributes.cpp
+  live_action.cpp
   items.cpp
+  live_client.cpp
+  live_socket.cpp
   live_server.cpp
   live_peer.cpp
   live_tab.cpp
-  main_menubar.cpp
   main_toolbar.cpp
-  map.cpp
+  main_menubar.cpp
   map_display.cpp
   map_region.cpp
   map_drawer.cpp
+  map.cpp
+  materials.cpp
+  map_window.cpp
   map_tab.cpp
   minimap_window.cpp
   mkpch.cpp
-  materials.cpp
-  map_window.cpp
-  net_connection.cpp
   mt_rand.cpp
   numbertextctrl.cpp
+  net_connection.cpp
   old_properties_window.cpp
   palette_brushlist.cpp
   palette_common.cpp
-  palette_waypoints.cpp
-  palette_house.cpp
   palette_creature.cpp
-  palette_window.cpp
+  palette_house.cpp
+  palette_waypoints.cpp
   pngfiles.cpp
+  palette_window.cpp
+  process_com.cpp
   preferences.cpp
   properties_window.cpp
   replace_items_window.cpp
-  process_com.cpp
-  raw_brush.cpp
   result_window.cpp
+  raw_brush.cpp
   rme_net.cpp
   selection.cpp
   settings.cpp
   spawn_brush.cpp
   spawn.cpp
-  templatemap81.cpp
   table_brush.cpp
   templatemap76-74.cpp
   templatemap854.cpp
-  tile.cpp
+  templatemap81.cpp
   templatemapclassic.cpp
   tileset.cpp
-  tileset_window.cpp
-  town.cpp
-  updater.cpp
+  tile.cpp
   wall_brush.cpp
+  town.cpp
+  tileset_window.cpp
+  updater.cpp
   waypoint_brush.cpp
   waypoints.cpp
   welcome_dialog.cpp
   rme.vcxproj -> C:\Users\karol\Documents\GitHub\RME_v2\build\Release\rme.exe
+  Building Custom Rule C:/Users/karol/Documents/GitHub/RME_v2/CMakeLists.txt
 ======================================== 
  BUILD SUCCESSFUL 
  Output: C:\Users\karol\Documents\GitHub\RME_v2\build\Release\rme.exe 
- Finished: wt. 20.01.2026 22:37:09,55 
+ Finished: czw. 22.01.2026 16:54:14,51 
 ======================================== 

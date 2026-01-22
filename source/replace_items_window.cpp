@@ -18,7 +18,7 @@
 #include "main.h"
 #include "replace_items_window.h"
 #include "find_item_window.h"
-#include "graphics.h"
+#include "rendering/graphics.h"
 #include "gui.h"
 #include "artprovider.h"
 #include "items.h"

@@ -18,7 +18,7 @@
 #ifndef RME_LIGHDRAWER_H
 #define RME_LIGHDRAWER_H
 
-#include "graphics.h"
+#include "rendering/graphics.h"
 #include "position.h"
 
 class LightDrawer {
