@@ -75,6 +75,8 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/item_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/marker_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/preview_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/shade_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/tile_color_calculator.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/screen_capture.h
 
 
 ${CMAKE_CURRENT_LIST_DIR}/map_region.h
@@ -196,6 +198,8 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/item_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/marker_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/preview_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/shade_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/tile_color_calculator.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/screen_capture.cpp
 
 
 ${CMAKE_CURRENT_LIST_DIR}/map_region.cpp

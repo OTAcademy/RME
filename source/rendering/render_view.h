@@ -18,6 +18,7 @@ struct RenderView {
 
 	void Setup(MapCanvas* canvas, const DrawingOptions& options);
 	int getFloorAdjustment() const;
+	bool IsTileVisible(int map_x, int map_y, int map_z) const;
 };
 
 #endif

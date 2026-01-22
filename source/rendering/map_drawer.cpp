@@ -59,6 +59,8 @@
 #include "rendering/marker_drawer.h"
 #include "rendering/preview_drawer.h"
 #include "rendering/shade_drawer.h"
+#include "rendering/tile_color_calculator.h"
+#include "rendering/screen_capture.h"
 
 MapDrawer::MapDrawer(MapCanvas* canvas) :
 	canvas(canvas), editor(canvas->editor) {
@@ -294,15 +296,15 @@ void MapDrawer::DrawTile(TileLocation* location) {
 	int map_z = location->getZ();
 
 	// Early viewport culling - skip tiles that are completely off-screen
+	if (!view.IsTileVisible(map_x, map_y, map_z)) {
+		return;
+	}
+
 	int offset = (map_z <= GROUND_LAYER)
 		? (GROUND_LAYER - map_z) * TileSize
 		: TileSize * (view.floor - map_z);
 	int screen_x = (map_x * TileSize) - view.view_scroll_x - offset;
 	int screen_y = (map_y * TileSize) - view.view_scroll_y - offset;
-	int margin = TileSize * 3; // Account for large sprites
-	if (screen_x < -margin || screen_x > view.screensize_x * view.zoom + margin || screen_y < -margin || screen_y > view.screensize_y * view.zoom + margin) {
-		return;
-	}
 
 	Waypoint* waypoint = canvas->editor.map.waypoints.getWaypoint(location);
 	if (options.show_tooltips && location->getWaypointCount() > 0) {
@@ -321,53 +323,9 @@ void MapDrawer::DrawTile(TileLocation* location) {
 
 	// begin filters for ground tile
 	if (!as_minimap) {
-		bool showspecial = options.show_only_colors || options.show_special_tiles;
-
-		if (options.show_blocking && tile->isBlocking() && tile->size() > 0) {
-			g = g / 3 * 2;
-			b = b / 3 * 2;
-		}
-
-		int item_count = tile->items.size();
-		if (options.highlight_items && item_count > 0 && !tile->items.back()->isBorder()) {
-			static const float factor[5] = { 0.75f, 0.6f, 0.48f, 0.40f, 0.33f };
-			int idx = (item_count < 5 ? item_count : 5) - 1;
-			g = int(g * factor[idx]);
-			r = int(r * factor[idx]);
-		}
-
-		if (options.show_spawns && location->getSpawnCount() > 0) {
-			float f = 1.0f;
-			for (uint32_t i = 0; i < location->getSpawnCount(); ++i) {
-				f *= 0.7f;
-			}
-			g = uint8_t(g * f);
-			b = uint8_t(b * f);
-		}
-
-		if (options.show_houses && tile->isHouseTile()) {
-			if ((int)tile->getHouseID() == current_house_id) {
-				r /= 2;
-			} else {
-				r /= 2;
-				g /= 2;
-			}
-		} else if (showspecial && tile->isPZ()) {
-			r /= 2;
-			b /= 2;
-		}
-
-		if (showspecial && tile->getMapFlags() & TILESTATE_PVPZONE) {
-			g = r / 4;
-			b = b / 3 * 2;
-		}
-
-		if (showspecial && tile->getMapFlags() & TILESTATE_NOLOGOUT) {
-			b /= 2;
-		}
-
-		if (showspecial && tile->getMapFlags() & TILESTATE_NOPVP) {
-			g /= 2;
+		// begin filters for ground tile
+		if (!as_minimap) {
+			TileColorCalculator::Calculate(tile, options, current_house_id, location->getSpawnCount(), r, g, b);
 		}
 	}
 
@@ -492,11 +450,5 @@ void MapDrawer::AddLight(TileLocation* location) {
 }
 
 void MapDrawer::TakeScreenshot(uint8_t* screenshot_buffer) {
-	glFinish(); // Wait for the operation to finish
-
-	glPixelStorei(GL_PACK_ALIGNMENT, 1); // 1 byte alignment
-
-	for (int i = 0; i < view.screensize_y; ++i) {
-		glReadPixels(0, view.screensize_y - i, view.screensize_x, 1, GL_RGB, GL_UNSIGNED_BYTE, (GLubyte*)(screenshot_buffer) + 3 * view.screensize_x * i);
-	}
+	ScreenCapture::Capture(view.screensize_x, view.screensize_y, screenshot_buffer);
 }
