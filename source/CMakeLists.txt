@@ -97,6 +97,11 @@ ${CMAKE_CURRENT_LIST_DIR}/map_window.h
 ${CMAKE_CURRENT_LIST_DIR}/materials.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/minimap_window.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/clipboard_handler.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/keyboard_handler.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/brush_selector.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/popup_action_handler.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/zoom_controller.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/navigation_controller.h
 ${CMAKE_CURRENT_LIST_DIR}/mt_rand.h
 ${CMAKE_CURRENT_LIST_DIR}/net_connection.h
 ${CMAKE_CURRENT_LIST_DIR}/numbertextctrl.h
@@ -232,6 +237,11 @@ ${CMAKE_CURRENT_LIST_DIR}/map_window.cpp
 ${CMAKE_CURRENT_LIST_DIR}/materials.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/minimap_window.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/clipboard_handler.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/keyboard_handler.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/brush_selector.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/popup_action_handler.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/zoom_controller.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/navigation_controller.cpp
 ${CMAKE_CURRENT_LIST_DIR}/mkpch.cpp
 ${CMAKE_CURRENT_LIST_DIR}/mt_rand.cpp
 ${CMAKE_CURRENT_LIST_DIR}/net_connection.cpp

@@ -48,6 +48,11 @@
 #include "map_popup_menu.h"
 #include "brush_utility.h"
 #include "rendering/ui/clipboard_handler.h"
+#include "rendering/ui/keyboard_handler.h"
+#include "rendering/ui/brush_selector.h"
+#include "rendering/ui/popup_action_handler.h"
+#include "rendering/ui/zoom_controller.h"
+#include "rendering/ui/navigation_controller.h"
 
 #include "doodad_brush.h"
 #include "house_exit_brush.h"
@@ -173,25 +178,7 @@ void MapCanvas::Refresh() {
 }
 
 void MapCanvas::SetZoom(double value) {
-	if (value < 0.125) {
-		value = 0.125;
-	}
-
-	if (value > 25.00) {
-		value = 25.0;
-	}
-
-	if (zoom != value) {
-		int center_x, center_y;
-		GetScreenCenter(&center_x, &center_y);
-
-		zoom = value;
-		static_cast<MapWindow*>(GetParent())->SetScreenCenterPosition(Position(center_x, center_y, floor));
-
-		UpdatePositionStatus();
-		UpdateZoomStatus();
-		Refresh();
-	}
+	ZoomController::SetZoom(this, value);
 }
 
 void MapCanvas::GetViewBox(int* view_scroll_x, int* view_scroll_y, int* screensize_x, int* screensize_y) const {
@@ -344,17 +331,11 @@ void MapCanvas::UpdatePositionStatus(int x, int y) {
 }
 
 void MapCanvas::UpdateZoomStatus() {
-	int percentage = (int)((1.0 / zoom) * 100);
-	wxString ss;
-	ss << "zoom: " << percentage << "%";
-	g_gui.root->SetStatusText(ss, 3);
+	ZoomController::UpdateStatus(this);
 }
 
 void MapCanvas::OnMouseMove(wxMouseEvent& event) {
-	if (screendragging) {
-		static_cast<MapWindow*>(GetParent())->ScrollRelative(int(g_settings.getFloat(Config::SCROLL_SPEED) * zoom * (event.GetX() - cursor_x)), int(g_settings.getFloat(Config::SCROLL_SPEED) * zoom * (event.GetY() - cursor_y)));
-		Refresh();
-	}
+	NavigationController::HandleMouseDrag(this, event);
 
 	cursor_x = event.GetX();
 	cursor_y = event.GetY();
@@ -1119,29 +1100,14 @@ void MapCanvas::OnMouseCameraClick(wxMouseEvent& event) {
 	last_mmb_click_x = event.GetX();
 	last_mmb_click_y = event.GetY();
 	if (event.ControlDown()) {
-		int screensize_x, screensize_y;
-		static_cast<MapWindow*>(GetParent())->GetViewSize(&screensize_x, &screensize_y);
-
-		static_cast<MapWindow*>(GetParent())->ScrollRelative(int(-screensize_x * (1.0 - zoom) * (std::max(cursor_x, 1) / double(screensize_x))), int(-screensize_y * (1.0 - zoom) * (std::max(cursor_y, 1) / double(screensize_y))));
-		zoom = 1.0;
-		Refresh();
+		ZoomController::ApplyRelativeZoom(this, 1.0 - zoom);
 	} else {
-		screendragging = true;
+		NavigationController::HandleCameraClick(this, event);
 	}
 }
 
 void MapCanvas::OnMouseCameraRelease(wxMouseEvent& event) {
-	SetFocus();
-	screendragging = false;
-	if (event.ControlDown()) {
-		// ...
-		// Haven't moved much, it's a click!
-	} else if (last_mmb_click_x > event.GetX() - 3 && last_mmb_click_x < event.GetX() + 3 && last_mmb_click_y > event.GetY() - 3 && last_mmb_click_y < event.GetY() + 3) {
-		int screensize_x, screensize_y;
-		static_cast<MapWindow*>(GetParent())->GetViewSize(&screensize_x, &screensize_y);
-		static_cast<MapWindow*>(GetParent())->ScrollRelative(int(zoom * (2 * cursor_x - screensize_x)), int(zoom * (2 * cursor_y - screensize_y)));
-		Refresh();
-	}
+	NavigationController::HandleCameraRelease(this, event);
 }
 
 void MapCanvas::OnMousePropertiesClick(wxMouseEvent& event) {
@@ -1381,29 +1347,7 @@ void MapCanvas::OnWheel(wxMouseEvent& event) {
 			diff = 0.0;
 		}
 	} else {
-		double diff = -event.GetWheelRotation() * g_settings.getFloat(Config::ZOOM_SPEED) / 640.0;
-		double oldzoom = zoom;
-		zoom += diff;
-
-		if (zoom < 0.125) {
-			diff = 0.125 - oldzoom;
-			zoom = 0.125;
-		}
-		if (zoom > 25.00) {
-			diff = 25.00 - oldzoom;
-			zoom = 25.0;
-		}
-
-		UpdateZoomStatus();
-
-		int screensize_x, screensize_y;
-		static_cast<MapWindow*>(GetParent())->GetViewSize(&screensize_x, &screensize_y);
-
-		// This took a day to figure out!
-		int scroll_x = int(screensize_x * diff * (std::max(cursor_x, 1) / double(screensize_x))) * GetContentScaleFactor();
-		int scroll_y = int(screensize_y * diff * (std::max(cursor_y, 1) / double(screensize_y))) * GetContentScaleFactor();
-
-		static_cast<MapWindow*>(GetParent())->ScrollRelative(-scroll_x, -scroll_y);
+		ZoomController::OnWheel(this, event);
 	}
 
 	Refresh();
@@ -1427,283 +1371,11 @@ void MapCanvas::OnGainMouse(wxMouseEvent& event) {
 }
 
 void MapCanvas::OnKeyDown(wxKeyEvent& event) {
-	// char keycode = event.GetKeyCode();
-	//  std::cout << "Keycode " << keycode << std::endl;
-	switch (event.GetKeyCode()) {
-		case WXK_NUMPAD_ADD:
-		case WXK_PAGEUP: {
-			g_gui.ChangeFloor(floor - 1);
-			break;
-		}
-		case WXK_NUMPAD_SUBTRACT:
-		case WXK_PAGEDOWN: {
-			g_gui.ChangeFloor(floor + 1);
-			break;
-		}
-		case WXK_NUMPAD_MULTIPLY: {
-			double diff = -0.3;
-
-			double oldzoom = zoom;
-			zoom += diff;
-
-			if (zoom < 0.125) {
-				diff = 0.125 - oldzoom;
-				zoom = 0.125;
-			}
-
-			int screensize_x, screensize_y;
-			static_cast<MapWindow*>(GetParent())->GetViewSize(&screensize_x, &screensize_y);
-
-			// This took a day to figure out!
-			int scroll_x = int(screensize_x * diff * (std::max(cursor_x, 1) / double(screensize_x)));
-			int scroll_y = int(screensize_y * diff * (std::max(cursor_y, 1) / double(screensize_y)));
-
-			static_cast<MapWindow*>(GetParent())->ScrollRelative(-scroll_x, -scroll_y);
-
-			UpdatePositionStatus();
-			UpdateZoomStatus();
-			Refresh();
-			break;
-		}
-		case WXK_NUMPAD_DIVIDE: {
-			double diff = 0.3;
-			double oldzoom = zoom;
-			zoom += diff;
-
-			if (zoom > 25.00) {
-				diff = 25.00 - oldzoom;
-				zoom = 25.0;
-			}
-
-			int screensize_x, screensize_y;
-			static_cast<MapWindow*>(GetParent())->GetViewSize(&screensize_x, &screensize_y);
-
-			// This took a day to figure out!
-			int scroll_x = int(screensize_x * diff * (std::max(cursor_x, 1) / double(screensize_x)));
-			int scroll_y = int(screensize_y * diff * (std::max(cursor_y, 1) / double(screensize_y)));
-
-			static_cast<MapWindow*>(GetParent())->ScrollRelative(-scroll_x, -scroll_y);
-
-			UpdatePositionStatus();
-			UpdateZoomStatus();
-			Refresh();
-			break;
-		}
-		// This will work like crap with non-us layouts, well, sucks for them until there is another solution.
-		case '[':
-		case '+': {
-			g_gui.IncreaseBrushSize();
-			Refresh();
-			break;
-		}
-		case ']':
-		case '-': {
-			g_gui.DecreaseBrushSize();
-			Refresh();
-			break;
-		}
-		case WXK_NUMPAD_UP:
-		case WXK_UP: {
-			int start_x, start_y;
-			static_cast<MapWindow*>(GetParent())->GetViewStart(&start_x, &start_y);
-
-			int tiles = 3;
-			if (event.ControlDown()) {
-				tiles = 10;
-			} else if (zoom == 1.0) {
-				tiles = 1;
-			}
-
-			static_cast<MapWindow*>(GetParent())->Scroll(start_x, int(start_y - TileSize * tiles * zoom));
-			UpdatePositionStatus();
-			Refresh();
-			break;
-		}
-		case WXK_NUMPAD_DOWN:
-		case WXK_DOWN: {
-			int start_x, start_y;
-			static_cast<MapWindow*>(GetParent())->GetViewStart(&start_x, &start_y);
-
-			int tiles = 3;
-			if (event.ControlDown()) {
-				tiles = 10;
-			} else if (zoom == 1.0) {
-				tiles = 1;
-			}
-
-			static_cast<MapWindow*>(GetParent())->Scroll(start_x, int(start_y + TileSize * tiles * zoom));
-			UpdatePositionStatus();
-			Refresh();
-			break;
-		}
-		case WXK_NUMPAD_LEFT:
-		case WXK_LEFT: {
-			int start_x, start_y;
-			static_cast<MapWindow*>(GetParent())->GetViewStart(&start_x, &start_y);
-
-			int tiles = 3;
-			if (event.ControlDown()) {
-				tiles = 10;
-			} else if (zoom == 1.0) {
-				tiles = 1;
-			}
-
-			static_cast<MapWindow*>(GetParent())->Scroll(int(start_x - TileSize * tiles * zoom), start_y);
-			UpdatePositionStatus();
-			Refresh();
-			break;
-		}
-		case WXK_NUMPAD_RIGHT:
-		case WXK_RIGHT: {
-			int start_x, start_y;
-			static_cast<MapWindow*>(GetParent())->GetViewStart(&start_x, &start_y);
-
-			int tiles = 3;
-			if (event.ControlDown()) {
-				tiles = 10;
-			} else if (zoom == 1.0) {
-				tiles = 1;
-			}
-
-			static_cast<MapWindow*>(GetParent())->Scroll(int(start_x + TileSize * tiles * zoom), start_y);
-			UpdatePositionStatus();
-			Refresh();
-			break;
-		}
-		case WXK_SPACE: { // Utility keys
-			if (event.ControlDown()) {
-				g_gui.FillDoodadPreviewBuffer();
-				g_gui.RefreshView();
-			} else {
-				g_gui.SwitchMode();
-			}
-			break;
-		}
-		case WXK_TAB: { // Tab switch
-			if (event.ShiftDown()) {
-				g_gui.CycleTab(false);
-			} else {
-				g_gui.CycleTab(true);
-			}
-			break;
-		}
-		case WXK_DELETE: { // Delete
-			editor.destroySelection();
-			g_gui.RefreshView();
-			break;
-		}
-		case 'z':
-		case 'Z': { // Rotate counterclockwise (actually shift variaton, but whatever... :P)
-			int nv = g_gui.GetBrushVariation();
-			--nv;
-			if (nv < 0) {
-				nv = max(0, (g_gui.GetCurrentBrush() ? g_gui.GetCurrentBrush()->getMaxVariation() - 1 : 0));
-			}
-			g_gui.SetBrushVariation(nv);
-			g_gui.RefreshView();
-			break;
-		}
-		case 'x':
-		case 'X': { // Rotate clockwise (actually shift variaton, but whatever... :P)
-			int nv = g_gui.GetBrushVariation();
-			++nv;
-			if (nv >= (g_gui.GetCurrentBrush() ? g_gui.GetCurrentBrush()->getMaxVariation() : 0)) {
-				nv = 0;
-			}
-			g_gui.SetBrushVariation(nv);
-			g_gui.RefreshView();
-			break;
-		}
-		case 'q':
-		case 'Q': { // Select previous brush
-			g_gui.SelectPreviousBrush();
-			break;
-		}
-		// Hotkeys
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9': {
-			int index = event.GetKeyCode() - '0';
-			if (event.ControlDown()) {
-				Hotkey hk;
-				if (g_gui.IsSelectionMode()) {
-					int view_start_x, view_start_y;
-					static_cast<MapWindow*>(GetParent())->GetViewStart(&view_start_x, &view_start_y);
-					int view_start_map_x = view_start_x / TileSize, view_start_map_y = view_start_y / TileSize;
-
-					int view_screensize_x, view_screensize_y;
-					static_cast<MapWindow*>(GetParent())->GetViewSize(&view_screensize_x, &view_screensize_y);
-
-					int map_x = int(view_start_map_x + (view_screensize_x * zoom) / TileSize / 2);
-					int map_y = int(view_start_map_y + (view_screensize_y * zoom) / TileSize / 2);
-
-					hk = Hotkey(Position(map_x, map_y, floor));
-				} else if (g_gui.GetCurrentBrush()) {
-					// Drawing mode
-					hk = Hotkey(g_gui.GetCurrentBrush());
-				} else {
-					break;
-				}
-				g_gui.SetHotkey(index, hk);
-			} else {
-				// Click hotkey
-				Hotkey hk = g_gui.GetHotkey(index);
-				if (hk.IsPosition()) {
-					g_gui.SetSelectionMode();
-
-					int map_x = hk.GetPosition().x;
-					int map_y = hk.GetPosition().y;
-					int map_z = hk.GetPosition().z;
-
-					static_cast<MapWindow*>(GetParent())->Scroll(TileSize * map_x, TileSize * map_y, true);
-					floor = map_z;
-
-					g_gui.SetStatusText("Used hotkey " + i2ws(index));
-					g_gui.RefreshView();
-				} else if (hk.IsBrush()) {
-					g_gui.SetDrawingMode();
-
-					std::string name = hk.GetBrushname();
-					Brush* brush = g_brushes.getBrush(name);
-					if (brush == nullptr) {
-						g_gui.SetStatusText("Brush \"" + wxstr(name) + "\" not found");
-						return;
-					}
-
-					if (!g_gui.SelectBrush(brush)) {
-						g_gui.SetStatusText("Brush \"" + wxstr(name) + "\" is not in any palette");
-						return;
-					}
-
-					g_gui.SetStatusText("Used hotkey " + i2ws(index));
-					g_gui.RefreshView();
-				} else {
-					g_gui.SetStatusText("Unassigned hotkey " + i2ws(index));
-				}
-			}
-			break;
-		}
-		case 'd':
-		case 'D': {
-			keyCode = WXK_CONTROL_D;
-			break;
-		}
-		default: {
-			event.Skip();
-			break;
-		}
-	}
+	KeyboardHandler::OnKeyDown(this, event);
 }
 
 void MapCanvas::OnKeyUp(wxKeyEvent& event) {
-	keyCode = WXK_NONE;
+	KeyboardHandler::OnKeyUp(this, event);
 }
 
 void MapCanvas::OnCopy(wxCommandEvent& WXUNUSED(event)) {
@@ -1739,332 +1411,75 @@ void MapCanvas::OnCopyName(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MapCanvas::OnBrowseTile(wxCommandEvent& WXUNUSED(event)) {
-	if (editor.selection.size() != 1) {
-		return;
-	}
-
-	Tile* tile = editor.selection.getSelectedTile();
-	if (!tile) {
-		return;
-	}
-	ASSERT(tile->isSelected());
-	Tile* new_tile = tile->deepCopy(editor.map);
-
-	wxDialog* w = new BrowseTileWindow(g_gui.root, new_tile, wxPoint(cursor_x, cursor_y));
-
-	int ret = w->ShowModal();
-	if (ret != 0) {
-		Action* action = editor.actionQueue->createAction(ACTION_DELETE_TILES);
-		action->addChange(newd Change(new_tile));
-		editor.addAction(action);
-	} else {
-		// Cancel
-		delete new_tile;
-	}
-
-	w->Destroy();
+	PopupActionHandler::BrowseTile(editor, cursor_x, cursor_y);
 }
 
 void MapCanvas::OnRotateItem(wxCommandEvent& WXUNUSED(event)) {
-	Tile* tile = editor.selection.getSelectedTile();
-
-	Action* action = editor.actionQueue->createAction(ACTION_ROTATE_ITEM);
-
-	Tile* new_tile = tile->deepCopy(editor.map);
-
-	ItemVector selected_items = new_tile->getSelectedItems();
-	ASSERT(selected_items.size() > 0);
-
-	selected_items.front()->doRotate();
-
-	action->addChange(newd Change(new_tile));
-
-	editor.actionQueue->addAction(action);
-	g_gui.RefreshView();
+	PopupActionHandler::RotateItem(editor);
 }
 
 void MapCanvas::OnGotoDestination(wxCommandEvent& WXUNUSED(event)) {
-	Tile* tile = editor.selection.getSelectedTile();
-	ItemVector selected_items = tile->getSelectedItems();
-	ASSERT(selected_items.size() > 0);
-	Teleport* teleport = dynamic_cast<Teleport*>(selected_items.front());
-	if (teleport) {
-		Position pos = teleport->getDestination();
-		g_gui.SetScreenCenterPosition(pos);
-	}
+	PopupActionHandler::GotoDestination(editor);
 }
 
 void MapCanvas::OnSwitchDoor(wxCommandEvent& WXUNUSED(event)) {
-	Tile* tile = editor.selection.getSelectedTile();
-
-	Action* action = editor.actionQueue->createAction(ACTION_SWITCHDOOR);
-
-	Tile* new_tile = tile->deepCopy(editor.map);
-
-	ItemVector selected_items = new_tile->getSelectedItems();
-	ASSERT(selected_items.size() > 0);
-
-	DoorBrush::switchDoor(selected_items.front());
-
-	action->addChange(newd Change(new_tile));
-
-	editor.actionQueue->addAction(action);
-	g_gui.RefreshView();
+	PopupActionHandler::SwitchDoor(editor);
 }
 
 void MapCanvas::OnSelectRAWBrush(wxCommandEvent& WXUNUSED(event)) {
-	if (editor.selection.size() != 1) {
-		return;
-	}
-	Tile* tile = editor.selection.getSelectedTile();
-	if (!tile) {
-		return;
-	}
-	Item* item = tile->getTopSelectedItem();
-
-	if (item && item->getRAWBrush()) {
-		g_gui.SelectBrush(item->getRAWBrush(), TILESET_RAW);
-	}
+	BrushSelector::SelectRAWBrush(editor.selection);
 }
 
 void MapCanvas::OnSelectGroundBrush(wxCommandEvent& WXUNUSED(event)) {
-	if (editor.selection.size() != 1) {
-		return;
-	}
-	Tile* tile = editor.selection.getSelectedTile();
-	if (!tile) {
-		return;
-	}
-	GroundBrush* bb = tile->getGroundBrush();
-
-	if (bb) {
-		g_gui.SelectBrush(bb, TILESET_TERRAIN);
-	}
+	BrushSelector::SelectGroundBrush(editor.selection);
 }
 
 void MapCanvas::OnSelectDoodadBrush(wxCommandEvent& WXUNUSED(event)) {
-	if (editor.selection.size() != 1) {
-		return;
-	}
-	Tile* tile = editor.selection.getSelectedTile();
-	if (!tile) {
-		return;
-	}
-	Item* item = tile->getTopSelectedItem();
-
-	if (item) {
-		g_gui.SelectBrush(item->getDoodadBrush(), TILESET_DOODAD);
-	}
+	BrushSelector::SelectDoodadBrush(editor.selection);
 }
 
 void MapCanvas::OnSelectDoorBrush(wxCommandEvent& WXUNUSED(event)) {
-	if (editor.selection.size() != 1) {
-		return;
-	}
-	Tile* tile = editor.selection.getSelectedTile();
-	if (!tile) {
-		return;
-	}
-	Item* item = tile->getTopSelectedItem();
-
-	if (item) {
-		g_gui.SelectBrush(item->getDoorBrush(), TILESET_TERRAIN);
-	}
+	BrushSelector::SelectDoorBrush(editor.selection);
 }
 
 void MapCanvas::OnSelectWallBrush(wxCommandEvent& WXUNUSED(event)) {
-	if (editor.selection.size() != 1) {
-		return;
-	}
-	Tile* tile = editor.selection.getSelectedTile();
-	if (!tile) {
-		return;
-	}
-	Item* wall = tile->getWall();
-	WallBrush* wb = wall->getWallBrush();
-
-	if (wb) {
-		g_gui.SelectBrush(wb, TILESET_TERRAIN);
-	}
+	BrushSelector::SelectWallBrush(editor.selection);
 }
 
 void MapCanvas::OnSelectCarpetBrush(wxCommandEvent& WXUNUSED(event)) {
-	if (editor.selection.size() != 1) {
-		return;
-	}
-	Tile* tile = editor.selection.getSelectedTile();
-	if (!tile) {
-		return;
-	}
-	Item* wall = tile->getCarpet();
-	CarpetBrush* cb = wall->getCarpetBrush();
-
-	if (cb) {
-		g_gui.SelectBrush(cb);
-	}
+	BrushSelector::SelectCarpetBrush(editor.selection);
 }
 
 void MapCanvas::OnSelectTableBrush(wxCommandEvent& WXUNUSED(event)) {
-	if (editor.selection.size() != 1) {
-		return;
-	}
-	Tile* tile = editor.selection.getSelectedTile();
-	if (!tile) {
-		return;
-	}
-	Item* wall = tile->getTable();
-	TableBrush* tb = wall->getTableBrush();
-
-	if (tb) {
-		g_gui.SelectBrush(tb);
-	}
+	BrushSelector::SelectTableBrush(editor.selection);
 }
 
 void MapCanvas::OnSelectHouseBrush(wxCommandEvent& WXUNUSED(event)) {
-	Tile* tile = editor.selection.getSelectedTile();
-	if (!tile) {
-		return;
-	}
-
-	if (tile->isHouseTile()) {
-		House* house = editor.map.houses.getHouse(tile->getHouseID());
-		if (house) {
-			g_gui.house_brush->setHouse(house);
-			g_gui.SelectBrush(g_gui.house_brush, TILESET_HOUSE);
-		}
-	}
+	BrushSelector::SelectHouseBrush(editor, editor.selection);
 }
 
 void MapCanvas::OnSelectCollectionBrush(wxCommandEvent& WXUNUSED(event)) {
-	Tile* tile = editor.selection.getSelectedTile();
-	if (!tile) {
-		return;
-	}
-
-	for (auto* item : tile->items) {
-		if (item->isWall()) {
-			WallBrush* wb = item->getWallBrush();
-			if (wb && wb->visibleInPalette() && wb->hasCollection()) {
-				g_gui.SelectBrush(wb, TILESET_COLLECTION);
-				return;
-			}
-		}
-		if (item->isTable()) {
-			TableBrush* tb = item->getTableBrush();
-			if (tb && tb->visibleInPalette() && tb->hasCollection()) {
-				g_gui.SelectBrush(tb, TILESET_COLLECTION);
-				return;
-			}
-		}
-		if (item->isCarpet()) {
-			CarpetBrush* cb = item->getCarpetBrush();
-			if (cb && cb->visibleInPalette() && cb->hasCollection()) {
-				g_gui.SelectBrush(cb, TILESET_COLLECTION);
-				return;
-			}
-		}
-		if (Brush* db = item->getDoodadBrush()) {
-			if (db && db->visibleInPalette() && db->hasCollection()) {
-				g_gui.SelectBrush(db, TILESET_COLLECTION);
-				return;
-			}
-		}
-		if (item->isSelected()) {
-			RAWBrush* rb = item->getRAWBrush();
-			if (rb && rb->hasCollection()) {
-				g_gui.SelectBrush(rb, TILESET_COLLECTION);
-				return;
-			}
-		}
-	}
-	GroundBrush* gb = tile->getGroundBrush();
-	if (gb && gb->visibleInPalette() && gb->hasCollection()) {
-		g_gui.SelectBrush(gb, TILESET_COLLECTION);
-		return;
-	}
+	BrushSelector::SelectCollectionBrush(editor.selection);
 }
 
 void MapCanvas::OnSelectCreatureBrush(wxCommandEvent& WXUNUSED(event)) {
-	Tile* tile = editor.selection.getSelectedTile();
-	if (!tile) {
-		return;
-	}
-
-	if (tile->creature) {
-		g_gui.SelectBrush(tile->creature->getBrush(), TILESET_CREATURE);
-	}
+	BrushSelector::SelectCreatureBrush(editor.selection);
 }
 
 void MapCanvas::OnSelectSpawnBrush(wxCommandEvent& WXUNUSED(event)) {
-	g_gui.SelectBrush(g_gui.spawn_brush, TILESET_CREATURE);
+	BrushSelector::SelectSpawnBrush();
 }
 
 void MapCanvas::OnSelectMoveTo(wxCommandEvent& WXUNUSED(event)) {
-	if (editor.selection.size() != 1) {
-		return;
-	}
-
-	Tile* tile = editor.selection.getSelectedTile();
-	if (!tile) {
-		return;
-	}
-	ASSERT(tile->isSelected());
-	Tile* new_tile = tile->deepCopy(editor.map);
-
-	wxDialog* w = nullptr;
-
-	ItemVector selected_items = new_tile->getSelectedItems();
-
-	Item* item = nullptr;
-	int count = 0;
-	for (ItemVector::iterator it = selected_items.begin(); it != selected_items.end(); ++it) {
-		++count;
-		if ((*it)->isSelected()) {
-			item = *it;
-		}
-	}
-
-	if (item) {
-		w = newd TilesetWindow(g_gui.root, &editor.map, new_tile, item);
-	} else {
-		return;
-	}
-
-	int ret = w->ShowModal();
-	if (ret != 0) {
-		Action* action = editor.actionQueue->createAction(ACTION_CHANGE_PROPERTIES);
-		action->addChange(newd Change(new_tile));
-		editor.addAction(action);
-
-		g_gui.RebuildPalettes();
-	} else {
-		// Cancel!
-		delete new_tile;
-	}
-	w->Destroy();
+	PopupActionHandler::SelectMoveTo(editor);
 }
 
 void MapCanvas::OnProperties(wxCommandEvent& WXUNUSED(event)) {
-	if (editor.selection.size() != 1) {
-		return;
-	}
-
-	Tile* tile = editor.selection.getSelectedTile();
-	if (tile) {
-		DialogHelper::OpenProperties(editor, tile);
-	}
+	PopupActionHandler::OpenProperties(editor);
 }
 
 void MapCanvas::ChangeFloor(int new_floor) {
-	ASSERT(new_floor >= 0 || new_floor < MAP_LAYERS);
-	int old_floor = floor;
-	floor = new_floor;
-	if (old_floor != new_floor) {
-		UpdatePositionStatus();
-		g_gui.root->UpdateFloorMenu();
-		g_gui.UpdateMinimap(true);
-	}
-	Refresh();
+	NavigationController::ChangeFloor(this, new_floor);
 }
 
 void MapCanvas::EnterDrawingMode() {
