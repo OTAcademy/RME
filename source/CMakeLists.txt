@@ -8,6 +8,7 @@ ${CMAKE_CURRENT_LIST_DIR}/artprovider.h
 ${CMAKE_CURRENT_LIST_DIR}/basemap.h
 ${CMAKE_CURRENT_LIST_DIR}/browse_tile_window.h
 ${CMAKE_CURRENT_LIST_DIR}/brush.h
+${CMAKE_CURRENT_LIST_DIR}/brush_utility.h
 ${CMAKE_CURRENT_LIST_DIR}/brush_enums.h
 ${CMAKE_CURRENT_LIST_DIR}/carpet_brush.h
 ${CMAKE_CURRENT_LIST_DIR}/client_version.h
@@ -55,6 +56,9 @@ ${CMAKE_CURRENT_LIST_DIR}/live_tab.h
 ${CMAKE_CURRENT_LIST_DIR}/main.h
 ${CMAKE_CURRENT_LIST_DIR}/main_menubar.h
 ${CMAKE_CURRENT_LIST_DIR}/main_toolbar.h
+${CMAKE_CURRENT_LIST_DIR}/map_popup_menu.h
+${CMAKE_CURRENT_LIST_DIR}/animation_timer.h
+${CMAKE_CURRENT_LIST_DIR}/dialog_helper.h
 ${CMAKE_CURRENT_LIST_DIR}/map.h
 ${CMAKE_CURRENT_LIST_DIR}/map_allocator.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/map_display.h
@@ -141,6 +145,7 @@ ${CMAKE_CURRENT_LIST_DIR}/application.cpp
 ${CMAKE_CURRENT_LIST_DIR}/artprovider.cpp
 ${CMAKE_CURRENT_LIST_DIR}/basemap.cpp
 ${CMAKE_CURRENT_LIST_DIR}/brush.cpp
+${CMAKE_CURRENT_LIST_DIR}/brush_utility.cpp
 ${CMAKE_CURRENT_LIST_DIR}/brush_tables.cpp
 ${CMAKE_CURRENT_LIST_DIR}/browse_tile_window.cpp
 ${CMAKE_CURRENT_LIST_DIR}/positionctrl.cpp
@@ -185,6 +190,9 @@ ${CMAKE_CURRENT_LIST_DIR}/live_socket.cpp
 ${CMAKE_CURRENT_LIST_DIR}/live_tab.cpp
 ${CMAKE_CURRENT_LIST_DIR}/main_menubar.cpp
 ${CMAKE_CURRENT_LIST_DIR}/main_toolbar.cpp
+${CMAKE_CURRENT_LIST_DIR}/map_popup_menu.cpp
+${CMAKE_CURRENT_LIST_DIR}/animation_timer.cpp
+${CMAKE_CURRENT_LIST_DIR}/dialog_helper.cpp
 ${CMAKE_CURRENT_LIST_DIR}/map.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/map_display.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/map_drawer.cpp

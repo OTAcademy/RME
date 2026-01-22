@@ -23,10 +23,12 @@
 #include "creature.h"
 #include "rendering/fps_counter.h"
 
+#include "map_popup_menu.h"
+#include "animation_timer.h"
+
 class Item;
 class Creature;
 class MapWindow;
-class MapPopupMenu;
 class AnimationTimer;
 class MapDrawer;
 
@@ -123,11 +125,6 @@ public:
 
 	void TakeScreenshot(wxFileName path, wxString format);
 
-protected:
-	void getTilesToDraw(int mouse_map_x, int mouse_map_y, int floor, PositionVector* tilestodraw, PositionVector* tilestoborder, bool fill = false);
-	bool floodFill(Map* map, const Position& center, int x, int y, GroundBrush* brush, PositionVector* positions);
-
-private:
 	enum {
 		BLOCK_SIZE = 100
 	};
@@ -137,11 +134,9 @@ private:
 	}
 
 	static bool processed[BLOCK_SIZE * BLOCK_SIZE];
-
 	Editor& editor;
 	MapDrawer* drawer;
 	int keyCode;
-	int countMaxFills = 0;
 
 	// View related
 	int floor;
@@ -196,32 +191,6 @@ private:
 	friend class PreviewDrawer;
 
 	DECLARE_EVENT_TABLE()
-};
-
-// Right-click popup menu
-class MapPopupMenu : public wxMenu {
-public:
-	MapPopupMenu(Editor& editor);
-	virtual ~MapPopupMenu();
-
-	void Update();
-
-protected:
-	Editor& editor;
-};
-
-class AnimationTimer : public wxTimer {
-public:
-	AnimationTimer(MapCanvas* canvas);
-	~AnimationTimer();
-
-	void Notify();
-	void Start();
-	void Stop();
-
-private:
-	MapCanvas* map_canvas;
-	bool started;
 };
 
 #endif

@@ -1,6 +1,6 @@
 ======================================== 
  RME Windows Build Script 
- Started: czw. 22.01.2026 21:03:40,83 
+ Started: czw. 22.01.2026 21:17:16,92 
 ======================================== 
 [1/3] Configuring CMake... 
 -- Running vcpkg install
@@ -167,178 +167,46 @@ The package wxwidgets provides CMake targets:
     find_package(wxWidgets CONFIG REQUIRED)
     target_link_libraries(main PRIVATE wx::core wx::base)
 
-All requested installations completed successfully in: 1.25 ms
+All requested installations completed successfully in: 1.23 ms
 -- Running vcpkg install - done
 -- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
--- Configuring done (2.1s)
+-- Configuring done (2.2s)
 -- Generating done (0.1s)
 -- Build files have been written to: C:/Users/karol/Documents/GitHub/RME_v2/build
 [2/3] Building Release... 
 Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
 
   Trwa skanowanie źródeł pod kątem zależności modułów...
-  copybuffer.cpp
-  creatures.cpp
-  add_item_window.cpp
-  creature.cpp
-  container_properties_window.cpp
-  brush.cpp
-  browse_tile_window.cpp
-  action.cpp
-  complexitem.cpp
-  add_tileset_window.cpp
-  common_windows.cpp
-  creature_brush.cpp
-  client_version.cpp
-  application.cpp
-  dat_debug_view.cpp
-  about_window.cpp
-  editor.cpp
-  dcbutton.cpp
-  gui.cpp
-  iomap_otbm.cpp
-  find_item_window.cpp
-  items.cpp
-  editor_tabs.cpp
-  extension_window.cpp
-  iomap.cpp
-  light_drawer.cpp
-  house_brush.cpp
-  house.cpp
-  live_action.cpp
-  live_client.cpp
-  graphics.cpp
-  item.cpp
-  live_peer.cpp
-  live_server.cpp
-  live_socket.cpp
-  live_tab.cpp
-  main_menubar.cpp
-  map.cpp
-  main_toolbar.cpp
   map_display.cpp
-  editor_sprite_loader.cpp
-  tooltip_drawer.cpp
-  render_view.cpp
-  selection_drawer.cpp
-  map_drawer.cpp
-  tile_describer.cpp
-  live_cursor_drawer.cpp
-  brush_overlay_drawer.cpp
-  drag_shadow_drawer.cpp
-  floor_drawer.cpp
-  sprite_drawer.cpp
-  creature_drawer.cpp
-  item_drawer.cpp
-  preview_drawer.cpp
-  marker_drawer.cpp
-  map_tab.cpp
-  tile_renderer.cpp
-  map_window.cpp
-  palette_creature.cpp
-  palette_brushlist.cpp
-  materials.cpp
-  old_properties_window.cpp
-  minimap_window.cpp
-  palette_common.cpp
-  palette_house.cpp
-  palette_waypoints.cpp
-  palette_window.cpp
-  preferences.cpp
-  process_com.cpp
-  properties_window.cpp
-  replace_items_window.cpp
-  result_window.cpp
-  selection.cpp
-  tileset.cpp
-  wall_brush.cpp
-  town.cpp
-  tileset_window.cpp
-  waypoints.cpp
-  tile.cpp
+  brush_utility.cpp
   Trwa kompilowanie…
-  creature.cpp
-  action.cpp
-  complexitem.cpp
-  client_version.cpp
-  copybuffer.cpp
-  add_item_window.cpp
-  container_properties_window.cpp
-  brush.cpp
-  creatures.cpp
-  application.cpp
-  add_tileset_window.cpp
-  browse_tile_window.cpp
-  about_window.cpp
-  creature_brush.cpp
-  common_windows.cpp
-  dat_debug_view.cpp
-  dcbutton.cpp
-  editor.cpp
-  house_brush.cpp
-  editor_tabs.cpp
-  find_item_window.cpp
-  extension_window.cpp
-  live_client.cpp
-  gui.cpp
-  graphics.cpp
-  iomap_otbm.cpp
-  house.cpp
-  item.cpp
-  light_drawer.cpp
-  iomap.cpp
-  items.cpp
-  live_action.cpp
-  live_peer.cpp
-  live_server.cpp
-  live_socket.cpp
-  live_tab.cpp
-  map_display.cpp
-  render_view.cpp
-  brush_overlay_drawer.cpp
-  map.cpp
-  tooltip_drawer.cpp
-  tile_describer.cpp
-  main_menubar.cpp
-  editor_sprite_loader.cpp
-  main_toolbar.cpp
-  selection_drawer.cpp
-  map_drawer.cpp
-  live_cursor_drawer.cpp
-  drag_shadow_drawer.cpp
-  floor_drawer.cpp
-  sprite_drawer.cpp
-  creature_drawer.cpp
-  marker_drawer.cpp
   preview_drawer.cpp
-  item_drawer.cpp
-  map_window.cpp
-  palette_creature.cpp
-  tile_renderer.cpp
-  old_properties_window.cpp
-  map_tab.cpp
-  minimap_window.cpp
-  palette_common.cpp
   palette_brushlist.cpp
-  materials.cpp
-  palette_house.cpp
+  tile_color_calculator.cpp
+  shade_drawer.cpp
+  tile_renderer.cpp
+  brush_utility.cpp
+  palette_common.cpp
+  old_properties_window.cpp
   palette_waypoints.cpp
+  minimap_window.cpp
+  map_display.cpp
+  materials.cpp
+  palette_creature.cpp
+  map_window.cpp
+  map_tab.cpp
+  palette_house.cpp
   palette_window.cpp
   preferences.cpp
-  replace_items_window.cpp
-  process_com.cpp
-  properties_window.cpp
-  selection.cpp
-  result_window.cpp
-  tileset.cpp
-  tile.cpp
-  wall_brush.cpp
-  waypoints.cpp
-  town.cpp
   tileset_window.cpp
+  replace_items_window.cpp
+  result_window.cpp
+  selection.cpp
+  process_com.cpp
+  wall_brush.cpp
   rme.vcxproj -> C:\Users\karol\Documents\GitHub\RME_v2\build\Release\rme.exe
 ======================================== 
  BUILD SUCCESSFUL 
  Output: C:\Users\karol\Documents\GitHub\RME_v2\build\Release\rme.exe 
- Finished: czw. 22.01.2026 21:04:34,09 
+ Finished: czw. 22.01.2026 21:17:36,70 
 ======================================== 

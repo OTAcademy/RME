@@ -43,6 +43,10 @@
 #include "application.h"
 #include "live_server.h"
 #include "browse_tile_window.h"
+#include "dialog_helper.h"
+#include "animation_timer.h"
+#include "map_popup_menu.h"
+#include "brush_utility.h"
 
 #include "doodad_brush.h"
 #include "house_exit_brush.h"
@@ -202,37 +206,7 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 		if (screenshot_buffer) {
 			options.SetIngame();
 		} else {
-			options.transparent_floors = g_settings.getBoolean(Config::TRANSPARENT_FLOORS);
-			options.transparent_items = g_settings.getBoolean(Config::TRANSPARENT_ITEMS);
-			options.show_ingame_box = g_settings.getBoolean(Config::SHOW_INGAME_BOX);
-			options.show_lights = g_settings.getBoolean(Config::SHOW_LIGHTS);
-			options.show_light_str = g_settings.getBoolean(Config::SHOW_LIGHT_STR);
-			options.show_tech_items = g_settings.getBoolean(Config::SHOW_TECHNICAL_ITEMS);
-			options.show_waypoints = g_settings.getBoolean(Config::SHOW_WAYPOINTS);
-			options.show_grid = g_settings.getInteger(Config::SHOW_GRID);
-			options.ingame = !g_settings.getBoolean(Config::SHOW_EXTRA);
-			options.show_all_floors = g_settings.getBoolean(Config::SHOW_ALL_FLOORS);
-			options.show_creatures = g_settings.getBoolean(Config::SHOW_CREATURES);
-			options.show_spawns = g_settings.getBoolean(Config::SHOW_SPAWNS);
-			options.show_houses = g_settings.getBoolean(Config::SHOW_HOUSES);
-			options.show_shade = g_settings.getBoolean(Config::SHOW_SHADE);
-			options.show_special_tiles = g_settings.getBoolean(Config::SHOW_SPECIAL_TILES);
-			options.show_items = g_settings.getBoolean(Config::SHOW_ITEMS);
-			options.highlight_items = g_settings.getBoolean(Config::HIGHLIGHT_ITEMS);
-			options.highlight_locked_doors = g_settings.getBoolean(Config::HIGHLIGHT_LOCKED_DOORS);
-			options.show_blocking = g_settings.getBoolean(Config::SHOW_BLOCKING);
-			options.show_tooltips = g_settings.getBoolean(Config::SHOW_TOOLTIPS);
-			options.show_as_minimap = g_settings.getBoolean(Config::SHOW_AS_MINIMAP);
-			options.show_only_colors = g_settings.getBoolean(Config::SHOW_ONLY_TILEFLAGS);
-			options.show_only_modified = g_settings.getBoolean(Config::SHOW_ONLY_MODIFIED_TILES);
-			options.show_preview = g_settings.getBoolean(Config::SHOW_PREVIEW);
-			options.show_hooks = g_settings.getBoolean(Config::SHOW_WALL_HOOKS);
-			options.hide_items_when_zoomed = g_settings.getBoolean(Config::HIDE_ITEMS_WHEN_ZOOMED);
-			options.show_towns = g_settings.getBoolean(Config::SHOW_TOWNS);
-			options.always_show_zones = g_settings.getBoolean(Config::ALWAYS_SHOW_ZONES);
-			options.extended_house_shader = g_settings.getBoolean(Config::EXT_HOUSE_SHADER);
-
-			options.experimental_fog = g_settings.getBoolean(Config::EXPERIMENTAL_FOG);
+			options.Update();
 		}
 
 		options.dragging = boundbox_selection;
@@ -431,7 +405,7 @@ void MapCanvas::OnMouseMove(wxMouseEvent& event) {
 			if (brush->isDoodad()) {
 				if (event.ControlDown()) {
 					PositionVector tilestodraw;
-					getTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, nullptr);
+					BrushUtility::GetTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, nullptr);
 					editor.undraw(tilestodraw, event.ShiftDown() || event.AltDown());
 				} else {
 					editor.draw(Position(mouse_map_x, mouse_map_y, floor), event.ShiftDown() || event.AltDown());
@@ -459,7 +433,7 @@ void MapCanvas::OnMouseMove(wxMouseEvent& event) {
 			} else if (brush->needBorders()) {
 				PositionVector tilestodraw, tilestoborder;
 
-				getTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, &tilestoborder);
+				BrushUtility::GetTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, &tilestoborder);
 
 				if (event.ControlDown()) {
 					editor.undraw(tilestodraw, tilestoborder, event.AltDown());
@@ -524,33 +498,8 @@ void MapCanvas::OnMouseLeftDoubleClick(wxMouseEvent& event) {
 		ScreenToMap(event.GetX(), event.GetY(), &mouse_map_x, &mouse_map_y);
 		Tile* tile = editor.map.getTile(mouse_map_x, mouse_map_y, floor);
 
-		if (tile && tile->size() > 0) {
-			Tile* new_tile = tile->deepCopy(editor.map);
-			wxDialog* w = nullptr;
-			if (new_tile->spawn && g_settings.getInteger(Config::SHOW_SPAWNS)) {
-				w = newd OldPropertiesWindow(g_gui.root, &editor.map, new_tile, new_tile->spawn);
-			} else if (new_tile->creature && g_settings.getInteger(Config::SHOW_CREATURES)) {
-				w = newd OldPropertiesWindow(g_gui.root, &editor.map, new_tile, new_tile->creature);
-			} else if (Item* item = new_tile->getTopItem()) {
-				if (editor.map.getVersion().otbm >= MAP_OTBM_4) {
-					w = newd PropertiesWindow(g_gui.root, &editor.map, new_tile, item);
-				} else {
-					w = newd OldPropertiesWindow(g_gui.root, &editor.map, new_tile, item);
-				}
-			} else {
-				return;
-			}
-
-			int ret = w->ShowModal();
-			if (ret != 0) {
-				Action* action = editor.actionQueue->createAction(ACTION_CHANGE_PROPERTIES);
-				action->addChange(newd Change(new_tile));
-				editor.addAction(action);
-			} else {
-				// Cancel!
-				delete new_tile;
-			}
-			w->Destroy();
+		if (tile) {
+			DialogHelper::OpenProperties(editor, tile);
 		}
 	}
 }
@@ -777,7 +726,7 @@ void MapCanvas::OnMouseActionClick(wxMouseEvent& event) {
 				if (event.ControlDown()) {
 					if (brush->isDoodad()) {
 						PositionVector tilestodraw;
-						getTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, nullptr);
+						BrushUtility::GetTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, nullptr);
 						editor.undraw(tilestodraw, event.AltDown());
 					} else {
 						editor.undraw(Position(mouse_map_x, mouse_map_y, floor), event.ShiftDown() || event.AltDown());
@@ -819,7 +768,7 @@ void MapCanvas::OnMouseActionClick(wxMouseEvent& event) {
 					PositionVector tilestoborder;
 
 					bool fill = keyCode == WXK_CONTROL_D && event.ControlDown() && brush->isGround();
-					getTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, &tilestoborder, fill);
+					BrushUtility::GetTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, &tilestoborder, fill);
 
 					if (!fill && event.ControlDown()) {
 						editor.undraw(tilestodraw, tilestoborder, event.AltDown());
@@ -841,7 +790,7 @@ void MapCanvas::OnMouseActionClick(wxMouseEvent& event) {
 				} else {
 					PositionVector tilestodraw;
 
-					getTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, nullptr);
+					BrushUtility::GetTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, nullptr);
 
 					if (event.ControlDown()) {
 						editor.undraw(tilestodraw, event.AltDown());
@@ -2196,51 +2145,9 @@ void MapCanvas::OnProperties(wxCommandEvent& WXUNUSED(event)) {
 	}
 
 	Tile* tile = editor.selection.getSelectedTile();
-	if (!tile) {
-		return;
+	if (tile) {
+		DialogHelper::OpenProperties(editor, tile);
 	}
-	ASSERT(tile->isSelected());
-	Tile* new_tile = tile->deepCopy(editor.map);
-
-	wxDialog* w = nullptr;
-
-	if (new_tile->spawn && g_settings.getInteger(Config::SHOW_SPAWNS)) {
-		w = newd OldPropertiesWindow(g_gui.root, &editor.map, new_tile, new_tile->spawn);
-	} else if (new_tile->creature && g_settings.getInteger(Config::SHOW_CREATURES)) {
-		w = newd OldPropertiesWindow(g_gui.root, &editor.map, new_tile, new_tile->creature);
-	} else {
-		ItemVector selected_items = new_tile->getSelectedItems();
-
-		Item* item = nullptr;
-		int count = 0;
-		for (ItemVector::iterator it = selected_items.begin(); it != selected_items.end(); ++it) {
-			++count;
-			if ((*it)->isSelected()) {
-				item = *it;
-			}
-		}
-
-		if (item) {
-			if (editor.map.getVersion().otbm >= MAP_OTBM_4) {
-				w = newd PropertiesWindow(g_gui.root, &editor.map, new_tile, item);
-			} else {
-				w = newd OldPropertiesWindow(g_gui.root, &editor.map, new_tile, item);
-			}
-		} else {
-			return;
-		}
-	}
-
-	int ret = w->ShowModal();
-	if (ret != 0) {
-		Action* action = editor.actionQueue->createAction(ACTION_CHANGE_PROPERTIES);
-		action->addChange(newd Change(new_tile));
-		editor.addAction(action);
-	} else {
-		// Cancel!
-		delete new_tile;
-	}
-	w->Destroy();
 }
 
 void MapCanvas::ChangeFloor(int new_floor) {
@@ -2312,356 +2219,3 @@ void MapCanvas::Reset() {
 	editor.selection.clear();
 	editor.actionQueue->clear();
 }
-
-MapPopupMenu::MapPopupMenu(Editor& editor) :
-	wxMenu(""), editor(editor) {
-	////
-}
-
-MapPopupMenu::~MapPopupMenu() {
-	////
-}
-
-void MapPopupMenu::Update() {
-	// Clear the menu of all items
-	while (GetMenuItemCount() != 0) {
-		wxMenuItem* m_item = FindItemByPosition(0);
-		// If you add a submenu, this won't delete it.
-		Delete(m_item);
-	}
-
-	bool anything_selected = editor.selection.size() != 0;
-
-	wxMenuItem* cutItem = Append(MAP_POPUP_MENU_CUT, "&Cut\tCTRL+X", "Cut out all selected items");
-	cutItem->Enable(anything_selected);
-
-	wxMenuItem* copyItem = Append(MAP_POPUP_MENU_COPY, "&Copy\tCTRL+C", "Copy all selected items");
-	copyItem->Enable(anything_selected);
-
-	wxMenuItem* copyPositionItem = Append(MAP_POPUP_MENU_COPY_POSITION, "&Copy Position", "Copy the position as a lua table");
-	copyPositionItem->Enable(anything_selected);
-
-	wxMenuItem* pasteItem = Append(MAP_POPUP_MENU_PASTE, "&Paste\tCTRL+V", "Paste items in the copybuffer here");
-	pasteItem->Enable(editor.copybuffer.canPaste());
-
-	wxMenuItem* deleteItem = Append(MAP_POPUP_MENU_DELETE, "&Delete\tDEL", "Removes all seleceted items");
-	deleteItem->Enable(anything_selected);
-
-	if (anything_selected) {
-		if (editor.selection.size() == 1) {
-			Tile* tile = editor.selection.getSelectedTile();
-			ItemVector selected_items = tile->getSelectedItems();
-
-			bool hasWall = false;
-			bool hasCarpet = false;
-			bool hasTable = false;
-			bool hasCollection = false;
-			Item* topItem = nullptr;
-			Item* topSelectedItem = (selected_items.size() == 1 ? selected_items.back() : nullptr);
-			Creature* topCreature = tile->creature;
-			Spawn* topSpawn = tile->spawn;
-
-			for (auto* item : tile->items) {
-				if (item->isWall()) {
-					Brush* wb = item->getWallBrush();
-					if (wb && wb->visibleInPalette()) {
-						hasWall = true;
-						hasCollection = hasCollection || wb->hasCollection();
-					}
-				}
-				if (item->isTable()) {
-					Brush* tb = item->getTableBrush();
-					if (tb && tb->visibleInPalette()) {
-						hasTable = true;
-						hasCollection = hasCollection || tb->hasCollection();
-					}
-				}
-				if (item->isCarpet()) {
-					Brush* cb = item->getCarpetBrush();
-					if (cb && cb->visibleInPalette()) {
-						hasCarpet = true;
-						hasCollection = hasCollection || cb->hasCollection();
-					}
-				}
-				if (Brush* db = item->getDoodadBrush()) {
-					hasCollection = hasCollection || db->hasCollection();
-				}
-				if (item->isSelected()) {
-					topItem = item;
-				}
-			}
-			if (!topItem) {
-				topItem = tile->ground;
-			}
-
-			AppendSeparator();
-
-			if (topSelectedItem) {
-				Append(MAP_POPUP_MENU_COPY_SERVER_ID, "Copy Item Server Id", "Copy the server id of this item");
-				Append(MAP_POPUP_MENU_COPY_CLIENT_ID, "Copy Item Client Id", "Copy the client id of this item");
-				Append(MAP_POPUP_MENU_COPY_NAME, "Copy Item Name", "Copy the name of this item");
-				AppendSeparator();
-			}
-
-			if (topSelectedItem || topCreature || topItem) {
-				Teleport* teleport = dynamic_cast<Teleport*>(topSelectedItem);
-				if (topSelectedItem && (topSelectedItem->isBrushDoor() || topSelectedItem->isRoteable() || teleport)) {
-
-					if (topSelectedItem->isRoteable()) {
-						Append(MAP_POPUP_MENU_ROTATE, "&Rotate item", "Rotate this item");
-					}
-
-					if (teleport && teleport->hasDestination()) {
-						Append(MAP_POPUP_MENU_GOTO, "&Go To Destination", "Go to the destination of this teleport");
-					}
-
-					if (topSelectedItem->isDoor()) {
-						if (topSelectedItem->isOpen()) {
-							Append(MAP_POPUP_MENU_SWITCH_DOOR, "&Close door", "Close this door");
-						} else {
-							Append(MAP_POPUP_MENU_SWITCH_DOOR, "&Open door", "Open this door");
-						}
-						AppendSeparator();
-					}
-				}
-
-				if (topCreature) {
-					Append(MAP_POPUP_MENU_SELECT_CREATURE_BRUSH, "Select Creature", "Uses the current creature as a creature brush");
-				}
-
-				if (topSpawn) {
-					Append(MAP_POPUP_MENU_SELECT_SPAWN_BRUSH, "Select Spawn", "Select the spawn brush");
-				}
-
-				Append(MAP_POPUP_MENU_SELECT_RAW_BRUSH, "Select RAW", "Uses the top item as a RAW brush");
-
-				if (g_settings.getBoolean(Config::SHOW_TILESET_EDITOR)) {
-					Append(MAP_POPUP_MENU_MOVE_TO_TILESET, "Move To Tileset", "Move this item to any tileset");
-				}
-
-				if (hasWall) {
-					Append(MAP_POPUP_MENU_SELECT_WALL_BRUSH, "Select Wallbrush", "Uses the current item as a wallbrush");
-				}
-
-				if (hasCarpet) {
-					Append(MAP_POPUP_MENU_SELECT_CARPET_BRUSH, "Select Carpetbrush", "Uses the current item as a carpetbrush");
-				}
-
-				if (hasTable) {
-					Append(MAP_POPUP_MENU_SELECT_TABLE_BRUSH, "Select Tablebrush", "Uses the current item as a tablebrush");
-				}
-
-				if (topSelectedItem && topSelectedItem->getDoodadBrush() && topSelectedItem->getDoodadBrush()->visibleInPalette()) {
-					Append(MAP_POPUP_MENU_SELECT_DOODAD_BRUSH, "Select Doodadbrush", "Use this doodad brush");
-				}
-
-				if (topSelectedItem && topSelectedItem->isBrushDoor() && topSelectedItem->getDoorBrush()) {
-					Append(MAP_POPUP_MENU_SELECT_DOOR_BRUSH, "Select Doorbrush", "Use this door brush");
-				}
-
-				if (tile->hasGround() && tile->getGroundBrush() && tile->getGroundBrush()->visibleInPalette()) {
-					Append(MAP_POPUP_MENU_SELECT_GROUND_BRUSH, "Select Groundbrush", "Uses the current item as a groundbrush");
-				}
-
-				if (hasCollection || topSelectedItem && topSelectedItem->hasCollectionBrush() || tile->getGroundBrush() && tile->getGroundBrush()->hasCollection()) {
-					Append(MAP_POPUP_MENU_SELECT_COLLECTION_BRUSH, "Select Collection", "Use this collection");
-				}
-
-				if (tile->isHouseTile()) {
-					Append(MAP_POPUP_MENU_SELECT_HOUSE_BRUSH, "Select House", "Draw with the house on this tile.");
-				}
-
-				AppendSeparator();
-				Append(MAP_POPUP_MENU_PROPERTIES, "&Properties", "Properties for the current object");
-			} else {
-
-				if (topCreature) {
-					Append(MAP_POPUP_MENU_SELECT_CREATURE_BRUSH, "Select Creature", "Uses the current creature as a creature brush");
-				}
-
-				if (topSpawn) {
-					Append(MAP_POPUP_MENU_SELECT_SPAWN_BRUSH, "Select Spawn", "Select the spawn brush");
-				}
-
-				Append(MAP_POPUP_MENU_SELECT_RAW_BRUSH, "Select RAW", "Uses the top item as a RAW brush");
-				if (hasWall) {
-					Append(MAP_POPUP_MENU_SELECT_WALL_BRUSH, "Select Wallbrush", "Uses the current item as a wallbrush");
-				}
-				if (tile->hasGround() && tile->getGroundBrush() && tile->getGroundBrush()->visibleInPalette()) {
-					Append(MAP_POPUP_MENU_SELECT_GROUND_BRUSH, "Select Groundbrush", "Uses the current tile as a groundbrush");
-				}
-
-				if (hasCollection || tile->getGroundBrush() && tile->getGroundBrush()->hasCollection()) {
-					Append(MAP_POPUP_MENU_SELECT_COLLECTION_BRUSH, "Select Collection", "Use this collection");
-				}
-
-				if (tile->isHouseTile()) {
-					Append(MAP_POPUP_MENU_SELECT_HOUSE_BRUSH, "Select House", "Draw with the house on this tile.");
-				}
-
-				if (tile->hasGround() || topCreature || topSpawn) {
-					AppendSeparator();
-					Append(MAP_POPUP_MENU_PROPERTIES, "&Properties", "Properties for the current object");
-				}
-			}
-
-			AppendSeparator();
-
-			wxMenuItem* browseTile = Append(MAP_POPUP_MENU_BROWSE_TILE, "Browse Field", "Navigate from tile items");
-			browseTile->Enable(anything_selected);
-		}
-	}
-}
-
-void MapCanvas::getTilesToDraw(int mouse_map_x, int mouse_map_y, int floor, PositionVector* tilestodraw, PositionVector* tilestoborder, bool fill /*= false*/) {
-	if (fill) {
-		Brush* brush = g_gui.GetCurrentBrush();
-		if (!brush || !brush->isGround()) {
-			return;
-		}
-
-		GroundBrush* newBrush = brush->asGround();
-		Position position(mouse_map_x, mouse_map_y, floor);
-
-		Tile* tile = editor.map.getTile(position);
-		GroundBrush* oldBrush = nullptr;
-		if (tile) {
-			oldBrush = tile->getGroundBrush();
-		}
-
-		if (oldBrush && oldBrush->getID() == newBrush->getID()) {
-			return;
-		}
-
-		if ((tile && tile->ground && !oldBrush) || (!tile && oldBrush)) {
-			return;
-		}
-
-		if (tile && oldBrush) {
-			GroundBrush* groundBrush = tile->getGroundBrush();
-			if (!groundBrush || groundBrush->getID() != oldBrush->getID()) {
-				return;
-			}
-		}
-
-		std::fill(std::begin(processed), std::end(processed), false);
-		floodFill(&editor.map, position, BLOCK_SIZE / 2, BLOCK_SIZE / 2, oldBrush, tilestodraw);
-
-	} else {
-		for (int y = -g_gui.GetBrushSize() - 1; y <= g_gui.GetBrushSize() + 1; y++) {
-			for (int x = -g_gui.GetBrushSize() - 1; x <= g_gui.GetBrushSize() + 1; x++) {
-				if (g_gui.GetBrushShape() == BRUSHSHAPE_SQUARE) {
-					if (x >= -g_gui.GetBrushSize() && x <= g_gui.GetBrushSize() && y >= -g_gui.GetBrushSize() && y <= g_gui.GetBrushSize()) {
-						if (tilestodraw) {
-							tilestodraw->push_back(Position(mouse_map_x + x, mouse_map_y + y, floor));
-						}
-					}
-					if (std::abs(x) - g_gui.GetBrushSize() < 2 && std::abs(y) - g_gui.GetBrushSize() < 2) {
-						if (tilestoborder) {
-							tilestoborder->push_back(Position(mouse_map_x + x, mouse_map_y + y, floor));
-						}
-					}
-				} else if (g_gui.GetBrushShape() == BRUSHSHAPE_CIRCLE) {
-					double distance = sqrt(double(x * x) + double(y * y));
-					if (distance < g_gui.GetBrushSize() + 0.005) {
-						if (tilestodraw) {
-							tilestodraw->push_back(Position(mouse_map_x + x, mouse_map_y + y, floor));
-						}
-					}
-					if (std::abs(distance - g_gui.GetBrushSize()) < 1.5) {
-						if (tilestoborder) {
-							tilestoborder->push_back(Position(mouse_map_x + x, mouse_map_y + y, floor));
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-bool MapCanvas::floodFill(Map* map, const Position& center, int x, int y, GroundBrush* brush, PositionVector* positions) {
-	countMaxFills++;
-	if (countMaxFills > (BLOCK_SIZE * 4 * 4)) {
-		countMaxFills = 0;
-		return true;
-	}
-
-	if (x <= 0 || y <= 0 || x >= BLOCK_SIZE || y >= BLOCK_SIZE) {
-		return false;
-	}
-
-	processed[getFillIndex(x, y)] = true;
-
-	int px = (center.x + x) - (BLOCK_SIZE / 2);
-	int py = (center.y + y) - (BLOCK_SIZE / 2);
-	if (px <= 0 || py <= 0 || px >= map->getWidth() || py >= map->getHeight()) {
-		return false;
-	}
-
-	Tile* tile = map->getTile(px, py, center.z);
-	if ((tile && tile->ground && !brush) || (!tile && brush)) {
-		return false;
-	}
-
-	if (tile && brush) {
-		GroundBrush* groundBrush = tile->getGroundBrush();
-		if (!groundBrush || groundBrush->getID() != brush->getID()) {
-			return false;
-		}
-	}
-
-	positions->push_back(Position(px, py, center.z));
-
-	bool deny = false;
-	if (!processed[getFillIndex(x - 1, y)]) {
-		deny = floodFill(map, center, x - 1, y, brush, positions);
-	}
-
-	if (!deny && !processed[getFillIndex(x, y - 1)]) {
-		deny = floodFill(map, center, x, y - 1, brush, positions);
-	}
-
-	if (!deny && !processed[getFillIndex(x + 1, y)]) {
-		deny = floodFill(map, center, x + 1, y, brush, positions);
-	}
-
-	if (!deny && !processed[getFillIndex(x, y + 1)]) {
-		deny = floodFill(map, center, x, y + 1, brush, positions);
-	}
-
-	return deny;
-}
-
-// ============================================================================
-// AnimationTimer
-
-AnimationTimer::AnimationTimer(MapCanvas* canvas) :
-	wxTimer(),
-	map_canvas(canvas),
-	started(false) {
-		////
-	};
-
-AnimationTimer::~AnimationTimer() {
-	////
-};
-
-void AnimationTimer::Notify() {
-	if (map_canvas->GetZoom() <= 2.0) {
-		map_canvas->Refresh();
-	}
-};
-
-void AnimationTimer::Start() {
-	if (!started) {
-		started = true;
-		wxTimer::Start(100);
-	}
-};
-
-void AnimationTimer::Stop() {
-	if (started) {
-		started = false;
-		wxTimer::Stop();
-	}
-};

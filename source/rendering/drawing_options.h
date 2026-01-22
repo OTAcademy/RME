@@ -6,6 +6,7 @@ struct DrawingOptions {
 
 	void SetIngame();
 	void SetDefault();
+	void Update();
 	bool isDrawLight() const noexcept;
 
 	bool transparent_floors;
