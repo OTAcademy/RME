@@ -17,6 +17,9 @@
 
 #include "main.h"
 #include "rendering/light_drawer.h"
+#include "tile.h"
+#include "item.h"
+#include "rendering/drawing_options.h"
 
 LightDrawer::LightDrawer() {
 	texture = 0;
@@ -136,6 +139,34 @@ void LightDrawer::addLight(int map_x, int map_y, int map_z, const SpriteLight& l
 	}
 
 	lights.push_back(Light { static_cast<uint16_t>(map_x), static_cast<uint16_t>(map_y), light.color, intensity });
+}
+
+void LightDrawer::CollectLights(TileLocation* location, float zoom, const DrawingOptions& options) {
+	if (!options.isDrawLight() || !location) {
+		return;
+	}
+
+	auto tile = location->get();
+	if (!tile) {
+		return;
+	}
+
+	const auto& position = location->getPosition();
+
+	if (tile->ground) {
+		if (tile->ground->hasLight()) {
+			addLight(position.x, position.y, position.z, tile->ground->getLight());
+		}
+	}
+
+	bool hidden = options.hide_items_when_zoomed && zoom > 10.f;
+	if (!hidden && !tile->items.empty()) {
+		for (auto item : tile->items) {
+			if (item->hasLight()) {
+				addLight(position.x, position.y, position.z, item->getLight());
+			}
+		}
+	}
 }
 
 void LightDrawer::clear() {

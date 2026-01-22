@@ -95,22 +95,7 @@ void MapDrawer::SetupGL() {
 	// Reset texture cache at the start of each frame
 	sprite_drawer->ResetCache();
 
-	glViewport(0, 0, view.screensize_x, view.screensize_y);
-
-	// Enable 2D mode
-	int vPort[4];
-
-	glGetIntegerv(GL_VIEWPORT, vPort);
-
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho(0, vPort[2] * view.zoom, vPort[3] * view.zoom, 0, -1, 1);
-
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glTranslatef(0.375f, 0.375f, 0.0f);
+	view.SetupGL();
 }
 
 void MapDrawer::Release() {
@@ -120,11 +105,7 @@ void MapDrawer::Release() {
 		light_drawer->clear();
 	}
 
-	// Disable 2D mode
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
+	view.ReleaseGL();
 }
 
 void MapDrawer::Draw() {
@@ -154,17 +135,7 @@ void MapDrawer::Draw() {
 }
 
 void MapDrawer::DrawBackground() {
-	// Black Background
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
-
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
-
-	// glAlphaFunc(GL_GEQUAL, 0.9f);
-	// glEnable(GL_ALPHA_TEST);
+	view.Clear();
 }
 
 void MapDrawer::DrawMap() {
@@ -237,16 +208,7 @@ void MapDrawer::DrawMap() {
 							editor.QueryNode(nd_map_x, nd_map_y, map_z > GROUND_LAYER);
 							nd->setRequested(map_z > GROUND_LAYER, true);
 						}
-						int cy = (nd_map_y)*TileSize - view.view_scroll_y - view.getFloorAdjustment();
-						int cx = (nd_map_x)*TileSize - view.view_scroll_x - view.getFloorAdjustment();
-
-						glColor4ub(255, 0, 255, 128);
-						glBegin(GL_QUADS);
-						glVertex2f(cx, cy + TileSize * 4);
-						glVertex2f(cx + TileSize * 4, cy + TileSize * 4);
-						glVertex2f(cx + TileSize * 4, cy);
-						glVertex2f(cx, cy);
-						glEnd();
+						grid_drawer->DrawNodeLoadingPlaceholder(nd_map_x, nd_map_y, view);
 					}
 				}
 			}
@@ -322,19 +284,14 @@ void MapDrawer::DrawTile(TileLocation* location) {
 	uint8_t r = 255, g = 255, b = 255;
 
 	// begin filters for ground tile
+	// begin filters for ground tile
 	if (!as_minimap) {
-		// begin filters for ground tile
-		if (!as_minimap) {
-			TileColorCalculator::Calculate(tile, options, current_house_id, location->getSpawnCount(), r, g, b);
-		}
+		TileColorCalculator::Calculate(tile, options, current_house_id, location->getSpawnCount(), r, g, b);
 	}
 
 	if (only_colors) {
 		if (as_minimap) {
-			uint8_t color = tile->getMiniMapColor();
-			r = (uint8_t)(int(color / 36) % 6 * 51);
-			g = (uint8_t)(int(color / 6) % 6 * 51);
-			b = (uint8_t)(color % 6 * 51);
+			TileColorCalculator::GetMinimapColor(tile, r, g, b);
 			sprite_drawer->glBlitSquare(draw_x, draw_y, r, g, b, 255);
 		} else if (r != 255 || g != 255 || b != 255) {
 			sprite_drawer->glBlitSquare(draw_x, draw_y, r, g, b, 128);
@@ -431,22 +388,7 @@ void MapDrawer::AddLight(TileLocation* location) {
 		return;
 	}
 
-	const auto& position = location->getPosition();
-
-	if (tile->ground) {
-		if (tile->ground->hasLight()) {
-			light_drawer->addLight(position.x, position.y, position.z, tile->ground->getLight());
-		}
-	}
-
-	bool hidden = options.hide_items_when_zoomed && view.zoom > 10.f;
-	if (!hidden && !tile->items.empty()) {
-		for (auto item : tile->items) {
-			if (item->hasLight()) {
-				light_drawer->addLight(position.x, position.y, position.z, item->getLight());
-			}
-		}
-	}
+	light_drawer->CollectLights(location, view.zoom, options);
 }
 
 void MapDrawer::TakeScreenshot(uint8_t* screenshot_buffer) {

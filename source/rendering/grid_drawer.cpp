@@ -95,6 +95,19 @@ void GridDrawer::DrawIngameBox(const RenderView& view, const DrawingOptions& opt
 	glEnable(GL_TEXTURE_2D);
 }
 
+void GridDrawer::DrawNodeLoadingPlaceholder(int nd_map_x, int nd_map_y, const RenderView& view) {
+	int cy = (nd_map_y)*TileSize - view.view_scroll_y - view.getFloorAdjustment();
+	int cx = (nd_map_x)*TileSize - view.view_scroll_x - view.getFloorAdjustment();
+
+	glColor4ub(255, 0, 255, 128);
+	glBegin(GL_QUADS);
+	glVertex2f(cx, cy + TileSize * 4);
+	glVertex2f(cx + TileSize * 4, cy + TileSize * 4);
+	glVertex2f(cx + TileSize * 4, cy);
+	glVertex2f(cx, cy);
+	glEnd();
+}
+
 void GridDrawer::drawRect(int x, int y, int w, int h, const wxColor& color, int width) {
 	glLineWidth(width);
 	glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());

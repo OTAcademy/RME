@@ -55,3 +55,10 @@ void TileColorCalculator::Calculate(const Tile* tile, const DrawingOptions& opti
 		g /= 2;
 	}
 }
+
+void TileColorCalculator::GetMinimapColor(const Tile* tile, uint8_t& r, uint8_t& g, uint8_t& b) {
+	uint8_t color = tile->getMiniMapColor();
+	r = (uint8_t)(int(color / 36) % 6 * 51);
+	g = (uint8_t)(int(color / 6) % 6 * 51);
+	b = (uint8_t)(color % 6 * 51);
+}

@@ -17,6 +17,10 @@ struct RenderView {
 	int mouse_map_x, mouse_map_y;
 
 	void Setup(MapCanvas* canvas, const DrawingOptions& options);
+	void SetupGL();
+	void ReleaseGL();
+	void Clear();
+
 	int getFloorAdjustment() const;
 	bool IsTileVisible(int map_x, int map_y, int map_z) const;
 };

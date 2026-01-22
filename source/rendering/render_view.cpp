@@ -60,3 +60,47 @@ bool RenderView::IsTileVisible(int map_x, int map_y, int map_z) const {
 	}
 	return true;
 }
+
+#ifdef __APPLE__
+	#include <GLUT/glut.h>
+#else
+	#include <GL/glut.h>
+#endif
+
+void RenderView::SetupGL() {
+	glViewport(0, 0, screensize_x, screensize_y);
+
+	// Enable 2D mode
+	int vPort[4];
+
+	glGetIntegerv(GL_VIEWPORT, vPort);
+
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(0, vPort[2] * zoom, vPort[3] * zoom, 0, -1, 1);
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	glTranslatef(0.375f, 0.375f, 0.0f);
+}
+
+void RenderView::ReleaseGL() {
+	// Disable 2D mode
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+}
+
+void RenderView::Clear() {
+	// Black Background
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+}
