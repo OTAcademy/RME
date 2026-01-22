@@ -24,7 +24,7 @@
 #include "settings.h"
 
 #include "process_com.h"
-#include "rendering/map_display.h"
+#include "rendering/ui/map_display.h"
 #include "welcome_dialog.h"
 
 class Item;

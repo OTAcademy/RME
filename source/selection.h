@@ -97,6 +97,10 @@ public:
 		ASSERT(size() == 1);
 		return *tiles.begin();
 	}
+	Tile* getSelectedTile() const {
+		ASSERT(size() == 1);
+		return *tiles.begin();
+	}
 
 private:
 	bool busy;

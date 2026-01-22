@@ -5,7 +5,7 @@
 #include "main.h"
 
 #include "animation_timer.h"
-#include "rendering/map_display.h"
+#include "rendering/ui/map_display.h"
 
 AnimationTimer::AnimationTimer(MapCanvas* canvas) :
 	wxTimer(),

@@ -32,9 +32,9 @@
 
 #include "common_windows.h"
 #include "result_window.h"
-#include "rendering/minimap_window.h"
+#include "rendering/ui/minimap_window.h"
 #include "palette_window.h"
-#include "rendering/map_display.h"
+#include "rendering/ui/map_display.h"
 #include "application.h"
 #include "welcome_dialog.h"
 

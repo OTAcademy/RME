@@ -24,7 +24,7 @@
 #include "palette_window.h"
 #include "preferences.h"
 #include "result_window.h"
-#include "rendering/minimap_window.h"
+#include "rendering/ui/minimap_window.h"
 #include "about_window.h"
 #include "main_menubar.h"
 #include "updater.h"

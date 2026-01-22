@@ -23,12 +23,12 @@ class GameSprite;
 class TooltipDrawer;
 
 // Storage during drawing, for option caching
-#include "rendering/drawing_options.h"
+#include "rendering/core/drawing_options.h"
 #include "definitions.h"
 #include "outfit.h"
 #include "creature.h"
 
-#include "rendering/render_view.h"
+#include "rendering/core/render_view.h"
 
 class GridDrawer;
 
