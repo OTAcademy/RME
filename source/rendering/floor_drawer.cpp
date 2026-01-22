@@ -11,7 +11,9 @@
 #endif
 
 #include "rendering/floor_drawer.h"
-#include "rendering/map_drawer.h"
+#include "rendering/item_drawer.h"
+#include "rendering/sprite_drawer.h"
+#include "rendering/creature_drawer.h"
 #include "rendering/render_view.h"
 #include "rendering/drawing_options.h"
 #include "editor.h"
@@ -23,10 +25,7 @@ FloorDrawer::FloorDrawer() {
 FloorDrawer::~FloorDrawer() {
 }
 
-void FloorDrawer::draw(MapDrawer* drawer, const RenderView& view, const DrawingOptions& options, Editor& editor) {
-	if (!drawer) {
-		return;
-	}
+void FloorDrawer::draw(ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, const RenderView& view, const DrawingOptions& options, Editor& editor) {
 
 	glEnable(GL_TEXTURE_2D);
 
@@ -51,15 +50,15 @@ void FloorDrawer::draw(MapDrawer* drawer, const RenderView& view, const DrawingO
 
 					if (tile->ground) {
 						if (tile->isPZ()) {
-							drawer->BlitItem(draw_x, draw_y, tile, tile->ground, false, 128, 255, 128, 96);
+							item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, tile, tile->ground, options, false, 128, 255, 128, 96);
 						} else {
-							drawer->BlitItem(draw_x, draw_y, tile, tile->ground, false, 255, 255, 255, 96);
+							item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, tile, tile->ground, options, false, 255, 255, 255, 96);
 						}
 					}
 					if (view.zoom <= 10.0 || !options.hide_items_when_zoomed) {
 						ItemVector::iterator it;
 						for (it = tile->items.begin(); it != tile->items.end(); it++) {
-							drawer->BlitItem(draw_x, draw_y, tile, *it, false, 255, 255, 255, 96);
+							item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, false, 255, 255, 255, 96);
 						}
 					}
 				}

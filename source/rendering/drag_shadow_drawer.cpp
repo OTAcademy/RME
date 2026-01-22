@@ -12,6 +12,9 @@
 
 #include "rendering/drag_shadow_drawer.h"
 #include "rendering/map_drawer.h"
+#include "rendering/item_drawer.h"
+#include "rendering/sprite_drawer.h"
+#include "rendering/creature_drawer.h"
 #include "rendering/render_view.h"
 #include "rendering/drawing_options.h"
 #include "editor.h"
@@ -29,7 +32,7 @@ DragShadowDrawer::DragShadowDrawer() {
 DragShadowDrawer::~DragShadowDrawer() {
 }
 
-void DragShadowDrawer::draw(MapDrawer* drawer, const RenderView& view, const DrawingOptions& options) {
+void DragShadowDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, const RenderView& view, const DrawingOptions& options) {
 	if (!drawer || !drawer->canvas) {
 		return;
 	}
@@ -72,19 +75,19 @@ void DragShadowDrawer::draw(MapDrawer* drawer, const RenderView& view, const Dra
 				Tile* desttile = drawer->editor.map.getTile(pos);
 				for (ItemVector::const_iterator iit = toRender.begin(); iit != toRender.end(); iit++) {
 					if (desttile) {
-						drawer->BlitItem(draw_x, draw_y, desttile, *iit, true, 160, 160, 160, 160);
+						item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, desttile, *iit, options, true, 160, 160, 160, 160);
 					} else {
-						drawer->BlitItem(draw_x, draw_y, pos, *iit, true, 160, 160, 160, 160);
+						item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, pos, *iit, options, true, 160, 160, 160, 160);
 					}
 				}
 
 				// save performance when moving large chunks unzoomed
 				if (view.zoom <= 3.0) {
 					if (tile->creature && tile->creature->isSelected() && options.show_creatures) {
-						drawer->BlitCreature(draw_x, draw_y, tile->creature);
+						creature_drawer->BlitCreature(sprite_drawer, draw_x, draw_y, tile->creature);
 					}
 					if (tile->spawn && tile->spawn->isSelected()) {
-						drawer->BlitSpriteType(draw_x, draw_y, SPRITE_SPAWN, 160, 160, 160, 160);
+						sprite_drawer->BlitSprite(draw_x, draw_y, SPRITE_SPAWN, 160, 160, 160, 160);
 					}
 				}
 			}

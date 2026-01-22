@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////////////////
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 // Remere's Map Editor is free software: you can redistribute it and/or modify
@@ -53,6 +53,9 @@
 #include "rendering/brush_overlay_drawer.h"
 #include "rendering/drag_shadow_drawer.h"
 #include "rendering/floor_drawer.h"
+#include "rendering/sprite_drawer.h"
+#include "rendering/item_drawer.h"
+#include "rendering/creature_drawer.h"
 
 MapDrawer::MapDrawer(MapCanvas* canvas) :
 	canvas(canvas), editor(canvas->editor) {
@@ -65,6 +68,9 @@ MapDrawer::MapDrawer(MapCanvas* canvas) :
 	brush_overlay_drawer = std::make_unique<BrushOverlayDrawer>();
 	drag_shadow_drawer = std::make_unique<DragShadowDrawer>();
 	floor_drawer = std::make_unique<FloorDrawer>();
+	sprite_drawer = std::make_unique<SpriteDrawer>();
+	creature_drawer = std::make_unique<CreatureDrawer>();
+	item_drawer = std::make_unique<ItemDrawer>();
 }
 
 MapDrawer::~MapDrawer() {
@@ -79,7 +85,7 @@ void MapDrawer::SetupVars() {
 
 void MapDrawer::SetupGL() {
 	// Reset texture cache at the start of each frame
-	last_bound_texture_ = 0;
+	sprite_drawer->ResetCache();
 
 	glViewport(0, 0, view.screensize_x, view.screensize_y);
 
@@ -119,14 +125,14 @@ void MapDrawer::Draw() {
 	if (options.isDrawLight()) {
 		DrawLight();
 	}
-	drag_shadow_drawer->draw(this, view, options);
-	floor_drawer->draw(this, view, options, editor);
-	floor_drawer->draw(this, view, options, editor); // Preserving double call from original code
+	drag_shadow_drawer->draw(this, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options);
+	floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor);
+	floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor); // Preserving double call from original code
 	if (options.dragging) {
 		selection_drawer->draw(view, canvas, options);
 	}
 	live_cursor_drawer->draw(view, editor, options);
-	brush_overlay_drawer->draw(this, view, options, editor);
+	brush_overlay_drawer->draw(this, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor);
 
 	if (options.show_grid) {
 		DrawGrid();
@@ -318,7 +324,7 @@ void MapDrawer::DrawMap() {
 							if (options.show_special_tiles && tile->getMapFlags() & TILESTATE_NOPVP) {
 								g /= 2;
 							}
-							BlitItem(draw_x, draw_y, tile, tile->ground, true, r, g, b, 160);
+							item_drawer->BlitItem(sprite_drawer.get(), creature_drawer.get(), draw_x, draw_y, tile, tile->ground, options, true, r, g, b, 160);
 						}
 
 						// Draw items on the tile
@@ -326,13 +332,13 @@ void MapDrawer::DrawMap() {
 							ItemVector::iterator it;
 							for (it = tile->items.begin(); it != tile->items.end(); it++) {
 								if ((*it)->isBorder()) {
-									BlitItem(draw_x, draw_y, tile, *it, true, 160, r, g, b);
+									item_drawer->BlitItem(sprite_drawer.get(), creature_drawer.get(), draw_x, draw_y, tile, *it, options, true, 160, r, g, b);
 								} else {
-									BlitItem(draw_x, draw_y, tile, *it, true, 160, 160, 160, 160);
+									item_drawer->BlitItem(sprite_drawer.get(), creature_drawer.get(), draw_x, draw_y, tile, *it, options, true, 160, 160, 160, 160);
 								}
 							}
 							if (tile->creature && options.show_creatures) {
-								BlitCreature(draw_x, draw_y, tile->creature);
+								creature_drawer->BlitCreature(sprite_drawer.get(), draw_x, draw_y, tile->creature);
 							}
 						}
 					}
@@ -357,365 +363,6 @@ void MapDrawer::DrawIngameBox() {
 
 void MapDrawer::DrawGrid() {
 	grid_drawer->DrawGrid(view, options);
-}
-
-void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Tile* tile, Item* item, bool ephemeral, int red, int green, int blue, int alpha) {
-	const Position& pos = tile->getPosition();
-	BlitItem(draw_x, draw_y, pos, item, ephemeral, red, green, blue, alpha, tile);
-}
-
-void MapDrawer::BlitItem(int& draw_x, int& draw_y, const Position& pos, Item* item, bool ephemeral, int red, int green, int blue, int alpha, const Tile* tile) {
-	ItemType& it = g_items[item->getID()];
-
-	// Locked door indicator
-	if (!options.ingame && options.highlight_locked_doors && it.isDoor() && it.isLocked) {
-		blue /= 2;
-		green /= 2;
-	}
-
-	if (!options.ingame && !ephemeral && item->isSelected()) {
-		red /= 2;
-		blue /= 2;
-		green /= 2;
-	}
-
-	// item sprite
-	GameSprite* spr = it.sprite;
-
-	// Display invisible and invalid items
-	// Ugly hacks. :)
-	if (!options.ingame && options.show_tech_items) {
-		// Red invalid client id
-		if (it.id == 0) {
-			BlitSquare(draw_x, draw_y, red, 0, 0, alpha);
-			return;
-		}
-
-		switch (it.clientID) {
-			// Yellow invisible stairs tile (459)
-			case 469:
-				BlitSquare(draw_x, draw_y, red, green, 0, alpha / 3 * 2);
-				return;
-
-			// Red invisible walkable tile (460)
-			case 470:
-			case 17970:
-			case 20028:
-			case 34168:
-				BlitSquare(draw_x, draw_y, red, 0, 0, alpha / 3 * 2);
-				return;
-
-			// Cyan invisible wall (1548)
-			case 2187:
-				BlitSquare(draw_x, draw_y, 0, green, blue, 80);
-				return;
-
-			default:
-				break;
-		}
-
-		// primal light
-		if (it.clientID >= 39092 && it.clientID <= 39100 || it.clientID == 39236 || it.clientID == 39367 || it.clientID == 39368) {
-			spr = g_items[SPRITE_LIGHTSOURCE].sprite;
-			red = 0;
-			alpha = 180;
-		}
-	}
-
-	// metaItem, sprite not found or not hidden
-	if (it.isMetaItem() || spr == nullptr || !ephemeral && it.pickupable && !options.show_items) {
-		return;
-	}
-
-	int screenx = draw_x - spr->getDrawOffset().first;
-	int screeny = draw_y - spr->getDrawOffset().second;
-
-	// Set the newd drawing height accordingly
-	draw_x -= spr->getDrawHeight();
-	draw_y -= spr->getDrawHeight();
-
-	int subtype = -1;
-
-	int pattern_x = pos.x % spr->pattern_x;
-	int pattern_y = pos.y % spr->pattern_y;
-	int pattern_z = pos.z % spr->pattern_z;
-
-	if (it.isSplash() || it.isFluidContainer()) {
-		subtype = item->getSubtype();
-	} else if (it.isHangable) {
-		if (tile && tile->hasProperty(HOOK_SOUTH)) {
-			pattern_x = 1;
-		} else if (tile && tile->hasProperty(HOOK_EAST)) {
-			pattern_x = 2;
-		} else {
-			pattern_x = 0;
-		}
-	} else if (it.stackable) {
-		if (item->getSubtype() <= 1) {
-			subtype = 0;
-		} else if (item->getSubtype() <= 2) {
-			subtype = 1;
-		} else if (item->getSubtype() <= 3) {
-			subtype = 2;
-		} else if (item->getSubtype() <= 4) {
-			subtype = 3;
-		} else if (item->getSubtype() < 10) {
-			subtype = 4;
-		} else if (item->getSubtype() < 25) {
-			subtype = 5;
-		} else if (item->getSubtype() < 50) {
-			subtype = 6;
-		} else {
-			subtype = 7;
-		}
-	}
-
-	if (!ephemeral && options.transparent_items && (!it.isGroundTile() || spr->width > 1 || spr->height > 1) && !it.isSplash() && (!it.isBorder || spr->width > 1 || spr->height > 1)) {
-		alpha /= 2;
-	}
-
-	Podium* podium = dynamic_cast<Podium*>(item);
-	if (it.isPodium() && !podium->hasShowPlatform() && !options.ingame) {
-		if (options.show_tech_items) {
-			alpha /= 2;
-		} else {
-			alpha = 0;
-		}
-	}
-
-	int frame = item->getFrame();
-	for (int cx = 0; cx != spr->width; cx++) {
-		for (int cy = 0; cy != spr->height; cy++) {
-			for (int cf = 0; cf != spr->layers; cf++) {
-				int texnum = spr->getHardwareID(cx, cy, cf, subtype, pattern_x, pattern_y, pattern_z, frame);
-				glBlitTexture(screenx - cx * TileSize, screeny - cy * TileSize, texnum, red, green, blue, alpha);
-			}
-		}
-	}
-
-	// zoomed out very far, avoid drawing stuff barely visible
-	if (view.zoom > 3.0) {
-		return;
-	}
-
-	if (it.isPodium()) {
-		Outfit outfit = podium->getOutfit();
-		if (!podium->hasShowOutfit()) {
-			if (podium->hasShowMount()) {
-				outfit.lookType = outfit.lookMount;
-				outfit.lookHead = outfit.lookMountHead;
-				outfit.lookBody = outfit.lookMountBody;
-				outfit.lookLegs = outfit.lookMountLegs;
-				outfit.lookFeet = outfit.lookMountFeet;
-				outfit.lookAddon = 0;
-				outfit.lookMount = 0;
-			} else {
-				outfit.lookType = 0;
-			}
-		}
-		if (!podium->hasShowMount()) {
-			outfit.lookMount = 0;
-		}
-
-		BlitCreature(draw_x, draw_y, outfit, static_cast<Direction>(podium->getDirection()), red, green, blue, 255);
-	}
-
-	// draw wall hook
-	if (!options.ingame && options.show_hooks && (it.hookSouth || it.hookEast)) {
-		DrawHookIndicator(draw_x, draw_y, it);
-	}
-
-	// draw light color indicator
-	if (!options.ingame && options.show_light_str) {
-		const SpriteLight& light = item->getLight();
-		if (light.intensity > 0) {
-			wxColor lightColor = colorFromEightBit(light.color);
-			uint8_t byteR = lightColor.Red();
-			uint8_t byteG = lightColor.Green();
-			uint8_t byteB = lightColor.Blue();
-			uint8_t byteA = 255;
-
-			int startOffset = std::max<int>(16, 32 - light.intensity);
-			int sqSize = TileSize - startOffset;
-			glDisable(GL_TEXTURE_2D);
-			glBlitSquare(draw_x + startOffset - 2, draw_y + startOffset - 2, 0, 0, 0, byteA, sqSize + 2);
-			glBlitSquare(draw_x + startOffset - 1, draw_y + startOffset - 1, byteR, byteG, byteB, byteA, sqSize);
-			glEnable(GL_TEXTURE_2D);
-		}
-	}
-}
-
-void MapDrawer::BlitSpriteType(int screenx, int screeny, uint32_t spriteid, int red, int green, int blue, int alpha) {
-	GameSprite* spr = g_items[spriteid].sprite;
-	if (spr == nullptr) {
-		return;
-	}
-	screenx -= spr->getDrawOffset().first;
-	screeny -= spr->getDrawOffset().second;
-
-	int tme = 0; // GetTime() % itype->FPA;
-	for (int cx = 0; cx != spr->width; ++cx) {
-		for (int cy = 0; cy != spr->height; ++cy) {
-			for (int cf = 0; cf != spr->layers; ++cf) {
-				int texnum = spr->getHardwareID(cx, cy, cf, -1, 0, 0, 0, tme);
-				// printf("CF: %d\tTexturenum: %d\n", cf, texnum);
-				glBlitTexture(screenx - cx * TileSize, screeny - cy * TileSize, texnum, red, green, blue, alpha);
-			}
-		}
-	}
-}
-
-void MapDrawer::BlitSpriteType(int screenx, int screeny, GameSprite* spr, int red, int green, int blue, int alpha) {
-	if (spr == nullptr) {
-		return;
-	}
-	screenx -= spr->getDrawOffset().first;
-	screeny -= spr->getDrawOffset().second;
-
-	int tme = 0; // GetTime() % itype->FPA;
-	for (int cx = 0; cx != spr->width; ++cx) {
-		for (int cy = 0; cy != spr->height; ++cy) {
-			for (int cf = 0; cf != spr->layers; ++cf) {
-				int texnum = spr->getHardwareID(cx, cy, cf, -1, 0, 0, 0, tme);
-				// printf("CF: %d\tTexturenum: %d\n", cf, texnum);
-				glBlitTexture(screenx - cx * TileSize, screeny - cy * TileSize, texnum, red, green, blue, alpha);
-			}
-		}
-	}
-}
-
-void MapDrawer::BlitCreature(int screenx, int screeny, const Outfit& outfit, Direction dir, int red, int green, int blue, int alpha) {
-	if (outfit.lookItem != 0) {
-		ItemType& it = g_items[outfit.lookItem];
-		BlitSpriteType(screenx, screeny, it.sprite, red, green, blue, alpha);
-	} else {
-		// get outfit sprite
-		GameSprite* spr = g_gui.gfx.getCreatureSprite(outfit.lookType);
-		if (!spr || outfit.lookType == 0) {
-			return;
-		}
-
-		int tme = 0; // GetTime() % itype->FPA;
-
-		// mount and addon drawing thanks to otc code
-		// mount colors by Zbizu
-		int pattern_z = 0;
-		if (outfit.lookMount != 0) {
-			if (GameSprite* mountSpr = g_gui.gfx.getCreatureSprite(outfit.lookMount)) {
-				// generate mount colors
-				Outfit mountOutfit;
-				mountOutfit.lookType = outfit.lookMount;
-				mountOutfit.lookHead = outfit.lookMountHead;
-				mountOutfit.lookBody = outfit.lookMountBody;
-				mountOutfit.lookLegs = outfit.lookMountLegs;
-				mountOutfit.lookFeet = outfit.lookMountFeet;
-
-				for (int cx = 0; cx != mountSpr->width; ++cx) {
-					for (int cy = 0; cy != mountSpr->height; ++cy) {
-						int texnum = mountSpr->getHardwareID(cx, cy, (int)dir, 0, 0, mountOutfit, tme);
-						glBlitTexture(screenx - cx * TileSize, screeny - cy * TileSize, texnum, red, green, blue, alpha);
-					}
-				}
-
-				pattern_z = std::min<int>(1, spr->pattern_z - 1);
-			}
-		}
-
-		// pattern_y => creature addon
-		for (int pattern_y = 0; pattern_y < spr->pattern_y; pattern_y++) {
-
-			// continue if we dont have this addon
-			if (pattern_y > 0 && !(outfit.lookAddon & (1 << (pattern_y - 1)))) {
-				continue;
-			}
-
-			for (int cx = 0; cx != spr->width; ++cx) {
-				for (int cy = 0; cy != spr->height; ++cy) {
-					int texnum = spr->getHardwareID(cx, cy, (int)dir, pattern_y, pattern_z, outfit, tme);
-					glBlitTexture(screenx - cx * TileSize, screeny - cy * TileSize, texnum, red, green, blue, alpha);
-				}
-			}
-		}
-	}
-}
-
-void MapDrawer::BlitCreature(int screenx, int screeny, const Creature* c, int red, int green, int blue, int alpha) {
-	if (!options.ingame && c->isSelected()) {
-		red /= 2;
-		green /= 2;
-		blue /= 2;
-	}
-	BlitCreature(screenx, screeny, c->getLookType(), c->getDirection(), red, green, blue, alpha);
-}
-
-void MapDrawer::BlitSquare(int sx, int sy, int red, int green, int blue, int alpha, int size) {
-	if (size == 0) {
-		size = TileSize;
-	}
-
-	GameSprite* spr = g_items[SPRITE_ZONE].sprite;
-	if (!spr) {
-		return;
-	}
-
-	int texnum = spr->getHardwareID(0, 0, 0, -1, 0, 0, 0, 0);
-	if (texnum == 0) {
-		return;
-	}
-
-	glBindTexture(GL_TEXTURE_2D, texnum);
-	glColor4ub(uint8_t(red), uint8_t(green), uint8_t(blue), uint8_t(alpha));
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.f, 0.f);
-	glVertex2f(sx, sy);
-	glTexCoord2f(1.f, 0.f);
-	glVertex2f(sx + TileSize, sy);
-	glTexCoord2f(1.f, 1.f);
-	glVertex2f(sx + TileSize, sy + TileSize);
-	glTexCoord2f(0.f, 1.f);
-	glVertex2f(sx, sy + TileSize);
-	glEnd();
-}
-
-void MapDrawer::DrawRawBrush(int screenx, int screeny, ItemType* itemType, uint8_t r, uint8_t g, uint8_t b, uint8_t alpha) {
-	GameSprite* spr = itemType->sprite;
-	uint16_t cid = itemType->clientID;
-
-	switch (cid) {
-		// Yellow invisible stairs tile
-		case 469:
-			b = 0;
-			alpha = alpha / 3 * 2;
-			spr = g_items[SPRITE_ZONE].sprite;
-			break;
-
-		// Red invisible walkable tile
-		case 470:
-			g = 0;
-			b = 0;
-			alpha = alpha / 3 * 2;
-			spr = g_items[SPRITE_ZONE].sprite;
-			break;
-
-		// Cyan invisible wall
-		case 2187:
-			r = 0;
-			alpha = alpha / 3;
-			spr = g_items[SPRITE_ZONE].sprite;
-			break;
-
-		default:
-			break;
-	}
-
-	// primal light
-	if (cid >= 39092 && cid <= 39100 || cid == 39236 || cid == 39367 || cid == 39368) {
-		spr = g_items[SPRITE_LIGHTSOURCE].sprite;
-		r = 0;
-		alpha = alpha / 3 * 2;
-	}
-
-	BlitSpriteType(screenx, screeny, spr, r, g, b, alpha);
 }
 
 void MapDrawer::DrawTile(TileLocation* location) {
@@ -820,9 +467,9 @@ void MapDrawer::DrawTile(TileLocation* location) {
 			r = (uint8_t)(int(color / 36) % 6 * 51);
 			g = (uint8_t)(int(color / 6) % 6 * 51);
 			b = (uint8_t)(color % 6 * 51);
-			BlitSquare(draw_x, draw_y, r, g, b, 255);
+			sprite_drawer->glBlitSquare(draw_x, draw_y, r, g, b, 255);
 		} else if (r != 255 || g != 255 || b != 255) {
-			BlitSquare(draw_x, draw_y, r, g, b, 128);
+			sprite_drawer->glBlitSquare(draw_x, draw_y, r, g, b, 128);
 		}
 	} else {
 		if (tile->ground) {
@@ -830,9 +477,9 @@ void MapDrawer::DrawTile(TileLocation* location) {
 				tile->ground->animate();
 			}
 
-			BlitItem(draw_x, draw_y, tile, tile->ground, false, r, g, b);
+			item_drawer->BlitItem(sprite_drawer.get(), creature_drawer.get(), draw_x, draw_y, tile, tile->ground, options, false, r, g, b);
 		} else if (options.always_show_zones && (r != 255 || g != 255 || b != 255)) {
-			DrawRawBrush(draw_x, draw_y, &g_items[SPRITE_ZONE], r, g, b, 60);
+			item_drawer->DrawRawBrush(sprite_drawer.get(), draw_x, draw_y, &g_items[SPRITE_ZONE], r, g, b, 60);
 		}
 	}
 
@@ -858,7 +505,7 @@ void MapDrawer::DrawTile(TileLocation* location) {
 
 				// item sprite
 				if ((*it)->isBorder()) {
-					BlitItem(draw_x, draw_y, tile, *it, false, r, g, b);
+					item_drawer->BlitItem(sprite_drawer.get(), creature_drawer.get(), draw_x, draw_y, tile, *it, options, false, r, g, b);
 				} else {
 					r = 255, g = 255, b = 255;
 
@@ -870,41 +517,41 @@ void MapDrawer::DrawTile(TileLocation* location) {
 							g /= 2;
 						}
 					}
-					BlitItem(draw_x, draw_y, tile, *it, false, r, g, b);
+					item_drawer->BlitItem(sprite_drawer.get(), creature_drawer.get(), draw_x, draw_y, tile, *it, options, false, r, g, b);
 				}
 			}
 			// monster/npc on tile
 			if (tile->creature && options.show_creatures) {
-				BlitCreature(draw_x, draw_y, tile->creature);
+				creature_drawer->BlitCreature(sprite_drawer.get(), draw_x, draw_y, tile->creature);
 			}
 		}
 
 		if (view.zoom < 10.0) {
 			// waypoint (blue flame)
 			if (!options.ingame && waypoint && options.show_waypoints) {
-				BlitSpriteType(draw_x, draw_y, SPRITE_WAYPOINT, 64, 64, 255);
+				sprite_drawer->BlitSprite(draw_x, draw_y, SPRITE_WAYPOINT, 64, 64, 255);
 			}
 
 			// house exit (blue splash)
 			if (tile->isHouseExit() && options.show_houses) {
 				if (tile->hasHouseExit(current_house_id)) {
-					BlitSpriteType(draw_x, draw_y, SPRITE_HOUSE_EXIT, 64, 255, 255);
+					sprite_drawer->BlitSprite(draw_x, draw_y, SPRITE_HOUSE_EXIT, 64, 255, 255);
 				} else {
-					BlitSpriteType(draw_x, draw_y, SPRITE_HOUSE_EXIT, 64, 64, 255);
+					sprite_drawer->BlitSprite(draw_x, draw_y, SPRITE_HOUSE_EXIT, 64, 64, 255);
 				}
 			}
 
 			// town temple (gray flag)
 			if (options.show_towns && tile->isTownExit(editor.map)) {
-				BlitSpriteType(draw_x, draw_y, SPRITE_TOWN_TEMPLE, 255, 255, 64, 170);
+				sprite_drawer->BlitSprite(draw_x, draw_y, SPRITE_TOWN_TEMPLE, 255, 255, 64, 170);
 			}
 
 			// spawn (purple flame)
 			if (tile->spawn && options.show_spawns) {
 				if (tile->spawn->isSelected()) {
-					BlitSpriteType(draw_x, draw_y, SPRITE_SPAWN, 128, 128, 128);
+					sprite_drawer->BlitSprite(draw_x, draw_y, SPRITE_SPAWN, 128, 128, 128);
 				} else {
-					BlitSpriteType(draw_x, draw_y, SPRITE_SPAWN, 255, 255, 255);
+					sprite_drawer->BlitSprite(draw_x, draw_y, SPRITE_SPAWN, 255, 255, 255);
 				}
 			}
 
@@ -920,29 +567,6 @@ void MapDrawer::DrawTile(TileLocation* location) {
 			tooltip.str("");
 		}
 	}
-}
-
-void MapDrawer::DrawHookIndicator(int x, int y, const ItemType& type) {
-	glDisable(GL_TEXTURE_2D);
-	glColor4ub(uint8_t(0), uint8_t(0), uint8_t(255), uint8_t(200));
-	glBegin(GL_QUADS);
-	if (type.hookSouth) {
-		x -= 10;
-		y += 10;
-		glVertex2f(x, y);
-		glVertex2f(x + 10, y);
-		glVertex2f(x + 20, y + 10);
-		glVertex2f(x + 10, y + 10);
-	} else if (type.hookEast) {
-		x += 10;
-		y -= 10;
-		glVertex2f(x, y);
-		glVertex2f(x + 10, y + 10);
-		glVertex2f(x + 10, y + 20);
-		glVertex2f(x, y + 10);
-	}
-	glEnd();
-	glEnable(GL_TEXTURE_2D);
 }
 
 void MapDrawer::DrawTooltips() {
@@ -990,43 +614,4 @@ void MapDrawer::TakeScreenshot(uint8_t* screenshot_buffer) {
 	for (int i = 0; i < view.screensize_y; ++i) {
 		glReadPixels(0, view.screensize_y - i, view.screensize_x, 1, GL_RGB, GL_UNSIGNED_BYTE, (GLubyte*)(screenshot_buffer) + 3 * view.screensize_x * i);
 	}
-}
-
-void MapDrawer::glBlitTexture(int sx, int sy, int texture_number, int red, int green, int blue, int alpha) {
-	if (texture_number != 0) {
-		// Cache texture binding to avoid redundant calls
-		if (static_cast<GLuint>(texture_number) != last_bound_texture_) {
-			glBindTexture(GL_TEXTURE_2D, texture_number);
-			last_bound_texture_ = texture_number;
-		}
-		glColor4ub(uint8_t(red), uint8_t(green), uint8_t(blue), uint8_t(alpha));
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.f, 0.f);
-		glVertex2f(sx, sy);
-		glTexCoord2f(1.f, 0.f);
-		glVertex2f(sx + TileSize, sy);
-		glTexCoord2f(1.f, 1.f);
-		glVertex2f(sx + TileSize, sy + TileSize);
-		glTexCoord2f(0.f, 1.f);
-		glVertex2f(sx, sy + TileSize);
-		glEnd();
-	}
-}
-
-void MapDrawer::glBlitSquare(int sx, int sy, int red, int green, int blue, int alpha, int size) {
-	if (size == 0) {
-		size = TileSize;
-	}
-
-	glColor4ub(uint8_t(red), uint8_t(green), uint8_t(blue), uint8_t(alpha));
-	glBegin(GL_QUADS);
-	glVertex2f(sx, sy);
-	glVertex2f(sx + size, sy);
-	glVertex2f(sx + size, sy + size);
-	glVertex2f(sx, sy + size);
-	glEnd();
-}
-
-void MapDrawer::glColor(wxColor color) {
-	glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
 }

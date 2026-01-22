@@ -10,12 +10,16 @@ struct RenderView;
 struct DrawingOptions;
 class Editor;
 
+class ItemDrawer;
+class SpriteDrawer;
+class CreatureDrawer;
+
 class FloorDrawer {
 public:
 	FloorDrawer();
 	~FloorDrawer();
 
-	void draw(MapDrawer* drawer, const RenderView& view, const DrawingOptions& options, Editor& editor);
+	void draw(ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, const RenderView& view, const DrawingOptions& options, Editor& editor);
 };
 
 #endif

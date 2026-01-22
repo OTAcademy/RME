@@ -14,12 +14,16 @@ struct DrawingOptions;
 class Brush;
 class Editor;
 
+class ItemDrawer;
+class SpriteDrawer;
+class CreatureDrawer;
+
 class BrushOverlayDrawer {
 public:
 	BrushOverlayDrawer();
 	~BrushOverlayDrawer();
 
-	void draw(MapDrawer* drawer, const RenderView& view, const DrawingOptions& options, Editor& editor);
+	void draw(MapDrawer* drawer, ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, const RenderView& view, const DrawingOptions& options, Editor& editor);
 
 private:
 	enum BrushColor {

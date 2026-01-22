@@ -69,6 +69,9 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/render_view.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/brush_overlay_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drag_shadow_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/floor_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/sprite_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/creature_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/item_drawer.h
 
 
 ${CMAKE_CURRENT_LIST_DIR}/map_region.h
@@ -184,6 +187,9 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/render_view.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/brush_overlay_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drag_shadow_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/floor_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/sprite_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/creature_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/item_drawer.cpp
 
 
 ${CMAKE_CURRENT_LIST_DIR}/map_region.cpp

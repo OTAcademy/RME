@@ -12,6 +12,9 @@
 
 #include "rendering/brush_overlay_drawer.h"
 #include "rendering/map_drawer.h"
+#include "rendering/item_drawer.h"
+#include "rendering/sprite_drawer.h"
+#include "rendering/creature_drawer.h"
 #include "rendering/render_view.h"
 #include "rendering/drawing_options.h"
 #include "rendering/brush_cursor_drawer.h"
@@ -45,7 +48,7 @@ BrushOverlayDrawer::BrushOverlayDrawer() {
 BrushOverlayDrawer::~BrushOverlayDrawer() {
 }
 
-void BrushOverlayDrawer::draw(MapDrawer* drawer, const RenderView& view, const DrawingOptions& options, Editor& editor) {
+void BrushOverlayDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, const RenderView& view, const DrawingOptions& options, Editor& editor) {
 	if (!g_gui.IsDrawingMode()) {
 		return;
 	}
@@ -155,7 +158,7 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, const RenderView& view, const D
 							if (brush->isOptionalBorder()) {
 								set_gl_color_check(brush, editor, Position(x, y, view.floor));
 							} else {
-								drawer->DrawRawBrush(cx, cy, raw_brush->getItemType(), 160, 160, 160, 160);
+								item_drawer->DrawRawBrush(sprite_drawer, cx, cy, raw_brush->getItemType(), 160, 160, 160, 160);
 							}
 						}
 					}
@@ -223,7 +226,7 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, const RenderView& view, const D
 						float distance = sqrt(dx * dx + dy * dy);
 						if (distance < radii) {
 							if (brush->isRaw()) {
-								drawer->DrawRawBrush(cx, cy, raw_brush->getItemType(), 160, 160, 160, 160);
+								item_drawer->DrawRawBrush(sprite_drawer, cx, cy, raw_brush->getItemType(), 160, 160, 160, 160);
 							} else {
 								set_gl_color(brushColor);
 								glBegin(GL_QUADS);
@@ -304,9 +307,9 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, const RenderView& view, const D
 			int cx = (view.mouse_map_x) * TileSize - view.view_scroll_x - view.getFloorAdjustment();
 			CreatureBrush* creature_brush = brush->asCreature();
 			if (creature_brush->canDraw(&editor.map, Position(view.mouse_map_x, view.mouse_map_y, view.floor))) {
-				drawer->BlitCreature(cx, cy, creature_brush->getType()->outfit, SOUTH, 255, 255, 255, 160);
+				creature_drawer->BlitCreature(sprite_drawer, cx, cy, creature_brush->getType()->outfit, SOUTH, 255, 255, 255, 160);
 			} else {
-				drawer->BlitCreature(cx, cy, creature_brush->getType()->outfit, SOUTH, 255, 64, 64, 160);
+				creature_drawer->BlitCreature(sprite_drawer, cx, cy, creature_brush->getType()->outfit, SOUTH, 255, 64, 64, 160);
 			}
 			glDisable(GL_TEXTURE_2D);
 		} else if (!brush->isDoodad()) {
@@ -323,7 +326,7 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, const RenderView& view, const D
 					if (g_gui.GetBrushShape() == BRUSHSHAPE_SQUARE) {
 						if (x >= -g_gui.GetBrushSize() && x <= g_gui.GetBrushSize() && y >= -g_gui.GetBrushSize() && y <= g_gui.GetBrushSize()) {
 							if (brush->isRaw()) {
-								drawer->DrawRawBrush(cx, cy, raw_brush->getItemType(), 160, 160, 160, 160);
+								item_drawer->DrawRawBrush(sprite_drawer, cx, cy, raw_brush->getItemType(), 160, 160, 160, 160);
 							} else {
 								if (brush->isWaypoint()) {
 									uint8_t r, g, b;
@@ -349,7 +352,7 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, const RenderView& view, const D
 						double distance = sqrt(double(x * x) + double(y * y));
 						if (distance < g_gui.GetBrushSize() + 0.005) {
 							if (brush->isRaw()) {
-								drawer->DrawRawBrush(cx, cy, raw_brush->getItemType(), 160, 160, 160, 160);
+								item_drawer->DrawRawBrush(sprite_drawer, cx, cy, raw_brush->getItemType(), 160, 160, 160, 160);
 							} else {
 								if (brush->isWaypoint()) {
 									uint8_t r, g, b;

@@ -40,6 +40,9 @@ class BrushCursorDrawer;
 class BrushOverlayDrawer;
 class DragShadowDrawer;
 class FloorDrawer;
+class SpriteDrawer;
+class ItemDrawer;
+class CreatureDrawer;
 
 class MapDrawer {
 	MapCanvas* canvas;
@@ -55,11 +58,11 @@ class MapDrawer {
 	std::unique_ptr<BrushOverlayDrawer> brush_overlay_drawer;
 	std::unique_ptr<DragShadowDrawer> drag_shadow_drawer;
 	std::unique_ptr<FloorDrawer> floor_drawer;
+	std::unique_ptr<SpriteDrawer> sprite_drawer;
+	std::unique_ptr<CreatureDrawer> creature_drawer;
+	std::unique_ptr<ItemDrawer> item_drawer;
 
 	uint32_t current_house_id;
-
-	// Texture bind caching for performance
-	GLuint last_bound_texture_ = 0;
 
 protected:
 	std::ostringstream tooltip;
@@ -97,21 +100,8 @@ public:
 	}
 
 protected:
-	void BlitItem(int& screenx, int& screeny, const Tile* tile, Item* item, bool ephemeral = false, int red = 255, int green = 255, int blue = 255, int alpha = 255);
-	void BlitItem(int& screenx, int& screeny, const Position& pos, Item* item, bool ephemeral = false, int red = 255, int green = 255, int blue = 255, int alpha = 255, const Tile* tile = nullptr);
-	void BlitSpriteType(int screenx, int screeny, uint32_t spriteid, int red = 255, int green = 255, int blue = 255, int alpha = 255);
-	void BlitSpriteType(int screenx, int screeny, GameSprite* spr, int red = 255, int green = 255, int blue = 255, int alpha = 255);
-	void BlitCreature(int screenx, int screeny, const Creature* c, int red = 255, int green = 255, int blue = 255, int alpha = 255);
-	void BlitCreature(int screenx, int screeny, const Outfit& outfit, Direction dir, int red = 255, int green = 255, int blue = 255, int alpha = 255);
-	void BlitSquare(int sx, int sy, int red, int green, int blue, int alpha, int size = 0);
-	void DrawRawBrush(int screenx, int screeny, ItemType* itemType, uint8_t r, uint8_t g, uint8_t b, uint8_t alpha);
 	void DrawTile(TileLocation* tile);
-	void DrawHookIndicator(int x, int y, const ItemType& type);
 	void AddLight(TileLocation* location);
-
-	void glBlitTexture(int sx, int sy, int texture_number, int red, int green, int blue, int alpha);
-	void glBlitSquare(int sx, int sy, int red, int green, int blue, int alpha, int size = 0);
-	void glColor(wxColor color);
 };
 
 #endif
