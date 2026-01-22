@@ -273,6 +273,9 @@ public:
 
 	Sprite* getSprite(int id);
 	GameSprite* getCreatureSprite(int id);
+	void insertSprite(int id, Sprite* sprite) {
+		sprite_space[id] = sprite;
+	}
 
 	long getElapsedTime() const {
 		return (animation_timer->TimeInMicro() / 1000).ToLong();

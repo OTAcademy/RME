@@ -61,6 +61,11 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/map_display.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/map_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/tooltip_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawing_options.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/fps_counter.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/screenshot_saver.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/tile_describer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/coordinate_mapper.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/editor_sprite_loader.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/grid_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/live_cursor_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/selection_drawer.h
@@ -185,6 +190,11 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/map_display.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/map_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/tooltip_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawing_options.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/fps_counter.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/screenshot_saver.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/tile_describer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/coordinate_mapper.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/editor_sprite_loader.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/grid_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/live_cursor_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/selection_drawer.cpp

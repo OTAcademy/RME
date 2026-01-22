@@ -33,6 +33,11 @@
 #include "properties_window.h"
 #include "tileset_window.h"
 #include "palette_window.h"
+#include "palette_window.h"
+#include "rendering/fps_counter.h"
+#include "rendering/screenshot_saver.h"
+#include "rendering/tile_describer.h"
+#include "rendering/coordinate_mapper.h"
 #include "rendering/map_display.h"
 #include "rendering/map_drawer.h"
 #include "application.h"
@@ -256,41 +261,16 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 	SwapBuffers();
 
 	// FPS tracking and limiting
-	static auto last_frame_time = std::chrono::steady_clock::now();
-	static int frame_count = 0;
-	static int current_fps = 0;
-	static auto last_fps_update = std::chrono::steady_clock::now();
-
-	auto now = std::chrono::steady_clock::now();
-	frame_count++;
-
-	// Update FPS counter every second
-	auto fps_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_fps_update);
-	if (fps_elapsed.count() >= 1000) {
-		current_fps = frame_count;
-		frame_count = 0;
-		last_fps_update = now;
-	}
-
-	// FPS limiting
-	int fps_limit = g_settings.getInteger(Config::FRAME_RATE_LIMIT);
-	if (fps_limit > 0) {
-		auto target_frame_duration = std::chrono::microseconds(1000000 / fps_limit);
-		auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - last_frame_time);
-		if (elapsed < target_frame_duration) {
-			std::this_thread::sleep_for(target_frame_duration - elapsed);
-		}
-	}
-	last_frame_time = std::chrono::steady_clock::now();
+	fps_counter.LimitFPS(g_settings.getInteger(Config::FRAME_RATE_LIMIT));
+	fps_counter.Update();
 
 	// Display FPS on status bar if enabled
 	if (g_settings.getBoolean(Config::SHOW_FPS_COUNTER)) {
-		static int last_displayed_fps = -1;
-		if (current_fps != last_displayed_fps) {
+		// Display FPS on status bar if enabled
+		if (g_settings.getBoolean(Config::SHOW_FPS_COUNTER) && fps_counter.HasChanged()) {
 			wxString fps_text;
-			fps_text.Printf("FPS: %d", current_fps);
+			fps_text.Printf("FPS: %d", fps_counter.GetFPS());
 			g_gui.root->SetStatusText(fps_text, 0);
-			last_displayed_fps = current_fps;
 		}
 	}
 
@@ -310,63 +290,17 @@ void MapCanvas::TakeScreenshot(wxFileName path, wxString format) {
 	wxGLCanvas::Update(); // Forces immediate redraws the window.
 
 	// screenshot_buffer should now contain the screenbuffer
-	if (screenshot_buffer == nullptr) {
-		g_gui.PopupDialog("Capture failed", "Image capture failed. Old Video Driver?", wxOK);
+
+	// Delegate saving to ScreenshotSaver
+
+	static_cast<MapWindow*>(GetParent())->GetViewSize(&screensize_x, &screensize_y);
+
+	wxString result = ScreenshotSaver::SaveScreenshot(path, format, screensize_x, screensize_y, screenshot_buffer);
+
+	if (result.StartsWith("Error:")) {
+		g_gui.PopupDialog("Screenshot Error", result, wxOK);
 	} else {
-		// We got the shit
-		int screensize_x, screensize_y;
-		static_cast<MapWindow*>(GetParent())->GetViewSize(&screensize_x, &screensize_y);
-		wxImage screenshot(screensize_x, screensize_y, screenshot_buffer);
-
-		time_t t = time(nullptr);
-		struct tm* current_time = localtime(&t);
-		ASSERT(current_time);
-
-		wxString date;
-		date << "screenshot_" << (1900 + current_time->tm_year);
-		if (current_time->tm_mon < 9) {
-			date << "-"
-				 << "0" << current_time->tm_mon + 1;
-		} else {
-			date << "-" << current_time->tm_mon + 1;
-		}
-		date << "-" << current_time->tm_mday;
-		date << "-" << current_time->tm_hour;
-		date << "-" << current_time->tm_min;
-		date << "-" << current_time->tm_sec;
-
-		int type = 0;
-		path.SetName(date);
-		if (format == "bmp") {
-			path.SetExt(format);
-			type = wxBITMAP_TYPE_BMP;
-		} else if (format == "png") {
-			path.SetExt(format);
-			type = wxBITMAP_TYPE_PNG;
-		} else if (format == "jpg" || format == "jpeg") {
-			path.SetExt(format);
-			type = wxBITMAP_TYPE_JPEG;
-		} else if (format == "tga") {
-			path.SetExt(format);
-			type = wxBITMAP_TYPE_TGA;
-		} else {
-			g_gui.SetStatusText("Unknown screenshot format \'" + format + "\", switching to default (png)");
-			path.SetExt("png");
-			;
-			type = wxBITMAP_TYPE_PNG;
-		}
-
-		path.Mkdir(0755, wxPATH_MKDIR_FULL);
-		wxFileOutputStream of(path.GetFullPath());
-		if (of.IsOk()) {
-			if (screenshot.SaveFile(of, static_cast<wxBitmapType>(type))) {
-				g_gui.SetStatusText("Took screenshot and saved as " + path.GetFullName());
-			} else {
-				g_gui.PopupDialog("File error", "Couldn't save image file correctly.", wxOK);
-			}
-		} else {
-			g_gui.PopupDialog("File error", "Couldn't open file " + path.GetFullPath() + " for writing.", wxOK);
-		}
+		g_gui.SetStatusText(result);
 	}
 
 	Refresh();
@@ -378,30 +312,23 @@ void MapCanvas::ScreenToMap(int screen_x, int screen_y, int* map_x, int* map_y) 
 	int start_x, start_y;
 	static_cast<MapWindow*>(GetParent())->GetViewStart(&start_x, &start_y);
 
-	screen_x *= GetContentScaleFactor();
-	screen_y *= GetContentScaleFactor();
+	CoordinateMapper::ScreenToMap(screen_x, screen_y, start_x, start_y, zoom, floor, GetContentScaleFactor(), map_x, map_y);
+}
+#if 0
 
-	if (screen_x < 0) {
-		*map_x = (start_x + screen_x) / TileSize;
-	} else {
-		*map_x = int(start_x + (screen_x * zoom)) / TileSize;
-	}
-
-	if (screen_y < 0) {
-		*map_y = (start_y + screen_y) / TileSize;
-	} else {
-		*map_y = int(start_y + (screen_y * zoom)) / TileSize;
-	}
-
-	if (floor <= GROUND_LAYER) {
-		*map_x += GROUND_LAYER - floor;
-		*map_y += GROUND_LAYER - floor;
-	} /* else {
-		 *map_x += MAP_MAX_LAYER - floor;
-		 *map_y += MAP_MAX_LAYER - floor;
-	 }*/
+*map_y = int(start_y + (screen_y * zoom)) / TileSize;
 }
 
+if (floor <= GROUND_LAYER) {
+	*map_x += GROUND_LAYER - floor;
+	*map_y += GROUND_LAYER - floor;
+} /* else {
+	 *map_x += MAP_MAX_LAYER - floor;
+	 *map_y += MAP_MAX_LAYER - floor;
+ }*/
+}
+
+#endif
 void MapCanvas::GetScreenCenter(int* map_x, int* map_y) {
 	int width, height;
 	static_cast<MapWindow*>(GetParent())->GetViewSize(&width, &height);
@@ -430,38 +357,15 @@ void MapCanvas::UpdatePositionStatus(int x, int y) {
 	ss = "";
 	Tile* tile = editor.map.getTile(map_x, map_y, floor);
 	if (tile) {
-		if (tile->spawn && g_settings.getInteger(Config::SHOW_SPAWNS)) {
-			ss << "Spawn radius: " << tile->spawn->getSize();
-		} else if (tile->creature && g_settings.getInteger(Config::SHOW_CREATURES)) {
-			ss << (tile->creature->isNpc() ? "NPC" : "Monster");
-			ss << " \"" << wxstr(tile->creature->getName()) << "\" spawntime: " << tile->creature->getSpawnTime();
-		} else if (Item* item = tile->getTopItem()) {
-			ss << "Item \"" << wxstr(item->getName()) << "\"";
-			ss << " id:" << item->getID();
-			ss << " cid:" << item->getClientID();
-			if (item->getUniqueID()) {
-				ss << " uid:" << item->getUniqueID();
-			}
-			if (item->getActionID()) {
-				ss << " aid:" << item->getActionID();
-			}
-			if (item->hasWeight()) {
-				wxString s;
-				s.Printf("%.2f", item->getWeight());
-				ss << " weight: " << s;
-			}
-		} else {
-			ss << "Nothing";
+		ss = TileDescriber::GetDescription(tile, g_settings.getInteger(Config::SHOW_SPAWNS), g_settings.getInteger(Config::SHOW_CREATURES));
+
+		if (editor.IsLive()) {
+			editor.GetLive().updateCursor(Position(map_x, map_y, floor));
 		}
+		g_gui.root->SetStatusText(ss, 1);
 	} else {
-		ss << "Nothing";
+		g_gui.root->SetStatusText("Nothing", 1);
 	}
-
-	if (editor.IsLive()) {
-		editor.GetLive().updateCursor(Position(map_x, map_y, floor));
-	}
-
-	g_gui.root->SetStatusText(ss, 1);
 }
 
 void MapCanvas::UpdateZoomStatus() {

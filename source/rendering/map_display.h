@@ -21,6 +21,7 @@
 #include "action.h"
 #include "tile.h"
 #include "creature.h"
+#include "rendering/fps_counter.h"
 
 class Item;
 class Creature;
@@ -185,6 +186,8 @@ private:
 	wxStopWatch refresh_watch;
 	MapPopupMenu* popup_menu;
 	AnimationTimer* animation_timer;
+
+	FPSCounter fps_counter;
 
 	friend class MapDrawer;
 	friend class SelectionDrawer;
