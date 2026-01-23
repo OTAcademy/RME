@@ -1,4 +1,4 @@
-name: Build RME
+name: Build - Linux
 
 on:
   push:
