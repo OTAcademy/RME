@@ -24,6 +24,7 @@ public:
 	void HandleRelease(const Position& mouse_map_pos, bool shift_down, bool ctrl_down, bool alt_down);
 	void HandlePropertiesClick(const Position& mouse_map_pos, bool shift_down, bool ctrl_down, bool alt_down);
 	void HandlePropertiesRelease(const Position& mouse_map_pos, bool shift_down, bool ctrl_down, bool alt_down);
+	void HandleDoubleClick(const Position& mouse_map_pos);
 
 	bool IsDragging() const {
 		return dragging;

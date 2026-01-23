@@ -22,7 +22,6 @@
 #include "rendering/core/drawing_options.h"
 
 LightDrawer::LightDrawer() {
-	texture = 0;
 	global_color = wxColor(50, 50, 50, 255);
 }
 
@@ -33,8 +32,8 @@ LightDrawer::~LightDrawer() {
 }
 
 void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog) {
-	if (texture == 0) {
-		createGLTexture();
+	if (!texture.IsCreated()) {
+		texture.Create();
 	}
 
 	int w = end_x - map_x;
@@ -75,13 +74,10 @@ void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x,
 	int draw_width = w * TileSize;
 	int draw_height = h * TileSize;
 
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
+	texture.Bind();
+	texture.SetFilter(GL_LINEAR, GL_LINEAR);
+	texture.SetWrap(0x812F, 0x812F); // GL_CLAMP_TO_EDGE
+	texture.Upload(w, h, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
 
 	if (!fog) {
 		glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
@@ -175,14 +171,11 @@ void LightDrawer::clear() {
 }
 
 void LightDrawer::createGLTexture() {
-	glGenTextures(1, &texture);
-	ASSERT(texture == 0);
+	texture.Create();
 }
 
 void LightDrawer::unloadGLTexture() {
-	if (texture != 0) {
-		glDeleteTextures(1, &texture);
-	}
+	texture.Release();
 }
 
 float LightDrawer::calculateIntensity(int map_x, int map_y, const Light& light) {

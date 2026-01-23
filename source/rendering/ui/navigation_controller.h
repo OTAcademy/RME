@@ -15,6 +15,7 @@ public:
 	static void HandleMouseDrag(MapCanvas* canvas, wxMouseEvent& event);
 	static void HandleCameraClick(MapCanvas* canvas, wxMouseEvent& event);
 	static void HandleCameraRelease(MapCanvas* canvas, wxMouseEvent& event);
+	static void HandleWheel(MapCanvas* canvas, wxMouseEvent& event);
 	static void ChangeFloor(MapCanvas* canvas, int new_floor);
 };
 

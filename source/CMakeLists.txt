@@ -32,6 +32,7 @@ ${CMAKE_CURRENT_LIST_DIR}/extension_window.h
 ${CMAKE_CURRENT_LIST_DIR}/find_item_window.h
 ${CMAKE_CURRENT_LIST_DIR}/filehandle.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/graphics.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/gl_texture.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/outfit_colors.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/sprite_light.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/editor_sprite.h
@@ -185,6 +186,7 @@ ${CMAKE_CURRENT_LIST_DIR}/extension_window.cpp
 ${CMAKE_CURRENT_LIST_DIR}/find_item_window.cpp
 ${CMAKE_CURRENT_LIST_DIR}/filehandle.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/graphics.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/gl_texture.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/outfit_colors.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/editor_sprite.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.cpp

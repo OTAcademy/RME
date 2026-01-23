@@ -70,8 +70,6 @@ class MapDrawer {
 	std::unique_ptr<ShadeDrawer> shade_drawer;
 	std::unique_ptr<TileRenderer> tile_renderer;
 
-	uint32_t current_house_id;
-
 protected:
 	std::ostringstream tooltip;
 
@@ -103,6 +101,9 @@ public:
 	DrawingOptions& getOptions() {
 		return options;
 	}
+
+private:
+	void DrawMapLayer(int map_z, bool live_client);
 };
 
 #endif

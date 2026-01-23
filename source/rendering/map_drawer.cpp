@@ -141,18 +141,6 @@ void MapDrawer::DrawBackground() {
 void MapDrawer::DrawMap() {
 	bool live_client = editor.IsLiveClient();
 
-	Brush* brush = g_gui.GetCurrentBrush();
-
-	// The current house we're drawing
-	current_house_id = 0;
-	if (brush) {
-		if (brush->isHouse()) {
-			current_house_id = brush->asHouse()->getHouseID();
-		} else if (brush->isHouseExit()) {
-			current_house_id = brush->asHouseExit()->getHouseID();
-		}
-	}
-
 	bool only_colors = options.show_as_minimap || options.show_only_colors;
 
 	// Enable texture mode
@@ -166,51 +154,14 @@ void MapDrawer::DrawMap() {
 		}
 
 		if (map_z >= view.end_z) {
-			int nd_start_x = view.start_x & ~3;
-			int nd_start_y = view.start_y & ~3;
-			int nd_end_x = (view.end_x & ~3) + 4;
-			int nd_end_y = (view.end_y & ~3) + 4;
-
-			for (int nd_map_x = nd_start_x; nd_map_x <= nd_end_x; nd_map_x += 4) {
-				for (int nd_map_y = nd_start_y; nd_map_y <= nd_end_y; nd_map_y += 4) {
-					QTreeNode* nd = editor.map.getLeaf(nd_map_x, nd_map_y);
-					if (!nd) {
-						if (live_client) {
-							nd = editor.map.createLeaf(nd_map_x, nd_map_y);
-							nd->setVisible(false, false);
-						} else {
-							continue;
-						}
-					}
-
-					if (!live_client || nd->isVisible(map_z > GROUND_LAYER)) {
-						for (int map_x = 0; map_x < 4; ++map_x) {
-							for (int map_y = 0; map_y < 4; ++map_y) {
-								TileLocation* location = nd->getTile(map_x, map_y, map_z);
-								tile_renderer->DrawTile(location, view, options, current_house_id, tooltip);
-								// draw light, but only if not zoomed too far
-								if (location && options.isDrawLight() && view.zoom <= 10.0) {
-									tile_renderer->AddLight(location, view, options);
-								}
-							}
-						}
-					} else {
-						if (!nd->isRequested(map_z > GROUND_LAYER)) {
-							// Request the node
-							editor.QueryNode(nd_map_x, nd_map_y, map_z > GROUND_LAYER);
-							nd->setRequested(map_z > GROUND_LAYER, true);
-						}
-						grid_drawer->DrawNodeLoadingPlaceholder(nd_map_x, nd_map_y, view);
-					}
-				}
-			}
+			DrawMapLayer(map_z, live_client);
 		}
 
 		if (only_colors) {
 			glEnable(GL_TEXTURE_2D);
 		}
 
-		preview_drawer->draw(canvas, view, map_z, options, editor, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), current_house_id);
+		preview_drawer->draw(canvas, view, map_z, options, editor, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), options.current_house_id);
 
 		--view.start_x;
 		--view.start_y;
@@ -233,6 +184,47 @@ void MapDrawer::DrawGrid() {
 
 void MapDrawer::DrawTooltips() {
 	tooltip_drawer->draw(view.zoom, TileSize);
+}
+
+void MapDrawer::DrawMapLayer(int map_z, bool live_client) {
+	int nd_start_x = view.start_x & ~3;
+	int nd_start_y = view.start_y & ~3;
+	int nd_end_x = (view.end_x & ~3) + 4;
+	int nd_end_y = (view.end_y & ~3) + 4;
+
+	for (int nd_map_x = nd_start_x; nd_map_x <= nd_end_x; nd_map_x += 4) {
+		for (int nd_map_y = nd_start_y; nd_map_y <= nd_end_y; nd_map_y += 4) {
+			QTreeNode* nd = editor.map.getLeaf(nd_map_x, nd_map_y);
+			if (!nd) {
+				if (live_client) {
+					nd = editor.map.createLeaf(nd_map_x, nd_map_y);
+					nd->setVisible(false, false);
+				} else {
+					continue;
+				}
+			}
+
+			if (!live_client || nd->isVisible(map_z > GROUND_LAYER)) {
+				for (int map_x = 0; map_x < 4; ++map_x) {
+					for (int map_y = 0; map_y < 4; ++map_y) {
+						TileLocation* location = nd->getTile(map_x, map_y, map_z);
+						tile_renderer->DrawTile(location, view, options, options.current_house_id, tooltip);
+						// draw light, but only if not zoomed too far
+						if (location && options.isDrawLight() && view.zoom <= 10.0) {
+							tile_renderer->AddLight(location, view, options);
+						}
+					}
+				}
+			} else {
+				if (!nd->isRequested(map_z > GROUND_LAYER)) {
+					// Request the node
+					editor.QueryNode(nd_map_x, nd_map_y, map_z > GROUND_LAYER);
+					nd->setRequested(map_z > GROUND_LAYER, true);
+				}
+				grid_drawer->DrawNodeLoadingPlaceholder(nd_map_x, nd_map_y, view);
+			}
+		}
+	}
 }
 
 void MapDrawer::DrawLight() {

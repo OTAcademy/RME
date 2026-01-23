@@ -96,3 +96,19 @@ void NavigationController::ChangeFloor(MapCanvas* canvas, int new_floor) {
 	}
 	canvas->Refresh();
 }
+
+void NavigationController::HandleWheel(MapCanvas* canvas, wxMouseEvent& event) {
+	if (event.ControlDown()) {
+		static double diff = 0.0;
+		diff += event.GetWheelRotation();
+		if (diff <= 1.0 || diff >= 1.0) {
+			if (diff < 0.0) {
+				ChangeFloor(canvas, canvas->floor - 1);
+			} else {
+				ChangeFloor(canvas, canvas->floor + 1);
+			}
+			diff = 0.0;
+		}
+		canvas->UpdatePositionStatus();
+	}
+}

@@ -1,6 +1,8 @@
 #ifndef RME_RENDERING_DRAWING_OPTIONS_H_
 #define RME_RENDERING_DRAWING_OPTIONS_H_
 
+#include <cstdint>
+
 struct DrawingOptions {
 	DrawingOptions();
 
@@ -45,6 +47,8 @@ struct DrawingOptions {
 	bool extended_house_shader;
 
 	bool experimental_fog;
+
+	uint32_t current_house_id;
 };
 
 #endif

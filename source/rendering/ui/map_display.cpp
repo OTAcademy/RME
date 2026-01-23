@@ -195,6 +195,17 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			options.Update();
 		}
 
+		// Calculate current house ID for highlighting
+		Brush* brush = g_gui.GetCurrentBrush();
+		options.current_house_id = 0;
+		if (brush) {
+			if (brush->isHouse()) {
+				options.current_house_id = brush->asHouse()->getHouseID();
+			} else if (brush->isHouseExit()) {
+				options.current_house_id = brush->asHouseExit()->getHouseID();
+			}
+		}
+
 		options.dragging = selection_controller->IsDragging();
 		options.boundbox_selection = selection_controller->IsBoundboxSelection();
 
@@ -369,15 +380,9 @@ void MapCanvas::OnMouseLeftClick(wxMouseEvent& event) {
 }
 
 void MapCanvas::OnMouseLeftDoubleClick(wxMouseEvent& event) {
-	if (g_settings.getInteger(Config::DOUBLECLICK_PROPERTIES)) {
-		int mouse_map_x, mouse_map_y;
-		ScreenToMap(event.GetX(), event.GetY(), &mouse_map_x, &mouse_map_y);
-		Tile* tile = editor.map.getTile(mouse_map_x, mouse_map_y, floor);
-
-		if (tile) {
-			DialogHelper::OpenProperties(editor, tile);
-		}
-	}
+	int mouse_map_x, mouse_map_y;
+	ScreenToMap(event.GetX(), event.GetY(), &mouse_map_x, &mouse_map_y);
+	selection_controller->HandleDoubleClick(Position(mouse_map_x, mouse_map_y, floor));
 }
 
 void MapCanvas::OnMouseCenterClick(wxMouseEvent& event) {
@@ -538,17 +543,7 @@ void MapCanvas::OnMousePropertiesRelease(wxMouseEvent& event) {
 
 void MapCanvas::OnWheel(wxMouseEvent& event) {
 	if (event.ControlDown()) {
-		static double diff = 0.0;
-		diff += event.GetWheelRotation();
-		if (diff <= 1.0 || diff >= 1.0) {
-			if (diff < 0.0) {
-				g_gui.ChangeFloor(floor - 1);
-			} else {
-				g_gui.ChangeFloor(floor + 1);
-			}
-			diff = 0.0;
-		}
-		UpdatePositionStatus();
+		NavigationController::HandleWheel(this, event);
 	} else if (event.AltDown()) {
 		static double diff = 0.0;
 		diff += event.GetWheelRotation();

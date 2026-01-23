@@ -18,9 +18,11 @@
 #ifndef RME_LIGHDRAWER_H
 #define RME_LIGHDRAWER_H
 
+#include <cstdint>
 #include "rendering/core/graphics.h"
 #include "rendering/core/sprite_light.h"
 #include "position.h"
+#include "rendering/core/gl_texture.h"
 
 class TileLocation;
 struct DrawingOptions;
@@ -72,7 +74,7 @@ public:
 	}
 
 private:
-	GLuint texture;
+	GLTexture texture;
 	std::vector<Light> lights;
 	std::vector<uint8_t> buffer;
 	wxColor global_color;

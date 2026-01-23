@@ -16,6 +16,7 @@
 #include "rendering/ui/brush_selector.h"
 #include "creature_brush.h"
 #include "raw_brush.h"
+#include "dialog_helper.h"
 
 SelectionController::SelectionController(MapCanvas* canvas, Editor& editor) :
 	canvas(canvas),
@@ -306,6 +307,15 @@ void SelectionController::HandlePropertiesRelease(const Position& mouse_map_pos,
 	editor.actionQueue->resetTimer();
 	dragging = false;
 	boundbox_selection = false;
+}
+
+void SelectionController::HandleDoubleClick(const Position& mouse_map_pos) {
+	if (g_settings.getInteger(Config::DOUBLECLICK_PROPERTIES)) {
+		Tile* tile = editor.map.getTile(mouse_map_pos);
+		if (tile) {
+			DialogHelper::OpenProperties(editor, tile);
+		}
+	}
 }
 
 void SelectionController::ExecuteBoundboxSelection(const Position& start_pos, const Position& end_pos, int floor) {

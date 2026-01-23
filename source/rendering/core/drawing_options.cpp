@@ -36,6 +36,7 @@ void DrawingOptions::SetDefault() {
 	show_preview = false;
 	show_hooks = false;
 	hide_items_when_zoomed = true;
+	current_house_id = 0;
 }
 
 void DrawingOptions::SetIngame() {
@@ -69,6 +70,7 @@ void DrawingOptions::SetIngame() {
 	show_preview = false;
 	show_hooks = false;
 	hide_items_when_zoomed = false;
+	current_house_id = 0;
 }
 
 #include "settings.h"
