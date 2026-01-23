@@ -18,6 +18,8 @@
 #ifndef RME_MAP_DRAWER_H_
 #define RME_MAP_DRAWER_H_
 
+#include "map_overlay.h"
+
 class GameSprite;
 
 struct MapTooltip {
@@ -141,6 +143,10 @@ public:
 	DrawingOptions& getOptions() {
 		return options;
 	}
+
+	MapViewInfo getViewInfo() const;
+	bool drawOverlayCommands(const std::vector<MapOverlayCommand>& commands);
+	bool addOverlayTooltips(const std::vector<MapOverlayTooltip>& tooltips);
 
 protected:
 	void BlitItem(int& screenx, int& screeny, const Tile* tile, Item* item, bool ephemeral = false, int red = 255, int green = 255, int blue = 255, int alpha = 255);
