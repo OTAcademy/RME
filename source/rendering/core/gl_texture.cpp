@@ -1,7 +1,8 @@
 #include "main.h"
 #include "rendering/core/gl_texture.h"
 
-GLTexture::GLTexture() : id(0) {
+GLTexture::GLTexture() :
+	id(0) {
 }
 
 GLTexture::~GLTexture() {

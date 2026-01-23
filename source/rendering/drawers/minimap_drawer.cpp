@@ -13,7 +13,8 @@
 // Included for minimap_color
 #include "rendering/core/graphics.h"
 
-MinimapDrawer::MinimapDrawer() : last_start_x(0), last_start_y(0) {
+MinimapDrawer::MinimapDrawer() :
+	last_start_x(0), last_start_y(0) {
 	for (int i = 0; i < 256; ++i) {
 		pens[i] = newd wxPen(wxColor(minimap_color[i].red, minimap_color[i].green, minimap_color[i].blue));
 	}

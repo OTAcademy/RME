@@ -15,7 +15,8 @@
 #include "sprites.h"
 #include "items.h"
 
-SpriteDrawer::SpriteDrawer() : last_bound_texture_(0) {
+SpriteDrawer::SpriteDrawer() :
+	last_bound_texture_(0) {
 }
 
 SpriteDrawer::~SpriteDrawer() {
