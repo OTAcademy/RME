@@ -15,38 +15,29 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#ifndef RME_LIGHDRAWER_H
-#define RME_LIGHDRAWER_H
+#ifndef RME_MAP_LAYER_DRAWER_H
+#define RME_MAP_LAYER_DRAWER_H
 
-#include <cstdint>
-#include <vector>
-#include <wx/wx.h>
-#include <wx/glcanvas.h>
-#include "rendering/core/sprite_light.h"
-#include "rendering/core/light_buffer.h"
-#include "rendering/core/gl_texture.h"
+#include <iosfwd>
 
+class Editor;
+class TileRenderer;
+class GridDrawer;
+struct RenderView;
 struct DrawingOptions;
-class TileLocation;
-class LightDrawer {
+struct LightBuffer;
+
+class MapLayerDrawer {
 public:
-	LightDrawer();
-	~LightDrawer();
+	MapLayerDrawer(TileRenderer* tile_renderer, GridDrawer* grid_drawer, Editor* editor);
+	~MapLayerDrawer();
 
-	void draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog, const LightBuffer& light_buffer);
-
-	void setGlobalLightColor(uint8_t color);
-
-	void createGLTexture();
-	void unloadGLTexture();
+	void Draw(int map_z, bool live_client, const RenderView& view, const DrawingOptions& options, LightBuffer& light_buffer, std::ostringstream& tooltip);
 
 private:
-	wxColor global_color;
-
-	// Open GL Texture used for lightmap
-	// It is owned by this class and should be released when context is destroyed
-	GLTexture texture;
-	std::vector<uint8_t> buffer;
+	TileRenderer* tile_renderer;
+	GridDrawer* grid_drawer;
+	Editor* editor;
 };
 
 #endif

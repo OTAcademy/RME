@@ -54,9 +54,7 @@ GraphicManager::GraphicManager() :
 	is_extended(false),
 	has_transparency(false),
 	has_frame_durations(false),
-	has_frame_groups(false),
-	loaded_textures(0),
-	lastclean(0) {
+	has_frame_groups(false) {
 	animation_timer = newd wxStopWatch();
 	animation_timer->Start();
 }
@@ -102,23 +100,19 @@ void GraphicManager::clear() {
 
 	sprite_space.swap(new_sprite_space);
 	image_space.clear();
-	cleanup_list.clear();
 
 	item_count = 0;
 	creature_count = 0;
-	loaded_textures = 0;
-	lastclean = time(nullptr);
+	item_count = 0;
+	creature_count = 0;
+	collector.Clear();
 	spritefile = "";
 
 	unloaded = true;
 }
 
 void GraphicManager::cleanSoftwareSprites() {
-	for (SpriteMap::iterator iter = sprite_space.begin(); iter != sprite_space.end(); ++iter) {
-		if (iter->first >= 0) { // Don't clean internal sprites
-			iter->second->unloadDC();
-		}
-	}
+	collector.CleanSoftwareSprites(sprite_space);
 }
 
 Sprite* GraphicManager::getSprite(int id) {
@@ -182,36 +176,15 @@ bool GraphicManager::loadSpriteDump(uint8_t*& target, uint16_t& size, int sprite
 }
 
 void GraphicManager::addSpriteToCleanup(GameSprite* spr) {
-	cleanup_list.push_back(spr);
-	// Clean if needed
-	if (cleanup_list.size() > std::max<uint32_t>(100, g_settings.getInteger(Config::SOFTWARE_CLEAN_THRESHOLD))) {
-		for (int i = 0; i < g_settings.getInteger(Config::SOFTWARE_CLEAN_SIZE) && static_cast<uint32_t>(i) < cleanup_list.size(); ++i) {
-			cleanup_list.front()->unloadDC();
-			cleanup_list.pop_front();
-		}
-	}
+	collector.AddSpriteToCleanup(spr);
 }
 
 void GraphicManager::garbageCollection() {
-	if (g_settings.getInteger(Config::TEXTURE_MANAGEMENT)) {
-		int t = time(nullptr);
-		if (loaded_textures > g_settings.getInteger(Config::TEXTURE_CLEAN_THRESHOLD) && t - lastclean > g_settings.getInteger(Config::TEXTURE_CLEAN_PULSE)) {
-			ImageMap::iterator iit = image_space.begin();
-			while (iit != image_space.end()) {
-				iit->second->clean(t);
-				++iit;
-			}
-			SpriteMap::iterator sit = sprite_space.begin();
-			while (sit != sprite_space.end()) {
-				GameSprite* gs = dynamic_cast<GameSprite*>(sit->second);
-				if (gs) {
-					gs->clean(t);
-				}
-				++sit;
-			}
-			lastclean = t;
-		}
+	std::map<int, void*> generic_image_space;
+	for (auto pair : image_space) {
+		generic_image_space[pair.first] = (void*)pair.second;
 	}
+	collector.GarbageCollect(sprite_space, generic_image_space);
 }
 
 GameSprite::GameSprite() :
@@ -376,7 +349,7 @@ void GameSprite::Image::createGLTexture(GLuint whatid) {
 	}
 
 	isGLLoaded = true;
-	g_gui.gfx.loaded_textures += 1;
+	g_gui.gfx.collector.NotifyTextureLoaded();
 
 	glBindTexture(GL_TEXTURE_2D, whatid);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // Nearest-neighbor
@@ -391,7 +364,7 @@ void GameSprite::Image::createGLTexture(GLuint whatid) {
 
 void GameSprite::Image::unloadGLTexture(GLuint whatid) {
 	isGLLoaded = false;
-	g_gui.gfx.loaded_textures -= 1;
+	g_gui.gfx.collector.NotifyTextureUnloaded();
 	glDeleteTextures(1, &whatid);
 }
 

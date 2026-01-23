@@ -17,6 +17,7 @@
 
 #include "main.h"
 #include "rendering/utilities/light_drawer.h"
+#include "rendering/utilities/light_calculator.h"
 #include "tile.h"
 #include "item.h"
 #include "rendering/core/drawing_options.h"
@@ -52,7 +53,7 @@ void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x,
 			buffer[color_index + 3] = 140; // global_color.Alpha();
 
 			for (const auto& light : light_buffer.lights) {
-				float intensity = calculateIntensity(mx, my, light);
+				float intensity = LightCalculator::calculateIntensity(mx, my, light);
 				if (intensity == 0.f) {
 					continue;
 				}
@@ -118,18 +119,4 @@ void LightDrawer::createGLTexture() {
 
 void LightDrawer::unloadGLTexture() {
 	texture.Release();
-}
-
-float LightDrawer::calculateIntensity(int map_x, int map_y, const LightBuffer::Light& light) {
-	int dx = map_x - light.map_x;
-	int dy = map_y - light.map_y;
-	float distance = std::sqrt(dx * dx + dy * dy);
-	if (distance > MaxLightIntensity) {
-		return 0.f;
-	}
-	float intensity = (-distance + light.intensity) * 0.2f;
-	if (intensity < 0.01f) {
-		return 0.f;
-	}
-	return std::min(intensity, 1.f);
 }

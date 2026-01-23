@@ -43,6 +43,7 @@ class DragShadowDrawer;
 class FloorDrawer;
 class SpriteDrawer;
 class ItemDrawer;
+class MapLayerDrawer;
 class CreatureDrawer;
 class MarkerDrawer;
 class PreviewDrawer;
@@ -65,6 +66,7 @@ class MapDrawer {
 	std::unique_ptr<DragShadowDrawer> drag_shadow_drawer;
 	std::unique_ptr<FloorDrawer> floor_drawer;
 	std::unique_ptr<SpriteDrawer> sprite_drawer;
+	std::unique_ptr<MapLayerDrawer> map_layer_drawer;
 	std::unique_ptr<CreatureDrawer> creature_drawer;
 	std::unique_ptr<ItemDrawer> item_drawer;
 	std::unique_ptr<MarkerDrawer> marker_drawer;

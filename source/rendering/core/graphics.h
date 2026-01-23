@@ -39,6 +39,7 @@ class FileReadHandle;
 class Animator;
 
 #include "rendering/core/sprite_light.h"
+#include "rendering/core/texture_garbage_collector.h"
 
 class Sprite {
 public:
@@ -184,6 +185,7 @@ public:
 	friend class GraphicManager;
 	friend class GameSpriteLoader;
 	friend class SpriteIconGenerator;
+	friend class TextureGarbageCollector;
 };
 
 class GraphicManager {
@@ -248,7 +250,6 @@ private:
 	SpriteMap sprite_space;
 	typedef std::map<int, GameSprite::Image*> ImageMap;
 	ImageMap image_space;
-	std::deque<GameSprite*> cleanup_list;
 
 	DatFormat dat_format;
 	uint16_t item_count;
@@ -261,8 +262,7 @@ private:
 	wxFileName metadata_file;
 	wxFileName sprites_file;
 
-	int loaded_textures;
-	int lastclean;
+	TextureGarbageCollector collector;
 
 	wxStopWatch* animation_timer;
 

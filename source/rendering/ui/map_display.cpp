@@ -35,10 +35,11 @@
 #include "palette_window.h"
 #include "palette_window.h"
 #include "rendering/utilities/fps_counter.h"
-#include "rendering/io/screenshot_saver.h"
+#include "rendering/ui/screenshot_controller.h"
 #include "rendering/utilities/tile_describer.h"
 #include "rendering/core/coordinate_mapper.h"
 #include "rendering/ui/map_display.h"
+#include "rendering/ui/map_status_updater.h"
 #include "rendering/map_drawer.h"
 #include "application.h"
 #include "live_server.h"
@@ -157,7 +158,7 @@ MapCanvas::MapCanvas(MapWindow* parent, Editor& editor, int* attriblist) :
 	drawer = new MapDrawer(this);
 	selection_controller = std::make_unique<SelectionController>(this, editor);
 	drawing_controller = std::make_unique<DrawingController>(this, editor);
-	screenshot_saver = std::make_unique<ScreenshotSaver>();
+	screenshot_controller = std::make_unique<ScreenshotController>(this);
 	keyCode = WXK_NONE;
 }
 
@@ -189,7 +190,7 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 
 	if (g_gui.IsRenderingEnabled()) {
 		DrawingOptions& options = drawer->getOptions();
-		if (screenshot_saver->IsCapturing()) {
+		if (screenshot_controller->IsCapturing()) {
 			options.SetIngame();
 		} else {
 			options.Update();
@@ -219,8 +220,8 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 		drawer->SetupGL();
 		drawer->Draw();
 
-		if (screenshot_saver->IsCapturing()) {
-			drawer->TakeScreenshot(screenshot_saver->GetBuffer());
+		if (screenshot_controller->IsCapturing()) {
+			drawer->TakeScreenshot(screenshot_controller->GetBuffer());
 		}
 
 		drawer->Release();
@@ -249,31 +250,7 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 }
 
 void MapCanvas::TakeScreenshot(wxFileName path, wxString format) {
-	int screensize_x, screensize_y;
-	GetViewBox(&view_scroll_x, &view_scroll_y, &screensize_x, &screensize_y);
-
-	screenshot_saver->PrepareCapture(screensize_x, screensize_y);
-
-	// Draw the window
-	Refresh();
-	wxGLCanvas::Update(); // Forces immediate redraws the window.
-
-	// Buffer should now contain the screenbuffer
-
-	static_cast<MapWindow*>(GetParent())->GetViewSize(&screensize_x, &screensize_y);
-
-	// Delegate saving to ScreenshotSaver
-	wxString result = screenshot_saver->SaveCapture(path, format, screensize_x, screensize_y);
-
-	if (result.StartsWith("Error:")) {
-		g_gui.PopupDialog("Screenshot Error", result, wxOK);
-	} else {
-		g_gui.SetStatusText(result);
-	}
-
-	Refresh();
-
-	screenshot_saver->Cleanup();
+	screenshot_controller->TakeScreenshot(path, format);
 }
 
 void MapCanvas::ScreenToMap(int screen_x, int screen_y, int* map_x, int* map_y) {
@@ -318,22 +295,7 @@ void MapCanvas::UpdatePositionStatus(int x, int y) {
 	int map_x, map_y;
 	ScreenToMap(x, y, &map_x, &map_y);
 
-	wxString ss;
-	ss << "x: " << map_x << " y:" << map_y << " z:" << floor;
-	g_gui.root->SetStatusText(ss, 2);
-
-	ss = "";
-	Tile* tile = editor.map.getTile(map_x, map_y, floor);
-	if (tile) {
-		ss = TileDescriber::GetDescription(tile, g_settings.getInteger(Config::SHOW_SPAWNS), g_settings.getInteger(Config::SHOW_CREATURES));
-
-		if (editor.IsLive()) {
-			editor.GetLive().updateCursor(Position(map_x, map_y, floor));
-		}
-		g_gui.root->SetStatusText(ss, 1);
-	} else {
-		g_gui.root->SetStatusText("Nothing", 1);
-	}
+	MapStatusUpdater::Update(editor, map_x, map_y, floor);
 }
 
 void MapCanvas::UpdateZoomStatus() {

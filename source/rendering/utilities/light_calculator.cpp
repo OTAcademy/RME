@@ -15,38 +15,21 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#ifndef RME_LIGHDRAWER_H
-#define RME_LIGHDRAWER_H
+#include "main.h"
+#include "rendering/utilities/light_calculator.h"
+#include <cmath>
+#include <algorithm>
 
-#include <cstdint>
-#include <vector>
-#include <wx/wx.h>
-#include <wx/glcanvas.h>
-#include "rendering/core/sprite_light.h"
-#include "rendering/core/light_buffer.h"
-#include "rendering/core/gl_texture.h"
-
-struct DrawingOptions;
-class TileLocation;
-class LightDrawer {
-public:
-	LightDrawer();
-	~LightDrawer();
-
-	void draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog, const LightBuffer& light_buffer);
-
-	void setGlobalLightColor(uint8_t color);
-
-	void createGLTexture();
-	void unloadGLTexture();
-
-private:
-	wxColor global_color;
-
-	// Open GL Texture used for lightmap
-	// It is owned by this class and should be released when context is destroyed
-	GLTexture texture;
-	std::vector<uint8_t> buffer;
-};
-
-#endif
+float LightCalculator::calculateIntensity(int map_x, int map_y, const LightBuffer::Light& light) {
+	int dx = map_x - light.map_x;
+	int dy = map_y - light.map_y;
+	float distance = std::sqrt(dx * dx + dy * dy);
+	if (distance > MaxLightIntensity) {
+		return 0.f;
+	}
+	float intensity = (-distance + light.intensity) * 0.2f;
+	if (intensity < 0.01f) {
+		return 0.f;
+	}
+	return std::min(intensity, 1.f);
+}

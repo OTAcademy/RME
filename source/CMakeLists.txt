@@ -32,6 +32,7 @@ ${CMAKE_CURRENT_LIST_DIR}/extension_window.h
 ${CMAKE_CURRENT_LIST_DIR}/find_item_window.h
 ${CMAKE_CURRENT_LIST_DIR}/filehandle.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/graphics.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/texture_garbage_collector.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/gl_texture.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/outfit_colors.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/light_buffer.h
@@ -53,6 +54,7 @@ ${CMAKE_CURRENT_LIST_DIR}/item_attributes.h
 ${CMAKE_CURRENT_LIST_DIR}/items.h
 ${CMAKE_CURRENT_LIST_DIR}/json.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/light_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/light_calculator.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/sprite_icon_generator.h
 ${CMAKE_CURRENT_LIST_DIR}/live_action.h
 ${CMAKE_CURRENT_LIST_DIR}/live_client.h
@@ -70,11 +72,14 @@ ${CMAKE_CURRENT_LIST_DIR}/dialog_helper.h
 ${CMAKE_CURRENT_LIST_DIR}/map.h
 ${CMAKE_CURRENT_LIST_DIR}/map_allocator.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/map_display.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/map_status_updater.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/map_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/map_layer_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/tooltip_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/drawing_options.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/fps_counter.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/screenshot_saver.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/screenshot_controller.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/tile_describer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/coordinate_mapper.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/editor_sprite_loader.h
@@ -188,6 +193,7 @@ ${CMAKE_CURRENT_LIST_DIR}/extension_window.cpp
 ${CMAKE_CURRENT_LIST_DIR}/find_item_window.cpp
 ${CMAKE_CURRENT_LIST_DIR}/filehandle.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/graphics.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/texture_garbage_collector.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/gl_texture.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/outfit_colors.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/light_buffer.cpp
@@ -205,6 +211,7 @@ ${CMAKE_CURRENT_LIST_DIR}/item_attributes.cpp
 ${CMAKE_CURRENT_LIST_DIR}/item.cpp
 ${CMAKE_CURRENT_LIST_DIR}/items.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/light_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/light_calculator.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/sprite_icon_generator.cpp
 ${CMAKE_CURRENT_LIST_DIR}/live_action.cpp
 ${CMAKE_CURRENT_LIST_DIR}/live_client.cpp
@@ -219,11 +226,14 @@ ${CMAKE_CURRENT_LIST_DIR}/animation_timer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/dialog_helper.cpp
 ${CMAKE_CURRENT_LIST_DIR}/map.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/map_display.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/map_status_updater.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/map_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/map_layer_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/tooltip_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/drawing_options.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/fps_counter.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/screenshot_saver.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/screenshot_controller.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/tile_describer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/coordinate_mapper.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/editor_sprite_loader.cpp

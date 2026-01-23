@@ -36,7 +36,7 @@ class AnimationTimer;
 class MapDrawer;
 class SelectionController;
 class DrawingController;
-class ScreenshotSaver;
+class ScreenshotController;
 
 class MapCanvas : public wxGLCanvas {
 public:
@@ -155,7 +155,7 @@ public:
 	bool screendragging;
 	bool isPasting() const;
 
-	std::unique_ptr<ScreenshotSaver> screenshot_saver;
+	std::unique_ptr<ScreenshotController> screenshot_controller;
 
 	int last_cursor_map_x;
 	int last_cursor_map_y;

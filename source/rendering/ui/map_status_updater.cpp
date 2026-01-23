@@ -15,38 +15,31 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#ifndef RME_LIGHDRAWER_H
-#define RME_LIGHDRAWER_H
+#include "main.h"
+#include "rendering/ui/map_status_updater.h"
+#include "gui.h"
+#include "editor.h"
+#include "map.h"
+#include "tile.h"
+#include "live_server.h"
+#include "rendering/utilities/tile_describer.h"
+#include "settings.h"
 
-#include <cstdint>
-#include <vector>
-#include <wx/wx.h>
-#include <wx/glcanvas.h>
-#include "rendering/core/sprite_light.h"
-#include "rendering/core/light_buffer.h"
-#include "rendering/core/gl_texture.h"
+void MapStatusUpdater::Update(Editor& editor, int map_x, int map_y, int map_z) {
+	wxString ss;
+	ss << "x: " << map_x << " y:" << map_y << " z:" << map_z;
+	g_gui.root->SetStatusText(ss, 2);
 
-struct DrawingOptions;
-class TileLocation;
-class LightDrawer {
-public:
-	LightDrawer();
-	~LightDrawer();
+	ss = "";
+	Tile* tile = editor.map.getTile(map_x, map_y, map_z);
+	if (tile) {
+		ss = TileDescriber::GetDescription(tile, g_settings.getInteger(Config::SHOW_SPAWNS), g_settings.getInteger(Config::SHOW_CREATURES));
 
-	void draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog, const LightBuffer& light_buffer);
-
-	void setGlobalLightColor(uint8_t color);
-
-	void createGLTexture();
-	void unloadGLTexture();
-
-private:
-	wxColor global_color;
-
-	// Open GL Texture used for lightmap
-	// It is owned by this class and should be released when context is destroyed
-	GLTexture texture;
-	std::vector<uint8_t> buffer;
-};
-
-#endif
+		if (editor.IsLive()) {
+			editor.GetLive().updateCursor(Position(map_x, map_y, map_z));
+		}
+		g_gui.root->SetStatusText(ss, 1);
+	} else {
+		g_gui.root->SetStatusText("Nothing", 1);
+	}
+}
