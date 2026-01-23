@@ -11,11 +11,13 @@ TextureAtlas::~TextureAtlas() {
 }
 
 TextureAtlas::TextureAtlas(TextureAtlas&& other) noexcept
-	: texture_id_(other.texture_id_), layer_count_(other.layer_count_),
-	  allocated_layers_(other.allocated_layers_),
-	  total_sprite_count_(other.total_sprite_count_),
-	  current_layer_(other.current_layer_), next_x_(other.next_x_),
-	  next_y_(other.next_y_) {
+	:
+	texture_id_(other.texture_id_),
+	layer_count_(other.layer_count_),
+	allocated_layers_(other.allocated_layers_),
+	total_sprite_count_(other.total_sprite_count_),
+	current_layer_(other.current_layer_), next_x_(other.next_x_),
+	next_y_(other.next_y_) {
 	other.texture_id_ = 0;
 	other.layer_count_ = 0;
 	other.allocated_layers_ = 0;
