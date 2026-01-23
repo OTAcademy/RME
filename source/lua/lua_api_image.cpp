@@ -30,12 +30,12 @@ namespace LuaAPI {
 		// Empty image
 	}
 
-
-
 	LuaImage::LuaImage(const std::string& path) :
 		filePath(path), spriteId(0), spriteSource(false) {
 
-		if (path.empty()) return;
+		if (path.empty()) {
+			return;
+		}
 
 		// Security Check
 		if (path.find("..") != std::string::npos) {
@@ -57,8 +57,12 @@ namespace LuaAPI {
 				std::string dataStr = dataPath.string();
 
 				bool allowed = false;
-				if (absStr.find(scriptsStr) == 0) allowed = true;
-				if (absStr.find(dataStr) == 0) allowed = true;
+				if (absStr.find(scriptsStr) == 0) {
+					allowed = true;
+				}
+				if (absStr.find(dataStr) == 0) {
+					allowed = true;
+				}
 
 				if (!allowed) {
 					printf("[Lua Security] Blocked absolute image path outside allowed directories: %s\n", path.c_str());
