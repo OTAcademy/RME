@@ -503,7 +503,7 @@ void registerApp(sol::state& lua) {
 
 	// Version info
 	app["version"] = __RME_VERSION__;
-	app["apiVersion"] = 2; // Bumped version for new APIs
+	app["apiVersion"] = 1;
 
 	// Functions
 	app["alert"] = showAlert;
