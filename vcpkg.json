@@ -1,18 +1,21 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
-  "dependencies": [
-    "wxwidgets",
-    "freeglut",
-    "asio",
-    "nlohmann-json",
-    "fmt",
-    {
-      "name": "libiconv",
-      "platform": "osx"
-    },
-    "libarchive",
-    "boost-spirit",
-    "boost-asio"
-  ],
-  "builtin-baseline": "215a2535590f1f63788ac9bd2ed58ad15e6afdff"
+	"$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+	"dependencies": [
+		"wxwidgets",
+		"freeglut",
+		"asio",
+		"nlohmann-json",
+		"fmt",
+		{
+			"name": "libiconv",
+			"platform": "osx"
+		},
+		"libarchive",
+		"boost-spirit",
+		"boost-asio",
+		"lua",
+		"sol2",
+		"cpr"
+	],
+	"builtin-baseline": "734f8130ffe2f02cf855a3a42a2958f01b3fb005"
 }
