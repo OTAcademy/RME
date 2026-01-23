@@ -45,6 +45,8 @@
 #include "../../../brushes/door_archway_small.xpm"
 
 #include "rendering/core/outfit_colors.h"
+#include "rendering/core/outfit_colorizer.h"
+#include "rendering/core/gl_texture_id_generator.h"
 
 GraphicManager::GraphicManager() :
 	client_version(nullptr),
@@ -77,11 +79,6 @@ bool GraphicManager::hasTransparency() const {
 
 bool GraphicManager::isUnloaded() const {
 	return unloaded;
-}
-
-GLuint GraphicManager::getFreeTextureID() {
-	static GLuint id_counter = 0x10000000;
-	return id_counter++; // This should (hopefully) never run out
 }
 
 void GraphicManager::clear() {
@@ -533,16 +530,6 @@ GameSprite::TemplateImage::~TemplateImage() {
 	////
 }
 
-void GameSprite::TemplateImage::colorizePixel(uint8_t color, uint8_t& red, uint8_t& green, uint8_t& blue) {
-	// Thanks! Khaos, or was it mips? Hmmm... =)
-	uint8_t ro = (TemplateOutfitLookupTable[color] & 0xFF0000) >> 16; // rgb outfit
-	uint8_t go = (TemplateOutfitLookupTable[color] & 0xFF00) >> 8;
-	uint8_t bo = (TemplateOutfitLookupTable[color] & 0xFF);
-	red = (uint8_t)(red * (ro / 255.f));
-	green = (uint8_t)(green * (go / 255.f));
-	blue = (uint8_t)(blue * (bo / 255.f));
-}
-
 uint8_t* GameSprite::TemplateImage::getRGBData() {
 	uint8_t* rgbdata = parent->spriteList[sprite_index]->getRGBData();
 	uint8_t* template_rgbdata = parent->spriteList[sprite_index + parent->height * parent->width]->getRGBData();
@@ -580,13 +567,13 @@ uint8_t* GameSprite::TemplateImage::getRGBData() {
 			uint8_t& tblue = template_rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 2];
 
 			if (tred && tgreen && !tblue) { // yellow => head
-				colorizePixel(lookHead, red, green, blue);
+				OutfitColorizer::ColorizePixel(lookHead, red, green, blue);
 			} else if (tred && !tgreen && !tblue) { // red => body
-				colorizePixel(lookBody, red, green, blue);
+				OutfitColorizer::ColorizePixel(lookBody, red, green, blue);
 			} else if (!tred && tgreen && !tblue) { // green => legs
-				colorizePixel(lookLegs, red, green, blue);
+				OutfitColorizer::ColorizePixel(lookLegs, red, green, blue);
 			} else if (!tred && !tgreen && tblue) { // blue => feet
-				colorizePixel(lookFeet, red, green, blue);
+				OutfitColorizer::ColorizePixel(lookFeet, red, green, blue);
 			}
 		}
 	}
@@ -631,13 +618,13 @@ uint8_t* GameSprite::TemplateImage::getRGBAData() {
 			uint8_t& tblue = template_rgbdata[y * SPRITE_PIXELS * 3 + x * 3 + 2];
 
 			if (tred && tgreen && !tblue) { // yellow => head
-				colorizePixel(lookHead, red, green, blue);
+				OutfitColorizer::ColorizePixel(lookHead, red, green, blue);
 			} else if (tred && !tgreen && !tblue) { // red => body
-				colorizePixel(lookBody, red, green, blue);
+				OutfitColorizer::ColorizePixel(lookBody, red, green, blue);
 			} else if (!tred && tgreen && !tblue) { // green => legs
-				colorizePixel(lookLegs, red, green, blue);
+				OutfitColorizer::ColorizePixel(lookLegs, red, green, blue);
 			} else if (!tred && !tgreen && tblue) { // blue => feet
-				colorizePixel(lookFeet, red, green, blue);
+				OutfitColorizer::ColorizePixel(lookFeet, red, green, blue);
 			}
 		}
 	}
@@ -648,7 +635,7 @@ uint8_t* GameSprite::TemplateImage::getRGBAData() {
 GLuint GameSprite::TemplateImage::getHardwareID() {
 	if (!isGLLoaded) {
 		if (gl_tid == 0) {
-			gl_tid = g_gui.gfx.getFreeTextureID();
+			gl_tid = GLTextureIDGenerator::GetFreeTextureID();
 		}
 		createGLTexture(gl_tid);
 		if (!isGLLoaded) {

@@ -43,3 +43,7 @@ void MapStatusUpdater::Update(Editor& editor, int map_x, int map_y, int map_z) {
 		g_gui.root->SetStatusText("Nothing", 1);
 	}
 }
+
+void MapStatusUpdater::UpdateFPS(const wxString& fps_status) {
+	g_gui.root->SetStatusText(fps_status, 0);
+}

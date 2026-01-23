@@ -59,6 +59,7 @@
 #include "rendering/ui/selection_controller.h"
 #include "rendering/ui/drawing_controller.h"
 #include "rendering/ui/drawing_controller.h"
+#include "rendering/ui/map_menu_handler.h"
 
 #include "doodad_brush.h"
 #include "house_exit_brush.h"
@@ -94,36 +95,12 @@ EVT_PAINT(MapCanvas::OnPaint)
 EVT_ERASE_BACKGROUND(MapCanvas::OnEraseBackground)
 
 // Menu events
-EVT_MENU(MAP_POPUP_MENU_CUT, MapCanvas::OnCut)
-EVT_MENU(MAP_POPUP_MENU_COPY, MapCanvas::OnCopy)
-EVT_MENU(MAP_POPUP_MENU_COPY_POSITION, MapCanvas::OnCopyPosition)
-EVT_MENU(MAP_POPUP_MENU_PASTE, MapCanvas::OnPaste)
-EVT_MENU(MAP_POPUP_MENU_DELETE, MapCanvas::OnDelete)
+// Menu events
 //----
-EVT_MENU(MAP_POPUP_MENU_COPY_SERVER_ID, MapCanvas::OnCopyServerId)
-EVT_MENU(MAP_POPUP_MENU_COPY_CLIENT_ID, MapCanvas::OnCopyClientId)
-EVT_MENU(MAP_POPUP_MENU_COPY_NAME, MapCanvas::OnCopyName)
 // ----
-EVT_MENU(MAP_POPUP_MENU_ROTATE, MapCanvas::OnRotateItem)
-EVT_MENU(MAP_POPUP_MENU_GOTO, MapCanvas::OnGotoDestination)
-EVT_MENU(MAP_POPUP_MENU_SWITCH_DOOR, MapCanvas::OnSwitchDoor)
 // ----
-EVT_MENU(MAP_POPUP_MENU_SELECT_RAW_BRUSH, MapCanvas::OnSelectRAWBrush)
-EVT_MENU(MAP_POPUP_MENU_SELECT_GROUND_BRUSH, MapCanvas::OnSelectGroundBrush)
-EVT_MENU(MAP_POPUP_MENU_SELECT_DOODAD_BRUSH, MapCanvas::OnSelectDoodadBrush)
-EVT_MENU(MAP_POPUP_MENU_SELECT_COLLECTION_BRUSH, MapCanvas::OnSelectCollectionBrush)
-EVT_MENU(MAP_POPUP_MENU_SELECT_DOOR_BRUSH, MapCanvas::OnSelectDoorBrush)
-EVT_MENU(MAP_POPUP_MENU_SELECT_WALL_BRUSH, MapCanvas::OnSelectWallBrush)
-EVT_MENU(MAP_POPUP_MENU_SELECT_CARPET_BRUSH, MapCanvas::OnSelectCarpetBrush)
-EVT_MENU(MAP_POPUP_MENU_SELECT_TABLE_BRUSH, MapCanvas::OnSelectTableBrush)
-EVT_MENU(MAP_POPUP_MENU_SELECT_CREATURE_BRUSH, MapCanvas::OnSelectCreatureBrush)
-EVT_MENU(MAP_POPUP_MENU_SELECT_SPAWN_BRUSH, MapCanvas::OnSelectSpawnBrush)
-EVT_MENU(MAP_POPUP_MENU_SELECT_HOUSE_BRUSH, MapCanvas::OnSelectHouseBrush)
-EVT_MENU(MAP_POPUP_MENU_MOVE_TO_TILESET, MapCanvas::OnSelectMoveTo)
 // ----
-EVT_MENU(MAP_POPUP_MENU_PROPERTIES, MapCanvas::OnProperties)
 // ----
-EVT_MENU(MAP_POPUP_MENU_BROWSE_TILE, MapCanvas::OnBrowseTile)
 END_EVENT_TABLE()
 
 bool MapCanvas::processed[] = { 0 };
@@ -159,6 +136,8 @@ MapCanvas::MapCanvas(MapWindow* parent, Editor& editor, int* attriblist) :
 	selection_controller = std::make_unique<SelectionController>(this, editor);
 	drawing_controller = std::make_unique<DrawingController>(this, editor);
 	screenshot_controller = std::make_unique<ScreenshotController>(this);
+	menu_handler = std::make_unique<MapMenuHandler>(this, editor);
+	menu_handler->BindEvents();
 	keyCode = WXK_NONE;
 }
 
@@ -238,11 +217,8 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 	fps_counter.Update();
 
 	// Display FPS on status bar if enabled
-	if (g_settings.getBoolean(Config::SHOW_FPS_COUNTER)) {
-		// Display FPS on status bar if enabled
-		if (g_settings.getBoolean(Config::SHOW_FPS_COUNTER) && fps_counter.HasChanged()) {
-			g_gui.root->SetStatusText(fps_counter.GetStatusString(), 0);
-		}
+	if (g_settings.getBoolean(Config::SHOW_FPS_COUNTER) && fps_counter.HasChanged()) {
+		MapStatusUpdater::UpdateFPS(fps_counter.GetStatusString());
 	}
 
 	// Send newd node requests
@@ -491,16 +467,7 @@ void MapCanvas::OnWheel(wxMouseEvent& event) {
 	if (event.ControlDown()) {
 		NavigationController::HandleWheel(this, event);
 	} else if (event.AltDown()) {
-		static double diff = 0.0;
-		diff += event.GetWheelRotation();
-		if (diff <= 1.0 || diff >= 1.0) {
-			if (diff < 0.0) {
-				g_gui.IncreaseBrushSize();
-			} else {
-				g_gui.DecreaseBrushSize();
-			}
-			diff = 0.0;
-		}
+		drawing_controller->HandleWheel(event.GetWheelRotation(), event.AltDown(), event.ControlDown());
 	} else {
 		ZoomController::OnWheel(this, event);
 	}
@@ -531,106 +498,6 @@ void MapCanvas::OnKeyDown(wxKeyEvent& event) {
 
 void MapCanvas::OnKeyUp(wxKeyEvent& event) {
 	KeyboardHandler::OnKeyUp(this, event);
-}
-
-void MapCanvas::OnCopy(wxCommandEvent& WXUNUSED(event)) {
-	ClipboardHandler::copy(editor, GetFloor());
-}
-
-void MapCanvas::OnCut(wxCommandEvent& WXUNUSED(event)) {
-	ClipboardHandler::cut(editor, GetFloor());
-}
-
-void MapCanvas::OnPaste(wxCommandEvent& WXUNUSED(event)) {
-	ClipboardHandler::paste();
-}
-
-void MapCanvas::OnDelete(wxCommandEvent& WXUNUSED(event)) {
-	ClipboardHandler::doDelete(editor);
-}
-
-void MapCanvas::OnCopyPosition(wxCommandEvent& WXUNUSED(event)) {
-	ClipboardHandler::copyPosition(editor.selection);
-}
-
-void MapCanvas::OnCopyServerId(wxCommandEvent& WXUNUSED(event)) {
-	ClipboardHandler::copyServerId(editor.selection);
-}
-
-void MapCanvas::OnCopyClientId(wxCommandEvent& WXUNUSED(event)) {
-	ClipboardHandler::copyClientId(editor.selection);
-}
-
-void MapCanvas::OnCopyName(wxCommandEvent& WXUNUSED(event)) {
-	ClipboardHandler::copyName(editor.selection);
-}
-
-void MapCanvas::OnBrowseTile(wxCommandEvent& WXUNUSED(event)) {
-	PopupActionHandler::BrowseTile(editor, cursor_x, cursor_y);
-}
-
-void MapCanvas::OnRotateItem(wxCommandEvent& WXUNUSED(event)) {
-	PopupActionHandler::RotateItem(editor);
-}
-
-void MapCanvas::OnGotoDestination(wxCommandEvent& WXUNUSED(event)) {
-	PopupActionHandler::GotoDestination(editor);
-}
-
-void MapCanvas::OnSwitchDoor(wxCommandEvent& WXUNUSED(event)) {
-	PopupActionHandler::SwitchDoor(editor);
-}
-
-void MapCanvas::OnSelectRAWBrush(wxCommandEvent& WXUNUSED(event)) {
-	BrushSelector::SelectRAWBrush(editor.selection);
-}
-
-void MapCanvas::OnSelectGroundBrush(wxCommandEvent& WXUNUSED(event)) {
-	BrushSelector::SelectGroundBrush(editor.selection);
-}
-
-void MapCanvas::OnSelectDoodadBrush(wxCommandEvent& WXUNUSED(event)) {
-	BrushSelector::SelectDoodadBrush(editor.selection);
-}
-
-void MapCanvas::OnSelectDoorBrush(wxCommandEvent& WXUNUSED(event)) {
-	BrushSelector::SelectDoorBrush(editor.selection);
-}
-
-void MapCanvas::OnSelectWallBrush(wxCommandEvent& WXUNUSED(event)) {
-	BrushSelector::SelectWallBrush(editor.selection);
-}
-
-void MapCanvas::OnSelectCarpetBrush(wxCommandEvent& WXUNUSED(event)) {
-	BrushSelector::SelectCarpetBrush(editor.selection);
-}
-
-void MapCanvas::OnSelectTableBrush(wxCommandEvent& WXUNUSED(event)) {
-	BrushSelector::SelectTableBrush(editor.selection);
-}
-
-void MapCanvas::OnSelectHouseBrush(wxCommandEvent& WXUNUSED(event)) {
-	BrushSelector::SelectHouseBrush(editor, editor.selection);
-}
-
-void MapCanvas::OnSelectCollectionBrush(wxCommandEvent& WXUNUSED(event)) {
-	BrushSelector::SelectCollectionBrush(editor.selection);
-}
-
-void MapCanvas::OnSelectCreatureBrush(wxCommandEvent& WXUNUSED(event)) {
-	BrushSelector::SelectCreatureBrush(editor.selection);
-}
-
-void MapCanvas::OnSelectSpawnBrush(wxCommandEvent& WXUNUSED(event)) {
-	BrushSelector::SelectSpawnBrush();
-}
-
-void MapCanvas::OnSelectMoveTo(wxCommandEvent& WXUNUSED(event)) {
-	PopupActionHandler::SelectMoveTo(editor);
-}
-
-void MapCanvas::OnProperties(wxCommandEvent& WXUNUSED(event)) {
-	PopupActionHandler::OpenProperties(editor);
 }
 
 void MapCanvas::ChangeFloor(int new_floor) {

@@ -72,6 +72,7 @@ ${CMAKE_CURRENT_LIST_DIR}/dialog_helper.h
 ${CMAKE_CURRENT_LIST_DIR}/map.h
 ${CMAKE_CURRENT_LIST_DIR}/map_allocator.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/map_display.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/map_menu_handler.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/map_status_updater.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/map_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/map_layer_drawer.h
@@ -195,7 +196,9 @@ ${CMAKE_CURRENT_LIST_DIR}/filehandle.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/graphics.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/texture_garbage_collector.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/gl_texture.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/gl_texture_id_generator.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/outfit_colors.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/outfit_colorizer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/light_buffer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/editor_sprite.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.cpp
@@ -226,6 +229,7 @@ ${CMAKE_CURRENT_LIST_DIR}/animation_timer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/dialog_helper.cpp
 ${CMAKE_CURRENT_LIST_DIR}/map.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/map_display.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/map_menu_handler.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/map_status_updater.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/map_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/map_layer_drawer.cpp

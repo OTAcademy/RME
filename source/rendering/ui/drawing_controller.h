@@ -19,6 +19,7 @@ public:
 	void HandleClick(const Position& mouse_map_pos, bool shift_down, bool ctrl_down, bool alt_down);
 	void HandleDrag(const Position& mouse_map_pos, bool shift_down, bool ctrl_down, bool alt_down);
 	void HandleRelease(const Position& mouse_map_pos, bool shift_down, bool ctrl_down, bool alt_down);
+	void HandleWheel(int rotation, bool alt_down, bool ctrl_down);
 
 	bool IsDrawing() const {
 		return drawing;

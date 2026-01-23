@@ -388,3 +388,18 @@ void DrawingController::HandleRelease(const Position& mouse_map_pos, bool shift_
 	replace_dragging = false;
 	editor.replace_brush = nullptr;
 }
+
+void DrawingController::HandleWheel(int rotation, bool alt_down, bool ctrl_down) {
+	if (alt_down) {
+		static double diff = 0.0;
+		diff += rotation;
+		if (diff <= 1.0 || diff >= 1.0) {
+			if (diff < 0.0) {
+				g_gui.IncreaseBrushSize();
+			} else {
+				g_gui.DecreaseBrushSize();
+			}
+			diff = 0.0;
+		}
+	}
+}

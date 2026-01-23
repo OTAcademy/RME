@@ -148,8 +148,6 @@ protected:
 		uint8_t lookFeet;
 
 	protected:
-		void colorizePixel(uint8_t color, uint8_t& r, uint8_t& b, uint8_t& g);
-
 		virtual void createGLTexture(GLuint ignored = 0);
 		virtual void unloadGLTexture(GLuint ignored = 0);
 	};
@@ -208,9 +206,6 @@ public:
 
 	uint16_t getItemSpriteMaxID() const;
 	uint16_t getCreatureSpriteMaxID() const;
-
-	// Get an unused texture id (this is acquired by simply increasing a value starting from 0x10000000)
-	GLuint getFreeTextureID();
 
 	// This is part of the binary
 	bool loadEditorSprites();

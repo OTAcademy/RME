@@ -18,11 +18,14 @@
 #ifndef RME_MAP_STATUS_UPDATER_H
 #define RME_MAP_STATUS_UPDATER_H
 
+#include <wx/string.h>
+
 class Editor;
 
 class MapStatusUpdater {
 public:
 	static void Update(Editor& editor, int map_x, int map_y, int map_z);
+	static void UpdateFPS(const wxString& fps_status);
 };
 
 #endif
