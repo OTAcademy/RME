@@ -39,7 +39,14 @@ find_package(ZLIB REQUIRED)
 
 # Lua scripting support
 find_package(Lua REQUIRED)
-find_path(SOL2_INCLUDE_DIRS "sol/sol.hpp")
+include(FetchContent)
+FetchContent_Declare(
+    sol2
+    GIT_REPOSITORY https://github.com/ThePhD/sol2.git
+    GIT_TAG        v3.3.0
+)
+FetchContent_MakeAvailable(sol2)
+set(SOL2_INCLUDE_DIRS ${sol2_SOURCE_DIR}/include)
 
 include(${wxWidgets_USE_FILE})
 include(source/CMakeLists.txt)
