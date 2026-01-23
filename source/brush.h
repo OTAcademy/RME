@@ -82,7 +82,7 @@ public:
 	}
 
 protected:
-	typedef std::map<uint32_t, AutoBorder*> BorderMap;
+	// typedef std::map<uint32_t, AutoBorder*> BorderMap;
 	BrushMap brushes;
 	BorderMap borders;
 
