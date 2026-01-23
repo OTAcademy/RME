@@ -263,19 +263,19 @@ LuaDialog::LuaDialog(sol::table options, sol::this_state ts) :
 	reqX = options.get_or("x", -1);
 	reqY = options.get_or("y", -1);
 
-	if (reqWidth != -1 || reqHeight != -1) {
+		if (reqWidth != -1 || reqHeight != -1) {
 		SetMinSize(wxSize(reqWidth != -1 ? reqWidth : 150, reqHeight != -1 ? reqHeight : 100));
 		SetSize(reqX != -1 ? reqX : -1, reqY != -1 ? reqY : -1, reqWidth, reqHeight);
 	} else if (reqX != -1 || reqY != -1) {
 		SetPosition(wxPoint(reqX != -1 ? reqX : GetPosition().x, reqY != -1 ? reqY : GetPosition().y));
 	}
 
-	if (options.get_or("dockable", false)) {
+	if (options.get_or(std::string("dockable"), false)) {
 		dockPanel = new wxPanel(g_gui.root, wxID_ANY);
 
 		wxAuiPaneInfo info;
-		std::string title = options.get_or("title", "Script Dialog"s);
-		std::string id = options.get_or("id", title);
+		std::string title = options.get_or(std::string("title"), "Script Dialog"s);
+		std::string id = options.get_or(std::string("id"), title);
 
 		info.Name(id);
 		info.Caption(title);
@@ -536,12 +536,12 @@ LuaDialog* LuaDialog::input(sol::table options) {
 LuaDialog* LuaDialog::number(sol::table options) {
 	ensureRowSizer();
 
-	std::string id = options.get_or("id", "number_"s + std::to_string(widgets.size()));
-	std::string labelText = options.get_or("label", ""s);
-	double value = options.get_or("text", options.get_or("value", 0.0));
-	int decimals = options.get_or("decimals", 0);
-	double minVal = options.get_or("min", -999999.0);
-	double maxVal = options.get_or("max", 999999.0);
+	std::string id = options.get_or(std::string("id"), "number_"s + std::to_string(widgets.size()));
+	std::string labelText = options.get_or(std::string("label"), ""s);
+	double value = options.get_or(std::string("text"), options.get_or(std::string("value"), 0.0));
+	int decimals = options.get_or(std::string("decimals"), 0);
+	double minVal = options.get_or(std::string("min"), -999999.0);
+	double maxVal = options.get_or(std::string("max"), 999999.0);
 
 	if (!labelText.empty()) {
 		wxStaticText* label = new wxStaticText(getParentForWidget(), wxID_ANY, wxString(labelText));
@@ -1042,15 +1042,15 @@ public:
 LuaDialog* LuaDialog::list(sol::table options) {
 	finishCurrentRow();
 
-	std::string id = options.get_or("id", "list_"s + std::to_string(widgets.size()));
-	int width = options.get_or("width", 200);
-	int height = options.get_or("height", 150);
-	int iconWidth = options.get_or("icon_width", 16);
-	int iconHeight = options.get_or("icon_height", 16);
-	int iconSize = options.get_or("icon_size", -1);
-	int itemHeight = options.get_or("item_height", 24);
-	bool showText = options.get_or("show_text", true);
-	bool smooth = options.get_or("smooth", true);
+	std::string id = options.get_or(std::string("id"), "list_"s + std::to_string(widgets.size()));
+	int width = options.get_or(std::string("width"), 200);
+	int height = options.get_or(std::string("height"), 150);
+	int iconWidth = options.get_or(std::string("icon_width"), 16);
+	int iconHeight = options.get_or(std::string("icon_height"), 16);
+	int iconSize = options.get_or(std::string("icon_size"), -1);
+	int itemHeight = options.get_or(std::string("item_height"), 24);
+	bool showText = options.get_or(std::string("show_text"), true);
+	bool smooth = options.get_or(std::string("smooth"), true);
 
 	if (iconSize > 0) {
 		iconWidth = iconSize;
@@ -1235,11 +1235,11 @@ LuaDialog* LuaDialog::list(sol::table options) {
 LuaDialog* LuaDialog::file(sol::table options) {
 	ensureRowSizer();
 
-	std::string id = options.get_or("id", "file_"s + std::to_string(widgets.size()));
-	std::string labelText = options.get_or("label", ""s);
-	std::string filename = options.get_or("filename", ""s);
-	std::string filetypes = options.get_or("filetypes", "*.*"s);
-	bool save = options.get_or("save", false);
+	std::string id = options.get_or(std::string("id"), "file_"s + std::to_string(widgets.size()));
+	std::string labelText = options.get_or(std::string("label"), ""s);
+	std::string filename = options.get_or(std::string("filename"), ""s);
+	std::string filetypes = options.get_or(std::string("filetypes"), "*.*"s);
+	bool save = options.get_or(std::string("save"), false);
 
 	if (!labelText.empty()) {
 		wxStaticText* label = new wxStaticText(getParentForWidget(), wxID_ANY, wxString(labelText));
@@ -1668,8 +1668,8 @@ void LuaDialog::popupContextMenu(const sol::function& callback, sol::table info,
 			continue;
 		}
 		sol::table item = pair.second.as<sol::table>();
-		bool separator = item.get_or("separator", false);
-		std::string text = item.get_or("text", ""s);
+		bool separator = item.get_or(std::string("separator"), false);
+		std::string text = item.get_or(std::string("text"), ""s);
 
 		if (separator || text.empty()) {
 			menu.AppendSeparator();
@@ -1678,7 +1678,7 @@ void LuaDialog::popupContextMenu(const sol::function& callback, sol::table info,
 
 		int id = nextId++;
 		wxMenuItem* menuItem = menu.Append(id, wxString(text));
-		bool enabled = item.get_or("enabled", true);
+		bool enabled = item.get_or(std::string("enabled"), true);
 		menuItem->Enable(enabled);
 
 		if (item["onclick"].valid()) {
@@ -1863,23 +1863,23 @@ LuaDialog* LuaDialog::modify(sol::table options) {
 				if (widget.type == "mapCanvas") {
 					MapPreviewCanvas* canvas = static_cast<MapPreviewCanvas*>(widget.widget);
 					if (props["x"].valid() && props["y"].valid()) {
-						canvas->SetPosition(props.get_or("x", 1000), props.get_or("y", 1000), props.get_or("z", (int)canvas->GetFloor()));
+						canvas->SetPosition(props.get_or(std::string("x"), 1000), props.get_or(std::string("y"), 1000), props.get_or(std::string("z"), (int)canvas->GetFloor()));
 					}
 					if (props["zoom"].valid()) {
-						canvas->SetZoom(props.get_or("zoom", 1.0));
+						canvas->SetZoom(props.get_or(std::string("zoom"), 1.0));
 					}
 					if (props["floor"].valid()) {
-						canvas->SetFloor(props.get_or("floor", 7));
+						canvas->SetFloor(props.get_or(std::string("floor"), 7));
 						canvas->Refresh();
 					}
-					if (props["sync"].valid() && props.get_or("sync", false)) {
+					if (props["sync"].valid() && props.get_or(std::string("sync"), false)) {
 						canvas->SyncView();
 					}
 					if (props["client_w"].valid() && props["client_h"].valid()) {
-						canvas->SetViewSize(props.get_or("client_w", ClientMapWidth), props.get_or("client_h", ClientMapHeight));
+						canvas->SetViewSize(props.get_or(std::string("client_w"), ClientMapWidth), props.get_or(std::string("client_h"), ClientMapHeight));
 					}
 					if (props["light"].valid()) {
-						canvas->SetLight(props.get_or("light", false));
+						canvas->SetLight(props.get_or(std::string("light"), false));
 					}
 				} else if (widget.type == "input") {
 					wxTextCtrl* ctrl = static_cast<wxTextCtrl*>(widget.widget);
