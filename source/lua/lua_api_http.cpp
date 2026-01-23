@@ -125,9 +125,7 @@ namespace LuaAPI {
 	static bool isUrlSafe(const std::string& url_str) {
 		std::string low = url_str;
 		std::transform(low.begin(), low.end(), low.begin(), ::tolower);
-		if (low.find("localhost") != std::string::npos ||
-			low.find("127.0.0.1") != std::string::npos ||
-			low.find("::1") != std::string::npos) {
+		if (low.find("localhost") != std::string::npos || low.find("127.0.0.1") != std::string::npos || low.find("::1") != std::string::npos) {
 			return false;
 		}
 		return true;
@@ -154,7 +152,7 @@ namespace LuaAPI {
 			}
 		}
 
-		cpr::Response response = cpr::Get(cpr::Url { url }, headers, cpr::Timeout{10000});
+		cpr::Response response = cpr::Get(cpr::Url { url }, headers, cpr::Timeout { 10000 });
 
 		result["status"] = static_cast<int>(response.status_code);
 		result["body"] = response.text;
@@ -196,7 +194,7 @@ namespace LuaAPI {
 			cpr::Url { url },
 			cpr::Body { body },
 			headers,
-			cpr::Timeout{10000}
+			cpr::Timeout { 10000 }
 		);
 
 		result["status"] = static_cast<int>(response.status_code);
@@ -333,7 +331,7 @@ namespace LuaAPI {
 				cpr::Body { body },
 				headers,
 				cpr::WriteCallback { writeCallback, 0 },
-				cpr::Timeout{30000}
+				cpr::Timeout { 30000 }
 			);
 
 			session->setStatusCode(static_cast<int>(response.status_code));
