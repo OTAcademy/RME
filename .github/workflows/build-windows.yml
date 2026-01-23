@@ -1,0 +1,79 @@
+name: Build - Windows
+
+# Trigger on manual dispatch, and push/PR to master
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    name: Windows-Release
+    runs-on: windows-2022
+
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 2
+      LUKKA_RUN_VCPKG_SHA: '734f8130ffe2f02cf855a3a42a2958f01b3fb005'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Get latest CMake and Ninja
+        uses: lukka/get-cmake@v3.31.6
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgGitCommitId: ${{ env.LUKKA_RUN_VCPKG_SHA }}
+
+      - name: Configure CMake
+        shell: pwsh
+        run: |
+          cmake -S . -B build -G "Visual Studio 17 2022" -A x64 `
+            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows-static `
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Install Dependencies via vcpkg
+        shell: pwsh
+        run: |
+          $deps = @("wxwidgets", "boost-thread", "boost-system", "libarchive", "freeglut", "zlib", "lua", "cpr", "nlohmann-json")
+          & "$env:VCPKG_ROOT/vcpkg" install $deps --triplet x64-windows-static
+
+      - name: Build
+        shell: pwsh
+        run: |
+          cmake --build build --config Release
+
+      - name: Prepare Artifacts
+        shell: pwsh
+        run: |
+          $artifactDir = "$env:GITHUB_WORKSPACE\artifacts"
+          New-Item -ItemType Directory -Force -Path $artifactDir | Out-Null
+
+          # Find the executable
+          $exePath = Get-ChildItem -Recurse -Path "$env:GITHUB_WORKSPACE\build" -Filter "rme.exe" | Select-Object -First 1
+
+          if (-not $exePath) {
+            Write-Error "Not found rme.exe!"
+            exit 1
+          }
+
+          Copy-Item $exePath.FullName -Destination $artifactDir
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rme-windows
+          path: artifacts/
