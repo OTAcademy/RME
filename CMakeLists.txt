@@ -55,5 +55,5 @@ add_executable(rme ${rme_H} ${rme_SRC})
 set_target_properties(rme PROPERTIES CXX_STANDARD 17)
 set_target_properties(rme PROPERTIES CXX_STANDARD_REQUIRED ON)
 
-include_directories(${Boost_INCLUDE_DIRS} ${LibArchive_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${GLUT_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${SOL2_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR}/source ${Boost_INCLUDE_DIRS} ${LibArchive_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${GLUT_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${SOL2_INCLUDE_DIRS})
 target_link_libraries(rme ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} ${LibArchive_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${ZLIB_LIBRARIES} ${LUA_LIBRARIES})
