@@ -1,6 +1,14 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
 
 project(rme)
+
+if(POLICY CMP0072)
+    cmake_policy(SET CMP0072 NEW) # Prefer GLVND
+endif()
+
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 NEW) # Use BoostConfig
+endif()
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE RelWithDebInfo)
