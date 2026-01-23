@@ -47,7 +47,13 @@ Scripts are executed sequentially when the editor loads. You can define global f
 
 
 ### Script Metadata
-Scripts can define metadata in their header to be displayed in the editor's menu and logs.
+
+There are two ways to create scripts in RME:
+
+#### Option 1: Single File Script (The Easy Way)
+This is best for simple scripts, tools, or quick experiments. You just create a single `.lua` file in the `scripts/` directory.
+
+You can define metadata in the file header using comments. The editor parses these to display information in the menus.
 
 ```lua
 -- My Script Name v1.0
@@ -74,6 +80,32 @@ You can also use special tags for specific fields:
 -- @Author: John Doe
 -- @Version: 1.0
 -- @Shortcut: Ctrl+Shift+G
+```
+
+#### Option 2: Package Script (The Advanced Way)
+
+This method is recommended for complex tools or extensions that require multiple files, custom modules, or external resources (like images or data files).
+
+1.  Create a subdirectory in `scripts/` (e.g., `scripts/my_cool_tool/`).
+2.  Create a `manifest.lua` file inside that directory.
+3.  Place your main script and resources in that directory.
+
+**manifest.lua Example:**
+```lua
+return {
+    name = "My Cool Tool",
+    description = "A tool that does amazing things.",
+    author = "Jane Doe",
+    version = "1.0",
+    main = "main.lua",        -- Entry point script (defaults to main.lua)
+    autorun = true,           -- Run automatically on startup (optional)
+    shortcut = "Ctrl+Alt+T"   -- Keyboard shortcut (optional)
+}
+```
+
+When using packages, the `SCRIPT_DIR` global variable in your main script will point to your package directory, allowing you to easily load resources:
+```lua
+local img = Image.fromFile(SCRIPT_DIR .. "/assets/icon.png")
 ```
 
 ### Best Practices
