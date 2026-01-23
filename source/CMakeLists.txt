@@ -34,6 +34,7 @@ ${CMAKE_CURRENT_LIST_DIR}/filehandle.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/graphics.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/gl_texture.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/outfit_colors.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/light_buffer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/sprite_light.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/editor_sprite.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/minimap_colors.h
@@ -52,6 +53,7 @@ ${CMAKE_CURRENT_LIST_DIR}/item_attributes.h
 ${CMAKE_CURRENT_LIST_DIR}/items.h
 ${CMAKE_CURRENT_LIST_DIR}/json.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/light_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/sprite_icon_generator.h
 ${CMAKE_CURRENT_LIST_DIR}/live_action.h
 ${CMAKE_CURRENT_LIST_DIR}/live_client.h
 ${CMAKE_CURRENT_LIST_DIR}/live_packets.h
@@ -188,6 +190,7 @@ ${CMAKE_CURRENT_LIST_DIR}/filehandle.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/graphics.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/gl_texture.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/outfit_colors.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/light_buffer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/editor_sprite.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.cpp
 ${CMAKE_CURRENT_LIST_DIR}/ground_brush.cpp
@@ -202,6 +205,7 @@ ${CMAKE_CURRENT_LIST_DIR}/item_attributes.cpp
 ${CMAKE_CURRENT_LIST_DIR}/item.cpp
 ${CMAKE_CURRENT_LIST_DIR}/items.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/light_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/sprite_icon_generator.cpp
 ${CMAKE_CURRENT_LIST_DIR}/live_action.cpp
 ${CMAKE_CURRENT_LIST_DIR}/live_client.cpp
 ${CMAKE_CURRENT_LIST_DIR}/live_peer.cpp

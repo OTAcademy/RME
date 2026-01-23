@@ -82,8 +82,9 @@ void MinimapWindow::OnMouseClick(wxMouseEvent& event) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
 	}
-	int new_map_x = drawer->GetLastStartX() + event.GetX();
-	int new_map_y = drawer->GetLastStartY() + event.GetY();
+	int new_map_x, new_map_y;
+	drawer->ScreenToMap(event.GetX(), event.GetY(), new_map_x, new_map_y);
+
 	g_gui.SetScreenCenterPosition(Position(new_map_x, new_map_y, g_gui.GetCurrentFloor()));
 	Refresh();
 	g_gui.RefreshView();

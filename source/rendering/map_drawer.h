@@ -24,6 +24,7 @@ class TooltipDrawer;
 
 // Storage during drawing, for option caching
 #include "rendering/core/drawing_options.h"
+#include "rendering/core/light_buffer.h"
 #include "definitions.h"
 #include "outfit.h"
 #include "creature.h"
@@ -54,6 +55,7 @@ class MapDrawer {
 	DrawingOptions options;
 	RenderView view;
 	std::shared_ptr<LightDrawer> light_drawer;
+	LightBuffer light_buffer;
 	std::unique_ptr<TooltipDrawer> tooltip_drawer;
 	std::unique_ptr<GridDrawer> grid_drawer;
 	std::unique_ptr<LiveCursorDrawer> live_cursor_drawer;

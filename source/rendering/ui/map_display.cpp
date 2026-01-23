@@ -240,9 +240,7 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 	if (g_settings.getBoolean(Config::SHOW_FPS_COUNTER)) {
 		// Display FPS on status bar if enabled
 		if (g_settings.getBoolean(Config::SHOW_FPS_COUNTER) && fps_counter.HasChanged()) {
-			wxString fps_text;
-			fps_text.Printf("FPS: %d", fps_counter.GetFPS());
-			g_gui.root->SetStatusText(fps_text, 0);
+			g_gui.root->SetStatusText(fps_counter.GetStatusString(), 0);
 		}
 	}
 
@@ -425,21 +423,7 @@ void MapCanvas::OnMouseActionClick(wxMouseEvent& event) {
 
 	if (event.ControlDown() && event.AltDown()) {
 		Tile* tile = editor.map.getTile(mouse_map_x, mouse_map_y, floor);
-		if (tile && tile->size() > 0) {
-			// Select visible creature
-			if (tile->creature && g_settings.getInteger(Config::SHOW_CREATURES)) {
-				CreatureBrush* brush = tile->creature->getBrush();
-				if (brush) {
-					g_gui.SelectBrush(brush, TILESET_CREATURE);
-					return;
-				}
-			}
-			// Fall back to item selection
-			Item* item = tile->getTopItem();
-			if (item && item->getRAWBrush()) {
-				g_gui.SelectBrush(item->getRAWBrush(), TILESET_RAW);
-			}
-		}
+		BrushSelector::SelectSmartBrush(editor, tile);
 	} else if (g_gui.IsSelectionMode()) {
 		selection_controller->HandleClick(Position(mouse_map_x, mouse_map_y, floor), event.ShiftDown(), event.ControlDown(), event.AltDown());
 	} else if (g_gui.GetCurrentBrush()) { // Drawing mode

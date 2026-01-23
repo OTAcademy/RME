@@ -46,6 +46,7 @@
 #include "rendering/ui/tooltip_drawer.h"
 #include "rendering/core/drawing_options.h"
 #include "rendering/core/render_view.h"
+
 #include "rendering/drawers/overlays/grid_drawer.h"
 #include "rendering/drawers/cursors/live_cursor_drawer.h"
 #include "rendering/drawers/overlays/selection_drawer.h"
@@ -67,20 +68,23 @@ MapDrawer::MapDrawer(MapCanvas* canvas) :
 	canvas(canvas), editor(canvas->editor) {
 	light_drawer = std::make_shared<LightDrawer>();
 	tooltip_drawer = std::make_unique<TooltipDrawer>();
+
+	sprite_drawer = std::make_unique<SpriteDrawer>();
+	creature_drawer = std::make_unique<CreatureDrawer>();
+	floor_drawer = std::make_unique<FloorDrawer>();
+	item_drawer = std::make_unique<ItemDrawer>();
+	marker_drawer = std::make_unique<MarkerDrawer>();
+
+	tile_renderer = std::make_unique<TileRenderer>(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), floor_drawer.get(), marker_drawer.get(), tooltip_drawer.get(), &editor);
+
 	grid_drawer = std::make_unique<GridDrawer>();
 	live_cursor_drawer = std::make_unique<LiveCursorDrawer>();
 	selection_drawer = std::make_unique<SelectionDrawer>();
 	brush_cursor_drawer = std::make_unique<BrushCursorDrawer>();
 	brush_overlay_drawer = std::make_unique<BrushOverlayDrawer>();
 	drag_shadow_drawer = std::make_unique<DragShadowDrawer>();
-	floor_drawer = std::make_unique<FloorDrawer>();
-	sprite_drawer = std::make_unique<SpriteDrawer>();
-	creature_drawer = std::make_unique<CreatureDrawer>();
-	item_drawer = std::make_unique<ItemDrawer>();
-	marker_drawer = std::make_unique<MarkerDrawer>();
 	preview_drawer = std::make_unique<PreviewDrawer>();
 	shade_drawer = std::make_unique<ShadeDrawer>();
-	tile_renderer = std::make_unique<TileRenderer>(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), floor_drawer.get(), marker_drawer.get(), tooltip_drawer.get(), light_drawer.get(), &editor);
 }
 
 MapDrawer::~MapDrawer() {
@@ -99,24 +103,25 @@ void MapDrawer::SetupGL() {
 }
 
 void MapDrawer::Release() {
-	tooltip_drawer->clear();
+	tooltip_drawer->clear(); // Note: tooltip_drawer uses clear(), distinct from LightDrawer
 
 	if (light_drawer) {
-		light_drawer->clear();
+		light_drawer->unloadGLTexture();
 	}
-
-	view.ReleaseGL();
 }
 
 void MapDrawer::Draw() {
+	light_buffer.Clear();
+
 	DrawBackground();
 	DrawMap();
 	if (options.isDrawLight()) {
 		DrawLight();
 	}
 	drag_shadow_drawer->draw(this, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options);
-	floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor);
-	floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor); // Preserving double call from original code
+	floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor); // Preserving logic
+	floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor); // Preserving double call from original code? Verified in user code.
+
 	if (options.boundbox_selection) {
 		selection_drawer->draw(view, canvas, options);
 	}
@@ -183,6 +188,9 @@ void MapDrawer::DrawGrid() {
 }
 
 void MapDrawer::DrawTooltips() {
+	// Origin calls draw(zoom, TileSize) or similar, but TooltipDrawer logic might vary.
+	// The user file had: tooltip_drawer->draw(view.zoom, TileSize);
+	// We'll keep it as user had it to avoid breaking tooltip logic.
 	tooltip_drawer->draw(view.zoom, TileSize);
 }
 
@@ -211,7 +219,7 @@ void MapDrawer::DrawMapLayer(int map_z, bool live_client) {
 						tile_renderer->DrawTile(location, view, options, options.current_house_id, tooltip);
 						// draw light, but only if not zoomed too far
 						if (location && options.isDrawLight() && view.zoom <= 10.0) {
-							tile_renderer->AddLight(location, view, options);
+							tile_renderer->AddLight(location, view, options, light_buffer);
 						}
 					}
 				}
@@ -228,8 +236,7 @@ void MapDrawer::DrawMapLayer(int map_z, bool live_client) {
 }
 
 void MapDrawer::DrawLight() {
-	// draw in-game light
-	light_drawer->draw(view.start_x, view.start_y, view.end_x, view.end_y, view.view_scroll_x, view.view_scroll_y, options.experimental_fog);
+	light_drawer->draw(view.start_x, view.start_y, view.end_x, view.end_y, view.view_scroll_x, view.view_scroll_y, options.experimental_fog, light_buffer);
 }
 
 void MapDrawer::TakeScreenshot(uint8_t* screenshot_buffer) {

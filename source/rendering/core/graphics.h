@@ -183,6 +183,7 @@ public:
 
 	friend class GraphicManager;
 	friend class GameSpriteLoader;
+	friend class SpriteIconGenerator;
 };
 
 class GraphicManager {

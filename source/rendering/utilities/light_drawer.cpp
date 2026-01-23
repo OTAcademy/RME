@@ -27,11 +27,9 @@ LightDrawer::LightDrawer() {
 
 LightDrawer::~LightDrawer() {
 	unloadGLTexture();
-
-	lights.clear();
 }
 
-void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog) {
+void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog, const LightBuffer& light_buffer) {
 	if (!texture.IsCreated()) {
 		texture.Create();
 	}
@@ -53,7 +51,7 @@ void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x,
 			buffer[color_index + 2] = global_color.Blue();
 			buffer[color_index + 3] = 140; // global_color.Alpha();
 
-			for (auto& light : lights) {
+			for (const auto& light : light_buffer.lights) {
 				float intensity = calculateIntensity(mx, my, light);
 				if (intensity == 0.f) {
 					continue;
@@ -114,62 +112,6 @@ void LightDrawer::setGlobalLightColor(uint8_t color) {
 	global_color = colorFromEightBit(color);
 }
 
-void LightDrawer::addLight(int map_x, int map_y, int map_z, const SpriteLight& light) {
-	if (map_z <= GROUND_LAYER) {
-		map_x -= (GROUND_LAYER - map_z);
-		map_y -= (GROUND_LAYER - map_z);
-	}
-
-	if (map_x <= 0 || map_x >= MAP_MAX_WIDTH || map_y <= 0 || map_y >= MAP_MAX_HEIGHT) {
-		return;
-	}
-
-	uint8_t intensity = std::min(light.intensity, static_cast<uint8_t>(MaxLightIntensity));
-
-	if (!lights.empty()) {
-		Light& previous = lights.back();
-		if (previous.map_x == map_x && previous.map_y == map_y && previous.color == light.color) {
-			previous.intensity = std::max(previous.intensity, intensity);
-			return;
-		}
-	}
-
-	lights.push_back(Light { static_cast<uint16_t>(map_x), static_cast<uint16_t>(map_y), light.color, intensity });
-}
-
-void LightDrawer::CollectLights(TileLocation* location, float zoom, const DrawingOptions& options) {
-	if (!options.isDrawLight() || !location) {
-		return;
-	}
-
-	auto tile = location->get();
-	if (!tile) {
-		return;
-	}
-
-	const auto& position = location->getPosition();
-
-	if (tile->ground) {
-		if (tile->ground->hasLight()) {
-			addLight(position.x, position.y, position.z, tile->ground->getLight());
-		}
-	}
-
-	bool hidden = options.hide_items_when_zoomed && zoom > 10.f;
-	if (!hidden && !tile->items.empty()) {
-		for (auto item : tile->items) {
-			if (item->hasLight()) {
-				addLight(position.x, position.y, position.z, item->getLight());
-			}
-		}
-	}
-}
-
-void LightDrawer::clear() {
-	lights.clear();
-	dirty_ = true;
-}
-
 void LightDrawer::createGLTexture() {
 	texture.Create();
 }
@@ -178,7 +120,7 @@ void LightDrawer::unloadGLTexture() {
 	texture.Release();
 }
 
-float LightDrawer::calculateIntensity(int map_x, int map_y, const Light& light) {
+float LightDrawer::calculateIntensity(int map_x, int map_y, const LightBuffer::Light& light) {
 	int dx = map_x - light.map_x;
 	int dy = map_y - light.map_y;
 	float distance = std::sqrt(dx * dx + dy * dy);

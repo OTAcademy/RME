@@ -1,4 +1,5 @@
 #include "main.h"
+// Force recompile
 #include "rendering/drawers/tiles/tile_renderer.h"
 
 #include "editor.h"
@@ -19,9 +20,9 @@
 #include "rendering/drawers/tiles/floor_drawer.h"
 #include "rendering/drawers/overlays/marker_drawer.h"
 #include "rendering/ui/tooltip_drawer.h"
-#include "rendering/utilities/light_drawer.h"
+#include "rendering/core/light_buffer.h"
 
-TileRenderer::TileRenderer(ItemDrawer* id, SpriteDrawer* sd, CreatureDrawer* cd, FloorDrawer* fd, MarkerDrawer* md, TooltipDrawer* td, LightDrawer* ld, Editor* ed) : item_drawer(id), sprite_drawer(sd), creature_drawer(cd), floor_drawer(fd), marker_drawer(md), tooltip_drawer(td), light_drawer(ld), editor(ed) {
+TileRenderer::TileRenderer(ItemDrawer* id, SpriteDrawer* sd, CreatureDrawer* cd, FloorDrawer* fd, MarkerDrawer* md, TooltipDrawer* td, Editor* ed) : item_drawer(id), sprite_drawer(sd), creature_drawer(cd), floor_drawer(fd), marker_drawer(md), tooltip_drawer(td), editor(ed) {
 }
 
 void TileRenderer::DrawTile(TileLocation* location, const RenderView& view, const DrawingOptions& options, uint32_t current_house_id, std::ostringstream& tooltip_stream) {
@@ -149,11 +150,30 @@ void TileRenderer::DrawTile(TileLocation* location, const RenderView& view, cons
 	}
 }
 
-void TileRenderer::AddLight(TileLocation* location, const RenderView& view, const DrawingOptions& options) {
+void TileRenderer::AddLight(TileLocation* location, const RenderView& view, const DrawingOptions& options, LightBuffer& light_buffer) {
 	if (!options.isDrawLight() || !location) {
 		return;
 	}
 
-	// Just forward to LightDrawer logic
-	light_drawer->CollectLights(location, view.zoom, options);
+	auto tile = location->get();
+	if (!tile) {
+		return;
+	}
+
+	const auto& position = location->getPosition();
+
+	if (tile->ground) {
+		if (tile->ground->hasLight()) {
+			light_buffer.AddLight(position.x, position.y, position.z, tile->ground->getLight());
+		}
+	}
+
+	bool hidden = options.hide_items_when_zoomed && view.zoom > 10.f;
+	if (!hidden && !tile->items.empty()) {
+		for (auto item : tile->items) {
+			if (item->hasLight()) {
+				light_buffer.AddLight(position.x, position.y, position.z, item->getLight());
+			}
+		}
+	}
 }

@@ -7,6 +7,8 @@
 
 #include <chrono>
 
+#include <wx/string.h>
+
 class FPSCounter {
 public:
 	FPSCounter();
@@ -19,6 +21,9 @@ public:
 
 	// Get the current FPS
 	int GetFPS() const;
+
+	// Get formatted status string
+	wxString GetStatusString() const;
 
 	// Limit the frame rate if needed (sleeps thread)
 	void LimitFPS(int limit);

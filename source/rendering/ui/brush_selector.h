@@ -20,6 +20,7 @@
 
 class Editor;
 class Selection;
+class Tile;
 
 /**
  * @brief Handles brush selection from popup menu context.
@@ -40,6 +41,7 @@ public:
 	static void SelectCollectionBrush(Selection& selection);
 	static void SelectCreatureBrush(Selection& selection);
 	static void SelectSpawnBrush();
+	static void SelectSmartBrush(Editor& editor, Tile* tile);
 
 private:
 	BrushSelector() = delete;

@@ -19,65 +19,38 @@
 #define RME_LIGHDRAWER_H
 
 #include <cstdint>
-#include "rendering/core/graphics.h"
+#include <vector>
+#include <wx/wx.h>
+#include <wx/glcanvas.h>
 #include "rendering/core/sprite_light.h"
-#include "position.h"
+#include "rendering/core/light_buffer.h"
 #include "rendering/core/gl_texture.h"
 
+class DrawingOptions;
 class TileLocation;
-struct DrawingOptions;
-
 class LightDrawer {
-	struct Light {
-		uint16_t map_x = 0;
-		uint16_t map_y = 0;
-		uint8_t color = 0;
-		uint8_t intensity = 0;
-	};
-
 public:
-	LightDrawer();
-	virtual ~LightDrawer();
+	static const int MaxLightIntensity = 210;
 
-	void draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog);
-	void CollectLights(TileLocation* location, float zoom, const DrawingOptions& options);
+	LightDrawer();
+	~LightDrawer();
+
+	void draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog, const LightBuffer& light_buffer);
 
 	void setGlobalLightColor(uint8_t color);
-	void addLight(int map_x, int map_y, int map_z, const SpriteLight& light);
-	void clear();
 
-private:
 	void createGLTexture();
 	void unloadGLTexture();
 
-	float calculateIntensity(int map_x, int map_y, const Light& light);
-
-	// Light caching
-	bool dirty_ = true;
-	int last_view_x_ = -1;
-	int last_view_y_ = -1;
-	int last_floor_ = -1;
-
-public:
-	void invalidate() {
-		dirty_ = true;
-	}
-	bool needsUpdate(int vx, int vy, int flr) {
-		if (dirty_ || vx != last_view_x_ || vy != last_view_y_ || flr != last_floor_) {
-			last_view_x_ = vx;
-			last_view_y_ = vy;
-			last_floor_ = flr;
-			dirty_ = false;
-			return true;
-		}
-		return false;
-	}
-
 private:
-	GLTexture texture;
-	std::vector<Light> lights;
-	std::vector<uint8_t> buffer;
+	float calculateIntensity(int map_x, int map_y, const LightBuffer::Light& light);
+
 	wxColor global_color;
+
+	// Open GL Texture used for lightmap
+	// It is owned by this class and should be released when context is destroyed
+	GLTexture texture;
+	std::vector<uint8_t> buffer;
 };
 
 #endif

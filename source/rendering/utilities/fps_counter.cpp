@@ -56,3 +56,7 @@ void FPSCounter::LimitFPS(int limit) {
 	}
 	last_frame_time = std::chrono::steady_clock::now();
 }
+
+wxString FPSCounter::GetStatusString() const {
+	return wxString::Format("FPS: %d", current_fps);
+}

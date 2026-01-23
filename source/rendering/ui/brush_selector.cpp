@@ -217,3 +217,21 @@ void BrushSelector::SelectCreatureBrush(Selection& selection) {
 void BrushSelector::SelectSpawnBrush() {
 	g_gui.SelectBrush(g_gui.spawn_brush, TILESET_CREATURE);
 }
+
+void BrushSelector::SelectSmartBrush(Editor& editor, Tile* tile) {
+	if (tile && tile->size() > 0) {
+		// Select visible creature
+		if (tile->creature && g_settings.getInteger(Config::SHOW_CREATURES)) {
+			CreatureBrush* brush = tile->creature->getBrush();
+			if (brush) {
+				g_gui.SelectBrush(brush, TILESET_CREATURE);
+				return;
+			}
+		}
+		// Fall back to item selection
+		Item* item = tile->getTopItem();
+		if (item && item->getRAWBrush()) {
+			g_gui.SelectBrush(item->getRAWBrush(), TILESET_RAW);
+		}
+	}
+}

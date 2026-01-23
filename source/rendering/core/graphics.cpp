@@ -327,43 +327,14 @@ GLuint GameSprite::getHardwareID(int _x, int _y, int _dir, int _addon, int _patt
 	return spriteList[v]->getHardwareID();
 }
 
+#include "rendering/utilities/sprite_icon_generator.h"
+
 wxMemoryDC* GameSprite::getDC(SpriteSize size) {
 	ASSERT(size == SPRITE_SIZE_16x16 || size == SPRITE_SIZE_32x32);
 
 	if (!dc[size]) {
-		ASSERT(width >= 1 && height >= 1);
-
-		const int bgshade = g_settings.getInteger(Config::ICON_BACKGROUND);
-
-		int image_size = std::max<int>(width, height) * SPRITE_PIXELS;
-		wxImage image(image_size, image_size);
-		image.Clear(bgshade);
-
-		for (uint8_t l = 0; l < layers; l++) {
-			for (uint8_t w = 0; w < width; w++) {
-				for (uint8_t h = 0; h < height; h++) {
-					const int i = getIndex(w, h, l, 0, 0, 0, 0);
-					uint8_t* data = spriteList[i]->getRGBData();
-					if (data) {
-						wxImage img(SPRITE_PIXELS, SPRITE_PIXELS, data);
-						img.SetMaskColour(0xFF, 0x00, 0xFF);
-						image.Paste(img, (width - w - 1) * SPRITE_PIXELS, (height - h - 1) * SPRITE_PIXELS);
-						img.Destroy();
-					}
-				}
-			}
-		}
-
-		// Now comes the resizing / antialiasing
-		if (size == SPRITE_SIZE_16x16 || image.GetWidth() > SPRITE_PIXELS || image.GetHeight() > SPRITE_PIXELS) {
-			int new_size = SPRITE_SIZE_16x16 ? 16 : 32;
-			image.Rescale(new_size, new_size);
-		}
-
-		wxBitmap bmp(image);
-		dc[size] = newd wxMemoryDC(bmp);
+		dc[size] = SpriteIconGenerator::Generate(this, size);
 		g_gui.gfx.addSpriteToCleanup(this);
-		image.Destroy();
 	}
 	return dc[size];
 }
