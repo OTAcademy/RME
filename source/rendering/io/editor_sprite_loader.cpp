@@ -1,6 +1,7 @@
 #include "definitions.h"
 #include "rendering/io/editor_sprite_loader.h"
 #include "rendering/core/graphics.h"
+#include "rendering/core/editor_sprite.h"
 #include "sprites.h"
 #include "../../../brushes/door_normal.xpm"
 #include "../../../brushes/door_normal_small.xpm"

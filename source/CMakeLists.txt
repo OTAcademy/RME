@@ -32,6 +32,9 @@ ${CMAKE_CURRENT_LIST_DIR}/extension_window.h
 ${CMAKE_CURRENT_LIST_DIR}/find_item_window.h
 ${CMAKE_CURRENT_LIST_DIR}/filehandle.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/graphics.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/outfit_colors.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/sprite_light.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/editor_sprite.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/minimap_colors.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.h
 ${CMAKE_CURRENT_LIST_DIR}/ground_brush.h
@@ -90,6 +93,7 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/tiles/tile_color_calculator.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/tiles/tile_renderer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/screen_capture.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/game_sprite_loader.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/minimap_drawer.h
 
 
 ${CMAKE_CURRENT_LIST_DIR}/map_region.h
@@ -181,6 +185,8 @@ ${CMAKE_CURRENT_LIST_DIR}/extension_window.cpp
 ${CMAKE_CURRENT_LIST_DIR}/find_item_window.cpp
 ${CMAKE_CURRENT_LIST_DIR}/filehandle.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/graphics.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/outfit_colors.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/editor_sprite.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.cpp
 ${CMAKE_CURRENT_LIST_DIR}/ground_brush.cpp
 ${CMAKE_CURRENT_LIST_DIR}/gui.cpp
@@ -233,6 +239,7 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/tiles/tile_color_calculator.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/tiles/tile_renderer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/screen_capture.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/game_sprite_loader.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/minimap_drawer.cpp
 
 
 ${CMAKE_CURRENT_LIST_DIR}/map_region.cpp

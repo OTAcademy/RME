@@ -19,6 +19,7 @@
 #define RME_LIGHDRAWER_H
 
 #include "rendering/core/graphics.h"
+#include "rendering/core/sprite_light.h"
 #include "position.h"
 
 class TileLocation;

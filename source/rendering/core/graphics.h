@@ -38,10 +38,7 @@ class GraphicManager;
 class FileReadHandle;
 class Animator;
 
-struct SpriteLight {
-	uint8_t intensity = 0;
-	uint8_t color = 0;
-};
+#include "rendering/core/sprite_light.h"
 
 class Sprite {
 public:
@@ -54,18 +51,6 @@ public:
 private:
 	Sprite(const Sprite&);
 	Sprite& operator=(const Sprite&);
-};
-
-class EditorSprite : public Sprite {
-public:
-	EditorSprite(wxBitmap* b16x16, wxBitmap* b32x32);
-	virtual ~EditorSprite();
-
-	virtual void DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width = -1, int height = -1);
-	virtual void unloadDC();
-
-protected:
-	wxBitmap* bm[SPRITE_SIZE_COUNT];
 };
 
 class GameSprite : public Sprite {

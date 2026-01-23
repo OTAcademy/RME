@@ -18,6 +18,7 @@
 #ifndef RME_MINIMAP_WINDOW_H_
 #define RME_MINIMAP_WINDOW_H_
 
+class MinimapDrawer;
 class MinimapWindow : public wxPanel {
 public:
 	MinimapWindow(wxWindow* parent);
@@ -34,10 +35,8 @@ public:
 	void OnKey(wxKeyEvent& event);
 
 protected:
-	wxPen* pens[256];
+	std::unique_ptr<MinimapDrawer> drawer;
 	wxTimer update_timer;
-	int last_start_x;
-	int last_start_y;
 
 	DECLARE_EVENT_TABLE()
 };

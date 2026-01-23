@@ -44,142 +44,7 @@
 #include "../../../brushes/door_archway.xpm"
 #include "../../../brushes/door_archway_small.xpm"
 
-// All 133 template colors
-static uint32_t TemplateOutfitLookupTable[] = {
-	0xFFFFFF,
-	0xFFD4BF,
-	0xFFE9BF,
-	0xFFFFBF,
-	0xE9FFBF,
-	0xD4FFBF,
-	0xBFFFBF,
-	0xBFFFD4,
-	0xBFFFE9,
-	0xBFFFFF,
-	0xBFE9FF,
-	0xBFD4FF,
-	0xBFBFFF,
-	0xD4BFFF,
-	0xE9BFFF,
-	0xFFBFFF,
-	0xFFBFE9,
-	0xFFBFD4,
-	0xFFBFBF,
-	0xDADADA,
-	0xBF9F8F,
-	0xBFAF8F,
-	0xBFBF8F,
-	0xAFBF8F,
-	0x9FBF8F,
-	0x8FBF8F,
-	0x8FBF9F,
-	0x8FBFAF,
-	0x8FBFBF,
-	0x8FAFBF,
-	0x8F9FBF,
-	0x8F8FBF,
-	0x9F8FBF,
-	0xAF8FBF,
-	0xBF8FBF,
-	0xBF8FAF,
-	0xBF8F9F,
-	0xBF8F8F,
-	0xB6B6B6,
-	0xBF7F5F,
-	0xBFAF8F,
-	0xBFBF5F,
-	0x9FBF5F,
-	0x7FBF5F,
-	0x5FBF5F,
-	0x5FBF7F,
-	0x5FBF9F,
-	0x5FBFBF,
-	0x5F9FBF,
-	0x5F7FBF,
-	0x5F5FBF,
-	0x7F5FBF,
-	0x9F5FBF,
-	0xBF5FBF,
-	0xBF5F9F,
-	0xBF5F7F,
-	0xBF5F5F,
-	0x919191,
-	0xBF6A3F,
-	0xBF943F,
-	0xBFBF3F,
-	0x94BF3F,
-	0x6ABF3F,
-	0x3FBF3F,
-	0x3FBF6A,
-	0x3FBF94,
-	0x3FBFBF,
-	0x3F94BF,
-	0x3F6ABF,
-	0x3F3FBF,
-	0x6A3FBF,
-	0x943FBF,
-	0xBF3FBF,
-	0xBF3F94,
-	0xBF3F6A,
-	0xBF3F3F,
-	0x6D6D6D,
-	0xFF5500,
-	0xFFAA00,
-	0xFFFF00,
-	0xAAFF00,
-	0x54FF00,
-	0x00FF00,
-	0x00FF54,
-	0x00FFAA,
-	0x00FFFF,
-	0x00A9FF,
-	0x0055FF,
-	0x0000FF,
-	0x5500FF,
-	0xA900FF,
-	0xFE00FF,
-	0xFF00AA,
-	0xFF0055,
-	0xFF0000,
-	0x484848,
-	0xBF3F00,
-	0xBF7F00,
-	0xBFBF00,
-	0x7FBF00,
-	0x3FBF00,
-	0x00BF00,
-	0x00BF3F,
-	0x00BF7F,
-	0x00BFBF,
-	0x007FBF,
-	0x003FBF,
-	0x0000BF,
-	0x3F00BF,
-	0x7F00BF,
-	0xBF00BF,
-	0xBF007F,
-	0xBF003F,
-	0xBF0000,
-	0x242424,
-	0x7F2A00,
-	0x7F5500,
-	0x7F7F00,
-	0x557F00,
-	0x2A7F00,
-	0x007F00,
-	0x007F2A,
-	0x007F55,
-	0x007F7F,
-	0x00547F,
-	0x002A7F,
-	0x00007F,
-	0x2A007F,
-	0x54007F,
-	0x7F007F,
-	0x7F0055,
-	0x7F002A,
-	0x7F0000,
-};
+#include "rendering/core/outfit_colors.h"
 
 GraphicManager::GraphicManager() :
 	client_version(nullptr),
@@ -313,42 +178,7 @@ bool GraphicManager::loadSpriteData(const FileName& datafile, wxString& error, w
 }
 
 bool GraphicManager::loadSpriteDump(uint8_t*& target, uint16_t& size, int sprite_id) {
-	if (g_settings.getInteger(Config::USE_MEMCACHED_SPRITES)) {
-		return false;
-	}
-
-	if (sprite_id == 0) {
-		// Empty GameSprite
-		size = 0;
-		target = nullptr;
-		return true;
-	}
-
-	FileReadHandle fh(spritefile);
-	if (!fh.isOk()) {
-		return false;
-	}
-	unloaded = false;
-
-	if (!fh.seek((is_extended ? 4 : 2) + sprite_id * sizeof(uint32_t))) {
-		return false;
-	}
-
-	uint32_t to_seek = 0;
-	if (fh.getU32(to_seek)) {
-		fh.seek(to_seek + 3);
-		uint16_t sprite_size;
-		if (fh.getU16(sprite_size)) {
-			target = newd uint8_t[sprite_size];
-			if (fh.getRAW(target, sprite_size)) {
-				size = sprite_size;
-				return true;
-			}
-			delete[] target;
-			target = nullptr;
-		}
-	}
-	return false;
+	return GameSpriteLoader::LoadSpriteDump(this, target, size, sprite_id);
 }
 
 void GraphicManager::addSpriteToCleanup(GameSprite* spr) {
@@ -382,29 +212,6 @@ void GraphicManager::garbageCollection() {
 			lastclean = t;
 		}
 	}
-}
-
-EditorSprite::EditorSprite(wxBitmap* b16x16, wxBitmap* b32x32) {
-	bm[SPRITE_SIZE_16x16] = b16x16;
-	bm[SPRITE_SIZE_32x32] = b32x32;
-}
-
-EditorSprite::~EditorSprite() {
-	unloadDC();
-}
-
-void EditorSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width, int height) {
-	wxBitmap* sp = bm[sz];
-	if (sp) {
-		dc->DrawBitmap(*sp, start_x, start_y, true);
-	}
-}
-
-void EditorSprite::unloadDC() {
-	delete bm[SPRITE_SIZE_16x16];
-	delete bm[SPRITE_SIZE_32x32];
-	bm[SPRITE_SIZE_16x16] = nullptr;
-	bm[SPRITE_SIZE_32x32] = nullptr;
 }
 
 GameSprite::GameSprite() :
@@ -805,16 +612,16 @@ uint8_t* GameSprite::TemplateImage::getRGBData() {
 		return nullptr;
 	}
 
-	if (lookHead > (sizeof(TemplateOutfitLookupTable) / sizeof(TemplateOutfitLookupTable[0]))) {
+	if (lookHead > TemplateOutfitLookupTableSize) {
 		lookHead = 0;
 	}
-	if (lookBody > (sizeof(TemplateOutfitLookupTable) / sizeof(TemplateOutfitLookupTable[0]))) {
+	if (lookBody > TemplateOutfitLookupTableSize) {
 		lookBody = 0;
 	}
-	if (lookLegs > (sizeof(TemplateOutfitLookupTable) / sizeof(TemplateOutfitLookupTable[0]))) {
+	if (lookLegs > TemplateOutfitLookupTableSize) {
 		lookLegs = 0;
 	}
-	if (lookFeet > (sizeof(TemplateOutfitLookupTable) / sizeof(TemplateOutfitLookupTable[0]))) {
+	if (lookFeet > TemplateOutfitLookupTableSize) {
 		lookFeet = 0;
 	}
 
@@ -856,16 +663,16 @@ uint8_t* GameSprite::TemplateImage::getRGBAData() {
 		return nullptr;
 	}
 
-	if (lookHead > (sizeof(TemplateOutfitLookupTable) / sizeof(TemplateOutfitLookupTable[0]))) {
+	if (lookHead > TemplateOutfitLookupTableSize) {
 		lookHead = 0;
 	}
-	if (lookBody > (sizeof(TemplateOutfitLookupTable) / sizeof(TemplateOutfitLookupTable[0]))) {
+	if (lookBody > TemplateOutfitLookupTableSize) {
 		lookBody = 0;
 	}
-	if (lookLegs > (sizeof(TemplateOutfitLookupTable) / sizeof(TemplateOutfitLookupTable[0]))) {
+	if (lookLegs > TemplateOutfitLookupTableSize) {
 		lookLegs = 0;
 	}
-	if (lookFeet > (sizeof(TemplateOutfitLookupTable) / sizeof(TemplateOutfitLookupTable[0]))) {
+	if (lookFeet > TemplateOutfitLookupTableSize) {
 		lookFeet = 0;
 	}
 

@@ -437,3 +437,42 @@ bool GameSpriteLoader::LoadSpriteData(GraphicManager* manager, const wxFileName&
 	manager->unloaded = false;
 	return true;
 }
+
+bool GameSpriteLoader::LoadSpriteDump(GraphicManager* manager, uint8_t*& target, uint16_t& size, int sprite_id) {
+	if (g_settings.getInteger(Config::USE_MEMCACHED_SPRITES)) {
+		return false;
+	}
+
+	if (sprite_id == 0) {
+		// Empty GameSprite
+		size = 0;
+		target = nullptr;
+		return true;
+	}
+
+	FileReadHandle fh(manager->spritefile);
+	if (!fh.isOk()) {
+		return false;
+	}
+	manager->unloaded = false;
+
+	if (!fh.seek((manager->is_extended ? 4 : 2) + sprite_id * sizeof(uint32_t))) {
+		return false;
+	}
+
+	uint32_t to_seek = 0;
+	if (fh.getU32(to_seek)) {
+		fh.seek(to_seek + 3);
+		uint16_t sprite_size;
+		if (fh.getU16(sprite_size)) {
+			target = newd uint8_t[sprite_size];
+			if (fh.getRAW(target, sprite_size)) {
+				size = sprite_size;
+				return true;
+			}
+			delete[] target;
+			target = nullptr;
+		}
+	}
+	return false;
+}
