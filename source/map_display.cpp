@@ -47,6 +47,8 @@
 #include "waypoint_brush.h"
 #include "raw_brush.h"
 #include "carpet_brush.h"
+#include "lua/lua_script.h"
+#include "lua/lua_script_manager.h"
 #include "table_brush.h"
 
 BEGIN_EVENT_TABLE(MapCanvas, wxGLCanvas)
@@ -101,11 +103,12 @@ EVT_MENU(MAP_POPUP_MENU_MOVE_TO_TILESET, MapCanvas::OnSelectMoveTo)
 EVT_MENU(MAP_POPUP_MENU_PROPERTIES, MapCanvas::OnProperties)
 // ----
 EVT_MENU(MAP_POPUP_MENU_BROWSE_TILE, MapCanvas::OnBrowseTile)
+EVT_MENU_RANGE(MAP_POPUP_MENU_SCRIPT_FIRST, MAP_POPUP_MENU_SCRIPT_LAST, MapCanvas::OnScriptMenu)
 END_EVENT_TABLE()
 
 bool MapCanvas::processed[] = { 0 };
 
-MapCanvas::MapCanvas(MapWindow* parent, Editor& editor, int* attriblist) :
+MapCanvas::MapCanvas(wxWindow* parent, Editor& editor, int* attriblist) :
 	wxGLCanvas(parent, wxID_ANY, nullptr, wxDefaultPosition, wxDefaultSize, wxWANTS_CHARS),
 	editor(editor),
 	floor(GROUND_LAYER),
@@ -160,6 +163,7 @@ void MapCanvas::Refresh() {
 	wxGLCanvas::Refresh();
 }
 
+// Virtual implementation (base assumes parent is MapWindow)
 void MapCanvas::SetZoom(double value) {
 	if (value < 0.125) {
 		value = 0.125;
@@ -174,7 +178,10 @@ void MapCanvas::SetZoom(double value) {
 		GetScreenCenter(&center_x, &center_y);
 
 		zoom = value;
-		static_cast<MapWindow*>(GetParent())->SetScreenCenterPosition(Position(center_x, center_y, floor));
+
+		// Unsafe cast if parent isn't MapWindow, but this is the base implementation
+		if (GetParent())
+			static_cast<MapWindow*>(GetParent())->SetScreenCenterPosition(Position(center_x, center_y, floor));
 
 		UpdatePositionStatus();
 		UpdateZoomStatus();
@@ -335,6 +342,8 @@ void MapCanvas::TakeScreenshot(wxFileName path, wxString format) {
 
 void MapCanvas::ScreenToMap(int screen_x, int screen_y, int* map_x, int* map_y) {
 	int start_x, start_y;
+
+	// Base implementation calls MapWindow parent
 	static_cast<MapWindow*>(GetParent())->GetViewStart(&start_x, &start_y);
 
 	screen_x *= GetContentScaleFactor();
@@ -432,8 +441,12 @@ void MapCanvas::UpdateZoomStatus() {
 
 void MapCanvas::OnMouseMove(wxMouseEvent& event) {
 	if (screendragging) {
-		static_cast<MapWindow*>(GetParent())->ScrollRelative(int(g_settings.getFloat(Config::SCROLL_SPEED) * zoom * (event.GetX() - cursor_x)), int(g_settings.getFloat(Config::SCROLL_SPEED) * zoom * (event.GetY() - cursor_y)));
-		Refresh();
+
+		MapWindow* mw = dynamic_cast<MapWindow*>(GetParent());
+		if (mw) {
+			mw->ScrollRelative(int(g_settings.getFloat(Config::SCROLL_SPEED) * zoom * (event.GetX() - cursor_x)), int(g_settings.getFloat(Config::SCROLL_SPEED) * zoom * (event.GetY() - cursor_y)));
+			Refresh();
+		}
 	}
 
 	cursor_x = event.GetX();
@@ -453,6 +466,11 @@ void MapCanvas::OnMouseMove(wxMouseEvent& event) {
 	if (map_update) {
 		UpdatePositionStatus(cursor_x, cursor_y);
 		UpdateZoomStatus();
+		if (g_luaScripts.isInitialized()) {
+			Tile* tile = editor.map.getTile(mouse_map_x, mouse_map_y, floor);
+			Item* topItem = tile ? tile->getTopItem() : nullptr;
+			g_luaScripts.updateMapOverlayHover(mouse_map_x, mouse_map_y, floor, cursor_x, cursor_y, tile, topItem);
+		}
 	}
 
 	if (g_gui.IsSelectionMode()) {
@@ -1515,6 +1533,9 @@ void MapCanvas::OnWheel(wxMouseEvent& event) {
 }
 
 void MapCanvas::OnLoseMouse(wxMouseEvent& event) {
+	if (g_luaScripts.isInitialized()) {
+		g_luaScripts.updateMapOverlayHover(-1, -1, floor, -1, -1, nullptr, nullptr);
+	}
 	Refresh();
 }
 
@@ -2303,6 +2324,9 @@ void MapCanvas::ChangeFloor(int new_floor) {
 	int old_floor = floor;
 	floor = new_floor;
 	if (old_floor != new_floor) {
+		if (g_luaScripts.isInitialized()) {
+			g_luaScripts.emit("floorChange", new_floor, old_floor);
+		}
 		UpdatePositionStatus();
 		g_gui.root->UpdateFloorMenu();
 		g_gui.UpdateMinimap(true);
@@ -2564,6 +2588,42 @@ void MapPopupMenu::Update() {
 
 			wxMenuItem* browseTile = Append(MAP_POPUP_MENU_BROWSE_TILE, "Browse Field", "Navigate from tile items");
 			browseTile->Enable(anything_selected);
+
+			// Add Lua Context Menu Items
+			const auto& menuItems = g_luaScripts.getContextMenuItems();
+			if (!menuItems.empty()) {
+				AppendSeparator();
+
+				for (size_t i = 0; i < menuItems.size(); ++i) {
+					int id = MAP_POPUP_MENU_SCRIPT_FIRST + i;
+					if (id > MAP_POPUP_MENU_SCRIPT_LAST) break;
+
+					Append(id, wxString::FromUTF8(menuItems[i].label));
+				}
+			}
+		}
+	}
+}
+
+void MapCanvas::OnScriptMenu(wxCommandEvent& event) {
+	int index = event.GetId() - MAP_POPUP_MENU_SCRIPT_FIRST;
+	const auto& menuItems = g_luaScripts.getContextMenuItems();
+
+	if (index >= 0 && index < static_cast<int>(menuItems.size())) {
+		try {
+			// Call the callback
+			const auto& item = menuItems[index];
+			if (item.callback.valid()) {
+				// Pass the clicked tile/position to the callback
+				Tile* tile = editor.map.getTile(last_click_map_x, last_click_map_y, floor);
+				if (tile) {
+					item.callback(tile);
+				} else {
+					item.callback(Position(last_click_map_x, last_click_map_y, floor));
+				}
+			}
+		} catch (const sol::error& e) {
+			wxMessageBox(wxString("Script execution error: ") + e.what(), "Lua Error", wxOK | wxICON_ERROR);
 		}
 	}
 }
