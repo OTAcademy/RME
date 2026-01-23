@@ -3,7 +3,11 @@ name: Release
 on:
   push:
     tags:
-      - v*
+      - 'v*'
+      - 'Hotfix*'
+      - 'Release*'
+      - 'Hotfix *'
+      - 'Release *'
 
 permissions:
   contents: write
