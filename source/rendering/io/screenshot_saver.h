@@ -12,7 +12,8 @@
 
 class ScreenshotSaver {
 public:
-	ScreenshotSaver() : buffer(nullptr) { }
+	ScreenshotSaver() :
+		buffer(nullptr) { }
 	~ScreenshotSaver() {
 		Cleanup();
 	}
