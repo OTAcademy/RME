@@ -29,6 +29,10 @@ find_package(wxWidgets COMPONENTS html aui gl adv core net base REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(ZLIB REQUIRED)
 
+# Lua scripting support
+find_package(Lua REQUIRED)
+find_path(SOL2_INCLUDE_DIRS "sol/sol.hpp")
+
 include(${wxWidgets_USE_FILE})
 include(source/CMakeLists.txt)
 add_executable(rme ${rme_H} ${rme_SRC})
@@ -36,5 +40,5 @@ add_executable(rme ${rme_H} ${rme_SRC})
 set_target_properties(rme PROPERTIES CXX_STANDARD 17)
 set_target_properties(rme PROPERTIES CXX_STANDARD_REQUIRED ON)
 
-include_directories(${Boost_INCLUDE_DIRS} ${LibArchive_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${GLUT_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIR})
-target_link_libraries(rme ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} ${LibArchive_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${ZLIB_LIBRARIES})
+include_directories(${Boost_INCLUDE_DIRS} ${LibArchive_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${GLUT_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${SOL2_INCLUDE_DIRS})
+target_link_libraries(rme ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} ${LibArchive_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${ZLIB_LIBRARIES} ${LUA_LIBRARIES})
