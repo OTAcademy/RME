@@ -714,7 +714,7 @@ namespace LuaAPI {
 
 			if (va.size() >= 3 && va[va.size() - 1].is<sol::table>()) {
 				sol::table opts = va[va.size() - 1].as<sol::table>();
-				enabled = opts.get_or("enabled", enabled);
+				enabled = opts.get_or(std::string("enabled"), enabled);
 				if (opts["ontoggle"].valid()) {
 					ontoggle = opts["ontoggle"];
 				}

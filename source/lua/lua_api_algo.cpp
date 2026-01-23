@@ -118,11 +118,11 @@ namespace LuaAPI {
 
 			if (options) {
 				sol::table opts = *options;
-				iterations = opts.get_or("iterations", 4);
-				birthLimit = opts.get_or("birthLimit", 4);
-				deathLimit = opts.get_or("deathLimit", 3);
-				width = opts.get_or("width", width);
-				height = opts.get_or("height", height);
+				iterations = opts.get_or(std::string("iterations"), 4);
+				birthLimit = opts.get_or(std::string("birthLimit"), 4);
+				deathLimit = opts.get_or(std::string("deathLimit"), 3);
+				width = opts.get_or(std::string("width"), width);
+				height = opts.get_or(std::string("height"), height);
 			}
 
 			if (width <= 0 || height <= 0) {
@@ -186,11 +186,11 @@ namespace LuaAPI {
 
 			if (options) {
 				sol::table opts = *options;
-				fillProbability = opts.get_or("fillProbability", 0.45f);
-				iterations = opts.get_or("iterations", 4);
-				birthLimit = opts.get_or("birthLimit", 4);
-				deathLimit = opts.get_or("deathLimit", 3);
-				seed = opts.get_or("seed", seed);
+				fillProbability = opts.get_or(std::string("fillProbability"), 0.45f);
+				iterations = opts.get_or(std::string("iterations"), 4);
+				birthLimit = opts.get_or(std::string("birthLimit"), 4);
+				deathLimit = opts.get_or(std::string("deathLimit"), 3);
+				seed = opts.get_or(std::string("seed"), seed);
 			}
 
 			std::mt19937 rng(seed);
@@ -282,17 +282,17 @@ namespace LuaAPI {
 
 			if (options) {
 				sol::table opts = *options;
-				iterations = opts.get_or("iterations", 50000);
-				erosionRadius = opts.get_or("erosionRadius", 3);
-				inertia = opts.get_or("inertia", 0.05f);
-				sedimentCapacity = opts.get_or("sedimentCapacity", 4.0f);
-				minSlope = opts.get_or("minSlope", 0.01f);
-				erosionSpeed = opts.get_or("erosionSpeed", 0.3f);
-				depositSpeed = opts.get_or("depositSpeed", 0.3f);
-				evaporateSpeed = opts.get_or("evaporateSpeed", 0.01f);
-				gravity = opts.get_or("gravity", 4.0f);
-				seed = opts.get_or("seed", seed);
-				maxDropletLifetime = opts.get_or("maxDropletLifetime", 30);
+				iterations = opts.get_or(std::string("iterations"), 50000);
+				erosionRadius = opts.get_or(std::string("erosionRadius"), 3);
+				inertia = opts.get_or(std::string("inertia"), 0.05f);
+				sedimentCapacity = opts.get_or(std::string("sedimentCapacity"), 4.0f);
+				minSlope = opts.get_or(std::string("minSlope"), 0.01f);
+				erosionSpeed = opts.get_or(std::string("erosionSpeed"), 0.3f);
+				depositSpeed = opts.get_or(std::string("depositSpeed"), 0.3f);
+				evaporateSpeed = opts.get_or(std::string("evaporateSpeed"), 0.01f);
+				gravity = opts.get_or(std::string("gravity"), 4.0f);
+				seed = opts.get_or(std::string("seed"), seed);
+				maxDropletLifetime = opts.get_or(std::string("maxDropletLifetime"), 30);
 			}
 
 			auto heightmap = tableToFloatGrid(inputHeightmap, width, height);
@@ -457,9 +457,9 @@ namespace LuaAPI {
 
 			if (options) {
 				sol::table opts = *options;
-				iterations = opts.get_or("iterations", 50);
-				talusAngle = opts.get_or("talusAngle", 0.5f);
-				erosionAmount = opts.get_or("erosionAmount", 0.5f);
+				iterations = opts.get_or(std::string("iterations"), 50);
+				talusAngle = opts.get_or(std::string("talusAngle"), 0.5f);
+				erosionAmount = opts.get_or(std::string("erosionAmount"), 0.5f);
 			}
 
 			auto heightmap = tableToFloatGrid(inputHeightmap, width, height);
@@ -532,8 +532,8 @@ namespace LuaAPI {
 
 			if (options) {
 				sol::table opts = *options;
-				iterations = opts.get_or("iterations", 1);
-				kernelSize = opts.get_or("kernelSize", 3);
+				iterations = opts.get_or(std::string("iterations"), 1);
+				kernelSize = opts.get_or(std::string("kernelSize"), 3);
 			}
 
 			auto grid = tableToFloatGrid(inputGrid, width, height);
@@ -579,8 +579,8 @@ namespace LuaAPI {
 			for (auto& kv : points) {
 				if (kv.second.get_type() == sol::type::table) {
 					sol::table pt = kv.second;
-					int x = pt.get_or("x", pt.get_or(1, 0));
-					int y = pt.get_or("y", pt.get_or(2, 0));
+					int x = pt.get_or(std::string("x"), pt.get_or(1, 0));
+					int y = pt.get_or(std::string("y"), pt.get_or(2, 0));
 					seedPoints.push_back({ x, y });
 				}
 			}
@@ -649,7 +649,7 @@ namespace LuaAPI {
 
 			if (options) {
 				sol::table opts = *options;
-				seed = opts.get_or("seed", seed);
+				seed = opts.get_or(std::string("seed"), seed);
 			}
 
 			std::mt19937 rng(seed);
@@ -710,10 +710,10 @@ namespace LuaAPI {
 
 			if (options) {
 				sol::table opts = *options;
-				minRoomSize = opts.get_or("minRoomSize", 5);
-				maxRoomSize = opts.get_or("maxRoomSize", 15);
-				seed = opts.get_or("seed", seed);
-				maxDepth = opts.get_or("maxDepth", 4);
+				minRoomSize = opts.get_or(std::string("minRoomSize"), 5);
+				maxRoomSize = opts.get_or(std::string("maxRoomSize"), 15);
+				seed = opts.get_or(std::string("seed"), seed);
+				maxDepth = opts.get_or(std::string("maxDepth"), 4);
 			}
 
 			std::mt19937 rng(seed);

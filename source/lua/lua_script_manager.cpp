@@ -123,10 +123,10 @@ static wxColor parseColor(const sol::object& obj, const wxColor& fallback) {
 
 	if (obj.is<sol::table>()) {
 		sol::table tbl = obj.as<sol::table>();
-		int r = tbl.get_or("r", tbl.get_or("red", 255));
-		int g = tbl.get_or("g", tbl.get_or("green", 255));
-		int b = tbl.get_or("b", tbl.get_or("blue", 255));
-		int a = tbl.get_or("a", tbl.get_or("alpha", 255));
+		int r = tbl.get_or(std::string("r"), tbl.get_or(std::string("red"), 255));
+		int g = tbl.get_or(std::string("g"), tbl.get_or(std::string("green"), 255));
+		int b = tbl.get_or(std::string("b"), tbl.get_or(std::string("blue"), 255));
+		int a = tbl.get_or(std::string("a"), tbl.get_or(std::string("alpha"), 255));
 		if (tbl[1].valid()) {
 			r = tbl.get_or(1, r);
 		}
@@ -152,8 +152,8 @@ bool LuaScriptManager::addMapOverlay(const std::string& id, sol::table options) 
 
 	MapOverlay overlay;
 	overlay.id = id;
-	overlay.enabled = options.get_or("enabled", true);
-	overlay.order = options.get_or("order", 0);
+	overlay.enabled = options.get_or(std::string("enabled"), true);
+	overlay.order = options.get_or(std::string("order"), 0);
 	if (options["ondraw"].valid()) {
 		overlay.ondraw = options["ondraw"];
 	}
@@ -309,14 +309,14 @@ void LuaScriptManager::collectMapOverlayCommands(const MapViewInfo& view, std::v
 		}
 		MapOverlayCommand cmd;
 		cmd.type = MapOverlayCommand::Type::Rect;
-		cmd.screen_space = opts.get_or("screen", false);
-		cmd.filled = opts.get_or("filled", true);
-		cmd.width = opts.get_or("width", 1);
-		cmd.x = opts.get_or("x", 0);
-		cmd.y = opts.get_or("y", 0);
-		cmd.z = opts.get_or("z", view.floor);
-		cmd.w = opts.get_or("w", 1);
-		cmd.h = opts.get_or("h", 1);
+		cmd.screen_space = opts.get_or(std::string("screen"), false);
+		cmd.filled = opts.get_or(std::string("filled"), true);
+		cmd.width = opts.get_or(std::string("width"), 1);
+		cmd.x = opts.get_or(std::string("x"), 0);
+		cmd.y = opts.get_or(std::string("y"), 0);
+		cmd.z = opts.get_or(std::string("z"), view.floor);
+		cmd.w = opts.get_or(std::string("w"), 1);
+		cmd.h = opts.get_or(std::string("h"), 1);
 		cmd.color = parseColor(opts["color"], wxColor(255, 255, 255, 128));
 		out.push_back(cmd);
 	};
@@ -328,14 +328,14 @@ void LuaScriptManager::collectMapOverlayCommands(const MapViewInfo& view, std::v
 		}
 		MapOverlayCommand cmd;
 		cmd.type = MapOverlayCommand::Type::Line;
-		cmd.screen_space = opts.get_or("screen", false);
-		cmd.width = opts.get_or("width", 1);
-		cmd.x = opts.get_or("x1", 0);
-		cmd.y = opts.get_or("y1", 0);
-		cmd.z = opts.get_or("z1", view.floor);
-		cmd.x2 = opts.get_or("x2", 0);
-		cmd.y2 = opts.get_or("y2", 0);
-		cmd.z2 = opts.get_or("z2", view.floor);
+		cmd.screen_space = opts.get_or(std::string("screen"), false);
+		cmd.width = opts.get_or(std::string("width"), 1);
+		cmd.x = opts.get_or(std::string("x1"), 0);
+		cmd.y = opts.get_or(std::string("y1"), 0);
+		cmd.z = opts.get_or(std::string("z1"), view.floor);
+		cmd.x2 = opts.get_or(std::string("x2"), 0);
+		cmd.y2 = opts.get_or(std::string("y2"), 0);
+		cmd.z2 = opts.get_or(std::string("z2"), view.floor);
 		cmd.color = parseColor(opts["color"], wxColor(255, 255, 255, 200));
 		out.push_back(cmd);
 	};
@@ -347,11 +347,11 @@ void LuaScriptManager::collectMapOverlayCommands(const MapViewInfo& view, std::v
 		}
 		MapOverlayCommand cmd;
 		cmd.type = MapOverlayCommand::Type::Text;
-		cmd.screen_space = opts.get_or("screen", false);
-		cmd.x = opts.get_or("x", 0);
-		cmd.y = opts.get_or("y", 0);
-		cmd.z = opts.get_or("z", view.floor);
-		cmd.text = opts.get_or("text", std::string());
+		cmd.screen_space = opts.get_or(std::string("screen"), false);
+		cmd.x = opts.get_or(std::string("x"), 0);
+		cmd.y = opts.get_or(std::string("y"), 0);
+		cmd.z = opts.get_or(std::string("z"), view.floor);
+		cmd.text = opts.get_or(std::string("text"), std::string());
 		cmd.color = parseColor(opts["color"], wxColor(255, 255, 255, 255));
 		if (!cmd.text.empty()) {
 			out.push_back(cmd);
@@ -431,13 +431,13 @@ void LuaScriptManager::updateMapOverlayHover(int map_x, int map_y, int map_z, in
 				if (table["highlight"].valid()) {
 					sol::table h = table["highlight"];
 					highlight.type = MapOverlayCommand::Type::Rect;
-					highlight.x = h.get_or("x", map_x);
-					highlight.y = h.get_or("y", map_y);
-					highlight.z = h.get_or("z", map_z);
-					highlight.w = h.get_or("w", 1);
-					highlight.h = h.get_or("h", 1);
-					highlight.filled = h.get_or("filled", false);
-					highlight.width = h.get_or("width", 1);
+					highlight.x = h.get_or(std::string("x"), map_x);
+					highlight.y = h.get_or(std::string("y"), map_y);
+					highlight.z = h.get_or(std::string("z"), map_z);
+					highlight.w = h.get_or(std::string("w"), 1);
+					highlight.h = h.get_or(std::string("h"), 1);
+					highlight.filled = h.get_or(std::string("filled"), false);
+					highlight.width = h.get_or(std::string("width"), 1);
 					highlight.color = parseColor(h["color"], wxColor(255, 255, 0, 128));
 					hasHighlight = true;
 				}
@@ -448,7 +448,7 @@ void LuaScriptManager::updateMapOverlayHover(int map_x, int map_y, int map_z, in
 						tooltip.color = wxColor(255, 255, 255, 255);
 					} else if (table["tooltip"].is<sol::table>()) {
 						sol::table t = table["tooltip"];
-						tooltip.text = t.get_or("text", std::string());
+						tooltip.text = t.get_or(std::string("text"), std::string());
 						tooltip.color = parseColor(t["color"], wxColor(255, 255, 255, 255));
 					}
 

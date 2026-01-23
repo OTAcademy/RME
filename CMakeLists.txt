@@ -48,6 +48,20 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(sol2)
 set(SOL2_INCLUDE_DIRS ${sol2_SOURCE_DIR}/include)
 
+FetchContent_Declare(
+    cpr
+    GIT_REPOSITORY https://github.com/libcpr/cpr.git
+    GIT_TAG        1.10.5
+)
+FetchContent_MakeAvailable(cpr)
+
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG        v3.11.3
+)
+FetchContent_MakeAvailable(json)
+
 include(${wxWidgets_USE_FILE})
 include(source/CMakeLists.txt)
 add_executable(rme ${rme_H} ${rme_SRC})
@@ -56,4 +70,4 @@ set_target_properties(rme PROPERTIES CXX_STANDARD 17)
 set_target_properties(rme PROPERTIES CXX_STANDARD_REQUIRED ON)
 
 include_directories(${CMAKE_SOURCE_DIR}/source ${Boost_INCLUDE_DIRS} ${LibArchive_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${GLUT_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${SOL2_INCLUDE_DIRS})
-target_link_libraries(rme ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} ${LibArchive_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${ZLIB_LIBRARIES} ${LUA_LIBRARIES})
+target_link_libraries(rme ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} ${LibArchive_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${ZLIB_LIBRARIES} ${LUA_LIBRARIES} cpr::cpr nlohmann_json::nlohmann_json)

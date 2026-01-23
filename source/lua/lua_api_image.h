@@ -41,6 +41,9 @@ namespace LuaAPI {
 		// Copy constructor
 		LuaImage(const LuaImage& other);
 
+		// Copy assignment operator
+		LuaImage& operator=(const LuaImage& other);
+
 		~LuaImage();
 
 		// Static factory methods for Lua

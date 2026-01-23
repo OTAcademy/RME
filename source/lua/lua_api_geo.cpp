@@ -144,8 +144,8 @@ namespace LuaAPI {
 			for (auto& kv : controlPoints) {
 				if (kv.second.get_type() == sol::type::table) {
 					sol::table pt = kv.second;
-					float x = pt.get_or("x", pt.get_or(1, 0.0f));
-					float y = pt.get_or("y", pt.get_or(2, 0.0f));
+					float x = pt.get_or(std::string("x"), pt.get_or(1, 0.0f));
+					float y = pt.get_or(std::string("y"), pt.get_or(2, 0.0f));
 					points.push_back({ x, y });
 				}
 			}
@@ -198,9 +198,9 @@ namespace LuaAPI {
 			for (auto& kv : controlPoints) {
 				if (kv.second.get_type() == sol::type::table) {
 					sol::table pt = kv.second;
-					float x = pt.get_or("x", 0.0f);
-					float y = pt.get_or("y", 0.0f);
-					float z = pt.get_or("z", 0.0f);
+					float x = pt.get_or(std::string("x"), 0.0f);
+					float y = pt.get_or(std::string("y"), 0.0f);
+					float z = pt.get_or(std::string("z"), 0.0f);
 					points.push_back({ x, y, z });
 				}
 			}
@@ -266,7 +266,7 @@ namespace LuaAPI {
 			bool eightConnected = false;
 			if (options) {
 				sol::table opts = *options;
-				eightConnected = opts.get_or("eightConnected", false);
+				eightConnected = opts.get_or(std::string("eightConnected"), false);
 			}
 
 			// Convert to grid
@@ -364,7 +364,7 @@ namespace LuaAPI {
 			bool eightConnected = false;
 			if (options) {
 				sol::table opts = *options;
-				eightConnected = opts.get_or("eightConnected", false);
+				eightConnected = opts.get_or(std::string("eightConnected"), false);
 			}
 
 			// Convert to grid
@@ -440,7 +440,7 @@ namespace LuaAPI {
 			bool filled = false;
 			if (options) {
 				sol::table opts = *options;
-				filled = opts.get_or("filled", false);
+				filled = opts.get_or(std::string("filled"), false);
 			}
 
 			int index = 1;
@@ -522,7 +522,7 @@ namespace LuaAPI {
 			bool filled = false;
 			if (options) {
 				sol::table opts = *options;
-				filled = opts.get_or("filled", false);
+				filled = opts.get_or(std::string("filled"), false);
 			}
 
 			int index = 1;
@@ -617,7 +617,7 @@ namespace LuaAPI {
 			bool filled = false;
 			if (options) {
 				sol::table opts = *options;
-				filled = opts.get_or("filled", false);
+				filled = opts.get_or(std::string("filled"), false);
 			}
 
 			int minX = std::min(x1, x2);
@@ -677,8 +677,8 @@ namespace LuaAPI {
 			for (auto& kv : vertices) {
 				if (kv.second.get_type() == sol::type::table) {
 					sol::table pt = kv.second;
-					int x = pt.get_or("x", pt.get_or(1, 0));
-					int y = pt.get_or("y", pt.get_or(2, 0));
+					int x = pt.get_or(std::string("x"), pt.get_or(1, 0));
+					int y = pt.get_or(std::string("y"), pt.get_or(2, 0));
 					verts.push_back({ x, y });
 				}
 			}
@@ -784,8 +784,8 @@ namespace LuaAPI {
 			for (auto& kv : vertices) {
 				if (kv.second.get_type() == sol::type::table) {
 					sol::table pt = kv.second;
-					float x = pt.get_or("x", pt.get_or(1, 0.0f));
-					float y = pt.get_or("y", pt.get_or(2, 0.0f));
+					float x = pt.get_or(std::string("x"), pt.get_or(1, 0.0f));
+					float y = pt.get_or(std::string("y"), pt.get_or(2, 0.0f));
 					verts.push_back({ x, y });
 				}
 			}

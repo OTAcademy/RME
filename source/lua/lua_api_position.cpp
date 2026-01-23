@@ -32,9 +32,9 @@ namespace LuaAPI {
 
 			// Also allow construction from table: Position{x=100, y=200, z=7}
 			sol::call_constructor, sol::factories([](int x, int y, int z) { return Position(x, y, z); }, [](sol::table t) {
-				int x = t.get_or("x", 0);
-				int y = t.get_or("y", 0);
-				int z = t.get_or("z", 0);
+				int x = t.get_or(std::string("x"), 0);
+				int y = t.get_or(std::string("y"), 0);
+				int z = t.get_or(std::string("z"), 0);
 				return Position(x, y, z); }),
 
 			// Properties

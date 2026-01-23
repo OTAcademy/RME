@@ -255,13 +255,13 @@ LuaDialog::LuaDialog(const std::string& title, sol::this_state ts) :
 
 // Overload constructor to handle options
 LuaDialog::LuaDialog(sol::table options, sol::this_state ts) :
-	wxDialog(g_gui.root, wxID_ANY, wxString(options.get_or("title", "Script Dialog"s)), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | (options.get_or("resizable", true) ? wxRESIZE_BORDER : 0) | (options.get_or("topmost", false) ? wxSTAY_ON_TOP : 0)),
+	wxDialog(g_gui.root, wxID_ANY, wxString(options.get_or(std::string("title"), "Script Dialog"s)), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | (options.get_or(std::string("resizable"), true) ? wxRESIZE_BORDER : 0) | (options.get_or(std::string("topmost"), false) ? wxSTAY_ON_TOP : 0)),
 	lua(ts) {
 
-	reqWidth = options.get_or("width", -1);
-	reqHeight = options.get_or("height", -1);
-	reqX = options.get_or("x", -1);
-	reqY = options.get_or("y", -1);
+	reqWidth = options.get_or(std::string("width"), -1);
+	reqHeight = options.get_or(std::string("height"), -1);
+	reqX = options.get_or(std::string("x"), -1);
+	reqY = options.get_or(std::string("y"), -1);
 
 		if (reqWidth != -1 || reqHeight != -1) {
 		SetMinSize(wxSize(reqWidth != -1 ? reqWidth : 150, reqHeight != -1 ? reqHeight : 100));
@@ -281,8 +281,8 @@ LuaDialog::LuaDialog(sol::table options, sol::this_state ts) :
 		info.Caption(title);
 		info.Right().Layer(1).Position(1).CloseButton(true).MaximizeButton(true);
 
-		int minW = options.get_or("min_width", reqWidth != -1 ? reqWidth : 200);
-		int minH = options.get_or("min_height", reqHeight != -1 ? reqHeight : 150);
+		int minW = options.get_or(std::string("min_width"), reqWidth != -1 ? reqWidth : 200);
+		int minH = options.get_or(std::string("min_height"), reqHeight != -1 ? reqHeight : 150);
 		info.MinSize(wxSize(minW, minH));
 
 		if (reqWidth != -1 || reqHeight != -1) {
@@ -383,8 +383,8 @@ LuaDialog* LuaDialog::endwrap() {
 LuaDialog* LuaDialog::box(sol::table options) {
 	finishCurrentRow();
 
-	std::string orient = options.get_or("orient", "vertical"s);
-	std::string label = options.get_or("label", ""s);
+	std::string orient = options.get_or(std::string("orient"), "vertical"s);
+	std::string label = options.get_or(std::string("label"), ""s);
 
 	wxSizer* sizer;
 	if (!label.empty()) {
@@ -424,8 +424,8 @@ LuaDialog* LuaDialog::endbox() {
 LuaDialog* LuaDialog::label(sol::table options) {
 	ensureRowSizer();
 
-	std::string text = options.get_or("text", "label"s);
-	std::string id = options.get_or("id", ""s);
+	std::string text = options.get_or(std::string("text"), "label"s);
+	std::string id = options.get_or(std::string("id"), ""s);
 
 	wxStaticText* label = new wxStaticText(getParentForWidget(), wxID_ANY, wxString(text));
 	currentRowSizer->Add(label, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
@@ -452,8 +452,8 @@ LuaDialog* LuaDialog::mapCanvas(sol::table options) {
 		return this;
 	}
 
-	std::string id = options.get_or("id", "map_c_"s + std::to_string(widgets.size()));
-	std::string labelText = options.get_or("label", ""s);
+	std::string id = options.get_or(std::string("id"), "map_c_"s + std::to_string(widgets.size()));
+	std::string labelText = options.get_or(std::string("label"), ""s);
 
 	if (!labelText.empty()) {
 		wxStaticText* label = new wxStaticText(getParentForWidget(), wxID_ANY, wxString(labelText));
@@ -486,10 +486,10 @@ LuaDialog* LuaDialog::mapCanvas(sol::table options) {
 LuaDialog* LuaDialog::input(sol::table options) {
 	ensureRowSizer();
 
-	std::string id = options.get_or("id", "input_"s + std::to_string(widgets.size()));
-	std::string labelText = options.get_or("label", ""s);
-	std::string text = options.get_or("text", ""s);
-	bool focus = options.get_or("focus", false);
+	std::string id = options.get_or(std::string("id"), "input_"s + std::to_string(widgets.size()));
+	std::string labelText = options.get_or(std::string("label"), ""s);
+	std::string text = options.get_or(std::string("text"), ""s);
+	bool focus = options.get_or(std::string("focus"), false);
 
 	if (!labelText.empty()) {
 		wxStaticText* label = new wxStaticText(getParentForWidget(), wxID_ANY, wxString(labelText));
@@ -574,11 +574,11 @@ LuaDialog* LuaDialog::number(sol::table options) {
 LuaDialog* LuaDialog::slider(sol::table options) {
 	ensureRowSizer();
 
-	std::string id = options.get_or("id", "slider_"s + std::to_string(widgets.size()));
-	std::string labelText = options.get_or("label", ""s);
-	int value = options.get_or("value", 0);
-	int minVal = options.get_or("min", 0);
-	int maxVal = options.get_or("max", 100);
+	std::string id = options.get_or(std::string("id"), "slider_"s + std::to_string(widgets.size()));
+	std::string labelText = options.get_or(std::string("label"), ""s);
+	int value = options.get_or(std::string("value"), 0);
+	int minVal = options.get_or(std::string("min"), 0);
+	int maxVal = options.get_or(std::string("max"), 100);
 
 	if (!labelText.empty()) {
 		wxStaticText* label = new wxStaticText(getParentForWidget(), wxID_ANY, wxString(labelText));
@@ -610,9 +610,9 @@ LuaDialog* LuaDialog::slider(sol::table options) {
 LuaDialog* LuaDialog::check(sol::table options) {
 	ensureRowSizer();
 
-	std::string id = options.get_or("id", "check_"s + std::to_string(widgets.size()));
-	std::string text = options.get_or("text", ""s);
-	bool selected = options.get_or("selected", false);
+	std::string id = options.get_or(std::string("id"), "check_"s + std::to_string(widgets.size()));
+	std::string text = options.get_or(std::string("text"), ""s);
+	bool selected = options.get_or(std::string("selected"), false);
 
 	wxCheckBox* checkbox = new wxCheckBox(getParentForWidget(), wxID_ANY, wxString(text));
 	checkbox->SetValue(selected);
@@ -643,9 +643,9 @@ LuaDialog* LuaDialog::check(sol::table options) {
 LuaDialog* LuaDialog::radio(sol::table options) {
 	ensureRowSizer();
 
-	std::string id = options.get_or("id", "radio_"s + std::to_string(widgets.size()));
-	std::string text = options.get_or("text", ""s);
-	bool selected = options.get_or("selected", false);
+	std::string id = options.get_or(std::string("id"), "radio_"s + std::to_string(widgets.size()));
+	std::string text = options.get_or(std::string("text"), ""s);
+	bool selected = options.get_or(std::string("selected"), false);
 
 	wxRadioButton* radio = new wxRadioButton(getParentForWidget(), wxID_ANY, wxString(text));
 	radio->SetValue(selected);
@@ -673,9 +673,9 @@ LuaDialog* LuaDialog::radio(sol::table options) {
 LuaDialog* LuaDialog::combobox(sol::table options) {
 	ensureRowSizer();
 
-	std::string id = options.get_or("id", "combobox_"s + std::to_string(widgets.size()));
-	std::string labelText = options.get_or("label", ""s);
-	std::string selected = options.get_or("option", ""s);
+	std::string id = options.get_or(std::string("id"), "combobox_"s + std::to_string(widgets.size()));
+	std::string labelText = options.get_or(std::string("label"), ""s);
+	std::string selected = options.get_or(std::string("option"), ""s);
 
 	wxArrayString choices;
 	if (options["options"].valid()) {
@@ -728,9 +728,9 @@ LuaDialog* LuaDialog::combobox(sol::table options) {
 LuaDialog* LuaDialog::button(sol::table options) {
 	ensureRowSizer();
 
-	std::string id = options.get_or("id", "button_"s + std::to_string(widgets.size()));
-	std::string text = options.get_or("text", "Button"s);
-	bool focus = options.get_or("focus", false);
+	std::string id = options.get_or(std::string("id"), "button_"s + std::to_string(widgets.size()));
+	std::string text = options.get_or(std::string("text"), "Button"s);
+	bool focus = options.get_or(std::string("focus"), false);
 
 	wxButton* btn = new wxButton(getParentForWidget(), wxID_ANY, wxString(text));
 	currentRowSizer->Add(btn, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
@@ -761,15 +761,15 @@ LuaDialog* LuaDialog::button(sol::table options) {
 LuaDialog* LuaDialog::color(sol::table options) {
 	ensureRowSizer();
 
-	std::string id = options.get_or("id", "color_"s + std::to_string(widgets.size()));
-	std::string labelText = options.get_or("label", ""s);
+	std::string id = options.get_or(std::string("id"), "color_"s + std::to_string(widgets.size()));
+	std::string labelText = options.get_or(std::string("label"), ""s);
 
 	wxColour defaultColor = *wxBLACK;
 	if (options["color"].valid()) {
 		sol::table c = options["color"];
-		int r = c.get_or("red", c.get_or(1, 0));
-		int g = c.get_or("green", c.get_or(2, 0));
-		int b = c.get_or("blue", c.get_or(3, 0));
+		int r = c.get_or(std::string("red"), c.get_or(1, 0));
+		int g = c.get_or(std::string("green"), c.get_or(2, 0));
+		int b = c.get_or(std::string("blue"), c.get_or(3, 0));
 		defaultColor = wxColour(r, g, b);
 	}
 
@@ -1072,9 +1072,9 @@ LuaDialog* LuaDialog::list(sol::table options) {
 		for (auto& pair : itemsTable) {
 			if (pair.second.is<sol::table>()) {
 				sol::table itemTable = pair.second;
-				std::string text = itemTable.get_or("text", ""s);
-				int icon = itemTable.get_or("icon", 0);
-				std::string tooltip = itemTable.get_or("tooltip", ""s);
+				std::string text = itemTable.get_or(std::string("text"), ""s);
+				int icon = itemTable.get_or(std::string("icon"), 0);
+				std::string tooltip = itemTable.get_or(std::string("tooltip"), ""s);
 				LuaAPI::LuaImage img;
 				if (itemTable["image"].valid()) {
 					if (itemTable["image"].is<LuaAPI::LuaImage>()) {
@@ -1089,7 +1089,7 @@ LuaDialog* LuaDialog::list(sol::table options) {
 	}
 
 	// Selection
-	int selection = options.get_or("selection", 0);
+	int selection = options.get_or(std::string("selection"), 0);
 	if (selection > 0 && selection <= (int)listbox->items.size()) {
 		listbox->SetSelection(selection - 1);
 	}
@@ -1276,11 +1276,11 @@ LuaDialog* LuaDialog::file(sol::table options) {
 LuaDialog* LuaDialog::image(sol::table options) {
 	ensureRowSizer();
 
-	std::string id = options.get_or("id", "image_"s + std::to_string(widgets.size()));
-	std::string labelText = options.get_or("label", ""s);
-	int width = options.get_or("width", -1);
-	int height = options.get_or("height", -1);
-	bool smooth = options.get_or("smooth", true); // Default to smooth scaling
+	std::string id = options.get_or(std::string("id"), "image_"s + std::to_string(widgets.size()));
+	std::string labelText = options.get_or(std::string("label"), ""s);
+	int width = options.get_or(std::string("width"), -1);
+	int height = options.get_or(std::string("height"), -1);
+	bool smooth = options.get_or(std::string("smooth"), true); // Default to smooth scaling
 
 	if (!labelText.empty()) {
 		wxStaticText* label = new wxStaticText(getParentForWidget(), wxID_ANY, wxString(labelText));
@@ -1358,9 +1358,9 @@ LuaDialog* LuaDialog::image(sol::table options) {
 LuaDialog* LuaDialog::item(sol::table options) {
 	ensureRowSizer();
 
-	std::string id = options.get_or("id", "item_"s + std::to_string(widgets.size()));
-	std::string labelText = options.get_or("label", ""s);
-	int itemId = options.get_or("itemid", 0);
+	std::string id = options.get_or(std::string("id"), "item_"s + std::to_string(widgets.size()));
+	std::string labelText = options.get_or(std::string("label"), ""s);
+	int itemId = options.get_or(std::string("itemid"), 0);
 
 	if (!labelText.empty()) {
 		wxStaticText* label = new wxStaticText(getParentForWidget(), wxID_ANY, wxString(labelText));
@@ -1385,7 +1385,7 @@ LuaDialog* LuaDialog::item(sol::table options) {
 
 	values[id] = sol::make_object(lua, itemId);
 
-	bool readonly = options.get_or("readonly", false);
+	bool readonly = options.get_or(std::string("readonly"), false);
 
 	// Bind click event
 	btn->Bind(wxEVT_BUTTON, [this, id, btn, readonly](wxCommandEvent&) {
@@ -1437,10 +1437,10 @@ LuaDialog* LuaDialog::newrow() {
 LuaDialog* LuaDialog::tab(sol::table options) {
 	finishCurrentRow();
 
-	std::string id = options.get_or("id", "tab_"s + std::to_string(widgets.size()));
-	std::string text = options.get_or("text", "Tab"s);
-	bool isButton = options.get_or("button", false) || options.get_or("is_button", false);
-	int insertIndex = options.get_or("index", -1);
+	std::string id = options.get_or(std::string("id"), "tab_"s + std::to_string(widgets.size()));
+	std::string text = options.get_or(std::string("text"), "Tab"s);
+	bool isButton = options.get_or(std::string("button"), false) || options.get_or(std::string("is_button"), false);
+	int insertIndex = options.get_or(std::string("index"), -1);
 	sol::function onclick;
 	sol::function oncontextmenu;
 	if (options["onclick"].valid()) {
@@ -1747,7 +1747,7 @@ LuaDialog* LuaDialog::show(sol::optional<sol::table> options) {
 	// Process options
 	if (options) {
 		sol::table opts = *options;
-		waitMode = opts.get_or("wait", true);
+		waitMode = opts.get_or(std::string("wait"), true);
 
 		if (opts["bounds"].valid()) {
 			setBounds(opts["bounds"]);
@@ -1884,36 +1884,36 @@ LuaDialog* LuaDialog::modify(sol::table options) {
 				} else if (widget.type == "input") {
 					wxTextCtrl* ctrl = static_cast<wxTextCtrl*>(widget.widget);
 					if (props["text"].valid()) {
-						ctrl->SetValue(wxString(props.get_or("text", ""s)));
+						ctrl->SetValue(wxString(props.get_or(std::string("text"), ""s)));
 					}
 				} else if (widget.type == "number") {
 					wxSpinCtrlDouble* ctrl = static_cast<wxSpinCtrlDouble*>(widget.widget);
 					if (props["value"].valid()) {
-						ctrl->SetValue(props.get_or("value", 0.0));
+						ctrl->SetValue(props.get_or(std::string("value"), 0.0));
 					}
 				} else if (widget.type == "check") {
 					wxCheckBox* ctrl = static_cast<wxCheckBox*>(widget.widget);
 					if (props["selected"].valid()) {
-						ctrl->SetValue(props.get_or("selected", false));
+						ctrl->SetValue(props.get_or(std::string("selected"), false));
 					}
 				} else if (widget.type == "item") {
 					ItemButton* ctrl = static_cast<ItemButton*>(widget.widget);
 					if (props["itemid"].valid()) {
-						int newItemId = props.get_or("itemid", 0);
+						int newItemId = props.get_or(std::string("itemid"), 0);
 						ctrl->SetSprite(newItemId);
 						ctrl->Refresh();
 					}
 				} else if (widget.type == "label") {
 					wxStaticText* ctrl = static_cast<wxStaticText*>(widget.widget);
 					if (props["text"].valid()) {
-						ctrl->SetLabel(wxString(props.get_or("text", ""s)));
+						ctrl->SetLabel(wxString(props.get_or(std::string("text"), ""s)));
 					}
 				} else if (widget.type == "list") {
 					LuaDialogListBox* ctrl = static_cast<LuaDialogListBox*>(widget.widget);
 					if (props["icon_width"].valid() || props["icon_height"].valid() || props["icon_size"].valid()) {
-						int iconWidth = props.get_or("icon_width", ctrl->iconWidth);
-						int iconHeight = props.get_or("icon_height", ctrl->iconHeight);
-						int iconSize = props.get_or("icon_size", -1);
+						int iconWidth = props.get_or(std::string("icon_width"), ctrl->iconWidth);
+						int iconHeight = props.get_or(std::string("icon_height"), ctrl->iconHeight);
+						int iconSize = props.get_or(std::string("icon_size"), -1);
 						if (iconSize > 0) {
 							iconWidth = iconSize;
 							iconHeight = iconSize;
@@ -1921,13 +1921,13 @@ LuaDialog* LuaDialog::modify(sol::table options) {
 						ctrl->SetIconSize(iconWidth, iconHeight);
 					}
 					if (props["item_height"].valid()) {
-						ctrl->SetItemHeight(props.get_or("item_height", ctrl->itemHeight));
+						ctrl->SetItemHeight(props.get_or(std::string("item_height"), ctrl->itemHeight));
 					}
 					if (props["show_text"].valid()) {
-						ctrl->SetShowText(props.get_or("show_text", true));
+						ctrl->SetShowText(props.get_or(std::string("show_text"), true));
 					}
 					if (props["smooth"].valid()) {
-						ctrl->SetSmooth(props.get_or("smooth", true));
+						ctrl->SetSmooth(props.get_or(std::string("smooth"), true));
 					}
 					if (props["items"].valid()) {
 						ctrl->Freeze();
@@ -1936,9 +1936,9 @@ LuaDialog* LuaDialog::modify(sol::table options) {
 						for (auto& pair : itemsTable) {
 							if (pair.second.is<sol::table>()) {
 								sol::table itemTable = pair.second;
-								std::string text = itemTable.get_or("text", ""s);
-								int icon = itemTable.get_or("icon", 0);
-								std::string tooltip = itemTable.get_or("tooltip", ""s);
+								std::string text = itemTable.get_or(std::string("text"), ""s);
+								int icon = itemTable.get_or(std::string("icon"), 0);
+								std::string tooltip = itemTable.get_or(std::string("tooltip"), ""s);
 								LuaAPI::LuaImage img;
 								if (itemTable["image"].valid()) {
 									if (itemTable["image"].is<LuaAPI::LuaImage>()) {
@@ -1954,7 +1954,7 @@ LuaDialog* LuaDialog::modify(sol::table options) {
 						ctrl->Thaw();
 					}
 					if (props["selection"].valid()) {
-						int selection = props.get_or("selection", 0);
+						int selection = props.get_or(std::string("selection"), 0);
 						if (selection > 0 && selection <= (int)ctrl->items.size()) {
 							ctrl->SetSelection(selection - 1);
 						} else {
@@ -1971,15 +1971,15 @@ LuaDialog* LuaDialog::modify(sol::table options) {
 					bool updateIconSize = false;
 					bool updateCellSize = false;
 
-					int iconSize = props.get_or("icon_size", -1);
-					int itemSize = props.get_or("item_size", -1);
-					int itemWidth = props.get_or("item_width", -1);
-					int itemHeight = props.get_or("item_height", -1);
-					int iconWidthOpt = props.get_or("icon_width", -1);
-					int iconHeightOpt = props.get_or("icon_height", -1);
-					int cellSize = props.get_or("cell_size", -1);
-					int cellWidthOpt = props.get_or("cell_width", -1);
-					int cellHeightOpt = props.get_or("cell_height", -1);
+					int iconSize = props.get_or(std::string("icon_size"), -1);
+					int itemSize = props.get_or(std::string("item_size"), -1);
+					int itemWidth = props.get_or(std::string("item_width"), -1);
+					int itemHeight = props.get_or(std::string("item_height"), -1);
+					int iconWidthOpt = props.get_or(std::string("icon_width"), -1);
+					int iconHeightOpt = props.get_or(std::string("icon_height"), -1);
+					int cellSize = props.get_or(std::string("cell_size"), -1);
+					int cellWidthOpt = props.get_or(std::string("cell_width"), -1);
+					int cellHeightOpt = props.get_or(std::string("cell_height"), -1);
 
 					if (iconSize > 0) {
 						iconWidth = iconSize;
@@ -2098,9 +2098,9 @@ LuaDialog* LuaDialog::modify(sol::table options) {
 					wxStaticBitmap* ctrl = static_cast<wxStaticBitmap*>(widget.widget);
 
 					LuaAPI::LuaImage luaImage;
-					int width = props.get_or("width", -1);
-					int height = props.get_or("height", -1);
-					bool smooth = props.get_or("smooth", true);
+					int width = props.get_or(std::string("width"), -1);
+					int height = props.get_or(std::string("height"), -1);
+					bool smooth = props.get_or(std::string("smooth"), true);
 
 					if (props["image"].valid()) {
 						luaImage = props["image"].get<LuaAPI::LuaImage>();
@@ -2148,19 +2148,19 @@ LuaDialog* LuaDialog::modify(sol::table options) {
 LuaDialog* LuaDialog::grid(sol::table options) {
 	ensureRowSizer();
 
-	std::string id = options.get_or("id", "grid_"s + std::to_string(widgets.size()));
-	std::string labelText = options.get_or("label", ""s);
-	int iconWidth = options.get_or("icon_width", 32);
-	int iconHeight = options.get_or("icon_height", 32);
-	int iconSize = options.get_or("icon_size", -1);
-	int itemSize = options.get_or("item_size", -1);
-	int itemWidth = options.get_or("item_width", -1);
-	int itemHeight = options.get_or("item_height", -1);
-	int cellSize = options.get_or("cell_size", -1);
-	int cellWidth = options.get_or("cell_width", -1);
-	int cellHeight = options.get_or("cell_height", -1);
-	bool labelWrap = options.get_or("label_wrap", true);
-	bool showText = options.get_or("show_text", true);
+	std::string id = options.get_or(std::string("id"), "grid_"s + std::to_string(widgets.size()));
+	std::string labelText = options.get_or(std::string("label"), ""s);
+	int iconWidth = options.get_or(std::string("icon_width"), 32);
+	int iconHeight = options.get_or(std::string("icon_height"), 32);
+	int iconSize = options.get_or(std::string("icon_size"), -1);
+	int itemSize = options.get_or(std::string("item_size"), -1);
+	int itemWidth = options.get_or(std::string("item_width"), -1);
+	int itemHeight = options.get_or(std::string("item_height"), -1);
+	int cellSize = options.get_or(std::string("cell_size"), -1);
+	int cellWidth = options.get_or(std::string("cell_width"), -1);
+	int cellHeight = options.get_or(std::string("cell_height"), -1);
+	bool labelWrap = options.get_or(std::string("label_wrap"), true);
+	bool showText = options.get_or(std::string("show_text"), true);
 
 	if (iconSize > 0) {
 		iconWidth = iconSize;
@@ -2234,7 +2234,7 @@ LuaDialog* LuaDialog::grid(sol::table options) {
 		for (auto& pair : itemsTable) {
 			if (pair.second.is<sol::table>()) {
 				sol::table itemTable = pair.second;
-				std::string text = itemTable.get_or("text", ""s);
+				std::string text = itemTable.get_or(std::string("text"), ""s);
 				if (!showText) {
 					text.clear();
 				}
@@ -2258,7 +2258,7 @@ LuaDialog* LuaDialog::grid(sol::table options) {
 				// Store original item index/id in data if needed, or rely on position
 				grid->SetItemData(index, index + 1); // 1-based index
 
-				std::string tooltip = itemTable.get_or("tooltip", ""s);
+				std::string tooltip = itemTable.get_or(std::string("tooltip"), ""s);
 				if (!tooltip.empty()) {
 					grid->AddTooltip(index, tooltip);
 				}
@@ -2477,10 +2477,10 @@ sol::object LuaDialog::getActiveTab() {
 }
 
 void LuaDialog::setBounds(sol::table bounds) {
-	int x = bounds.get_or("x", GetPosition().x);
-	int y = bounds.get_or("y", GetPosition().y);
-	int w = bounds.get_or("width", GetSize().GetWidth());
-	int h = bounds.get_or("height", GetSize().GetHeight());
+	int x = bounds.get_or(std::string("x"), GetPosition().x);
+	int y = bounds.get_or(std::string("y"), GetPosition().y);
+	int w = bounds.get_or(std::string("width"), GetSize().GetWidth());
+	int h = bounds.get_or(std::string("height"), GetSize().GetHeight());
 	SetSize(x, y, w, h);
 }
 

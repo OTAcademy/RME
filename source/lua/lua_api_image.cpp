@@ -100,6 +100,16 @@ namespace LuaAPI {
 		spriteSource(other.spriteSource) {
 	}
 
+	LuaImage& LuaImage::operator=(const LuaImage& other) {
+		if (this != &other) {
+			image = other.image.IsOk() ? other.image.Copy() : wxImage();
+			filePath = other.filePath;
+			spriteId = other.spriteId;
+			spriteSource = other.spriteSource;
+		}
+		return *this;
+	}
+
 	LuaImage::~LuaImage() {
 		// wxImage handles its own cleanup
 	}
