@@ -350,6 +350,22 @@ GLuint GameSprite::getHardwareID(int _x, int _y, int _dir, int _addon, int _patt
 	return spriteList[v]->getHardwareID();
 }
 
+const AtlasRegion* GameSprite::getAtlasRegion(int _x, int _y, int _dir, int _addon, int _pattern_z, const Outfit& _outfit, int _frame) {
+	uint32_t v = getIndex(_x, _y, 0, _dir, _addon, _pattern_z, _frame);
+	if (v >= numsprites) {
+		if (numsprites == 1) {
+			v = 0;
+		} else {
+			v %= numsprites;
+		}
+	}
+	if (layers > 1) { // Template
+		TemplateImage* img = getTemplateImage(v, _outfit);
+		return img->getAtlasRegion();
+	}
+	return spriteList[v]->getAtlasRegion();
+}
+
 #include "rendering/utilities/sprite_icon_generator.h"
 
 wxMemoryDC* GameSprite::getDC(SpriteSize size) {
@@ -507,12 +523,22 @@ uint8_t* GameSprite::NormalImage::getRGBData() {
 }
 
 uint8_t* GameSprite::NormalImage::getRGBAData() {
+	// Robust ID 0 handling
+	if (id == 0) {
+		const int pixels_data_size = SPRITE_PIXELS_SIZE * 4;
+		uint8_t* data = newd uint8_t[pixels_data_size];
+		memset(data, 0, pixels_data_size); // Transparent
+		return data;
+	}
+
 	if (!dump) {
 		if (g_settings.getInteger(Config::USE_MEMCACHED_SPRITES)) {
 			return nullptr;
 		}
 
 		if (!g_gui.gfx.loadSpriteDump(dump, size, id)) {
+			// This is the only case where we return nullptr for non-zero ID
+			// effectively warning the caller that the sprite is missing from file
 			return nullptr;
 		}
 	}
@@ -523,13 +549,19 @@ uint8_t* GameSprite::NormalImage::getRGBAData() {
 	uint8_t bpp = use_alpha ? 4 : 3;
 	int write = 0;
 	int read = 0;
+	bool non_zero_alpha_found = false;
+	bool non_black_pixel_found = false;
 
 	// decompress pixels
 	while (read < size && write < pixels_data_size) {
 		int transparent = dump[read] | dump[read + 1] << 8;
-		if (use_alpha && transparent >= SPRITE_PIXELS_SIZE) { // Corrupted sprite?
-			break;
+
+		// Integrity check for transparency run
+		if (write + (transparent * 4) > pixels_data_size) {
+			spdlog::warn("Sprite {}: Transparency run overrun (transparent={}, write={}, max={})", id, transparent, write, pixels_data_size);
+			transparent = (pixels_data_size - write) / 4;
 		}
+
 		read += 2;
 		for (int i = 0; i < transparent && write < pixels_data_size; i++) {
 			data[write + 0] = 0x00; // red
@@ -539,13 +571,44 @@ uint8_t* GameSprite::NormalImage::getRGBAData() {
 			write += 4;
 		}
 
+		if (read >= size || write >= pixels_data_size) {
+			break;
+		}
+
 		int colored = dump[read] | dump[read + 1] << 8;
 		read += 2;
+
+		// Integrity check for colored run
+		if (write + (colored * 4) > pixels_data_size) {
+			spdlog::warn("Sprite {}: Colored run overrun (colored={}, write={}, max={})", id, colored, write, pixels_data_size);
+			colored = (pixels_data_size - write) / 4;
+		}
+
+		// Integrity check for read buffer
+		if (read + (colored * bpp) > size) {
+			spdlog::warn("Sprite {}: Read buffer overrun (colored={}, bpp={}, read={}, size={})", id, colored, bpp, read, size);
+			// We can't easily recover here without risking reading garbage, so stop
+			break;
+		}
+
 		for (int i = 0; i < colored && write < pixels_data_size; i++) {
-			data[write + 0] = dump[read + 0]; // red
-			data[write + 1] = dump[read + 1]; // green
-			data[write + 2] = dump[read + 2]; // blue
-			data[write + 3] = use_alpha ? dump[read + 3] : 0xFF; // alpha
+			uint8_t r = dump[read + 0];
+			uint8_t g = dump[read + 1];
+			uint8_t b = dump[read + 2];
+			uint8_t a = use_alpha ? dump[read + 3] : 0xFF;
+
+			data[write + 0] = r;
+			data[write + 1] = g;
+			data[write + 2] = b;
+			data[write + 3] = a;
+
+			if (a > 0) {
+				non_zero_alpha_found = true;
+			}
+			if (r > 0 || g > 0 || b > 0) {
+				non_black_pixel_found = true;
+			}
+
 			write += 4;
 			read += bpp;
 		}
@@ -559,6 +622,24 @@ uint8_t* GameSprite::NormalImage::getRGBAData() {
 		data[write + 3] = 0x00; // alpha
 		write += 4;
 	}
+
+	// Debug logging for diagnostic - verify if we are decoding pure transparency or pure blackness
+	// Only log for a few arbitrary IDs to avoid spamming, or if suspicious
+	if (!non_zero_alpha_found && id > 100) {
+		// This sprite is 100% invisible. This might be correct (magic fields?) but worth noting if ALL are invisible.
+		static int empty_log_count = 0;
+		if (empty_log_count++ < 10) {
+			spdlog::info("Sprite {}: Decoded fully transparent sprite. bpp used: {}, dump size: {}", id, bpp, size);
+		}
+	} else if (!non_black_pixel_found && non_zero_alpha_found && id > 100) {
+		// This sprite has alpha but all RGB are 0. It is a "black shadow" or "darkness".
+		// If ALL sprites look like this, we have a problem.
+		static int black_log_count = 0;
+		if (black_log_count++ < 10) {
+			spdlog::warn("Sprite {}: Decoded PURE BLACK sprite (Alpha > 0, RGB = 0). bpp used: {}, dump size: {}. Check hasTransparency() config!", id, bpp, size);
+		}
+	}
+
 	return data;
 }
 
@@ -574,10 +655,7 @@ GLuint GameSprite::NormalImage::getHardwareID() {
 }
 
 void GameSprite::NormalImage::createGLTexture(GLuint ignored) {
-	// TEMPORARILY DISABLED: Atlas path causes black tiles because getHardwareID
-	// returns gl_tid which has no data when sprites go to atlas instead.
-	// TODO: Re-enable once atlas rendering is fixed
-	/*
+	// Atlas-only rendering - no legacy fallback
 	if (g_gui.gfx.ensureAtlasManager()) {
 		AtlasManager* atlas_mgr = g_gui.gfx.getAtlasManager();
 		if (!atlas_region) {
@@ -590,17 +668,18 @@ void GameSprite::NormalImage::createGLTexture(GLuint ignored) {
 					g_gui.gfx.collector.NotifyTextureLoaded();
 					return;
 				}
+				spdlog::warn("Atlas addSprite failed for id={}", id);
+			} else {
+				spdlog::warn("getRGBAData returned null for sprite id={}, dump={}, size={}", id, (dump ? "exists" : "null"), size);
 			}
 		} else {
 			// Already in atlas
 			isGLLoaded = true;
 			return;
 		}
+	} else {
+		spdlog::error("AtlasManager not available for sprite {}", id);
 	}
-	*/
-
-	// Use legacy individual texture (always)
-	Image::createGLTexture(gl_tid);
 }
 
 void GameSprite::NormalImage::unloadGLTexture(GLuint ignored) {
@@ -625,7 +704,8 @@ GameSprite::TemplateImage::TemplateImage(GameSprite* parent, int v, const Outfit
 	lookHead(outfit.lookHead),
 	lookBody(outfit.lookBody),
 	lookLegs(outfit.lookLegs),
-	lookFeet(outfit.lookFeet) {
+	lookFeet(outfit.lookFeet),
+	atlas_region(nullptr) {
 	////
 }
 
@@ -750,7 +830,41 @@ GLuint GameSprite::TemplateImage::getHardwareID() {
 }
 
 void GameSprite::TemplateImage::createGLTexture(GLuint unused) {
-	Image::createGLTexture(gl_tid);
+	// Atlas-only rendering - use generated gl_tid as unique ID
+	if (g_gui.gfx.ensureAtlasManager()) {
+		AtlasManager* atlas_mgr = g_gui.gfx.getAtlasManager();
+		if (!atlas_region) {
+			uint8_t* rgba = getRGBAData();
+			if (rgba) {
+				// Use the unique gl_tid as the sprite identifier in the atlas
+				atlas_region = atlas_mgr->addSprite(gl_tid, rgba);
+				delete[] rgba;
+				if (atlas_region) {
+					isGLLoaded = true;
+					return;
+				}
+				spdlog::warn("Atlas addSprite failed for template sprite_index={}", sprite_index);
+			} else {
+				spdlog::warn("getRGBAData returned null for template sprite_index={}", sprite_index);
+			}
+		} else {
+			isGLLoaded = true;
+			return;
+		}
+	} else {
+		spdlog::error("AtlasManager not available for template sprite_index={}", sprite_index);
+	}
+}
+
+const AtlasRegion* GameSprite::TemplateImage::getAtlasRegion() {
+	if (!isGLLoaded) {
+		if (gl_tid == 0) {
+			gl_tid = GLTextureIDGenerator::GetFreeTextureID();
+		}
+		createGLTexture(gl_tid);
+	}
+	visit();
+	return atlas_region;
 }
 
 void GameSprite::TemplateImage::unloadGLTexture(GLuint unused) {

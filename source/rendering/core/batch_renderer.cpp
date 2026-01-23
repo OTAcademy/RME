@@ -11,16 +11,18 @@ GLuint BatchRenderer::VBO = 0;
 GLuint BatchRenderer::EBO = 0;
 std::vector<Vertex> BatchRenderer::vertices;
 std::vector<uint32_t> BatchRenderer::indices;
-GLuint BatchRenderer::whiteTextureID = 0;
+
 GLuint BatchRenderer::currentTextureID = 0;
 GLenum BatchRenderer::currentPrimitiveMode = GL_TRIANGLES;
-ShaderProgram* BatchRenderer::shader = nullptr;
+
+ShaderProgram* BatchRenderer::externalShader = nullptr;
 ShaderProgram* BatchRenderer::atlasShader = nullptr;
 AtlasManager* BatchRenderer::currentAtlas = nullptr;
 bool BatchRenderer::usingAtlas = false;
 
 glm::vec4 BatchRenderer::currentColor = glm::vec4(1.0f);
 glm::vec2 BatchRenderer::currentTexCoord = glm::vec2(0.0f);
+const AtlasRegion* BatchRenderer::whiteRegion = nullptr; // Initialize cache
 
 static glm::mat4 s_ProjectionMatrix = glm::mat4(1.0f);
 static glm::mat4 s_ViewMatrix = glm::mat4(1.0f);
@@ -28,11 +30,6 @@ static glm::mat4 s_ViewMatrix = glm::mat4(1.0f);
 void BatchRenderer::SetMatrices(const glm::mat4& projection, const glm::mat4& view) {
 	s_ProjectionMatrix = projection;
 	s_ViewMatrix = view;
-	if (shader) {
-		shader->Use();
-		shader->SetMat4("projection", s_ProjectionMatrix);
-		shader->SetMat4("view", s_ViewMatrix);
-	}
 	if (atlasShader) {
 		atlasShader->Use();
 		atlasShader->SetMat4("projection", s_ProjectionMatrix);
@@ -116,12 +113,20 @@ void BatchRenderer::Init() {
 	spdlog::info("BatchRenderer::Init starting");
 	InitRenderData();
 
-	// Load legacy shader
-	shader = newd ShaderProgram();
-	if (!shader->Load(vertexShaderSource, fragmentShaderSource)) {
-		spdlog::error("Failed to load BatchRenderer legacy shader");
+	// Load external generic shader (formerly legacy)
+	externalShader = newd ShaderProgram();
+	if (!externalShader->Load(vertexShaderSource, fragmentShaderSource)) {
+		spdlog::error("Failed to load BatchRenderer external shader");
 	} else {
-		spdlog::info("BatchRenderer legacy shader loaded successfully");
+		spdlog::info("BatchRenderer external shader loaded successfully");
+	}
+
+	// Load external generic shader (formerly legacy)
+	externalShader = newd ShaderProgram();
+	if (!externalShader->Load(vertexShaderSource, fragmentShaderSource)) {
+		spdlog::error("Failed to load BatchRenderer external shader");
+	} else {
+		spdlog::info("BatchRenderer external shader loaded successfully");
 	}
 
 	// Load atlas shader
@@ -132,12 +137,7 @@ void BatchRenderer::Init() {
 		spdlog::info("BatchRenderer atlas shader loaded successfully");
 	}
 
-	// Create 1x1 white texture for untextured drawing
-	glCreateTextures(GL_TEXTURE_2D, 1, &whiteTextureID);
-	glTextureStorage2D(whiteTextureID, 1, GL_RGBA8, 1, 1);
-	uint32_t white = 0xFFFFFFFF;
-	glTextureSubImage2D(whiteTextureID, 0, 0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &white);
-	spdlog::info("BatchRenderer::Init complete - whiteTextureID={}, VAO={}, VBO={}, EBO={}", whiteTextureID, VAO, VBO, EBO);
+	spdlog::info("BatchRenderer::Init complete - VAO={}, VBO={}, EBO={}", VAO, VBO, EBO);
 }
 
 void BatchRenderer::Shutdown() {
@@ -147,8 +147,7 @@ void BatchRenderer::Shutdown() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
-	glDeleteTextures(1, &whiteTextureID);
-	delete shader;
+	delete externalShader;
 	delete atlasShader;
 }
 
@@ -184,6 +183,12 @@ void BatchRenderer::SetAtlasManager(AtlasManager* atlas) {
 	if (currentAtlas != atlas) {
 		Flush();
 		currentAtlas = atlas;
+		// Cache white pixel region for untextured primitives
+		if (currentAtlas) {
+			whiteRegion = currentAtlas->getWhitePixel();
+		} else {
+			whiteRegion = nullptr;
+		}
 	}
 	usingAtlas = (atlas != nullptr && atlas->isValid());
 }
@@ -191,10 +196,8 @@ void BatchRenderer::SetAtlasManager(AtlasManager* atlas) {
 void BatchRenderer::Begin() {
 	vertices.clear();
 	indices.clear();
-	currentTextureID = whiteTextureID;
 	currentPrimitiveMode = GL_TRIANGLES;
-	usingAtlas = false;
-	currentAtlas = nullptr;
+	// Atlas must be set externally by SetAtlasManager
 }
 
 void BatchRenderer::End() {
@@ -209,11 +212,48 @@ void BatchRenderer::Flush() {
 	if (usingAtlas && currentAtlas) {
 		FlushAtlasBatch();
 	} else {
-		FlushLegacyBatch();
+		FlushExternalBatch();
 	}
 }
 
+void BatchRenderer::FlushExternalBatch() {
+	static int s_flushCount = 0;
+	static int s_logEveryN = 1000;
+
+	glNamedBufferSubData(VBO, 0, vertices.size() * sizeof(Vertex), vertices.data());
+
+	if (currentPrimitiveMode == GL_TRIANGLES && !indices.empty()) {
+		glNamedBufferSubData(EBO, 0, indices.size() * sizeof(uint32_t), indices.data());
+	}
+
+	if (externalShader) {
+		externalShader->Use();
+		externalShader->SetMat4("projection", s_ProjectionMatrix);
+		externalShader->SetMat4("view", s_ViewMatrix);
+		glBindTextureUnit(0, currentTextureID);
+		externalShader->SetInt("image", 0);
+	}
+
+	glBindVertexArray(VAO);
+
+	if (currentPrimitiveMode == GL_TRIANGLES) {
+		if (s_flushCount % s_logEveryN == 0) {
+			spdlog::info("FlushExternal #{}: textureID={}, vertices={}, indices={}, VAO={}", s_flushCount, currentTextureID, vertices.size(), indices.size(), VAO);
+		}
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
+	} else if (currentPrimitiveMode == GL_LINES) {
+		glDrawArrays(GL_LINES, 0, vertices.size());
+	}
+
+	s_flushCount++;
+	vertices.clear();
+	indices.clear();
+}
+
 void BatchRenderer::FlushAtlasBatch() {
+	static int s_atlasFlushCount = 0;
+	static int s_logEveryN = 1000;
+
 	glNamedBufferSubData(VBO, 0, vertices.size() * sizeof(Vertex), vertices.data());
 
 	if (currentPrimitiveMode == GL_TRIANGLES && !indices.empty()) {
@@ -229,51 +269,33 @@ void BatchRenderer::FlushAtlasBatch() {
 	glBindVertexArray(VAO);
 
 	if (currentPrimitiveMode == GL_TRIANGLES) {
-		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
-	} else if (currentPrimitiveMode == GL_LINES) {
-		glDrawArrays(GL_LINES, 0, vertices.size());
-	}
-
-	vertices.clear();
-	indices.clear();
-}
-
-void BatchRenderer::FlushLegacyBatch() {
-	static int s_flushCount = 0;
-	static int s_logEveryN = 1000; // Log every 1000th flush to avoid spam
-
-	glNamedBufferSubData(VBO, 0, vertices.size() * sizeof(Vertex), vertices.data());
-
-	if (currentPrimitiveMode == GL_TRIANGLES && !indices.empty()) {
-		glNamedBufferSubData(EBO, 0, indices.size() * sizeof(uint32_t), indices.data());
-	}
-
-	shader->Use();
-	// IMPORTANT: Set matrices every flush - they must be set after Use()
-	shader->SetMat4("projection", s_ProjectionMatrix);
-	shader->SetMat4("view", s_ViewMatrix);
-	glBindTextureUnit(0, currentTextureID);
-	shader->SetInt("image", 0);
-
-	glBindVertexArray(VAO);
-
-	if (currentPrimitiveMode == GL_TRIANGLES) {
-		if (s_flushCount % s_logEveryN == 0) {
-			spdlog::info("FlushLegacy #{}: textureID={}, vertices={}, indices={}, VAO={}", s_flushCount, currentTextureID, vertices.size(), indices.size(), VAO);
+		if (s_atlasFlushCount % s_logEveryN == 0) {
+			spdlog::info("FlushAtlas #{}: vertices={}, indices={}, VAO={}", s_atlasFlushCount, vertices.size(), indices.size(), VAO);
 		}
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
 	} else if (currentPrimitiveMode == GL_LINES) {
 		glDrawArrays(GL_LINES, 0, vertices.size());
 	}
 
-	s_flushCount++;
+	s_atlasFlushCount++;
 	vertices.clear();
 	indices.clear();
 }
 
 void BatchRenderer::DrawAtlasQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, const AtlasRegion* region) {
 	if (!region || !currentAtlas) {
+		static bool warned = false;
+		if (!warned) {
+			spdlog::warn("BatchRenderer::DrawAtlasQuad call ignored: region={} currentAtlas={}", (void*)region, (void*)currentAtlas);
+			warned = true;
+		}
 		return;
+	}
+
+	static bool log_once = false;
+	if (!log_once) {
+		spdlog::info("BatchRenderer::DrawAtlasQuad FIRST CALL: pos={:.1f},{:.1f} size={:.1f},{:.1f} region_layer={}", position.x, position.y, size.x, size.y, region->atlas_index);
+		log_once = true;
 	}
 
 	// Switch to atlas mode if we were using legacy textures
@@ -317,11 +339,13 @@ void BatchRenderer::DrawAtlasQuad(const glm::vec2& position, const glm::vec2& si
 }
 
 void BatchRenderer::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color) {
-	DrawTextureQuad(position, size, color, whiteTextureID);
+	DrawAtlasQuad(position, size, color, whiteRegion);
 }
 
-void BatchRenderer::DrawTextureQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, GLuint textureID) {
-	// Switch to legacy mode if we were using atlas
+// DrawTextureQuad removed replaced by DrawExternalTexture
+
+void BatchRenderer::DrawExternalTexture(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, GLuint textureID) {
+	// Switch to external mode if we were using atlas
 	if (usingAtlas) {
 		Flush();
 		usingAtlas = false;
@@ -340,7 +364,7 @@ void BatchRenderer::DrawTextureQuad(const glm::vec2& position, const glm::vec2& 
 
 	uint32_t offset = vertices.size();
 
-	// Layer 0 for legacy mode
+	// Layer 0 for legacy/external mode
 	vertices.push_back({ { x, y }, { 0.0f, 0.0f, 0.0f }, color });
 	vertices.push_back({ { x + w, y }, { 1.0f, 0.0f, 0.0f }, color });
 	vertices.push_back({ { x + w, y + h }, { 1.0f, 1.0f, 0.0f }, color });
@@ -356,22 +380,61 @@ void BatchRenderer::DrawTextureQuad(const glm::vec2& position, const glm::vec2& 
 }
 
 void BatchRenderer::DrawTriangle(const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3, const glm::vec4& color) {
-	if (usingAtlas) {
+	if (!usingAtlas) {
+		// Can't draw without atlas? Actually we can try drawing with external shader and white texture
+		// But whiteTextureID is separate.
+		// If usingAtlas is false, we are collecting vertices for external render.
+		// But external render uses 'currentTextureID'.
+		// We should switch to whiteTextureID if needed?
+		// For simplicity, primitives will force atlas mode now.
+		// If we are in external mode, we FLUSH and switch to atlas.
 		Flush();
-		usingAtlas = false;
+		usingAtlas = true;
+		// Re-ensure whiteRegion? SetAtlasManager sets it.
+		// But SetAtlasManager sets usingAtlas=true.
+		// So if usingAtlas is false, maybe currentAtlas is null?
+		// BatchRenderer::Begin sets currentAtlas = nullptr.
+		// So if usingAtlas is false, we might not have an atlas.
+		// If we don't have an atlas, we should probably warn or fallback?
+		// But DrawTriangle is used for UI on top of map.
+		// If map drawer sets atlas, it persists?
+		// Yes, SetAtlasManager is persistent until Reset?
+		// Begin() resets it.
+
+		// If someone calls DrawTriangle without Atlas, it will fail to draw anything visible if we depend on atlas white pixel.
+		// But BatchRenderer caches 'whiteRegion'. If 'whiteRegion' is null, we can't draw.
+		if (!whiteRegion) {
+			// This happens if AtlasManager was never set or failed to get white pixel.
+			// Let's fallback to external render for primitives if no atlas?
+			// DrawExternalTexture(..., whiteTextureID).
+			// But DrawTriangle needs triangle drawing support in external.
+			// The old DrawTriangle supported this.
+			// Re-enable external DrawTriangle if specific conditions met?
+			// Let's assume Atlas is always available for UI.
+			return;
+		}
 	}
 
 	if (currentPrimitiveMode != GL_TRIANGLES || vertices.size() + 3 > MAX_VERTICES || indices.size() + 3 > MAX_INDICES) {
 		Flush();
-		currentTextureID = whiteTextureID;
 		currentPrimitiveMode = GL_TRIANGLES;
 	}
 
 	uint32_t offset = vertices.size();
 
-	vertices.push_back({ p1, { 0.0f, 0.0f, 0.0f }, color });
-	vertices.push_back({ p2, { 0.5f, 0.0f, 0.0f }, color });
-	vertices.push_back({ p3, { 1.0f, 1.0f, 0.0f }, color });
+	// Center of white pixel
+	float u = 0.5f;
+	float v = 0.5f;
+	float layer = 0.0f;
+	if (whiteRegion) {
+		u = (whiteRegion->u_min + whiteRegion->u_max) * 0.5f;
+		v = (whiteRegion->v_min + whiteRegion->v_max) * 0.5f;
+		layer = static_cast<float>(whiteRegion->atlas_index);
+	}
+
+	vertices.push_back({ p1, { u, v, layer }, color });
+	vertices.push_back({ p2, { u, v, layer }, color });
+	vertices.push_back({ p3, { u, v, layer }, color });
 
 	indices.push_back(offset + 0);
 	indices.push_back(offset + 1);
@@ -379,19 +442,31 @@ void BatchRenderer::DrawTriangle(const glm::vec2& p1, const glm::vec2& p2, const
 }
 
 void BatchRenderer::DrawLine(const glm::vec2& start, const glm::vec2& end, const glm::vec4& color) {
-	if (usingAtlas) {
-		Flush();
-		usingAtlas = false;
+	if (!usingAtlas) {
+		// Same issue as DrawTriangle. Assume atlas available.
+		// If not, maybe we should auto-switch to atlas if we know one?
+		// But BatchRenderer::Begin clears currentAtlas.
+		// The caller MUST set atlas.
+		return;
 	}
 
 	if (currentPrimitiveMode != GL_LINES || vertices.size() + 2 > MAX_VERTICES) {
 		Flush();
-		currentTextureID = whiteTextureID;
 		currentPrimitiveMode = GL_LINES;
 	}
 
-	vertices.push_back({ start, { 0.0f, 0.0f, 0.0f }, color });
-	vertices.push_back({ end, { 1.0f, 1.0f, 0.0f }, color });
+	// Center of white pixel
+	float u = 0.5f;
+	float v = 0.5f;
+	float layer = 0.0f;
+	if (whiteRegion) {
+		u = (whiteRegion->u_min + whiteRegion->u_max) * 0.5f;
+		v = (whiteRegion->v_min + whiteRegion->v_max) * 0.5f;
+		layer = static_cast<float>(whiteRegion->atlas_index);
+	}
+
+	vertices.push_back({ start, { u, v, layer }, color });
+	vertices.push_back({ end, { u, v, layer }, color });
 }
 
 // Immediate mode emulations

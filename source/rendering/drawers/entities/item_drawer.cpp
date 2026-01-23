@@ -19,6 +19,7 @@
 #include "items.h"
 #include "complexitem.h"
 #include "sprites.h"
+#include "gui.h"
 
 ItemDrawer::ItemDrawer() {
 }
@@ -154,12 +155,18 @@ void ItemDrawer::BlitItem(SpriteDrawer* sprite_drawer, CreatureDrawer* creature_
 		}
 	}
 
+	// Atlas-only rendering
+	g_gui.gfx.ensureAtlasManager();
+	BatchRenderer::SetAtlasManager(g_gui.gfx.getAtlasManager());
+
 	int frame = item->getFrame();
 	for (int cx = 0; cx != spr->width; cx++) {
 		for (int cy = 0; cy != spr->height; cy++) {
 			for (int cf = 0; cf != spr->layers; cf++) {
-				int texnum = spr->getHardwareID(cx, cy, cf, subtype, pattern_x, pattern_y, pattern_z, frame);
-				sprite_drawer->glBlitTexture(screenx - cx * TileSize, screeny - cy * TileSize, texnum, red, green, blue, alpha);
+				const AtlasRegion* region = spr->getAtlasRegion(cx, cy, cf, subtype, pattern_x, pattern_y, pattern_z, frame);
+				if (region) {
+					sprite_drawer->glBlitAtlasQuad(screenx - cx * TileSize, screeny - cy * TileSize, region, red, green, blue, alpha);
+				}
 			}
 		}
 	}

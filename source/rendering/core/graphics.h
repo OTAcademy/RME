@@ -67,6 +67,8 @@ public:
 
 	// Phase 2: Get atlas region for texture array rendering
 	const AtlasRegion* getAtlasRegion(int _x, int _y, int _layer, int _subtype, int _pattern_x, int _pattern_y, int _pattern_z, int _frame);
+	const AtlasRegion* getAtlasRegion(int _x, int _y, int _dir, int _addon, int _pattern_z, const Outfit& _outfit, int _frame);
+
 	virtual void DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width = -1, int height = -1);
 
 	virtual void unloadDC();
@@ -148,6 +150,9 @@ protected:
 		virtual GLuint getHardwareID();
 		virtual uint8_t* getRGBData();
 		virtual uint8_t* getRGBAData();
+
+		const AtlasRegion* getAtlasRegion();
+		const AtlasRegion* atlas_region;
 
 		GLuint gl_tid;
 		GameSprite* parent;

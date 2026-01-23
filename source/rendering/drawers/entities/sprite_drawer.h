@@ -21,7 +21,6 @@ public:
 
 	void ResetCache();
 
-	void glBlitTexture(int sx, int sy, int texture_number, int red, int green, int blue, int alpha);
 	void glBlitAtlasQuad(int sx, int sy, const AtlasRegion* region, int red, int green, int blue, int alpha);
 	void glBlitSquare(int sx, int sy, int red, int green, int blue, int alpha, int size = 0);
 	void glSetColor(wxColor color);

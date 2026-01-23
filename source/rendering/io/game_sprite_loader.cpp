@@ -389,9 +389,10 @@ bool GameSpriteLoader::LoadSpriteData(GraphicManager* manager, const wxFileName&
 		total_pics = u16;
 	}
 
+	manager->spritefile = nstr(datafile.GetFullPath());
+	manager->unloaded = false;
+
 	if (!g_settings.getInteger(Config::USE_MEMCACHED_SPRITES)) {
-		manager->spritefile = nstr(datafile.GetFullPath());
-		manager->unloaded = false;
 		return true;
 	}
 
@@ -439,15 +440,15 @@ bool GameSpriteLoader::LoadSpriteData(GraphicManager* manager, const wxFileName&
 }
 
 bool GameSpriteLoader::LoadSpriteDump(GraphicManager* manager, uint8_t*& target, uint16_t& size, int sprite_id) {
-	if (g_settings.getInteger(Config::USE_MEMCACHED_SPRITES)) {
-		return false;
-	}
-
 	if (sprite_id == 0) {
 		// Empty GameSprite
 		size = 0;
 		target = nullptr;
 		return true;
+	}
+
+	if (g_settings.getInteger(Config::USE_MEMCACHED_SPRITES) && manager->spritefile.empty()) {
+		return false;
 	}
 
 	FileReadHandle fh(manager->spritefile);

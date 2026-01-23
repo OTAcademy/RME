@@ -33,7 +33,8 @@ public:
 
 	// Legacy single-texture rendering (for backward compatibility)
 	static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
-	static void DrawTextureQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, GLuint textureID);
+	// External texture rendering (e.g. LightMap)
+	static void DrawExternalTexture(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, GLuint textureID);
 	static void DrawTriangle(const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3, const glm::vec4& color);
 	static void DrawLine(const glm::vec2& start, const glm::vec2& end, const glm::vec4& color);
 
@@ -43,13 +44,13 @@ public:
 	static void SubmitVertex(const glm::vec2& position);
 
 	static ShaderProgram& GetShader() {
-		return *shader;
+		return *externalShader;
 	}
 
 private:
 	static void InitRenderData();
 	static void FlushAtlasBatch(); // Flush for atlas mode
-	static void FlushLegacyBatch(); // Flush for legacy mode
+	static void FlushExternalBatch(); // Flush for external texture mode
 
 	static const size_t MAX_QUADS = 50000;
 	static const size_t MAX_VERTICES = MAX_QUADS * 4;
@@ -62,15 +63,15 @@ private:
 	static std::vector<Vertex> vertices;
 	static std::vector<uint32_t> indices;
 
-	static GLuint whiteTextureID;
 	static GLuint currentTextureID;
 	static GLenum currentPrimitiveMode;
 
-	static ShaderProgram* shader; // Legacy single-texture shader
+	static ShaderProgram* externalShader; // Generic 2D shader
 	static ShaderProgram* atlasShader; // Texture array shader
 
 	static AtlasManager* currentAtlas;
-	static bool usingAtlas;
+	static const AtlasRegion* whiteRegion;
+	static bool usingAtlas; // true = atlas, false = external
 
 	// Immediate mode state
 	static glm::vec4 currentColor;

@@ -26,25 +26,6 @@ void SpriteDrawer::ResetCache() {
 	s_zeroTextureCount = 0;
 }
 
-void SpriteDrawer::glBlitTexture(int sx, int sy, int texture_number, int red, int green, int blue, int alpha) {
-	if (texture_number != 0) {
-		float normalizedR = red / 255.0f;
-		float normalizedG = green / 255.0f;
-		float normalizedB = blue / 255.0f;
-		float normalizedA = alpha / 255.0f;
-
-		BatchRenderer::DrawTextureQuad(
-			glm::vec2(sx, sy),
-			glm::vec2(TileSize, TileSize),
-			glm::vec4(normalizedR, normalizedG, normalizedB, normalizedA),
-			static_cast<GLuint>(texture_number)
-		);
-		s_blitCount++;
-	} else {
-		s_zeroTextureCount++;
-	}
-}
-
 void SpriteDrawer::glBlitAtlasQuad(int sx, int sy, const AtlasRegion* region, int red, int green, int blue, int alpha) {
 	if (region) {
 		float normalizedR = red / 255.0f;
@@ -102,16 +83,18 @@ void SpriteDrawer::BlitSprite(int screenx, int screeny, GameSprite* spr, int red
 
 	int tme = 0; // GetTime() % itype->FPA;
 
-	// TEMPORARILY DISABLED: Atlas rendering for debugging
-	// TODO: Re-enable once atlas issues are resolved
-	bool atlasAvailable = false; // g_gui.gfx.hasAtlasManager();
+	// Atlas-only rendering - ensure atlas is available
+	g_gui.gfx.ensureAtlasManager();
+	BatchRenderer::SetAtlasManager(g_gui.gfx.getAtlasManager());
 
 	for (int cx = 0; cx != spr->width; ++cx) {
 		for (int cy = 0; cy != spr->height; ++cy) {
 			for (int cf = 0; cf != spr->layers; ++cf) {
-				// Legacy texture path only
-				int texnum = spr->getHardwareID(cx, cy, cf, -1, 0, 0, 0, tme);
-				glBlitTexture(screenx - cx * TileSize, screeny - cy * TileSize, texnum, red, green, blue, alpha);
+				const AtlasRegion* region = spr->getAtlasRegion(cx, cy, cf, -1, 0, 0, 0, tme);
+				if (region) {
+					glBlitAtlasQuad(screenx - cx * TileSize, screeny - cy * TileSize, region, red, green, blue, alpha);
+				}
+				// No fallback - if region is null, sprite failed to load
 			}
 		}
 	}

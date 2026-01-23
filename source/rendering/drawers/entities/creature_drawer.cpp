@@ -60,8 +60,10 @@ void CreatureDrawer::BlitCreature(SpriteDrawer* sprite_drawer, int screenx, int 
 
 				for (int cx = 0; cx != mountSpr->width; ++cx) {
 					for (int cy = 0; cy != mountSpr->height; ++cy) {
-						int texnum = mountSpr->getHardwareID(cx, cy, (int)dir, 0, 0, mountOutfit, tme);
-						sprite_drawer->glBlitTexture(screenx - cx * TileSize, screeny - cy * TileSize, texnum, red, green, blue, alpha);
+						const AtlasRegion* region = mountSpr->getAtlasRegion(cx, cy, (int)dir, 0, 0, mountOutfit, tme);
+						if (region) {
+							sprite_drawer->glBlitAtlasQuad(screenx - cx * TileSize, screeny - cy * TileSize, region, red, green, blue, alpha);
+						}
 					}
 				}
 
@@ -79,8 +81,10 @@ void CreatureDrawer::BlitCreature(SpriteDrawer* sprite_drawer, int screenx, int 
 
 			for (int cx = 0; cx != spr->width; ++cx) {
 				for (int cy = 0; cy != spr->height; ++cy) {
-					int texnum = spr->getHardwareID(cx, cy, (int)dir, pattern_y, pattern_z, outfit, tme);
-					sprite_drawer->glBlitTexture(screenx - cx * TileSize, screeny - cy * TileSize, texnum, red, green, blue, alpha);
+					const AtlasRegion* region = spr->getAtlasRegion(cx, cy, (int)dir, pattern_y, pattern_z, outfit, tme);
+					if (region) {
+						sprite_drawer->glBlitAtlasQuad(screenx - cx * TileSize, screeny - cy * TileSize, region, red, green, blue, alpha);
+					}
 				}
 			}
 		}

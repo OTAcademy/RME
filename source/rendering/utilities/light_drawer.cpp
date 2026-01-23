@@ -85,7 +85,7 @@ void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x,
 		glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	BatchRenderer::DrawTextureQuad(
+	BatchRenderer::DrawExternalTexture(
 		glm::vec2(draw_x, draw_y),
 		glm::vec2(draw_width, draw_height),
 		glm::vec4(1.0f),
