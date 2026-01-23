@@ -27,8 +27,6 @@ FloorDrawer::~FloorDrawer() {
 
 void FloorDrawer::draw(ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, const RenderView& view, const DrawingOptions& options, Editor& editor) {
 
-	glEnable(GL_TEXTURE_2D);
-
 	// Draw "transparent higher floor"
 	if (view.floor != 8 && view.floor != 0 && options.transparent_floors) {
 		int map_z = view.floor - 1;
@@ -65,6 +63,4 @@ void FloorDrawer::draw(ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, Cre
 			}
 		}
 	}
-
-	glDisable(GL_TEXTURE_2D);
 }

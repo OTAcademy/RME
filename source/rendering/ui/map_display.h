@@ -170,6 +170,7 @@ public:
 
 private:
 	MapWindow* GetMapWindow() const;
+	bool renderer_initialized = false;
 };
 
 #endif

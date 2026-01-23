@@ -4,18 +4,13 @@
 
 #include "main.h"
 
-#ifdef __APPLE__
-	#include <GLUT/glut.h>
-#else
-	#include <GL/glut.h>
-#endif
-
 #include <algorithm>
 #undef min
 #undef max
 
 #include "rendering/drawers/entities/item_drawer.h"
 #include "rendering/core/graphics.h"
+#include "rendering/core/batch_renderer.h"
 #include "rendering/drawers/entities/sprite_drawer.h"
 #include "rendering/drawers/entities/creature_drawer.h"
 #include "rendering/core/drawing_options.h"
@@ -211,34 +206,11 @@ void ItemDrawer::BlitItem(SpriteDrawer* sprite_drawer, CreatureDrawer* creature_
 			int sqSize = TileSize - startOffset;
 
 			// We need to disable texture 2d for BlitSquare. SpriteDrawer::glBlitSquare does NOT disable texture 2d automatically?
-			// SpriteDrawer::glBlitSquare does NOT bind texture 0.
-			// MapDrawer::BlitSquare bound texture 0? No.
-			// MapDrawer::BlitSquare did:
-			/*
-			int texnum = spr->getHardwareID... -> This was for loading the white square sprite!
-			glBindTexture(GL_TEXTURE_2D, texnum);
-			*/
-			// Wait, MapDrawer::BlitSquare actually used a "SPRITE_ZONE" sprite!
-			// "GameSprite* spr = g_items[SPRITE_ZONE].sprite;"
-			// So it was textured drawing!
-			// BUT MapDrawer::DrawLight indicator used:
-			// "glDisable(GL_TEXTURE_2D); glBlitSquare... glEnable(GL_TEXTURE_2D);"
-			// And "glBlitSquare" (the helper method) did:
-			/*
-			void MapDrawer::glBlitSquare(...) {
-				glColor4ub...
-				glBegin(GL_QUADS)...
-			}
-			*/
-			// So `glBlitSquare` assumes no texture if called within that block.
-			// `MapDrawer::BlitSquare` (with uppercase B) used a sprite.
-			// `MapDrawer::glBlitSquare` (lowercase gl) drew a quad.
+			// SpriteDrawer::glBlitSquare internally uses BatchRenderer::DrawQuad which sets blank texture if needed.
+			// So we don't need manual enable/disable here anymore.
 
-			// So here we need untextured quad.
-			glDisable(GL_TEXTURE_2D);
 			sprite_drawer->glBlitSquare(draw_x + startOffset - 2, draw_y + startOffset - 2, 0, 0, 0, byteA, sqSize + 2);
 			sprite_drawer->glBlitSquare(draw_x + startOffset - 1, draw_y + startOffset - 1, byteR, byteG, byteB, byteA, sqSize);
-			glEnable(GL_TEXTURE_2D);
 		}
 	}
 }
@@ -285,24 +257,41 @@ void ItemDrawer::DrawRawBrush(SpriteDrawer* sprite_drawer, int screenx, int scre
 }
 
 void ItemDrawer::DrawHookIndicator(int x, int y, const ItemType& type) {
-	glDisable(GL_TEXTURE_2D);
-	glColor4ub(uint8_t(0), uint8_t(0), uint8_t(255), uint8_t(200));
-	glBegin(GL_QUADS);
+	// glDisable(GL_TEXTURE_2D); handled by DrawQuad
+	glm::vec4 color(0.0f, 0.0f, 1.0f, 200.0f / 255.0f);
+
 	if (type.hookSouth) {
 		x -= 10;
 		y += 10;
-		glVertex2f(x, y);
-		glVertex2f(x + 10, y);
-		glVertex2f(x + 20, y + 10);
-		glVertex2f(x + 10, y + 10);
+
+		BatchRenderer::DrawTriangle(
+			glm::vec2(x, y),
+			glm::vec2(x + 10, y),
+			glm::vec2(x + 10, y + 10),
+			color
+		);
+		BatchRenderer::DrawTriangle(
+			glm::vec2(x + 10, y),
+			glm::vec2(x + 20, y + 10),
+			glm::vec2(x + 10, y + 10),
+			color
+		);
+
 	} else if (type.hookEast) {
 		x += 10;
 		y -= 10;
-		glVertex2f(x, y);
-		glVertex2f(x + 10, y + 10);
-		glVertex2f(x + 10, y + 20);
-		glVertex2f(x, y + 10);
+
+		BatchRenderer::DrawTriangle(
+			glm::vec2(x, y),
+			glm::vec2(x + 10, y + 10),
+			glm::vec2(x, y + 10),
+			color
+		);
+		BatchRenderer::DrawTriangle(
+			glm::vec2(x + 10, y + 10),
+			glm::vec2(x + 10, y + 20),
+			glm::vec2(x, y + 10),
+			color
+		);
 	}
-	glEnd();
-	glEnable(GL_TEXTURE_2D);
 }

@@ -28,6 +28,8 @@
 #include "outfit.h"
 #include "definitions.h"
 #include "creatures.h"
+#include "settings.h"
+#include "definitions.h"
 
 #include "brush.h"
 
@@ -42,6 +44,56 @@
 #include "raw_brush.h"
 #include "table_brush.h"
 #include "waypoint_brush.h"
+
+#include "rendering/core/batch_renderer.h"
+
+// Helper to get color from config
+glm::vec4 BrushOverlayDrawer::get_brush_color(BrushColor color) {
+	glm::vec4 c(1.0f);
+	switch (color) {
+		case COLOR_BRUSH:
+			c = glm::vec4(
+				g_settings.getInteger(Config::CURSOR_RED) / 255.0f,
+				g_settings.getInteger(Config::CURSOR_GREEN) / 255.0f,
+				g_settings.getInteger(Config::CURSOR_BLUE) / 255.0f,
+				g_settings.getInteger(Config::CURSOR_ALPHA) / 255.0f
+			);
+			break;
+
+		case COLOR_FLAG_BRUSH:
+		case COLOR_HOUSE_BRUSH:
+			c = glm::vec4(
+				g_settings.getInteger(Config::CURSOR_ALT_RED) / 255.0f,
+				g_settings.getInteger(Config::CURSOR_ALT_GREEN) / 255.0f,
+				g_settings.getInteger(Config::CURSOR_ALT_BLUE) / 255.0f,
+				g_settings.getInteger(Config::CURSOR_ALT_ALPHA) / 255.0f
+			);
+			break;
+
+		case COLOR_SPAWN_BRUSH:
+		case COLOR_ERASER:
+		case COLOR_INVALID:
+			c = glm::vec4(166.0f / 255.0f, 0.0f, 0.0f, 128.0f / 255.0f);
+			break;
+
+		case COLOR_VALID:
+			c = glm::vec4(0.0f, 166.0f / 255.0f, 0.0f, 128.0f / 255.0f);
+			break;
+
+		default:
+			c = glm::vec4(1.0f, 1.0f, 1.0f, 0.5f);
+			break;
+	}
+	return c;
+}
+
+glm::vec4 BrushOverlayDrawer::get_check_color(Brush* brush, Editor& editor, const Position& pos) {
+	if (brush->canDraw(&editor.map, pos)) {
+		return get_brush_color(COLOR_VALID);
+	} else {
+		return get_brush_color(COLOR_INVALID);
+	}
+}
 
 BrushOverlayDrawer::BrushOverlayDrawer() {
 }
@@ -62,18 +114,20 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, Sprite
 
 	Brush* brush = g_gui.GetCurrentBrush();
 
-	BrushColor brushColor = COLOR_BLANK;
+	BrushColor brushColorType = COLOR_BLANK;
 	if (brush->isTerrain() || brush->isTable() || brush->isCarpet()) {
-		brushColor = COLOR_BRUSH;
+		brushColorType = COLOR_BRUSH;
 	} else if (brush->isHouse()) {
-		brushColor = COLOR_HOUSE_BRUSH;
+		brushColorType = COLOR_HOUSE_BRUSH;
 	} else if (brush->isFlag()) {
-		brushColor = COLOR_FLAG_BRUSH;
+		brushColorType = COLOR_FLAG_BRUSH;
 	} else if (brush->isSpawn()) {
-		brushColor = COLOR_SPAWN_BRUSH;
+		brushColorType = COLOR_SPAWN_BRUSH;
 	} else if (brush->isEraser()) {
-		brushColor = COLOR_ERASER;
+		brushColorType = COLOR_ERASER;
 	}
+
+	glm::vec4 brushColor = get_brush_color(brushColorType);
 
 	if (drawer->canvas->drawing_controller->IsDraggingDraw()) {
 		ASSERT(brush->canDrag());
@@ -92,42 +146,50 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, Sprite
 			int delta_x = last_click_end_sx - last_click_start_sx;
 			int delta_y = last_click_end_sy - last_click_start_sy;
 
-			set_gl_color(brushColor);
-			glBegin(GL_QUADS);
-			{
-				glVertex2f(last_click_start_sx, last_click_start_sy + TileSize);
-				glVertex2f(last_click_end_sx, last_click_start_sy + TileSize);
-				glVertex2f(last_click_end_sx, last_click_start_sy);
-				glVertex2f(last_click_start_sx, last_click_start_sy);
-			}
+			// Top
+			BatchRenderer::DrawQuad(
+				glm::vec2(last_click_start_sx, last_click_start_sy),
+				glm::vec2(last_click_end_sx - last_click_start_sx, TileSize),
+				brushColor
+			);
 
+			// Bottom
 			if (delta_y > TileSize) {
-				glVertex2f(last_click_start_sx, last_click_end_sy - TileSize);
-				glVertex2f(last_click_start_sx + TileSize, last_click_end_sy - TileSize);
-				glVertex2f(last_click_start_sx + TileSize, last_click_start_sy + TileSize);
-				glVertex2f(last_click_start_sx, last_click_start_sy + TileSize);
+				BatchRenderer::DrawQuad(
+					glm::vec2(last_click_start_sx, last_click_end_sy - TileSize),
+					glm::vec2(last_click_end_sx - last_click_start_sx, TileSize),
+					brushColor
+				);
 			}
 
+			// Right
 			if (delta_x > TileSize && delta_y > TileSize) {
-				glVertex2f(last_click_end_sx - TileSize, last_click_start_sy + TileSize);
-				glVertex2f(last_click_end_sx, last_click_start_sy + TileSize);
-				glVertex2f(last_click_end_sx, last_click_end_sy - TileSize);
-				glVertex2f(last_click_end_sx - TileSize, last_click_end_sy - TileSize);
+				BatchRenderer::DrawQuad(
+					glm::vec2(last_click_end_sx - TileSize, last_click_start_sy + TileSize),
+					glm::vec2(TileSize, last_click_end_sy - last_click_start_sy - 2 * TileSize + TileSize),
+					brushColor
+				);
+				float h = (last_click_end_sy - TileSize) - (last_click_start_sy + TileSize);
+				BatchRenderer::DrawQuad(
+					glm::vec2(last_click_end_sx - TileSize, last_click_start_sy + TileSize),
+					glm::vec2(TileSize, h),
+					brushColor
+				);
 			}
 
+			// Left
 			if (delta_y > TileSize) {
-				glVertex2f(last_click_start_sx, last_click_end_sy - TileSize);
-				glVertex2f(last_click_end_sx, last_click_end_sy - TileSize);
-				glVertex2f(last_click_end_sx, last_click_end_sy);
-				glVertex2f(last_click_start_sx, last_click_end_sy);
+				float h = (last_click_end_sy - TileSize) - (last_click_start_sy + TileSize);
+				BatchRenderer::DrawQuad(
+					glm::vec2(last_click_start_sx, last_click_start_sy + TileSize),
+					glm::vec2(TileSize, h),
+					brushColor
+				);
 			}
-			glEnd();
 		} else {
-			if (brush->isRaw()) {
-				glEnable(GL_TEXTURE_2D);
-			}
+			// if (brush->isRaw()) { glEnable(GL_TEXTURE_2D); } -> handled by DrawRawBrush or BatchRenderer
 
-			if (g_gui.GetBrushShape() == BRUSHSHAPE_SQUARE || brush->isSpawn() /* Spawn brush is always square */) {
+			if (g_gui.GetBrushShape() == BRUSHSHAPE_SQUARE || brush->isSpawn()) {
 				if (brush->isRaw() || brush->isOptionalBorder()) {
 					int start_x, end_x;
 					int start_y, end_y;
@@ -157,7 +219,8 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, Sprite
 						for (int x = start_x; x <= end_x; x++) {
 							int cx = x * TileSize - view.view_scroll_x - view.getFloorAdjustment();
 							if (brush->isOptionalBorder()) {
-								set_gl_color_check(brush, editor, Position(x, y, view.floor));
+								// set_gl_color_check(brush, editor, Position(x, y, view.floor));
+								BatchRenderer::DrawQuad(glm::vec2(cx, cy), glm::vec2(TileSize, TileSize), get_check_color(brush, editor, Position(x, y, view.floor)));
 							} else {
 								item_drawer->DrawRawBrush(sprite_drawer, cx, cy, raw_brush->getItemType(), 160, 160, 160, 160);
 							}
@@ -174,13 +237,9 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, Sprite
 					int last_click_end_sx = last_click_end_map_x * TileSize - view.view_scroll_x - view.getFloorAdjustment();
 					int last_click_end_sy = last_click_end_map_y * TileSize - view.view_scroll_y - view.getFloorAdjustment();
 
-					set_gl_color(brushColor);
-					glBegin(GL_QUADS);
-					glVertex2f(last_click_start_sx, last_click_start_sy);
-					glVertex2f(last_click_end_sx, last_click_start_sy);
-					glVertex2f(last_click_end_sx, last_click_end_sy);
-					glVertex2f(last_click_start_sx, last_click_end_sy);
-					glEnd();
+					float w = last_click_end_sx - last_click_start_sx;
+					float h = last_click_end_sy - last_click_start_sy;
+					BatchRenderer::DrawQuad(glm::vec2(last_click_start_sx, last_click_start_sy), glm::vec2(w, h), brushColor);
 				}
 			} else if (g_gui.GetBrushShape() == BRUSHSHAPE_CIRCLE) {
 				// Calculate drawing offsets
@@ -223,28 +282,19 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, Sprite
 						int cx = x * TileSize - view.view_scroll_x - view.getFloorAdjustment();
 
 						float dx = center_x - x;
-						// printf("%f;%f\n", dx, dy);
 						float distance = sqrt(dx * dx + dy * dy);
 						if (distance < radii) {
 							if (brush->isRaw()) {
 								item_drawer->DrawRawBrush(sprite_drawer, cx, cy, raw_brush->getItemType(), 160, 160, 160, 160);
 							} else {
-								set_gl_color(brushColor);
-								glBegin(GL_QUADS);
-								glVertex2f(cx, cy + TileSize);
-								glVertex2f(cx + TileSize, cy + TileSize);
-								glVertex2f(cx + TileSize, cy);
-								glVertex2f(cx, cy);
-								glEnd();
+								BatchRenderer::DrawQuad(glm::vec2(cx, cy), glm::vec2(TileSize, TileSize), brushColor);
 							}
 						}
 					}
 				}
 			}
 
-			if (brush->isRaw()) {
-				glDisable(GL_TEXTURE_2D);
-			}
+			// if (brush->isRaw()) { glDisable(GL_TEXTURE_2D); }
 		}
 	} else {
 		if (brush->isWall()) {
@@ -261,49 +311,30 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, Sprite
 			int delta_x = end_sx - start_sx;
 			int delta_y = end_sy - start_sy;
 
-			set_gl_color(brushColor);
-			glBegin(GL_QUADS);
-			{
-				glVertex2f(start_sx, start_sy + TileSize);
-				glVertex2f(end_sx, start_sy + TileSize);
-				glVertex2f(end_sx, start_sy);
-				glVertex2f(start_sx, start_sy);
-			}
+			// Top
+			BatchRenderer::DrawQuad(glm::vec2(start_sx, start_sy), glm::vec2(end_sx - start_sx, TileSize), brushColor);
 
+			// Bottom
 			if (delta_y > TileSize) {
-				glVertex2f(start_sx, end_sy - TileSize);
-				glVertex2f(start_sx + TileSize, end_sy - TileSize);
-				glVertex2f(start_sx + TileSize, start_sy + TileSize);
-				glVertex2f(start_sx, start_sy + TileSize);
+				BatchRenderer::DrawQuad(glm::vec2(start_sx, end_sy - TileSize), glm::vec2(end_sx - start_sx, TileSize), brushColor);
 			}
 
+			// Right
 			if (delta_x > TileSize && delta_y > TileSize) {
-				glVertex2f(end_sx - TileSize, start_sy + TileSize);
-				glVertex2f(end_sx, start_sy + TileSize);
-				glVertex2f(end_sx, end_sy - TileSize);
-				glVertex2f(end_sx - TileSize, end_sy - TileSize);
+				BatchRenderer::DrawQuad(glm::vec2(end_sx - TileSize, start_sy + TileSize), glm::vec2(TileSize, end_sy - start_sy - 2 * TileSize + TileSize), brushColor);
 			}
 
+			// Left
 			if (delta_y > TileSize) {
-				glVertex2f(start_sx, end_sy - TileSize);
-				glVertex2f(end_sx, end_sy - TileSize);
-				glVertex2f(end_sx, end_sy);
-				glVertex2f(start_sx, end_sy);
+				BatchRenderer::DrawQuad(glm::vec2(start_sx, start_sy + TileSize), glm::vec2(TileSize, end_sy - start_sy - 2 * TileSize + TileSize), brushColor);
 			}
-			glEnd();
 		} else if (brush->isDoor()) {
 			int cx = (view.mouse_map_x) * TileSize - view.view_scroll_x - view.getFloorAdjustment();
 			int cy = (view.mouse_map_y) * TileSize - view.view_scroll_y - view.getFloorAdjustment();
 
-			set_gl_color_check(brush, editor, Position(view.mouse_map_x, view.mouse_map_y, view.floor));
-			glBegin(GL_QUADS);
-			glVertex2f(cx, cy + TileSize);
-			glVertex2f(cx + TileSize, cy + TileSize);
-			glVertex2f(cx + TileSize, cy);
-			glVertex2f(cx, cy);
-			glEnd();
+			BatchRenderer::DrawQuad(glm::vec2(cx, cy), glm::vec2(TileSize, TileSize), get_check_color(brush, editor, Position(view.mouse_map_x, view.mouse_map_y, view.floor)));
 		} else if (brush->isCreature()) {
-			glEnable(GL_TEXTURE_2D);
+			// glEnable(GL_TEXTURE_2D);
 			int cy = (view.mouse_map_y) * TileSize - view.view_scroll_y - view.getFloorAdjustment();
 			int cx = (view.mouse_map_x) * TileSize - view.view_scroll_x - view.getFloorAdjustment();
 			CreatureBrush* creature_brush = brush->asCreature();
@@ -312,11 +343,11 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, Sprite
 			} else {
 				creature_drawer->BlitCreature(sprite_drawer, cx, cy, creature_brush->getType()->outfit, SOUTH, 255, 64, 64, 160);
 			}
-			glDisable(GL_TEXTURE_2D);
+			// glDisable(GL_TEXTURE_2D);
 		} else if (!brush->isDoodad()) {
 			RAWBrush* raw_brush = nullptr;
 			if (brush->isRaw()) { // Textured brush
-				glEnable(GL_TEXTURE_2D);
+				// glEnable(GL_TEXTURE_2D);
 				raw_brush = brush->asRaw();
 			}
 
@@ -334,18 +365,11 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, Sprite
 									get_color(brush, editor, Position(view.mouse_map_x + x, view.mouse_map_y + y, view.floor), r, g, b);
 									drawer->brush_cursor_drawer->draw(cx, cy, brush, r, g, b);
 								} else {
+									glm::vec4 c = brushColor;
 									if (brush->isHouseExit() || brush->isOptionalBorder()) {
-										set_gl_color_check(brush, editor, Position(view.mouse_map_x + x, view.mouse_map_y + y, view.floor));
-									} else {
-										set_gl_color(brushColor);
+										c = get_check_color(brush, editor, Position(view.mouse_map_x + x, view.mouse_map_y + y, view.floor));
 									}
-
-									glBegin(GL_QUADS);
-									glVertex2f(cx, cy + TileSize);
-									glVertex2f(cx + TileSize, cy + TileSize);
-									glVertex2f(cx + TileSize, cy);
-									glVertex2f(cx, cy);
-									glEnd();
+									BatchRenderer::DrawQuad(glm::vec2(cx, cy), glm::vec2(TileSize, TileSize), c);
 								}
 							}
 						}
@@ -360,18 +384,11 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, Sprite
 									get_color(brush, editor, Position(view.mouse_map_x + x, view.mouse_map_y + y, view.floor), r, g, b);
 									drawer->brush_cursor_drawer->draw(cx, cy, brush, r, g, b);
 								} else {
+									glm::vec4 c = brushColor;
 									if (brush->isHouseExit() || brush->isOptionalBorder()) {
-										set_gl_color_check(brush, editor, Position(view.mouse_map_x + x, view.mouse_map_y + y, view.floor));
-									} else {
-										set_gl_color(brushColor);
+										c = get_check_color(brush, editor, Position(view.mouse_map_x + x, view.mouse_map_y + y, view.floor));
 									}
-
-									glBegin(GL_QUADS);
-									glVertex2f(cx, cy + TileSize);
-									glVertex2f(cx + TileSize, cy + TileSize);
-									glVertex2f(cx + TileSize, cy);
-									glVertex2f(cx, cy);
-									glEnd();
+									BatchRenderer::DrawQuad(glm::vec2(cx, cy), glm::vec2(TileSize, TileSize), c);
 								}
 							}
 						}
@@ -379,9 +396,9 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, Sprite
 				}
 			}
 
-			if (brush->isRaw()) { // Textured brush
-				glDisable(GL_TEXTURE_2D);
-			}
+			// if (brush->isRaw()) { // Textured brush
+			// 	glDisable(GL_TEXTURE_2D);
+			// }
 		}
 	}
 }
@@ -398,56 +415,5 @@ void BrushOverlayDrawer::get_color(Brush* brush, Editor& editor, const Position&
 	} else {
 		r = 0xff;
 		g = 0x00, b = 0x00;
-	}
-}
-
-void BrushOverlayDrawer::set_gl_color(BrushColor color) {
-	switch (color) {
-		case COLOR_BRUSH:
-			glColor4ub(
-				g_settings.getInteger(Config::CURSOR_RED),
-				g_settings.getInteger(Config::CURSOR_GREEN),
-				g_settings.getInteger(Config::CURSOR_BLUE),
-				g_settings.getInteger(Config::CURSOR_ALPHA)
-			);
-			break;
-
-		case COLOR_FLAG_BRUSH:
-		case COLOR_HOUSE_BRUSH:
-			glColor4ub(
-				g_settings.getInteger(Config::CURSOR_ALT_RED),
-				g_settings.getInteger(Config::CURSOR_ALT_GREEN),
-				g_settings.getInteger(Config::CURSOR_ALT_BLUE),
-				g_settings.getInteger(Config::CURSOR_ALT_ALPHA)
-			);
-			break;
-
-		case COLOR_SPAWN_BRUSH:
-			glColor4ub(166, 0, 0, 128);
-			break;
-
-		case COLOR_ERASER:
-			glColor4ub(166, 0, 0, 128);
-			break;
-
-		case COLOR_VALID:
-			glColor4ub(0, 166, 0, 128);
-			break;
-
-		case COLOR_INVALID:
-			glColor4ub(166, 0, 0, 128);
-			break;
-
-		default:
-			glColor4ub(255, 255, 255, 128);
-			break;
-	}
-}
-
-void BrushOverlayDrawer::set_gl_color_check(Brush* brush, Editor& editor, const Position& pos) {
-	if (brush->canDraw(&editor.map, pos)) {
-		set_gl_color(COLOR_VALID);
-	} else {
-		set_gl_color(COLOR_INVALID);
 	}
 }

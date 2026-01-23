@@ -3,6 +3,8 @@
   "dependencies": [
     "wxwidgets",
     "freeglut",
+    "glad",
+    "glm",
     "asio",
     "nlohmann-json",
     "fmt",

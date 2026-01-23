@@ -17,12 +17,6 @@
 
 #include "main.h"
 
-#ifdef __APPLE__
-	#include <GLUT/glut.h>
-#else
-	#include <GL/glut.h>
-#endif
-
 #include "editor.h"
 #include "gui.h"
 #include "sprites.h"
@@ -48,6 +42,7 @@
 #include "rendering/ui/tooltip_drawer.h"
 #include "rendering/core/drawing_options.h"
 #include "rendering/core/render_view.h"
+#include "rendering/core/batch_renderer.h"
 
 #include "rendering/drawers/overlays/grid_drawer.h"
 #include "rendering/drawers/cursors/live_cursor_drawer.h"
@@ -113,6 +108,7 @@ void MapDrawer::SetupGL() {
 	sprite_drawer->ResetCache();
 
 	view.SetupGL();
+	BatchRenderer::SetMatrices(view.projectionMatrix, view.viewMatrix);
 }
 
 void MapDrawer::Release() {
@@ -133,7 +129,7 @@ void MapDrawer::Draw() {
 	}
 	drag_shadow_drawer->draw(this, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options);
 	floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor); // Preserving logic
-	floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor); // Preserving double call from original code? Verified in user code.
+
 
 	if (options.boundbox_selection) {
 		selection_drawer->draw(view, canvas, options);
@@ -162,9 +158,9 @@ void MapDrawer::DrawMap() {
 	bool only_colors = options.show_as_minimap || options.show_only_colors;
 
 	// Enable texture mode
-	if (!only_colors) {
-		glEnable(GL_TEXTURE_2D);
-	}
+	// if (!only_colors) {
+	// 	glEnable(GL_TEXTURE_2D);
+	// }
 
 	for (int map_z = view.start_z; map_z >= view.superend_z; map_z--) {
 		if (map_z == view.end_z && view.start_z != view.end_z) {
@@ -175,9 +171,9 @@ void MapDrawer::DrawMap() {
 			DrawMapLayer(map_z, live_client);
 		}
 
-		if (only_colors) {
-			glEnable(GL_TEXTURE_2D);
-		}
+		// if (only_colors) {
+		// 	glEnable(GL_TEXTURE_2D);
+		// }
 
 		preview_drawer->draw(canvas, view, map_z, options, editor, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), options.current_house_id);
 
@@ -187,9 +183,9 @@ void MapDrawer::DrawMap() {
 		++view.end_y;
 	}
 
-	if (!only_colors) {
-		glEnable(GL_TEXTURE_2D);
-	}
+	// if (!only_colors) {
+	// 	glEnable(GL_TEXTURE_2D);
+	// }
 }
 
 void MapDrawer::DrawIngameBox() {

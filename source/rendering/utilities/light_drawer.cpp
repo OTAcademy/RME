@@ -17,6 +17,7 @@
 
 #include "main.h"
 #include "rendering/utilities/light_drawer.h"
+#include "rendering/core/batch_renderer.h"
 #include "rendering/utilities/light_calculator.h"
 #include "tile.h"
 #include "item.h"
@@ -77,34 +78,33 @@ void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x,
 	texture.SetWrap(0x812F, 0x812F); // GL_CLAMP_TO_EDGE
 	texture.Upload(w, h, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
 
+	// Important: BatchRenderer might have other stuff pending. Flush it first.
+	BatchRenderer::Flush();
+
 	if (!fog) {
 		glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	glColor4ub(255, 255, 255, 255); // reset color
-	glEnable(GL_TEXTURE_2D);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.f, 0.f);
-	glVertex2f(draw_x, draw_y);
-	glTexCoord2f(1.f, 0.f);
-	glVertex2f(draw_x + draw_width, draw_y);
-	glTexCoord2f(1.f, 1.f);
-	glVertex2f(draw_x + draw_width, draw_y + draw_height);
-	glTexCoord2f(0.f, 1.f);
-	glVertex2f(draw_x, draw_y + draw_height);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
+	BatchRenderer::DrawTextureQuad(
+		glm::vec2(draw_x, draw_y),
+		glm::vec2(draw_width, draw_height),
+		glm::vec4(1.0f),
+		texture.GetID()
+	);
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	// Flush IMMEDIATELY to apply the blend function to THIS quad
+	BatchRenderer::Flush();
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore default
 
 	if (fog) {
-		glColor4ub(10, 10, 10, 80);
-		glBegin(GL_QUADS);
-		glVertex2f(draw_x, draw_y);
-		glVertex2f(draw_x + draw_width, draw_y);
-		glVertex2f(draw_x + draw_width, draw_y + draw_height);
-		glVertex2f(draw_x, draw_y + draw_height);
-		glEnd();
+		glm::vec4 fogColor(10.0f / 255.0f, 10.0f / 255.0f, 10.0f / 255.0f, 80.0f / 255.0f);
+		BatchRenderer::DrawQuad(
+			glm::vec2(draw_x, draw_y),
+			glm::vec2(draw_width, draw_height),
+			fogColor
+		);
+		// No need to explicit flush here, safe to batch
 	}
 }
 

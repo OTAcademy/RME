@@ -1,35 +1,32 @@
-#include "main.h"
 #include "rendering/drawers/overlays/grid_drawer.h"
+#include "rendering/core/batch_renderer.h"
 
 #include "rendering/core/render_view.h"
 #include "rendering/core/drawing_options.h"
 #include "definitions.h"
 #include <wx/gdicmn.h>
 
-#ifdef __APPLE__
-	#include <GLUT/glut.h>
-#else
-	#include <GL/glut.h>
-#endif
-
 void GridDrawer::DrawGrid(const RenderView& view, const DrawingOptions& options) {
 	if (!options.show_grid) {
 		return;
 	}
 
-	glColor4ub(255, 255, 255, 128);
-	glBegin(GL_LINES);
+	glm::vec4 color(1.0f, 1.0f, 1.0f, 0.5f); // 128/255 approx 0.5
+
 	// Batch all horizontal lines
 	for (int y = view.start_y; y < view.end_y; ++y) {
-		glVertex2f(view.start_x * TileSize - view.view_scroll_x, y * TileSize - view.view_scroll_y);
-		glVertex2f(view.end_x * TileSize - view.view_scroll_x, y * TileSize - view.view_scroll_y);
+		float yPos = y * TileSize - view.view_scroll_y;
+		float xStart = view.start_x * TileSize - view.view_scroll_x;
+		float xEnd = view.end_x * TileSize - view.view_scroll_x;
+		BatchRenderer::DrawLine(glm::vec2(xStart, yPos), glm::vec2(xEnd, yPos), color);
 	}
 	// Batch all vertical lines
 	for (int x = view.start_x; x < view.end_x; ++x) {
-		glVertex2f(x * TileSize - view.view_scroll_x, view.start_y * TileSize - view.view_scroll_y);
-		glVertex2f(x * TileSize - view.view_scroll_x, view.end_y * TileSize - view.view_scroll_y);
+		float xPos = x * TileSize - view.view_scroll_x;
+		float yStart = view.start_y * TileSize - view.view_scroll_y;
+		float yEnd = view.end_y * TileSize - view.view_scroll_y;
+		BatchRenderer::DrawLine(glm::vec2(xPos, yStart), glm::vec2(xPos, yEnd), color);
 	}
-	glEnd();
 }
 
 void GridDrawer::DrawIngameBox(const RenderView& view, const DrawingOptions& options) {
@@ -53,7 +50,9 @@ void GridDrawer::DrawIngameBox(const RenderView& view, const DrawingOptions& opt
 
 	static wxColor side_color(0, 0, 0, 200);
 
-	glDisable(GL_TEXTURE_2D);
+	// BatchRenderer doesn't support disabling GL_TEXTURE_2D state globally,
+	// but DrawQuad uses white texture if no texture ID is provided or if specific non-textured method used.
+	// DrawQuad uses whiteTextureID by default.
 
 	// left side
 	if (box_start_map_x >= view.start_x) {
@@ -91,41 +90,35 @@ void GridDrawer::DrawIngameBox(const RenderView& view, const DrawingOptions& opt
 	box_end_x = box_start_x + TileSize;
 	box_end_y = box_start_y + TileSize;
 	drawRect(box_start_x, box_start_y, box_end_x - box_start_x, box_end_y - box_start_y, *wxGREEN);
-
-	glEnable(GL_TEXTURE_2D);
 }
 
 void GridDrawer::DrawNodeLoadingPlaceholder(int nd_map_x, int nd_map_y, const RenderView& view) {
 	int cy = (nd_map_y)*TileSize - view.view_scroll_y - view.getFloorAdjustment();
 	int cx = (nd_map_x)*TileSize - view.view_scroll_x - view.getFloorAdjustment();
 
-	glColor4ub(255, 0, 255, 128);
-	glBegin(GL_QUADS);
-	glVertex2f(cx, cy + TileSize * 4);
-	glVertex2f(cx + TileSize * 4, cy + TileSize * 4);
-	glVertex2f(cx + TileSize * 4, cy);
-	glVertex2f(cx, cy);
-	glEnd();
+	glm::vec4 color(1.0f, 0.0f, 1.0f, 0.5f); // 255, 0, 255, 128
+	BatchRenderer::DrawQuad(
+		glm::vec2(cx, cy),
+		glm::vec2(TileSize * 4, TileSize * 4),
+		color
+	);
 }
 
 void GridDrawer::drawRect(int x, int y, int w, int h, const wxColor& color, int width) {
-	glLineWidth(width);
-	glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
-	glBegin(GL_LINE_STRIP);
-	glVertex2f(x, y);
-	glVertex2f(x + w, y);
-	glVertex2f(x + w, y + h);
-	glVertex2f(x, y + h);
-	glVertex2f(x, y);
-	glEnd();
+	// glLineWidth(width); // Width ignored for now, BatchRenderer lines are 1px
+	glm::vec4 c(color.Red() / 255.0f, color.Green() / 255.0f, color.Blue() / 255.0f, color.Alpha() / 255.0f);
+
+	// Top
+	BatchRenderer::DrawLine(glm::vec2(x, y), glm::vec2(x + w, y), c);
+	// Right
+	BatchRenderer::DrawLine(glm::vec2(x + w, y), glm::vec2(x + w, y + h), c);
+	// Bottom
+	BatchRenderer::DrawLine(glm::vec2(x + w, y + h), glm::vec2(x, y + h), c);
+	// Left
+	BatchRenderer::DrawLine(glm::vec2(x, y + h), glm::vec2(x, y), c);
 }
 
 void GridDrawer::drawFilledRect(int x, int y, int w, int h, const wxColor& color) {
-	glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
-	glBegin(GL_QUADS);
-	glVertex2f(x, y);
-	glVertex2f(x + w, y);
-	glVertex2f(x + w, y + h);
-	glVertex2f(x, y + h);
-	glEnd();
+	glm::vec4 c(color.Red() / 255.0f, color.Green() / 255.0f, color.Blue() / 255.0f, color.Alpha() / 255.0f);
+	BatchRenderer::DrawQuad(glm::vec2(x, y), glm::vec2(w, h), c);
 }

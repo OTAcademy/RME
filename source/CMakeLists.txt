@@ -40,6 +40,9 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/core/sprite_light.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/editor_sprite.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/minimap_colors.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/shader_program.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/batch_renderer.h
 ${CMAKE_CURRENT_LIST_DIR}/ground_brush.h
 ${CMAKE_CURRENT_LIST_DIR}/gui.h
 ${CMAKE_CURRENT_LIST_DIR}/gui_ids.h
@@ -204,6 +207,8 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/core/outfit_colorizer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/light_buffer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/editor_sprite.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/shader_program.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/batch_renderer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/ground_brush.cpp
 ${CMAKE_CURRENT_LIST_DIR}/gui.cpp
 ${CMAKE_CURRENT_LIST_DIR}/house_brush.cpp

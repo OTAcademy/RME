@@ -10,6 +10,8 @@
 #include "brush.h"
 #include "definitions.h" // For PI
 
+#include "rendering/core/batch_renderer.h"
+
 void BrushCursorDrawer::draw(int x, int y, Brush* brush, uint8_t r, uint8_t g, uint8_t b) {
 	x += (TileSize / 2);
 	y += (TileSize / 2);
@@ -32,30 +34,55 @@ void BrushCursorDrawer::draw(int x, int y, Brush* brush, uint8_t r, uint8_t g, u
 	};
 
 	// circle
-	glBegin(GL_TRIANGLE_FAN);
-	glColor4ub(0x00, 0x00, 0x00, 0x50);
-	glVertex2i(x, y);
-	for (int i = 0; i <= 30; i++) {
-		float angle = i * 2.0f * PI / 30;
-		glVertex2f(cos(angle) * (TileSize / 2) + x, sin(angle) * (TileSize / 2) + y);
+	glm::vec4 circleColor(0.0f, 0.0f, 0.0f, 0x50 / 255.0f);
+	// Center: x,y.
+	// Radius: TileSize/2.
+	// Draw fan as triangles.
+	float radius = TileSize / 2.0f;
+	int segments = 30;
+	glm::vec2 center(x, y);
+
+	for (int i = 0; i < segments; i++) {
+		float angle1 = i * 2.0f * PI / segments;
+		float angle2 = (i + 1) * 2.0f * PI / segments;
+
+		BatchRenderer::DrawTriangle(
+			center,
+			glm::vec2(cos(angle1) * radius + x, sin(angle1) * radius + y),
+			glm::vec2(cos(angle2) * radius + x, sin(angle2) * radius + y),
+			circleColor
+		);
 	}
-	glEnd();
 
 	// background
-	glColor4ub(r, g, b, 0xB4);
-	glBegin(GL_POLYGON);
-	for (int i = 0; i < 8; ++i) {
-		glVertex2i(vertexes[i][0] + x, vertexes[i][1] + y);
-	}
-	glEnd();
+	glm::vec4 bgColor(r / 255.0f, g / 255.0f, b / 255.0f, 0xB4 / 255.0f);
+
+	// Decomposed:
+	// Box: (-15, -20) to (15, -5). width=30, height=15.
+	// Top Left of box relative to x,y: (-15, -20).
+	// But coordinates seem to be relative offset.
+	BatchRenderer::DrawQuad(
+		glm::vec2(x - 15, y - 20),
+		glm::vec2(30, 15),
+		bgColor
+	);
+
+	// Tip Triangle: (-5, -5), (0,0), (5, -5) relative to x,y
+	BatchRenderer::DrawTriangle(
+		glm::vec2(x - 5, y - 5),
+		glm::vec2(x, y),
+		glm::vec2(x + 5, y - 5),
+		bgColor
+	);
 
 	// borders
-	glColor4ub(0x00, 0x00, 0x00, 0xB4);
-	glLineWidth(1.0);
-	glBegin(GL_LINES);
+	glm::vec4 borderColor(0.0f, 0.0f, 0.0f, 0xB4 / 255.0f);
+
 	for (int i = 0; i < 8; ++i) {
-		glVertex2i(vertexes[i][0] + x, vertexes[i][1] + y);
-		glVertex2i(vertexes[i + 1][0] + x, vertexes[i + 1][1] + y);
+		BatchRenderer::DrawLine(
+			glm::vec2(vertexes[i][0] + x, vertexes[i][1] + y),
+			glm::vec2(vertexes[i + 1][0] + x, vertexes[i + 1][1] + y),
+			borderColor
+		);
 	}
-	glEnd();
 }

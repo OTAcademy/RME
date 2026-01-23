@@ -115,6 +115,7 @@ protected:
 
 		// We use the sprite id as GL texture id
 		uint32_t id;
+		GLuint gl_tid;
 
 		// This contains the pixel data
 		uint16_t size;

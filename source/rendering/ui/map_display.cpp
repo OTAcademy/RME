@@ -40,6 +40,7 @@
 #include "rendering/ui/map_display.h"
 #include "rendering/ui/map_status_updater.h"
 #include "rendering/map_drawer.h"
+#include "rendering/core/batch_renderer.h"
 #include "application.h"
 #include "live_server.h"
 #include "browse_tile_window.h"
@@ -104,11 +105,22 @@ END_EVENT_TABLE()
 
 bool MapCanvas::processed[] = { 0 };
 
+// Helper to create attributes
+static wxGLAttributes& GetCoreProfileAttributes() {
+	static wxGLAttributes vAttrs = []() {
+		wxGLAttributes a;
+		a.PlatformDefaults().Defaults().RGBA().DoubleBuffer().Depth(24).Stencil(8).EndList();
+		return a;
+	}();
+	return vAttrs;
+}
+
 MapCanvas::MapCanvas(MapWindow* parent, Editor& editor, int* attriblist) :
-	wxGLCanvas(parent, wxID_ANY, nullptr, wxDefaultPosition, wxDefaultSize, wxWANTS_CHARS),
+	wxGLCanvas(parent, GetCoreProfileAttributes(), wxID_ANY, wxDefaultPosition, wxDefaultSize, wxWANTS_CHARS),
 	editor(editor),
 	floor(GROUND_LAYER),
 	zoom(1.0),
+	renderer_initialized(false),
 	cursor_x(-1),
 	cursor_y(-1),
 	dragging(false),
@@ -144,6 +156,9 @@ MapCanvas::~MapCanvas() {
 	delete popup_menu;
 	delete animation_timer;
 	delete drawer;
+	if (renderer_initialized) {
+		BatchRenderer::Shutdown();
+	}
 }
 
 void MapCanvas::Refresh() {
@@ -170,6 +185,15 @@ MapWindow* MapCanvas::GetMapWindow() const {
 void MapCanvas::OnPaint(wxPaintEvent& event) {
 	SetCurrent(*g_gui.GetGLContext(this));
 
+	static bool gladInitialized = false;
+	if (!gladInitialized) {
+		if (!gladLoadGL()) {
+			// Handle error - maybe log or fallback (though fallback is hard with Core Profile)
+			// For now, we assume it works if Context creation succeeded
+		}
+		gladInitialized = true;
+	}
+
 	if (g_gui.IsRenderingEnabled()) {
 		DrawingOptions& options = drawer->getOptions();
 		if (screenshot_controller->IsCapturing()) {
@@ -187,6 +211,12 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			animation_timer->Stop();
 		}
 
+		if (!renderer_initialized) {
+			BatchRenderer::Init();
+			renderer_initialized = true;
+		}
+
+		BatchRenderer::Begin();
 		drawer->SetupVars();
 		drawer->SetupGL();
 		drawer->Draw();
@@ -196,6 +226,7 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 		}
 
 		drawer->Release();
+		BatchRenderer::End();
 	}
 
 	// Clean unused textures

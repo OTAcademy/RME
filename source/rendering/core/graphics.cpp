@@ -341,7 +341,15 @@ void GameSprite::Image::createGLTexture(GLuint whatid) {
 
 	uint8_t* rgba = getRGBAData();
 	if (!rgba) {
-		return;
+		// Fallback: Create a magenta texture to distinguish failure from garbage
+		// Use literal 32 to ensure compilation (OT sprites are always 32x32)
+		rgba = newd uint8_t[32 * 32 * 4];
+		for (int i = 0; i < 32 * 32; ++i) {
+			rgba[i * 4 + 0] = 255;
+			rgba[i * 4 + 1] = 0;
+			rgba[i * 4 + 2] = 255;
+			rgba[i * 4 + 3] = 255;
+		}
 	}
 
 	isGLLoaded = true;
@@ -376,6 +384,7 @@ void GameSprite::Image::clean(int time) {
 
 GameSprite::NormalImage::NormalImage() :
 	id(0),
+	gl_tid(0),
 	size(0),
 	dump(nullptr) {
 	////
@@ -500,18 +509,21 @@ uint8_t* GameSprite::NormalImage::getRGBAData() {
 
 GLuint GameSprite::NormalImage::getHardwareID() {
 	if (!isGLLoaded) {
-		createGLTexture(id);
+		if (gl_tid == 0) {
+			gl_tid = GLTextureIDGenerator::GetFreeTextureID();
+		}
+		createGLTexture(gl_tid);
 	}
 	visit();
-	return id;
+	return gl_tid;
 }
 
 void GameSprite::NormalImage::createGLTexture(GLuint ignored) {
-	Image::createGLTexture(id);
+	Image::createGLTexture(gl_tid);
 }
 
 void GameSprite::NormalImage::unloadGLTexture(GLuint ignored) {
-	Image::unloadGLTexture(id);
+	Image::unloadGLTexture(gl_tid);
 }
 
 GameSprite::TemplateImage::TemplateImage(GameSprite* parent, int v, const Outfit& outfit) :

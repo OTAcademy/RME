@@ -111,7 +111,9 @@ wxGLContext* GUI::GetGLContext(wxGLCanvas* win) {
 		*/
 		OGLContext = new wxGLContext(win, nullptr);
 #else
-		OGLContext = newd wxGLContext(win);
+		wxGLContextAttrs ctxAttrs;
+		ctxAttrs.PlatformDefaults().CoreProfile().MajorVersion(4).MinorVersion(5).EndList();
+		OGLContext = newd wxGLContext(win, nullptr, &ctxAttrs);
 #endif
 	}
 

@@ -69,37 +69,27 @@ void RenderView::getScreenPosition(int map_x, int map_y, int map_z, int& out_x, 
 	out_y = (map_y * TileSize) - view_scroll_y - offset;
 }
 
-#ifdef __APPLE__
-	#include <GLUT/glut.h>
-#else
-	#include <GL/glut.h>
-#endif
+#include <glm/gtc/matrix_transform.hpp>
 
 void RenderView::SetupGL() {
 	glViewport(0, 0, screensize_x, screensize_y);
 
-	// Enable 2D mode
-	int vPort[4];
+	// Calculate Projection
+	// glOrtho(0, vPort[2] * zoom, vPort[3] * zoom, 0, -1, 1);
+	// Equivalent: 0 -> width*zoom, height*zoom -> 0
 
-	glGetIntegerv(GL_VIEWPORT, vPort);
+	int width = screensize_x;
+	int height = screensize_y;
 
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho(0, vPort[2] * zoom, vPort[3] * zoom, 0, -1, 1);
+	projectionMatrix = glm::ortho(0.0f, width * zoom, height * zoom, 0.0f, -1.0f, 1.0f);
 
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glTranslatef(0.375f, 0.375f, 0.0f);
+	// Calculate ModelView
+	// glTranslatef(0.375f, 0.375f, 0.0f);
+	viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.375f, 0.375f, 0.0f));
 }
 
 void RenderView::ReleaseGL() {
-	// Disable 2D mode
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
+	// No legacy matrix stack to cleanup
 }
 
 void RenderView::Clear() {
@@ -107,7 +97,8 @@ void RenderView::Clear() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
+
+	// glLoadIdentity(); // Legacy
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);

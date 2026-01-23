@@ -86,7 +86,7 @@ void NavigationController::HandleCameraRelease(MapCanvas* canvas, wxMouseEvent& 
 }
 
 void NavigationController::ChangeFloor(MapCanvas* canvas, int new_floor) {
-	ASSERT(new_floor >= 0 || new_floor < MAP_LAYERS);
+	new_floor = std::clamp(new_floor, 0, MAP_LAYERS - 1);
 	int old_floor = canvas->floor;
 	canvas->floor = new_floor;
 	if (old_floor != new_floor) {

@@ -1,12 +1,7 @@
 #include "main.h"
 
-#ifdef __APPLE__
-	#include <GLUT/glut.h>
-#else
-	#include <GL/glut.h>
-#endif
-
 #include "rendering/drawers/cursors/live_cursor_drawer.h"
+#include "rendering/core/batch_renderer.h"
 #include "rendering/core/render_view.h"
 #include "editor.h"
 #include "live_socket.h"
@@ -46,15 +41,17 @@ void LiveCursorDrawer::draw(const RenderView& view, Editor& editor, const Drawin
 		float draw_x = ((cursor.pos.x * TileSize) - view.view_scroll_x) - offset;
 		float draw_y = ((cursor.pos.y * TileSize) - view.view_scroll_y) - offset;
 
-		// glColor(cursor.color); // Replaced with direct GL call since helper might not be valid here
-		// Assuming cursor.color is wxColor
-		glColor4ub(cursor.color.Red(), cursor.color.Green(), cursor.color.Blue(), cursor.color.Alpha());
+		glm::vec4 color(
+			cursor.color.Red() / 255.0f,
+			cursor.color.Green() / 255.0f,
+			cursor.color.Blue() / 255.0f,
+			cursor.color.Alpha() / 255.0f
+		);
 
-		glBegin(GL_QUADS);
-		glVertex2f(draw_x, draw_y);
-		glVertex2f(draw_x + TileSize, draw_y);
-		glVertex2f(draw_x + TileSize, draw_y + TileSize);
-		glVertex2f(draw_x, draw_y + TileSize);
-		glEnd();
+		BatchRenderer::DrawQuad(
+			glm::vec2(draw_x, draw_y),
+			glm::vec2(TileSize, TileSize),
+			color
+		);
 	}
 }

@@ -1,19 +1,8 @@
-//////////////////////////////////////////////////////////////////////
-// This file is part of Remere's Map Editor
-//////////////////////////////////////////////////////////////////////
-
-#include "main.h"
-
-#ifdef __APPLE__
-	#include <GLUT/glut.h>
-#else
-	#include <GL/glut.h>
-#endif
-
 #include "rendering/drawers/entities/sprite_drawer.h"
 #include "rendering/core/graphics.h"
 #include "sprites.h"
 #include "items.h"
+#include "rendering/core/batch_renderer.h"
 
 SpriteDrawer::SpriteDrawer() :
 	last_bound_texture_(0) {
@@ -28,22 +17,17 @@ void SpriteDrawer::ResetCache() {
 
 void SpriteDrawer::glBlitTexture(int sx, int sy, int texture_number, int red, int green, int blue, int alpha) {
 	if (texture_number != 0) {
-		// Cache texture binding to avoid redundant calls
-		if (static_cast<GLuint>(texture_number) != last_bound_texture_) {
-			glBindTexture(GL_TEXTURE_2D, texture_number);
-			last_bound_texture_ = texture_number;
-		}
-		glColor4ub(uint8_t(red), uint8_t(green), uint8_t(blue), uint8_t(alpha));
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.f, 0.f);
-		glVertex2f(sx, sy);
-		glTexCoord2f(1.f, 0.f);
-		glVertex2f(sx + TileSize, sy);
-		glTexCoord2f(1.f, 1.f);
-		glVertex2f(sx + TileSize, sy + TileSize);
-		glTexCoord2f(0.f, 1.f);
-		glVertex2f(sx, sy + TileSize);
-		glEnd();
+		float normalizedR = red / 255.0f;
+		float normalizedG = green / 255.0f;
+		float normalizedB = blue / 255.0f;
+		float normalizedA = alpha / 255.0f;
+
+		BatchRenderer::DrawTextureQuad(
+			glm::vec2(sx, sy),
+			glm::vec2(TileSize, TileSize),
+			glm::vec4(normalizedR, normalizedG, normalizedB, normalizedA),
+			static_cast<GLuint>(texture_number)
+		);
 	}
 }
 
@@ -52,17 +36,22 @@ void SpriteDrawer::glBlitSquare(int sx, int sy, int red, int green, int blue, in
 		size = TileSize;
 	}
 
-	glColor4ub(uint8_t(red), uint8_t(green), uint8_t(blue), uint8_t(alpha));
-	glBegin(GL_QUADS);
-	glVertex2f(sx, sy);
-	glVertex2f(sx + size, sy);
-	glVertex2f(sx + size, sy + size);
-	glVertex2f(sx, sy + size);
-	glEnd();
+	float normalizedR = red / 255.0f;
+	float normalizedG = green / 255.0f;
+	float normalizedB = blue / 255.0f;
+	float normalizedA = alpha / 255.0f;
+
+	BatchRenderer::DrawQuad(
+		glm::vec2(sx, sy),
+		glm::vec2(size, size),
+		glm::vec4(normalizedR, normalizedG, normalizedB, normalizedA)
+	);
 }
 
 void SpriteDrawer::glSetColor(wxColor color) {
-	glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
+	// Not needed with BatchRenderer automatic color handling in DrawQuad,
+	// but if used for stateful drawing elsewhere, we might need a state setter.
+	// For now, ignoring as glBlitTexture/Square takes explicit color.
 }
 
 void SpriteDrawer::BlitSprite(int screenx, int screeny, uint32_t spriteid, int red, int green, int blue, int alpha) {

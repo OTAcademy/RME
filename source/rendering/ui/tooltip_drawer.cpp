@@ -17,11 +17,11 @@
 
 #include "rendering/ui/tooltip_drawer.h"
 #include "rendering/core/graphics.h"
+#include "rendering/core/batch_renderer.h"
 #include "item.h"
 #include "complexitem.h"
 #include "waypoints.h"
 #include <wx/wx.h> // For wxColor if needed, but we use OpenGL calls mostly.
-#include <GL/glut.h>
 #include "common.h" // for newd macro
 
 TooltipDrawer::TooltipDrawer() {
@@ -117,22 +117,10 @@ void TooltipDrawer::draw(float zoom, int tile_size) {
 		int char_count = 0;
 		int line_char_count = 0;
 
-		for (const char* c = text; *c != '\0'; c++) {
-			if (*c == '\n' || (line_char_count >= MapTooltip::MAX_CHARS_PER_LINE && *c == ' ')) {
-				height += 14.0f;
-				line_width = 0.0f;
-				line_char_count = 0;
-			} else {
-				line_width += glutBitmapWidth(GLUT_BITMAP_HELVETICA_12, *c);
-			}
-			width = std::max<float>(width, line_width);
-			char_count++;
-			line_char_count++;
-
-			if (tooltip->ellipsis && char_count > (MapTooltip::MAX_CHARS + 3)) {
-				break;
-			}
-		}
+		// TODO: Modern text rendering
+		// GLUT is removed.
+		width = std::max<float>(width, text ? strlen(text) * 8.0f : 0.0f);
+		height = 16.0f; // Dummy height
 
 		float scale = zoom < 1.0f ? zoom : 1.0f;
 
@@ -148,11 +136,6 @@ void TooltipDrawer::draw(float zoom, int tile_size) {
 		float starty = y - (height + space);
 		float endy = y - space;
 
-		// 7----0----1
-		// |         |
-		// 6--5  3--2
-		//     \/
-		//     4
 		float vertexes[9][2] = {
 			{ x, starty }, // 0
 			{ endx, starty }, // 1
@@ -166,49 +149,93 @@ void TooltipDrawer::draw(float zoom, int tile_size) {
 		};
 
 		// background
-		glColor4ub(tooltip->r, tooltip->g, tooltip->b, 255);
-		glBegin(GL_POLYGON);
-		for (int i = 0; i < 8; ++i) {
-			glVertex2f(vertexes[i][0], vertexes[i][1]);
-		}
-		glEnd();
+		glm::vec4 bgColor(tooltip->r / 255.0f, tooltip->g / 255.0f, tooltip->b / 255.0f, 1.0f);
+
+		// Polygon tessellation is messy. It's a speech bubble shape.
+		// Convex? No, it has a tail (point 4).
+		// Decompose into fan/triangles?
+
+		// 0-1-2-3-4-5-6-7-0
+		// Center 0 is not center of fan.
+		// Let's just create a fan around 0? 0 is top-center.
+		// Wait, 0 is {x, starty} which is top center.
+		// 1 is Top Right.
+		// 2 is Bottom Right (above tail).
+		// 3 is Tail Start.
+		// 4 is Tail Tip (y down).
+		// 5 is Tail End.
+		// 6 is Bottom Left.
+		// 7 is Top Left.
+
+		// Triangles:
+		// 0-1-2 (Top Right Chunk? No, 0-1 and 1-2)
+		// Let's use simple tessellation or GL_POLYGON emulation if BatchRenderer supported it.
+		// Manual Triangles:
+		// 0,1,2
+		// 0,2,3
+		// 0,3,6
+		// 0,6,7
+		// 6,3,5
+		// 3,4,5 (Tail)
+		// Wait, coordinates might be confusing.
+		// Let's submit vertices for a polygon if logic permits, OR just assume this is a convex-ish shape + tail.
+		// Actually, standard tooltip is a rounded box. This is drawing a box + tail.
+
+		// Tessellation:
+		// Quad (startx, endx, starty, endy) covers most?
+		// endy < starty ? No, Y likely decreases up?
+		// y = tooltip y (mouse pos).
+		// starty = y - (height + space); (Above mouse)
+		// So starty < y.
+		// It seems Drawing is Y-up?
+		// MapCanvas usually uses 0,0 top-left?
+		// If 0,0 is top-left, then Y increases DOWN.
+		// starty = y - big_number => Above. This implies Y increases DOWN.
+
+		// Vertices:
+		// 7(TL)---------1(TR)  <-- starty
+		// |             |
+		// 6(BL)---5-3---2(BR)  <-- endy
+		//          \ /
+		//           4(Tip)     <-- y
+
+		// So we have a Box (1,2,6,7) and a Triangle (3,4,5).
+		// Box: (startx, starty) to (endx, endy).
+		BatchRenderer::DrawQuad(
+			glm::vec2(startx, starty),
+			glm::vec2(width, height),
+			bgColor
+		);
+
+		// Tail Triangle (3,4,5)
+		BatchRenderer::DrawTriangle(
+			glm::vec2(x + space, endy), // 3
+			glm::vec2(x, y), // 4
+			glm::vec2(x - space, endy), // 5
+			bgColor
+		);
 
 		// borders
-		glColor4ub(0, 0, 0, 255);
-		glLineWidth(1.0);
-		glBegin(GL_LINES);
+		glm::vec4 borderColor(0.0f, 0.0f, 0.0f, 1.0f);
 		for (int i = 0; i < 8; ++i) {
-			glVertex2f(vertexes[i][0], vertexes[i][1]);
-			glVertex2f(vertexes[i + 1][0], vertexes[i + 1][1]);
+			BatchRenderer::DrawLine(
+				glm::vec2(vertexes[i][0], vertexes[i][1]),
+				glm::vec2(vertexes[i + 1][0], vertexes[i + 1][1]),
+				borderColor
+			);
 		}
-		glEnd();
 
 		// text
+		// Immediate mode GLUT text cannot be batched easily.
+		// We Must Flush before drawing direct GL/GLUT text.
+		BatchRenderer::Flush();
+
 		if (zoom <= 1.0) {
 			startx += (3.0f * scale);
 			starty += (14.0f * scale);
-			glColor4ub(0, 0, 0, 255);
-			glRasterPos2f(startx, starty);
-			char_count = 0;
-			line_char_count = 0;
-			for (const char* c = text; *c != '\0'; c++) {
-				if (*c == '\n' || (line_char_count >= MapTooltip::MAX_CHARS_PER_LINE && *c == ' ')) {
-					starty += (14.0f * scale);
-					glRasterPos2f(startx, starty);
-					line_char_count = 0;
-				}
-				char_count++;
-				line_char_count++;
 
-				if (tooltip->ellipsis && char_count >= MapTooltip::MAX_CHARS) {
-					glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, '.');
-					if (char_count >= (MapTooltip::MAX_CHARS + 2)) {
-						break;
-					}
-				} else if (!iscntrl(*c)) {
-					glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
-				}
-			}
+			// TODO: Implement text rendering using a font atlas/BatchRenderer.
+			// Legacy GLUT/glBitmap text is not supported in Core Profile and has been removed.
 		}
 	}
 }

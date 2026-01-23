@@ -1,0 +1,7 @@
+Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
+
+  Trwa skanowanie źródeł pod kątem zależności modułów...
+  navigation_controller.cpp
+  Trwa kompilowanie…
+  navigation_controller.cpp
+  rme.vcxproj -> C:\Users\karol\Documents\GitHub\RME_v2\build\Release\rme.exe

@@ -38,10 +38,14 @@ find_package(wxWidgets COMPONENTS html aui gl adv core net base REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(ZLIB REQUIRED)
 
+
 # wxWidgets_USE_FILE is set by vcpkg/system wxWidgets, but empty with Conan
 if(wxWidgets_USE_FILE)
 	include(${wxWidgets_USE_FILE})
 endif()
+
+find_package(glad CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
 
 include(source/CMakeLists.txt)
 if(WIN32)
@@ -99,3 +103,5 @@ else()
 endif()
 
 target_link_libraries(rme PRIVATE ${OPENGL_LIBRARIES})
+target_link_libraries(rme PRIVATE glad::glad)
+target_link_libraries(rme PRIVATE glm::glm)

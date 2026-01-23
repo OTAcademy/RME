@@ -4,7 +4,11 @@
 
 #include "rendering/core/gl_texture_id_generator.h"
 
+#include "rendering/core/graphics.h" // For GL headers
+#include "rendering/core/batch_renderer.h" // For GL headers via graphics/batch
+
 GLuint GLTextureIDGenerator::GetFreeTextureID() {
-	static GLuint id_counter = 0x10000000;
-	return id_counter++; // This should (hopefully) never run out
+	GLuint id;
+	glGenTextures(1, &id);
+	return id;
 }

@@ -6,7 +6,9 @@
 #define RME_RENDERING_BRUSH_OVERLAY_DRAWER_H_
 
 #include "position.h"
+#include "position.h"
 #include <wx/colour.h>
+#include <glm/glm.hpp>
 
 class MapDrawer;
 struct RenderView;
@@ -38,8 +40,9 @@ private:
 	};
 
 	void get_color(Brush* brush, Editor& editor, const Position& position, uint8_t& r, uint8_t& g, uint8_t& b);
-	void set_gl_color(BrushColor color);
-	void set_gl_color_check(Brush* brush, Editor& editor, const Position& pos);
+
+	glm::vec4 get_brush_color(BrushColor color);
+	glm::vec4 get_check_color(Brush* brush, Editor& editor, const Position& pos);
 };
 
 #endif

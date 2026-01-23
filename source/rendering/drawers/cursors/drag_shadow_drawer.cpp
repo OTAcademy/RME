@@ -38,8 +38,6 @@ void DragShadowDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, SpriteDr
 		return;
 	}
 
-	glEnable(GL_TEXTURE_2D);
-
 	// Draw dragging shadow
 	if (!drawer->editor.selection.isBusy() && options.dragging && !options.ingame) {
 		for (TileSet::iterator tit = drawer->editor.selection.begin(); tit != drawer->editor.selection.end(); tit++) {
@@ -95,6 +93,4 @@ void DragShadowDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, SpriteDr
 			}
 		}
 	}
-
-	glDisable(GL_TEXTURE_2D);
 }

@@ -4,6 +4,8 @@
 class MapCanvas;
 struct DrawingOptions;
 
+#include <glm/glm.hpp>
+
 struct RenderView {
 	float zoom;
 	int tile_size;
@@ -15,6 +17,9 @@ struct RenderView {
 	int screensize_x, screensize_y;
 
 	int mouse_map_x, mouse_map_y;
+
+	glm::mat4 projectionMatrix;
+	glm::mat4 viewMatrix;
 
 	void Setup(MapCanvas* canvas, const DrawingOptions& options);
 	void SetupGL();

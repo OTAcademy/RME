@@ -7,6 +7,7 @@
 #endif
 
 #include "rendering/drawers/overlays/selection_drawer.h"
+#include "rendering/core/batch_renderer.h"
 #include "rendering/core/render_view.h"
 #include "rendering/core/drawing_options.h"
 #include "rendering/ui/map_display.h"
@@ -45,15 +46,12 @@ void SelectionDrawer::draw(const RenderView& view, const MapCanvas* canvas, cons
 	lines[3][2] = last_click_rx;
 	lines[3][3] = last_click_ry;
 
-	glEnable(GL_LINE_STIPPLE);
-	glLineStipple(1, 0xf0);
-	glLineWidth(1.0);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glBegin(GL_LINES);
+	// glLineStipple is deprecated in Core 4.5.
+	// We will draw solid lines for now. If stipple is needed, we need a shader solution.
+
+	glm::vec4 color(1.0f, 1.0f, 1.0f, 1.0f);
+
 	for (int i = 0; i < 4; i++) {
-		glVertex2f(lines[i][0], lines[i][1]);
-		glVertex2f(lines[i][2], lines[i][3]);
+		BatchRenderer::DrawLine(glm::vec2(lines[i][0], lines[i][1]), glm::vec2(lines[i][2], lines[i][3]), color);
 	}
-	glEnd();
-	glDisable(GL_LINE_STIPPLE);
 }
