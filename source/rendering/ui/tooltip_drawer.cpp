@@ -18,6 +18,9 @@
 #include "rendering/ui/tooltip_drawer.h"
 #include "rendering/core/graphics.h"
 #include "rendering/core/batch_renderer.h"
+#include "rendering/core/text_renderer.h"
+#include <nanovg.h>
+#include "rendering/core/coordinate_mapper.h"
 #include "item.h"
 #include "complexitem.h"
 #include "waypoints.h"
@@ -38,12 +41,12 @@ void TooltipDrawer::clear() {
 	tooltips.clear();
 }
 
-void TooltipDrawer::addTooltip(int screenx, int screeny, const std::string& text, uint8_t r, uint8_t g, uint8_t b) {
+void TooltipDrawer::addTooltip(Position pos, const std::string& text, uint8_t r, uint8_t g, uint8_t b) {
 	if (text.empty()) {
 		return;
 	}
 
-	MapTooltip* tooltip = newd MapTooltip(screenx, screeny, text, r, g, b);
+	MapTooltip* tooltip = newd MapTooltip(pos, text, r, g, b);
 	tooltip->checkLineEnding();
 	tooltips.push_back(tooltip);
 }
@@ -107,135 +110,120 @@ void TooltipDrawer::writeTooltip(Waypoint* waypoint, std::ostringstream& stream)
 	stream << "wp: " << waypoint->name << "\n";
 }
 
-void TooltipDrawer::draw(float zoom, int tile_size) {
+void TooltipDrawer::draw(const RenderView& view) {
+	NVGcontext* vg = TextRenderer::GetContext();
+	if (!vg) {
+		return;
+	}
+
 	for (std::vector<MapTooltip*>::const_iterator it = tooltips.begin(); it != tooltips.end(); ++it) {
 		MapTooltip* tooltip = (*it);
-		const char* text = tooltip->text.c_str();
-		float line_width = 0.0f;
-		float width = 2.0f;
-		float height = 14.0f;
-		int char_count = 0;
-		int line_char_count = 0;
-
-		// TODO: Modern text rendering
-		// GLUT is removed.
-		width = std::max<float>(width, text ? strlen(text) * 8.0f : 0.0f);
-		height = 16.0f; // Dummy height
-
-		float scale = zoom < 1.0f ? zoom : 1.0f;
-
-		width = (width + 8.0f) * scale;
-		height = (height + 4.0f) * scale;
-
-		float x = tooltip->x + (tile_size / 2.0f);
-		float y = tooltip->y;
-		float center = width / 2.0f;
-		float space = (7.0f * scale);
-		float startx = x - center;
-		float endx = x + center;
-		float starty = y - (height + space);
-		float endy = y - space;
-
-		float vertexes[9][2] = {
-			{ x, starty }, // 0
-			{ endx, starty }, // 1
-			{ endx, endy }, // 2
-			{ x + space, endy }, // 3
-			{ x, y }, // 4
-			{ x - space, endy }, // 5
-			{ startx, endy }, // 6
-			{ startx, starty }, // 7
-			{ x, starty }, // 0
-		};
-
-		// background
-		glm::vec4 bgColor(tooltip->r / 255.0f, tooltip->g / 255.0f, tooltip->b / 255.0f, 1.0f);
-
-		// Polygon tessellation is messy. It's a speech bubble shape.
-		// Convex? No, it has a tail (point 4).
-		// Decompose into fan/triangles?
-
-		// 0-1-2-3-4-5-6-7-0
-		// Center 0 is not center of fan.
-		// Let's just create a fan around 0? 0 is top-center.
-		// Wait, 0 is {x, starty} which is top center.
-		// 1 is Top Right.
-		// 2 is Bottom Right (above tail).
-		// 3 is Tail Start.
-		// 4 is Tail Tip (y down).
-		// 5 is Tail End.
-		// 6 is Bottom Left.
-		// 7 is Top Left.
-
-		// Triangles:
-		// 0-1-2 (Top Right Chunk? No, 0-1 and 1-2)
-		// Let's use simple tessellation or GL_POLYGON emulation if BatchRenderer supported it.
-		// Manual Triangles:
-		// 0,1,2
-		// 0,2,3
-		// 0,3,6
-		// 0,6,7
-		// 6,3,5
-		// 3,4,5 (Tail)
-		// Wait, coordinates might be confusing.
-		// Let's submit vertices for a polygon if logic permits, OR just assume this is a convex-ish shape + tail.
-		// Actually, standard tooltip is a rounded box. This is drawing a box + tail.
-
-		// Tessellation:
-		// Quad (startx, endx, starty, endy) covers most?
-		// endy < starty ? No, Y likely decreases up?
-		// y = tooltip y (mouse pos).
-		// starty = y - (height + space); (Above mouse)
-		// So starty < y.
-		// It seems Drawing is Y-up?
-		// MapCanvas usually uses 0,0 top-left?
-		// If 0,0 is top-left, then Y increases DOWN.
-		// starty = y - big_number => Above. This implies Y increases DOWN.
-
-		// Vertices:
-		// 7(TL)---------1(TR)  <-- starty
-		// |             |
-		// 6(BL)---5-3---2(BR)  <-- endy
-		//          \ /
-		//           4(Tip)     <-- y
-
-		// So we have a Box (1,2,6,7) and a Triangle (3,4,5).
-		// Box: (startx, starty) to (endx, endy).
-		BatchRenderer::DrawQuad(
-			glm::vec2(startx, starty),
-			glm::vec2(width, height),
-			bgColor
-		);
-
-		// Tail Triangle (3,4,5)
-		BatchRenderer::DrawTriangle(
-			glm::vec2(x + space, endy), // 3
-			glm::vec2(x, y), // 4
-			glm::vec2(x - space, endy), // 5
-			bgColor
-		);
-
-		// borders
-		glm::vec4 borderColor(0.0f, 0.0f, 0.0f, 1.0f);
-		for (int i = 0; i < 8; ++i) {
-			BatchRenderer::DrawLine(
-				glm::vec2(vertexes[i][0], vertexes[i][1]),
-				glm::vec2(vertexes[i + 1][0], vertexes[i + 1][1]),
-				borderColor
-			);
+		const std::string& text = tooltip->text;
+		if (text.empty()) {
+			continue;
 		}
 
-		// text
-		// Immediate mode GLUT text cannot be batched easily.
-		// We Must Flush before drawing direct GL/GLUT text.
-		BatchRenderer::Flush();
+		int unscaled_x, unscaled_y;
+		view.getScreenPosition(tooltip->pos.x, tooltip->pos.y, tooltip->pos.z, unscaled_x, unscaled_y);
 
-		if (zoom <= 1.0) {
-			startx += (3.0f * scale);
-			starty += (14.0f * scale);
+		// Convert to Screen Pixels (NanoVG Space)
+		// The map is rendered with glOrtho(0, width*zoom, height*zoom, 0, ...)
+		// This means 1 Logical Unit = (1 / zoom) Screen Pixels.
+		float zoom = view.zoom;
+		if (zoom < 0.01f) {
+			zoom = 1.0f; // Safety
+		}
 
-			// TODO: Implement text rendering using a font atlas/BatchRenderer.
-			// Legacy GLUT/glBitmap text is not supported in Core Profile and has been removed.
+		float screen_x = unscaled_x / zoom;
+		float screen_y = unscaled_y / zoom;
+		float tile_size_screen = 32.0f / zoom;
+
+		// Adjust to center of tile
+		screen_x += tile_size_screen / 2.0f;
+		screen_y += tile_size_screen / 2.0f;
+
+		// --- Text Layout (Multiline) ---
+		float fontSize = 12.0f; // Consistent small font
+		nvgFontSize(vg, fontSize);
+		nvgFontFace(vg, "sans");
+		nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+
+		// Process lines
+		float maxLineWidth = 250.0f; // Tibia-like max width
+		float lineHeight = fontSize * 1.2f;
+
+		struct TextRow {
+			std::string content;
+			float width;
+		};
+		std::vector<TextRow> rows;
+		float totalTextWidth = 0.0f;
+
+		// 1. Split by \n
+		std::stringstream ss(text);
+		std::string segment;
+		while (std::getline(ss, segment, '\n')) {
+			if (segment.empty()) {
+				// Empty line (optional: add spacing or ignore)
+				continue;
+			}
+
+			// 2. Wrap long lines using NanoVG
+			const char* start = segment.c_str();
+			const char* end = start + segment.length();
+			NVGtextRow nvgRows[32]; // Max 32 lines per segment
+			int nRows = nvgTextBreakLines(vg, start, end, maxLineWidth, nvgRows, 32);
+
+			for (int i = 0; i < nRows; i++) {
+				std::string lineStr(nvgRows[i].start, nvgRows[i].end);
+				float w = nvgRows[i].width; // Bounds of this line
+				// nvgTextBreakLines returns width, or we can measure it
+				// float b[4]; nvgTextBounds(vg, 0,0, lineStr.c_str(), nullptr, b); w = b[2]-b[0];
+
+				if (w > totalTextWidth) {
+					totalTextWidth = w;
+				}
+				rows.push_back({ lineStr, w });
+			}
+		}
+
+		if (rows.empty()) {
+			continue;
+		}
+
+		float padding = 4.0f;
+		float boxWidth = totalTextWidth + (padding * 2);
+		float boxHeight = (rows.size() * lineHeight) + (padding * 2);
+
+		// Position tooltip above the tile (centered horizontally)
+		float tooltipX = screen_x - (boxWidth / 2.0f);
+		float tooltipY = screen_y - boxHeight - 5.0f; // 5px gap
+
+		// Draw Shadow
+		nvgBeginPath(vg);
+		nvgRect(vg, tooltipX + 2, tooltipY + 2, boxWidth, boxHeight);
+		nvgFillColor(vg, nvgRGBA(0, 0, 0, 128));
+		nvgFill(vg);
+
+		// Draw Background (Black, Tibia Style)
+		nvgBeginPath(vg);
+		nvgRect(vg, tooltipX, tooltipY, boxWidth, boxHeight);
+		nvgFillColor(vg, nvgRGBA(0, 0, 0, 230)); // Stronger opacity for readability
+		nvgFill(vg);
+
+		// Draw Border (Light Grey/White, 1px)
+		nvgBeginPath(vg);
+		nvgRect(vg, tooltipX + 0.5f, tooltipY + 0.5f, boxWidth - 1, boxHeight - 1);
+		nvgStrokeColor(vg, nvgRGBA(150, 150, 150, 255));
+		nvgStrokeWidth(vg, 1.0f);
+		nvgStroke(vg);
+
+		// Draw Text Lines
+		nvgFillColor(vg, nvgRGBA(255, 255, 255, 255));
+		float cursorY = tooltipY + padding;
+		for (const auto& row : rows) {
+			nvgText(vg, tooltipX + padding, cursorY, row.content.c_str(), nullptr);
+			cursorY += lineHeight;
 		}
 	}
 }

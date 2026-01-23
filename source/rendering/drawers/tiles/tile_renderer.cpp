@@ -140,9 +140,9 @@ void TileRenderer::DrawTile(TileLocation* location, const RenderView& view, cons
 			// tooltips
 			if (options.show_tooltips) {
 				if (location->getWaypointCount() > 0) {
-					tooltip_drawer->addTooltip(draw_x, draw_y, tooltip_stream.str(), 0, 255, 0);
+					tooltip_drawer->addTooltip(location->getPosition(), tooltip_stream.str(), 0, 255, 0);
 				} else {
-					tooltip_drawer->addTooltip(draw_x, draw_y, tooltip_stream.str());
+					tooltip_drawer->addTooltip(location->getPosition(), tooltip_stream.str());
 				}
 			}
 

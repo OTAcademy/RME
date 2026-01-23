@@ -209,6 +209,7 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/core/editor_sprite.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/shader_program.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/batch_renderer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/text_renderer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/ground_brush.cpp
 ${CMAKE_CURRENT_LIST_DIR}/gui.cpp
 ${CMAKE_CURRENT_LIST_DIR}/house_brush.cpp

@@ -345,10 +345,10 @@ void GameSprite::Image::createGLTexture(GLuint whatid) {
 		// Use literal 32 to ensure compilation (OT sprites are always 32x32)
 		rgba = newd uint8_t[32 * 32 * 4];
 		for (int i = 0; i < 32 * 32; ++i) {
-			rgba[i * 4 + 0] = 255;
+			rgba[i * 4 + 0] = 0;
 			rgba[i * 4 + 1] = 0;
-			rgba[i * 4 + 2] = 255;
-			rgba[i * 4 + 3] = 255;
+			rgba[i * 4 + 2] = 0;
+			rgba[i * 4 + 3] = 0;
 		}
 	}
 

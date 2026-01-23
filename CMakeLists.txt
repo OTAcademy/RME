@@ -46,6 +46,7 @@ endif()
 
 find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
+find_package(nanovg CONFIG REQUIRED)
 
 include(source/CMakeLists.txt)
 if(WIN32)
@@ -105,3 +106,4 @@ endif()
 target_link_libraries(rme PRIVATE ${OPENGL_LIBRARIES})
 target_link_libraries(rme PRIVATE glad::glad)
 target_link_libraries(rme PRIVATE glm::glm)
+target_link_libraries(rme PRIVATE nanovg::nanovg)

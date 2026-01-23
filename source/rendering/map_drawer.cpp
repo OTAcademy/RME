@@ -112,7 +112,7 @@ void MapDrawer::SetupGL() {
 }
 
 void MapDrawer::Release() {
-	tooltip_drawer->clear(); // Note: tooltip_drawer uses clear(), distinct from LightDrawer
+	// tooltip_drawer->clear(); // Moved to ClearTooltips(), called explicitly after UI draw
 
 	if (light_drawer) {
 		light_drawer->unloadGLTexture();
@@ -130,7 +130,6 @@ void MapDrawer::Draw() {
 	drag_shadow_drawer->draw(this, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options);
 	floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor); // Preserving logic
 
-
 	if (options.boundbox_selection) {
 		selection_drawer->draw(view, canvas, options);
 	}
@@ -143,9 +142,10 @@ void MapDrawer::Draw() {
 	if (options.show_ingame_box) {
 		DrawIngameBox();
 	}
-	if (options.show_tooltips) {
-		DrawTooltips();
+	if (options.show_ingame_box) {
+		DrawIngameBox();
 	}
+	// Tooltips are now drawn in MapCanvas::OnPaint (UI Pass)
 }
 
 void MapDrawer::DrawBackground() {
@@ -197,10 +197,7 @@ void MapDrawer::DrawGrid() {
 }
 
 void MapDrawer::DrawTooltips() {
-	// Origin calls draw(zoom, TileSize) or similar, but TooltipDrawer logic might vary.
-	// The user file had: tooltip_drawer->draw(view.zoom, TileSize);
-	// We'll keep it as user had it to avoid breaking tooltip logic.
-	tooltip_drawer->draw(view.zoom, TileSize);
+	tooltip_drawer->draw(view);
 }
 
 void MapDrawer::DrawMapLayer(int map_z, bool live_client) {
@@ -213,4 +210,8 @@ void MapDrawer::DrawLight() {
 
 void MapDrawer::TakeScreenshot(uint8_t* screenshot_buffer) {
 	ScreenCapture::Capture(view.screensize_x, view.screensize_y, screenshot_buffer);
+}
+
+void MapDrawer::ClearTooltips() {
+	tooltip_drawer->clear();
 }

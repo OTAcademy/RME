@@ -1,7 +1,7 @@
 Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
 
   Trwa skanowanie źródeł pod kątem zależności modułów...
-  navigation_controller.cpp
+  tooltip_drawer.cpp
   Trwa kompilowanie…
-  navigation_controller.cpp
-  rme.vcxproj -> C:\Users\karol\Documents\GitHub\RME_v2\build\Release\rme.exe
+  tooltip_drawer.cpp
+LINK : fatal error LNK1104: nie można otworzyć pliku "C:\Users\karol\Documents\GitHub\RME_v2\build\Release\rme.exe" [C:\Users\karol\Documents\GitHub\RME_v2\build\rme.vcxproj]

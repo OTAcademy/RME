@@ -41,6 +41,7 @@
 #include "rendering/ui/map_status_updater.h"
 #include "rendering/map_drawer.h"
 #include "rendering/core/batch_renderer.h"
+#include "rendering/core/text_renderer.h"
 #include "application.h"
 #include "live_server.h"
 #include "browse_tile_window.h"
@@ -211,6 +212,11 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			animation_timer->Stop();
 		}
 
+		// Text Renderer Init
+		if (!TextRenderer::GetContext()) {
+			TextRenderer::Init();
+		}
+
 		if (!renderer_initialized) {
 			BatchRenderer::Init();
 			renderer_initialized = true;
@@ -227,6 +233,15 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 
 		drawer->Release();
 		BatchRenderer::End();
+
+		// Draw UI (Tooltips) using NanoVG
+		if (options.show_tooltips) {
+			TextRenderer::BeginFrame(GetSize().x, GetSize().y);
+			drawer->DrawTooltips();
+			TextRenderer::EndFrame();
+		}
+
+		drawer->ClearTooltips();
 	}
 
 	// Clean unused textures

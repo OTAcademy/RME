@@ -97,6 +97,7 @@ public:
 
 	void DrawGrid();
 	void DrawTooltips();
+	void ClearTooltips();
 
 	void DrawLight();
 

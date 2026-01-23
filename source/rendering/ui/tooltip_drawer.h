@@ -18,10 +18,13 @@
 #ifndef RME_TOOLTIP_DRAWER_H_
 #define RME_TOOLTIP_DRAWER_H_
 
-#include <string>
+#include "../../definitions.h"
+#include <iostream>
+#include "position.h"
+#include "rendering/core/render_view.h"
 #include <vector>
+#include <string>
 #include <sstream>
-#include "definitions.h"
 
 class Item;
 class Waypoint;
@@ -32,8 +35,8 @@ struct MapTooltip {
 		MAX_CHARS = 255,
 	};
 
-	MapTooltip(int x, int y, std::string text, uint8_t r, uint8_t g, uint8_t b) :
-		x(x), y(y), text(text), r(r), g(g), b(b) {
+	MapTooltip(Position pos, std::string text, uint8_t r, uint8_t g, uint8_t b) :
+		pos(pos), text(text), r(r), g(g), b(b) {
 		ellipsis = (text.length() - 3) > MAX_CHARS;
 	}
 
@@ -43,7 +46,7 @@ struct MapTooltip {
 		}
 	}
 
-	int x, y;
+	Position pos;
 	std::string text;
 	uint8_t r, g, b;
 	bool ellipsis;
@@ -54,10 +57,10 @@ public:
 	TooltipDrawer();
 	~TooltipDrawer();
 
-	void addTooltip(int screenx, int screeny, const std::string& text, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255);
+	void addTooltip(Position pos, const std::string& text, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255);
 	void writeTooltip(Item* item, std::ostringstream& stream, bool isHouseTile = false);
 	void writeTooltip(Waypoint* waypoint, std::ostringstream& stream);
-	void draw(float zoom, int tile_size);
+	void draw(const RenderView& view);
 	void clear();
 
 protected:
