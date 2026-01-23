@@ -126,7 +126,7 @@ ${CMAKE_CURRENT_LIST_DIR}/lua/lua_api_http.h
 ${CMAKE_CURRENT_LIST_DIR}/lua/lua_api_noise.h
 ${CMAKE_CURRENT_LIST_DIR}/lua/lua_api_algo.h
 ${CMAKE_CURRENT_LIST_DIR}/lua/lua_api_geo.h
-${CMAKE_CURRENT_LIST_DIR}/FastNoiseLite.h
+${CMAKE_CURRENT_LIST_DIR}/fast_noise_lite.h
 )
 
 set(rme_SRC

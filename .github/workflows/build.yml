@@ -37,7 +37,8 @@ jobs:
             zlib1g-dev \
             libxmu-dev \
             libxi-dev \
-            liblua5.3-dev
+            liblua5.3-dev \
+            libsol2-dev
 
       - name: Setup ccache
         run: |
