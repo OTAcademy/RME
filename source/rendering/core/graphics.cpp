@@ -46,6 +46,7 @@
 #include "rendering/core/outfit_colors.h"
 #include "rendering/core/outfit_colorizer.h"
 #include "rendering/core/gl_texture_id_generator.h"
+#include <spdlog/spdlog.h>
 
 GraphicManager::GraphicManager() :
 	client_version(nullptr),
@@ -70,6 +71,13 @@ GraphicManager::~GraphicManager() {
 	}
 
 	delete animation_timer;
+
+	// Cleanup atlas manager
+	if (atlas_manager_) {
+		atlas_manager_->clear();
+		delete atlas_manager_;
+		atlas_manager_ = nullptr;
+	}
 }
 
 bool GraphicManager::hasTransparency() const {
@@ -104,11 +112,40 @@ void GraphicManager::clear() {
 	collector.Clear();
 	spritefile = "";
 
+	// Cleanup atlas manager (will be reinitialized lazily when needed)
+	if (atlas_manager_) {
+		atlas_manager_->clear();
+		delete atlas_manager_;
+		atlas_manager_ = nullptr;
+	}
+
 	unloaded = true;
 }
 
 void GraphicManager::cleanSoftwareSprites() {
 	collector.CleanSoftwareSprites(sprite_space);
+}
+
+bool GraphicManager::ensureAtlasManager() {
+	// Already initialized
+	if (atlas_manager_ && atlas_manager_->isValid()) {
+		return true;
+	}
+
+	// Create and initialize on first use
+	if (!atlas_manager_) {
+		atlas_manager_ = newd AtlasManager();
+	}
+
+	// Lazy initialization happens inside AtlasManager::ensureInitialized()
+	if (!atlas_manager_->ensureInitialized()) {
+		std::cerr << "GraphicManager: Failed to initialize atlas manager" << std::endl;
+		delete atlas_manager_;
+		atlas_manager_ = nullptr;
+		return false;
+	}
+
+	return true;
 }
 
 Sprite* GraphicManager::getSprite(int id) {
@@ -259,6 +296,23 @@ GLuint GameSprite::getHardwareID(int _x, int _y, int _layer, int _count, int _pa
 	return spriteList[v]->getHardwareID();
 }
 
+const AtlasRegion* GameSprite::getAtlasRegion(int _x, int _y, int _layer, int _count, int _pattern_x, int _pattern_y, int _pattern_z, int _frame) {
+	uint32_t v;
+	if (_count >= 0 && height <= 1 && width <= 1) {
+		v = _count;
+	} else {
+		v = ((((((_frame)*pattern_y + _pattern_y) * pattern_x + _pattern_x) * layers + _layer) * height + _y) * width + _x);
+	}
+	if (v >= numsprites) {
+		if (numsprites == 1) {
+			v = 0;
+		} else {
+			v %= numsprites;
+		}
+	}
+	return spriteList[v]->getAtlasRegion();
+}
+
 GameSprite::TemplateImage* GameSprite::getTemplateImage(int sprite_index, const Outfit& outfit) {
 	if (instanced_templates.empty()) {
 		TemplateImage* img = newd TemplateImage(this, sprite_index, outfit);
@@ -385,6 +439,7 @@ void GameSprite::Image::clean(int time) {
 GameSprite::NormalImage::NormalImage() :
 	id(0),
 	gl_tid(0),
+	atlas_region(nullptr),
 	size(0),
 	dump(nullptr) {
 	////
@@ -519,11 +574,48 @@ GLuint GameSprite::NormalImage::getHardwareID() {
 }
 
 void GameSprite::NormalImage::createGLTexture(GLuint ignored) {
+	// TEMPORARILY DISABLED: Atlas path causes black tiles because getHardwareID
+	// returns gl_tid which has no data when sprites go to atlas instead.
+	// TODO: Re-enable once atlas rendering is fixed
+	/*
+	if (g_gui.gfx.ensureAtlasManager()) {
+		AtlasManager* atlas_mgr = g_gui.gfx.getAtlasManager();
+		if (!atlas_region) {
+			uint8_t* rgba = getRGBAData();
+			if (rgba) {
+				atlas_region = atlas_mgr->addSprite(id, rgba);
+				delete[] rgba;
+				if (atlas_region) {
+					isGLLoaded = true;
+					g_gui.gfx.collector.NotifyTextureLoaded();
+					return;
+				}
+			}
+		} else {
+			// Already in atlas
+			isGLLoaded = true;
+			return;
+		}
+	}
+	*/
+
+	// Use legacy individual texture (always)
 	Image::createGLTexture(gl_tid);
 }
 
 void GameSprite::NormalImage::unloadGLTexture(GLuint ignored) {
 	Image::unloadGLTexture(gl_tid);
+}
+
+const AtlasRegion* GameSprite::NormalImage::getAtlasRegion() {
+	if (!isGLLoaded) {
+		if (gl_tid == 0) {
+			gl_tid = GLTextureIDGenerator::GetFreeTextureID();
+		}
+		createGLTexture(gl_tid);
+	}
+	visit();
+	return atlas_region;
 }
 
 GameSprite::TemplateImage::TemplateImage(GameSprite* parent, int v, const Outfit& outfit) :

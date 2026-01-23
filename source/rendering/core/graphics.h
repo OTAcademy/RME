@@ -41,6 +41,7 @@ class Animator;
 #include "rendering/core/sprite_light.h"
 #include "rendering/core/texture_garbage_collector.h"
 #include "rendering/core/render_timer.h"
+#include "rendering/core/atlas_manager.h"
 
 class Sprite {
 public:
@@ -63,6 +64,9 @@ public:
 	int getIndex(int width, int height, int layer, int pattern_x, int pattern_y, int pattern_z, int frame) const;
 	GLuint getHardwareID(int _x, int _y, int _layer, int _subtype, int _pattern_x, int _pattern_y, int _pattern_z, int _frame);
 	GLuint getHardwareID(int _x, int _y, int _dir, int _addon, int _pattern_z, const Outfit& _outfit, int _frame); // CreatureDatabase
+
+	// Phase 2: Get atlas region for texture array rendering
+	const AtlasRegion* getAtlasRegion(int _x, int _y, int _layer, int _subtype, int _pattern_x, int _pattern_y, int _pattern_z, int _frame);
 	virtual void DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width = -1, int height = -1);
 
 	virtual void unloadDC();
@@ -116,6 +120,7 @@ protected:
 		// We use the sprite id as GL texture id
 		uint32_t id;
 		GLuint gl_tid;
+		const AtlasRegion* atlas_region; // AtlasRegion in texture array (nullptr if not loaded)
 
 		// This contains the pixel data
 		uint16_t size;
@@ -126,6 +131,9 @@ protected:
 		virtual GLuint getHardwareID();
 		virtual uint8_t* getRGBData();
 		virtual uint8_t* getRGBAData();
+
+		// Phase 2: Get atlas region (ensures loaded first)
+		const AtlasRegion* getAtlasRegion();
 
 	protected:
 		virtual void createGLTexture(GLuint ignored = 0);
@@ -237,11 +245,24 @@ public:
 
 	ClientVersion* client_version;
 
+	// Sprite Atlas (Phase 2) - manages all game sprites in a texture array
+	AtlasManager* getAtlasManager() {
+		return atlas_manager_;
+	}
+	bool hasAtlasManager() const {
+		return atlas_manager_ != nullptr && atlas_manager_->isValid();
+	}
+	// Lazy initialization of atlas
+	bool ensureAtlasManager();
+
 private:
 	bool unloaded;
 	// This is used if memcaching is NOT on
 	std::string spritefile;
 	bool loadSpriteDump(uint8_t*& target, uint16_t& size, int sprite_id);
+
+	// Atlas manager for Phase 2 texture array rendering
+	AtlasManager* atlas_manager_ = nullptr;
 
 	typedef std::map<int, Sprite*> SpriteMap;
 	SpriteMap sprite_space;

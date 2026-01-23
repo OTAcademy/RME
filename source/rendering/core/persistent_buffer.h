@@ -2,43 +2,92 @@
 #define RME_RENDERING_CORE_PERSISTENT_BUFFER_H_
 
 #include "main.h"
-#include <vector>
 
-struct BufferRange {
-	size_t start;
-	size_t size;
-	GLsync fence;
-};
-
+/**
+ * Triple-buffered ring buffer with persistent mapping for zero-copy GPU uploads.
+ *
+ * Based on the proven imgui_renderer implementation:
+ * 1. Maps buffer ONCE at initialization (persistent mapping)
+ * 2. Uses 3 sections that rotate after each draw (triple buffering)
+ * 3. Uses fence sync to ensure GPU is done with a section before reusing
+ *
+ * Key insight: Each flush gets its OWN section. No accumulating within sections.
+ */
 class PersistentBuffer {
 public:
-	PersistentBuffer(size_t size, GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	static constexpr size_t BUFFER_COUNT = 3;
+
+	PersistentBuffer() = default;
 	~PersistentBuffer();
 
-	void Init();
-	void Release();
+	// Non-copyable
+	PersistentBuffer(const PersistentBuffer&) = delete;
+	PersistentBuffer& operator=(const PersistentBuffer&) = delete;
 
-	// Allocate space in the ring buffer.
-	// Returns the mapped pointer to write to, and sets out_offset for bind commands.
-	void* Allocate(size_t size, size_t& out_offset);
+	/**
+	 * Initialize the ring buffer with persistent mapping.
+	 * @param element_size Size of each element in bytes
+	 * @param max_elements Maximum elements per section
+	 * @return true if successful
+	 */
+	bool initialize(size_t element_size, size_t max_elements);
 
-	// Mark the recently allocated range as "in use by GPU" after issuing draw command.
-	void Lock(size_t size);
+	/**
+	 * Release GPU resources.
+	 */
+	void cleanup();
 
-	GLuint GetID() const {
-		return bufferID;
+	/**
+	 * Wait for the current section to be available, return write pointer.
+	 * This will block if the GPU is still reading from this section.
+	 * @param count Number of elements to write (for bounds checking)
+	 * @return Pointer to write data, or nullptr if count exceeds capacity
+	 */
+	void* waitAndMap(size_t count);
+
+	/**
+	 * Signal that we've finished drawing. Call AFTER each draw call!
+	 * Inserts fence and advances to next section.
+	 */
+	void signalFinished();
+
+	/**
+	 * Get the OpenGL buffer ID.
+	 */
+	GLuint getBufferId() const {
+		return bufferId_;
+	}
+
+	/**
+	 * Get byte offset to current section for vertex attribute setup.
+	 */
+	size_t getCurrentSectionOffset() const;
+
+	/**
+	 * Get max elements per section.
+	 */
+	size_t getMaxElements() const {
+		return maxElements_;
+	}
+
+	/**
+	 * Get element size in bytes.
+	 */
+	size_t getElementSize() const {
+		return elementSize_;
 	}
 
 private:
-	void WaitForFence(size_t start, size_t size);
+	GLuint bufferId_ = 0;
+	void* mappedPtr_ = nullptr;
+	GLsync fences_[BUFFER_COUNT] = { nullptr, nullptr, nullptr };
 
-	GLuint bufferID = 0;
-	size_t totalSize = 0;
-	size_t currentOffset = 0;
-	uint8_t* mappedData = nullptr;
-	GLbitfield flags;
+	size_t elementSize_ = 0;
+	size_t maxElements_ = 0;
+	size_t sectionSize_ = 0; // elementSize * maxElements
+	size_t currentSection_ = 0;
 
-	std::vector<BufferRange> fences;
+	bool initialized_ = false;
 };
 
 #endif

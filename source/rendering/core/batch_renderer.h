@@ -5,9 +5,14 @@
 #include <vector>
 #include "shader_program.h"
 
+// Forward declarations
+class AtlasManager;
+struct AtlasRegion;
+
+// Vertex with 3D texture coordinates for texture array sampling
 struct Vertex {
 	glm::vec2 position;
-	glm::vec2 texCoord;
+	glm::vec3 texCoord; // u, v, layer
 	glm::vec4 color; // Normalized 0-1
 };
 
@@ -22,6 +27,11 @@ public:
 
 	static void SetMatrices(const glm::mat4& projection, const glm::mat4& view);
 
+	// Atlas-based rendering (Phase 2) - uses AtlasRegion with UV coordinates
+	static void SetAtlasManager(AtlasManager* atlas);
+	static void DrawAtlasQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, const AtlasRegion* region);
+
+	// Legacy single-texture rendering (for backward compatibility)
 	static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
 	static void DrawTextureQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, GLuint textureID);
 	static void DrawTriangle(const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3, const glm::vec4& color);
@@ -38,8 +48,10 @@ public:
 
 private:
 	static void InitRenderData();
+	static void FlushAtlasBatch(); // Flush for atlas mode
+	static void FlushLegacyBatch(); // Flush for legacy mode
 
-	static const size_t MAX_QUADS = 10000;
+	static const size_t MAX_QUADS = 50000;
 	static const size_t MAX_VERTICES = MAX_QUADS * 4;
 	static const size_t MAX_INDICES = MAX_QUADS * 6;
 
@@ -49,13 +61,16 @@ private:
 
 	static std::vector<Vertex> vertices;
 	static std::vector<uint32_t> indices;
-	static size_t indexCount;
 
 	static GLuint whiteTextureID;
 	static GLuint currentTextureID;
 	static GLenum currentPrimitiveMode;
 
-	static ShaderProgram* shader;
+	static ShaderProgram* shader; // Legacy single-texture shader
+	static ShaderProgram* atlasShader; // Texture array shader
+
+	static AtlasManager* currentAtlas;
+	static bool usingAtlas;
 
 	// Immediate mode state
 	static glm::vec4 currentColor;

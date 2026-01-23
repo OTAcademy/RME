@@ -36,6 +36,7 @@
 #include "creature.h"
 
 #include <wx/snglinst.h>
+#include <spdlog/spdlog.h>
 
 #if defined(__LINUX__) || defined(__WINDOWS__)
 	#include <GL/glut.h>
@@ -96,6 +97,18 @@ bool Application::OnInit() {
 #if defined __DEBUG_MODE__ && defined __WINDOWS__
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+
+#ifdef __WINDOWS__
+	// Allocate console for debug output
+	AllocConsole();
+	FILE* fp;
+	freopen_s(&fp, "CONOUT$", "w", stdout);
+	freopen_s(&fp, "CONOUT$", "w", stderr);
+#endif
+
+	// Configure spdlog for debug output
+	spdlog::set_level(spdlog::level::info);
+	spdlog::info("RME starting up - logging enabled");
 
 	std::cout << "This is free software: you are free to change and redistribute it." << std::endl;
 	std::cout << "There is NO WARRANTY, to the extent permitted by law." << std::endl;
