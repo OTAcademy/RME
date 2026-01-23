@@ -4,4 +4,4 @@ Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
   tooltip_drawer.cpp
   Trwa kompilowanie…
   tooltip_drawer.cpp
-LINK : fatal error LNK1104: nie można otworzyć pliku "C:\Users\karol\Documents\GitHub\RME_v2\build\Release\rme.exe" [C:\Users\karol\Documents\GitHub\RME_v2\build\rme.vcxproj]
+  rme.vcxproj -> C:\Users\karol\Documents\GitHub\RME_v2\build\Release\rme.exe

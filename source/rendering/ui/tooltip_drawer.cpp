@@ -191,35 +191,46 @@ void TooltipDrawer::draw(const RenderView& view) {
 			continue;
 		}
 
-		float padding = 4.0f;
+		float padding = 6.0f;
 		float boxWidth = totalTextWidth + (padding * 2);
 		float boxHeight = (rows.size() * lineHeight) + (padding * 2);
+		float cornerRadius = 4.0f;
 
 		// Position tooltip above the tile (centered horizontally)
 		float tooltipX = screen_x - (boxWidth / 2.0f);
-		float tooltipY = screen_y - boxHeight - 5.0f; // 5px gap
+		float tooltipY = screen_y - boxHeight - 8.0f;
 
-		// Draw Shadow
+		// --- Minimalistic Floating Tooltip ---
+
+		// Floating Shadow (soft, offset for 3D effect)
+		float shadowOffsetX = 4.0f;
+		float shadowOffsetY = 6.0f;
+
+		// Draw soft shadow using multiple layers for blur effect
+		for (int i = 3; i >= 0; i--) {
+			float alpha = 30.0f + (3 - i) * 20.0f; // Gradient opacity
+			float spread = i * 2.0f;
+			nvgBeginPath(vg);
+			nvgRoundedRect(vg, tooltipX + shadowOffsetX - spread, tooltipY + shadowOffsetY - spread, boxWidth + spread * 2, boxHeight + spread * 2, cornerRadius + spread);
+			nvgFillColor(vg, nvgRGBA(0, 0, 0, (int)alpha));
+			nvgFill(vg);
+		}
+
+		// Main Background (clean, slightly warm white)
 		nvgBeginPath(vg);
-		nvgRect(vg, tooltipX + 2, tooltipY + 2, boxWidth, boxHeight);
-		nvgFillColor(vg, nvgRGBA(0, 0, 0, 128));
+		nvgRoundedRect(vg, tooltipX, tooltipY, boxWidth, boxHeight, cornerRadius);
+		nvgFillColor(vg, nvgRGBA(250, 248, 245, 255)); // Off-white / warm
 		nvgFill(vg);
 
-		// Draw Background (Black, Tibia Style)
+		// Subtle Border
 		nvgBeginPath(vg);
-		nvgRect(vg, tooltipX, tooltipY, boxWidth, boxHeight);
-		nvgFillColor(vg, nvgRGBA(0, 0, 0, 230)); // Stronger opacity for readability
-		nvgFill(vg);
-
-		// Draw Border (Light Grey/White, 1px)
-		nvgBeginPath(vg);
-		nvgRect(vg, tooltipX + 0.5f, tooltipY + 0.5f, boxWidth - 1, boxHeight - 1);
-		nvgStrokeColor(vg, nvgRGBA(150, 150, 150, 255));
+		nvgRoundedRect(vg, tooltipX + 0.5f, tooltipY + 0.5f, boxWidth - 1, boxHeight - 1, cornerRadius);
+		nvgStrokeColor(vg, nvgRGBA(180, 170, 160, 255)); // Light brown/grey
 		nvgStrokeWidth(vg, 1.0f);
 		nvgStroke(vg);
 
-		// Draw Text Lines
-		nvgFillColor(vg, nvgRGBA(255, 255, 255, 255));
+		// Text (dark for contrast)
+		nvgFillColor(vg, nvgRGBA(40, 35, 30, 255));
 		float cursorY = tooltipY + padding;
 		for (const auto& row : rows) {
 			nvgText(vg, tooltipX + padding, cursorY, row.content.c_str(), nullptr);
