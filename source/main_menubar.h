@@ -156,6 +156,17 @@ namespace MenuBar {
 		ABOUT,
 
 		EXPERIMENTAL_FOG,
+
+		// Scripts menu
+		SCRIPTS_OPEN_FOLDER,
+		SCRIPTS_RELOAD,
+		SCRIPTS_MANAGER,  // Show/hide Script Manager window
+		SCRIPTS_FIRST,  // Dynamic script IDs start here
+		SCRIPTS_LAST = SCRIPTS_FIRST + 100,  // Allow up to 100 scripts
+
+		// Show menu (custom overlays)
+		SHOW_CUSTOM_FIRST,
+		SHOW_CUSTOM_LAST = SHOW_CUSTOM_FIRST + 200,  // Allow up to 200 custom show entries
 	};
 }
 
@@ -288,6 +299,21 @@ public:
 	void OnGotoWebsite(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);
 
+	// Scripts Menu
+	void OnScriptsOpenFolder(wxCommandEvent& event);
+	void OnScriptsReload(wxCommandEvent& event);
+	void OnScriptsManager(wxCommandEvent& event);
+	void OnScriptExecute(wxCommandEvent& event);
+
+	// Show Menu (custom overlays)
+	void OnShowOverlayToggle(wxCommandEvent& event);
+
+	// Scripts menu management
+	void LoadScriptsMenu();
+	void RefreshScriptsMenu();
+	void LoadShowMenu();
+	void RefreshShowMenu();
+
 protected:
 	// Load and returns a menu item, also sets accelerator
 	wxObject* LoadItem(pugi::xml_node node, wxMenu* parent, wxArrayString& warnings, wxString& error);
@@ -308,6 +334,12 @@ protected:
 	wxFileHistory recentFiles;
 
 	std::map<std::string, MenuBar::Action*> actions;
+
+	// Scripts menu
+	wxMenu* scriptsMenu = nullptr;
+	wxMenu* showMenu = nullptr;
+	size_t showMenuCount = 0;
+	bool showMenuHasSeparator = false;
 
 	DECLARE_EVENT_TABLE();
 };

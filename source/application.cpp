@@ -34,6 +34,8 @@
 #include "map.h"
 #include "complexitem.h"
 #include "creature.h"
+#include "lua/lua_script_manager.h"
+#include "lua/lua_scripts_window.h"
 
 #include <wx/snglinst.h>
 
@@ -172,6 +174,13 @@ bool Application::OnInit() {
 
 	// Load palette
 	g_gui.LoadPerspective();
+
+	// Initialize Lua scripting system
+	if (!g_luaScripts.initialize()) {
+		wxLogWarning("Failed to initialize Lua scripting: %s", g_luaScripts.getLastError());
+	} else if (g_gui.root && g_gui.root->menu_bar) {
+		g_gui.root->menu_bar->LoadScriptsMenu();
+	}
 
 	wxIcon icon(editor_icon);
 	g_gui.root->SetIcon(icon);
@@ -331,6 +340,9 @@ void Application::Unload() {
 }
 
 int Application::OnExit() {
+	// Shutdown Lua scripting system
+	g_luaScripts.shutdown();
+
 #ifdef _USE_PROCESS_COM
 	wxDELETE(m_proc_server);
 	wxDELETE(m_single_instance_checker);
@@ -390,6 +402,24 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	tool_bar = newd MainToolBar(this, g_gui.aui_manager);
 
 	g_gui.aui_manager->AddPane(g_gui.tabbook, wxAuiPaneInfo().CenterPane().Floatable(false).CloseButton(false).PaneBorder(false));
+
+	// Create Script Manager panel (dockable)
+	LuaScriptsWindow* scriptsWindow = newd LuaScriptsWindow(this);
+	LuaScriptsWindow::SetInstance(scriptsWindow);
+	g_gui.aui_manager->AddPane(scriptsWindow,
+		wxAuiPaneInfo()
+			.Name("ScriptManager")
+			.Caption("Script Manager")
+			.Right()
+			.CloseButton(true)
+			.MaximizeButton(false)
+			.MinimizeButton(false)
+			.Floatable(true)
+			.BestSize(450, 350)
+			.MinSize(300, 200)
+			.Hide()  // Hidden by default, show from menu
+	);
+
 	g_gui.aui_manager->Update();
 
 	UpdateMenubar();

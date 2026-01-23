@@ -36,6 +36,8 @@
 #include "materials.h"
 #include "live_client.h"
 #include "live_server.h"
+#include "lua/lua_script_manager.h"
+#include "lua/lua_scripts_window.h"
 
 BEGIN_EVENT_TABLE(MainMenuBar, wxEvtHandler)
 END_EVENT_TABLE()
@@ -199,6 +201,11 @@ MainMenuBar::MainMenuBar(MainFrame* frame) :
 	MAKE_ACTION(GOTO_WEBSITE, wxITEM_NORMAL, OnGotoWebsite);
 	MAKE_ACTION(ABOUT, wxITEM_NORMAL, OnAbout);
 
+	// Scripts menu actions
+	MAKE_ACTION(SCRIPTS_OPEN_FOLDER, wxITEM_NORMAL, OnScriptsOpenFolder);
+	MAKE_ACTION(SCRIPTS_RELOAD, wxITEM_NORMAL, OnScriptsReload);
+	MAKE_ACTION(SCRIPTS_MANAGER, wxITEM_NORMAL, OnScriptsManager);
+
 	// A deleter, this way the frame does not need
 	// to bother deleting us.
 	class CustomMenuBar : public wxMenuBar {
@@ -223,6 +230,16 @@ MainMenuBar::MainMenuBar(MainFrame* frame) :
 	}
 	for (size_t i = 0; i < 10; ++i) {
 		frame->Connect(recentFiles.GetBaseId() + i, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainMenuBar::OnOpenRecent), nullptr, this);
+	}
+
+	// Connect script execution events (dynamic range)
+	for (int i = SCRIPTS_FIRST; i <= SCRIPTS_LAST; ++i) {
+		frame->Connect(MAIN_FRAME_MENU + i, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainMenuBar::OnScriptExecute), nullptr, this);
+	}
+
+	// Connect show overlay toggle events (dynamic range)
+	for (int i = SHOW_CUSTOM_FIRST; i <= SHOW_CUSTOM_LAST; ++i) {
+		frame->Connect(MAIN_FRAME_MENU + i, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainMenuBar::OnShowOverlayToggle), nullptr, this);
 	}
 }
 
@@ -301,6 +318,40 @@ void MainMenuBar::Update() {
 
 	bool enable = !g_gui.IsWelcomeDialogShown();
 	menubar->Enable(enable);
+
+	if (showMenu) {
+		const auto& shows = g_luaScripts.getMapOverlayShows();
+		const size_t maxCount = static_cast<size_t>(MenuBar::SHOW_CUSTOM_LAST - MenuBar::SHOW_CUSTOM_FIRST);
+		const size_t desiredCount = std::min(shows.size(), maxCount);
+		bool needsReload = showMenuCount != desiredCount;
+
+		if (!needsReload) {
+			for (size_t i = 0; i < desiredCount; ++i) {
+				wxMenuItem* item = showMenu->FindItem(MAIN_FRAME_MENU + MenuBar::SHOW_CUSTOM_FIRST + static_cast<int>(i));
+				if (!item) {
+					needsReload = true;
+					break;
+				}
+				wxString label = wxString::FromUTF8(shows[i].label);
+				if (item->GetItemLabelText() != label) {
+					needsReload = true;
+					break;
+				}
+			}
+		}
+
+		if (needsReload) {
+			LoadShowMenu();
+		} else {
+			for (size_t i = 0; i < desiredCount; ++i) {
+				wxMenuItem* item = showMenu->FindItem(MAIN_FRAME_MENU + MenuBar::SHOW_CUSTOM_FIRST + static_cast<int>(i));
+				if (item) {
+					item->Check(g_luaScripts.isMapOverlayEnabled(shows[i].overlayId));
+				}
+			}
+		}
+	}
+
 	if (!enable) {
 		return;
 	}
@@ -621,16 +672,36 @@ wxObject* MainMenuBar::LoadItem(pugi::xml_node node, wxMenu* parent, wxArrayStri
 		}
 
 		std::string name = attribute.as_string();
+		std::string menuName = name;
 		std::replace(name.begin(), name.end(), '$', '&');
 
 		wxMenu* menu = newd wxMenu;
-		if ((attribute = node.attribute("special")) && std::string(attribute.as_string()) == "RECENT_FILES") {
-			recentFiles.UseMenu(menu);
+		if ((attribute = node.attribute("special"))) {
+			std::string special = attribute.as_string();
+			if (special == "RECENT_FILES") {
+				recentFiles.UseMenu(menu);
+			} else if (special == "SCRIPTS") {
+				// Store reference to scripts menu for dynamic population
+				scriptsMenu = menu;
+				// Add static items
+				for (pugi::xml_node menuNode = node.first_child(); menuNode; menuNode = menuNode.next_sibling()) {
+					LoadItem(menuNode, menu, warnings, error);
+				}
+				// Load script entries
+				LoadScriptsMenu();
+			}
 		} else {
 			for (pugi::xml_node menuNode = node.first_child(); menuNode; menuNode = menuNode.next_sibling()) {
 				// Load an add each item in order
 				LoadItem(menuNode, menu, warnings, error);
 			}
+		}
+
+		if (menuName == "Show") {
+			showMenu = menu;
+			showMenuCount = 0;
+			showMenuHasSeparator = false;
+			LoadShowMenu();
 		}
 
 		// If we have a parent, add ourselves.
@@ -774,14 +845,14 @@ void MainMenuBar::OnImportMonsterData(wxCommandEvent& WXUNUSED(event)) {
 			wxString error;
 			wxArrayString warnings;
 			bool ok = g_creatures.importXMLFromOT(FileName(paths[i]), error, warnings);
-			if (ok) {
-				g_gui.ListDialog("Monster loader errors", warnings);
-			} else {
-				wxMessageBox("Error OT data file \"" + paths[i] + "\".\n" + error, "Error", wxOK | wxICON_INFORMATION, g_gui.root);
+			if (!ok) {
+				g_gui.PopupDialog("Error", error, wxOK);
 			}
 		}
 	}
 }
+
+
 
 void MainMenuBar::OnImportMinimap(wxCommandEvent& WXUNUSED(event)) {
 	ASSERT(g_gui.IsEditorOpen());
@@ -2086,4 +2157,190 @@ void MainMenuBar::SearchItems(bool unique, bool action, bool container, bool wri
 	for (std::vector<std::pair<Tile*, Item*>>::iterator iter = found.begin(); iter != found.end(); ++iter) {
 		result->AddPosition(searcher.desc(iter->second), iter->first->getPosition());
 	}
+}
+
+// ============================================================================
+// Scripts Menu Handlers
+
+void MainMenuBar::OnScriptsOpenFolder(wxCommandEvent& WXUNUSED(event)) {
+	g_luaScripts.openScriptsFolder();
+}
+
+void MainMenuBar::OnScriptsReload(wxCommandEvent& WXUNUSED(event)) {
+	g_luaScripts.reloadScripts();
+	RefreshScriptsMenu();
+	g_gui.SetStatusText("Scripts reloaded");
+
+	// Also refresh the Script Manager window if open
+	LuaScriptsWindow* scriptsWindow = LuaScriptsWindow::Get();
+	if (scriptsWindow) {
+		scriptsWindow->RefreshScriptList();
+	}
+}
+
+void MainMenuBar::OnScriptsManager(wxCommandEvent& WXUNUSED(event)) {
+	// Toggle visibility of Script Manager panel
+	wxAuiPaneInfo& pane = g_gui.aui_manager->GetPane("ScriptManager");
+	if (pane.IsOk()) {
+		pane.Show(!pane.IsShown());
+		g_gui.aui_manager->Update();
+	}
+}
+
+void MainMenuBar::OnScriptExecute(wxCommandEvent& event) {
+	using namespace MenuBar;
+
+	int scriptIndex = event.GetId() - MAIN_FRAME_MENU - SCRIPTS_FIRST;
+	const auto& scripts = g_luaScripts.getScripts();
+
+	if (scriptIndex >= 0 && scriptIndex < (int)scripts.size()) {
+		LuaScript* script = scripts[scriptIndex].get();
+		if (!g_luaScripts.executeScript(script)) {
+			wxMessageBox(
+				wxString("Script error:\n") + g_luaScripts.getLastError(),
+				"Lua Script Error",
+				wxOK | wxICON_ERROR
+			);
+		}
+	}
+}
+
+void MainMenuBar::OnShowOverlayToggle(wxCommandEvent& event) {
+	using namespace MenuBar;
+
+	int showIndex = event.GetId() - MAIN_FRAME_MENU - SHOW_CUSTOM_FIRST;
+	const auto& shows = g_luaScripts.getMapOverlayShows();
+	if (showIndex < 0 || showIndex >= static_cast<int>(shows.size())) {
+		return;
+	}
+
+	const auto& showItem = shows[showIndex];
+	g_luaScripts.setMapOverlayShowEnabled(showItem.overlayId, event.IsChecked());
+	g_gui.RefreshView();
+}
+
+void MainMenuBar::LoadScriptsMenu() {
+	using namespace MenuBar;
+
+	if (!scriptsMenu) {
+		return;
+	}
+
+	// But let's be safe and look for the second separator
+	int separatorCount = 0;
+	size_t clearFrom = 0;
+	bool found = false;
+
+	for (size_t i = 0; i < scriptsMenu->GetMenuItemCount(); ++i) {
+		wxMenuItem* item = scriptsMenu->FindItemByPosition(i);
+		if (item && item->IsSeparator()) {
+			separatorCount++;
+			if (separatorCount == 2) {
+				clearFrom = i + 1;
+				found = true;
+				break;
+			}
+		}
+	}
+
+	// If we found the second separator, delete everything after it
+	if (!found) {
+		clearFrom = 5;
+	}
+
+	while (scriptsMenu->GetMenuItemCount() > clearFrom) {
+		scriptsMenu->Delete(scriptsMenu->FindItemByPosition(clearFrom));
+	}
+
+	// Add scripts
+	const auto& scripts = g_luaScripts.getScripts();
+	if (!scripts.empty()) {
+		// scriptsMenu->AppendSeparator(); // Separator is already there ideally
+
+		int scriptIndex = 0;
+		for (const auto& script : scripts) {
+			if (scriptIndex >= (SCRIPTS_LAST - SCRIPTS_FIRST)) {
+				break;  // Maximum scripts reached
+			}
+
+			if (!script->isEnabled()) {
+				scriptIndex++;
+				continue;
+			}
+
+			wxString label = wxString::FromUTF8(script->getDisplayName());
+			wxString shortcut = wxString::FromUTF8(script->getShortcut());
+
+			if (!shortcut.IsEmpty()) {
+				label += "\t" + shortcut;
+			}
+
+			wxMenuItem* item = scriptsMenu->Append(
+				MAIN_FRAME_MENU + SCRIPTS_FIRST + scriptIndex,
+				label,
+				wxString::FromUTF8(script->getDescription())
+			);
+			scriptIndex++;
+		}
+	}
+}
+
+void MainMenuBar::RefreshScriptsMenu() {
+	LoadScriptsMenu();
+}
+
+void MainMenuBar::LoadShowMenu() {
+	using namespace MenuBar;
+
+	if (!showMenu) {
+		return;
+	}
+
+	size_t total = showMenu->GetMenuItemCount();
+	if (showMenuCount > 0) {
+		for (size_t i = 0; i < showMenuCount && total > 0; ++i) {
+			showMenu->Delete(showMenu->FindItemByPosition(total - 1));
+			--total;
+		}
+	}
+	if (showMenuHasSeparator && total > 0) {
+		showMenu->Delete(showMenu->FindItemByPosition(total - 1));
+		--total;
+	}
+
+	showMenuCount = 0;
+	showMenuHasSeparator = false;
+
+	const auto& shows = g_luaScripts.getMapOverlayShows();
+	if (shows.empty()) {
+		return;
+	}
+
+	showMenu->AppendSeparator();
+	showMenuHasSeparator = true;
+
+	const size_t maxCount = static_cast<size_t>(SHOW_CUSTOM_LAST - SHOW_CUSTOM_FIRST);
+	size_t count = 0;
+	for (const auto& show : shows) {
+		if (count >= maxCount) {
+			break;
+		}
+
+		wxMenuItem* item = showMenu->Append(
+			MAIN_FRAME_MENU + SHOW_CUSTOM_FIRST + static_cast<int>(count),
+			wxString::FromUTF8(show.label),
+			wxString(),
+			wxITEM_CHECK
+		);
+		if (item) {
+			item->Check(show.enabled);
+		}
+		++count;
+	}
+
+	showMenuCount = count;
+}
+
+void MainMenuBar::RefreshShowMenu() {
+	LoadShowMenu();
 }
