@@ -27,7 +27,6 @@
 #include "rendering/io/editor_sprite_loader.h"
 
 #include <wx/mstream.h>
-#include <wx/stopwatch.h>
 #include <wx/dir.h>
 #include "pngfiles.h"
 
@@ -57,7 +56,7 @@ GraphicManager::GraphicManager() :
 	has_transparency(false),
 	has_frame_durations(false),
 	has_frame_groups(false) {
-	animation_timer = newd wxStopWatch();
+	animation_timer = newd RenderTimer();
 	animation_timer->Start();
 }
 

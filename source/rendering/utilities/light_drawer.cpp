@@ -23,14 +23,13 @@
 #include "rendering/core/drawing_options.h"
 
 LightDrawer::LightDrawer() {
-	global_color = wxColor(50, 50, 50, 255);
 }
 
 LightDrawer::~LightDrawer() {
 	unloadGLTexture();
 }
 
-void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog, const LightBuffer& light_buffer) {
+void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog, const LightBuffer& light_buffer, const wxColor& global_color) {
 	if (!texture.IsCreated()) {
 		texture.Create();
 	}
@@ -107,10 +106,6 @@ void LightDrawer::draw(int map_x, int map_y, int end_x, int end_y, int scroll_x,
 		glVertex2f(draw_x, draw_y + draw_height);
 		glEnd();
 	}
-}
-
-void LightDrawer::setGlobalLightColor(uint8_t color) {
-	global_color = colorFromEightBit(color);
 }
 
 void LightDrawer::createGLTexture() {

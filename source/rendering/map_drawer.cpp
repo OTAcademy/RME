@@ -27,6 +27,7 @@
 #include "gui.h"
 #include "sprites.h"
 #include "rendering/map_drawer.h"
+#include "brush.h"
 #include "rendering/drawers/map_layer_drawer.h"
 #include "rendering/ui/map_display.h"
 #include "copybuffer.h"
@@ -94,6 +95,16 @@ MapDrawer::~MapDrawer() {
 }
 
 void MapDrawer::SetupVars() {
+	options.current_house_id = 0;
+	Brush* brush = g_gui.GetCurrentBrush();
+	if (brush) {
+		if (brush->isHouse()) {
+			options.current_house_id = brush->asHouse()->getHouseID();
+		} else if (brush->isHouseExit()) {
+			options.current_house_id = brush->asHouseExit()->getHouseID();
+		}
+	}
+
 	view.Setup(canvas, options);
 }
 
@@ -201,7 +212,7 @@ void MapDrawer::DrawMapLayer(int map_z, bool live_client) {
 }
 
 void MapDrawer::DrawLight() {
-	light_drawer->draw(view.start_x, view.start_y, view.end_x, view.end_y, view.view_scroll_x, view.view_scroll_y, options.experimental_fog, light_buffer);
+	light_drawer->draw(view.start_x, view.start_y, view.end_x, view.end_y, view.view_scroll_x, view.view_scroll_y, options.experimental_fog, light_buffer, options.global_light_color);
 }
 
 void MapDrawer::TakeScreenshot(uint8_t* screenshot_buffer) {

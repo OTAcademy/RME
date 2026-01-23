@@ -21,7 +21,7 @@
 #include "action.h"
 #include "tile.h"
 #include "creature.h"
-#include "rendering/utilities/fps_counter.h"
+#include "rendering/utilities/frame_pacer.h"
 
 #include "map_popup_menu.h"
 #include "map_popup_menu.h"
@@ -152,7 +152,7 @@ public:
 	MapPopupMenu* popup_menu;
 	AnimationTimer* animation_timer;
 
-	FPSCounter fps_counter;
+	FramePacer frame_pacer;
 
 	friend class MapDrawer;
 	friend class SelectionDrawer;
@@ -167,6 +167,9 @@ public:
 	std::unique_ptr<SelectionController> selection_controller;
 	std::unique_ptr<DrawingController> drawing_controller;
 	std::unique_ptr<MapMenuHandler> menu_handler;
+
+private:
+	MapWindow* GetMapWindow() const;
 };
 
 #endif

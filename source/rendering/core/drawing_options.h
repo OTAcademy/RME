@@ -2,6 +2,7 @@
 #define RME_RENDERING_DRAWING_OPTIONS_H_
 
 #include <cstdint>
+#include <wx/wx.h>
 
 struct DrawingOptions {
 	DrawingOptions();
@@ -49,6 +50,7 @@ struct DrawingOptions {
 	bool experimental_fog;
 
 	uint32_t current_house_id;
+	wxColor global_light_color;
 };
 
 #endif

@@ -33,15 +33,13 @@ public:
 	LightDrawer();
 	~LightDrawer();
 
-	void draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog, const LightBuffer& light_buffer);
-
-	void setGlobalLightColor(uint8_t color);
+	void draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog, const LightBuffer& light_buffer, const wxColor& global_color);
 
 	void createGLTexture();
 	void unloadGLTexture();
 
 private:
-	wxColor global_color;
+	// wxColor global_color; // Removed state
 
 	// Open GL Texture used for lightmap
 	// It is owned by this class and should be released when context is destroyed

@@ -40,6 +40,7 @@ class Animator;
 
 #include "rendering/core/sprite_light.h"
 #include "rendering/core/texture_garbage_collector.h"
+#include "rendering/core/render_timer.h"
 
 class Sprite {
 public:
@@ -201,7 +202,7 @@ public:
 	}
 
 	long getElapsedTime() const {
-		return (animation_timer->TimeInMicro() / 1000).ToLong();
+		return animation_timer->getElapsedTime();
 	}
 
 	uint16_t getItemSpriteMaxID() const;
@@ -259,7 +260,7 @@ private:
 
 	TextureGarbageCollector collector;
 
-	wxStopWatch* animation_timer;
+	RenderTimer* animation_timer;
 
 	friend class GameSprite::Image;
 	friend class GameSprite::NormalImage;

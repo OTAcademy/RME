@@ -34,7 +34,6 @@
 #include "tileset_window.h"
 #include "palette_window.h"
 #include "palette_window.h"
-#include "rendering/utilities/fps_counter.h"
 #include "rendering/ui/screenshot_controller.h"
 #include "rendering/utilities/tile_describer.h"
 #include "rendering/core/coordinate_mapper.h"
@@ -160,8 +159,12 @@ void MapCanvas::SetZoom(double value) {
 }
 
 void MapCanvas::GetViewBox(int* view_scroll_x, int* view_scroll_y, int* screensize_x, int* screensize_y) const {
-	static_cast<MapWindow*>(GetParent())->GetViewSize(screensize_x, screensize_y);
-	static_cast<MapWindow*>(GetParent())->GetViewStart(view_scroll_x, view_scroll_y);
+	GetMapWindow()->GetViewSize(screensize_x, screensize_y);
+	GetMapWindow()->GetViewStart(view_scroll_x, view_scroll_y);
+}
+
+MapWindow* MapCanvas::GetMapWindow() const {
+	return static_cast<MapWindow*>(GetParent());
 }
 
 void MapCanvas::OnPaint(wxPaintEvent& event) {
@@ -173,17 +176,6 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			options.SetIngame();
 		} else {
 			options.Update();
-		}
-
-		// Calculate current house ID for highlighting
-		Brush* brush = g_gui.GetCurrentBrush();
-		options.current_house_id = 0;
-		if (brush) {
-			if (brush->isHouse()) {
-				options.current_house_id = brush->asHouse()->getHouseID();
-			} else if (brush->isHouseExit()) {
-				options.current_house_id = brush->asHouseExit()->getHouseID();
-			}
 		}
 
 		options.dragging = selection_controller->IsDragging();
@@ -213,13 +205,7 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 	SwapBuffers();
 
 	// FPS tracking and limiting
-	fps_counter.LimitFPS(g_settings.getInteger(Config::FRAME_RATE_LIMIT));
-	fps_counter.Update();
-
-	// Display FPS on status bar if enabled
-	if (g_settings.getBoolean(Config::SHOW_FPS_COUNTER) && fps_counter.HasChanged()) {
-		MapStatusUpdater::UpdateFPS(fps_counter.GetStatusString());
-	}
+	frame_pacer.UpdateAndLimit(g_settings.getInteger(Config::FRAME_RATE_LIMIT), g_settings.getBoolean(Config::SHOW_FPS_COUNTER));
 
 	// Send newd node requests
 	editor.SendNodeRequests();
@@ -231,7 +217,7 @@ void MapCanvas::TakeScreenshot(wxFileName path, wxString format) {
 
 void MapCanvas::ScreenToMap(int screen_x, int screen_y, int* map_x, int* map_y) {
 	int start_x, start_y;
-	static_cast<MapWindow*>(GetParent())->GetViewStart(&start_x, &start_y);
+	GetMapWindow()->GetViewStart(&start_x, &start_y);
 
 	CoordinateMapper::ScreenToMap(screen_x, screen_y, start_x, start_y, zoom, floor, GetContentScaleFactor(), map_x, map_y);
 }
@@ -252,7 +238,7 @@ if (floor <= GROUND_LAYER) {
 #endif
 void MapCanvas::GetScreenCenter(int* map_x, int* map_y) {
 	int width, height;
-	static_cast<MapWindow*>(GetParent())->GetViewSize(&width, &height);
+	GetMapWindow()->GetViewSize(&width, &height);
 	return ScreenToMap(width / 2, height / 2, map_x, map_y);
 }
 

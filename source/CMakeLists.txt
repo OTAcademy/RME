@@ -78,7 +78,9 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/map_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/map_layer_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/tooltip_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/drawing_options.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/render_timer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/fps_counter.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/frame_pacer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/screenshot_saver.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/screenshot_controller.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/tile_describer.h
@@ -235,7 +237,9 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/map_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/map_layer_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/tooltip_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/drawing_options.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/render_timer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/fps_counter.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/frame_pacer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/screenshot_saver.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/screenshot_controller.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/tile_describer.cpp
