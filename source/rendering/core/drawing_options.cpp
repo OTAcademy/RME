@@ -15,6 +15,7 @@ void DrawingOptions::SetDefault() {
 	show_waypoints = true;
 	ingame = false;
 	dragging = false;
+	boundbox_selection = false;
 
 	show_grid = 0;
 	show_all_floors = true;
@@ -47,6 +48,7 @@ void DrawingOptions::SetIngame() {
 	show_waypoints = false;
 	ingame = true;
 	dragging = false;
+	boundbox_selection = false;
 
 	show_grid = 0;
 	show_all_floors = true;

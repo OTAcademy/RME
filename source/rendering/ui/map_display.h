@@ -24,13 +24,19 @@
 #include "rendering/utilities/fps_counter.h"
 
 #include "map_popup_menu.h"
+#include "map_popup_menu.h"
 #include "animation_timer.h"
+#include <memory>
 
 class Item;
 class Creature;
 class MapWindow;
 class AnimationTimer;
+class AnimationTimer;
 class MapDrawer;
+class SelectionController;
+class DrawingController;
+class ScreenshotSaver;
 
 class MapCanvas : public wxGLCanvas {
 public:
@@ -148,15 +154,8 @@ public:
 	bool boundbox_selection;
 	bool screendragging;
 	bool isPasting() const;
-	bool drawing;
-	bool dragging_draw;
-	bool replace_dragging;
 
-	uint8_t* screenshot_buffer;
-
-	int drag_start_x;
-	int drag_start_y;
-	int drag_start_z;
+	std::unique_ptr<ScreenshotSaver> screenshot_saver;
 
 	int last_cursor_map_x;
 	int last_cursor_map_y;
@@ -189,8 +188,13 @@ public:
 	friend class BrushOverlayDrawer;
 	friend class DragShadowDrawer;
 	friend class PreviewDrawer;
+	friend class SelectionController;
+	friend class DrawingController;
 
 	DECLARE_EVENT_TABLE()
+
+	std::unique_ptr<SelectionController> selection_controller;
+	std::unique_ptr<DrawingController> drawing_controller;
 };
 
 #endif

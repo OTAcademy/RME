@@ -12,10 +12,26 @@
 
 class ScreenshotSaver {
 public:
-	// Returns status message or error message
-	static wxString SaveScreenshot(const wxFileName& path, const wxString& format, int width, int height, uint8_t* buffer);
+	ScreenshotSaver() : buffer(nullptr) { }
+	~ScreenshotSaver() {
+		Cleanup();
+	}
+
+	void PrepareCapture(int width, int height);
+	wxString SaveCapture(const wxFileName& path, const wxString& format, int width, int height);
+
+	uint8_t* GetBuffer() const {
+		return buffer;
+	}
+	bool IsCapturing() const {
+		return buffer != nullptr;
+	}
+
+	void Cleanup();
 
 private:
+	uint8_t* buffer;
+
 	static wxString GenerateDateString();
 };
 

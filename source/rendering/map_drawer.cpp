@@ -117,7 +117,7 @@ void MapDrawer::Draw() {
 	drag_shadow_drawer->draw(this, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options);
 	floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor);
 	floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor); // Preserving double call from original code
-	if (options.dragging) {
+	if (options.boundbox_selection) {
 		selection_drawer->draw(view, canvas, options);
 	}
 	live_cursor_drawer->draw(view, editor, options);

@@ -25,6 +25,7 @@
 #include "item.h"
 #include "creature.h"
 #include "spawn.h"
+#include "rendering/ui/selection_controller.h"
 
 DragShadowDrawer::DragShadowDrawer() {
 }
@@ -46,9 +47,10 @@ void DragShadowDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, SpriteDr
 			Position pos = tile->getPosition();
 
 			int move_x, move_y, move_z;
-			move_x = drawer->canvas->drag_start_x - view.mouse_map_x;
-			move_y = drawer->canvas->drag_start_y - view.mouse_map_y;
-			move_z = drawer->canvas->drag_start_z - view.floor;
+			Position drag_start = drawer->canvas->selection_controller->GetDragStartPosition();
+			move_x = drag_start.x - view.mouse_map_x;
+			move_y = drag_start.y - view.mouse_map_y;
+			move_z = drag_start.z - view.floor;
 
 			pos.x -= move_x;
 			pos.y -= move_y;

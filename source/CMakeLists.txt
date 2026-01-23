@@ -89,6 +89,7 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/tiles/shade_drawer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/tiles/tile_color_calculator.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/tiles/tile_renderer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/screen_capture.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/io/game_sprite_loader.h
 
 
 ${CMAKE_CURRENT_LIST_DIR}/map_region.h
@@ -102,6 +103,8 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/brush_selector.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/popup_action_handler.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/zoom_controller.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/navigation_controller.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/selection_controller.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/drawing_controller.h
 ${CMAKE_CURRENT_LIST_DIR}/mt_rand.h
 ${CMAKE_CURRENT_LIST_DIR}/net_connection.h
 ${CMAKE_CURRENT_LIST_DIR}/numbertextctrl.h
@@ -229,6 +232,7 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/tiles/shade_drawer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/tiles/tile_color_calculator.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/tiles/tile_renderer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/screen_capture.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/io/game_sprite_loader.cpp
 
 
 ${CMAKE_CURRENT_LIST_DIR}/map_region.cpp
@@ -242,6 +246,8 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/brush_selector.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/popup_action_handler.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/zoom_controller.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/ui/navigation_controller.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/selection_controller.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/ui/drawing_controller.cpp
 ${CMAKE_CURRENT_LIST_DIR}/mkpch.cpp
 ${CMAKE_CURRENT_LIST_DIR}/mt_rand.cpp
 ${CMAKE_CURRENT_LIST_DIR}/net_connection.cpp

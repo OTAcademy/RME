@@ -26,12 +26,12 @@ wxString ScreenshotSaver::GenerateDateString() {
 	return date;
 }
 
-wxString ScreenshotSaver::SaveScreenshot(const wxFileName& suggestedInfo, const wxString& format, int width, int height, uint8_t* buffer) {
+wxString ScreenshotSaver::SaveCapture(const wxFileName& suggestedInfo, const wxString& format, int width, int height) {
 	if (!buffer) {
-		return "Error: Image capture failed. Old Video Driver?";
+		return "Error: Image capture failed. Buffer empty.";
 	}
 
-	wxImage screenshot(width, height, buffer);
+	wxImage screenshot(width, height, buffer, true);
 	wxFileName path = suggestedInfo;
 
 	int type = 0;
@@ -67,5 +67,17 @@ wxString ScreenshotSaver::SaveScreenshot(const wxFileName& suggestedInfo, const 
 		}
 	} else {
 		return "Error: Couldn't open file " + path.GetFullPath() + " for writing.";
+	}
+}
+
+void ScreenshotSaver::PrepareCapture(int width, int height) {
+	Cleanup();
+	buffer = newd uint8_t[3 * width * height];
+}
+
+void ScreenshotSaver::Cleanup() {
+	if (buffer) {
+		delete[] buffer;
+		buffer = nullptr;
 	}
 }

@@ -197,6 +197,7 @@ public:
 	std::list<TemplateImage*> instanced_templates; // Templates that use this sprite
 
 	friend class GraphicManager;
+	friend class GameSpriteLoader;
 };
 
 class GraphicManager {
@@ -227,10 +228,13 @@ public:
 	bool loadEditorSprites();
 	// Metadata should be loaded first
 	// This fills the item / creature adress space
+
+	// This fills the item / creature adress space
 	bool loadOTFI(const FileName& filename, wxString& error, wxArrayString& warnings);
 	bool loadSpriteMetadata(const FileName& datafile, wxString& error, wxArrayString& warnings);
-	bool loadSpriteMetadataFlags(FileReadHandle& file, GameSprite* sType, wxString& error, wxArrayString& warnings);
 	bool loadSpriteData(const FileName& datafile, wxString& error, wxArrayString& warnings);
+
+	friend class GameSpriteLoader;
 
 	// Cleans old & unused textures according to config settings
 	void garbageCollection();

@@ -184,3 +184,17 @@ void LightDrawer::unloadGLTexture() {
 		glDeleteTextures(1, &texture);
 	}
 }
+
+float LightDrawer::calculateIntensity(int map_x, int map_y, const Light& light) {
+	int dx = map_x - light.map_x;
+	int dy = map_y - light.map_y;
+	float distance = std::sqrt(dx * dx + dy * dy);
+	if (distance > MaxLightIntensity) {
+		return 0.f;
+	}
+	float intensity = (-distance + light.intensity) * 0.2f;
+	if (intensity < 0.01f) {
+		return 0.f;
+	}
+	return std::min(intensity, 1.f);
+}

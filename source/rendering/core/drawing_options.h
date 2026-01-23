@@ -18,6 +18,7 @@ struct DrawingOptions {
 	bool show_waypoints;
 	bool ingame;
 	bool dragging;
+	bool boundbox_selection;
 
 	int show_grid;
 	bool show_all_floors;

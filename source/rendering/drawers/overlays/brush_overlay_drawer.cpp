@@ -31,6 +31,7 @@
 
 #include "brush.h"
 
+#include "rendering/ui/drawing_controller.h"
 #include "doodad_brush.h"
 #include "creature_brush.h"
 #include "house_exit_brush.h"
@@ -74,7 +75,7 @@ void BrushOverlayDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, Sprite
 		brushColor = COLOR_ERASER;
 	}
 
-	if (drawer->canvas->dragging_draw) {
+	if (drawer->canvas->drawing_controller->IsDraggingDraw()) {
 		ASSERT(brush->canDrag());
 
 		if (brush->isWall()) {

@@ -52,7 +52,12 @@
 #include "rendering/ui/brush_selector.h"
 #include "rendering/ui/popup_action_handler.h"
 #include "rendering/ui/zoom_controller.h"
+#include "rendering/ui/zoom_controller.h"
 #include "rendering/ui/navigation_controller.h"
+#include "rendering/ui/navigation_controller.h"
+#include "rendering/ui/selection_controller.h"
+#include "rendering/ui/drawing_controller.h"
+#include "rendering/ui/drawing_controller.h"
 
 #include "doodad_brush.h"
 #include "house_exit_brush.h"
@@ -132,15 +137,6 @@ MapCanvas::MapCanvas(MapWindow* parent, Editor& editor, int* attriblist) :
 	dragging(false),
 	boundbox_selection(false),
 	screendragging(false),
-	drawing(false),
-	dragging_draw(false),
-	replace_dragging(false),
-
-	screenshot_buffer(nullptr),
-
-	drag_start_x(-1),
-	drag_start_y(-1),
-	drag_start_z(-1),
 
 	last_cursor_map_x(-1),
 	last_cursor_map_y(-1),
@@ -159,6 +155,9 @@ MapCanvas::MapCanvas(MapWindow* parent, Editor& editor, int* attriblist) :
 	popup_menu = newd MapPopupMenu(editor);
 	animation_timer = newd AnimationTimer(this);
 	drawer = new MapDrawer(this);
+	selection_controller = std::make_unique<SelectionController>(this, editor);
+	drawing_controller = std::make_unique<DrawingController>(this, editor);
+	screenshot_saver = std::make_unique<ScreenshotSaver>();
 	keyCode = WXK_NONE;
 }
 
@@ -166,7 +165,6 @@ MapCanvas::~MapCanvas() {
 	delete popup_menu;
 	delete animation_timer;
 	delete drawer;
-	free(screenshot_buffer);
 }
 
 void MapCanvas::Refresh() {
@@ -191,13 +189,14 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 
 	if (g_gui.IsRenderingEnabled()) {
 		DrawingOptions& options = drawer->getOptions();
-		if (screenshot_buffer) {
+		if (screenshot_saver->IsCapturing()) {
 			options.SetIngame();
 		} else {
 			options.Update();
 		}
 
-		options.dragging = boundbox_selection;
+		options.dragging = selection_controller->IsDragging();
+		options.boundbox_selection = selection_controller->IsBoundboxSelection();
 
 		if (options.show_preview) {
 			animation_timer->Start();
@@ -209,8 +208,8 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 		drawer->SetupGL();
 		drawer->Draw();
 
-		if (screenshot_buffer) {
-			drawer->TakeScreenshot(screenshot_buffer);
+		if (screenshot_saver->IsCapturing()) {
+			drawer->TakeScreenshot(screenshot_saver->GetBuffer());
 		}
 
 		drawer->Release();
@@ -244,20 +243,18 @@ void MapCanvas::TakeScreenshot(wxFileName path, wxString format) {
 	int screensize_x, screensize_y;
 	GetViewBox(&view_scroll_x, &view_scroll_y, &screensize_x, &screensize_y);
 
-	delete[] screenshot_buffer;
-	screenshot_buffer = newd uint8_t[3 * screensize_x * screensize_y];
+	screenshot_saver->PrepareCapture(screensize_x, screensize_y);
 
 	// Draw the window
 	Refresh();
 	wxGLCanvas::Update(); // Forces immediate redraws the window.
 
-	// screenshot_buffer should now contain the screenbuffer
-
-	// Delegate saving to ScreenshotSaver
+	// Buffer should now contain the screenbuffer
 
 	static_cast<MapWindow*>(GetParent())->GetViewSize(&screensize_x, &screensize_y);
 
-	wxString result = ScreenshotSaver::SaveScreenshot(path, format, screensize_x, screensize_y, screenshot_buffer);
+	// Delegate saving to ScreenshotSaver
+	wxString result = screenshot_saver->SaveCapture(path, format, screensize_x, screensize_y);
 
 	if (result.StartsWith("Error:")) {
 		g_gui.PopupDialog("Screenshot Error", result, wxOK);
@@ -267,7 +264,7 @@ void MapCanvas::TakeScreenshot(wxFileName path, wxString format) {
 
 	Refresh();
 
-	screenshot_buffer = nullptr;
+	screenshot_saver->Cleanup();
 }
 
 void MapCanvas::ScreenToMap(int screen_x, int screen_y, int* map_x, int* map_y) {
@@ -357,112 +354,9 @@ void MapCanvas::OnMouseMove(wxMouseEvent& event) {
 	}
 
 	if (g_gui.IsSelectionMode()) {
-		if (map_update && isPasting()) {
-			Refresh();
-		} else if (map_update && dragging) {
-			wxString ss;
-
-			int move_x = drag_start_x - mouse_map_x;
-			int move_y = drag_start_y - mouse_map_y;
-			int move_z = drag_start_z - floor;
-			ss << "Dragging " << -move_x << "," << -move_y << "," << -move_z;
-			g_gui.SetStatusText(ss);
-
-			Refresh();
-		} else if (boundbox_selection) {
-			if (map_update) {
-				wxString ss;
-
-				int move_x = std::abs(last_click_map_x - mouse_map_x);
-				int move_y = std::abs(last_click_map_y - mouse_map_y);
-				ss << "Selection " << move_x + 1 << ":" << move_y + 1;
-				g_gui.SetStatusText(ss);
-			}
-
-			Refresh();
-		}
+		selection_controller->HandleDrag(Position(mouse_map_x, mouse_map_y, floor), event.ShiftDown(), event.ControlDown(), event.AltDown());
 	} else { // Drawing mode
-		Brush* brush = g_gui.GetCurrentBrush();
-		if (map_update && drawing && brush) {
-			if (brush->isDoodad()) {
-				if (event.ControlDown()) {
-					PositionVector tilestodraw;
-					BrushUtility::GetTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, nullptr);
-					editor.undraw(tilestodraw, event.ShiftDown() || event.AltDown());
-				} else {
-					editor.draw(Position(mouse_map_x, mouse_map_y, floor), event.ShiftDown() || event.AltDown());
-				}
-			} else if (brush->isDoor()) {
-				if (!brush->canDraw(&editor.map, Position(mouse_map_x, mouse_map_y, floor))) {
-					// We don't have to waste an action in this case...
-				} else {
-					PositionVector tilestodraw;
-					PositionVector tilestoborder;
-
-					tilestodraw.push_back(Position(mouse_map_x, mouse_map_y, floor));
-
-					tilestoborder.push_back(Position(mouse_map_x, mouse_map_y - 1, floor));
-					tilestoborder.push_back(Position(mouse_map_x - 1, mouse_map_y, floor));
-					tilestoborder.push_back(Position(mouse_map_x, mouse_map_y + 1, floor));
-					tilestoborder.push_back(Position(mouse_map_x + 1, mouse_map_y, floor));
-
-					if (event.ControlDown()) {
-						editor.undraw(tilestodraw, tilestoborder, event.AltDown());
-					} else {
-						editor.draw(tilestodraw, tilestoborder, event.AltDown());
-					}
-				}
-			} else if (brush->needBorders()) {
-				PositionVector tilestodraw, tilestoborder;
-
-				BrushUtility::GetTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, &tilestoborder);
-
-				if (event.ControlDown()) {
-					editor.undraw(tilestodraw, tilestoborder, event.AltDown());
-				} else {
-					editor.draw(tilestodraw, tilestoborder, event.AltDown());
-				}
-			} else if (brush->oneSizeFitsAll()) {
-				drawing = true;
-				PositionVector tilestodraw;
-				tilestodraw.push_back(Position(mouse_map_x, mouse_map_y, floor));
-
-				if (event.ControlDown()) {
-					editor.undraw(tilestodraw, event.AltDown());
-				} else {
-					editor.draw(tilestodraw, event.AltDown());
-				}
-			} else { // No borders
-				PositionVector tilestodraw;
-
-				for (int y = -g_gui.GetBrushSize(); y <= g_gui.GetBrushSize(); y++) {
-					for (int x = -g_gui.GetBrushSize(); x <= g_gui.GetBrushSize(); x++) {
-						if (g_gui.GetBrushShape() == BRUSHSHAPE_SQUARE) {
-							tilestodraw.push_back(Position(mouse_map_x + x, mouse_map_y + y, floor));
-						} else if (g_gui.GetBrushShape() == BRUSHSHAPE_CIRCLE) {
-							double distance = sqrt(double(x * x) + double(y * y));
-							if (distance < g_gui.GetBrushSize() + 0.005) {
-								tilestodraw.push_back(Position(mouse_map_x + x, mouse_map_y + y, floor));
-							}
-						}
-					}
-				}
-				if (event.ControlDown()) {
-					editor.undraw(tilestodraw, event.AltDown());
-				} else {
-					editor.draw(tilestodraw, event.AltDown());
-				}
-			}
-
-			// Create newd doodad layout (does nothing if a non-doodad brush is selected)
-			g_gui.FillDoodadPreviewBuffer();
-
-			g_gui.RefreshView();
-		} else if (dragging_draw) {
-			g_gui.RefreshView();
-		} else if (map_update && brush) {
-			Refresh();
-		}
+		drawing_controller->HandleDrag(Position(mouse_map_x, mouse_map_y, floor), event.ShiftDown(), event.ControlDown(), event.AltDown());
 	}
 }
 
@@ -542,248 +436,9 @@ void MapCanvas::OnMouseActionClick(wxMouseEvent& event) {
 			}
 		}
 	} else if (g_gui.IsSelectionMode()) {
-		if (isPasting()) {
-			// Set paste to false (no rendering etc.)
-			EndPasting();
-
-			// Paste to the map
-			editor.copybuffer.paste(editor, Position(mouse_map_x, mouse_map_y, floor));
-
-			// Start dragging
-			dragging = true;
-			drag_start_x = mouse_map_x;
-			drag_start_y = mouse_map_y;
-			drag_start_z = floor;
-		} else {
-			do {
-				boundbox_selection = false;
-				if (event.ShiftDown()) {
-					boundbox_selection = true;
-
-					if (!event.ControlDown()) {
-						editor.selection.start(); // Start selection session
-						editor.selection.clear(); // Clear out selection
-						editor.selection.finish(); // End selection session
-						editor.selection.updateSelectionCount();
-					}
-				} else if (event.ControlDown()) {
-					Tile* tile = editor.map.getTile(mouse_map_x, mouse_map_y, floor);
-					if (tile) {
-						if (tile->spawn && g_settings.getInteger(Config::SHOW_SPAWNS)) {
-							editor.selection.start(); // Start selection session
-							if (tile->spawn->isSelected()) {
-								editor.selection.remove(tile, tile->spawn);
-							} else {
-								editor.selection.add(tile, tile->spawn);
-							}
-							editor.selection.finish(); // Finish selection session
-							editor.selection.updateSelectionCount();
-						} else if (tile->creature && g_settings.getInteger(Config::SHOW_CREATURES)) {
-							editor.selection.start(); // Start selection session
-							if (tile->creature->isSelected()) {
-								editor.selection.remove(tile, tile->creature);
-							} else {
-								editor.selection.add(tile, tile->creature);
-							}
-							editor.selection.finish(); // Finish selection session
-							editor.selection.updateSelectionCount();
-						} else {
-							Item* item = tile->getTopItem();
-							if (item) {
-								editor.selection.start(); // Start selection session
-								if (item->isSelected()) {
-									editor.selection.remove(tile, item);
-								} else {
-									editor.selection.add(tile, item);
-								}
-								editor.selection.finish(); // Finish selection session
-								editor.selection.updateSelectionCount();
-							}
-						}
-					}
-				} else {
-					Tile* tile = editor.map.getTile(mouse_map_x, mouse_map_y, floor);
-					if (!tile) {
-						editor.selection.start(); // Start selection session
-						editor.selection.clear(); // Clear out selection
-						editor.selection.finish(); // End selection session
-						editor.selection.updateSelectionCount();
-					} else if (tile->isSelected()) {
-						dragging = true;
-						drag_start_x = mouse_map_x;
-						drag_start_y = mouse_map_y;
-						drag_start_z = floor;
-					} else {
-						editor.selection.start(); // Start a selection session
-						editor.selection.clear();
-						editor.selection.commit();
-						if (tile->spawn && g_settings.getInteger(Config::SHOW_SPAWNS)) {
-							editor.selection.add(tile, tile->spawn);
-							dragging = true;
-							drag_start_x = mouse_map_x;
-							drag_start_y = mouse_map_y;
-							drag_start_z = floor;
-						} else if (tile->creature && g_settings.getInteger(Config::SHOW_CREATURES)) {
-							editor.selection.add(tile, tile->creature);
-							dragging = true;
-							drag_start_x = mouse_map_x;
-							drag_start_y = mouse_map_y;
-							drag_start_z = floor;
-						} else {
-							Item* item = tile->getTopItem();
-							if (item) {
-								editor.selection.add(tile, item);
-								dragging = true;
-								drag_start_x = mouse_map_x;
-								drag_start_y = mouse_map_y;
-								drag_start_z = floor;
-							}
-						}
-						editor.selection.finish(); // Finish the selection session
-						editor.selection.updateSelectionCount();
-					}
-				}
-			} while (false);
-		}
+		selection_controller->HandleClick(Position(mouse_map_x, mouse_map_y, floor), event.ShiftDown(), event.ControlDown(), event.AltDown());
 	} else if (g_gui.GetCurrentBrush()) { // Drawing mode
-		Brush* brush = g_gui.GetCurrentBrush();
-		if (event.ShiftDown() && brush->canDrag()) {
-			dragging_draw = true;
-		} else {
-			if (g_gui.GetBrushSize() == 0 && !brush->oneSizeFitsAll()) {
-				drawing = true;
-			} else {
-				drawing = g_gui.GetCurrentBrush()->canSmear();
-			}
-			if (brush->isWall()) {
-				if (event.AltDown() && g_gui.GetBrushSize() == 0) {
-					// z0mg, just clicked a tile, shift variaton.
-					if (event.ControlDown()) {
-						editor.undraw(Position(mouse_map_x, mouse_map_y, floor), event.AltDown());
-					} else {
-						editor.draw(Position(mouse_map_x, mouse_map_y, floor), event.AltDown());
-					}
-				} else {
-					PositionVector tilestodraw;
-					PositionVector tilestoborder;
-
-					int start_map_x = mouse_map_x - g_gui.GetBrushSize();
-					int start_map_y = mouse_map_y - g_gui.GetBrushSize();
-					int end_map_x = mouse_map_x + g_gui.GetBrushSize();
-					int end_map_y = mouse_map_y + g_gui.GetBrushSize();
-
-					for (int y = start_map_y - 1; y <= end_map_y + 1; ++y) {
-						for (int x = start_map_x - 1; x <= end_map_x + 1; ++x) {
-							if ((x <= start_map_x + 1 || x >= end_map_x - 1) || (y <= start_map_y + 1 || y >= end_map_y - 1)) {
-								tilestoborder.push_back(Position(x, y, floor));
-							}
-							if (((x == start_map_x || x == end_map_x) || (y == start_map_y || y == end_map_y)) && ((x >= start_map_x && x <= end_map_x) && (y >= start_map_y && y <= end_map_y))) {
-								tilestodraw.push_back(Position(x, y, floor));
-							}
-						}
-					}
-					if (event.ControlDown()) {
-						editor.undraw(tilestodraw, tilestoborder, event.AltDown());
-					} else {
-						editor.draw(tilestodraw, tilestoborder, event.AltDown());
-					}
-				}
-			} else if (brush->isDoor()) {
-				PositionVector tilestodraw;
-				PositionVector tilestoborder;
-
-				tilestodraw.push_back(Position(mouse_map_x, mouse_map_y, floor));
-
-				tilestoborder.push_back(Position(mouse_map_x, mouse_map_y - 1, floor));
-				tilestoborder.push_back(Position(mouse_map_x - 1, mouse_map_y, floor));
-				tilestoborder.push_back(Position(mouse_map_x, mouse_map_y + 1, floor));
-				tilestoborder.push_back(Position(mouse_map_x + 1, mouse_map_y, floor));
-
-				if (event.ControlDown()) {
-					editor.undraw(tilestodraw, tilestoborder, event.AltDown());
-				} else {
-					editor.draw(tilestodraw, tilestoborder, event.AltDown());
-				}
-			} else if (brush->isDoodad() || brush->isSpawn() || brush->isCreature()) {
-				if (event.ControlDown()) {
-					if (brush->isDoodad()) {
-						PositionVector tilestodraw;
-						BrushUtility::GetTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, nullptr);
-						editor.undraw(tilestodraw, event.AltDown());
-					} else {
-						editor.undraw(Position(mouse_map_x, mouse_map_y, floor), event.ShiftDown() || event.AltDown());
-					}
-				} else {
-					bool will_show_spawn = false;
-					if (brush->isSpawn() || brush->isCreature()) {
-						if (!g_settings.getBoolean(Config::SHOW_SPAWNS)) {
-							Tile* tile = editor.map.getTile(mouse_map_x, mouse_map_y, floor);
-							if (!tile || !tile->spawn) {
-								will_show_spawn = true;
-							}
-						}
-					}
-
-					editor.draw(Position(mouse_map_x, mouse_map_y, floor), event.ShiftDown() || event.AltDown());
-
-					if (will_show_spawn) {
-						Tile* tile = editor.map.getTile(mouse_map_x, mouse_map_y, floor);
-						if (tile && tile->spawn) {
-							g_settings.setInteger(Config::SHOW_SPAWNS, true);
-							g_gui.UpdateMenubar();
-						}
-					}
-				}
-			} else {
-				if (brush->isGround() && event.AltDown()) {
-					replace_dragging = true;
-					Tile* draw_tile = editor.map.getTile(mouse_map_x, mouse_map_y, floor);
-					if (draw_tile) {
-						editor.replace_brush = draw_tile->getGroundBrush();
-					} else {
-						editor.replace_brush = nullptr;
-					}
-				}
-
-				if (brush->needBorders()) {
-					PositionVector tilestodraw;
-					PositionVector tilestoborder;
-
-					bool fill = keyCode == WXK_CONTROL_D && event.ControlDown() && brush->isGround();
-					BrushUtility::GetTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, &tilestoborder, fill);
-
-					if (!fill && event.ControlDown()) {
-						editor.undraw(tilestodraw, tilestoborder, event.AltDown());
-					} else {
-						editor.draw(tilestodraw, tilestoborder, event.AltDown());
-					}
-				} else if (brush->oneSizeFitsAll()) {
-					if (brush->isHouseExit() || brush->isWaypoint()) {
-						editor.draw(Position(mouse_map_x, mouse_map_y, floor), event.AltDown());
-					} else {
-						PositionVector tilestodraw;
-						tilestodraw.push_back(Position(mouse_map_x, mouse_map_y, floor));
-						if (event.ControlDown()) {
-							editor.undraw(tilestodraw, event.AltDown());
-						} else {
-							editor.draw(tilestodraw, event.AltDown());
-						}
-					}
-				} else {
-					PositionVector tilestodraw;
-
-					BrushUtility::GetTilesToDraw(mouse_map_x, mouse_map_y, floor, &tilestodraw, nullptr);
-
-					if (event.ControlDown()) {
-						editor.undraw(tilestodraw, event.AltDown());
-					} else {
-						editor.draw(tilestodraw, event.AltDown());
-					}
-				}
-			}
-			// Change the doodad layout brush
-			g_gui.FillDoodadPreviewBuffer();
-		}
+		drawing_controller->HandleClick(Position(mouse_map_x, mouse_map_y, floor), event.ShiftDown(), event.ControlDown(), event.AltDown());
 	}
 	last_click_x = int(event.GetX() * zoom);
 	last_click_y = int(event.GetY() * zoom);
@@ -809,286 +464,9 @@ void MapCanvas::OnMouseActionRelease(wxMouseEvent& event) {
 	int move_z = last_click_map_z - floor;
 
 	if (g_gui.IsSelectionMode()) {
-		if (dragging && (move_x != 0 || move_y != 0 || move_z != 0)) {
-			editor.moveSelection(Position(move_x, move_y, move_z));
-		} else {
-			if (boundbox_selection) {
-				if (mouse_map_x == last_click_map_x && mouse_map_y == last_click_map_y && event.ControlDown()) {
-					// Mouse hasn't moved, do control+shift thingy!
-					Tile* tile = editor.map.getTile(mouse_map_x, mouse_map_y, floor);
-					if (tile) {
-						editor.selection.start(); // Start a selection session
-						if (tile->isSelected()) {
-							editor.selection.remove(tile);
-						} else {
-							editor.selection.add(tile);
-						}
-						editor.selection.finish(); // Finish the selection session
-						editor.selection.updateSelectionCount();
-					}
-				} else {
-					// The cursor has moved, do some boundboxing!
-					if (last_click_map_x > mouse_map_x) {
-						int tmp = mouse_map_x;
-						mouse_map_x = last_click_map_x;
-						last_click_map_x = tmp;
-					}
-					if (last_click_map_y > mouse_map_y) {
-						int tmp = mouse_map_y;
-						mouse_map_y = last_click_map_y;
-						last_click_map_y = tmp;
-					}
-
-					int numtiles = 0;
-					int threadcount = std::max(g_settings.getInteger(Config::WORKER_THREADS), 1);
-
-					int start_x = 0, start_y = 0, start_z = 0;
-					int end_x = 0, end_y = 0, end_z = 0;
-
-					switch (g_settings.getInteger(Config::SELECTION_TYPE)) {
-						case SELECT_CURRENT_FLOOR: {
-							start_z = end_z = floor;
-							start_x = last_click_map_x;
-							start_y = last_click_map_y;
-							end_x = mouse_map_x;
-							end_y = mouse_map_y;
-							break;
-						}
-						case SELECT_ALL_FLOORS: {
-							start_x = last_click_map_x;
-							start_y = last_click_map_y;
-							start_z = MAP_MAX_LAYER;
-							end_x = mouse_map_x;
-							end_y = mouse_map_y;
-							end_z = floor;
-
-							if (g_settings.getInteger(Config::COMPENSATED_SELECT)) {
-								start_x -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-								start_y -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-
-								end_x -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-								end_y -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-							}
-
-							numtiles = (start_z - end_z) * (end_x - start_x) * (end_y - start_y);
-							break;
-						}
-						case SELECT_VISIBLE_FLOORS: {
-							start_x = last_click_map_x;
-							start_y = last_click_map_y;
-							if (floor <= GROUND_LAYER) {
-								start_z = GROUND_LAYER;
-							} else {
-								start_z = std::min(MAP_MAX_LAYER, floor + 2);
-							}
-							end_x = mouse_map_x;
-							end_y = mouse_map_y;
-							end_z = floor;
-
-							if (g_settings.getInteger(Config::COMPENSATED_SELECT)) {
-								start_x -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-								start_y -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-
-								end_x -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-								end_y -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-							}
-							break;
-						}
-					}
-
-					if (numtiles < 500) {
-						// No point in threading for such a small set.
-						threadcount = 1;
-					}
-					// Subdivide the selection area
-					// We know it's a square, just split it into several areas
-					int width = end_x - start_x;
-					if (width < threadcount) {
-						threadcount = min(1, width);
-					}
-					// Let's divide!
-					int remainder = width;
-					int cleared = 0;
-					std::vector<SelectionThread*> threads;
-					if (width == 0) {
-						threads.push_back(newd SelectionThread(editor, Position(start_x, start_y, start_z), Position(start_x, end_y, end_z)));
-					} else {
-						for (int i = 0; i < threadcount; ++i) {
-							int chunksize = width / threadcount;
-							// The last threads takes all the remainder
-							if (i == threadcount - 1) {
-								chunksize = remainder;
-							}
-							threads.push_back(newd SelectionThread(editor, Position(start_x + cleared, start_y, start_z), Position(start_x + cleared + chunksize, end_y, end_z)));
-							cleared += chunksize;
-							remainder -= chunksize;
-						}
-					}
-					ASSERT(cleared == width);
-					ASSERT(remainder == 0);
-
-					editor.selection.start(); // Start a selection session
-					for (std::vector<SelectionThread*>::iterator iter = threads.begin(); iter != threads.end(); ++iter) {
-						(*iter)->Execute();
-					}
-					for (std::vector<SelectionThread*>::iterator iter = threads.begin(); iter != threads.end(); ++iter) {
-						editor.selection.join(*iter);
-					}
-					editor.selection.finish(); // Finish the selection session
-					editor.selection.updateSelectionCount();
-				}
-			} else if (event.ControlDown()) {
-				////
-			} else {
-				// User hasn't moved anything, meaning selection/deselection
-				Tile* tile = editor.map.getTile(mouse_map_x, mouse_map_y, floor);
-				if (tile) {
-					if (tile->spawn && g_settings.getInteger(Config::SHOW_SPAWNS)) {
-						if (!tile->spawn->isSelected()) {
-							editor.selection.start(); // Start a selection session
-							editor.selection.add(tile, tile->spawn);
-							editor.selection.finish(); // Finish the selection session
-							editor.selection.updateSelectionCount();
-						}
-					} else if (tile->creature && g_settings.getInteger(Config::SHOW_CREATURES)) {
-						if (!tile->creature->isSelected()) {
-							editor.selection.start(); // Start a selection session
-							editor.selection.add(tile, tile->creature);
-							editor.selection.finish(); // Finish the selection session
-							editor.selection.updateSelectionCount();
-						}
-					} else {
-						Item* item = tile->getTopItem();
-						if (item && !item->isSelected()) {
-							editor.selection.start(); // Start a selection session
-							editor.selection.add(tile, item);
-							editor.selection.finish(); // Finish the selection session
-							editor.selection.updateSelectionCount();
-						}
-					}
-				}
-			}
-		}
-		editor.actionQueue->resetTimer();
-		dragging = false;
-		boundbox_selection = false;
+		selection_controller->HandleRelease(Position(mouse_map_x, mouse_map_y, floor), event.ShiftDown(), event.ControlDown(), event.AltDown());
 	} else if (g_gui.GetCurrentBrush()) { // Drawing mode
-		Brush* brush = g_gui.GetCurrentBrush();
-		if (dragging_draw) {
-			if (brush->isSpawn()) {
-				int start_map_x = std::min(last_click_map_x, mouse_map_x);
-				int start_map_y = std::min(last_click_map_y, mouse_map_y);
-				int end_map_x = std::max(last_click_map_x, mouse_map_x);
-				int end_map_y = std::max(last_click_map_y, mouse_map_y);
-
-				int map_x = start_map_x + (end_map_x - start_map_x) / 2;
-				int map_y = start_map_y + (end_map_y - start_map_y) / 2;
-
-				int width = min(g_settings.getInteger(Config::MAX_SPAWN_RADIUS), ((end_map_x - start_map_x) / 2 + (end_map_y - start_map_y) / 2) / 2);
-				int old = g_gui.GetBrushSize();
-				g_gui.SetBrushSize(width);
-				editor.draw(Position(map_x, map_y, floor), event.AltDown());
-				g_gui.SetBrushSize(old);
-			} else {
-				PositionVector tilestodraw;
-				PositionVector tilestoborder;
-				if (brush->isWall()) {
-					int start_map_x = std::min(last_click_map_x, mouse_map_x);
-					int start_map_y = std::min(last_click_map_y, mouse_map_y);
-					int end_map_x = std::max(last_click_map_x, mouse_map_x);
-					int end_map_y = std::max(last_click_map_y, mouse_map_y);
-
-					for (int y = start_map_y - 1; y <= end_map_y + 1; y++) {
-						for (int x = start_map_x - 1; x <= end_map_x + 1; x++) {
-							if ((x <= start_map_x + 1 || x >= end_map_x - 1) || (y <= start_map_y + 1 || y >= end_map_y - 1)) {
-								tilestoborder.push_back(Position(x, y, floor));
-							}
-							if (((x == start_map_x || x == end_map_x) || (y == start_map_y || y == end_map_y)) && ((x >= start_map_x && x <= end_map_x) && (y >= start_map_y && y <= end_map_y))) {
-								tilestodraw.push_back(Position(x, y, floor));
-							}
-						}
-					}
-				} else {
-					if (g_gui.GetBrushShape() == BRUSHSHAPE_SQUARE) {
-						if (last_click_map_x > mouse_map_x) {
-							int tmp = mouse_map_x;
-							mouse_map_x = last_click_map_x;
-							last_click_map_x = tmp;
-						}
-						if (last_click_map_y > mouse_map_y) {
-							int tmp = mouse_map_y;
-							mouse_map_y = last_click_map_y;
-							last_click_map_y = tmp;
-						}
-
-						for (int x = last_click_map_x - 1; x <= mouse_map_x + 1; x++) {
-							for (int y = last_click_map_y - 1; y <= mouse_map_y + 1; y++) {
-								if ((x <= last_click_map_x || x >= mouse_map_x) || (y <= last_click_map_y || y >= mouse_map_y)) {
-									tilestoborder.push_back(Position(x, y, floor));
-								}
-								if ((x >= last_click_map_x && x <= mouse_map_x) && (y >= last_click_map_y && y <= mouse_map_y)) {
-									tilestodraw.push_back(Position(x, y, floor));
-								}
-							}
-						}
-					} else {
-						int start_x, end_x;
-						int start_y, end_y;
-						int width = std::max(
-							std::abs(
-								std::max(mouse_map_y, last_click_map_y) - std::min(mouse_map_y, last_click_map_y)
-							),
-							std::abs(
-								std::max(mouse_map_x, last_click_map_x) - std::min(mouse_map_x, last_click_map_x)
-							)
-						);
-						if (mouse_map_x < last_click_map_x) {
-							start_x = last_click_map_x - width;
-							end_x = last_click_map_x;
-						} else {
-							start_x = last_click_map_x;
-							end_x = last_click_map_x + width;
-						}
-						if (mouse_map_y < last_click_map_y) {
-							start_y = last_click_map_y - width;
-							end_y = last_click_map_y;
-						} else {
-							start_y = last_click_map_y;
-							end_y = last_click_map_y + width;
-						}
-
-						int center_x = start_x + (end_x - start_x) / 2;
-						int center_y = start_y + (end_y - start_y) / 2;
-						float radii = width / 2.0f + 0.005f;
-
-						for (int y = start_y - 1; y <= end_y + 1; y++) {
-							float dy = center_y - y;
-							for (int x = start_x - 1; x <= end_x + 1; x++) {
-								float dx = center_x - x;
-								// printf("%f;%f\n", dx, dy);
-								float distance = sqrt(dx * dx + dy * dy);
-								if (distance < radii) {
-									tilestodraw.push_back(Position(x, y, floor));
-								}
-								if (std::abs(distance - radii) < 1.5) {
-									tilestoborder.push_back(Position(x, y, floor));
-								}
-							}
-						}
-					}
-				}
-				if (event.ControlDown()) {
-					editor.undraw(tilestodraw, tilestoborder, event.AltDown());
-				} else {
-					editor.draw(tilestodraw, tilestoborder, event.AltDown());
-				}
-			}
-		}
-		editor.actionQueue->resetTimer();
-		drawing = false;
-		dragging_draw = false;
-		replace_dragging = false;
-		editor.replace_brush = nullptr;
+		drawing_controller->HandleRelease(Position(mouse_map_x, mouse_map_y, floor), event.ShiftDown(), event.ControlDown(), event.AltDown());
 	}
 	g_gui.RefreshView();
 	g_gui.UpdateMinimap();
@@ -1121,44 +499,7 @@ void MapCanvas::OnMousePropertiesClick(wxMouseEvent& event) {
 		g_gui.SetSelectionMode();
 	}
 
-	EndPasting();
-
-	boundbox_selection = false;
-	if (event.ShiftDown()) {
-		boundbox_selection = true;
-
-		if (!event.ControlDown()) {
-			editor.selection.start(); // Start selection session
-			editor.selection.clear(); // Clear out selection
-			editor.selection.finish(); // End selection session
-			editor.selection.updateSelectionCount();
-		}
-	} else if (!tile) {
-		editor.selection.start(); // Start selection session
-		editor.selection.clear(); // Clear out selection
-		editor.selection.finish(); // End selection session
-		editor.selection.updateSelectionCount();
-	} else if (tile->isSelected()) {
-		// Do nothing!
-	} else {
-		editor.selection.start(); // Start a selection session
-		editor.selection.clear();
-		editor.selection.commit();
-		if (tile->spawn && g_settings.getInteger(Config::SHOW_SPAWNS)) {
-			editor.selection.add(tile, tile->spawn);
-		} else if (tile->creature && g_settings.getInteger(Config::SHOW_CREATURES)) {
-			editor.selection.add(tile, tile->creature);
-		} else {
-			Item* item = tile->getTopItem();
-			if (item) {
-				editor.selection.add(tile, item);
-			}
-		}
-		editor.selection.finish(); // Finish the selection session
-		editor.selection.updateSelectionCount();
-	}
-
-	last_click_x = int(event.GetX() * zoom);
+	selection_controller->HandlePropertiesClick(Position(mouse_map_x, mouse_map_y, floor), event.ShiftDown(), event.ControlDown(), event.AltDown());
 	last_click_y = int(event.GetY() * zoom);
 
 	int start_x, start_y;
@@ -1179,134 +520,7 @@ void MapCanvas::OnMousePropertiesRelease(wxMouseEvent& event) {
 		g_gui.SetSelectionMode();
 	}
 
-	if (boundbox_selection) {
-		if (mouse_map_x == last_click_map_x && mouse_map_y == last_click_map_y && event.ControlDown()) {
-			// Mouse hasn't move, do control+shift thingy!
-			Tile* tile = editor.map.getTile(mouse_map_x, mouse_map_y, floor);
-			if (tile) {
-				editor.selection.start(); // Start a selection session
-				if (tile->isSelected()) {
-					editor.selection.remove(tile);
-				} else {
-					editor.selection.add(tile);
-				}
-				editor.selection.finish(); // Finish the selection session
-				editor.selection.updateSelectionCount();
-			}
-		} else {
-			// The cursor has moved, do some boundboxing!
-			if (last_click_map_x > mouse_map_x) {
-				int tmp = mouse_map_x;
-				mouse_map_x = last_click_map_x;
-				last_click_map_x = tmp;
-			}
-			if (last_click_map_y > mouse_map_y) {
-				int tmp = mouse_map_y;
-				mouse_map_y = last_click_map_y;
-				last_click_map_y = tmp;
-			}
-
-			editor.selection.start(); // Start a selection session
-			switch (g_settings.getInteger(Config::SELECTION_TYPE)) {
-				case SELECT_CURRENT_FLOOR: {
-					for (int x = last_click_map_x; x <= mouse_map_x; x++) {
-						for (int y = last_click_map_y; y <= mouse_map_y; y++) {
-							Tile* tile = editor.map.getTile(x, y, floor);
-							if (!tile) {
-								continue;
-							}
-							editor.selection.add(tile);
-						}
-					}
-					break;
-				}
-				case SELECT_ALL_FLOORS: {
-					int start_x, start_y, start_z;
-					int end_x, end_y, end_z;
-
-					start_x = last_click_map_x;
-					start_y = last_click_map_y;
-					start_z = MAP_MAX_LAYER;
-					end_x = mouse_map_x;
-					end_y = mouse_map_y;
-					end_z = floor;
-
-					if (g_settings.getInteger(Config::COMPENSATED_SELECT)) {
-						start_x -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-						start_y -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-
-						end_x -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-						end_y -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-					}
-
-					for (int z = start_z; z >= end_z; z--) {
-						for (int x = start_x; x <= end_x; x++) {
-							for (int y = start_y; y <= end_y; y++) {
-								Tile* tile = editor.map.getTile(x, y, z);
-								if (!tile) {
-									continue;
-								}
-								editor.selection.add(tile);
-							}
-						}
-						if (z <= GROUND_LAYER && g_settings.getInteger(Config::COMPENSATED_SELECT)) {
-							start_x++;
-							start_y++;
-							end_x++;
-							end_y++;
-						}
-					}
-					break;
-				}
-				case SELECT_VISIBLE_FLOORS: {
-					int start_x, start_y, start_z;
-					int end_x, end_y, end_z;
-
-					start_x = last_click_map_x;
-					start_y = last_click_map_y;
-					if (floor <= GROUND_LAYER) {
-						start_z = GROUND_LAYER;
-					} else {
-						start_z = std::min(MAP_MAX_LAYER, floor + 2);
-					}
-					end_x = mouse_map_x;
-					end_y = mouse_map_y;
-					end_z = floor;
-
-					if (g_settings.getInteger(Config::COMPENSATED_SELECT)) {
-						start_x -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-						start_y -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-
-						end_x -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-						end_y -= (floor < GROUND_LAYER ? GROUND_LAYER - floor : 0);
-					}
-
-					for (int z = start_z; z >= end_z; z--) {
-						for (int x = start_x; x <= end_x; x++) {
-							for (int y = start_y; y <= end_y; y++) {
-								Tile* tile = editor.map.getTile(x, y, z);
-								if (!tile) {
-									continue;
-								}
-								editor.selection.add(tile);
-							}
-						}
-						if (z <= GROUND_LAYER && g_settings.getInteger(Config::COMPENSATED_SELECT)) {
-							start_x++;
-							start_y++;
-							end_x++;
-							end_y++;
-						}
-					}
-					break;
-				}
-			}
-			editor.selection.finish(); // Finish the selection session
-			editor.selection.updateSelectionCount();
-		}
-	} else if (event.ControlDown()) {
-		// Nothing
-	}
+	selection_controller->HandlePropertiesRelease(Position(mouse_map_x, mouse_map_y, floor), event.ShiftDown(), event.ControlDown(), event.AltDown());
 
 	popup_menu->Update();
 	PopupMenu(popup_menu);
@@ -1361,7 +575,7 @@ void MapCanvas::OnGainMouse(wxMouseEvent& event) {
 	if (!event.LeftIsDown()) {
 		dragging = false;
 		boundbox_selection = false;
-		drawing = false;
+		drawing_controller->Reset();
 	}
 	if (!event.MiddleIsDown()) {
 		screendragging = false;
@@ -1490,9 +704,7 @@ void MapCanvas::EnterDrawingMode() {
 }
 
 void MapCanvas::EnterSelectionMode() {
-	drawing = false;
-	dragging_draw = false;
-	replace_dragging = false;
+	drawing_controller->Reset();
 	editor.replace_brush = nullptr;
 	Refresh();
 }
@@ -1519,15 +731,9 @@ void MapCanvas::Reset() {
 	dragging = false;
 	boundbox_selection = false;
 	screendragging = false;
-	drawing = false;
-	dragging_draw = false;
+	drawing_controller->Reset();
 
-	replace_dragging = false;
 	editor.replace_brush = nullptr;
-
-	drag_start_x = -1;
-	drag_start_y = -1;
-	drag_start_z = -1;
 
 	last_click_map_x = -1;
 	last_click_map_y = -1;

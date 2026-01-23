@@ -13,6 +13,6 @@ void ScreenCapture::Capture(int width, int height, uint8_t* buffer) {
 	glPixelStorei(GL_PACK_ALIGNMENT, 1); // 1 byte alignment
 
 	for (int i = 0; i < height; ++i) {
-		glReadPixels(0, height - i, width, 1, GL_RGB, GL_UNSIGNED_BYTE, (GLubyte*)(buffer) + 3 * width * i);
+		glReadPixels(0, height - 1 - i, width, 1, GL_RGB, GL_UNSIGNED_BYTE, (GLubyte*)(buffer) + 3 * width * i);
 	}
 }
