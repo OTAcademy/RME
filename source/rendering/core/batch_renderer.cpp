@@ -3,7 +3,6 @@
 #include <iostream>
 
 // Static members
-// Initialized statically
 int BatchRenderer::refCount = 0;
 GLuint BatchRenderer::VAO = 0;
 GLuint BatchRenderer::VBO = 0;
@@ -97,8 +96,6 @@ void BatchRenderer::InitRenderData() {
 	glCreateVertexArrays(1, &VAO);
 
 	glCreateBuffers(1, &VBO);
-	// Mutable storage is fine, but we don't need to orphan every frame if we manage sync properly.
-	// Reverting to simpler usage but keeping Dynamic Draw for performance.
 	glNamedBufferData(VBO, MAX_VERTICES * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
 
 	glCreateBuffers(1, &EBO);
@@ -139,15 +136,11 @@ void BatchRenderer::Flush() {
 		return;
 	}
 
-	// No orphaning here to avoid crash on fast updates.
-	// Standard update. If we needed sync, we'd use fences, but default GL implicit sync usually works for this load.
 	glNamedBufferSubData(VBO, 0, vertices.size() * sizeof(Vertex), vertices.data());
 
-	// Only upload EBO if we are in indexed mode (Triangles)
-	// For Lines, we use DrawArrays
 	if (currentPrimitiveMode == GL_TRIANGLES) {
 		if (indices.empty()) {
-			return; // Should match vertices logic roughly
+			return;
 		}
 		glNamedBufferSubData(EBO, 0, indices.size() * sizeof(uint32_t), indices.data());
 	}
@@ -210,7 +203,7 @@ void BatchRenderer::DrawTriangle(const glm::vec2& p1, const glm::vec2& p2, const
 	uint32_t offset = vertices.size();
 
 	vertices.push_back({ p1, { 0.0f, 0.0f }, color });
-	vertices.push_back({ p2, { 0.5f, 0.0f }, color }); // Arbitrary TexCoords for untextured triangle
+	vertices.push_back({ p2, { 0.5f, 0.0f }, color });
 	vertices.push_back({ p3, { 1.0f, 1.0f }, color });
 
 	indices.push_back(offset + 0);
@@ -239,7 +232,6 @@ void BatchRenderer::SetTexCoord(const glm::vec2& texCoord) {
 }
 
 void BatchRenderer::SubmitVertex(const glm::vec2& position) {
-	// This function tries to emulate GL_QUADS behavior from legacy OpenGL
 	if (currentPrimitiveMode != GL_TRIANGLES || vertices.size() + 1 > MAX_VERTICES) {
 		Flush();
 		currentPrimitiveMode = GL_TRIANGLES;
@@ -247,8 +239,7 @@ void BatchRenderer::SubmitVertex(const glm::vec2& position) {
 
 	vertices.push_back({ position, currentTexCoord, currentColor });
 
-	// Assume GL_QUADS was INTENDED.
-	// Every 4 vertices = 2 triangles.
+	// GL_QUADS emulation: Every 4 vertices = 2 triangles.
 	if (vertices.size() % 4 == 0) {
 		uint32_t offset = vertices.size() - 4;
 		indices.push_back(offset + 0);
