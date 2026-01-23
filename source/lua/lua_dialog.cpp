@@ -263,7 +263,7 @@ LuaDialog::LuaDialog(sol::table options, sol::this_state ts) :
 	reqX = options.get_or(std::string("x"), -1);
 	reqY = options.get_or(std::string("y"), -1);
 
-		if (reqWidth != -1 || reqHeight != -1) {
+	if (reqWidth != -1 || reqHeight != -1) {
 		SetMinSize(wxSize(reqWidth != -1 ? reqWidth : 150, reqHeight != -1 ? reqHeight : 100));
 		SetSize(reqX != -1 ? reqX : -1, reqY != -1 ? reqY : -1, reqWidth, reqHeight);
 	} else if (reqX != -1 || reqY != -1) {
