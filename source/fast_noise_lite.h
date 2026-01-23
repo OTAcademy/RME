@@ -1358,10 +1358,10 @@ private:
 			case CellularDistanceFunction_Euclidean:
 			case CellularDistanceFunction_EuclideanSq:
 				for (int xi = xr - 1; xi <= xr + 1; xi++) {
-					int yPrimed = yPrimedBase;
+					unsigned int yPrimed = yPrimedBase;
 
 					for (int yi = yr - 1; yi <= yr + 1; yi++) {
-						int hash = Hash(seed, xPrimed, yPrimed);
+						int hash = Hash(seed, xPrimed, (int)yPrimed);
 						int idx = hash & (255 << 1);
 
 						float vecX = (float)(xi - x) + Lookup<float>::RandVecs2D[idx] * cellularJitter;
@@ -1381,10 +1381,10 @@ private:
 				break;
 			case CellularDistanceFunction_Manhattan:
 				for (int xi = xr - 1; xi <= xr + 1; xi++) {
-					int yPrimed = yPrimedBase;
+					unsigned int yPrimed = yPrimedBase;
 
 					for (int yi = yr - 1; yi <= yr + 1; yi++) {
-						int hash = Hash(seed, xPrimed, yPrimed);
+						int hash = Hash(seed, xPrimed, (int)yPrimed);
 						int idx = hash & (255 << 1);
 
 						float vecX = (float)(xi - x) + Lookup<float>::RandVecs2D[idx] * cellularJitter;
@@ -1404,10 +1404,10 @@ private:
 				break;
 			case CellularDistanceFunction_Hybrid:
 				for (int xi = xr - 1; xi <= xr + 1; xi++) {
-					int yPrimed = yPrimedBase;
+					unsigned int yPrimed = yPrimedBase;
 
 					for (int yi = yr - 1; yi <= yr + 1; yi++) {
-						int hash = Hash(seed, xPrimed, yPrimed);
+						int hash = Hash(seed, xPrimed, (int)yPrimed);
 						int idx = hash & (255 << 1);
 
 						float vecX = (float)(xi - x) + Lookup<float>::RandVecs2D[idx] * cellularJitter;
@@ -1478,10 +1478,10 @@ private:
 					int yPrimed = yPrimedBase;
 
 					for (int yi = yr - 1; yi <= yr + 1; yi++) {
-						int zPrimed = zPrimedBase;
+						unsigned int zPrimed = zPrimedBase;
 
 						for (int zi = zr - 1; zi <= zr + 1; zi++) {
-							int hash = Hash(seed, xPrimed, yPrimed, zPrimed);
+							int hash = Hash(seed, xPrimed, yPrimed, (int)zPrimed);
 							int idx = hash & (255 << 2);
 
 							float vecX = (float)(xi - x) + Lookup<float>::RandVecs3D[idx] * cellularJitter;
@@ -1507,10 +1507,10 @@ private:
 					int yPrimed = yPrimedBase;
 
 					for (int yi = yr - 1; yi <= yr + 1; yi++) {
-						int zPrimed = zPrimedBase;
+						unsigned int zPrimed = zPrimedBase;
 
 						for (int zi = zr - 1; zi <= zr + 1; zi++) {
-							int hash = Hash(seed, xPrimed, yPrimed, zPrimed);
+							int hash = Hash(seed, xPrimed, yPrimed, (int)zPrimed);
 							int idx = hash & (255 << 2);
 
 							float vecX = (float)(xi - x) + Lookup<float>::RandVecs3D[idx] * cellularJitter;
@@ -1536,10 +1536,10 @@ private:
 					int yPrimed = yPrimedBase;
 
 					for (int yi = yr - 1; yi <= yr + 1; yi++) {
-						int zPrimed = zPrimedBase;
+						unsigned int zPrimed = zPrimedBase;
 
 						for (int zi = zr - 1; zi <= zr + 1; zi++) {
-							int hash = Hash(seed, xPrimed, yPrimed, zPrimed);
+							int hash = Hash(seed, xPrimed, yPrimed, (int)zPrimed);
 							int idx = hash & (255 << 2);
 
 							float vecX = (float)(xi - x) + Lookup<float>::RandVecs3D[idx] * cellularJitter;

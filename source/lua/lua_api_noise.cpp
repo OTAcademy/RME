@@ -214,23 +214,23 @@ namespace LuaAPI {
 				sol::table opts = *options;
 
 				// Frequency
-				float freq = opts.get_or("frequency", 0.01f);
+				float freq = opts.get_or(std::string("frequency"), 0.01f);
 				noise.SetFrequency(freq);
 
 				// Octaves (layers of noise)
-				int octaves = opts.get_or("octaves", 4);
+				int octaves = opts.get_or(std::string("octaves"), 4);
 				noise.SetFractalOctaves(octaves);
 
 				// Lacunarity (frequency multiplier per octave)
-				float lacunarity = opts.get_or("lacunarity", 2.0f);
+				float lacunarity = opts.get_or(std::string("lacunarity"), 2.0f);
 				noise.SetFractalLacunarity(lacunarity);
 
 				// Gain (amplitude multiplier per octave)
-				float gain = opts.get_or("gain", 0.5f);
+				float gain = opts.get_or(std::string("gain"), 0.5f);
 				noise.SetFractalGain(gain);
 
 				// Noise type for fractal
-				std::string noiseType = opts.get_or<std::string>("noiseType", "simplex");
+				std::string noiseType = opts.get_or<std::string>(std::string("noiseType"), "simplex");
 				if (noiseType == "perlin") {
 					noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 				} else if (noiseType == "simplex" || noiseType == "opensimplex") {
@@ -259,12 +259,12 @@ namespace LuaAPI {
 
 			if (options) {
 				sol::table opts = *options;
-				noise.SetFrequency(opts.get_or("frequency", 0.01f));
-				noise.SetFractalOctaves(opts.get_or("octaves", 4));
-				noise.SetFractalLacunarity(opts.get_or("lacunarity", 2.0f));
-				noise.SetFractalGain(opts.get_or("gain", 0.5f));
+				noise.SetFrequency(opts.get_or(std::string("frequency"), 0.01f));
+				noise.SetFractalOctaves(opts.get_or(std::string("octaves"), 4));
+				noise.SetFractalLacunarity(opts.get_or(std::string("lacunarity"), 2.0f));
+				noise.SetFractalGain(opts.get_or(std::string("gain"), 0.5f));
 
-				std::string noiseType = opts.get_or<std::string>("noiseType", "simplex");
+				std::string noiseType = opts.get_or<std::string>(std::string("noiseType"), "simplex");
 				if (noiseType == "perlin") {
 					noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 				} else {
@@ -295,10 +295,10 @@ namespace LuaAPI {
 
 			if (options) {
 				sol::table opts = *options;
-				noise.SetFrequency(opts.get_or("frequency", 0.01f));
-				noise.SetFractalOctaves(opts.get_or("octaves", 4));
-				noise.SetFractalLacunarity(opts.get_or("lacunarity", 2.0f));
-				noise.SetFractalGain(opts.get_or("gain", 0.5f));
+				noise.SetFrequency(opts.get_or(std::string("frequency"), 0.01f));
+				noise.SetFractalOctaves(opts.get_or(std::string("octaves"), 4));
+				noise.SetFractalLacunarity(opts.get_or(std::string("lacunarity"), 2.0f));
+				noise.SetFractalGain(opts.get_or(std::string("gain"), 0.5f));
 			} else {
 				noise.SetFrequency(0.01f);
 				noise.SetFractalOctaves(4);
@@ -325,10 +325,10 @@ namespace LuaAPI {
 
 			if (options) {
 				sol::table opts = *options;
-				amplitude = opts.get_or("amplitude", 30.0f);
-				frequency = opts.get_or("frequency", 0.01f);
+				amplitude = opts.get_or(std::string("amplitude"), 30.0f);
+				frequency = opts.get_or(std::string("frequency"), 0.01f);
 
-				std::string warpType = opts.get_or<std::string>("type", "simplex");
+				std::string warpType = opts.get_or<std::string>(std::string("type"), "simplex");
 				if (warpType == "simplex" || warpType == "opensimplex") {
 					noise.SetDomainWarpType(FastNoiseLite::DomainWarpType_OpenSimplex2);
 				} else if (warpType == "simplexReduced") {
@@ -426,10 +426,10 @@ namespace LuaAPI {
 
 			if (options) {
 				sol::table opts = *options;
-				noise.SetSeed(opts.get_or("seed", 1337));
-				noise.SetFrequency(opts.get_or("frequency", 0.01f));
+				noise.SetSeed(opts.get_or(std::string("seed"), 1337));
+				noise.SetFrequency(opts.get_or(std::string("frequency"), 0.01f));
 
-				std::string noiseType = opts.get_or<std::string>("noiseType", "simplex");
+				std::string noiseType = opts.get_or<std::string>(std::string("noiseType"), "simplex");
 				if (noiseType == "perlin") {
 					noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 				} else if (noiseType == "simplex") {
@@ -441,15 +441,15 @@ namespace LuaAPI {
 				}
 
 				// Fractal settings
-				std::string fractal = opts.get_or<std::string>("fractal", "none");
+				std::string fractal = opts.get_or<std::string>(std::string("fractal"), "none");
 				if (fractal == "fbm") {
 					noise.SetFractalType(FastNoiseLite::FractalType_FBm);
-					noise.SetFractalOctaves(opts.get_or("octaves", 4));
-					noise.SetFractalLacunarity(opts.get_or("lacunarity", 2.0f));
-					noise.SetFractalGain(opts.get_or("gain", 0.5f));
+					noise.SetFractalOctaves(opts.get_or(std::string("octaves"), 4));
+					noise.SetFractalLacunarity(opts.get_or(std::string("lacunarity"), 2.0f));
+					noise.SetFractalGain(opts.get_or(std::string("gain"), 0.5f));
 				} else if (fractal == "ridged") {
 					noise.SetFractalType(FastNoiseLite::FractalType_Ridged);
-					noise.SetFractalOctaves(opts.get_or("octaves", 4));
+					noise.SetFractalOctaves(opts.get_or(std::string("octaves"), 4));
 				}
 			} else {
 				noise.SetSeed(1337);
