@@ -23,6 +23,7 @@
 #include "item.h"
 #include "editor.h"
 #include "gui.h"
+#include "lua/lua_script_manager.h"
 
 Selection::Selection(Editor& editor) :
 	busy(false),
@@ -269,6 +270,13 @@ void Selection::finish(SessionFlags flags) {
 		}
 	}
 	busy = false;
+
+	// Notify Lua scripts only if we're on the main thread and it's a "real" selection change
+	if (!(flags & (INTERNAL | SUBTHREAD))) {
+		if (g_luaScripts.isInitialized()) {
+			g_luaScripts.emit("selectionChange");
+		}
+	}
 }
 
 void Selection::updateSelectionCount() {

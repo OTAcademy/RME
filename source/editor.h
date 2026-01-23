@@ -57,6 +57,7 @@ public: // Functions
 	LiveClient* GetLiveClient() const;
 	LiveServer* GetLiveServer() const;
 	LiveSocket& GetLive() const;
+	Map* getMap() { return &map; }
 	bool CanEdit() const {
 		return true;
 	}

@@ -22,6 +22,7 @@
 #include "map.h"
 #include "editor.h"
 #include "gui.h"
+#include "lua/lua_script_manager.h"
 
 Change::Change() :
 	type(CHANGE_NONE), data(nullptr) {
@@ -602,6 +603,9 @@ void ActionQueue::addBatch(BatchAction* batch, int stacking_delay) {
 		batch->timestamp = time(nullptr);
 		current++;
 	} while (false);
+
+	// Notify Lua scripts about action change
+	g_luaScripts.emit("actionChange");
 }
 
 void ActionQueue::addAction(Action* action, int stacking_delay) {
@@ -620,6 +624,7 @@ void ActionQueue::undo() {
 		current--;
 		BatchAction* batch = actions[current];
 		batch->undo();
+		g_luaScripts.emit("actionChange");
 	}
 }
 
@@ -628,6 +633,7 @@ void ActionQueue::redo() {
 		BatchAction* batch = actions[current];
 		batch->redo();
 		current++;
+		g_luaScripts.emit("actionChange");
 	}
 }
 

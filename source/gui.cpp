@@ -41,6 +41,7 @@
 #include "live_client.h"
 #include "live_tab.h"
 #include "live_server.h"
+#include "lua/lua_script_manager.h"
 
 #ifdef __WXOSX__
 	#include <AGL/agl.h>
@@ -1140,6 +1141,7 @@ void GUI::FinishWelcomeDialog() {
 		welcomeDialog->Destroy();
 		welcomeDialog = nullptr;
 	}
+	UpdateMenubar();
 }
 
 bool GUI::IsWelcomeDialogShown() {
@@ -1643,6 +1645,10 @@ void GUI::SelectBrushInternal(Brush* brush) {
 
 	SetDrawingMode();
 	RefreshView();
+
+	if (g_luaScripts.isInitialized()) {
+		g_luaScripts.emit("brushChange", current_brush->getName());
+	}
 }
 
 void GUI::SelectPreviousBrush() {
