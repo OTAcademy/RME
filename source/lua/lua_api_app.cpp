@@ -436,6 +436,13 @@ namespace LuaAPI {
 		}
 
 		std::string filename = name;
+
+		// Security check: Prevent path traversal and absolute paths
+		if (filename.find("..") != std::string::npos || std::filesystem::path(filename).is_absolute()) {
+			printf("[Lua Security] Blocked unsafe path in app.storage: %s\n", filename.c_str());
+			return lua.create_table();
+		}
+
 		if (filename.find('.') == std::string::npos) {
 			filename += ".json";
 		}

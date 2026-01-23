@@ -121,10 +121,28 @@ namespace LuaAPI {
 	static std::mutex g_sessionsMutex;
 	static int g_nextSessionId = 1;
 
+	// Security helper: Block localhost and loopback
+	static bool isUrlSafe(const std::string& url_str) {
+		std::string low = url_str;
+		std::transform(low.begin(), low.end(), low.begin(), ::tolower);
+		if (low.find("localhost") != std::string::npos ||
+			low.find("127.0.0.1") != std::string::npos ||
+			low.find("::1") != std::string::npos) {
+			return false;
+		}
+		return true;
+	}
+
 	// HTTP GET request
 	static sol::table httpGet(sol::this_state ts, const std::string& url, sol::optional<sol::table> optHeaders) {
 		sol::state_view lua(ts);
 		sol::table result = lua.create_table();
+
+		if (!isUrlSafe(url)) {
+			result["error"] = "Security: URL blocked (Localhost access denied)";
+			result["ok"] = false;
+			return result;
+		}
 
 		cpr::Header headers;
 		if (optHeaders) {
@@ -136,7 +154,7 @@ namespace LuaAPI {
 			}
 		}
 
-		cpr::Response response = cpr::Get(cpr::Url { url }, headers);
+		cpr::Response response = cpr::Get(cpr::Url { url }, headers, cpr::Timeout{10000});
 
 		result["status"] = static_cast<int>(response.status_code);
 		result["body"] = response.text;
@@ -158,6 +176,12 @@ namespace LuaAPI {
 		sol::state_view lua(ts);
 		sol::table result = lua.create_table();
 
+		if (!isUrlSafe(url)) {
+			result["error"] = "Security: URL blocked (Localhost access denied)";
+			result["ok"] = false;
+			return result;
+		}
+
 		cpr::Header headers;
 		if (optHeaders) {
 			sol::table headersTable = *optHeaders;
@@ -171,7 +195,8 @@ namespace LuaAPI {
 		cpr::Response response = cpr::Post(
 			cpr::Url { url },
 			cpr::Body { body },
-			headers
+			headers,
+			cpr::Timeout{10000}
 		);
 
 		result["status"] = static_cast<int>(response.status_code);
@@ -271,6 +296,12 @@ namespace LuaAPI {
 		sol::state_view lua(ts);
 		sol::table result = lua.create_table();
 
+		if (!isUrlSafe(url)) {
+			result["error"] = "Security: URL blocked (Localhost access denied)";
+			result["ok"] = false;
+			return result;
+		}
+
 		auto session = std::make_shared<StreamSession>();
 		int sessionId;
 
@@ -301,7 +332,8 @@ namespace LuaAPI {
 				cpr::Url { url },
 				cpr::Body { body },
 				headers,
-				cpr::WriteCallback { writeCallback, 0 }
+				cpr::WriteCallback { writeCallback, 0 },
+				cpr::Timeout{30000}
 			);
 
 			session->setStatusCode(static_cast<int>(response.status_code));

@@ -79,17 +79,56 @@ void LuaEngine::setupSandbox() {
 	// Remove dangerous functions for security
 	// We don't want scripts to be able to execute system commands or access arbitrary files
 
-	// Sandbox restrictions conditioned or removed for development flexibility
-	// if (lua["os"].valid()) {
-	// 	 lua["os"]["execute"] = sol::nil;
-	// 	 lua["os"]["exit"] = sol::nil;
-	// }
+	// Sandbox OS library
+	if (lua["os"].valid()) {
+		lua["os"]["execute"] = sol::nil;
+		lua["os"]["exit"] = sol::nil;
+		lua["os"]["remove"] = sol::nil;
+		lua["os"]["rename"] = sol::nil;
+		lua["os"]["tmpname"] = sol::nil;
+		lua["os"]["getenv"] = sol::nil;
+		lua["os"]["setlocale"] = sol::nil;
+	}
 
-	// Enable standard libraries for versatile scripting
-	// lua["io"] = sol::nil;
-	// lua["loadfile"] = sol::nil;
-	// lua["dofile"] = sol::nil;
-	// lua["package"]["loadlib"] = sol::nil;
+	// Disable IO library completely - scripts must use app.storage
+	lua["io"] = sol::nil;
+
+	// Disable dynamic loading of C libraries
+	if (lua["package"].valid()) {
+		lua["package"]["loadlib"] = sol::nil;
+
+		// Also remove C loaders from package.searchers (Lua 5.2+) to prevent 'require' from loading DLLs
+		if (lua["package"]["searchers"].valid()) {
+			sol::table searchers = lua["package"]["searchers"];
+			// 1: preload, 2: lua loader, 3: c loader, 4: all-in-one loader
+			// Keep 1 and 2, remove 3 and 4
+			searchers[3] = sol::nil;
+			searchers[4] = sol::nil;
+		}
+	}
+
+	// Disable accessing arbitrary files
+	lua["dofile"] = sol::nil;
+	lua["loadfile"] = sol::nil;
+
+	// Secure 'load' to prevent bytecode execution (only allow mode "t")
+	// If the chunk starts with the bytecode signature (ESC Lua), load() normally detects it.
+	// By enforcing mode "t", we prevent loading precompiled bytecode.
+	try {
+		lua.script(R"(
+			local old_load = load
+			_G.load = function(chunk, chunkname, mode, env)
+				-- If mode is provided, ensure it is 't'
+				if mode and mode ~= "t" then
+					error("Secure Mode: Binary chunks are disabled.")
+				end
+				-- Force 't' mode
+				return old_load(chunk, chunkname, "t", env)
+			end
+		)");
+	} catch (...) {
+		// Ignore if load is already nil or something
+	}
 }
 
 void LuaEngine::registerBaseLibraries() {

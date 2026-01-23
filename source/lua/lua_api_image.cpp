@@ -20,6 +20,8 @@
 #include "../gui.h"
 #include "../graphics.h"
 #include "../items.h"
+#include <filesystem>
+#include "lua_script_manager.h"
 
 namespace LuaAPI {
 
@@ -28,8 +30,45 @@ namespace LuaAPI {
 		// Empty image
 	}
 
+
+
 	LuaImage::LuaImage(const std::string& path) :
 		filePath(path), spriteId(0), spriteSource(false) {
+
+		if (path.empty()) return;
+
+		// Security Check
+		if (path.find("..") != std::string::npos) {
+			printf("[Lua Security] Blocked image path with traversal: %s\n", path.c_str());
+			return;
+		}
+
+		namespace fs = std::filesystem;
+		try {
+			fs::path p(path);
+			if (p.is_absolute()) {
+				// Normalize directories for comparison
+				fs::path scriptsPath = fs::absolute(LuaScriptManager::getInstance().getScriptsDirectory());
+				fs::path dataPath = fs::absolute(GUI::GetDataDirectory().ToStdString());
+				fs::path absPath = fs::absolute(p);
+
+				std::string absStr = absPath.string();
+				std::string scriptsStr = scriptsPath.string();
+				std::string dataStr = dataPath.string();
+
+				bool allowed = false;
+				if (absStr.find(scriptsStr) == 0) allowed = true;
+				if (absStr.find(dataStr) == 0) allowed = true;
+
+				if (!allowed) {
+					printf("[Lua Security] Blocked absolute image path outside allowed directories: %s\n", path.c_str());
+					return;
+				}
+			}
+		} catch (...) {
+			return;
+		}
+
 		if (!path.empty()) {
 			image.LoadFile(wxString(path));
 		}
