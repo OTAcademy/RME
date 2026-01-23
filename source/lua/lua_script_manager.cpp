@@ -27,8 +27,8 @@
 #include <algorithm>
 
 #ifdef _WIN32
-#include <windows.h>
-#include <shellapi.h>
+	#include <windows.h>
+	#include <shellapi.h>
 #endif
 
 LuaScriptManager& LuaScriptManager::getInstance() {
@@ -102,15 +102,13 @@ bool LuaScriptManager::removeEventListener(int listenerId) {
 	return false;
 }
 
-
-
 void LuaScriptManager::clearAllCallbacks() {
 	contextMenuItems.clear();
 	eventListeners.clear();
 	nextListenerId = 1;
 	mapOverlays.clear();
 	mapOverlayShows.clear();
-	mapOverlayHover = MapOverlayHoverState{};
+	mapOverlayHover = MapOverlayHoverState {};
 }
 
 void LuaScriptManager::registerAPIs() {
@@ -129,10 +127,18 @@ static wxColor parseColor(const sol::object& obj, const wxColor& fallback) {
 		int g = tbl.get_or("g", tbl.get_or("green", 255));
 		int b = tbl.get_or("b", tbl.get_or("blue", 255));
 		int a = tbl.get_or("a", tbl.get_or("alpha", 255));
-		if (tbl[1].valid()) r = tbl.get_or(1, r);
-		if (tbl[2].valid()) g = tbl.get_or(2, g);
-		if (tbl[3].valid()) b = tbl.get_or(3, b);
-		if (tbl[4].valid()) a = tbl.get_or(4, a);
+		if (tbl[1].valid()) {
+			r = tbl.get_or(1, r);
+		}
+		if (tbl[2].valid()) {
+			g = tbl.get_or(2, g);
+		}
+		if (tbl[3].valid()) {
+			b = tbl.get_or(3, b);
+		}
+		if (tbl[4].valid()) {
+			a = tbl.get_or(4, a);
+		}
 		return wxColor(r, g, b, a);
 	}
 
@@ -298,7 +304,9 @@ void LuaScriptManager::collectMapOverlayCommands(const MapViewInfo& view, std::v
 
 	ctx["rect"] = [&, getOptsTable](sol::variadic_args va) {
 		sol::table opts = getOptsTable(va);
-		if (!opts.valid()) return;
+		if (!opts.valid()) {
+			return;
+		}
 		MapOverlayCommand cmd;
 		cmd.type = MapOverlayCommand::Type::Rect;
 		cmd.screen_space = opts.get_or("screen", false);
@@ -315,7 +323,9 @@ void LuaScriptManager::collectMapOverlayCommands(const MapViewInfo& view, std::v
 
 	ctx["line"] = [&, getOptsTable](sol::variadic_args va) {
 		sol::table opts = getOptsTable(va);
-		if (!opts.valid()) return;
+		if (!opts.valid()) {
+			return;
+		}
 		MapOverlayCommand cmd;
 		cmd.type = MapOverlayCommand::Type::Line;
 		cmd.screen_space = opts.get_or("screen", false);
@@ -332,7 +342,9 @@ void LuaScriptManager::collectMapOverlayCommands(const MapViewInfo& view, std::v
 
 	ctx["text"] = [&, getOptsTable](sol::variadic_args va) {
 		sol::table opts = getOptsTable(va);
-		if (!opts.valid()) return;
+		if (!opts.valid()) {
+			return;
+		}
 		MapOverlayCommand cmd;
 		cmd.type = MapOverlayCommand::Type::Text;
 		cmd.screen_space = opts.get_or("screen", false);
@@ -367,7 +379,7 @@ void LuaScriptManager::collectMapOverlayCommands(const MapViewInfo& view, std::v
 }
 
 void LuaScriptManager::updateMapOverlayHover(int map_x, int map_y, int map_z, int screen_x, int screen_y, Tile* tile, Item* topItem) {
-	mapOverlayHover = MapOverlayHoverState{};
+	mapOverlayHover = MapOverlayHoverState {};
 	if (!initialized) {
 		return;
 	}
@@ -484,10 +496,9 @@ void LuaScriptManager::discoverScripts() {
 	scanDirectory(scriptsDir);
 
 	// Sort scripts by display name
-	std::sort(scripts.begin(), scripts.end(),
-		[](const std::unique_ptr<LuaScript>& a, const std::unique_ptr<LuaScript>& b) {
-			return a->getDisplayName() < b->getDisplayName();
-		});
+	std::sort(scripts.begin(), scripts.end(), [](const std::unique_ptr<LuaScript>& a, const std::unique_ptr<LuaScript>& b) {
+		return a->getDisplayName() < b->getDisplayName();
+	});
 
 	runAutoScripts();
 }

@@ -23,36 +23,36 @@
 
 namespace LuaAPI {
 
-// Simple RGBA color class for Lua scripting
-struct LuaColor {
-	uint8_t red;
-	uint8_t green;
-	uint8_t blue;
-	uint8_t alpha;
+	// Simple RGBA color class for Lua scripting
+	struct LuaColor {
+		uint8_t red;
+		uint8_t green;
+		uint8_t blue;
+		uint8_t alpha;
 
-	LuaColor() : red(0), green(0), blue(0), alpha(255) {}
-	LuaColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255)
-		: red(r), green(g), blue(b), alpha(a) {}
+		LuaColor() :
+			red(0), green(0), blue(0), alpha(255) { }
+		LuaColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) :
+			red(r), green(g), blue(b), alpha(a) { }
 
-	// Convert to wxColour for use with wxWidgets
-	wxColour toWxColour() const {
-		return wxColour(red, green, blue, alpha);
-	}
+		// Convert to wxColour for use with wxWidgets
+		wxColour toWxColour() const {
+			return wxColour(red, green, blue, alpha);
+		}
 
-	// Create from wxColour
-	static LuaColor fromWxColour(const wxColour& c) {
-		return LuaColor(c.Red(), c.Green(), c.Blue(), c.Alpha());
-	}
+		// Create from wxColour
+		static LuaColor fromWxColour(const wxColour& c) {
+			return LuaColor(c.Red(), c.Green(), c.Blue(), c.Alpha());
+		}
 
-	// Equality comparison
-	bool operator==(const LuaColor& other) const {
-		return red == other.red && green == other.green &&
-			   blue == other.blue && alpha == other.alpha;
-	}
-};
+		// Equality comparison
+		bool operator==(const LuaColor& other) const {
+			return red == other.red && green == other.green && blue == other.blue && alpha == other.alpha;
+		}
+	};
 
-// Register the Color usertype with Lua
-void registerColor(sol::state& lua);
+	// Register the Color usertype with Lua
+	void registerColor(sol::state& lua);
 
 } // namespace LuaAPI
 

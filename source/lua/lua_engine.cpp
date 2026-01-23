@@ -21,7 +21,8 @@
 #include <fstream>
 #include <sstream>
 
-LuaEngine::LuaEngine() : initialized(false) {
+LuaEngine::LuaEngine() :
+	initialized(false) {
 }
 
 LuaEngine::~LuaEngine() {
@@ -121,11 +122,7 @@ void LuaEngine::registerBaseLibraries() {
 	};
 
 	// Register MouseButton enum
-	lua.new_enum("MouseButton",
-		"LEFT", 1,
-		"RIGHT", 2,
-		"MIDDLE", 3
-	);
+	lua.new_enum("MouseButton", "LEFT", 1, "RIGHT", 2, "MIDDLE", 3);
 }
 
 void LuaEngine::setPrintCallback(PrintCallback callback) {

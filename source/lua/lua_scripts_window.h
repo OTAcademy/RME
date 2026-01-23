@@ -36,8 +36,12 @@ public:
 	void ClearConsole();
 
 	// Get singleton instance (created by application)
-	static LuaScriptsWindow* Get() { return instance; }
-	static void SetInstance(LuaScriptsWindow* win) { instance = win; }
+	static LuaScriptsWindow* Get() {
+		return instance;
+	}
+	static void SetInstance(LuaScriptsWindow* win) {
+		instance = win;
+	}
 
 protected:
 	// Event handlers

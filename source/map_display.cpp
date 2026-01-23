@@ -180,8 +180,9 @@ void MapCanvas::SetZoom(double value) {
 		zoom = value;
 
 		// Unsafe cast if parent isn't MapWindow, but this is the base implementation
-		if (GetParent())
+		if (GetParent()) {
 			static_cast<MapWindow*>(GetParent())->SetScreenCenterPosition(Position(center_x, center_y, floor));
+		}
 
 		UpdatePositionStatus();
 		UpdateZoomStatus();
@@ -2596,7 +2597,9 @@ void MapPopupMenu::Update() {
 
 				for (size_t i = 0; i < menuItems.size(); ++i) {
 					int id = MAP_POPUP_MENU_SCRIPT_FIRST + i;
-					if (id > MAP_POPUP_MENU_SCRIPT_LAST) break;
+					if (id > MAP_POPUP_MENU_SCRIPT_LAST) {
+						break;
+					}
 
 					Append(id, wxString::FromUTF8(menuItems[i].label));
 				}

@@ -25,61 +25,69 @@
 
 namespace LuaAPI {
 
-// LuaImage class for Lua scripting
-// Supports loading external images and game item sprites
-class LuaImage {
-public:
-	// Default constructor (empty image)
-	LuaImage();
+	// LuaImage class for Lua scripting
+	// Supports loading external images and game item sprites
+	class LuaImage {
+	public:
+		// Default constructor (empty image)
+		LuaImage();
 
-	// Constructor from file path
-	explicit LuaImage(const std::string& path);
+		// Constructor from file path
+		explicit LuaImage(const std::string& path);
 
-	// Constructor from item sprite ID
-	LuaImage(int spriteId, bool isItemSprite);
+		// Constructor from item sprite ID
+		LuaImage(int spriteId, bool isItemSprite);
 
-	// Copy constructor
-	LuaImage(const LuaImage& other);
+		// Copy constructor
+		LuaImage(const LuaImage& other);
 
-	~LuaImage();
+		~LuaImage();
 
-	// Static factory methods for Lua
-	static LuaImage loadFromFile(const std::string& path);
-	static LuaImage loadFromItemSprite(int itemId);
-	static LuaImage loadFromSprite(int spriteId);
+		// Static factory methods for Lua
+		static LuaImage loadFromFile(const std::string& path);
+		static LuaImage loadFromItemSprite(int itemId);
+		static LuaImage loadFromSprite(int spriteId);
 
-	// Properties
-	int getWidth() const;
-	int getHeight() const;
-	bool isValid() const;
-	std::string getPath() const { return filePath; }
-	int getSpriteId() const { return spriteId; }
-	bool isSpriteSource() const { return spriteSource; }
+		// Properties
+		int getWidth() const;
+		int getHeight() const;
+		bool isValid() const;
+		std::string getPath() const {
+			return filePath;
+		}
+		int getSpriteId() const {
+			return spriteId;
+		}
+		bool isSpriteSource() const {
+			return spriteSource;
+		}
 
-	// Operations
-	LuaImage resize(int width, int height, bool smooth = true) const;
-	LuaImage scale(double factor, bool smooth = true) const;
+		// Operations
+		LuaImage resize(int width, int height, bool smooth = true) const;
+		LuaImage scale(double factor, bool smooth = true) const;
 
-	// Get the underlying wxImage (for internal use)
-	const wxImage& getWxImage() const { return image; }
-	wxBitmap getBitmap() const;
-	wxBitmap getBitmap(int width, int height, bool smooth = true) const;
+		// Get the underlying wxImage (for internal use)
+		const wxImage& getWxImage() const {
+			return image;
+		}
+		wxBitmap getBitmap() const;
+		wxBitmap getBitmap(int width, int height, bool smooth = true) const;
 
-	// Equality comparison
-	bool operator==(const LuaImage& other) const;
+		// Equality comparison
+		bool operator==(const LuaImage& other) const;
 
-private:
-	wxImage image;
-	std::string filePath;
-	int spriteId = 0;
-	bool spriteSource = false;
+	private:
+		wxImage image;
+		std::string filePath;
+		int spriteId = 0;
+		bool spriteSource = false;
 
-	// Load image from game sprite
-	void loadFromSpriteId(int id);
-};
+		// Load image from game sprite
+		void loadFromSpriteId(int id);
+	};
 
-// Register the Image usertype with Lua
-void registerImage(sol::state& lua);
+	// Register the Image usertype with Lua
+	void registerImage(sol::state& lua);
 
 } // namespace LuaAPI
 

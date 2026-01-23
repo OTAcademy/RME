@@ -124,7 +124,9 @@ public:
 	void setBounds(sol::table bounds);
 	sol::object getActiveTab();
 
-	bool isDockable() const { return dockPanel != nullptr; }
+	bool isDockable() const {
+		return dockPanel != nullptr;
+	}
 
 private:
 	sol::state_view lua;

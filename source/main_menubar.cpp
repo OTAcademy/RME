@@ -852,8 +852,6 @@ void MainMenuBar::OnImportMonsterData(wxCommandEvent& WXUNUSED(event)) {
 	}
 }
 
-
-
 void MainMenuBar::OnImportMinimap(wxCommandEvent& WXUNUSED(event)) {
 	ASSERT(g_gui.IsEditorOpen());
 	// wxDialog* importmap = newd ImportMapWindow();
@@ -2260,7 +2258,7 @@ void MainMenuBar::LoadScriptsMenu() {
 		int scriptIndex = 0;
 		for (const auto& script : scripts) {
 			if (scriptIndex >= (SCRIPTS_LAST - SCRIPTS_FIRST)) {
-				break;  // Maximum scripts reached
+				break; // Maximum scripts reached
 			}
 
 			if (!script->isEnabled()) {

@@ -9,7 +9,7 @@
 
 namespace LuaAPI {
 
-void registerJson(sol::state& lua);
+	void registerJson(sol::state& lua);
 
 }
 

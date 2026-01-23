@@ -32,22 +32,46 @@ public:
 	~LuaScript() = default;
 
 	// Script info
-	const std::string& getFilePath() const { return filepath; }
-	const std::string& getDirectory() const { return directory; }
-	const std::string& getFileName() const { return filename; }
-	const std::string& getDisplayName() const { return displayName; }
-	const std::string& getDescription() const { return description; }
-	const std::string& getAuthor() const { return author; }
-	const std::string& getVersion() const { return version; }
-	const std::string& getShortcut() const { return shortcut; }
-	bool shouldAutoRun() const { return autorun; }
+	const std::string& getFilePath() const {
+		return filepath;
+	}
+	const std::string& getDirectory() const {
+		return directory;
+	}
+	const std::string& getFileName() const {
+		return filename;
+	}
+	const std::string& getDisplayName() const {
+		return displayName;
+	}
+	const std::string& getDescription() const {
+		return description;
+	}
+	const std::string& getAuthor() const {
+		return author;
+	}
+	const std::string& getVersion() const {
+		return version;
+	}
+	const std::string& getShortcut() const {
+		return shortcut;
+	}
+	bool shouldAutoRun() const {
+		return autorun;
+	}
 
 	// Is this a directory-based script with manifest?
-	bool isPackage() const { return isPackageScript; }
+	bool isPackage() const {
+		return isPackageScript;
+	}
 
 	// State
-	bool isEnabled() const { return enabled; }
-	void setEnabled(bool value) { enabled = value; }
+	bool isEnabled() const {
+		return enabled;
+	}
+	void setEnabled(bool value) {
+		enabled = value;
+	}
 
 	// Parse metadata from comments or manifest.json
 	void parseMetadata();
@@ -56,17 +80,17 @@ private:
 	void parseMetadataFromComments();
 	void parseMetadataFromManifest();
 
-	std::string filepath;      // Full path to the main .lua file
-	std::string directory;     // Directory containing the script (for packages)
-	std::string filename;      // Just the filename
-	std::string displayName;   // Display name (from metadata or filename)
-	std::string description;   // Description
-	std::string author;        // Author
-	std::string version;       // Version
-	std::string shortcut;      // Keyboard shortcut
+	std::string filepath; // Full path to the main .lua file
+	std::string directory; // Directory containing the script (for packages)
+	std::string filename; // Just the filename
+	std::string displayName; // Display name (from metadata or filename)
+	std::string description; // Description
+	std::string author; // Author
+	std::string version; // Version
+	std::string shortcut; // Keyboard shortcut
 	bool enabled;
 	bool autorun;
-	bool isPackageScript;      // True if loaded from directory with manifest.json
+	bool isPackageScript; // True if loaded from directory with manifest.json
 };
 
 #endif // RME_LUA_SCRIPT_H

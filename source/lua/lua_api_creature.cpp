@@ -28,53 +28,44 @@
 
 namespace LuaAPI {
 
-void registerCreature(sol::state& lua) {
-	// Register Direction enum
-	lua.new_enum("Direction",
-		"NORTH", NORTH,
-		"EAST", EAST,
-		"SOUTH", SOUTH,
-		"WEST", WEST
-	);
+	void registerCreature(sol::state& lua) {
+		// Register Direction enum
+		lua.new_enum("Direction", "NORTH", NORTH, "EAST", EAST, "SOUTH", SOUTH, "WEST", WEST);
 
-	// Register Creature usertype (expanded from basic in lua_api_tile.cpp)
-	lua.new_usertype<Creature>("Creature",
-		sol::no_constructor,
+		// Register Creature usertype (expanded from basic in lua_api_tile.cpp)
+		lua.new_usertype<Creature>(
+			"Creature",
+			sol::no_constructor,
 
-		// Properties (read-only)
-		"name", sol::property([](Creature* c) -> std::string {
-			return c ? c->getName() : "";
-		}),
-		"isNpc", sol::property([](Creature* c) -> bool {
-			return c && c->isNpc();
-		}),
+			// Properties (read-only)
+			"name", sol::property([](Creature* c) -> std::string {
+				return c ? c->getName() : "";
+			}),
+			"isNpc", sol::property([](Creature* c) -> bool {
+				return c && c->isNpc();
+			}),
 
-		// Properties (read/write)
-		"spawnTime", sol::property(
-			[](Creature* c) -> int { return c ? c->getSpawnTime() : 0; },
-			[](Creature* c, int time) {
+			// Properties (read/write)
+			"spawnTime", sol::property([](Creature* c) -> int { return c ? c->getSpawnTime() : 0; }, [](Creature* c, int time) {
 				if (c) {
 					c->setSpawnTime(time);
-				}
-			}
-		),
-		"direction", sol::property(
-			[](Creature* c) -> int { return c ? static_cast<int>(c->getDirection()) : 0; },
-			[](Creature* c, int dir) {
+				} }),
+			"direction", sol::property([](Creature* c) -> int { return c ? static_cast<int>(c->getDirection()) : 0; }, [](Creature* c, int dir) {
 				if (c && dir >= DIRECTION_FIRST && dir <= DIRECTION_LAST) {
 					c->setDirection(static_cast<Direction>(dir));
-				}
-			}
-		),
+				} }),
 
-		// Selection
-		"isSelected", sol::property([](Creature* c) { return c && c->isSelected(); }),
-		"select", [](Creature* c) { if (c) c->select(); },
-		"deselect", [](Creature* c) { if (c) c->deselect(); },
+			// Selection
+			"isSelected", sol::property([](Creature* c) { return c && c->isSelected(); }),
+			"select", [](Creature* c) { if (c){ c->select();
+} },
+			"deselect", [](Creature* c) { if (c){ c->deselect();
+} },
 
-		// String representation
-		sol::meta_function::to_string, [](Creature* c) -> std::string {
-			if (!c) return "Creature(invalid)";
+			// String representation
+			sol::meta_function::to_string, [](Creature* c) -> std::string {
+			if (!c){ return "Creature(invalid)";
+}
 			std::string dir;
 			switch (c->getDirection()) {
 				case NORTH: dir = "N"; break;
@@ -84,55 +75,49 @@ void registerCreature(sol::state& lua) {
 				default: dir = "?"; break;
 			}
 			return "Creature(\"" + c->getName() + "\", dir=" + dir +
-				   ", spawn=" + std::to_string(c->getSpawnTime()) + "s)";
-		}
-	);
+				   ", spawn=" + std::to_string(c->getSpawnTime()) + "s)"; }
+		);
 
-	// Register Spawn usertype (expanded from basic in lua_api_tile.cpp)
-	lua.new_usertype<Spawn>("Spawn",
-		sol::no_constructor,
+		// Register Spawn usertype (expanded from basic in lua_api_tile.cpp)
+		lua.new_usertype<Spawn>(
+			"Spawn",
+			sol::no_constructor,
 
-		// Properties (read/write)
-		"size", sol::property(
-			[](Spawn* s) -> int { return s ? s->getSize() : 0; },
-			[](Spawn* s, int size) {
+			// Properties (read/write)
+			"size", sol::property([](Spawn* s) -> int { return s ? s->getSize() : 0; }, [](Spawn* s, int size) {
 				if (s && size > 0 && size < 100) {
 					s->setSize(size);
-				}
-			}
-		),
-		// Alias for size
-		"radius", sol::property(
-			[](Spawn* s) -> int { return s ? s->getSize() : 0; },
-			[](Spawn* s, int size) {
+				} }),
+			// Alias for size
+			"radius", sol::property([](Spawn* s) -> int { return s ? s->getSize() : 0; }, [](Spawn* s, int size) {
 				if (s && size > 0 && size < 100) {
 					s->setSize(size);
-				}
-			}
-		),
+				} }),
 
-		// Selection
-		"isSelected", sol::property([](Spawn* s) { return s && s->isSelected(); }),
-		"select", [](Spawn* s) { if (s) s->select(); },
-		"deselect", [](Spawn* s) { if (s) s->deselect(); },
+			// Selection
+			"isSelected", sol::property([](Spawn* s) { return s && s->isSelected(); }),
+			"select", [](Spawn* s) { if (s){ s->select();
+} },
+			"deselect", [](Spawn* s) { if (s){ s->deselect();
+} },
 
-		// String representation
-		sol::meta_function::to_string, [](Spawn* s) -> std::string {
-			if (!s) return "Spawn(invalid)";
-			return "Spawn(radius=" + std::to_string(s->getSize()) + ")";
-		}
-	);
-
-	// Helper function to check if a creature type exists
-	lua["creatureExists"] = [](const std::string& name) -> bool {
-		return g_creatures[name] != nullptr;
-	};
-
-	// Helper function to check if a creature is an NPC by name
-	lua["isNpcType"] = [](const std::string& name) -> bool {
-		CreatureType* type = g_creatures[name];
-		return type && type->isNpc;
-	};
+			// String representation
+			sol::meta_function::to_string, [](Spawn* s) -> std::string {
+			if (!s){ return "Spawn(invalid)";
 }
+			return "Spawn(radius=" + std::to_string(s->getSize()) + ")"; }
+		);
+
+		// Helper function to check if a creature type exists
+		lua["creatureExists"] = [](const std::string& name) -> bool {
+			return g_creatures[name] != nullptr;
+		};
+
+		// Helper function to check if a creature is an NPC by name
+		lua["isNpcType"] = [](const std::string& name) -> bool {
+			CreatureType* type = g_creatures[name];
+			return type && type->isNpc;
+		};
+	}
 
 } // namespace LuaAPI

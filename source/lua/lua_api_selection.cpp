@@ -25,127 +25,121 @@
 
 namespace LuaAPI {
 
-// Helper to get the current selection
-static Selection* getCurrentSelection() {
-	Editor* editor = g_gui.GetCurrentEditor();
-	if (!editor) return nullptr;
-	return &editor->selection;
-}
-
-// Get tiles as a Lua table
-static sol::table getSelectionTiles(sol::this_state ts) {
-	sol::state_view lua(ts);
-	sol::table result = lua.create_table();
-
-	Selection* sel = getCurrentSelection();
-	if (!sel) return result;
-
-	int idx = 1;
-	for (Tile* tile : sel->getTiles()) {
-		if (tile) {
-			result[idx++] = tile;
+	// Helper to get the current selection
+	static Selection* getCurrentSelection() {
+		Editor* editor = g_gui.GetCurrentEditor();
+		if (!editor) {
+			return nullptr;
 		}
+		return &editor->selection;
 	}
-	return result;
-}
 
-// Get bounds as a table with min/max positions
-static sol::table getSelectionBounds(sol::this_state ts) {
-	sol::state_view lua(ts);
-	sol::table result = lua.create_table();
+	// Get tiles as a Lua table
+	static sol::table getSelectionTiles(sol::this_state ts) {
+		sol::state_view lua(ts);
+		sol::table result = lua.create_table();
 
-	Selection* sel = getCurrentSelection();
-	if (!sel || sel->size() == 0) {
+		Selection* sel = getCurrentSelection();
+		if (!sel) {
+			return result;
+		}
+
+		int idx = 1;
+		for (Tile* tile : sel->getTiles()) {
+			if (tile) {
+				result[idx++] = tile;
+			}
+		}
 		return result;
 	}
 
-	result["min"] = sel->minPosition();
-	result["max"] = sel->maxPosition();
-	return result;
-}
+	// Get bounds as a table with min/max positions
+	static sol::table getSelectionBounds(sol::this_state ts) {
+		sol::state_view lua(ts);
+		sol::table result = lua.create_table();
 
-void registerSelection(sol::state& lua) {
-	// Register Selection usertype
-	lua.new_usertype<Selection>("Selection",
-		// No public constructor - selection is obtained from app.selection
-		sol::no_constructor,
+		Selection* sel = getCurrentSelection();
+		if (!sel || sel->size() == 0) {
+			return result;
+		}
 
-		// Properties
-		"isEmpty", sol::property([](Selection* sel) {
-			return sel == nullptr || sel->size() == 0;
-		}),
-		"size", sol::property([](Selection* sel) -> size_t {
-			return sel ? sel->size() : 0;
-		}),
-		"isBusy", sol::property([](Selection* sel) {
-			return sel && sel->isBusy();
-		}),
+		result["min"] = sel->minPosition();
+		result["max"] = sel->maxPosition();
+		return result;
+	}
 
-		// Tiles collection (as a table)
-		"tiles", sol::property([](Selection* sel, sol::this_state ts) {
-			return getSelectionTiles(ts);
-		}),
+	void registerSelection(sol::state& lua) {
+		// Register Selection usertype
+		lua.new_usertype<Selection>(
+			"Selection",
+			// No public constructor - selection is obtained from app.selection
+			sol::no_constructor,
 
-		// Bounds
-		"bounds", sol::property([](Selection* sel, sol::this_state ts) {
-			return getSelectionBounds(ts);
-		}),
-		"minPosition", sol::property([](Selection* sel) -> Position {
-			return sel ? sel->minPosition() : Position();
-		}),
-		"maxPosition", sol::property([](Selection* sel) -> Position {
-			return sel ? sel->maxPosition() : Position();
-		}),
+			// Properties
+			"isEmpty", sol::property([](Selection* sel) {
+				return sel == nullptr || sel->size() == 0;
+			}),
+			"size", sol::property([](Selection* sel) -> size_t {
+				return sel ? sel->size() : 0;
+			}),
+			"isBusy", sol::property([](Selection* sel) {
+				return sel && sel->isBusy();
+			}),
 
-		// Methods
-		"clear", [](Selection* sel) {
+			// Tiles collection (as a table)
+			"tiles", sol::property([](Selection* sel, sol::this_state ts) {
+				return getSelectionTiles(ts);
+			}),
+
+			// Bounds
+			"bounds", sol::property([](Selection* sel, sol::this_state ts) {
+				return getSelectionBounds(ts);
+			}),
+			"minPosition", sol::property([](Selection* sel) -> Position {
+				return sel ? sel->minPosition() : Position();
+			}),
+			"maxPosition", sol::property([](Selection* sel) -> Position {
+				return sel ? sel->maxPosition() : Position();
+			}),
+
+			// Methods
+			"clear", [](Selection* sel) {
 			if (sel) {
 				sel->start(Selection::INTERNAL);
 				sel->clear();
 				sel->finish(Selection::INTERNAL);
-			}
-		},
+			} },
 
-		"add", sol::overload(
-			[](Selection* sel, Tile* tile) {
+			"add", sol::overload([](Selection* sel, Tile* tile) {
 				if (sel && tile) {
 					sel->start(Selection::INTERNAL);
 					sel->add(tile);
 					sel->finish(Selection::INTERNAL);
-				}
-			},
-			[](Selection* sel, Tile* tile, Item* item) {
+				} }, [](Selection* sel, Tile* tile, Item* item) {
 				if (sel && tile && item) {
 					sel->start(Selection::INTERNAL);
 					sel->add(tile, item);
 					sel->finish(Selection::INTERNAL);
-				}
-			}
-		),
+				} }),
 
-		"remove", sol::overload(
-			[](Selection* sel, Tile* tile) {
+			"remove", sol::overload([](Selection* sel, Tile* tile) {
 				if (sel && tile) {
 					sel->start(Selection::INTERNAL);
 					sel->remove(tile);
 					sel->finish(Selection::INTERNAL);
-				}
-			},
-			[](Selection* sel, Tile* tile, Item* item) {
+				} }, [](Selection* sel, Tile* tile, Item* item) {
 				if (sel && tile && item) {
 					sel->start(Selection::INTERNAL);
 					sel->remove(tile, item);
 					sel->finish(Selection::INTERNAL);
-				}
-			}
-		),
+				} }),
 
-		// String representation
-		sol::meta_function::to_string, [](Selection* sel) {
-			if (!sel) return std::string("Selection(invalid)");
-			return "Selection(size=" + std::to_string(sel->size()) + ")";
-		}
-	);
+			// String representation
+			sol::meta_function::to_string, [](Selection* sel) {
+			if (!sel){ return std::string("Selection(invalid)");
 }
+			return "Selection(size=" + std::to_string(sel->size()) + ")"; }
+		);
+	}
 
 } // namespace LuaAPI

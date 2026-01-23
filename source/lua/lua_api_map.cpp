@@ -26,120 +26,112 @@
 
 namespace LuaAPI {
 
-// Custom iterator for Map tiles to use in Lua for-loops
-class LuaMapTileIterator {
-public:
-	LuaMapTileIterator(Map* map) : map(map), started(false) {
-		if (map) {
-			iter = map->begin();
-			endIter = map->end();
+	// Custom iterator for Map tiles to use in Lua for-loops
+	class LuaMapTileIterator {
+	public:
+		LuaMapTileIterator(Map* map) :
+			map(map), started(false) {
+			if (map) {
+				iter = map->begin();
+				endIter = map->end();
+			}
 		}
-	}
 
-	std::tuple<sol::object, sol::object> next(sol::this_state ts) {
-		sol::state_view lua(ts);
+		std::tuple<sol::object, sol::object> next(sol::this_state ts) {
+			sol::state_view lua(ts);
 
-		if (!map) {
+			if (!map) {
+				return std::make_tuple(sol::nil, sol::nil);
+			}
+
+			// Find next valid tile
+			while (iter != endIter) {
+				TileLocation* loc = *iter;
+				++iter;
+
+				if (loc && loc->get()) {
+					Tile* tile = loc->get();
+					return std::make_tuple(
+						sol::make_object(lua, tile),
+						sol::make_object(lua, tile)
+					);
+				}
+			}
+
 			return std::make_tuple(sol::nil, sol::nil);
 		}
 
-		// Find next valid tile
-		while (iter != endIter) {
-			TileLocation* loc = *iter;
-			++iter;
+	private:
+		Map* map;
+		MapIterator iter;
+		MapIterator endIter;
+		bool started;
+	};
 
-			if (loc && loc->get()) {
-				Tile* tile = loc->get();
-				return std::make_tuple(
-					sol::make_object(lua, tile),
-					sol::make_object(lua, tile)
-				);
+	// Iterator for Spawns
+	class LuaMapSpawnIterator {
+	public:
+		LuaMapSpawnIterator(Map* map) :
+			map(map) {
+			if (map) {
+				iter = map->spawns.begin();
+				endIter = map->spawns.end();
 			}
 		}
 
-		return std::make_tuple(sol::nil, sol::nil);
-	}
-
-private:
-	Map* map;
-	MapIterator iter;
-	MapIterator endIter;
-	bool started;
-};
-
-// Iterator for Spawns
-class LuaMapSpawnIterator {
-public:
-	LuaMapSpawnIterator(Map* map) : map(map) {
-		if (map) {
-			iter = map->spawns.begin();
-			endIter = map->spawns.end();
-		}
-	}
-
-	Tile* next() {
-		if (!map) return nullptr;
-
-		if (iter != endIter) {
-			Position pos = *iter;
-			++iter;
-			return map->getTile(pos);
-		}
-		return nullptr;
-	}
-
-private:
-	Map* map;
-	SpawnPositionList::const_iterator iter;
-	SpawnPositionList::const_iterator endIter;
-};
-
-void registerMap(sol::state& lua) {
-	// Register the iterator type
-	lua.new_usertype<LuaMapTileIterator>("MapTileIterator",
-		sol::no_constructor,
-		"next", &LuaMapTileIterator::next
-	);
-
-	// Register Spawn iterator
-	lua.new_usertype<LuaMapSpawnIterator>("MapSpawnIterator",
-		sol::no_constructor,
-		"next", &LuaMapSpawnIterator::next
-	);
-
-	// Register Map usertype
-	lua.new_usertype<Map>("Map",
-		// No public constructor - maps are obtained from app.map
-		sol::no_constructor,
-
-		// Properties (read-only)
-		"name", sol::property(&Map::getName),
-		"filename", sol::property(&Map::getFilename),
-		"description", sol::property(&Map::getMapDescription),
-		"width", sol::property(&Map::getWidth),
-		"height", sol::property(&Map::getHeight),
-		"houseFilename", sol::property(&Map::getHouseFilename),
-		"spawnFilename", sol::property(&Map::getSpawnFilename),
-		"hasFile", sol::property(&Map::hasFile),
-		"hasChanged", sol::property(&Map::hasChanged),
-		"tileCount", sol::property([](Map* map) -> uint64_t {
-			return map ? map->getTileCount() : 0;
-		}),
-
-
-		// Get tile methods
-		"getTile", sol::overload(
-			[](Map* map, int x, int y, int z) -> Tile* {
-				return map ? map->getTile(x, y, z) : nullptr;
-			},
-			[](Map* map, const Position& pos) -> Tile* {
-				return map ? map->getTile(pos) : nullptr;
+		Tile* next() {
+			if (!map) {
+				return nullptr;
 			}
-		),
 
-		// Get or create tile (for adding content to empty positions)
-		"getOrCreateTile", [](Map* map, sol::variadic_args va) -> Tile* {
-			if (!map) return nullptr;
+			if (iter != endIter) {
+				Position pos = *iter;
+				++iter;
+				return map->getTile(pos);
+			}
+			return nullptr;
+		}
+
+	private:
+		Map* map;
+		SpawnPositionList::const_iterator iter;
+		SpawnPositionList::const_iterator endIter;
+	};
+
+	void registerMap(sol::state& lua) {
+		// Register the iterator type
+		lua.new_usertype<LuaMapTileIterator>("MapTileIterator", sol::no_constructor, "next", &LuaMapTileIterator::next);
+
+		// Register Spawn iterator
+		lua.new_usertype<LuaMapSpawnIterator>("MapSpawnIterator", sol::no_constructor, "next", &LuaMapSpawnIterator::next);
+
+		// Register Map usertype
+		lua.new_usertype<Map>(
+			"Map",
+			// No public constructor - maps are obtained from app.map
+			sol::no_constructor,
+
+			// Properties (read-only)
+			"name", sol::property(&Map::getName),
+			"filename", sol::property(&Map::getFilename),
+			"description", sol::property(&Map::getMapDescription),
+			"width", sol::property(&Map::getWidth),
+			"height", sol::property(&Map::getHeight),
+			"houseFilename", sol::property(&Map::getHouseFilename),
+			"spawnFilename", sol::property(&Map::getSpawnFilename),
+			"hasFile", sol::property(&Map::hasFile),
+			"hasChanged", sol::property(&Map::hasChanged),
+			"tileCount", sol::property([](Map* map) -> uint64_t {
+				return map ? map->getTileCount() : 0;
+			}),
+
+			// Get tile methods
+			"getTile", sol::overload([](Map* map, int x, int y, int z) -> Tile* { return map ? map->getTile(x, y, z) : nullptr; }, [](Map* map, const Position& pos) -> Tile* { return map ? map->getTile(pos) : nullptr; }),
+
+			// Get or create tile (for adding content to empty positions)
+			"getOrCreateTile", [](Map* map, sol::variadic_args va) -> Tile* {
+			if (!map){ return nullptr;
+}
 
 			Position pos;
 			if (va.size() == 1 && va[0].is<Position>()) {
@@ -152,41 +144,40 @@ void registerMap(sol::state& lua) {
 				throw sol::error("getOrCreateTile expects (x, y, z) or (Position)");
 			}
 
-			return map->getOrCreateTile(pos);
-		},
+			return map->getOrCreateTile(pos); },
 
-		// Tiles iterator - allows: for tile in map.tiles do ... end
-		"tiles", sol::property([](Map* map, sol::this_state ts) {
-			sol::state_view lua(ts);
+			// Tiles iterator - allows: for tile in map.tiles do ... end
+			"tiles", sol::property([](Map* map, sol::this_state ts) {
+				sol::state_view lua(ts);
 
-			// Return an iterator function
-			auto iterator = std::make_shared<LuaMapTileIterator>(map);
+				// Return an iterator function
+				auto iterator = std::make_shared<LuaMapTileIterator>(map);
 
-			// Return the iterator function that Lua will call repeatedly
-			return sol::make_object(lua, [iterator](sol::this_state ts) {
-				return iterator->next(ts);
-			});
-		}),
+				// Return the iterator function that Lua will call repeatedly
+				return sol::make_object(lua, [iterator](sol::this_state ts) {
+					return iterator->next(ts);
+				});
+			}),
 
-		// Spawns iterator - allows: for tile in map.spawns do ... end
-		"spawns", sol::property([](Map* map, sol::this_state ts) {
-			sol::state_view lua(ts);
+			// Spawns iterator - allows: for tile in map.spawns do ... end
+			"spawns", sol::property([](Map* map, sol::this_state ts) {
+				sol::state_view lua(ts);
 
-			auto iterator = std::make_shared<LuaMapSpawnIterator>(map);
+				auto iterator = std::make_shared<LuaMapSpawnIterator>(map);
 
-			return sol::make_object(lua, [iterator]() -> Tile* {
-				return iterator->next();
-			});
-		}),
+				return sol::make_object(lua, [iterator]() -> Tile* {
+					return iterator->next();
+				});
+			}),
 
-		// String representation
-		sol::meta_function::to_string, [](Map* map) {
-			if (!map) return std::string("Map(invalid)");
+			// String representation
+			sol::meta_function::to_string, [](Map* map) {
+			if (!map){ return std::string("Map(invalid)");
+}
 			return "Map(\"" + map->getName() + "\", " +
 				   std::to_string(map->getWidth()) + "x" +
-				   std::to_string(map->getHeight()) + ")";
-		}
-	);
-}
+				   std::to_string(map->getHeight()) + ")"; }
+		);
+	}
 
 } // namespace LuaAPI

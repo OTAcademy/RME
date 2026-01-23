@@ -272,14 +272,18 @@ static void DrawDirectText(int x, int y, const std::string& text, const wxColor&
 	glColor4ub(0, 0, 0, 255);
 	glRasterPos2i(x + 1, y + 13);
 	for (const char* c = text.c_str(); *c != '\0'; c++) {
-		if (*c != '\n') glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
+		if (*c != '\n') {
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
+		}
 	}
 
 	// Text
 	glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
 	glRasterPos2i(x, y + 12);
 	for (const char* c = text.c_str(); *c != '\0'; c++) {
-		if (*c != '\n') glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
+		if (*c != '\n') {
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
+		}
 	}
 }
 
@@ -349,8 +353,7 @@ bool MapDrawer::drawOverlayCommands(const std::vector<MapOverlayCommand>& comman
 				y1 = static_cast<int>(cmd.y);
 				x2 = static_cast<int>(cmd.x2);
 				y2 = static_cast<int>(cmd.y2);
-			} else if (mapToScreen(this, cmd.x, cmd.y, cmd.z, x1, y1) &&
-					   mapToScreen(this, cmd.x2, cmd.y2, cmd.z2, x2, y2)) {
+			} else if (mapToScreen(this, cmd.x, cmd.y, cmd.z, x1, y1) && mapToScreen(this, cmd.x2, cmd.y2, cmd.z2, x2, y2)) {
 				// use map coords as-is
 			} else {
 				if (isScreenSpace) {

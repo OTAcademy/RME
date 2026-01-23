@@ -45,7 +45,9 @@ public:
 	// Lifecycle
 	bool initialize();
 	void shutdown();
-	bool isInitialized() const { return initialized; }
+	bool isInitialized() const {
+		return initialized;
+	}
 
 	// Script discovery and management
 	void discoverScripts();
@@ -57,7 +59,9 @@ public:
 	bool executeScript(size_t index, std::string& errorOut);
 
 	// Access scripts
-	const std::vector<std::unique_ptr<LuaScript>>& getScripts() const { return scripts; }
+	const std::vector<std::unique_ptr<LuaScript>>& getScripts() const {
+		return scripts;
+	}
 	LuaScript* getScript(const std::string& filepath);
 
 	// Enable/disable scripts
@@ -65,10 +69,14 @@ public:
 	bool isScriptEnabled(size_t index) const;
 
 	// Engine access
-	LuaEngine& getEngine() { return engine; }
+	LuaEngine& getEngine() {
+		return engine;
+	}
 
 	// Error handling
-	std::string getLastError() const { return lastError; }
+	std::string getLastError() const {
+		return lastError;
+	}
 
 	// Scripts directory
 	std::string getScriptsDirectory() const;
@@ -84,7 +92,9 @@ public:
 		sol::function callback;
 	};
 	void registerContextMenuItem(const std::string& label, sol::function callback);
-	const std::vector<ContextMenuItem>& getContextMenuItems() const { return contextMenuItems; }
+	const std::vector<ContextMenuItem>& getContextMenuItems() const {
+		return contextMenuItems;
+	}
 
 	// Event System
 	struct EventListener {
@@ -97,7 +107,9 @@ public:
 
 	template <typename... Args>
 	void emit(const std::string& eventName, Args&&... args) {
-		if (!initialized) return;
+		if (!initialized) {
+			return;
+		}
 
 		for (auto& listener : eventListeners) {
 			if (listener.eventName == eventName && listener.callback.valid()) {
@@ -133,10 +145,14 @@ public:
 	bool registerMapOverlayShow(const std::string& label, const std::string& overlayId, bool enabled, sol::function ontoggle);
 	bool setMapOverlayShowEnabled(const std::string& overlayId, bool enabled);
 	bool isMapOverlayEnabled(const std::string& id) const;
-	const std::vector<MapOverlayShowItem>& getMapOverlayShows() const { return mapOverlayShows; }
+	const std::vector<MapOverlayShowItem>& getMapOverlayShows() const {
+		return mapOverlayShows;
+	}
 	void collectMapOverlayCommands(const MapViewInfo& view, std::vector<MapOverlayCommand>& out);
 	void updateMapOverlayHover(int map_x, int map_y, int map_z, int screen_x, int screen_y, Tile* tile, Item* topItem);
-	const MapOverlayHoverState& getMapOverlayHover() const { return mapOverlayHover; }
+	const MapOverlayHoverState& getMapOverlayHover() const {
+		return mapOverlayHover;
+	}
 
 private:
 	LuaScriptManager() = default;

@@ -133,11 +133,15 @@ void LuaScript::parseMetadataFromManifest() {
 			quote = '\'';
 		}
 
-		if (pos == std::string::npos) return "";
+		if (pos == std::string::npos) {
+			return "";
+		}
 
 		size_t valueStart = content.find(quote, pos) + 1;
 		size_t valueEnd = content.find(quote, valueStart);
-		if (valueEnd == std::string::npos) return "";
+		if (valueEnd == std::string::npos) {
+			return "";
+		}
 
 		return content.substr(valueStart, valueEnd - valueStart);
 	};
@@ -145,23 +149,35 @@ void LuaScript::parseMetadataFromManifest() {
 	std::string val;
 
 	val = getValue("name");
-	if (!val.empty()) displayName = val;
+	if (!val.empty()) {
+		displayName = val;
+	}
 
 	val = getValue("description");
-	if (!val.empty()) description = val;
+	if (!val.empty()) {
+		description = val;
+	}
 
 	val = getValue("author");
-	if (!val.empty()) author = val;
+	if (!val.empty()) {
+		author = val;
+	}
 
 	val = getValue("version");
-	if (!val.empty()) version = val;
+	if (!val.empty()) {
+		version = val;
+	}
 
 	val = getValue("shortcut");
-	if (!val.empty()) shortcut = val;
+	if (!val.empty()) {
+		shortcut = val;
+	}
 
 	val = getValue("autorun");
 	if (!val.empty()) {
-		if (val == "true") autorun = true;
+		if (val == "true") {
+			autorun = true;
+		}
 	} else {
 		// Also check boolean literal
 		if (content.find("autorun = true") != std::string::npos || content.find("autorun=true") != std::string::npos) {
@@ -238,35 +254,49 @@ void LuaScript::parseMetadataFromComments() {
 		if (comment.size() > 7 && comment.substr(0, 7) == "@Title:") {
 			displayName = comment.substr(7);
 			size_t s = displayName.find_first_not_of(" \t");
-			if (s != std::string::npos) displayName = displayName.substr(s);
+			if (s != std::string::npos) {
+				displayName = displayName.substr(s);
+			}
 			foundName = true;
 			continue;
 		} else if (comment.size() > 13 && comment.substr(0, 13) == "@Description:") {
 			std::string descPart = comment.substr(13);
 			size_t s = descPart.find_first_not_of(" \t");
-			if (s != std::string::npos) descPart = descPart.substr(s);
+			if (s != std::string::npos) {
+				descPart = descPart.substr(s);
+			}
 
-			if (descBuilder.tellp() > 0) descBuilder << " ";
+			if (descBuilder.tellp() > 0) {
+				descBuilder << " ";
+			}
 			descBuilder << descPart;
 			continue;
 		} else if (comment.size() > 8 && comment.substr(0, 8) == "@Author:") {
 			author = comment.substr(8);
 			size_t s = author.find_first_not_of(" \t");
-			if (s != std::string::npos) author = author.substr(s);
+			if (s != std::string::npos) {
+				author = author.substr(s);
+			}
 			continue;
 		} else if (comment.size() > 9 && comment.substr(0, 9) == "@Version:") {
 			version = comment.substr(9);
 			size_t s = version.find_first_not_of(" \t");
-			if (s != std::string::npos) version = version.substr(s);
+			if (s != std::string::npos) {
+				version = version.substr(s);
+			}
 			continue;
 		} else if (comment.size() > 10 && comment.substr(0, 10) == "@Shortcut:") {
 			shortcut = comment.substr(10);
 			size_t s = shortcut.find_first_not_of(" \t");
-			if (s != std::string::npos) shortcut = shortcut.substr(s);
+			if (s != std::string::npos) {
+				shortcut = shortcut.substr(s);
+			}
 			continue;
 		} else if (comment.size() > 9 && (comment.substr(0, 9) == "@AutoRun:" || comment.substr(0, 9) == "@Autorun:")) {
 			std::string ar = comment.substr(9);
-			if (ar.find("true") != std::string::npos) autorun = true;
+			if (ar.find("true") != std::string::npos) {
+				autorun = true;
+			}
 			continue;
 		}
 

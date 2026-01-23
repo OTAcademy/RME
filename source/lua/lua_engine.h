@@ -36,22 +36,32 @@ public:
 	void shutdown();
 
 	// Check if engine is ready
-	bool isInitialized() const { return initialized; }
+	bool isInitialized() const {
+		return initialized;
+	}
 
 	// Script execution
 	bool executeFile(const std::string& filepath);
 	bool executeString(const std::string& code, const std::string& chunkName = "chunk");
 
 	// Get underlying sol state for API registration
-	sol::state& getState() { return lua; }
-	const sol::state& getState() const { return lua; }
+	sol::state& getState() {
+		return lua;
+	}
+	const sol::state& getState() const {
+		return lua;
+	}
 
 	// Error handling
-	std::string getLastError() const { return lastError; }
-	void clearError() { lastError.clear(); }
+	std::string getLastError() const {
+		return lastError;
+	}
+	void clearError() {
+		lastError.clear();
+	}
 
 	// Safe call wrapper with error handling
-	template<typename Func>
+	template <typename Func>
 	bool safeCall(Func&& func) {
 		try {
 			auto result = func();
@@ -71,7 +81,7 @@ public:
 	}
 
 	// Safe call that doesn't return a result
-	template<typename Func>
+	template <typename Func>
 	bool safeCallVoid(Func&& func) {
 		try {
 			func();

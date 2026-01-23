@@ -406,18 +406,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	// Create Script Manager panel (dockable)
 	LuaScriptsWindow* scriptsWindow = newd LuaScriptsWindow(this);
 	LuaScriptsWindow::SetInstance(scriptsWindow);
-	g_gui.aui_manager->AddPane(scriptsWindow,
-		wxAuiPaneInfo()
-			.Name("ScriptManager")
-			.Caption("Script Manager")
-			.Right()
-			.CloseButton(true)
-			.MaximizeButton(false)
-			.MinimizeButton(false)
-			.Floatable(true)
-			.BestSize(450, 350)
-			.MinSize(300, 200)
-			.Hide()  // Hidden by default, show from menu
+	g_gui.aui_manager->AddPane(scriptsWindow, wxAuiPaneInfo().Name("ScriptManager").Caption("Script Manager").Right().CloseButton(true).MaximizeButton(false).MinimizeButton(false).Floatable(true).BestSize(450, 350).MinSize(300, 200).Hide() // Hidden by default, show from menu
 	);
 
 	g_gui.aui_manager->Update();

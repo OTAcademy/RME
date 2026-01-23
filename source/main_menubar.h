@@ -160,13 +160,13 @@ namespace MenuBar {
 		// Scripts menu
 		SCRIPTS_OPEN_FOLDER,
 		SCRIPTS_RELOAD,
-		SCRIPTS_MANAGER,  // Show/hide Script Manager window
-		SCRIPTS_FIRST,  // Dynamic script IDs start here
-		SCRIPTS_LAST = SCRIPTS_FIRST + 100,  // Allow up to 100 scripts
+		SCRIPTS_MANAGER, // Show/hide Script Manager window
+		SCRIPTS_FIRST, // Dynamic script IDs start here
+		SCRIPTS_LAST = SCRIPTS_FIRST + 100, // Allow up to 100 scripts
 
 		// Show menu (custom overlays)
 		SHOW_CUSTOM_FIRST,
-		SHOW_CUSTOM_LAST = SHOW_CUSTOM_FIRST + 200,  // Allow up to 200 custom show entries
+		SHOW_CUSTOM_LAST = SHOW_CUSTOM_FIRST + 200, // Allow up to 200 custom show entries
 	};
 }
 

@@ -20,51 +20,51 @@
 
 namespace LuaAPI {
 
-void registerAll(sol::state& lua) {
-	// Register base types first (order matters for dependencies)
+	void registerAll(sol::state& lua) {
+		// Register base types first (order matters for dependencies)
 
-	// Position is used by Tile and Map
-	registerPosition(lua);
+		// Position is used by Tile and Map
+		registerPosition(lua);
 
-	// Item is used by Tile
-	registerItem(lua);
+		// Item is used by Tile
+		registerItem(lua);
 
-	// Color is a standalone type
-	registerColor(lua);
+		// Color is a standalone type
+		registerColor(lua);
 
-	// Creature/Spawn are used by Tile (must come before Tile)
-	registerCreature(lua);
+		// Creature/Spawn are used by Tile (must come before Tile)
+		registerCreature(lua);
 
-	// Tile is used by Map and Selection
-	registerTile(lua);
+		// Tile is used by Map and Selection
+		registerTile(lua);
 
-	// Map uses Tile and Position
-	registerMap(lua);
+		// Map uses Tile and Position
+		registerMap(lua);
 
-	// Selection uses Tile
-	registerSelection(lua);
+		// Selection uses Tile
+		registerSelection(lua);
 
-	// Must come after Map and Selection so app.map/app.selection work
-	registerApp(lua);
+		// Must come after Map and Selection so app.map/app.selection work
+		registerApp(lua);
 
-	// Register Dialog class
-	registerDialog(lua);
+		// Register Dialog class
+		registerDialog(lua);
 
-	registerBrush(lua);
+		registerBrush(lua);
 
-	// Register Image class
-	registerImage(lua);
+		// Register Image class
+		registerImage(lua);
 
-	// Register JSON helper
-	registerJson(lua);
+		// Register JSON helper
+		registerJson(lua);
 
-	// Register HTTP client
-	registerHttp(lua);
+		// Register HTTP client
+		registerHttp(lua);
 
-	// Register procedural generation APIs
-	registerNoise(lua);
-	registerAlgo(lua);
-	registerGeo(lua);
-}
+		// Register procedural generation APIs
+		registerNoise(lua);
+		registerAlgo(lua);
+		registerGeo(lua);
+	}
 
 }

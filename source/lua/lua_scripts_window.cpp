@@ -27,12 +27,12 @@
 LuaScriptsWindow* LuaScriptsWindow::instance = nullptr;
 
 BEGIN_EVENT_TABLE(LuaScriptsWindow, wxPanel)
-	EVT_LIST_ITEM_ACTIVATED(SCRIPT_MANAGER_LIST, LuaScriptsWindow::OnScriptActivated)
-	EVT_LIST_ITEM_SELECTED(SCRIPT_MANAGER_LIST, LuaScriptsWindow::OnScriptSelected)
-	EVT_BUTTON(SCRIPT_MANAGER_RELOAD, LuaScriptsWindow::OnReloadScripts)
-	EVT_BUTTON(SCRIPT_MANAGER_OPEN_FOLDER, LuaScriptsWindow::OnOpenFolder)
-	EVT_BUTTON(SCRIPT_MANAGER_CLEAR_CONSOLE, LuaScriptsWindow::OnClearConsole)
-	EVT_BUTTON(SCRIPT_MANAGER_RUN_SCRIPT, LuaScriptsWindow::OnRunScript)
+EVT_LIST_ITEM_ACTIVATED(SCRIPT_MANAGER_LIST, LuaScriptsWindow::OnScriptActivated)
+EVT_LIST_ITEM_SELECTED(SCRIPT_MANAGER_LIST, LuaScriptsWindow::OnScriptSelected)
+EVT_BUTTON(SCRIPT_MANAGER_RELOAD, LuaScriptsWindow::OnReloadScripts)
+EVT_BUTTON(SCRIPT_MANAGER_OPEN_FOLDER, LuaScriptsWindow::OnOpenFolder)
+EVT_BUTTON(SCRIPT_MANAGER_CLEAR_CONSOLE, LuaScriptsWindow::OnClearConsole)
+EVT_BUTTON(SCRIPT_MANAGER_RUN_SCRIPT, LuaScriptsWindow::OnRunScript)
 END_EVENT_TABLE()
 
 LuaScriptsWindow::LuaScriptsWindow(wxWindow* parent) :
@@ -97,9 +97,7 @@ void LuaScriptsWindow::BuildUI() {
 	mainSizer->Add(buttonSizer, 0, wxEXPAND | wxALL, 2);
 
 	// Script list
-	script_list = newd wxListCtrl(this, SCRIPT_MANAGER_LIST,
-		wxDefaultPosition, wxSize(-1, 150),
-		wxLC_REPORT | wxLC_SINGLE_SEL);
+	script_list = newd wxListCtrl(this, SCRIPT_MANAGER_LIST, wxDefaultPosition, wxSize(-1, 150), wxLC_REPORT | wxLC_SINGLE_SEL);
 
 	script_list->InsertColumn(0, "Status", wxLIST_FORMAT_CENTER, 40);
 	script_list->InsertColumn(1, "Title", wxLIST_FORMAT_LEFT, 70);
@@ -115,9 +113,7 @@ void LuaScriptsWindow::BuildUI() {
 	mainSizer->Add(consoleLabel, 0, wxLEFT | wxTOP, 4);
 
 	// Console output
-	console_output = newd wxTextCtrl(this, wxID_ANY, wxEmptyString,
-		wxDefaultPosition, wxSize(-1, 100),
-		wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH2 | wxHSCROLL);
+	console_output = newd wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 100), wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH2 | wxHSCROLL);
 
 	// Set monospace font for console
 	wxFont consoleFont(9, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
@@ -131,7 +127,9 @@ void LuaScriptsWindow::BuildUI() {
 }
 
 void LuaScriptsWindow::RefreshScriptList() {
-	if (!script_list) return;
+	if (!script_list) {
+		return;
+	}
 
 	script_list->DeleteAllItems();
 
@@ -140,7 +138,6 @@ void LuaScriptsWindow::RefreshScriptList() {
 		const auto& script = scripts[i];
 
 		long index = script_list->InsertItem(i, script->isEnabled() ? "On" : "Off");
-
 
 		script_list->SetItem(index, 1, wxString::FromUTF8(script->getDisplayName()));
 		script_list->SetItem(index, 2, wxString::FromUTF8(script->getDescription()));
@@ -168,14 +165,16 @@ void LuaScriptsWindow::RefreshScriptList() {
 }
 
 void LuaScriptsWindow::LogMessage(const wxString& message, bool isError) {
-	if (!console_output) return;
+	if (!console_output) {
+		return;
+	}
 
 	// Set color based on message type
 	wxTextAttr attr;
 	if (isError) {
-		attr.SetTextColour(wxColour(255, 100, 100));  // Red for errors
+		attr.SetTextColour(wxColour(255, 100, 100)); // Red for errors
 	} else {
-		attr.SetTextColour(wxColour(200, 200, 200));  // Light gray for normal
+		attr.SetTextColour(wxColour(200, 200, 200)); // Light gray for normal
 	}
 
 	console_output->SetDefaultStyle(attr);
@@ -200,7 +199,9 @@ void LuaScriptsWindow::ClearConsole() {
 }
 
 void LuaScriptsWindow::UpdateScriptState(long index) {
-	if (!script_list || index < 0) return;
+	if (!script_list || index < 0) {
+		return;
+	}
 
 	size_t scriptIndex = static_cast<size_t>(script_list->GetItemData(index));
 	const auto& scripts = g_luaScripts.getScripts();
@@ -220,7 +221,9 @@ void LuaScriptsWindow::UpdateScriptState(long index) {
 void LuaScriptsWindow::OnScriptActivated(wxListEvent& event) {
 	// Double-click to run the script
 	long index = event.GetIndex();
-	if (index < 0) return;
+	if (index < 0) {
+		return;
+	}
 
 	size_t scriptIndex = static_cast<size_t>(script_list->GetItemData(index));
 	const auto& scripts = g_luaScripts.getScripts();
@@ -274,7 +277,9 @@ void LuaScriptsWindow::OnClearConsole(wxCommandEvent& event) {
 
 void LuaScriptsWindow::OnRunScript(wxCommandEvent& event) {
 	long selected = script_list->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-	if (selected < 0) return;
+	if (selected < 0) {
+		return;
+	}
 
 	size_t scriptIndex = static_cast<size_t>(script_list->GetItemData(selected));
 	const auto& scripts = g_luaScripts.getScripts();
@@ -292,7 +297,9 @@ void LuaScriptsWindow::OnRunScript(wxCommandEvent& event) {
 void LuaScriptsWindow::OnScriptCheckToggle(wxListEvent& event) {
 	// Toggle script enabled state (would need checkbox implementation)
 	long index = event.GetIndex();
-	if (index < 0) return;
+	if (index < 0) {
+		return;
+	}
 
 	size_t scriptIndex = static_cast<size_t>(script_list->GetItemData(index));
 	g_luaScripts.setScriptEnabled(scriptIndex, !g_luaScripts.isScriptEnabled(scriptIndex));

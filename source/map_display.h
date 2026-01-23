@@ -101,8 +101,12 @@ public:
 	}
 	virtual void GetScreenCenter(int* map_x, int* map_y);
 
-	virtual int GetClientWidth() const { return ClientMapWidth; }
-	virtual int GetClientHeight() const { return ClientMapHeight; }
+	virtual int GetClientWidth() const {
+		return ClientMapWidth;
+	}
+	virtual int GetClientHeight() const {
+		return ClientMapHeight;
+	}
 
 	void StartPasting();
 	void EndPasting();
@@ -113,7 +117,9 @@ public:
 	void UpdateZoomStatus();
 
 	void ChangeFloor(int new_floor);
-	void SetFloor(int new_floor) { floor = new_floor; }
+	void SetFloor(int new_floor) {
+		floor = new_floor;
+	}
 	int GetFloor() const {
 		return floor;
 	}
