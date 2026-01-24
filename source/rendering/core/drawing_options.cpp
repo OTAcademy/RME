@@ -1,5 +1,5 @@
-#include "main.h"
-#include "gui.h"
+#include "app/main.h"
+#include "ui/gui.h"
 #include "rendering/core/drawing_options.h"
 
 DrawingOptions::DrawingOptions() {
@@ -77,7 +77,7 @@ void DrawingOptions::SetIngame() {
 	current_house_id = 0;
 }
 
-#include "settings.h"
+#include "app/settings.h"
 
 void DrawingOptions::Update() {
 	transparent_floors = g_settings.getBoolean(Config::TRANSPARENT_FLOORS);

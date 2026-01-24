@@ -1,4 +1,4 @@
-#include "main.h"
+#include "app/main.h"
 #include "rendering/core/text_renderer.h"
 
 // GLAD must be included before NanoVG

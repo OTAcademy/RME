@@ -19,7 +19,7 @@
 #define RME_ANIMATOR_H_
 
 #include <vector>
-#include "common.h"
+#include "util/common.h"
 
 enum AnimationDirection {
 	ANIMATION_FORWARD = 0,

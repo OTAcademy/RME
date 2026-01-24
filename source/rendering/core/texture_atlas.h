@@ -1,7 +1,7 @@
 #ifndef RME_RENDERING_CORE_TEXTURE_ATLAS_H_
 #define RME_RENDERING_CORE_TEXTURE_ATLAS_H_
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/core/pixel_buffer_object.h"
 #include <optional>
 #include <cstdint>

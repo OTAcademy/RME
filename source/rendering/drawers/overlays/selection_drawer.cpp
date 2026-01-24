@@ -1,4 +1,4 @@
-#include "main.h"
+#include "app/main.h"
 
 #ifdef __APPLE__
 	#include <GLUT/glut.h>
@@ -12,7 +12,7 @@
 #include "rendering/core/drawing_options.h"
 #include "rendering/ui/map_display.h"
 #include "rendering/core/graphics.h"
-#include "gui.h"
+#include "ui/gui.h"
 
 void SelectionDrawer::draw(SpriteBatch& sprite_batch, const RenderView& view, const MapCanvas* canvas, const DrawingOptions& options) {
 	if (options.ingame) {

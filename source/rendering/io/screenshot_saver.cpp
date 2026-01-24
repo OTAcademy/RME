@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "rendering/io/screenshot_saver.h"
-#include "main.h" // For ASSERT and other common definitions if needed
+#include "app/main.h" // For ASSERT and other common definitions if needed
 #include <wx/wfstream.h>
 #include <time.h>
 

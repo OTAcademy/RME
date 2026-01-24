@@ -18,11 +18,11 @@
 #ifndef RME_GRAPHICS_H_
 #define RME_GRAPHICS_H_
 
-#include "outfit.h"
-#include "common.h"
+#include "game/outfit.h"
+#include "util/common.h"
 #include <deque>
 
-#include "client_version.h"
+#include "app/client_version.h"
 
 enum SpriteSize {
 	SPRITE_SIZE_16x16,

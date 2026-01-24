@@ -1,7 +1,7 @@
 #ifndef RME_RENDERING_CORE_SHADER_PROGRAM_H_
 #define RME_RENDERING_CORE_SHADER_PROGRAM_H_
 
-#include "main.h"
+#include "app/main.h"
 #include <string>
 #include <unordered_map>
 #include <glm/glm.hpp>

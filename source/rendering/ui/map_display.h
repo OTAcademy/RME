@@ -18,14 +18,14 @@
 #ifndef RME_DISPLAY_WINDOW_H_
 #define RME_DISPLAY_WINDOW_H_
 
-#include "action.h"
-#include "tile.h"
-#include "creature.h"
+#include "editor/action.h"
+#include "map/tile.h"
+#include "game/creature.h"
 #include "rendering/utilities/frame_pacer.h"
 
-#include "map_popup_menu.h"
-#include "map_popup_menu.h"
-#include "animation_timer.h"
+#include "ui/map_popup_menu.h"
+#include "ui/map_popup_menu.h"
+#include "game/animation_timer.h"
 #include <memory>
 
 class Item;

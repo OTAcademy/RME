@@ -2,7 +2,7 @@
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/core/editor_sprite.h"
 
 EditorSprite::EditorSprite(wxBitmap* b16x16, wxBitmap* b32x32) {

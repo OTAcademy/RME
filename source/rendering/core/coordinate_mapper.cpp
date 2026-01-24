@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "rendering/core/coordinate_mapper.h"
-#include "definitions.h" // For MAP_MAX_LAYER, GROUND_LAYER, TileSize if defined there, or map.h
+#include "app/definitions.h" // For MAP_MAX_LAYER, GROUND_LAYER, TileSize if defined there, or map.h
 
 #ifndef TileSize
 	#define TileSize 32

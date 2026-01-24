@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 
 #include <sstream>
 #include <time.h>
@@ -23,17 +23,17 @@
 #include <chrono>
 #include <wx/wfstream.h>
 
-#include "gui.h"
-#include "editor.h"
-#include "brush.h"
-#include "sprites.h"
-#include "map.h"
-#include "tile.h"
-#include "old_properties_window.h"
-#include "properties_window.h"
-#include "tileset_window.h"
-#include "palette_window.h"
-#include "palette_window.h"
+#include "ui/gui.h"
+#include "editor/editor.h"
+#include "brushes/brush.h"
+#include "game/sprites.h"
+#include "map/map.h"
+#include "map/tile.h"
+#include "ui/old_properties_window.h"
+#include "ui/properties_window.h"
+#include "ui/tileset_window.h"
+#include "palette/palette_window.h"
+#include "palette/palette_window.h"
 #include "rendering/ui/screenshot_controller.h"
 #include "rendering/utilities/tile_describer.h"
 #include "rendering/core/coordinate_mapper.h"
@@ -41,13 +41,13 @@
 #include "rendering/ui/map_status_updater.h"
 #include "rendering/map_drawer.h"
 #include "rendering/core/text_renderer.h"
-#include "application.h"
-#include "live_server.h"
-#include "browse_tile_window.h"
-#include "dialog_helper.h"
-#include "animation_timer.h"
-#include "map_popup_menu.h"
-#include "brush_utility.h"
+#include "app/application.h"
+#include "live/live_server.h"
+#include "ui/browse_tile_window.h"
+#include "ui/dialog_helper.h"
+#include "game/animation_timer.h"
+#include "ui/map_popup_menu.h"
+#include "brushes/brush_utility.h"
 #include "rendering/ui/clipboard_handler.h"
 #include "rendering/ui/keyboard_handler.h"
 #include "rendering/ui/brush_selector.h"
@@ -61,17 +61,17 @@
 #include "rendering/ui/drawing_controller.h"
 #include "rendering/ui/map_menu_handler.h"
 
-#include "doodad_brush.h"
-#include "house_exit_brush.h"
-#include "house_brush.h"
-#include "wall_brush.h"
-#include "spawn_brush.h"
-#include "creature_brush.h"
-#include "ground_brush.h"
-#include "waypoint_brush.h"
-#include "raw_brush.h"
-#include "carpet_brush.h"
-#include "table_brush.h"
+#include "brushes/doodad_brush.h"
+#include "brushes/house_exit_brush.h"
+#include "brushes/house_brush.h"
+#include "brushes/wall_brush.h"
+#include "brushes/spawn_brush.h"
+#include "brushes/creature_brush.h"
+#include "brushes/ground_brush.h"
+#include "brushes/waypoint_brush.h"
+#include "brushes/raw_brush.h"
+#include "brushes/carpet_brush.h"
+#include "brushes/table_brush.h"
 
 BEGIN_EVENT_TABLE(MapCanvas, wxGLCanvas)
 EVT_KEY_DOWN(MapCanvas::OnKeyDown)

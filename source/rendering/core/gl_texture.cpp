@@ -1,4 +1,4 @@
-#include "main.h"
+#include "app/main.h"
 #include "rendering/core/gl_texture.h"
 
 GLTexture::GLTexture() :

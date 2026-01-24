@@ -2,7 +2,7 @@
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 
 #ifdef __APPLE__
 	#include <GLUT/glut.h>
@@ -18,14 +18,14 @@
 #include "rendering/drawers/entities/creature_drawer.h"
 #include "rendering/core/render_view.h"
 #include "rendering/core/drawing_options.h"
-#include "editor.h"
+#include "editor/editor.h"
 #include "rendering/ui/map_display.h"
-#include "tile.h"
-#include "sprites.h"
+#include "map/tile.h"
+#include "game/sprites.h"
 
-#include "item.h"
-#include "creature.h"
-#include "spawn.h"
+#include "game/item.h"
+#include "game/creature.h"
+#include "game/spawn.h"
 #include "rendering/ui/selection_controller.h"
 
 DragShadowDrawer::DragShadowDrawer() {

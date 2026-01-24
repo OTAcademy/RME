@@ -5,10 +5,10 @@
 #ifndef RME_RENDERING_SPRITE_DRAWER_H_
 #define RME_RENDERING_SPRITE_DRAWER_H_
 
-#include "main.h"
+#include "app/main.h"
 
 #include <wx/colour.h>
-#include "definitions.h"
+#include "app/definitions.h"
 
 // Forward declarations
 class GameSprite;

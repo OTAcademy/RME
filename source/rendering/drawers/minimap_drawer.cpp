@@ -1,11 +1,11 @@
-#include "main.h"
+#include "app/main.h"
 #include "rendering/drawers/minimap_drawer.h"
 #include "rendering/core/primitive_renderer.h"
 #include "rendering/ui/map_display.h"
-#include "editor.h"
-#include "map.h"
-#include "tile.h"
-#include "gui.h"
+#include "editor/editor.h"
+#include "map/map.h"
+#include "map/tile.h"
+#include "ui/gui.h"
 
 // Included for minimap_color
 #include "rendering/core/graphics.h"

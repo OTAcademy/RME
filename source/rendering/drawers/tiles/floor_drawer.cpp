@@ -2,7 +2,7 @@
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 
 #ifdef __APPLE__
 	#include <GLUT/glut.h>
@@ -16,8 +16,8 @@
 #include "rendering/drawers/entities/creature_drawer.h"
 #include "rendering/core/render_view.h"
 #include "rendering/core/drawing_options.h"
-#include "editor.h"
-#include "tile.h"
+#include "editor/editor.h"
+#include "map/tile.h"
 
 FloorDrawer::FloorDrawer() {
 }

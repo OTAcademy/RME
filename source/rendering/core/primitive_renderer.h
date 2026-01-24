@@ -1,7 +1,7 @@
 #ifndef RME_RENDERING_CORE_PRIMITIVE_RENDERER_H_
 #define RME_RENDERING_CORE_PRIMITIVE_RENDERER_H_
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/core/shader_program.h"
 #include <vector>
 #include <memory>

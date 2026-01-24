@@ -1,7 +1,7 @@
 #ifndef RME_RENDERING_CORE_RING_BUFFER_H_
 #define RME_RENDERING_CORE_RING_BUFFER_H_
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/core/sync_handle.h"
 #include <cstddef>
 #include <cstdint>

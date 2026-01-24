@@ -15,16 +15,16 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/ui/popup_action_handler.h"
-#include "editor.h"
-#include "tile.h"
-#include "item.h"
-#include "gui.h"
-#include "browse_tile_window.h"
-#include "tileset_window.h"
-#include "dialog_helper.h"
-#include "brush.h"
+#include "editor/editor.h"
+#include "map/tile.h"
+#include "game/item.h"
+#include "ui/gui.h"
+#include "ui/browse_tile_window.h"
+#include "ui/tileset_window.h"
+#include "ui/dialog_helper.h"
+#include "brushes/brush.h"
 
 void PopupActionHandler::RotateItem(Editor& editor) {
 	Tile* tile = editor.selection.getSelectedTile();

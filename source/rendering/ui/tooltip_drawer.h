@@ -18,9 +18,9 @@
 #ifndef RME_TOOLTIP_DRAWER_H_
 #define RME_TOOLTIP_DRAWER_H_
 
-#include "../../definitions.h"
+#include "app/definitions.h"
 #include <iostream>
-#include "position.h"
+#include "map/position.h"
 #include "rendering/core/render_view.h"
 #include <vector>
 #include <string>

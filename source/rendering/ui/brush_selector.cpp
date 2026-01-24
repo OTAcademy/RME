@@ -15,21 +15,21 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/ui/brush_selector.h"
-#include "gui.h"
-#include "editor.h"
-#include "tile.h"
-#include "item.h"
-#include "brush.h"
-#include "ground_brush.h"
-#include "wall_brush.h"
-#include "carpet_brush.h"
-#include "table_brush.h"
-#include "raw_brush.h"
-#include "house_brush.h"
-#include "spawn_brush.h"
-#include "creature_brush.h"
+#include "ui/gui.h"
+#include "editor/editor.h"
+#include "map/tile.h"
+#include "game/item.h"
+#include "brushes/brush.h"
+#include "brushes/ground_brush.h"
+#include "brushes/wall_brush.h"
+#include "brushes/carpet_brush.h"
+#include "brushes/table_brush.h"
+#include "brushes/raw_brush.h"
+#include "brushes/house_brush.h"
+#include "brushes/spawn_brush.h"
+#include "brushes/creature_brush.h"
 
 void BrushSelector::SelectRAWBrush(Selection& selection) {
 	if (selection.size() != 1) {

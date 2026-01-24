@@ -5,9 +5,9 @@
 #ifndef RME_RENDERING_CREATURE_DRAWER_H_
 #define RME_RENDERING_CREATURE_DRAWER_H_
 
-#include "definitions.h"
-#include "outfit.h"
-#include "creature.h"
+#include "app/definitions.h"
+#include "game/outfit.h"
+#include "game/creature.h"
 
 // Forward declarations
 

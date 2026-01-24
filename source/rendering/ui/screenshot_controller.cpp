@@ -15,11 +15,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/ui/screenshot_controller.h"
 #include "rendering/ui/map_display.h"
 #include "rendering/io/screenshot_saver.h"
-#include "gui.h"
+#include "ui/gui.h"
 
 ScreenshotController::ScreenshotController(MapCanvas* canvas) :
 	canvas(canvas) {

@@ -1,6 +1,6 @@
 #include "rendering/drawers/minimap_renderer.h"
-#include "map.h"
-#include "tile.h"
+#include "map/map.h"
+#include "map/tile.h"
 #include "rendering/core/minimap_colors.h"
 #include <iostream>
 #include <algorithm>

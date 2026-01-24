@@ -2,21 +2,21 @@
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/ui/selection_controller.h"
 #include "rendering/ui/map_display.h"
-#include "editor.h"
-#include "map.h"
-#include "tile.h"
-#include "item.h"
-#include "spawn.h"
-#include "creature.h"
-#include "settings.h"
-#include "gui.h"
+#include "editor/editor.h"
+#include "map/map.h"
+#include "map/tile.h"
+#include "game/item.h"
+#include "game/spawn.h"
+#include "game/creature.h"
+#include "app/settings.h"
+#include "ui/gui.h"
 #include "rendering/ui/brush_selector.h"
-#include "creature_brush.h"
-#include "raw_brush.h"
-#include "dialog_helper.h"
+#include "brushes/creature_brush.h"
+#include "brushes/raw_brush.h"
+#include "ui/dialog_helper.h"
 
 SelectionController::SelectionController(MapCanvas* canvas, Editor& editor) :
 	canvas(canvas),

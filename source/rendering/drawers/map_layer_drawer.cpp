@@ -15,12 +15,12 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/drawers/map_layer_drawer.h"
 #include "rendering/drawers/tiles/tile_renderer.h"
 #include "rendering/drawers/overlays/grid_drawer.h"
-#include "editor.h"
-#include "map.h"
+#include "editor/editor.h"
+#include "map/map.h"
 #include "rendering/core/render_view.h"
 #include "rendering/core/drawing_options.h"
 #include "rendering/core/light_buffer.h"

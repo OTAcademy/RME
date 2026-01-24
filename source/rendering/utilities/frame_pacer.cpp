@@ -2,7 +2,7 @@
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/utilities/frame_pacer.h"
 #include "rendering/ui/map_status_updater.h"
 

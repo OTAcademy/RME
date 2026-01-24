@@ -2,7 +2,7 @@
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 
 #include <algorithm>
 #undef min
@@ -17,12 +17,12 @@
 #include "rendering/drawers/entities/sprite_drawer.h"
 #include "rendering/drawers/entities/creature_drawer.h"
 #include "rendering/core/drawing_options.h"
-#include "tile.h"
-#include "item.h"
-#include "items.h"
-#include "complexitem.h"
-#include "sprites.h"
-#include "gui.h"
+#include "map/tile.h"
+#include "game/item.h"
+#include "game/items.h"
+#include "game/complexitem.h"
+#include "game/sprites.h"
+#include "ui/gui.h"
 
 ItemDrawer::ItemDrawer() {
 }

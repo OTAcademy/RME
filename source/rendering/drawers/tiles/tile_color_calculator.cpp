@@ -1,9 +1,9 @@
-#include "main.h"
+#include "app/main.h"
 #include "rendering/drawers/tiles/tile_color_calculator.h"
-#include "tile.h"
-#include "item.h"
+#include "map/tile.h"
+#include "game/item.h"
 #include "rendering/core/drawing_options.h"
-#include "definitions.h"
+#include "app/definitions.h"
 
 void TileColorCalculator::Calculate(const Tile* tile, const DrawingOptions& options, uint32_t current_house_id, int spawn_count, uint8_t& r, uint8_t& g, uint8_t& b) {
 	bool showspecial = options.show_only_colors || options.show_special_tiles;

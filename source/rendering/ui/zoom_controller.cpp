@@ -2,11 +2,11 @@
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/ui/zoom_controller.h"
 #include "rendering/ui/map_display.h"
-#include "map_window.h"
-#include "gui.h"
+#include "ui/map_window.h"
+#include "ui/gui.h"
 #include <algorithm>
 #include <cmath>
 

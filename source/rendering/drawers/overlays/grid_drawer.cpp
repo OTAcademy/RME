@@ -1,12 +1,12 @@
 #include "rendering/drawers/overlays/grid_drawer.h"
 #include "rendering/drawers/overlays/grid_drawer.h"
-#include "gui.h"
+#include "ui/gui.h"
 #include "rendering/core/sprite_batch.h"
 #include "rendering/core/graphics.h"
 
 #include "rendering/core/render_view.h"
 #include "rendering/core/drawing_options.h"
-#include "definitions.h"
+#include "app/definitions.h"
 #include <wx/gdicmn.h>
 
 void GridDrawer::DrawGrid(SpriteBatch& sprite_batch, const RenderView& view, const DrawingOptions& options) {

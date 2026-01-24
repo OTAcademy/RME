@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <algorithm>
 #include "rendering/core/sprite_light.h"
-#include "definitions.h"
+#include "app/definitions.h"
 
 struct LightBuffer {
 	struct Light {

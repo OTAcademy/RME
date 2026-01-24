@@ -15,15 +15,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 
 #include <spdlog/spdlog.h>
 
 #include "rendering/core/graphics.h"
-#include "editor.h"
-#include "map.h"
+#include "editor/editor.h"
+#include "map/map.h"
 
-#include "gui.h"
+#include "ui/gui.h"
 #include "rendering/ui/map_display.h"
 #include "rendering/ui/minimap_window.h"
 

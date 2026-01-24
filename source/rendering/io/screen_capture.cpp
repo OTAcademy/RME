@@ -1,5 +1,5 @@
 #include "rendering/io/screen_capture.h"
-#include "main.h"
+#include "app/main.h"
 
 #ifdef __APPLE__
 	#include <GLUT/glut.h>

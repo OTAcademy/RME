@@ -5,7 +5,7 @@
 #ifndef RME_RENDERING_CORE_GL_TEXTURE_ID_GENERATOR_H_
 #define RME_RENDERING_CORE_GL_TEXTURE_ID_GENERATOR_H_
 
-#include "main.h"
+#include "app/main.h"
 
 // Check if we are on Windows or Linux to include appropriate GL headers if main.h doesn't suffice or if we want to be explicit.
 // Using GLuint which usually requires GL headers.

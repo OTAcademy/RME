@@ -15,10 +15,10 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/core/texture_garbage_collector.h"
 #include "rendering/core/graphics.h"
-#include "settings.h"
+#include "app/settings.h"
 #include <algorithm>
 
 TextureGarbageCollector::TextureGarbageCollector() :

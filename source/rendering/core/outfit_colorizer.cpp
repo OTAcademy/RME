@@ -2,7 +2,7 @@
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/core/outfit_colorizer.h"
 #include "rendering/core/outfit_colors.h"
 

@@ -2,13 +2,13 @@
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 
 #include "rendering/io/game_sprite_loader.h"
 #include "rendering/core/graphics.h"
-#include "filehandle.h"
-#include "settings.h"
-#include "otml.h"
+#include "io/filehandle.h"
+#include "app/settings.h"
+#include "map/otml.h"
 #include <wx/dir.h>
 
 bool GameSpriteLoader::LoadOTFI(GraphicManager* manager, const wxFileName& filename, wxString& error, wxArrayString& warnings) {

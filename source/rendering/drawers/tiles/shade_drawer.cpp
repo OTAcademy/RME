@@ -1,4 +1,4 @@
-#include "main.h"
+#include "app/main.h"
 
 #ifdef __APPLE__
 	#include <GLUT/glut.h>
@@ -16,7 +16,7 @@ ShadeDrawer::~ShadeDrawer() {
 
 #include "rendering/core/sprite_batch.h"
 #include "rendering/core/graphics.h"
-#include "gui.h"
+#include "ui/gui.h"
 
 void ShadeDrawer::draw(SpriteBatch& sprite_batch, const RenderView& view, const DrawingOptions& options) {
 	if (view.start_z != view.end_z && options.show_shade) {

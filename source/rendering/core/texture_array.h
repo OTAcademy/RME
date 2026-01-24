@@ -1,7 +1,7 @@
 #ifndef RME_RENDERING_CORE_TEXTURE_ARRAY_H_
 #define RME_RENDERING_CORE_TEXTURE_ARRAY_H_
 
-#include "main.h"
+#include "app/main.h"
 #include <vector>
 
 /**

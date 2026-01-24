@@ -15,12 +15,12 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/utilities/light_drawer.h"
 #include "rendering/utilities/light_calculator.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include "tile.h"
-#include "item.h"
+#include "map/tile.h"
+#include "game/item.h"
 #include "rendering/core/drawing_options.h"
 
 LightDrawer::LightDrawer() {

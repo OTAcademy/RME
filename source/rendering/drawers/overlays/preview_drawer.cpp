@@ -1,4 +1,4 @@
-#include "main.h"
+#include "app/main.h"
 
 #ifdef __APPLE__
 	#include <GLUT/glut.h>
@@ -12,9 +12,9 @@
 #include "rendering/ui/map_display.h"
 #include "rendering/drawers/entities/item_drawer.h"
 #include "rendering/drawers/entities/creature_drawer.h"
-#include "gui.h"
-#include "brush.h"
-#include "copybuffer.h"
+#include "ui/gui.h"
+#include "brushes/brush.h"
+#include "editor/copybuffer.h"
 
 PreviewDrawer::PreviewDrawer() {
 }

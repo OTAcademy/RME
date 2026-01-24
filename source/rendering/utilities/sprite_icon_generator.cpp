@@ -2,10 +2,10 @@
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/utilities/sprite_icon_generator.h"
-#include "settings.h"
-#include "gui.h"
+#include "app/settings.h"
+#include "ui/gui.h"
 
 wxMemoryDC* SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size) {
 	ASSERT(sprite->width >= 1 && sprite->height >= 1);

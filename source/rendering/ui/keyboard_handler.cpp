@@ -15,15 +15,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/ui/keyboard_handler.h"
 #include "rendering/ui/zoom_controller.h"
 #include "rendering/ui/navigation_controller.h"
 #include "rendering/ui/map_display.h"
-#include "map_window.h"
-#include "gui.h"
-#include "editor.h"
-#include "brush.h"
+#include "ui/map_window.h"
+#include "ui/gui.h"
+#include "editor/editor.h"
+#include "brushes/brush.h"
 
 void KeyboardHandler::OnKeyDown(MapCanvas* canvas, wxKeyEvent& event) {
 	switch (event.GetKeyCode()) {

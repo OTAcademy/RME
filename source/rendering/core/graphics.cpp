@@ -15,20 +15,20 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 
-#include "sprites.h"
+#include "game/sprites.h"
 #include "rendering/core/graphics.h"
-#include "filehandle.h"
-#include "settings.h"
-#include "gui.h"
-#include "gui.h"
-#include "otml.h"
+#include "io/filehandle.h"
+#include "app/settings.h"
+#include "ui/gui.h"
+#include "ui/gui.h"
+#include "map/otml.h"
 #include "rendering/io/editor_sprite_loader.h"
 
 #include <wx/mstream.h>
 #include <wx/dir.h>
-#include "pngfiles.h"
+#include "ui/pngfiles.h"
 
 #include "../../../brushes/door_normal.xpm"
 #include "../../../brushes/door_normal_small.xpm"

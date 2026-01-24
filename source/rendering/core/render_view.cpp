@@ -1,9 +1,9 @@
-#include "main.h"
+#include "app/main.h"
 #include "rendering/core/render_view.h"
 
 #include "rendering/ui/map_display.h"
 #include "rendering/core/drawing_options.h"
-#include "definitions.h" // For TileSize, GROUND_LAYER, MAP_MAX_LAYER
+#include "app/definitions.h" // For TileSize, GROUND_LAYER, MAP_MAX_LAYER
 #include <algorithm> // For std::min
 
 void RenderView::Setup(MapCanvas* canvas, const DrawingOptions& options) {

@@ -2,7 +2,7 @@
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 
 #ifdef __APPLE__
 	#include <GLUT/glut.h>
@@ -12,10 +12,10 @@
 
 #include "rendering/drawers/entities/creature_drawer.h"
 #include "rendering/drawers/entities/sprite_drawer.h"
-#include "creature.h"
-#include "gui.h"
-#include "items.h"
-#include "sprites.h"
+#include "game/creature.h"
+#include "ui/gui.h"
+#include "game/items.h"
+#include "game/sprites.h"
 #include "rendering/core/sprite_batch.h"
 
 CreatureDrawer::CreatureDrawer() {

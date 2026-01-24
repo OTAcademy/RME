@@ -15,15 +15,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/ui/map_status_updater.h"
-#include "gui.h"
-#include "editor.h"
-#include "map.h"
-#include "tile.h"
-#include "live_server.h"
+#include "ui/gui.h"
+#include "editor/editor.h"
+#include "map/map.h"
+#include "map/tile.h"
+#include "live/live_server.h"
 #include "rendering/utilities/tile_describer.h"
-#include "settings.h"
+#include "app/settings.h"
 
 void MapStatusUpdater::Update(Editor& editor, int map_x, int map_y, int map_z) {
 	wxString ss;

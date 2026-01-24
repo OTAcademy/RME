@@ -1,9 +1,9 @@
 #include "rendering/drawers/entities/sprite_drawer.h"
 #include "rendering/core/graphics.h"
-#include "sprites.h"
-#include "items.h"
+#include "game/sprites.h"
+#include "game/items.h"
 
-#include "gui.h"
+#include "ui/gui.h"
 #include <spdlog/spdlog.h>
 #include "rendering/core/sprite_batch.h"
 #include "rendering/core/atlas_manager.h"

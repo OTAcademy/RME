@@ -15,14 +15,14 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/ui/clipboard_handler.h"
-#include "editor.h"
-#include "gui.h"
-#include "tile.h"
-#include "item.h"
-#include "selection.h"
-#include "settings.h"
+#include "editor/editor.h"
+#include "ui/gui.h"
+#include "map/tile.h"
+#include "game/item.h"
+#include "editor/selection.h"
+#include "app/settings.h"
 
 void ClipboardHandler::copy(Editor& editor, int floor) {
 	if (g_gui.IsSelectionMode()) {

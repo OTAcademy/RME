@@ -1,14 +1,14 @@
-#include "main.h"
+#include "app/main.h"
 
 #include "rendering/drawers/cursors/live_cursor_drawer.h"
 
 #include "rendering/core/sprite_batch.h"
 #include "rendering/core/render_view.h"
-#include "editor.h"
-#include "live_socket.h"
+#include "editor/editor.h"
+#include "live/live_socket.h"
 #include "rendering/core/drawing_options.h"
 #include "rendering/core/graphics.h"
-#include "gui.h"
+#include "ui/gui.h"
 
 void LiveCursorDrawer::draw(SpriteBatch& sprite_batch, const RenderView& view, Editor& editor, const DrawingOptions& options) {
 	if (options.ingame || !editor.IsLive()) {

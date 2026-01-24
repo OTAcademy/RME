@@ -5,7 +5,7 @@
 #ifndef RME_RENDERING_CORE_RENDER_TIMER_H_
 #define RME_RENDERING_CORE_RENDER_TIMER_H_
 
-#include "main.h"
+#include "app/main.h"
 #include <wx/stopwatch.h>
 
 class RenderTimer {

@@ -25,9 +25,9 @@ class TooltipDrawer;
 // Storage during drawing, for option caching
 #include "rendering/core/drawing_options.h"
 #include "rendering/core/light_buffer.h"
-#include "definitions.h"
-#include "outfit.h"
-#include "creature.h"
+#include "app/definitions.h"
+#include "game/outfit.h"
+#include "game/creature.h"
 
 #include "rendering/core/render_view.h"
 #include "rendering/core/sprite_batch.h"

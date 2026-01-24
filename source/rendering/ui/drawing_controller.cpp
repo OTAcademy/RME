@@ -2,30 +2,30 @@
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/ui/drawing_controller.h"
 #include "rendering/ui/map_display.h"
-#include "editor.h"
-#include "map.h"
-#include "tile.h"
-#include "brush.h"
-#include "gui.h"
-#include "brush_utility.h"
-#include "settings.h"
+#include "editor/editor.h"
+#include "map/map.h"
+#include "map/tile.h"
+#include "brushes/brush.h"
+#include "ui/gui.h"
+#include "brushes/brush_utility.h"
+#include "app/settings.h"
 
 // Brushes
-#include "doodad_brush.h"
+#include "brushes/doodad_brush.h"
 
-#include "carpet_brush.h"
-#include "creature_brush.h"
-#include "ground_brush.h"
-#include "house_brush.h"
-#include "house_exit_brush.h"
-#include "raw_brush.h"
-#include "spawn_brush.h"
-#include "table_brush.h"
-#include "wall_brush.h"
-#include "waypoint_brush.h"
+#include "brushes/carpet_brush.h"
+#include "brushes/creature_brush.h"
+#include "brushes/ground_brush.h"
+#include "brushes/house_brush.h"
+#include "brushes/house_exit_brush.h"
+#include "brushes/raw_brush.h"
+#include "brushes/spawn_brush.h"
+#include "brushes/table_brush.h"
+#include "brushes/wall_brush.h"
+#include "brushes/waypoint_brush.h"
 
 DrawingController::DrawingController(MapCanvas* canvas, Editor& editor) :
 	canvas(canvas),

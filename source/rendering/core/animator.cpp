@@ -15,9 +15,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/core/animator.h"
-#include "gui.h"
+#include "ui/gui.h"
 
 Animator::Animator(int frame_count, int start_frame, int loop_count, bool async) :
 	frame_count(frame_count),

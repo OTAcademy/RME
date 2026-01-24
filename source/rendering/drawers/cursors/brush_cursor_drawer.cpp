@@ -1,4 +1,4 @@
-#include "main.h"
+#include "app/main.h"
 
 #ifdef __APPLE__
 	#include <GLUT/glut.h>
@@ -7,13 +7,13 @@
 #endif
 
 #include "rendering/drawers/cursors/brush_cursor_drawer.h"
-#include "brush.h"
-#include "definitions.h" // For PI
+#include "brushes/brush.h"
+#include "app/definitions.h" // For PI
 
 #include "rendering/core/sprite_batch.h"
 #include "rendering/core/primitive_renderer.h"
 #include "rendering/core/graphics.h"
-#include "gui.h"
+#include "ui/gui.h"
 
 void BrushCursorDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, int x, int y, Brush* brush, uint8_t r, uint8_t g, uint8_t b) {
 	x += (TileSize / 2);

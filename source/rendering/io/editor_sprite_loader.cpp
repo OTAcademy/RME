@@ -1,8 +1,8 @@
-#include "definitions.h"
+#include "app/definitions.h"
 #include "rendering/io/editor_sprite_loader.h"
 #include "rendering/core/graphics.h"
 #include "rendering/core/editor_sprite.h"
-#include "sprites.h"
+#include "game/sprites.h"
 #include "../../../brushes/door_normal.xpm"
 #include "../../../brushes/door_normal_small.xpm"
 #include "../../../brushes/door_locked.xpm"
@@ -15,10 +15,10 @@
 #include "../../../brushes/door_normal_alt_small.xpm"
 #include "../../../brushes/door_archway.xpm"
 #include "../../../brushes/door_archway_small.xpm"
-#include "main.h"
+#include "app/main.h"
 
 // Needs to be defined or included to access png files
-#include "pngfiles.h"
+#include "ui/pngfiles.h"
 
 #include <wx/mstream.h>
 

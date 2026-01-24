@@ -2,12 +2,12 @@
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "rendering/ui/map_menu_handler.h"
 #include "rendering/ui/map_display.h"
 #include "rendering/ui/clipboard_handler.h"
 #include "rendering/ui/popup_action_handler.h"
-#include "brush_utility.h" // For BrushSelector if needed, though map_display used it directly from "rendering/ui/brush_selector.h" which seems to be "brush_utility.h" or similar?
+#include "brushes/brush_utility.h" // For BrushSelector if needed, though map_display used it directly from "rendering/ui/brush_selector.h" which seems to be "brush_utility.h" or similar?
 // Actually map_display.cpp included "rendering/ui/brush_selector.h".
 // Let's check includes in map_display.cpp again.
 // #include "rendering/ui/brush_selector.h"
@@ -15,9 +15,9 @@
 // #include "rendering/ui/clipboard_handler.h"
 
 #include "rendering/ui/brush_selector.h"
-#include "map_popup_menu.h"
-#include "editor.h"
-#include "gui_ids.h"
+#include "ui/map_popup_menu.h"
+#include "editor/editor.h"
+#include "ui/gui_ids.h"
 
 MapMenuHandler::MapMenuHandler(MapCanvas* canvas, Editor& editor) :
 	canvas(canvas),

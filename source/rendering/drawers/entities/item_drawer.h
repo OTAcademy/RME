@@ -5,8 +5,8 @@
 #ifndef RME_RENDERING_ITEM_DRAWER_H_
 #define RME_RENDERING_ITEM_DRAWER_H_
 
-#include "definitions.h"
-#include "position.h"
+#include "app/definitions.h"
+#include "map/position.h"
 
 // Forward declarations
 class SpriteDrawer;

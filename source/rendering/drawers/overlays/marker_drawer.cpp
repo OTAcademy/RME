@@ -1,11 +1,11 @@
-#include "main.h"
+#include "app/main.h"
 #include "rendering/drawers/overlays/marker_drawer.h"
 #include "rendering/drawers/entities/sprite_drawer.h"
 #include "rendering/core/graphics.h"
 #include "rendering/core/sprite_batch.h"
-#include "tile.h"
-#include "sprites.h"
-#include "editor.h"
+#include "map/tile.h"
+#include "game/sprites.h"
+#include "editor/editor.h"
 
 MarkerDrawer::MarkerDrawer() {
 }
