@@ -29,27 +29,84 @@
 class Item;
 class Waypoint;
 
-struct MapTooltip {
-	enum TextLength {
-		MAX_CHARS_PER_LINE = 40,
-		MAX_CHARS = 255,
-	};
+// Tooltip category determines header color and icon
+enum class TooltipCategory {
+	WAYPOINT, // Green - landmark
+	ITEM, // Dark charcoal - generic item
+	DOOR, // Brown - door with door ID
+	TELEPORT, // Purple - teleporter
+	TEXT // Gold - readable text (signs, books)
+};
 
-	MapTooltip(Position pos, std::string text, uint8_t r, uint8_t g, uint8_t b) :
-		pos(pos), text(text), r(r), g(g), b(b) {
-		ellipsis = (text.length() - 3) > MAX_CHARS;
-	}
+// Semantic color palette for tooltip rendering
+namespace TooltipColors {
+	// Header colors by category (RGB)
+	constexpr uint8_t WAYPOINT_HEADER_R = 50, WAYPOINT_HEADER_G = 205, WAYPOINT_HEADER_B = 50; // Lime Green
+	constexpr uint8_t ITEM_HEADER_R = 58, ITEM_HEADER_G = 58, ITEM_HEADER_B = 64; // Charcoal
+	constexpr uint8_t DOOR_HEADER_R = 139, DOOR_HEADER_G = 69, DOOR_HEADER_B = 19; // Saddle Brown
+	constexpr uint8_t TELEPORT_HEADER_R = 153, TELEPORT_HEADER_G = 50, TELEPORT_HEADER_B = 204; // Dark Orchid
+	constexpr uint8_t TEXT_HEADER_R = 218, TEXT_HEADER_G = 165, TEXT_HEADER_B = 32; // Goldenrod
 
-	void checkLineEnding() {
-		if (text.at(text.size() - 1) == '\n') {
-			text.resize(text.size() - 1);
+	// Field value colors (RGB)
+	constexpr uint8_t ACTION_ID_R = 255, ACTION_ID_G = 165, ACTION_ID_B = 0; // Orange
+	constexpr uint8_t UNIQUE_ID_R = 100, UNIQUE_ID_G = 149, UNIQUE_ID_B = 237; // Cornflower Blue
+	constexpr uint8_t DOOR_ID_R = 0, DOOR_ID_G = 139, DOOR_ID_B = 139; // Dark Cyan
+	constexpr uint8_t TEXT_R = 255, TEXT_G = 215, TEXT_B = 0; // Gold
+	constexpr uint8_t TELEPORT_DEST_R = 186, TELEPORT_DEST_G = 85, TELEPORT_DEST_B = 211; // Medium Orchid
+
+	// Body colors
+	constexpr uint8_t BODY_BG_R = 30, BODY_BG_G = 30, BODY_BG_B = 35; // Near Black
+	constexpr uint8_t BODY_TEXT_R = 220, BODY_TEXT_G = 220, BODY_TEXT_B = 220; // Light Gray
+	constexpr uint8_t HEADER_TEXT_R = 255, HEADER_TEXT_G = 255, HEADER_TEXT_B = 255; // White
+}
+
+// Structured tooltip data for card-based rendering
+struct TooltipData {
+	Position pos;
+	TooltipCategory category = TooltipCategory::ITEM;
+
+	// Header info
+	uint16_t itemId = 0;
+	std::string itemName;
+
+	// Optional fields (0 or empty = not shown)
+	uint16_t actionId = 0;
+	uint16_t uniqueId = 0;
+	uint8_t doorId = 0;
+	std::string text;
+	std::string description;
+	Position destination; // For teleports (check if valid via destination.x > 0)
+
+	// Waypoint-specific
+	std::string waypointName;
+
+	TooltipData() = default;
+
+	// Constructor for waypoint
+	TooltipData(Position p, const std::string& wpName) : pos(p), category(TooltipCategory::WAYPOINT), waypointName(wpName) { }
+
+	// Constructor for item
+	TooltipData(Position p, uint16_t id, const std::string& name) : pos(p), category(TooltipCategory::ITEM), itemId(id), itemName(name) { }
+
+	// Determine category based on fields
+	void updateCategory() {
+		if (!waypointName.empty()) {
+			category = TooltipCategory::WAYPOINT;
+		} else if (destination.x > 0) {
+			category = TooltipCategory::TELEPORT;
+		} else if (doorId > 0) {
+			category = TooltipCategory::DOOR;
+		} else if (!text.empty()) {
+			category = TooltipCategory::TEXT;
+		} else {
+			category = TooltipCategory::ITEM;
 		}
 	}
 
-	Position pos;
-	std::string text;
-	uint8_t r, g, b;
-	bool ellipsis;
+	// Check if this tooltip has any visible fields
+	bool hasVisibleFields() const {
+		return !waypointName.empty() || actionId > 0 || uniqueId > 0 || doorId > 0 || !text.empty() || !description.empty() || destination.x > 0;
+	}
 };
 
 class TooltipDrawer {
@@ -57,14 +114,23 @@ public:
 	TooltipDrawer();
 	~TooltipDrawer();
 
-	void addTooltip(Position pos, const std::string& text, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255);
-	void writeTooltip(Item* item, std::ostringstream& stream, bool isHouseTile = false);
-	void writeTooltip(Waypoint* waypoint, std::ostringstream& stream);
+	// Add a structured tooltip for an item
+	void addItemTooltip(const TooltipData& data);
+
+	// Add a waypoint tooltip
+	void addWaypointTooltip(Position pos, const std::string& name);
+
+	// Draw all tooltips
 	void draw(const RenderView& view);
+
+	// Clear all tooltips
 	void clear();
 
 protected:
-	std::vector<MapTooltip*> tooltips;
+	std::vector<TooltipData> tooltips;
+
+	// Helper to get header color based on category
+	void getHeaderColor(TooltipCategory cat, uint8_t& r, uint8_t& g, uint8_t& b) const;
 };
 
 #endif

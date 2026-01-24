@@ -20,11 +20,7 @@
 #include "rendering/core/text_renderer.h"
 #include <nanovg.h>
 #include "rendering/core/coordinate_mapper.h"
-#include "item.h"
-#include "complexitem.h"
-#include "waypoints.h"
-#include <wx/wx.h> // For wxColor if needed, but we use OpenGL calls mostly.
-#include "common.h" // for newd macro
+#include <wx/wx.h>
 
 TooltipDrawer::TooltipDrawer() {
 }
@@ -34,79 +30,54 @@ TooltipDrawer::~TooltipDrawer() {
 }
 
 void TooltipDrawer::clear() {
-	for (auto* tooltip : tooltips) {
-		delete tooltip;
-	}
 	tooltips.clear();
 }
 
-void TooltipDrawer::addTooltip(Position pos, const std::string& text, uint8_t r, uint8_t g, uint8_t b) {
-	if (text.empty()) {
+void TooltipDrawer::addItemTooltip(const TooltipData& data) {
+	if (!data.hasVisibleFields()) {
 		return;
 	}
-
-	MapTooltip* tooltip = newd MapTooltip(pos, text, r, g, b);
-	tooltip->checkLineEnding();
-	tooltips.push_back(tooltip);
+	tooltips.push_back(data);
 }
 
-void TooltipDrawer::writeTooltip(Item* item, std::ostringstream& stream, bool isHouseTile) {
-	if (item == nullptr) {
+void TooltipDrawer::addWaypointTooltip(Position pos, const std::string& name) {
+	if (name.empty()) {
 		return;
 	}
-
-	const uint16_t id = item->getID();
-	if (id < 100) {
-		return;
-	}
-
-	const uint16_t unique = item->getUniqueID();
-	const uint16_t action = item->getActionID();
-	const std::string& text = item->getText();
-	uint8_t doorId = 0;
-
-	if (isHouseTile && item->isDoor()) {
-		if (Door* door = dynamic_cast<Door*>(item)) {
-			if (door->isRealDoor()) {
-				doorId = door->getDoorID();
-			}
-		}
-	}
-
-	Teleport* tp = dynamic_cast<Teleport*>(item);
-	if (unique == 0 && action == 0 && doorId == 0 && text.empty() && !tp) {
-		return;
-	}
-
-	if (stream.tellp() > 0) {
-		stream << "\n";
-	}
-
-	stream << "id: " << id << "\n";
-
-	if (action > 0) {
-		stream << "aid: " << action << "\n";
-	}
-	if (unique > 0) {
-		stream << "uid: " << unique << "\n";
-	}
-	if (doorId > 0) {
-		stream << "door id: " << static_cast<int>(doorId) << "\n";
-	}
-	if (!text.empty()) {
-		stream << "text: " << text << "\n";
-	}
-	if (tp) {
-		const Position& dest = tp->getDestination();
-		stream << "destination: " << dest.x << ", " << dest.y << ", " << dest.z << "\n";
-	}
+	TooltipData data(pos, name);
+	tooltips.push_back(data);
 }
 
-void TooltipDrawer::writeTooltip(Waypoint* waypoint, std::ostringstream& stream) {
-	if (stream.tellp() > 0) {
-		stream << "\n";
+void TooltipDrawer::getHeaderColor(TooltipCategory cat, uint8_t& r, uint8_t& g, uint8_t& b) const {
+	using namespace TooltipColors;
+	switch (cat) {
+		case TooltipCategory::WAYPOINT:
+			r = WAYPOINT_HEADER_R;
+			g = WAYPOINT_HEADER_G;
+			b = WAYPOINT_HEADER_B;
+			break;
+		case TooltipCategory::DOOR:
+			r = DOOR_HEADER_R;
+			g = DOOR_HEADER_G;
+			b = DOOR_HEADER_B;
+			break;
+		case TooltipCategory::TELEPORT:
+			r = TELEPORT_HEADER_R;
+			g = TELEPORT_HEADER_G;
+			b = TELEPORT_HEADER_B;
+			break;
+		case TooltipCategory::TEXT:
+			r = TEXT_HEADER_R;
+			g = TEXT_HEADER_G;
+			b = TEXT_HEADER_B;
+			break;
+		case TooltipCategory::ITEM:
+		default:
+			r = ITEM_HEADER_R;
+			g = ITEM_HEADER_G;
+			b = ITEM_HEADER_B;
+			break;
 	}
-	stream << "wp: " << waypoint->name << "\n";
 }
 
 void TooltipDrawer::draw(const RenderView& view) {
@@ -115,125 +86,195 @@ void TooltipDrawer::draw(const RenderView& view) {
 		return;
 	}
 
-	for (std::vector<MapTooltip*>::const_iterator it = tooltips.begin(); it != tooltips.end(); ++it) {
-		MapTooltip* tooltip = (*it);
-		const std::string& text = tooltip->text;
-		if (text.empty()) {
-			continue;
-		}
+	using namespace TooltipColors;
 
+	for (const auto& tooltip : tooltips) {
 		int unscaled_x, unscaled_y;
-		view.getScreenPosition(tooltip->pos.x, tooltip->pos.y, tooltip->pos.z, unscaled_x, unscaled_y);
+		view.getScreenPosition(tooltip.pos.x, tooltip.pos.y, tooltip.pos.z, unscaled_x, unscaled_y);
 
-		// Convert to Screen Pixels (NanoVG Space)
-		// The map is rendered with glOrtho(0, width*zoom, height*zoom, 0, ...)
-		// This means 1 Logical Unit = (1 / zoom) Screen Pixels.
 		float zoom = view.zoom;
 		if (zoom < 0.01f) {
-			zoom = 1.0f; // Safety
+			zoom = 1.0f;
 		}
 
 		float screen_x = unscaled_x / zoom;
 		float screen_y = unscaled_y / zoom;
 		float tile_size_screen = 32.0f / zoom;
 
-		// Adjust to center of tile
+		// Center on tile
 		screen_x += tile_size_screen / 2.0f;
 		screen_y += tile_size_screen / 2.0f;
 
-		// --- Text Layout (Multiline) ---
-		float fontSize = 12.0f; // Consistent small font
-		nvgFontSize(vg, fontSize);
-		nvgFontFace(vg, "sans");
-		nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+		// Layout constants
+		float fontSize = 11.0f;
+		float padding = 10.0f;
+		float lineHeight = fontSize * 1.4f;
+		float cornerRadius = 4.0f;
+		float borderWidth = 1.0f; // Thinner border
+		float minWidth = 120.0f;
+		float maxWidth = 220.0f; // Max content width for wrapping
 
-		// Process lines
-		float maxLineWidth = 250.0f; // Tibia-like max width
-		float lineHeight = fontSize * 1.2f;
-
-		struct TextRow {
-			std::string content;
-			float width;
+		// Build content lines with word wrapping support
+		struct FieldLine {
+			std::string label;
+			std::string value;
+			uint8_t r, g, b;
+			std::vector<std::string> wrappedLines; // For multi-line values
 		};
-		std::vector<TextRow> rows;
-		float totalTextWidth = 0.0f;
+		std::vector<FieldLine> fields;
 
-		// 1. Split by \n
-		std::stringstream ss(text);
-		std::string segment;
-		while (std::getline(ss, segment, '\n')) {
-			if (segment.empty()) {
-				// Empty line (optional: add spacing or ignore)
-				continue;
+		if (tooltip.category == TooltipCategory::WAYPOINT) {
+			fields.push_back({ "Waypoint", tooltip.waypointName, WAYPOINT_HEADER_R, WAYPOINT_HEADER_G, WAYPOINT_HEADER_B, {} });
+		} else {
+			if (tooltip.actionId > 0) {
+				fields.push_back({ "Action ID", std::to_string(tooltip.actionId), ACTION_ID_R, ACTION_ID_G, ACTION_ID_B, {} });
 			}
-
-			// 2. Wrap long lines using NanoVG
-			const char* start = segment.c_str();
-			const char* end = start + segment.length();
-			NVGtextRow nvgRows[32]; // Max 32 lines per segment
-			int nRows = nvgTextBreakLines(vg, start, end, maxLineWidth, nvgRows, 32);
-
-			for (int i = 0; i < nRows; i++) {
-				std::string lineStr(nvgRows[i].start, nvgRows[i].end);
-				float w = nvgRows[i].width; // Bounds of this line
-				// nvgTextBreakLines returns width, or we can measure it
-				// float b[4]; nvgTextBounds(vg, 0,0, lineStr.c_str(), nullptr, b); w = b[2]-b[0];
-
-				if (w > totalTextWidth) {
-					totalTextWidth = w;
-				}
-				rows.push_back({ lineStr, w });
+			if (tooltip.uniqueId > 0) {
+				fields.push_back({ "Unique ID", std::to_string(tooltip.uniqueId), UNIQUE_ID_R, UNIQUE_ID_G, UNIQUE_ID_B, {} });
+			}
+			if (tooltip.doorId > 0) {
+				fields.push_back({ "Door ID", std::to_string(tooltip.doorId), DOOR_ID_R, DOOR_ID_G, DOOR_ID_B, {} });
+			}
+			if (tooltip.destination.x > 0) {
+				std::string dest = std::to_string(tooltip.destination.x) + ", " + std::to_string(tooltip.destination.y) + ", " + std::to_string(tooltip.destination.z);
+				fields.push_back({ "Destination", dest, TELEPORT_DEST_R, TELEPORT_DEST_G, TELEPORT_DEST_B, {} });
+			}
+			if (!tooltip.description.empty()) {
+				fields.push_back({ "Description", tooltip.description, BODY_TEXT_R, BODY_TEXT_G, BODY_TEXT_B, {} });
+			}
+			if (!tooltip.text.empty()) {
+				fields.push_back({ "Text", "\"" + tooltip.text + "\"", TEXT_R, TEXT_G, TEXT_B, {} });
 			}
 		}
 
-		if (rows.empty()) {
+		// Skip if no fields
+		if (fields.empty()) {
 			continue;
 		}
 
-		float padding = 6.0f;
-		float boxWidth = totalTextWidth + (padding * 2);
-		float boxHeight = (rows.size() * lineHeight) + (padding * 2);
-		float cornerRadius = 4.0f;
+		// Set up font for measurements
+		nvgFontSize(vg, fontSize);
+		nvgFontFace(vg, "sans");
 
-		// Position tooltip above the tile (centered horizontally)
+		// Measure label widths and wrap long values
+		float maxLabelWidth = 0.0f;
+		for (auto& field : fields) {
+			float labelBounds[4];
+			nvgTextBounds(vg, 0, 0, field.label.c_str(), nullptr, labelBounds);
+			float lw = labelBounds[2] - labelBounds[0];
+			if (lw > maxLabelWidth) {
+				maxLabelWidth = lw;
+			}
+		}
+
+		float valueStartX = maxLabelWidth + 12.0f; // Gap between label and value
+		float maxValueWidth = maxWidth - valueStartX - padding * 2;
+
+		// Word wrap values that are too long
+		int totalLines = 0;
+		float actualMaxWidth = minWidth;
+
+		for (auto& field : fields) {
+			const char* start = field.value.c_str();
+			const char* end = start + field.value.length();
+
+			// Check if value fits on one line
+			float valueBounds[4];
+			nvgTextBounds(vg, 0, 0, start, nullptr, valueBounds);
+			float valueWidth = valueBounds[2] - valueBounds[0];
+
+			if (valueWidth <= maxValueWidth) {
+				// Single line
+				field.wrappedLines.push_back(field.value);
+				totalLines++;
+				float lineWidth = valueStartX + valueWidth + padding * 2;
+				if (lineWidth > actualMaxWidth) {
+					actualMaxWidth = lineWidth;
+				}
+			} else {
+				// Need to wrap - use NanoVG text breaking
+				NVGtextRow rows[16];
+				int nRows = nvgTextBreakLines(vg, start, end, maxValueWidth, rows, 16);
+
+				for (int i = 0; i < nRows; i++) {
+					std::string line(rows[i].start, rows[i].end);
+					field.wrappedLines.push_back(line);
+					totalLines++;
+
+					float lineWidth = valueStartX + rows[i].width + padding * 2;
+					if (lineWidth > actualMaxWidth) {
+						actualMaxWidth = lineWidth;
+					}
+				}
+
+				if (nRows == 0) {
+					// Fallback if breaking failed
+					field.wrappedLines.push_back(field.value);
+					totalLines++;
+				}
+			}
+		}
+
+		// Calculate box dimensions
+		float boxWidth = std::min(maxWidth + padding * 2, std::max(minWidth, actualMaxWidth));
+		float boxHeight = totalLines * lineHeight + padding * 2;
+
+		// Position tooltip above tile
 		float tooltipX = screen_x - (boxWidth / 2.0f);
-		float tooltipY = screen_y - boxHeight - 8.0f;
+		float tooltipY = screen_y - boxHeight - 12.0f;
 
-		// --- Minimalistic Floating Tooltip ---
+		// Get border color based on category
+		uint8_t borderR, borderG, borderB;
+		getHeaderColor(tooltip.category, borderR, borderG, borderB);
 
-		// Floating Shadow (soft, offset for 3D effect)
-		float shadowOffsetX = 4.0f;
-		float shadowOffsetY = 6.0f;
-
-		// Draw soft shadow using multiple layers for blur effect
+		// Shadow (multi-layer soft shadow)
 		for (int i = 3; i >= 0; i--) {
-			float alpha = 30.0f + (3 - i) * 20.0f; // Gradient opacity
+			float alpha = 35.0f + (3 - i) * 20.0f;
 			float spread = i * 2.0f;
+			float offsetY = 3.0f + i * 1.0f;
 			nvgBeginPath(vg);
-			nvgRoundedRect(vg, tooltipX + shadowOffsetX - spread, tooltipY + shadowOffsetY - spread, boxWidth + spread * 2, boxHeight + spread * 2, cornerRadius + spread);
+			nvgRoundedRect(vg, tooltipX - spread, tooltipY + offsetY - spread, boxWidth + spread * 2, boxHeight + spread * 2, cornerRadius + spread);
 			nvgFillColor(vg, nvgRGBA(0, 0, 0, (int)alpha));
 			nvgFill(vg);
 		}
 
-		// Main Background (clean, slightly warm white)
+		// Main background
 		nvgBeginPath(vg);
 		nvgRoundedRect(vg, tooltipX, tooltipY, boxWidth, boxHeight, cornerRadius);
-		nvgFillColor(vg, nvgRGBA(250, 248, 245, 255)); // Off-white / warm
+		nvgFillColor(vg, nvgRGBA(BODY_BG_R, BODY_BG_G, BODY_BG_B, 250));
 		nvgFill(vg);
 
-		// Subtle Border
+		// Full colored border around entire frame
 		nvgBeginPath(vg);
-		nvgRoundedRect(vg, tooltipX + 0.5f, tooltipY + 0.5f, boxWidth - 1, boxHeight - 1, cornerRadius);
-		nvgStrokeColor(vg, nvgRGBA(180, 170, 160, 255)); // Light brown/grey
-		nvgStrokeWidth(vg, 1.0f);
+		nvgRoundedRect(vg, tooltipX, tooltipY, boxWidth, boxHeight, cornerRadius);
+		nvgStrokeColor(vg, nvgRGBA(borderR, borderG, borderB, 255));
+		nvgStrokeWidth(vg, borderWidth);
 		nvgStroke(vg);
 
-		// Text (dark for contrast)
-		nvgFillColor(vg, nvgRGBA(40, 35, 30, 255));
+		// Draw content
+		float contentX = tooltipX + padding;
 		float cursorY = tooltipY + padding;
-		for (const auto& row : rows) {
-			nvgText(vg, tooltipX + padding, cursorY, row.content.c_str(), nullptr);
-			cursorY += lineHeight;
+
+		nvgFontSize(vg, fontSize);
+		nvgFontFace(vg, "sans");
+		nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+
+		for (const auto& field : fields) {
+			bool firstLine = true;
+			for (const auto& line : field.wrappedLines) {
+				if (firstLine) {
+					// Draw label on first line
+					nvgFillColor(vg, nvgRGBA(BODY_TEXT_R, BODY_TEXT_G, BODY_TEXT_B, 160));
+					nvgText(vg, contentX, cursorY, field.label.c_str(), nullptr);
+					firstLine = false;
+				}
+
+				// Draw value line in semantic color
+				nvgFillColor(vg, nvgRGBA(field.r, field.g, field.b, 255));
+				nvgText(vg, contentX + valueStartX, cursorY, line.c_str(), nullptr);
+
+				cursorY += lineHeight;
+			}
 		}
 	}
 }

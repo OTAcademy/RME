@@ -1,8 +1,5 @@
 #include "main.h"
-// Force recompile
 #include "rendering/drawers/tiles/tile_renderer.h"
-#include "rendering/core/sprite_batch.h"
-#include "rendering/core/primitive_renderer.h"
 #include "rendering/core/sprite_batch.h"
 #include "rendering/core/primitive_renderer.h"
 
@@ -11,6 +8,7 @@
 #include "item.h"
 #include "items.h"
 #include "waypoint_brush.h"
+#include "complexitem.h"
 
 #include "rendering/core/drawing_options.h"
 #include "rendering/core/render_view.h"
@@ -28,6 +26,62 @@
 
 TileRenderer::TileRenderer(ItemDrawer* id, SpriteDrawer* sd, CreatureDrawer* cd, FloorDrawer* fd, MarkerDrawer* md, TooltipDrawer* td, Editor* ed) :
 	item_drawer(id), sprite_drawer(sd), creature_drawer(cd), floor_drawer(fd), marker_drawer(md), tooltip_drawer(td), editor(ed) {
+}
+
+// Helper function to create tooltip data from an item
+static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool isHouseTile) {
+	if (!item) {
+		return TooltipData();
+	}
+
+	const uint16_t id = item->getID();
+	if (id < 100) {
+		return TooltipData();
+	}
+
+	const uint16_t unique = item->getUniqueID();
+	const uint16_t action = item->getActionID();
+	const std::string& text = item->getText();
+	const std::string& description = item->getDescription();
+	uint8_t doorId = 0;
+	Position destination;
+
+	// Check if it's a door
+	if (isHouseTile && item->isDoor()) {
+		if (Door* door = dynamic_cast<Door*>(item)) {
+			if (door->isRealDoor()) {
+				doorId = door->getDoorID();
+			}
+		}
+	}
+
+	// Check if it's a teleport
+	Teleport* tp = dynamic_cast<Teleport*>(item);
+	if (tp && tp->hasDestination()) {
+		destination = tp->getDestination();
+	}
+
+	// Only create tooltip if there's something to show
+	if (unique == 0 && action == 0 && doorId == 0 && text.empty() && description.empty() && destination.x == 0) {
+		return TooltipData();
+	}
+
+	// Get item name from database
+	std::string itemName = g_items[id].name;
+	if (itemName.empty()) {
+		itemName = "Item";
+	}
+
+	TooltipData data(pos, id, itemName);
+	data.actionId = action;
+	data.uniqueId = unique;
+	data.doorId = doorId;
+	data.text = text;
+	data.description = description;
+	data.destination = destination;
+	data.updateCategory();
+
+	return data;
 }
 
 void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, TileLocation* location, const RenderView& view, const DrawingOptions& options, uint32_t current_house_id, std::ostringstream& tooltip_stream) {
@@ -57,10 +111,10 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 	view.getScreenPosition(map_x, map_y, map_z, draw_x, draw_y);
 
 	Waypoint* waypoint = editor->map.waypoints.getWaypoint(location);
-	if (options.show_tooltips && location->getWaypointCount() > 0) {
-		if (waypoint) {
-			tooltip_drawer->writeTooltip(waypoint, tooltip_stream);
-		}
+
+	// Waypoint tooltip (one per waypoint)
+	if (options.show_tooltips && location->getWaypointCount() > 0 && waypoint && map_z == view.floor) {
+		tooltip_drawer->addWaypointTooltip(location->getPosition(), waypoint->name);
 	}
 
 	bool as_minimap = options.show_as_minimap;
@@ -68,7 +122,6 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 
 	uint8_t r = 255, g = 255, b = 255;
 
-	// begin filters for ground tile
 	// begin filters for ground tile
 	if (!as_minimap) {
 		TileColorCalculator::Calculate(tile, options, current_house_id, location->getSpawnCount(), r, g, b);
@@ -94,8 +147,12 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 		}
 	}
 
+	// Ground tooltip (one per item)
 	if (options.show_tooltips && map_z == view.floor && tile->ground) {
-		tooltip_drawer->writeTooltip(tile->ground, tooltip_stream, false);
+		TooltipData groundData = CreateItemTooltipData(tile->ground, location->getPosition(), tile->isHouseTile());
+		if (groundData.hasVisibleFields()) {
+			tooltip_drawer->addItemTooltip(groundData);
+		}
 	}
 
 	// end filters for ground tile
@@ -104,9 +161,12 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 		if (view.zoom < 10.0 || !options.hide_items_when_zoomed) {
 			// items on tile
 			for (ItemVector::iterator it = tile->items.begin(); it != tile->items.end(); it++) {
-				// item tooltip
+				// item tooltip (one per item)
 				if (options.show_tooltips && map_z == view.floor) {
-					tooltip_drawer->writeTooltip(*it, tooltip_stream, tile->isHouseTile());
+					TooltipData itemData = CreateItemTooltipData(*it, location->getPosition(), tile->isHouseTile());
+					if (itemData.hasVisibleFields()) {
+						tooltip_drawer->addItemTooltip(itemData);
+					}
 				}
 
 				// item animation
@@ -140,17 +200,6 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 		if (view.zoom < 10.0) {
 			// markers (waypoint, house exit, town temple, spawn)
 			marker_drawer->draw(sprite_batch, sprite_drawer, draw_x, draw_y, tile, waypoint, current_house_id, *editor, options);
-
-			// tooltips
-			if (options.show_tooltips) {
-				if (location->getWaypointCount() > 0) {
-					tooltip_drawer->addTooltip(location->getPosition(), tooltip_stream.str(), 0, 255, 0);
-				} else {
-					tooltip_drawer->addTooltip(location->getPosition(), tooltip_stream.str());
-				}
-			}
-
-			tooltip_stream.str("");
 		}
 	}
 }
