@@ -83,10 +83,12 @@ struct TooltipData {
 	TooltipData() = default;
 
 	// Constructor for waypoint
-	TooltipData(Position p, const std::string& wpName) : pos(p), category(TooltipCategory::WAYPOINT), waypointName(wpName) { }
+	TooltipData(Position p, const std::string& wpName) :
+		pos(p), category(TooltipCategory::WAYPOINT), waypointName(wpName) { }
 
 	// Constructor for item
-	TooltipData(Position p, uint16_t id, const std::string& name) : pos(p), category(TooltipCategory::ITEM), itemId(id), itemName(name) { }
+	TooltipData(Position p, uint16_t id, const std::string& name) :
+		pos(p), category(TooltipCategory::ITEM), itemId(id), itemName(name) { }
 
 	// Determine category based on fields
 	void updateCategory() {

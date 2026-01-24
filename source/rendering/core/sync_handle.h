@@ -27,7 +27,8 @@ public:
 	/**
 	 * Construct from existing sync object (takes ownership).
 	 */
-	explicit SyncHandle(GLsync sync) : sync_(sync) { }
+	explicit SyncHandle(GLsync sync) :
+		sync_(sync) { }
 
 	/**
 	 * Destructor - deletes the sync object if valid.
@@ -41,7 +42,8 @@ public:
 	/**
 	 * Move constructor - transfers ownership.
 	 */
-	SyncHandle(SyncHandle&& other) noexcept : sync_(other.sync_) {
+	SyncHandle(SyncHandle&& other) noexcept :
+		sync_(other.sync_) {
 		other.sync_ = nullptr;
 	}
 

@@ -8,7 +8,9 @@ PixelBufferObject::~PixelBufferObject() {
 }
 
 PixelBufferObject::PixelBufferObject(PixelBufferObject&& other) noexcept
-	: current_index_(other.current_index_), size_(other.size_), initialized_(other.initialized_) {
+	:
+	current_index_(other.current_index_),
+	size_(other.size_), initialized_(other.initialized_) {
 	for (int i = 0; i < BUFFER_COUNT; ++i) {
 		buffers_[i] = other.buffers_[i];
 		other.buffers_[i] = 0;

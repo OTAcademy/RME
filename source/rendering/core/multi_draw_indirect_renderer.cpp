@@ -11,7 +11,9 @@ MultiDrawIndirectRenderer::~MultiDrawIndirectRenderer() {
 }
 
 MultiDrawIndirectRenderer::MultiDrawIndirectRenderer(MultiDrawIndirectRenderer&& other) noexcept
-	: commands_(std::move(other.commands_)), command_buffer_(other.command_buffer_), available_(other.available_), initialized_(other.initialized_) {
+	:
+	commands_(std::move(other.commands_)),
+	command_buffer_(other.command_buffer_), available_(other.available_), initialized_(other.initialized_) {
 	other.command_buffer_ = 0;
 	other.available_ = false;
 	other.initialized_ = false;

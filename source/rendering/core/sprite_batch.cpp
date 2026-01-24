@@ -56,7 +56,9 @@ SpriteBatch::~SpriteBatch() {
 }
 
 SpriteBatch::SpriteBatch(SpriteBatch&& other) noexcept
-	: shader_(std::move(other.shader_)), vao_(other.vao_), quad_vbo_(other.quad_vbo_), quad_ebo_(other.quad_ebo_), ring_buffer_(std::move(other.ring_buffer_)), mdi_renderer_(std::move(other.mdi_renderer_)), pending_sprites_(std::move(other.pending_sprites_)), projection_(other.projection_), global_tint_(other.global_tint_), in_batch_(other.in_batch_), use_mdi_(other.use_mdi_), draw_call_count_(other.draw_call_count_), sprite_count_(other.sprite_count_) {
+	:
+	shader_(std::move(other.shader_)),
+	vao_(other.vao_), quad_vbo_(other.quad_vbo_), quad_ebo_(other.quad_ebo_), ring_buffer_(std::move(other.ring_buffer_)), mdi_renderer_(std::move(other.mdi_renderer_)), pending_sprites_(std::move(other.pending_sprites_)), projection_(other.projection_), global_tint_(other.global_tint_), in_batch_(other.in_batch_), use_mdi_(other.use_mdi_), draw_call_count_(other.draw_call_count_), sprite_count_(other.sprite_count_) {
 	other.vao_ = 0;
 	other.quad_vbo_ = 0;
 	other.quad_ebo_ = 0;
