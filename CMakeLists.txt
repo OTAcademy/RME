@@ -68,6 +68,8 @@ if(MSVC)
         include_directories(${VCPKG_LUA_INCLUDES})
     endif()
 
+    add_compile_definitions(SOL_USING_CXX_LUA_HPP=1)
+
     set(LIBS_TO_LINK ${LUA_LIB_TARGET} cpr::cpr nlohmann_json::nlohmann_json sol2::sol2)
 
 else()
