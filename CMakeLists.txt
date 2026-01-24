@@ -46,10 +46,60 @@ find_package(GLUT REQUIRED)
 find_package(ZLIB REQUIRED)
 
 # Lua scripting support
+# Lua scripting support
 find_package(Lua REQUIRED)
-find_package(sol2 CONFIG REQUIRED)
-find_package(cpr CONFIG REQUIRED)
-find_package(nlohmann_json CONFIG REQUIRED)
+
+include(FetchContent)
+
+# sol2
+find_package(sol2 CONFIG QUIET)
+if(NOT sol2_FOUND)
+    message(STATUS "sol2 not found via find_package, using FetchContent...")
+    FetchContent_Declare(
+        sol2
+        GIT_REPOSITORY https://github.com/ThePhD/sol2.git
+        GIT_TAG        v3.3.0
+    )
+    FetchContent_MakeAvailable(sol2)
+
+    # Ensure usable target exists
+    if(NOT TARGET sol2::sol2)
+        if(TARGET sol2)
+            add_library(sol2::sol2 ALIAS sol2)
+        else()
+            # If no target, setting include directory manually
+            set(SOL2_INCLUDE_DIRS ${sol2_SOURCE_DIR}/include)
+            include_directories(${SOL2_INCLUDE_DIRS})
+            # Create a dummy interface target to link against if needed to satisfy linker
+            add_library(sol2::sol2 INTERFACE IMPORTED)
+            set_target_properties(sol2::sol2 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${SOL2_INCLUDE_DIRS}")
+        endif()
+    endif()
+endif()
+
+# cpr
+find_package(cpr CONFIG QUIET)
+if(NOT cpr_FOUND)
+    message(STATUS "cpr not found via find_package, using FetchContent...")
+    FetchContent_Declare(
+        cpr
+        GIT_REPOSITORY https://github.com/libcpr/cpr.git
+        GIT_TAG        1.10.5
+    )
+    FetchContent_MakeAvailable(cpr)
+endif()
+
+# nlohmann_json
+find_package(nlohmann_json CONFIG QUIET)
+if(NOT nlohmann_json_FOUND)
+    message(STATUS "nlohmann_json not found via find_package, using FetchContent...")
+    FetchContent_Declare(
+        json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG        v3.11.3
+    )
+    FetchContent_MakeAvailable(json)
+endif()
 
 include(${wxWidgets_USE_FILE})
 include(source/CMakeLists.txt)
