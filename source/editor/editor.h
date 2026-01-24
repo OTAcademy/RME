@@ -35,17 +35,17 @@ class LiveClient;
 class LiveServer;
 class LiveSocket;
 
-class Editor {
+#include "live/live_manager.h"
+
+class Editor : public wxFrame {
 public:
 	Editor(CopyBuffer& copybuffer, LiveClient* client);
 	Editor(CopyBuffer& copybuffer, const FileName& fn);
 	Editor(CopyBuffer& copybuffer);
 	~Editor();
 
-protected:
-	// Live Server
-	LiveServer* live_server;
-	LiveClient* live_client;
+	// Live Manager
+	LiveManager live_manager;
 
 public:
 	// Public members

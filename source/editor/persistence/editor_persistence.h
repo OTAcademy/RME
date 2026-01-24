@@ -11,6 +11,7 @@ class Editor;
 class EditorPersistence {
 public:
 	static void saveMap(Editor& editor, FileName filename, bool showdialog);
+	static void loadMap(Editor& editor, const FileName& filename);
 	static bool importMap(Editor& editor, FileName filename, int import_x_offset, int import_y_offset, ImportType house_import_type, ImportType spawn_import_type);
 	static bool exportSelectionAsMiniMap(Editor& editor, FileName directory, wxString fileName);
 };

@@ -20,6 +20,11 @@
 
 #include "io/filehandle.h"
 #include "brushes/brush_enums.h"
+#include "ext/pugixml.hpp"
+#include "util/con_vector.h"
+#include <wx/string.h>
+#include <map>
+#include <vector>
 
 class Brush;
 class GroundBrush;
