@@ -1,3 +1,16 @@
+> [!CAUTION]
+> Not a single change that I make is stable. 
+> This repo aims to upgrade rendering system and improve FPS performance. So far so good.
+> Opengl 4.5 was introduced
+> New library for tooltips
+> Better light system
+> Fixed minimap lag
+> Upgrading to modern wxwidgets is WIP. 
+> This project has many breaking changes and its not stable.
+
+
+
+
 What is this?
 =============
 
