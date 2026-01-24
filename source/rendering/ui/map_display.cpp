@@ -183,15 +183,6 @@ MapWindow* MapCanvas::GetMapWindow() const {
 void MapCanvas::OnPaint(wxPaintEvent& event) {
 	SetCurrent(*g_gui.GetGLContext(this));
 
-	static bool gladInitialized = false;
-	if (!gladInitialized) {
-		if (!gladLoadGL()) {
-			// Handle error - maybe log or fallback (though fallback is hard with Core Profile)
-			// For now, we assume it works if Context creation succeeded
-		}
-		gladInitialized = true;
-	}
-
 	if (g_gui.IsRenderingEnabled()) {
 		DrawingOptions& options = drawer->getOptions();
 		if (screenshot_controller->IsCapturing()) {

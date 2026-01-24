@@ -17,6 +17,8 @@
 
 #include "app/main.h"
 
+#include <wx/wfstream.h>
+#include <spdlog/spdlog.h>
 #include <wx/display.h>
 
 #include "ui/gui.h"
@@ -116,7 +118,15 @@ wxGLContext* GUI::GetGLContext(wxGLCanvas* win) {
 		wxGLContextAttrs ctxAttrs;
 		ctxAttrs.PlatformDefaults().CoreProfile().MajorVersion(4).MinorVersion(5).EndList();
 		OGLContext = newd wxGLContext(win, nullptr, &ctxAttrs);
+		spdlog::info("GUI: Created new OpenGL 4.5 Core Profile context");
 #endif
+		// Initialize GLAD for the new context
+		win->SetCurrent(*OGLContext);
+		if (!gladLoadGL()) {
+			spdlog::error("GUI: Failed to initialize GLAD!");
+		} else {
+			spdlog::info("GUI: GLAD initialized successfully");
+		}
 	}
 
 	return OGLContext;

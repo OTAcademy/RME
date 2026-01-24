@@ -120,6 +120,7 @@ public:
 
 private:
 	void DrawMapLayer(int map_z, bool live_client);
+	bool renderers_initialized = false;
 };
 
 #endif

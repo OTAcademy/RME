@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstring>
 #include <utility>
+#include <spdlog/spdlog.h>
 
 const char* sprite_batch_vert = R"(
 #version 450 core
@@ -103,13 +104,13 @@ bool SpriteBatch::initialize() {
 	// Load shader
 	shader_ = std::make_unique<ShaderProgram>();
 	if (!shader_->Load(sprite_batch_vert, sprite_batch_frag)) {
-		std::cerr << "SpriteBatch: Failed to load shader" << std::endl;
+		spdlog::error("SpriteBatch: Failed to load shader");
 		return false;
 	}
 
 	// Initialize RingBuffer
 	if (!ring_buffer_.initialize(sizeof(SpriteInstance), MAX_SPRITES_PER_BATCH)) {
-		std::cerr << "SpriteBatch: Failed to initialize RingBuffer" << std::endl;
+		spdlog::error("SpriteBatch: Failed to initialize RingBuffer");
 		return false;
 	}
 
@@ -173,8 +174,12 @@ bool SpriteBatch::initialize() {
 	// Initialize MDI
 	if (mdi_renderer_.initialize()) {
 		use_mdi_ = true;
+		spdlog::info("SpriteBatch: MDI renderer initialized");
+	} else {
+		spdlog::warn("SpriteBatch: MDI renderer failed to initialize, using fallback path");
 	}
 
+	spdlog::info("SpriteBatch initialized successfully (VAO: {})", vao_);
 	return true;
 }
 

@@ -1,5 +1,6 @@
 #include "rendering/core/primitive_renderer.h"
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 const char* primitive_vert = R"(
 #version 450 core
@@ -37,7 +38,7 @@ PrimitiveRenderer::~PrimitiveRenderer() {
 void PrimitiveRenderer::initialize() {
 	shader_ = std::make_unique<ShaderProgram>();
 	if (!shader_->Load(primitive_vert, primitive_frag)) {
-		std::cerr << "PrimitiveRenderer: Shader load failed" << std::endl;
+		spdlog::error("PrimitiveRenderer: Shader load failed");
 	}
 
 	glCreateVertexArrays(1, &vao_);
@@ -58,6 +59,8 @@ void PrimitiveRenderer::initialize() {
 	glEnableVertexArrayAttrib(vao_, 1);
 	glVertexArrayAttribFormat(vao_, 1, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex, color));
 	glVertexArrayAttribBinding(vao_, 1, 0);
+
+	spdlog::info("PrimitiveRenderer initialized (VAO: {}, VBO: {})", vao_, vbo_);
 }
 
 void PrimitiveRenderer::shutdown() {

@@ -20,6 +20,7 @@
 #include "editor/editor.h"
 #include "ui/gui.h"
 #include "game/sprites.h"
+#include <spdlog/spdlog.h>
 #include "rendering/map_drawer.h"
 #include "brushes/brush.h"
 #include "rendering/drawers/map_layer_drawer.h"
@@ -114,10 +115,11 @@ void MapDrawer::SetupGL() {
 
 	view.SetupGL();
 
-	// Ensure renderers are initialized (safe to call multiple times if we add a check,
-	// or we assume SetupGL is called once per context init, but checks are safer)
-	static bool renderers_initialized = false;
+	view.SetupGL();
+
+	// Ensure renderers are initialized
 	if (!renderers_initialized) {
+		spdlog::info("MapDrawer: Initializing renderers for canvas {:p}", (void*)canvas);
 		sprite_batch->initialize();
 		primitive_renderer->initialize();
 		renderers_initialized = true;
