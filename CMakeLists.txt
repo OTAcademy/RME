@@ -59,6 +59,7 @@ endif()
 
 set_target_properties(rme PROPERTIES CXX_STANDARD 20)
 set_target_properties(rme PROPERTIES CXX_STANDARD_REQUIRED ON)
+target_compile_definitions(rme PRIVATE WXWIN_COMPATIBILITY_3_3)
 
 
 # Link against wxWidgets (works with both vcpkg and Conan)

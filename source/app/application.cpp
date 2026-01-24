@@ -96,6 +96,11 @@ Application::~Application() {
 }
 
 bool Application::OnInit() {
+#ifdef __WXMSW__
+	// Enable dark mode support for Windows (wxWidgets 3.3+)
+	MSWEnableDarkMode(wxApp::DarkMode_Always);
+#endif
+
 #if defined __DEBUG_MODE__ && defined __WINDOWS__
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
