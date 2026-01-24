@@ -122,6 +122,29 @@ public:
 		}
 	}
 
+	template <typename... Args>
+	bool emitCancellable(const std::string& eventName, Args&&... args) {
+		if (!initialized) {
+			return false;
+		}
+
+		bool consumed = false;
+		for (auto& listener : eventListeners) {
+			if (listener.eventName == eventName && listener.callback.valid()) {
+				try {
+					sol::object result = listener.callback(std::forward<Args>(args)...);
+					if (result.valid() && result.is<bool>() && result.as<bool>()) {
+						consumed = true;
+						break; // Stop propagation
+					}
+				} catch (const sol::error& e) {
+					logOutput("Event '" + eventName + "' error: " + std::string(e.what()), true);
+				}
+			}
+		}
+		return consumed;
+	}
+
 	// Clear all registered callbacks (called before script reload)
 	void clearAllCallbacks();
 

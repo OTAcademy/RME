@@ -103,35 +103,51 @@ namespace LuaAPI {
 			}),
 
 			// Methods
+			"start", [](Selection* sel) {
+				if (sel && !sel->isBusy()) {
+					sel->start(Selection::INTERNAL);
+				}
+			},
+			"finish", [](Selection* sel) {
+				if (sel && sel->isBusy()) {
+					sel->finish(Selection::INTERNAL);
+				}
+			},
 			"clear", [](Selection* sel) {
-			if (sel) {
-				sel->start(Selection::INTERNAL);
-				sel->clear();
-				sel->finish(Selection::INTERNAL);
-			} },
+				if (sel) {
+					bool managed = !sel->isBusy();
+					if (managed) sel->start(Selection::INTERNAL);
+					sel->clear();
+					if (managed) sel->finish(Selection::INTERNAL);
+				}
+			},
 
 			"add", sol::overload([](Selection* sel, Tile* tile) {
 				if (sel && tile) {
-					sel->start(Selection::INTERNAL);
+					bool managed = !sel->isBusy();
+					if (managed) sel->start(Selection::INTERNAL);
 					sel->add(tile);
-					sel->finish(Selection::INTERNAL);
+					if (managed) sel->finish(Selection::INTERNAL);
 				} }, [](Selection* sel, Tile* tile, Item* item) {
 				if (sel && tile && item) {
-					sel->start(Selection::INTERNAL);
+					bool managed = !sel->isBusy();
+					if (managed) sel->start(Selection::INTERNAL);
 					sel->add(tile, item);
-					sel->finish(Selection::INTERNAL);
+					if (managed) sel->finish(Selection::INTERNAL);
 				} }),
 
 			"remove", sol::overload([](Selection* sel, Tile* tile) {
 				if (sel && tile) {
-					sel->start(Selection::INTERNAL);
+					bool managed = !sel->isBusy();
+					if (managed) sel->start(Selection::INTERNAL);
 					sel->remove(tile);
-					sel->finish(Selection::INTERNAL);
+					if (managed) sel->finish(Selection::INTERNAL);
 				} }, [](Selection* sel, Tile* tile, Item* item) {
 				if (sel && tile && item) {
-					sel->start(Selection::INTERNAL);
+					bool managed = !sel->isBusy();
+					if (managed) sel->start(Selection::INTERNAL);
 					sel->remove(tile, item);
-					sel->finish(Selection::INTERNAL);
+					if (managed) sel->finish(Selection::INTERNAL);
 				} }),
 
 			// String representation

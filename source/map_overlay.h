@@ -46,6 +46,7 @@ struct MapOverlayCommand {
 	Type type = Type::Rect;
 	bool screen_space = false;
 	bool filled = true;
+	bool dashed = false;
 	int width = 1;
 
 	int x = 0;

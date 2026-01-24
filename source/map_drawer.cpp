@@ -365,12 +365,21 @@ bool MapDrawer::drawOverlayCommands(const std::vector<MapOverlayCommand>& comman
 				continue;
 			}
 
+			if (cmd.dashed) {
+				glEnable(GL_LINE_STIPPLE);
+				glLineStipple(1, 0x00FF);
+			}
+
 			glLineWidth(cmd.width);
 			glColor4ub(cmd.color.Red(), cmd.color.Green(), cmd.color.Blue(), cmd.color.Alpha());
 			glBegin(GL_LINES);
 			glVertex2f(x1, y1);
 			glVertex2f(x2, y2);
 			glEnd();
+
+			if (cmd.dashed) {
+				glDisable(GL_LINE_STIPPLE);
+			}
 		} else if (cmd.type == MapOverlayCommand::Type::Text) {
 			if (!cmd.text.empty()) {
 				if (isScreenSpace) {

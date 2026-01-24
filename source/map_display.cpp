@@ -474,6 +474,10 @@ void MapCanvas::OnMouseMove(wxMouseEvent& event) {
 		}
 	}
 
+	if (g_luaScripts.isInitialized() && g_luaScripts.emitCancellable("onMouseMove", mouse_map_x, mouse_map_y, floor)) {
+		return;
+	}
+
 	if (g_gui.IsSelectionMode()) {
 		if (map_update && isPasting()) {
 			Refresh();
@@ -585,10 +589,20 @@ void MapCanvas::OnMouseMove(wxMouseEvent& event) {
 }
 
 void MapCanvas::OnMouseLeftRelease(wxMouseEvent& event) {
+	int map_x, map_y;
+	ScreenToMap(event.GetX(), event.GetY(), &map_x, &map_y);
+	if (g_luaScripts.isInitialized() && g_luaScripts.emitCancellable("onMouseRelease", map_x, map_y, floor, std::string("left"))) {
+		return;
+	}
 	OnMouseActionRelease(event);
 }
 
 void MapCanvas::OnMouseLeftClick(wxMouseEvent& event) {
+	int map_x, map_y;
+	ScreenToMap(event.GetX(), event.GetY(), &map_x, &map_y);
+	if (g_luaScripts.isInitialized() && g_luaScripts.emitCancellable("onMousePress", map_x, map_y, floor, std::string("left"))) {
+		return;
+	}
 	OnMouseActionClick(event);
 }
 
@@ -646,6 +660,11 @@ void MapCanvas::OnMouseCenterRelease(wxMouseEvent& event) {
 }
 
 void MapCanvas::OnMouseRightClick(wxMouseEvent& event) {
+	int map_x, map_y;
+	ScreenToMap(event.GetX(), event.GetY(), &map_x, &map_y);
+	if (g_luaScripts.isInitialized() && g_luaScripts.emitCancellable("onMousePress", map_x, map_y, floor, std::string("right"))) {
+		return;
+	}
 	if (g_settings.getInteger(Config::SWITCH_MOUSEBUTTONS)) {
 		OnMouseCameraClick(event);
 	} else {
@@ -654,6 +673,11 @@ void MapCanvas::OnMouseRightClick(wxMouseEvent& event) {
 }
 
 void MapCanvas::OnMouseRightRelease(wxMouseEvent& event) {
+	int map_x, map_y;
+	ScreenToMap(event.GetX(), event.GetY(), &map_x, &map_y);
+	if (g_luaScripts.isInitialized() && g_luaScripts.emitCancellable("onMouseRelease", map_x, map_y, floor, std::string("right"))) {
+		return;
+	}
 	if (g_settings.getInteger(Config::SWITCH_MOUSEBUTTONS)) {
 		OnMouseCameraRelease(event);
 	} else {

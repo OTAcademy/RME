@@ -660,6 +660,24 @@ namespace LuaAPI {
 			}
 		};
 
+		// Keyboard modification state
+		sol::table keyboard = lua.create_table();
+		keyboard["isCtrlDown"] = []() -> bool {
+			return wxGetKeyState(WXK_CONTROL);
+		};
+		keyboard["isShiftDown"] = []() -> bool {
+			return wxGetKeyState(WXK_SHIFT);
+		};
+		keyboard["isAltDown"] = []() -> bool {
+			return wxGetKeyState(WXK_ALT);
+		};
+		app["keyboard"] = keyboard;
+
+		// Clipboard / Edit operations
+		app["copy"] = []() { g_gui.DoCopy(); };
+		app["cut"] = []() { g_gui.DoCut(); };
+		app["paste"] = []() { g_gui.DoPaste(); };
+
 		// Map overlay system
 		sol::table mapView = lua.create_table();
 		mapView["addOverlay"] = [](sol::variadic_args va) -> bool {

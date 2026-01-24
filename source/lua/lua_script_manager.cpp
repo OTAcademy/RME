@@ -312,6 +312,8 @@ void LuaScriptManager::collectMapOverlayCommands(const MapViewInfo& view, std::v
 		cmd.screen_space = opts.get_or(std::string("screen"), false);
 		cmd.filled = opts.get_or(std::string("filled"), true);
 		cmd.width = opts.get_or(std::string("width"), 1);
+		std::string style = opts.get_or(std::string("style"), std::string("solid"));
+		cmd.dashed = (style == "dotted" || style == "dashed");
 		cmd.x = opts.get_or(std::string("x"), 0);
 		cmd.y = opts.get_or(std::string("y"), 0);
 		cmd.z = opts.get_or(std::string("z"), view.floor);
@@ -330,6 +332,8 @@ void LuaScriptManager::collectMapOverlayCommands(const MapViewInfo& view, std::v
 		cmd.type = MapOverlayCommand::Type::Line;
 		cmd.screen_space = opts.get_or(std::string("screen"), false);
 		cmd.width = opts.get_or(std::string("width"), 1);
+		std::string style = opts.get_or(std::string("style"), std::string("solid"));
+		cmd.dashed = (style == "dotted" || style == "dashed");
 		cmd.x = opts.get_or(std::string("x1"), 0);
 		cmd.y = opts.get_or(std::string("y1"), 0);
 		cmd.z = opts.get_or(std::string("z1"), view.floor);

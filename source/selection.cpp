@@ -223,7 +223,9 @@ void Selection::clear() {
 }
 
 void Selection::start(SessionFlags flags) {
-	if (!(flags & INTERNAL)) {
+	if (flags & INTERNAL) {
+		subsession = editor.actionQueue->createAction(ACTION_SELECT);
+	} else if (!(flags & INTERNAL)) {
 		if (flags & SUBTHREAD) {
 			;
 		} else {
@@ -251,7 +253,13 @@ void Selection::commit() {
 }
 
 void Selection::finish(SessionFlags flags) {
-	if (!(flags & INTERNAL)) {
+	if (flags & INTERNAL) {
+		if (subsession) {
+			subsession->commit(nullptr);
+			delete subsession;
+			subsession = nullptr;
+		}
+	} else if (!(flags & INTERNAL)) {
 		if (flags & SUBTHREAD) {
 			ASSERT(subsession);
 			subsession = nullptr;
@@ -271,8 +279,11 @@ void Selection::finish(SessionFlags flags) {
 	}
 	busy = false;
 
-	// Notify Lua scripts only if we're on the main thread and it's a "real" selection change
-	if (!(flags & (INTERNAL | SUBTHREAD))) {
+	// Update status bar
+	updateSelectionCount();
+
+	// Notify Lua scripts
+	if (!(flags & SUBTHREAD)) {
 		if (g_luaScripts.isInitialized()) {
 			g_luaScripts.emit("selectionChange");
 		}
