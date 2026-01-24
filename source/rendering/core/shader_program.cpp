@@ -2,7 +2,8 @@
 #include <vector>
 #include <iostream>
 
-ShaderProgram::ShaderProgram() : program_id(0) {
+ShaderProgram::ShaderProgram() :
+	program_id(0) {
 }
 
 ShaderProgram::~ShaderProgram() {
