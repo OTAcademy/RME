@@ -89,6 +89,8 @@ GUI::GUI() :
 	draw_locked_doors(false),
 	use_custom_thickness(false),
 	custom_thickness_mod(0.0),
+	light_intensity(1.0f),
+	ambient_light_level(0.5f),
 	progressBar(nullptr),
 	disabled_counter(0) {
 	doodad_buffer_map = newd BaseMap();

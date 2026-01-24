@@ -11,7 +11,7 @@ void RenderView::Setup(MapCanvas* canvas, const DrawingOptions& options) {
 	canvas->GetViewBox(&view_scroll_x, &view_scroll_y, &screensize_x, &screensize_y);
 
 	zoom = (float)canvas->GetZoom();
-	tile_size = int(TileSize / zoom); // after zoom
+	tile_size = std::max(1, (int)(TileSize / zoom)); // after zoom
 	floor = canvas->GetFloor();
 
 	if (options.show_all_floors) {

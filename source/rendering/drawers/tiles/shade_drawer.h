@@ -4,12 +4,14 @@
 #include "rendering/core/render_view.h"
 #include "rendering/core/drawing_options.h"
 
+class SpriteBatch;
+
 class ShadeDrawer {
 public:
 	ShadeDrawer();
 	~ShadeDrawer();
 
-	void draw(const RenderView& view, const DrawingOptions& options);
+	void draw(SpriteBatch& sprite_batch, const RenderView& view, const DrawingOptions& options);
 };
 
 #endif

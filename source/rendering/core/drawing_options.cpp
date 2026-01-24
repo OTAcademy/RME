@@ -1,4 +1,5 @@
 #include "main.h"
+#include "gui.h"
 #include "rendering/core/drawing_options.h"
 
 DrawingOptions::DrawingOptions() {
@@ -37,6 +38,9 @@ void DrawingOptions::SetDefault() {
 	show_hooks = false;
 	hide_items_when_zoomed = true;
 	current_house_id = 0;
+	light_intensity = 1.0f;
+	ambient_light_level = 0.5f;
+	global_light_color = wxColor(128, 128, 128);
 }
 
 void DrawingOptions::SetIngame() {
@@ -105,6 +109,8 @@ void DrawingOptions::Update() {
 	show_towns = g_settings.getBoolean(Config::SHOW_TOWNS);
 	always_show_zones = g_settings.getBoolean(Config::ALWAYS_SHOW_ZONES);
 	extended_house_shader = g_settings.getBoolean(Config::EXT_HOUSE_SHADER);
+	light_intensity = g_gui.GetLightIntensity();
+	ambient_light_level = g_gui.GetAmbientLightLevel();
 
 	experimental_fog = g_settings.getBoolean(Config::EXPERIMENTAL_FOG);
 }

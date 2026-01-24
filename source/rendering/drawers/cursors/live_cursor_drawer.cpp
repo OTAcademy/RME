@@ -1,13 +1,16 @@
 #include "main.h"
 
 #include "rendering/drawers/cursors/live_cursor_drawer.h"
-#include "rendering/core/batch_renderer.h"
+
+#include "rendering/core/sprite_batch.h"
 #include "rendering/core/render_view.h"
 #include "editor.h"
 #include "live_socket.h"
 #include "rendering/core/drawing_options.h"
+#include "rendering/core/graphics.h"
+#include "gui.h"
 
-void LiveCursorDrawer::draw(const RenderView& view, Editor& editor, const DrawingOptions& options) {
+void LiveCursorDrawer::draw(SpriteBatch& sprite_batch, const RenderView& view, Editor& editor, const DrawingOptions& options) {
 	if (options.ingame || !editor.IsLive()) {
 		return;
 	}
@@ -48,10 +51,8 @@ void LiveCursorDrawer::draw(const RenderView& view, Editor& editor, const Drawin
 			cursor.color.Alpha() / 255.0f
 		);
 
-		BatchRenderer::DrawQuad(
-			glm::vec2(draw_x, draw_y),
-			glm::vec2(TileSize, TileSize),
-			color
-		);
+		if (g_gui.gfx.ensureAtlasManager()) {
+			sprite_batch.drawRect(draw_x, draw_y, (float)TileSize, (float)TileSize, color, *g_gui.gfx.getAtlasManager());
+		}
 	}
 }

@@ -7,6 +7,8 @@
 #endif
 
 #include "rendering/drawers/overlays/preview_drawer.h"
+#include "rendering/core/sprite_batch.h"
+#include "rendering/core/primitive_renderer.h"
 #include "rendering/ui/map_display.h"
 #include "rendering/drawers/entities/item_drawer.h"
 #include "rendering/drawers/entities/creature_drawer.h"
@@ -20,7 +22,7 @@ PreviewDrawer::PreviewDrawer() {
 PreviewDrawer::~PreviewDrawer() {
 }
 
-void PreviewDrawer::draw(MapCanvas* canvas, const RenderView& view, int map_z, const DrawingOptions& options, Editor& editor, ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, uint32_t current_house_id) {
+void PreviewDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, MapCanvas* canvas, const RenderView& view, int map_z, const DrawingOptions& options, Editor& editor, ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, uint32_t current_house_id) {
 	if (g_gui.secondary_map != nullptr && !options.ingame) {
 		Brush* brush = g_gui.GetCurrentBrush();
 
@@ -83,7 +85,9 @@ void PreviewDrawer::draw(MapCanvas* canvas, const RenderView& view, int map_z, c
 						if (options.show_special_tiles && tile->getMapFlags() & TILESTATE_NOPVP) {
 							g /= 2;
 						}
-						item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, tile, tile->ground, options, true, r, g, b, 160);
+						if (tile->ground) {
+							item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, tile->ground, options, true, r, g, b, 160);
+						}
 					}
 
 					// Draw items on the tile
@@ -91,13 +95,13 @@ void PreviewDrawer::draw(MapCanvas* canvas, const RenderView& view, int map_z, c
 						ItemVector::iterator it;
 						for (it = tile->items.begin(); it != tile->items.end(); it++) {
 							if ((*it)->isBorder()) {
-								item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, true, 160, r, g, b);
+								item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, true, 160, r, g, b);
 							} else {
-								item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, true, 160, 160, 160, 160);
+								item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, true, 160, 160, 160, 160);
 							}
 						}
 						if (tile->creature && options.show_creatures) {
-							creature_drawer->BlitCreature(sprite_drawer, draw_x, draw_y, tile->creature);
+							creature_drawer->BlitCreature(sprite_batch, sprite_drawer, draw_x, draw_y, tile->creature);
 						}
 					}
 				}

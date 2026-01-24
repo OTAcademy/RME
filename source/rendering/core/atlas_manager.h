@@ -62,7 +62,7 @@ public:
 	/**
 	 * Get a region for a white pixel.
 	 */
-	const AtlasRegion* getWhitePixel();
+	const AtlasRegion* getWhitePixel() const;
 
 	/**
 	 * Get texture ID.

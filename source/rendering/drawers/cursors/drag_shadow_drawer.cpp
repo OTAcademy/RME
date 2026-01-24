@@ -11,6 +11,7 @@
 #endif
 
 #include "rendering/drawers/cursors/drag_shadow_drawer.h"
+#include "rendering/core/sprite_batch.h"
 #include "rendering/map_drawer.h"
 #include "rendering/drawers/entities/item_drawer.h"
 #include "rendering/drawers/entities/sprite_drawer.h"
@@ -33,7 +34,9 @@ DragShadowDrawer::DragShadowDrawer() {
 DragShadowDrawer::~DragShadowDrawer() {
 }
 
-void DragShadowDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, const RenderView& view, const DrawingOptions& options) {
+#include "rendering/core/primitive_renderer.h"
+
+void DragShadowDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, MapDrawer* drawer, ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, const RenderView& view, const DrawingOptions& options) {
 	if (!drawer || !drawer->canvas) {
 		return;
 	}
@@ -75,19 +78,19 @@ void DragShadowDrawer::draw(MapDrawer* drawer, ItemDrawer* item_drawer, SpriteDr
 				Tile* desttile = drawer->editor.map.getTile(pos);
 				for (ItemVector::const_iterator iit = toRender.begin(); iit != toRender.end(); iit++) {
 					if (desttile) {
-						item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, desttile, *iit, options, true, 160, 160, 160, 160);
+						item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, desttile, *iit, options, true, 160, 160, 160, 160);
 					} else {
-						item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, pos, *iit, options, true, 160, 160, 160, 160);
+						item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, pos, *iit, options, true, 160, 160, 160, 160);
 					}
 				}
 
 				// save performance when moving large chunks unzoomed
 				if (view.zoom <= 3.0) {
 					if (tile->creature && tile->creature->isSelected() && options.show_creatures) {
-						creature_drawer->BlitCreature(sprite_drawer, draw_x, draw_y, tile->creature);
+						creature_drawer->BlitCreature(sprite_batch, sprite_drawer, draw_x, draw_y, tile->creature);
 					}
 					if (tile->spawn && tile->spawn->isSelected()) {
-						sprite_drawer->BlitSprite(draw_x, draw_y, SPRITE_SPAWN, 160, 160, 160, 160);
+						sprite_drawer->BlitSprite(sprite_batch, draw_x, draw_y, SPRITE_SPAWN, 160, 160, 160, 160);
 					}
 				}
 			}

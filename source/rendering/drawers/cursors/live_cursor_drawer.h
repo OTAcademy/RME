@@ -4,12 +4,13 @@
 struct RenderView;
 class Editor;
 class LiveSocket;
+class SpriteBatch;
 
 struct DrawingOptions;
 
 class LiveCursorDrawer {
 public:
-	void draw(const RenderView& view, Editor& editor, const DrawingOptions& options);
+	void draw(SpriteBatch& sprite_batch, const RenderView& view, Editor& editor, const DrawingOptions& options);
 };
 
 #endif

@@ -26,13 +26,15 @@ class GridDrawer;
 struct RenderView;
 struct DrawingOptions;
 struct LightBuffer;
+class SpriteBatch;
+class PrimitiveRenderer;
 
 class MapLayerDrawer {
 public:
 	MapLayerDrawer(TileRenderer* tile_renderer, GridDrawer* grid_drawer, Editor* editor);
 	~MapLayerDrawer();
 
-	void Draw(int map_z, bool live_client, const RenderView& view, const DrawingOptions& options, LightBuffer& light_buffer, std::ostringstream& tooltip);
+	void Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, int map_z, bool live_client, const RenderView& view, const DrawingOptions& options, LightBuffer& light_buffer, std::ostringstream& tooltip);
 
 private:
 	TileRenderer* tile_renderer;

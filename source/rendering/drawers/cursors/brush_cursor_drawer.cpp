@@ -10,9 +10,12 @@
 #include "brush.h"
 #include "definitions.h" // For PI
 
-#include "rendering/core/batch_renderer.h"
+#include "rendering/core/sprite_batch.h"
+#include "rendering/core/primitive_renderer.h"
+#include "rendering/core/graphics.h"
+#include "gui.h"
 
-void BrushCursorDrawer::draw(int x, int y, Brush* brush, uint8_t r, uint8_t g, uint8_t b) {
+void BrushCursorDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, int x, int y, Brush* brush, uint8_t r, uint8_t g, uint8_t b) {
 	x += (TileSize / 2);
 	y += (TileSize / 2);
 
@@ -46,7 +49,7 @@ void BrushCursorDrawer::draw(int x, int y, Brush* brush, uint8_t r, uint8_t g, u
 		float angle1 = i * 2.0f * PI / segments;
 		float angle2 = (i + 1) * 2.0f * PI / segments;
 
-		BatchRenderer::DrawTriangle(
+		primitive_renderer.drawTriangle(
 			center,
 			glm::vec2(cos(angle1) * radius + x, sin(angle1) * radius + y),
 			glm::vec2(cos(angle2) * radius + x, sin(angle2) * radius + y),
@@ -61,14 +64,14 @@ void BrushCursorDrawer::draw(int x, int y, Brush* brush, uint8_t r, uint8_t g, u
 	// Box: (-15, -20) to (15, -5). width=30, height=15.
 	// Top Left of box relative to x,y: (-15, -20).
 	// But coordinates seem to be relative offset.
-	BatchRenderer::DrawQuad(
-		glm::vec2(x - 15, y - 20),
-		glm::vec2(30, 15),
-		bgColor
-	);
+	if (g_gui.gfx.ensureAtlasManager()) {
+		const AtlasManager& atlas = *g_gui.gfx.getAtlasManager();
+		sprite_batch.drawRect((float)(x - 15), (float)(y - 20), (float)30, (float)15, bgColor, atlas);
+	}
 
 	// Tip Triangle: (-5, -5), (0,0), (5, -5) relative to x,y
-	BatchRenderer::DrawTriangle(
+	// Tip Triangle: (-5, -5), (0,0), (5, -5) relative to x,y
+	primitive_renderer.drawTriangle(
 		glm::vec2(x - 5, y - 5),
 		glm::vec2(x, y),
 		glm::vec2(x + 5, y - 5),
@@ -79,7 +82,7 @@ void BrushCursorDrawer::draw(int x, int y, Brush* brush, uint8_t r, uint8_t g, u
 	glm::vec4 borderColor(0.0f, 0.0f, 0.0f, 0xB4 / 255.0f);
 
 	for (int i = 0; i < 8; ++i) {
-		BatchRenderer::DrawLine(
+		primitive_renderer.drawLine(
 			glm::vec2(vertexes[i][0] + x, vertexes[i][1] + y),
 			glm::vec2(vertexes[i + 1][0] + x, vertexes[i + 1][1] + y),
 			borderColor

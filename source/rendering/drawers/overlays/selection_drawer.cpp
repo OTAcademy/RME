@@ -7,12 +7,14 @@
 #endif
 
 #include "rendering/drawers/overlays/selection_drawer.h"
-#include "rendering/core/batch_renderer.h"
+#include "rendering/core/sprite_batch.h"
 #include "rendering/core/render_view.h"
 #include "rendering/core/drawing_options.h"
 #include "rendering/ui/map_display.h"
+#include "rendering/core/graphics.h"
+#include "gui.h"
 
-void SelectionDrawer::draw(const RenderView& view, const MapCanvas* canvas, const DrawingOptions& options) {
+void SelectionDrawer::draw(SpriteBatch& sprite_batch, const RenderView& view, const MapCanvas* canvas, const DrawingOptions& options) {
 	if (options.ingame) {
 		return;
 	}
@@ -51,7 +53,35 @@ void SelectionDrawer::draw(const RenderView& view, const MapCanvas* canvas, cons
 
 	glm::vec4 color(1.0f, 1.0f, 1.0f, 1.0f);
 
-	for (int i = 0; i < 4; i++) {
-		BatchRenderer::DrawLine(glm::vec2(lines[i][0], lines[i][1]), glm::vec2(lines[i][2], lines[i][3]), color);
+	if (g_gui.gfx.ensureAtlasManager()) {
+		const AtlasManager& atlas = *g_gui.gfx.getAtlasManager();
+		for (int i = 0; i < 4; i++) {
+			// BatchRenderer::DrawLine(glm::vec2(lines[i][0], lines[i][1]), glm::vec2(lines[i][2], lines[i][3]), color);
+			float x1 = lines[i][0];
+			float y1 = lines[i][1];
+			float x2 = lines[i][2];
+			float y2 = lines[i][3];
+
+			// Assuming axis aligned lines for selection box
+			float w = std::abs(x2 - x1);
+			float h = std::abs(y2 - y1);
+			if (w == 0) {
+				w = 1.0f; // Vertical line
+			}
+			if (h == 0) {
+				h = 1.0f; // Horizontal line
+			}
+
+			// Need to handle non-axis aligned lines? Selection box usually is axis aligned.
+			// But if rotation involves... SelectionDrawer logic above suggests it follows 4 corners.
+			// Wait, lines[0] is (last_click_rx, last_click_ry) to (cursor_rx, last_click_ry). That is Horizontal.
+			// lines[1] is (cursor_rx, last_click_ry) to (cursor_rx, cursor_ry). That is Vertical.
+			// It is axis aligned.
+
+			float x = std::min(x1, x2);
+			float y = std::min(y1, y2);
+
+			sprite_batch.drawRect(x, y, w, h, color, atlas);
+		}
 	}
 }

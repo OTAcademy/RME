@@ -40,7 +40,6 @@
 #include "rendering/ui/map_display.h"
 #include "rendering/ui/map_status_updater.h"
 #include "rendering/map_drawer.h"
-#include "rendering/core/batch_renderer.h"
 #include "rendering/core/text_renderer.h"
 #include "application.h"
 #include "live_server.h"
@@ -156,10 +155,8 @@ MapCanvas::MapCanvas(MapWindow* parent, Editor& editor, int* attriblist) :
 MapCanvas::~MapCanvas() {
 	delete popup_menu;
 	delete animation_timer;
+
 	delete drawer;
-	if (renderer_initialized) {
-		BatchRenderer::Shutdown();
-	}
 }
 
 void MapCanvas::Refresh() {
@@ -212,17 +209,12 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			animation_timer->Stop();
 		}
 
-		// Text Renderer Init
 		if (!TextRenderer::GetContext()) {
 			TextRenderer::Init();
 		}
 
-		if (!renderer_initialized) {
-			BatchRenderer::Init();
-			renderer_initialized = true;
-		}
+		// BatchRenderer calls removed - MapDrawer handles its own renderers
 
-		BatchRenderer::Begin();
 		drawer->SetupVars();
 		drawer->SetupGL();
 		drawer->Draw();
@@ -232,7 +224,7 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 		}
 
 		drawer->Release();
-		BatchRenderer::End();
+		// BatchRenderer::End(); call removed
 
 		// Draw UI (Tooltips) using NanoVG
 		if (options.show_tooltips) {
@@ -330,6 +322,7 @@ void MapCanvas::OnMouseMove(wxMouseEvent& event) {
 	if (map_update) {
 		UpdatePositionStatus(cursor_x, cursor_y);
 		UpdateZoomStatus();
+		Refresh();
 	}
 
 	if (g_gui.IsSelectionMode()) {

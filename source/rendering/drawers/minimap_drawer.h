@@ -5,10 +5,12 @@
 #ifndef RME_RENDERING_DRAWERS_MINIMAP_DRAWER_H_
 #define RME_RENDERING_DRAWERS_MINIMAP_DRAWER_H_
 
-#include <wx/wx.h>
+#include "rendering/drawers/minimap_renderer.h"
+#include <memory>
 
 class Editor;
 class MapCanvas;
+class PrimitiveRenderer;
 
 class MinimapDrawer {
 public:
@@ -27,7 +29,8 @@ public:
 	}
 
 private:
-	wxPen* pens[256];
+	std::unique_ptr<MinimapRenderer> renderer;
+	std::unique_ptr<PrimitiveRenderer> primitive_renderer;
 	int last_start_x;
 	int last_start_y;
 };

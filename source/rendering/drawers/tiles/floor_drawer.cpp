@@ -25,7 +25,7 @@ FloorDrawer::FloorDrawer() {
 FloorDrawer::~FloorDrawer() {
 }
 
-void FloorDrawer::draw(ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, const RenderView& view, const DrawingOptions& options, Editor& editor) {
+void FloorDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, const RenderView& view, const DrawingOptions& options, Editor& editor) {
 
 	// Draw "transparent higher floor"
 	if (view.floor != 8 && view.floor != 0 && options.transparent_floors) {
@@ -48,15 +48,15 @@ void FloorDrawer::draw(ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, Cre
 
 					if (tile->ground) {
 						if (tile->isPZ()) {
-							item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, tile, tile->ground, options, false, 128, 255, 128, 96);
+							item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, tile->ground, options, false, 128, 255, 128, 96);
 						} else {
-							item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, tile, tile->ground, options, false, 255, 255, 255, 96);
+							item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, tile->ground, options, false, 255, 255, 255, 96);
 						}
 					}
 					if (view.zoom <= 10.0 || !options.hide_items_when_zoomed) {
 						ItemVector::iterator it;
 						for (it = tile->items.begin(); it != tile->items.end(); it++) {
-							item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, false, 255, 255, 255, 96);
+							item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, false, 255, 255, 255, 96);
 						}
 					}
 				}

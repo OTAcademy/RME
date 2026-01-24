@@ -17,6 +17,8 @@
 
 #include "main.h"
 
+#include <spdlog/spdlog.h>
+
 #include "rendering/core/graphics.h"
 #include "editor.h"
 #include "map.h"
@@ -37,13 +39,30 @@ EVT_TIMER(wxID_ANY, MinimapWindow::OnDelayedUpdate)
 EVT_KEY_DOWN(MinimapWindow::OnKey)
 END_EVENT_TABLE()
 
+// Helper to create attributes
+static wxGLAttributes& GetCoreProfileAttributes() {
+	static wxGLAttributes vAttrs = []() {
+		wxGLAttributes a;
+		a.PlatformDefaults().Defaults().RGBA().DoubleBuffer().Depth(24).Stencil(8).EndList();
+		return a;
+	}();
+	return vAttrs;
+}
+
 MinimapWindow::MinimapWindow(wxWindow* parent) :
-	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(205, 130)),
-	update_timer(this) {
+	wxGLCanvas(parent, GetCoreProfileAttributes(), wxID_ANY, wxDefaultPosition, wxSize(205, 130)),
+	update_timer(this),
+	context(nullptr) {
+	spdlog::info("MinimapWindow::MinimapWindow - Creating context");
+	context = new wxGLContext(this);
+	if (!context->IsOK()) {
+		spdlog::error("MinimapWindow::MinimapWindow - Context creation failed");
+	}
 	drawer = std::make_unique<MinimapDrawer>();
 }
 
 MinimapWindow::~MinimapWindow() {
+	delete context;
 }
 
 void MinimapWindow::OnSize(wxSizeEvent& event) {
@@ -65,17 +84,41 @@ void MinimapWindow::OnDelayedUpdate(wxTimerEvent& event) {
 }
 
 void MinimapWindow::OnPaint(wxPaintEvent& event) {
-	wxBufferedPaintDC pdc(this);
+	wxPaintDC dc(this); // Required for wxGLCanvas
+
+	// spdlog::info("MinimapWindow::OnPaint");
+
+	if (!context) {
+		spdlog::error("MinimapWindow::OnPaint - No context!");
+		return;
+	}
+
+	SetCurrent(*context);
+
+	static bool gladInitialized = false;
+	if (!gladInitialized) {
+		spdlog::info("MinimapWindow::OnPaint - Initializing GLAD");
+		if (!gladLoadGL()) {
+			spdlog::error("MinimapWindow::OnPaint - Failed to load GLAD");
+		} else {
+			spdlog::info("MinimapWindow::OnPaint - GLAD loaded. GL Version: {}", (char*)glGetString(GL_VERSION));
+		}
+		gladInitialized = true;
+	}
 
 	if (!g_gui.IsEditorOpen()) {
-		pdc.SetBackground(*wxBLACK_BRUSH);
-		pdc.Clear();
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		SwapBuffers();
 		return;
 	}
 	Editor& editor = *g_gui.GetCurrentEditor();
 	MapCanvas* canvas = g_gui.GetCurrentMapTab()->GetCanvas();
 
-	drawer->Draw(pdc, GetSize(), editor, canvas);
+	// Mock dc passed to Draw, unused by new GL implementation
+	drawer->Draw(dc, GetSize(), editor, canvas);
+
+	SwapBuffers();
 }
 
 void MinimapWindow::OnMouseClick(wxMouseEvent& event) {
