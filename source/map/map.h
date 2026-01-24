@@ -159,6 +159,9 @@ protected:
 	friend class IOMapOTBM;
 	friend class IOMapOTMM;
 	friend class Editor;
+	friend class SelectionOperations;
+	friend class MapProcessor;
+	friend class EditorPersistence;
 
 public:
 	Waypoints waypoints;

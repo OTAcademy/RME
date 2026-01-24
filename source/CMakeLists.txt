@@ -26,6 +26,8 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/copybuffer.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/operations/selection_operations.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/editor_persistence.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_tabs.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection.h
     ${CMAKE_CURRENT_LIST_DIR}/ext/pugiconfig.hpp
@@ -59,6 +61,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/map/basemap.h
     ${CMAKE_CURRENT_LIST_DIR}/map/map.h
     ${CMAKE_CURRENT_LIST_DIR}/map/map_allocator.h
+    ${CMAKE_CURRENT_LIST_DIR}/map/operations/map_processor.h
     ${CMAKE_CURRENT_LIST_DIR}/map/map_region.h
     ${CMAKE_CURRENT_LIST_DIR}/map/otml.h
     ${CMAKE_CURRENT_LIST_DIR}/map/position.h
@@ -202,6 +205,8 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/copybuffer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/operations/selection_operations.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/editor_persistence.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_tabs.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ext/pugixml.cpp
@@ -229,6 +234,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/live/live_tab.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/basemap.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/map.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/map/operations/map_processor.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/map_region.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/tile.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/tileset.cpp

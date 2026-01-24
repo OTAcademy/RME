@@ -25,6 +25,9 @@
 
 #include "editor/action.h"
 #include "editor/selection.h"
+#include "editor/operations/selection_operations.h"
+#include "map/operations/map_processor.h"
+#include "editor/persistence/editor_persistence.h"
 
 class BaseMap;
 class CopyBuffer;

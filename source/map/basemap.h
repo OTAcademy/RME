@@ -148,6 +148,8 @@ protected:
 	QTreeNode root; // The Quad Tree root
 
 	friend class QTreeNode;
+	friend class MapProcessor;
+	friend class EditorPersistence;
 };
 
 inline Tile* BaseMap::getTile(int x, int y, int z) {
