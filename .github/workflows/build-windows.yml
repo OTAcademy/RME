@@ -32,10 +32,21 @@ jobs:
       - name: Get latest CMake and Ninja
         uses: lukka/get-cmake@v3.31.6
 
+      - name: Restore vcpkg artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.LOCALAPPDATA }}\vcpkg\archives
+            ${{ env.APPDATA }}\vcpkg\archives
+          key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-
+
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
           vcpkgGitCommitId: ${{ env.LUKKA_RUN_VCPKG_SHA }}
+          vcpkgJsonGlob: 'vcpkg.json'
 
       - name: Configure CMake
         shell: pwsh
