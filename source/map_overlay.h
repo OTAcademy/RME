@@ -41,6 +41,7 @@ struct MapOverlayCommand {
 		Rect,
 		Line,
 		Text,
+		Sprite,
 	};
 
 	Type type = Type::Rect;
@@ -57,6 +58,8 @@ struct MapOverlayCommand {
 	int x2 = 0;
 	int y2 = 0;
 	int z2 = 0;
+
+	uint32_t sprite_id = 0;
 
 	std::string text;
 	wxColor color = wxColor(255, 255, 255, 255);
