@@ -3,6 +3,9 @@
 
 #include "main.h"
 #include <vector>
+#include "main.h"
+#include <vector>
+#include <memory>
 #include "shader_program.h"
 
 // Forward declarations
@@ -66,8 +69,8 @@ private:
 	static GLuint currentTextureID;
 	static GLenum currentPrimitiveMode;
 
-	static ShaderProgram* externalShader; // Generic 2D shader
-	static ShaderProgram* atlasShader; // Texture array shader
+	static std::unique_ptr<ShaderProgram> externalShader; // Generic 2D shader
+	static std::unique_ptr<ShaderProgram> atlasShader; // Texture array shader
 
 	static AtlasManager* currentAtlas;
 	static const AtlasRegion* whiteRegion;

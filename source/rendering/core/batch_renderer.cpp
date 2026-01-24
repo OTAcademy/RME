@@ -15,8 +15,8 @@ std::vector<uint32_t> BatchRenderer::indices;
 GLuint BatchRenderer::currentTextureID = 0;
 GLenum BatchRenderer::currentPrimitiveMode = GL_TRIANGLES;
 
-ShaderProgram* BatchRenderer::externalShader = nullptr;
-ShaderProgram* BatchRenderer::atlasShader = nullptr;
+std::unique_ptr<ShaderProgram> BatchRenderer::externalShader;
+std::unique_ptr<ShaderProgram> BatchRenderer::atlasShader;
 AtlasManager* BatchRenderer::currentAtlas = nullptr;
 bool BatchRenderer::usingAtlas = false;
 
@@ -114,15 +114,7 @@ void BatchRenderer::Init() {
 	InitRenderData();
 
 	// Load external generic shader (formerly legacy)
-	externalShader = newd ShaderProgram();
-	if (!externalShader->Load(vertexShaderSource, fragmentShaderSource)) {
-		spdlog::error("Failed to load BatchRenderer external shader");
-	} else {
-		spdlog::info("BatchRenderer external shader loaded successfully");
-	}
-
-	// Load external generic shader (formerly legacy)
-	externalShader = newd ShaderProgram();
+	externalShader.reset(newd ShaderProgram());
 	if (!externalShader->Load(vertexShaderSource, fragmentShaderSource)) {
 		spdlog::error("Failed to load BatchRenderer external shader");
 	} else {
@@ -130,7 +122,7 @@ void BatchRenderer::Init() {
 	}
 
 	// Load atlas shader
-	atlasShader = newd ShaderProgram();
+	atlasShader.reset(newd ShaderProgram());
 	if (!atlasShader->Load(atlasVertexShaderSource, atlasFragmentShaderSource)) {
 		spdlog::error("Failed to load BatchRenderer atlas shader");
 	} else {
@@ -147,8 +139,8 @@ void BatchRenderer::Shutdown() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
-	delete externalShader;
-	delete atlasShader;
+	externalShader.reset();
+	atlasShader.reset();
 }
 
 void BatchRenderer::InitRenderData() {
