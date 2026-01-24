@@ -32,7 +32,8 @@ DrawingController::DrawingController(MapCanvas* canvas, Editor& editor) :
 	editor(editor),
 	drawing(false),
 	dragging_draw(false),
-	replace_dragging(false) {
+	replace_dragging(false),
+	last_draw_pos(Position(-1, -1, -1)) {
 }
 
 DrawingController::~DrawingController() {
@@ -57,6 +58,7 @@ void DrawingController::HandleClick(const Position& mouse_map_pos, bool shift_do
 					} else {
 						editor.draw(mouse_map_pos, alt_down);
 					}
+					last_draw_pos = mouse_map_pos;
 				} else {
 					PositionVector tilestodraw;
 					PositionVector tilestoborder;
@@ -138,6 +140,7 @@ void DrawingController::HandleClick(const Position& mouse_map_pos, bool shift_do
 						editor.replace_brush = nullptr;
 					}
 				}
+				last_draw_pos = mouse_map_pos;
 
 				if (brush->needBorders()) {
 					PositionVector tilestodraw;
@@ -182,6 +185,11 @@ void DrawingController::HandleClick(const Position& mouse_map_pos, bool shift_do
 }
 
 void DrawingController::HandleDrag(const Position& mouse_map_pos, bool shift_down, bool ctrl_down, bool alt_down) {
+	if (mouse_map_pos == last_draw_pos) {
+		return;
+	}
+	last_draw_pos = mouse_map_pos;
+
 	Brush* brush = g_gui.GetCurrentBrush();
 	if (drawing && brush) {
 		if (brush->isDoodad()) {
@@ -387,6 +395,7 @@ void DrawingController::HandleRelease(const Position& mouse_map_pos, bool shift_
 	dragging_draw = false;
 	replace_dragging = false;
 	editor.replace_brush = nullptr;
+	last_draw_pos = Position(-1, -1, -1); // Reset last_draw_pos here as well, or call Reset()
 }
 
 void DrawingController::HandleWheel(int rotation, bool alt_down, bool ctrl_down) {

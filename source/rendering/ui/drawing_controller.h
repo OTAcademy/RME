@@ -44,6 +44,8 @@ private:
 	bool drawing;
 	bool dragging_draw;
 	bool replace_dragging;
+
+	Position last_draw_pos;
 };
 
 #endif

@@ -1,6 +1,6 @@
 ======================================== 
  RME Windows Build Script 
- Started: sob. 24.01.2026 19:01:41,34 
+ Started: sob. 24.01.2026 23:53:28,31 
 ======================================== 
 [1/3] Configuring CMake... 
 -- Running vcpkg install
@@ -202,91 +202,26 @@ The package wxwidgets provides CMake targets:
     find_package(wxWidgets CONFIG REQUIRED)
     target_link_libraries(main PRIVATE wx::core wx::base)
 
-All requested installations completed successfully in: 1.51 ms
+All requested installations completed successfully in: 1.24 ms
 -- Running vcpkg install - done
 -- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
--- Configuring done (2.3s)
+-- Configuring done (2.1s)
 -- Generating done (0.1s)
 -- Build files have been written to: C:/Users/karol/Documents/GitHub/RME_v2/build
 [2/3] Building Release... 
 Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
 
   Trwa skanowanie źródeł pod kątem zależności modułów...
-  multi_draw_indirect_renderer.cpp
-  ring_buffer.cpp
-  pixel_buffer_object.cpp
-  Trwa kompilowanie…
-  live_socket.cpp
-  live_peer.cpp
-  map.cpp
-  map_menu_handler.cpp
-  pixel_buffer_object.cpp
-  main_toolbar.cpp
-  multi_draw_indirect_renderer.cpp
-  map_popup_menu.cpp
-  ring_buffer.cpp
-  live_tab.cpp
-  live_server.cpp
-  map_status_updater.cpp
-  map_drawer.cpp
-  dialog_helper.cpp
-  main_menubar.cpp
-  map_display.cpp
-  map_layer_drawer.cpp
-  selection_drawer.cpp
-  grid_drawer.cpp
-  tooltip_drawer.cpp
-  drawing_options.cpp
-  live_cursor_drawer.cpp
-  screenshot_controller.cpp
-  editor_sprite_loader.cpp
-  render_view.cpp
-  brush_cursor_drawer.cpp
-  drag_shadow_drawer.cpp
-  brush_overlay_drawer.cpp
-  floor_drawer.cpp
-  sprite_drawer.cpp
-  creature_drawer.cpp
-  item_drawer.cpp
-  marker_drawer.cpp
-  preview_drawer.cpp
-  tile_renderer.cpp
-  game_sprite_loader.cpp
-  minimap_drawer.cpp
-  tile_color_calculator.cpp
-  minimap_renderer.cpp
-  shade_drawer.cpp
-  clipboard_handler.cpp
-  materials.cpp
-  keyboard_handler.cpp
-  minimap_window.cpp
-  map_tab.cpp
-  map_window.cpp
-  brush_selector.cpp
-  popup_action_handler.cpp
-  zoom_controller.cpp
-  navigation_controller.cpp
-  selection_controller.cpp
   drawing_controller.cpp
-  old_properties_window.cpp
-  palette_creature.cpp
-  palette_brushlist.cpp
-  palette_common.cpp
-  palette_house.cpp
-  process_com.cpp
-  palette_waypoints.cpp
-  properties_window.cpp
-  preferences.cpp
-  palette_window.cpp
-  replace_items_window.cpp
-  result_window.cpp
-  selection.cpp
-  settings.cpp
-  tileset_window.cpp
-  wall_brush.cpp
+  map_display.cpp
+  brush_overlay_drawer.cpp
+  Trwa kompilowanie…
+  drawing_controller.cpp
+  map_display.cpp
+  brush_overlay_drawer.cpp
   rme.vcxproj -> C:\Users\karol\Documents\GitHub\RME_v2\build\Release\rme.exe
 ======================================== 
  BUILD SUCCESSFUL 
  Output: C:\Users\karol\Documents\GitHub\RME_v2\build\Release\rme.exe 
- Finished: sob. 24.01.2026 19:02:32,65 
+ Finished: sob. 24.01.2026 23:53:39,31 
 ======================================== 
