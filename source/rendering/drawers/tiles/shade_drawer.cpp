@@ -14,7 +14,6 @@ ShadeDrawer::ShadeDrawer() {
 ShadeDrawer::~ShadeDrawer() {
 }
 
-#include "rendering/drawers/tiles/shade_drawer.h"
 #include "rendering/core/sprite_batch.h"
 #include "rendering/core/graphics.h"
 #include "gui.h"

@@ -10,7 +10,7 @@
 #include "creature.h"
 
 // Forward declarations
-// Forward declarations
+
 class SpriteDrawer;
 class SpriteBatch;
 

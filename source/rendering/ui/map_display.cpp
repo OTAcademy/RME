@@ -155,7 +155,7 @@ MapCanvas::MapCanvas(MapWindow* parent, Editor& editor, int* attriblist) :
 MapCanvas::~MapCanvas() {
 	delete popup_menu;
 	delete animation_timer;
-	delete animation_timer;
+
 	delete drawer;
 }
 

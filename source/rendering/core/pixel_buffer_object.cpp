@@ -1,5 +1,6 @@
 #include "rendering/core/pixel_buffer_object.h"
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <cstring>
 #include <utility>
 
@@ -82,7 +83,7 @@ void* PixelBufferObject::mapWrite() {
 	if (fences_[current_index_]) {
 		GLenum result = fences_[current_index_].clientWait(GL_SYNC_FLUSH_COMMANDS_BIT, 1000000000);
 		if (result == GL_TIMEOUT_EXPIRED || result == GL_WAIT_FAILED) {
-			std::cerr << "PixelBufferObject: Fence wait failed" << std::endl;
+			spdlog::error("PixelBufferObject: Fence wait failed");
 			return nullptr;
 		}
 		fences_[current_index_].reset();

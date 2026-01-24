@@ -1,5 +1,6 @@
 #include "rendering/core/multi_draw_indirect_renderer.h"
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <utility>
 
 MultiDrawIndirectRenderer::MultiDrawIndirectRenderer() {
@@ -49,7 +50,7 @@ bool MultiDrawIndirectRenderer::initialize() {
 	// Create buffer for indirect commands
 	glGenBuffers(1, &command_buffer_);
 	if (command_buffer_ == 0) {
-		std::cerr << "MultiDrawIndirectRenderer: Failed to create command buffer" << std::endl;
+		spdlog::error("MultiDrawIndirectRenderer: Failed to create command buffer");
 		available_ = false;
 		return false;
 	}

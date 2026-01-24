@@ -199,7 +199,7 @@ void ItemDrawer::BlitItem(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 
 	// draw wall hook
 	if (!options.ingame && options.show_hooks && (it.hookSouth || it.hookEast)) {
-		DrawHookIndicator(sprite_batch, draw_x, draw_y, it);
+		DrawHookIndicator(sprite_batch, primitive_renderer, draw_x, draw_y, it);
 	}
 
 	// draw light color indicator
@@ -266,27 +266,26 @@ void ItemDrawer::DrawRawBrush(SpriteBatch& sprite_batch, SpriteDrawer* sprite_dr
 	sprite_drawer->BlitSprite(sprite_batch, screenx, screeny, spr, r, g, b, alpha);
 }
 
-void ItemDrawer::DrawHookIndicator(SpriteBatch& sprite_batch, int x, int y, const ItemType& type) {
-	// glDisable(GL_TEXTURE_2D); handled by DrawQuad
+void ItemDrawer::DrawHookIndicator(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, int x, int y, const ItemType& type) {
 	glm::vec4 color(0.0f, 0.0f, 1.0f, 200.0f / 255.0f);
 
-	if (g_gui.gfx.ensureAtlasManager()) {
-		const AtlasManager& atlas = *g_gui.gfx.getAtlasManager();
-
-		// Simulate triangles with small filled rects or lines
-		// Original drew 2 triangles to form an arrow-like shape?
-		// South Hook: (x-10, y) -> (x+10, y) -> (x+10, y+10) AND (x+10, y) -> (x+20, y+10) -> (x+10, y+10)
-		// Effectively a shape 20x10.
-		// We will draw a small blue rectangle as indicator for now to save complexity.
-		// Or draw lines.
-
-		int size = 8;
-		if (type.hookSouth) {
-			// Center bottom
-			sprite_batch.drawRect((float)(x - size / 2), (float)(y + 10), (float)size, (float)size, color, atlas);
-		} else if (type.hookEast) {
-			// Center right
-			sprite_batch.drawRect((float)(x + 10), (float)(y + size / 2 - 10), (float)size, (float)size, color, atlas);
-		}
+	if (type.hookSouth) {
+		// South Hook: Arrow pointing down/south
+		// Triangle 1: (x, y) -> (x+20, y) -> (x+10, y+10)
+		primitive_renderer.drawTriangle(
+			glm::vec2(x, y),
+			glm::vec2(x + 20, y),
+			glm::vec2(x + 10, y + 10),
+			color
+		);
+	} else if (type.hookEast) {
+		// East Hook: Arrow pointing right/east
+		// Triangle 1: (x, y) -> (x, y+20) -> (x+10, y+10)
+		primitive_renderer.drawTriangle(
+			glm::vec2(x, y),
+			glm::vec2(x, y + 20),
+			glm::vec2(x + 10, y + 10),
+			color
+		);
 	}
 }

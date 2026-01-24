@@ -7,7 +7,7 @@
 class SpriteDrawer;
 class Tile;
 class Waypoint;
-class Waypoint;
+
 class Editor;
 class SpriteBatch;
 

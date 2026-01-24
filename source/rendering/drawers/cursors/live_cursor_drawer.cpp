@@ -1,7 +1,7 @@
 #include "main.h"
 
 #include "rendering/drawers/cursors/live_cursor_drawer.h"
-#include "rendering/drawers/cursors/live_cursor_drawer.h"
+
 #include "rendering/core/sprite_batch.h"
 #include "rendering/core/render_view.h"
 #include "editor.h"

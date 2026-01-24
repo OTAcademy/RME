@@ -1,5 +1,6 @@
 #include "rendering/core/ring_buffer.h"
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <cstring>
 #include <utility>
 
@@ -56,7 +57,7 @@ bool RingBuffer::initialize(size_t element_size, size_t max_elements) {
 	// Create buffer
 	glCreateBuffers(1, &buffer_id_);
 	if (buffer_id_ == 0) {
-		std::cerr << "RingBuffer: Failed to create buffer" << std::endl;
+		spdlog::error("RingBuffer: Failed to create buffer");
 		return false;
 	}
 
@@ -72,7 +73,7 @@ bool RingBuffer::initialize(size_t element_size, size_t max_elements) {
 	mapped_ptr_ = glMapNamedBufferRange(buffer_id_, 0, total_size, map_flags);
 
 	if (!mapped_ptr_) {
-		std::cerr << "RingBuffer: Persistent mapping failed" << std::endl;
+		spdlog::error("RingBuffer: Persistent mapping failed");
 		glDeleteBuffers(1, &buffer_id_);
 		buffer_id_ = 0;
 		return false;
@@ -119,7 +120,7 @@ void* RingBuffer::waitAndMap(size_t count) {
 		); // 1 second timeout
 
 		if (result == GL_TIMEOUT_EXPIRED || result == GL_WAIT_FAILED) {
-			std::cerr << "RingBuffer: Fence wait timeout/failed on section " << current_section_ << std::endl;
+			spdlog::error("RingBuffer: Fence wait timeout/failed on section {}", current_section_);
 			// Return nullptr to avoid UB (writing while GPU reads)
 			return nullptr;
 		}

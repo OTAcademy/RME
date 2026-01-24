@@ -44,10 +44,6 @@ private:
 
 	// Open GL Texture used for lightmap
 	// It is owned by this class and should be released when context is destroyed
-	// Open GL Texture used for lightmap
-	// It is owned by this class and should be released when context is destroyed
-	GLTexture texture;
-	std::vector<uint8_t> buffer;
 
 	std::unique_ptr<ShaderProgram> shader;
 	GLuint vao = 0;

@@ -1,5 +1,6 @@
 #include "main.h"
 #include "rendering/drawers/minimap_drawer.h"
+#include "rendering/core/primitive_renderer.h"
 #include "rendering/ui/map_display.h"
 #include "editor.h"
 #include "map.h"
@@ -12,6 +13,7 @@
 
 MinimapDrawer::MinimapDrawer() :
 	renderer(std::make_unique<MinimapRenderer>()),
+	primitive_renderer(std::make_unique<PrimitiveRenderer>()),
 	last_start_x(0), last_start_y(0) {
 }
 
@@ -43,6 +45,7 @@ void MinimapDrawer::Draw(wxDC& pdc, const wxSize& size, Editor& editor, MapCanva
 	static bool initialized = false;
 	if (!initialized) {
 		if (renderer->initialize()) {
+			primitive_renderer->initialize();
 			initialized = true;
 		}
 	}
@@ -114,10 +117,6 @@ void MinimapDrawer::Draw(wxDC& pdc, const wxSize& size, Editor& editor, MapCanva
 
 		// Draw View Box (Overlay)
 		if (g_settings.getInteger(Config::MINIMAP_VIEW_BOX)) {
-			// We can implement this in GL or stick to basic line drawing if we had a primitive renderer.
-			// Since MinimapDrawer uses its own context, standard PrimitiveRenderer might not be bound?
-			// Let's rely on the fact that we can call gl logic manually for this simple box.
-
 			// Compute box coordinates
 			int screensize_x, screensize_y;
 			int view_scroll_x, view_scroll_y;
@@ -137,13 +136,21 @@ void MinimapDrawer::Draw(wxDC& pdc, const wxSize& size, Editor& editor, MapCanva
 			float w = (float)view_w;
 			float h = (float)view_h;
 
-			// Draw white rectangle
-			// Just use legacy immediate mode for this single debug box to save time creating a VBO.
-			// It's strictly debug/overlay.
-			// Wait, core profile doesn't support glBegin/glEnd.
-			// We skip drawing the box for now or implement a simple line shader.
-			// Actually, let's skip it to ensure stability first.
-			// Or check if we have a simple line drawer.
+			// Draw white rectangle using PrimitiveRenderer
+			primitive_renderer->setProjectionMatrix(projection);
+
+			glm::vec4 color(1.0f, 1.0f, 1.0f, 1.0f);
+
+			// Top
+			primitive_renderer->drawLine(glm::vec2(x, y), glm::vec2(x + w, y), color);
+			// Bottom
+			primitive_renderer->drawLine(glm::vec2(x, y + h), glm::vec2(x + w, y + h), color);
+			// Left
+			primitive_renderer->drawLine(glm::vec2(x, y), glm::vec2(x, y + h), color);
+			// Right
+			primitive_renderer->drawLine(glm::vec2(x + w, y), glm::vec2(x + w, y + h), color);
+
+			primitive_renderer->flush();
 		}
 	}
 }

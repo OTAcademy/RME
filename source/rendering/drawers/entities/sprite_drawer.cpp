@@ -3,10 +3,6 @@
 #include "sprites.h"
 #include "items.h"
 
-#include "rendering/drawers/entities/sprite_drawer.h"
-#include "rendering/core/graphics.h"
-#include "sprites.h"
-#include "items.h"
 #include "gui.h"
 #include <spdlog/spdlog.h>
 #include "rendering/core/sprite_batch.h"

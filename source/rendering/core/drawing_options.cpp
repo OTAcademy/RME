@@ -39,6 +39,7 @@ void DrawingOptions::SetDefault() {
 	hide_items_when_zoomed = true;
 	current_house_id = 0;
 	light_intensity = 1.0f;
+	ambient_light_level = 0.5f;
 	global_light_color = wxColor(128, 128, 128);
 }
 

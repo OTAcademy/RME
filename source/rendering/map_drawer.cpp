@@ -83,7 +83,7 @@ MapDrawer::MapDrawer(MapCanvas* canvas) :
 	brush_overlay_drawer = std::make_unique<BrushOverlayDrawer>();
 	drag_shadow_drawer = std::make_unique<DragShadowDrawer>();
 	preview_drawer = std::make_unique<PreviewDrawer>();
-	preview_drawer = std::make_unique<PreviewDrawer>();
+
 	shade_drawer = std::make_unique<ShadeDrawer>();
 
 	sprite_batch = std::make_unique<SpriteBatch>();

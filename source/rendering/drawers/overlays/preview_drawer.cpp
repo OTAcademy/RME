@@ -88,15 +88,6 @@ void PreviewDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive
 						if (tile->ground) {
 							item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, tile->ground, options, true, r, g, b, 160);
 						}
-
-						// Items
-						for (ItemVector::iterator it = tile->items.begin(); it != tile->items.end(); it++) {
-							if ((*it)->isBorder()) {
-								item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, true, r, g, b, 160);
-							} else {
-								item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, true, r, g, b, 160);
-							}
-						}
 					}
 
 					// Draw items on the tile

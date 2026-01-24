@@ -10,6 +10,7 @@
 
 class Editor;
 class MapCanvas;
+class PrimitiveRenderer;
 
 class MinimapDrawer {
 public:
@@ -29,6 +30,7 @@ public:
 
 private:
 	std::unique_ptr<MinimapRenderer> renderer;
+	std::unique_ptr<PrimitiveRenderer> primitive_renderer;
 	int last_start_x;
 	int last_start_y;
 };
