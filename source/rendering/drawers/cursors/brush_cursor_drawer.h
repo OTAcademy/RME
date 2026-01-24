@@ -4,10 +4,12 @@
 #include <cstdint>
 
 class Brush;
+class SpriteBatch;
+class PrimitiveRenderer;
 
 class BrushCursorDrawer {
 public:
-	void draw(int x, int y, Brush* brush, uint8_t r, uint8_t g, uint8_t b);
+	void draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, int x, int y, Brush* brush, uint8_t r, uint8_t g, uint8_t b);
 };
 
 #endif

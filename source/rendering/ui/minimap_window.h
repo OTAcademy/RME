@@ -18,8 +18,10 @@
 #ifndef RME_MINIMAP_WINDOW_H_
 #define RME_MINIMAP_WINDOW_H_
 
+#include <wx/glcanvas.h>
+
 class MinimapDrawer;
-class MinimapWindow : public wxPanel {
+class MinimapWindow : public wxGLCanvas {
 public:
 	MinimapWindow(wxWindow* parent);
 	virtual ~MinimapWindow();
@@ -37,6 +39,7 @@ public:
 protected:
 	std::unique_ptr<MinimapDrawer> drawer;
 	wxTimer update_timer;
+	wxGLContext* context;
 
 	DECLARE_EVENT_TABLE()
 };

@@ -835,6 +835,12 @@ void GameSprite::TemplateImage::createGLTexture(GLuint unused) {
 		AtlasManager* atlas_mgr = g_gui.gfx.getAtlasManager();
 		if (!atlas_region) {
 			uint8_t* rgba = getRGBAData();
+			if (!rgba) {
+				spdlog::warn("getRGBAData returned null for template sprite_index={} - creating fallback", sprite_index);
+				rgba = newd uint8_t[32 * 32 * 4];
+				memset(rgba, 0, 32 * 32 * 4);
+			}
+
 			if (rgba) {
 				// Use the unique gl_tid as the sprite identifier in the atlas
 				atlas_region = atlas_mgr->addSprite(gl_tid, rgba);
@@ -844,10 +850,9 @@ void GameSprite::TemplateImage::createGLTexture(GLuint unused) {
 					return;
 				}
 				spdlog::warn("Atlas addSprite failed for template sprite_index={}", sprite_index);
-			} else {
-				spdlog::warn("getRGBAData returned null for template sprite_index={}", sprite_index);
 			}
 		} else {
+			// Already in atlas
 			isGLLoaded = true;
 			return;
 		}

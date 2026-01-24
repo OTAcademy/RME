@@ -24,16 +24,19 @@
 #include <wx/glcanvas.h>
 #include "rendering/core/sprite_light.h"
 #include "rendering/core/light_buffer.h"
+#include "rendering/core/sprite_light.h"
+#include "rendering/core/light_buffer.h"
 #include "rendering/core/gl_texture.h"
+#include "rendering/core/shader_program.h"
 
 struct DrawingOptions;
+struct RenderView;
 class TileLocation;
 class LightDrawer {
 public:
 	LightDrawer();
 	~LightDrawer();
-
-	void draw(int map_x, int map_y, int end_x, int end_y, int scroll_x, int scroll_y, bool fog, const LightBuffer& light_buffer, const wxColor& global_color);
+	void draw(const RenderView& view, bool fog, const LightBuffer& light_buffer, const wxColor& global_color);
 
 	void createGLTexture();
 	void unloadGLTexture();
@@ -43,8 +46,16 @@ private:
 
 	// Open GL Texture used for lightmap
 	// It is owned by this class and should be released when context is destroyed
+	// Open GL Texture used for lightmap
+	// It is owned by this class and should be released when context is destroyed
 	GLTexture texture;
 	std::vector<uint8_t> buffer;
+
+	std::unique_ptr<ShaderProgram> shader;
+	GLuint vao = 0;
+	GLuint vbo = 0;
+
+	void initRenderResources();
 };
 
 #endif

@@ -85,6 +85,13 @@ bool TextureAtlas::initialize(int initial_layers) {
 	next_x_ = 0;
 	next_y_ = 0;
 
+	// Initialize PBO
+	pbo_ = std::make_unique<PixelBufferObject>();
+	if (!pbo_->initialize(SPRITE_SIZE * SPRITE_SIZE * 4)) {
+		spdlog::error("TextureAtlas: Failed to initialize PBO");
+		return false;
+	}
+
 	spdlog::info("TextureAtlas created: {}x{} x {} layers, id={}", ATLAS_SIZE, ATLAS_SIZE, initial_layers, texture_id_);
 	return true;
 }
@@ -156,9 +163,32 @@ std::optional<AtlasRegion> TextureAtlas::addSprite(const uint8_t* rgba_data) {
 	int pixel_y = next_y_ * SPRITE_SIZE;
 
 	// Upload sprite data to texture array
-	glBindTexture(GL_TEXTURE_2D_ARRAY, texture_id_);
-	glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, pixel_x, pixel_y, current_layer_, SPRITE_SIZE, SPRITE_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, rgba_data);
-	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+	bool uploaded = false;
+	if (pbo_) {
+		void* ptr = pbo_->mapWrite();
+		if (ptr) {
+			memcpy(ptr, rgba_data, SPRITE_SIZE * SPRITE_SIZE * 4);
+			pbo_->unmap();
+
+			pbo_->bind(); // Binds GL_PIXEL_UNPACK_BUFFER
+
+			glBindTexture(GL_TEXTURE_2D_ARRAY, texture_id_);
+			// Offset is 0 in PBO
+			glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, pixel_x, pixel_y, current_layer_, SPRITE_SIZE, SPRITE_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+
+			pbo_->unbind();
+			pbo_->advance();
+			uploaded = true;
+		}
+	}
+
+	if (!uploaded) {
+		// Fallback synchronously
+		glBindTexture(GL_TEXTURE_2D_ARRAY, texture_id_);
+		glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, pixel_x, pixel_y, current_layer_, SPRITE_SIZE, SPRITE_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, rgba_data);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+	}
 
 	// Calculate UV coordinates with half-texel inset to prevent bleeding
 	const float texel_size = 1.0f / static_cast<float>(ATLAS_SIZE);

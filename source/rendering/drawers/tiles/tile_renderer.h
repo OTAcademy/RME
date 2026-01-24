@@ -17,12 +17,14 @@ class MarkerDrawer;
 class TooltipDrawer;
 struct LightBuffer;
 struct LightBuffer;
+class SpriteBatch;
+class PrimitiveRenderer;
 
 class TileRenderer {
 public:
 	TileRenderer(ItemDrawer* id, SpriteDrawer* sd, CreatureDrawer* cd, FloorDrawer* fd, MarkerDrawer* md, TooltipDrawer* td, Editor* ed);
 
-	void DrawTile(TileLocation* location, const RenderView& view, const DrawingOptions& options, uint32_t current_house_id, std::ostringstream& tooltip_stream);
+	void DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, TileLocation* location, const RenderView& view, const DrawingOptions& options, uint32_t current_house_id, std::ostringstream& tooltip_stream);
 	void AddLight(TileLocation* location, const RenderView& view, const DrawingOptions& options, LightBuffer& light_buffer);
 
 private:

@@ -42,9 +42,14 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/core/minimap_colors.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/shader_program.h
-${CMAKE_CURRENT_LIST_DIR}/rendering/core/batch_renderer.h
-${CMAKE_CURRENT_LIST_DIR}/rendering/core/persistent_buffer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/sprite_batch.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/primitive_renderer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/multi_draw_indirect_renderer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/ring_buffer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/sync_handle.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/sprite_instance.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/texture_atlas.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/pixel_buffer_object.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/atlas_manager.h
 ${CMAKE_CURRENT_LIST_DIR}/ground_brush.h
 ${CMAKE_CURRENT_LIST_DIR}/gui.h
@@ -111,6 +116,7 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/tiles/tile_renderer.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/screen_capture.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/game_sprite_loader.h
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/minimap_drawer.h
+${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/minimap_renderer.h
 
 
 ${CMAKE_CURRENT_LIST_DIR}/map_region.h
@@ -211,9 +217,12 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/core/light_buffer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/editor_sprite.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/shader_program.cpp
-${CMAKE_CURRENT_LIST_DIR}/rendering/core/batch_renderer.cpp
-${CMAKE_CURRENT_LIST_DIR}/rendering/core/persistent_buffer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/sprite_batch.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/primitive_renderer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/multi_draw_indirect_renderer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/ring_buffer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/texture_atlas.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/core/pixel_buffer_object.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/atlas_manager.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/core/text_renderer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/ground_brush.cpp
@@ -276,6 +285,7 @@ ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/tiles/tile_renderer.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/screen_capture.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/io/game_sprite_loader.cpp
 ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/minimap_drawer.cpp
+${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/minimap_renderer.cpp
 
 
 ${CMAKE_CURRENT_LIST_DIR}/map_region.cpp

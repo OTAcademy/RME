@@ -2,6 +2,7 @@
 #define RME_RENDERING_CORE_TEXTURE_ATLAS_H_
 
 #include "main.h"
+#include "rendering/core/pixel_buffer_object.h"
 #include <optional>
 #include <cstdint>
 
@@ -97,6 +98,9 @@ public:
 
 private:
 	bool addLayer();
+
+	// PBO for async uploads
+	std::unique_ptr<PixelBufferObject> pbo_;
 
 	GLuint texture_id_ = 0;
 	int layer_count_ = 0;

@@ -30,6 +30,8 @@ class TooltipDrawer;
 #include "creature.h"
 
 #include "rendering/core/render_view.h"
+#include "rendering/core/sprite_batch.h"
+#include "rendering/core/primitive_renderer.h"
 
 class GridDrawer;
 
@@ -73,6 +75,8 @@ class MapDrawer {
 	std::unique_ptr<PreviewDrawer> preview_drawer;
 	std::unique_ptr<ShadeDrawer> shade_drawer;
 	std::unique_ptr<TileRenderer> tile_renderer;
+	std::unique_ptr<SpriteBatch> sprite_batch;
+	std::unique_ptr<PrimitiveRenderer> primitive_renderer;
 
 protected:
 	std::ostringstream tooltip;
@@ -105,6 +109,13 @@ public:
 
 	DrawingOptions& getOptions() {
 		return options;
+	}
+
+	SpriteBatch* getSpriteBatch() {
+		return sprite_batch.get();
+	}
+	PrimitiveRenderer* getPrimitiveRenderer() {
+		return primitive_renderer.get();
 	}
 
 private:

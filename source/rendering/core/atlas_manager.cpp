@@ -17,6 +17,11 @@ bool AtlasManager::ensureInitialized() {
 	}
 
 	spdlog::info("AtlasManager: Texture array initialized ({}x{}, {} initial layers)", TextureAtlas::ATLAS_SIZE, TextureAtlas::ATLAS_SIZE, INITIAL_LAYERS);
+
+	// Ensure white pixel exists (ID 0xFFFFFFFF)
+	std::vector<uint8_t> white_data(32 * 32 * 4, 255);
+	addSprite(WHITE_PIXEL_ID, white_data.data());
+
 	return true;
 }
 
@@ -63,14 +68,12 @@ const AtlasRegion* AtlasManager::addSprite(uint32_t sprite_id, const uint8_t* rg
 	return ptr;
 }
 
-const AtlasRegion* AtlasManager::getWhitePixel() {
+const AtlasRegion* AtlasManager::getWhitePixel() const {
 	if (sprite_regions_.count(WHITE_PIXEL_ID)) {
 		return sprite_regions_.at(WHITE_PIXEL_ID);
 	}
-
-	// Create 32x32 white texture
-	std::vector<uint8_t> white_data(32 * 32 * 4, 255);
-	return addSprite(WHITE_PIXEL_ID, white_data.data());
+	// Should have been initialized in ensureInitialized()
+	return nullptr;
 }
 
 bool AtlasManager::hasSprite(uint32_t sprite_id) const {

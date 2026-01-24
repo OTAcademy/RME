@@ -24,6 +24,8 @@
 #include "rendering/core/render_view.h"
 #include "rendering/core/drawing_options.h"
 #include "rendering/core/light_buffer.h"
+#include "rendering/core/sprite_batch.h"
+#include "rendering/core/primitive_renderer.h"
 
 MapLayerDrawer::MapLayerDrawer(TileRenderer* tile_renderer, GridDrawer* grid_drawer, Editor* editor) :
 	tile_renderer(tile_renderer),
@@ -34,7 +36,7 @@ MapLayerDrawer::MapLayerDrawer(TileRenderer* tile_renderer, GridDrawer* grid_dra
 MapLayerDrawer::~MapLayerDrawer() {
 }
 
-void MapLayerDrawer::Draw(int map_z, bool live_client, const RenderView& view, const DrawingOptions& options, LightBuffer& light_buffer, std::ostringstream& tooltip) {
+void MapLayerDrawer::Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, int map_z, bool live_client, const RenderView& view, const DrawingOptions& options, LightBuffer& light_buffer, std::ostringstream& tooltip) {
 	int nd_start_x = view.start_x & ~3;
 	int nd_start_y = view.start_y & ~3;
 	int nd_end_x = (view.end_x & ~3) + 4;
@@ -56,7 +58,7 @@ void MapLayerDrawer::Draw(int map_z, bool live_client, const RenderView& view, c
 				for (int map_x = 0; map_x < 4; ++map_x) {
 					for (int map_y = 0; map_y < 4; ++map_y) {
 						TileLocation* location = nd->getTile(map_x, map_y, map_z);
-						tile_renderer->DrawTile(location, view, options, options.current_house_id, tooltip);
+						tile_renderer->DrawTile(sprite_batch, primitive_renderer, location, view, options, options.current_house_id, tooltip);
 						// draw light, but only if not zoomed too far
 						if (location && options.isDrawLight() && view.zoom <= 10.0) {
 							tile_renderer->AddLight(location, view, options, light_buffer);
@@ -69,7 +71,7 @@ void MapLayerDrawer::Draw(int map_z, bool live_client, const RenderView& view, c
 					editor->QueryNode(nd_map_x, nd_map_y, map_z > GROUND_LAYER);
 					nd->setRequested(map_z > GROUND_LAYER, true);
 				}
-				grid_drawer->DrawNodeLoadingPlaceholder(nd_map_x, nd_map_y, view);
+				grid_drawer->DrawNodeLoadingPlaceholder(sprite_batch, nd_map_x, nd_map_y, view);
 			}
 		}
 	}

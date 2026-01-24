@@ -42,7 +42,8 @@
 #include "rendering/ui/tooltip_drawer.h"
 #include "rendering/core/drawing_options.h"
 #include "rendering/core/render_view.h"
-#include "rendering/core/batch_renderer.h"
+#include "rendering/core/sprite_batch.h"
+#include "rendering/core/primitive_renderer.h"
 
 #include "rendering/drawers/overlays/grid_drawer.h"
 #include "rendering/drawers/cursors/live_cursor_drawer.h"
@@ -82,7 +83,11 @@ MapDrawer::MapDrawer(MapCanvas* canvas) :
 	brush_overlay_drawer = std::make_unique<BrushOverlayDrawer>();
 	drag_shadow_drawer = std::make_unique<DragShadowDrawer>();
 	preview_drawer = std::make_unique<PreviewDrawer>();
+	preview_drawer = std::make_unique<PreviewDrawer>();
 	shade_drawer = std::make_unique<ShadeDrawer>();
+
+	sprite_batch = std::make_unique<SpriteBatch>();
+	primitive_renderer = std::make_unique<PrimitiveRenderer>();
 }
 
 MapDrawer::~MapDrawer() {
@@ -108,7 +113,15 @@ void MapDrawer::SetupGL() {
 	sprite_drawer->ResetCache();
 
 	view.SetupGL();
-	BatchRenderer::SetMatrices(view.projectionMatrix, view.viewMatrix);
+
+	// Ensure renderers are initialized (safe to call multiple times if we add a check,
+	// or we assume SetupGL is called once per context init, but checks are safer)
+	static bool renderers_initialized = false;
+	if (!renderers_initialized) {
+		sprite_batch->initialize();
+		primitive_renderer->initialize();
+		renderers_initialized = true;
+	}
 }
 
 void MapDrawer::Release() {
@@ -122,19 +135,37 @@ void MapDrawer::Release() {
 void MapDrawer::Draw() {
 	light_buffer.Clear();
 
-	DrawBackground();
+	// Begin Batches
+	sprite_batch->begin(view.projectionMatrix);
+	primitive_renderer->setProjectionMatrix(view.projectionMatrix);
+
+	DrawBackground(); // Clear screen
 	DrawMap();
+
+	// Flush Map for Light Pass
+	if (g_gui.gfx.ensureAtlasManager()) {
+		sprite_batch->end(*g_gui.gfx.getAtlasManager());
+	}
+	primitive_renderer->flush();
+
 	if (options.isDrawLight()) {
 		DrawLight();
 	}
-	drag_shadow_drawer->draw(this, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options);
-	floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor); // Preserving logic
+
+	// Resume Batch for Overlays
+	sprite_batch->begin(view.projectionMatrix);
+
+	if (drag_shadow_drawer) {
+		drag_shadow_drawer->draw(*sprite_batch, *primitive_renderer, this, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options);
+	}
+	// FloorDrawer is commented out in original?
+	// floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor);
 
 	if (options.boundbox_selection) {
-		selection_drawer->draw(view, canvas, options);
+		selection_drawer->draw(*sprite_batch, view, canvas, options);
 	}
-	live_cursor_drawer->draw(view, editor, options);
-	brush_overlay_drawer->draw(this, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor);
+	live_cursor_drawer->draw(*sprite_batch, view, editor, options);
+	brush_overlay_drawer->draw(*sprite_batch, *primitive_renderer, this, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor);
 
 	if (options.show_grid) {
 		DrawGrid();
@@ -142,9 +173,13 @@ void MapDrawer::Draw() {
 	if (options.show_ingame_box) {
 		DrawIngameBox();
 	}
-	if (options.show_ingame_box) {
-		DrawIngameBox();
+
+	// End Batches and Flush
+	if (g_gui.gfx.ensureAtlasManager()) {
+		sprite_batch->end(*g_gui.gfx.getAtlasManager());
 	}
+	primitive_renderer->flush();
+
 	// Tooltips are now drawn in MapCanvas::OnPaint (UI Pass)
 }
 
@@ -164,7 +199,7 @@ void MapDrawer::DrawMap() {
 
 	for (int map_z = view.start_z; map_z >= view.superend_z; map_z--) {
 		if (map_z == view.end_z && view.start_z != view.end_z) {
-			shade_drawer->draw(view, options);
+			shade_drawer->draw(*sprite_batch, view, options);
 		}
 
 		if (map_z >= view.end_z) {
@@ -175,7 +210,7 @@ void MapDrawer::DrawMap() {
 		// 	glEnable(GL_TEXTURE_2D);
 		// }
 
-		preview_drawer->draw(canvas, view, map_z, options, editor, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), options.current_house_id);
+		preview_drawer->draw(*sprite_batch, *primitive_renderer, canvas, view, map_z, options, editor, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), options.current_house_id);
 
 		--view.start_x;
 		--view.start_y;
@@ -189,11 +224,11 @@ void MapDrawer::DrawMap() {
 }
 
 void MapDrawer::DrawIngameBox() {
-	grid_drawer->DrawIngameBox(view, options);
+	grid_drawer->DrawIngameBox(*sprite_batch, view, options);
 }
 
 void MapDrawer::DrawGrid() {
-	grid_drawer->DrawGrid(view, options);
+	grid_drawer->DrawGrid(*sprite_batch, view, options);
 }
 
 void MapDrawer::DrawTooltips() {
@@ -201,11 +236,11 @@ void MapDrawer::DrawTooltips() {
 }
 
 void MapDrawer::DrawMapLayer(int map_z, bool live_client) {
-	map_layer_drawer->Draw(map_z, live_client, view, options, light_buffer, tooltip);
+	map_layer_drawer->Draw(*sprite_batch, *primitive_renderer, map_z, live_client, view, options, light_buffer, tooltip);
 }
 
 void MapDrawer::DrawLight() {
-	light_drawer->draw(view.start_x, view.start_y, view.end_x, view.end_y, view.view_scroll_x, view.view_scroll_y, options.experimental_fog, light_buffer, options.global_light_color);
+	light_drawer->draw(view, options.experimental_fog, light_buffer, options.global_light_color);
 }
 
 void MapDrawer::TakeScreenshot(uint8_t* screenshot_buffer) {

@@ -17,7 +17,6 @@
 
 #include "rendering/ui/tooltip_drawer.h"
 #include "rendering/core/graphics.h"
-#include "rendering/core/batch_renderer.h"
 #include "rendering/core/text_renderer.h"
 #include <nanovg.h>
 #include "rendering/core/coordinate_mapper.h"

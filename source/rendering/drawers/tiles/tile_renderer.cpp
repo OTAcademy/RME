@@ -1,6 +1,10 @@
 #include "main.h"
 // Force recompile
 #include "rendering/drawers/tiles/tile_renderer.h"
+#include "rendering/core/sprite_batch.h"
+#include "rendering/core/primitive_renderer.h"
+#include "rendering/core/sprite_batch.h"
+#include "rendering/core/primitive_renderer.h"
 
 #include "editor.h"
 #include "tile.h"
@@ -26,7 +30,7 @@ TileRenderer::TileRenderer(ItemDrawer* id, SpriteDrawer* sd, CreatureDrawer* cd,
 	item_drawer(id), sprite_drawer(sd), creature_drawer(cd), floor_drawer(fd), marker_drawer(md), tooltip_drawer(td), editor(ed) {
 }
 
-void TileRenderer::DrawTile(TileLocation* location, const RenderView& view, const DrawingOptions& options, uint32_t current_house_id, std::ostringstream& tooltip_stream) {
+void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, TileLocation* location, const RenderView& view, const DrawingOptions& options, uint32_t current_house_id, std::ostringstream& tooltip_stream) {
 	if (!location) {
 		return;
 	}
@@ -73,9 +77,9 @@ void TileRenderer::DrawTile(TileLocation* location, const RenderView& view, cons
 	if (only_colors) {
 		if (as_minimap) {
 			TileColorCalculator::GetMinimapColor(tile, r, g, b);
-			sprite_drawer->glBlitSquare(draw_x, draw_y, r, g, b, 255);
+			sprite_drawer->glBlitSquare(sprite_batch, draw_x, draw_y, r, g, b, 255);
 		} else if (r != 255 || g != 255 || b != 255) {
-			sprite_drawer->glBlitSquare(draw_x, draw_y, r, g, b, 128);
+			sprite_drawer->glBlitSquare(sprite_batch, draw_x, draw_y, r, g, b, 128);
 		}
 	} else {
 		if (tile->ground) {
@@ -83,10 +87,10 @@ void TileRenderer::DrawTile(TileLocation* location, const RenderView& view, cons
 				tile->ground->animate();
 			}
 
-			item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, tile, tile->ground, options, false, r, g, b);
+			item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, tile->ground, options, false, r, g, b);
 		} else if (options.always_show_zones && (r != 255 || g != 255 || b != 255)) {
 			ItemType* zoneItem = &g_items[SPRITE_ZONE];
-			item_drawer->DrawRawBrush(sprite_drawer, draw_x, draw_y, zoneItem, r, g, b, 60);
+			item_drawer->DrawRawBrush(sprite_batch, sprite_drawer, draw_x, draw_y, zoneItem, r, g, b, 60);
 		}
 	}
 
@@ -112,7 +116,7 @@ void TileRenderer::DrawTile(TileLocation* location, const RenderView& view, cons
 
 				// item sprite
 				if ((*it)->isBorder()) {
-					item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, false, r, g, b);
+					item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, false, r, g, b);
 				} else {
 					uint8_t ir = 255, ig = 255, ib = 255;
 
@@ -124,18 +128,18 @@ void TileRenderer::DrawTile(TileLocation* location, const RenderView& view, cons
 							ig /= 2;
 						}
 					}
-					item_drawer->BlitItem(sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, false, ir, ig, ib);
+					item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, false, ir, ig, ib);
 				}
 			}
 			// monster/npc on tile
 			if (tile->creature && options.show_creatures) {
-				creature_drawer->BlitCreature(sprite_drawer, draw_x, draw_y, tile->creature);
+				creature_drawer->BlitCreature(sprite_batch, sprite_drawer, draw_x, draw_y, tile->creature);
 			}
 		}
 
 		if (view.zoom < 10.0) {
 			// markers (waypoint, house exit, town temple, spawn)
-			marker_drawer->draw(sprite_drawer, draw_x, draw_y, tile, waypoint, current_house_id, *editor, options);
+			marker_drawer->draw(sprite_batch, sprite_drawer, draw_x, draw_y, tile, waypoint, current_house_id, *editor, options);
 
 			// tooltips
 			if (options.show_tooltips) {

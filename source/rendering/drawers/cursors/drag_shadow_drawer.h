@@ -12,13 +12,15 @@ struct DrawingOptions;
 class ItemDrawer;
 class SpriteDrawer;
 class CreatureDrawer;
+class SpriteBatch;
+class PrimitiveRenderer;
 
 class DragShadowDrawer {
 public:
 	DragShadowDrawer();
 	~DragShadowDrawer();
 
-	void draw(MapDrawer* drawer, ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, const RenderView& view, const DrawingOptions& options);
+	void draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, MapDrawer* drawer, ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, const RenderView& view, const DrawingOptions& options);
 };
 
 #endif
