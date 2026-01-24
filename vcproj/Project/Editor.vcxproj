@@ -344,6 +344,7 @@
     <ClInclude Include="..\..\source\map_display.h" />
     <ClCompile Include="..\..\source\map_display.cpp" />
     <ClInclude Include="..\..\source\map_drawer.h" />
+    <ClInclude Include="..\..\source\map_overlay.h" />
     <ClCompile Include="..\..\source\map_drawer.cpp" />
     <ClInclude Include="..\..\source\map_window.h" />
     <ClCompile Include="..\..\source\map_window.cpp" />
@@ -422,6 +423,46 @@
     <ClCompile Include="..\..\source\waypoint_brush.cpp" />
     <ClInclude Include="..\..\source\find_item_window.h" />
     <ClInclude Include="..\..\source\welcome_dialog.h" />
+    <ClCompile Include="..\..\source\lua\lua_api.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_app.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_position.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_item.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_tile.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_map.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_selection.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_dialog.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_color.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_creature.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_brush.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_image.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_json.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_http.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_noise.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_algo.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_api_geo.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_scripts_window.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_engine.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_script.cpp" />
+    <ClCompile Include="..\..\source\lua\lua_script_manager.cpp" />
+    <ClInclude Include="..\..\source\lua\lua_api.h" />
+    <ClInclude Include="..\..\source\lua\lua_api_app.h" />
+    <ClInclude Include="..\..\source\lua\lua_api_position.h" />
+    <ClInclude Include="..\..\source\lua\lua_api_item.h" />
+    <ClInclude Include="..\..\source\lua\lua_api_tile.h" />
+    <ClInclude Include="..\..\source\lua\lua_api_map.h" />
+    <ClInclude Include="..\..\source\lua\lua_api_selection.h" />
+    <ClInclude Include="..\..\source\lua\lua_dialog.h" />
+    <ClInclude Include="..\..\source\lua\lua_api_color.h" />
+    <ClInclude Include="..\..\source\lua\lua_api_creature.h" />
+    <ClInclude Include="..\..\source\lua\lua_api_brush.h" />
+    <ClInclude Include="..\..\source\lua\lua_api_image.h" />
+    <ClInclude Include="..\..\source\lua\lua_api_json.h" />
+    <ClInclude Include="..\..\source\lua\lua_api_http.h" />
+    <ClInclude Include="..\..\source\lua\lua_engine.h" />
+    <ClInclude Include="..\..\source\lua\lua_script.h" />
+    <ClInclude Include="..\..\source\lua\lua_scripts_window.h" />
+    <ClInclude Include="..\..\source\lua\lua_script_manager.h" />
+
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\mkpch.cpp">

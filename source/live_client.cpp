@@ -51,59 +51,28 @@ bool LiveClient::connect(const std::string& address, uint16_t port) {
 		socket = std::make_shared<boost::asio::ip::tcp::socket>(service);
 	}
 
-	boost::asio::ip::tcp::resolver::query query(address, std::to_string(port));
-	resolver->async_resolve(query, [this](const boost::system::error_code& error, boost::asio::ip::tcp::resolver::iterator endpoint_iterator) -> void {
+	resolver->async_resolve(address, std::to_string(port), [this](const boost::system::error_code& error, boost::asio::ip::tcp::resolver::results_type results) -> void {
 		if (error) {
 			logMessage("Error: " + error.message());
 		} else {
-			tryConnect(endpoint_iterator);
+			tryConnect(results);
 		}
 	});
 
-	/*
-	if(!client->WaitOnConnect(5, 0)) {
-		if(log)
-			log->Disconnect();
-		last_err = "Connection timed out.";
-		client->Destroy();
-		client = nullptr;
-		delete connection;
-		return false;
-	}
-
-	if(!client->IsConnected()) {
-		if(log)
-			log->Disconnect();
-		last_err = "Connection refused by peer.";
-		client->Destroy();
-		client = nullptr;
-		delete connection;
-		return false;
-	}
-
-	if(log)
-		log->Message("Connection established!");
-	*/
 	return true;
 }
 
-void LiveClient::tryConnect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator) {
+void LiveClient::tryConnect(const boost::asio::ip::tcp::resolver::results_type& results) {
 	if (stopped) {
 		return;
 	}
 
-	if (endpoint_iterator == boost::asio::ip::tcp::resolver::iterator()) {
-		return;
-	}
+	logMessage("Connecting to server...");
 
-	logMessage("Joining server " + endpoint_iterator->host_name() + ":" + endpoint_iterator->service_name() + "...");
-
-	boost::asio::async_connect(*socket, endpoint_iterator, [this](boost::system::error_code error, boost::asio::ip::tcp::resolver::iterator endpoint_iterator) -> void {
-		if (!socket->is_open()) {
-			tryConnect(++endpoint_iterator);
-		} else if (error) {
+	boost::asio::async_connect(*socket, results, [this](boost::system::error_code error, const boost::asio::ip::tcp::endpoint& endpoint) -> void {
+		if (error) {
 			if (handleError(error)) {
-				tryConnect(++endpoint_iterator);
+				//
 			} else {
 				wxTheApp->CallAfter([this]() {
 					close();

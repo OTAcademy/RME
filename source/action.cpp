@@ -22,6 +22,7 @@
 #include "map.h"
 #include "editor.h"
 #include "gui.h"
+#include "lua/lua_script_manager.h"
 
 Change::Change() :
 	type(CHANGE_NONE), data(nullptr) {
@@ -141,7 +142,6 @@ size_t Action::memsize() const {
 }
 
 void Action::commit(DirtyList* dirty_list) {
-	editor.selection.start(Selection::INTERNAL);
 	ChangeList::const_iterator it = changes.begin();
 	while (it != changes.end()) {
 		Change* c = *it;
@@ -280,7 +280,6 @@ void Action::commit(DirtyList* dirty_list) {
 		}
 		++it;
 	}
-	editor.selection.finish(Selection::INTERNAL);
 	commited = true;
 }
 
@@ -289,7 +288,6 @@ void Action::undo(DirtyList* dirty_list) {
 		return;
 	}
 
-	editor.selection.start(Selection::INTERNAL);
 	ChangeList::reverse_iterator it = changes.rbegin();
 
 	while (it != changes.rend()) {
@@ -409,7 +407,6 @@ void Action::undo(DirtyList* dirty_list) {
 		}
 		++it;
 	}
-	editor.selection.finish(Selection::INTERNAL);
 	commited = false;
 }
 
@@ -602,6 +599,9 @@ void ActionQueue::addBatch(BatchAction* batch, int stacking_delay) {
 		batch->timestamp = time(nullptr);
 		current++;
 	} while (false);
+
+	// Notify Lua scripts about action change
+	g_luaScripts.emit("actionChange");
 }
 
 void ActionQueue::addAction(Action* action, int stacking_delay) {
@@ -620,6 +620,7 @@ void ActionQueue::undo() {
 		current--;
 		BatchAction* batch = actions[current];
 		batch->undo();
+		g_luaScripts.emit("actionChange");
 	}
 }
 
@@ -628,6 +629,7 @@ void ActionQueue::redo() {
 		BatchAction* batch = actions[current];
 		batch->redo();
 		current++;
+		g_luaScripts.emit("actionChange");
 	}
 }
 

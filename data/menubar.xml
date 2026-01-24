@@ -235,6 +235,14 @@
 	<menu name="Experimental">
 		<item name="Fog in light view" hotkey="" action="EXPERIMENTAL_FOG" help="Apply fog filter to light effect."/>
 	</menu>
+	<menu name="Scripts" special="SCRIPTS">
+		<item name="Script Manager..." action="SCRIPTS_MANAGER" help="Show/hide the Script Manager window."/>
+		<separator/>
+		<item name="Open Scripts Folder" action="SCRIPTS_OPEN_FOLDER" help="Open the scripts folder in file explorer."/>
+		<item name="Reload Scripts" hotkey="Ctrl+Shift+F5" action="SCRIPTS_RELOAD" help="Reload all scripts from disk."/>
+		<separator/>
+		<!-- Scripts are loaded dynamically below this point -->
+	</menu>
 	<menu name="About">
 		<item name="Extensions..." hotkey="F2" action="EXTENSIONS" help=""/>
 		<item name="Goto Website" hotkey="F3" action="GOTO_WEBSITE" help=""/>

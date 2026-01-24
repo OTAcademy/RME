@@ -76,8 +76,13 @@ public:
 		return brushes;
 	}
 
-protected:
 	typedef std::map<uint32_t, AutoBorder*> BorderMap;
+	const BorderMap& getBorders() const {
+		return borders;
+	}
+
+protected:
+	// typedef std::map<uint32_t, AutoBorder*> BorderMap;
 	BrushMap brushes;
 	BorderMap borders;
 

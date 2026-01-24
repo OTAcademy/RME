@@ -1,0 +1,148 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - 'Hotfix*'
+      - 'Release*'
+      - 'Hotfix *'
+      - 'Release *'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            asset_prefix: rme-linux
+          - os: windows-2022
+            asset_prefix: rme-windows
+
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 2
+      LUKKA_RUN_VCPKG_SHA: '734f8130ffe2f02cf855a3a42a2958f01b3fb005'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      # --- Linux Dependencies ---
+      - name: Install Dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential cmake ccache libasio-dev nlohmann-json3-dev \
+            libfmt-dev libboost-system-dev libboost-thread-dev libwxgtk3.2-dev \
+            libglu1-mesa-dev freeglut3-dev libarchive-dev zlib1g-dev \
+            libxmu-dev libxi-dev liblua5.3-dev
+
+      # --- Windows Dependencies ---
+      - name: Get latest CMake (Windows)
+        if: runner.os == 'Windows'
+        uses: lukka/get-cmake@v3.31.6
+
+      - name: Setup vcpkg (Windows)
+        if: runner.os == 'Windows'
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgGitCommitId: ${{ env.LUKKA_RUN_VCPKG_SHA }}
+
+      - name: Install Dependencies via vcpkg (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $deps = @("wxwidgets", "boost-thread", "boost-system", "libarchive", "freeglut", "zlib", "lua", "cpr", "nlohmann-json")
+          & "$env:VCPKG_ROOT/vcpkg" install $deps --triplet x64-windows-static
+
+      # --- Configure ---
+      - name: Configure CMake (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Configure CMake (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cmake -S . -B build -G "Visual Studio 17 2022" -A x64 `
+            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows-static `
+            -DCMAKE_BUILD_TYPE=Release
+
+      # --- Build ---
+      - name: Build
+        run: cmake --build build --config Release --parallel 2
+
+      # --- Package ---
+      - name: Prepare Release Bundle
+        shell: bash
+        run: |
+          mkdir release_package
+
+          # Copy Executable
+          if [ "${{ runner.os }}" == "Windows" ]; then
+             find build -name "rme.exe" -exec cp {} release_package/ \;
+          else
+             find build -name "rme" -exec cp {} release_package/ \;
+             chmod +x release_package/rme
+          fi
+
+          # Copy Resources
+          cp -r data release_package/
+          [ -d "brushes" ] && cp -r brushes release_package/
+          [ -d "icons" ] && cp -r icons release_package/
+          [ -d "extensions" ] && cp -r extensions release_package/
+          [ -d "modules" ] && cp -r modules release_package/
+          [ -d "scripts" ] && cp -r scripts release_package/
+
+          # Copy License/Readme
+          [ -f "LICENSE" ] && cp LICENSE release_package/
+          [ -f "LICENSE.rtf" ] && cp LICENSE.rtf release_package/
+          [ -f "README.md" ] && cp README.md release_package/
+
+      - name: Prepare Source Bundle
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          mkdir source_package
+          [ -d "source" ] && cp -r source source_package/
+          [ -d "vcproj" ] && cp -r vcproj source_package/
+          [ -f "CMakeLists.txt" ] && cp CMakeLists.txt source_package/
+          [ -f "vcpkg.json" ] && cp vcpkg.json source_package/
+          [ -f "LICENSE.rtf" ] && cp LICENSE.rtf source_package/
+          [ -f "README.md" ] && cp README.md source_package/
+
+      - name: Zip Source
+        if: runner.os == 'Windows'
+        uses: thedoctor0/zip-release@0.7.6
+        with:
+          type: zip
+          filename: rme-source-${{ github.ref_name }}.zip
+          path: source_package/
+
+      - name: Zip Release
+        uses: thedoctor0/zip-release@0.7.6
+        with:
+          type: zip
+          filename: ${{ matrix.asset_prefix }}-${{ github.ref_name }}.zip
+          path: release_package/
+
+      # --- Upload ---
+      - name: Upload Release Artifact
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "*.zip"
+          allowUpdates: true
+          replacesArtifacts: true
+          token: ${{ secrets.GITHUB_TOKEN }}

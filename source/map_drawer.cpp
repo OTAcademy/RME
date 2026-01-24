@@ -16,6 +16,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "main.h"
+#include "lua/lua_script_manager.h"
 
 #ifdef __APPLE__
 	#include <GLUT/glut.h>
@@ -205,6 +206,7 @@ void MapDrawer::Draw() {
 	}
 	DrawDraggingShadow();
 	DrawHigherFloors();
+	bool overlayHasTooltips = false;
 	if (options.dragging) {
 		DrawSelectionBox();
 	}
@@ -216,9 +218,211 @@ void MapDrawer::Draw() {
 	if (options.show_ingame_box) {
 		DrawIngameBox();
 	}
-	if (options.show_tooltips) {
+	if (g_luaScripts.isInitialized()) {
+		std::vector<MapOverlayCommand> overlayCommands;
+		g_luaScripts.collectMapOverlayCommands(getViewInfo(), overlayCommands);
+		overlayHasTooltips = drawOverlayCommands(overlayCommands) || overlayHasTooltips;
+
+		const MapOverlayHoverState& hoverState = g_luaScripts.getMapOverlayHover();
+		if (hoverState.valid) {
+			overlayHasTooltips = addOverlayTooltips(hoverState.tooltips) || overlayHasTooltips;
+			overlayHasTooltips = drawOverlayCommands(hoverState.commands) || overlayHasTooltips;
+		}
+	}
+	if (options.show_tooltips || overlayHasTooltips) {
 		DrawTooltips();
 	}
+}
+
+MapViewInfo MapDrawer::getViewInfo() const {
+	MapViewInfo info;
+	info.start_x = start_x;
+	info.start_y = start_y;
+	info.end_x = end_x;
+	info.end_y = end_y;
+	info.floor = floor;
+	info.zoom = zoom;
+	info.view_scroll_x = view_scroll_x;
+	info.view_scroll_y = view_scroll_y;
+	info.tile_size = tile_size;
+	info.screen_width = screensize_x;
+	info.screen_height = screensize_y;
+	return info;
+}
+
+static bool mapToScreen(const MapDrawer* drawer, int map_x, int map_y, int map_z, int& screen_x, int& screen_y) {
+	if (!drawer) {
+		return false;
+	}
+
+	int offset = 0;
+	if (map_z <= GROUND_LAYER) {
+		offset = (GROUND_LAYER - map_z) * TileSize;
+	} else {
+		offset = TileSize * (drawer->getViewInfo().floor - map_z);
+	}
+
+	screen_x = ((map_x * TileSize) - drawer->getViewInfo().view_scroll_x) - offset;
+	screen_y = ((map_y * TileSize) - drawer->getViewInfo().view_scroll_y) - offset;
+	return true;
+}
+
+static void DrawDirectText(int x, int y, const std::string& text, const wxColor& color) {
+	// Drop shadow
+	glColor4ub(0, 0, 0, 255);
+	glRasterPos2i(x + 1, y + 13);
+	for (const char* c = text.c_str(); *c != '\0'; c++) {
+		if (*c != '\n') {
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
+		}
+	}
+
+	// Text
+	glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
+	glRasterPos2i(x, y + 12);
+	for (const char* c = text.c_str(); *c != '\0'; c++) {
+		if (*c != '\n') {
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
+		}
+	}
+}
+
+bool MapDrawer::drawOverlayCommands(const std::vector<MapOverlayCommand>& commands) {
+	bool hasTooltips = false;
+	if (commands.empty()) {
+		return false;
+	}
+
+	int vPort[4];
+	glGetIntegerv(GL_VIEWPORT, vPort);
+
+	glDisable(GL_TEXTURE_2D);
+	for (const auto& cmd : commands) {
+		bool isScreenSpace = cmd.screen_space;
+
+		if (isScreenSpace) {
+			glMatrixMode(GL_PROJECTION);
+			glPushMatrix();
+			glLoadIdentity();
+			glOrtho(0, vPort[2], vPort[3], 0, -1, 1);
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			glLoadIdentity();
+			glTranslatef(0.375f, 0.375f, 0.0f);
+		}
+
+		if (cmd.type == MapOverlayCommand::Type::Rect) {
+			int screen_x = 0;
+			int screen_y = 0;
+			int screen_w = 0;
+			int screen_h = 0;
+
+			if (isScreenSpace) {
+				screen_x = static_cast<int>(cmd.x);
+				screen_y = static_cast<int>(cmd.y);
+				screen_w = static_cast<int>(cmd.w);
+				screen_h = static_cast<int>(cmd.h);
+			} else if (mapToScreen(this, cmd.x, cmd.y, cmd.z, screen_x, screen_y)) {
+				int w_tiles = cmd.w > 0 ? cmd.w : 1;
+				int h_tiles = cmd.h > 0 ? cmd.h : 1;
+				screen_w = w_tiles * TileSize;
+				screen_h = h_tiles * TileSize;
+			} else {
+				if (isScreenSpace) {
+					glMatrixMode(GL_PROJECTION);
+					glPopMatrix();
+					glMatrixMode(GL_MODELVIEW);
+					glPopMatrix();
+				}
+				continue;
+			}
+
+			if (cmd.filled) {
+				drawFilledRect(screen_x, screen_y, screen_w, screen_h, cmd.color);
+			} else {
+				drawRect(screen_x, screen_y, screen_w, screen_h, cmd.color, cmd.width);
+			}
+		} else if (cmd.type == MapOverlayCommand::Type::Line) {
+			int x1 = 0;
+			int y1 = 0;
+			int x2 = 0;
+			int y2 = 0;
+
+			if (isScreenSpace) {
+				x1 = static_cast<int>(cmd.x);
+				y1 = static_cast<int>(cmd.y);
+				x2 = static_cast<int>(cmd.x2);
+				y2 = static_cast<int>(cmd.y2);
+			} else if (mapToScreen(this, cmd.x, cmd.y, cmd.z, x1, y1) && mapToScreen(this, cmd.x2, cmd.y2, cmd.z2, x2, y2)) {
+				// use map coords as-is
+			} else {
+				if (isScreenSpace) {
+					glMatrixMode(GL_PROJECTION);
+					glPopMatrix();
+					glMatrixMode(GL_MODELVIEW);
+					glPopMatrix();
+				}
+				continue;
+			}
+
+			if (cmd.dashed) {
+				glEnable(GL_LINE_STIPPLE);
+				glLineStipple(1, 0x00FF);
+			}
+
+			glLineWidth(cmd.width);
+			glColor4ub(cmd.color.Red(), cmd.color.Green(), cmd.color.Blue(), cmd.color.Alpha());
+			glBegin(GL_LINES);
+			glVertex2f(x1, y1);
+			glVertex2f(x2, y2);
+			glEnd();
+
+			if (cmd.dashed) {
+				glDisable(GL_LINE_STIPPLE);
+			}
+		} else if (cmd.type == MapOverlayCommand::Type::Text) {
+			if (!cmd.text.empty()) {
+				if (isScreenSpace) {
+					int screen_x = static_cast<int>(cmd.x);
+					int screen_y = static_cast<int>(cmd.y);
+					DrawDirectText(screen_x, screen_y, cmd.text, cmd.color);
+				} else {
+					int screen_x = 0;
+					int screen_y = 0;
+					if (mapToScreen(this, cmd.x, cmd.y, cmd.z, screen_x, screen_y)) {
+						MakeTooltip(screen_x, screen_y, cmd.text, cmd.color.Red(), cmd.color.Green(), cmd.color.Blue());
+						hasTooltips = true;
+					}
+				}
+			}
+		}
+
+		if (isScreenSpace) {
+			glMatrixMode(GL_PROJECTION);
+			glPopMatrix();
+			glMatrixMode(GL_MODELVIEW);
+			glPopMatrix();
+		}
+	}
+	glEnable(GL_TEXTURE_2D);
+	return hasTooltips;
+}
+
+bool MapDrawer::addOverlayTooltips(const std::vector<MapOverlayTooltip>& tooltips) {
+	bool hasTooltips = false;
+	for (const auto& tooltip : tooltips) {
+		int screen_x = 0;
+		int screen_y = 0;
+		if (!mapToScreen(this, tooltip.x, tooltip.y, tooltip.z, screen_x, screen_y)) {
+			continue;
+		}
+
+		if (!tooltip.text.empty()) {
+			MakeTooltip(screen_x, screen_y, tooltip.text, tooltip.color.Red(), tooltip.color.Green(), tooltip.color.Blue());
+			hasTooltips = true;
+		}
+	}
+	return hasTooltips;
 }
 
 void MapDrawer::DrawBackground() {

@@ -34,6 +34,7 @@
 #include "doodad_brush.h"
 #include "creature_brush.h"
 #include "spawn_brush.h"
+#include "lua/lua_script_manager.h"
 
 #include "live_server.h"
 #include "live_client.h"
@@ -275,6 +276,8 @@ void Editor::saveMap(FileName filename, bool showdialog) {
 		if (showdialog) {
 			g_gui.DestroyLoadBar();
 		}
+
+		g_luaScripts.emit("mapSave", savefile);
 
 		// Check for errors...
 		if (!success) {

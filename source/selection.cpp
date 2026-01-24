@@ -23,6 +23,7 @@
 #include "item.h"
 #include "editor.h"
 #include "gui.h"
+#include "lua/lua_script_manager.h"
 
 Selection::Selection(Editor& editor) :
 	busy(false),
@@ -222,7 +223,9 @@ void Selection::clear() {
 }
 
 void Selection::start(SessionFlags flags) {
-	if (!(flags & INTERNAL)) {
+	if (flags & INTERNAL) {
+		subsession = editor.actionQueue->createAction(ACTION_SELECT);
+	} else if (!(flags & INTERNAL)) {
 		if (flags & SUBTHREAD) {
 			;
 		} else {
@@ -250,7 +253,13 @@ void Selection::commit() {
 }
 
 void Selection::finish(SessionFlags flags) {
-	if (!(flags & INTERNAL)) {
+	if (flags & INTERNAL) {
+		if (subsession) {
+			subsession->commit(nullptr);
+			delete subsession;
+			subsession = nullptr;
+		}
+	} else if (!(flags & INTERNAL)) {
 		if (flags & SUBTHREAD) {
 			ASSERT(subsession);
 			subsession = nullptr;
@@ -269,6 +278,16 @@ void Selection::finish(SessionFlags flags) {
 		}
 	}
 	busy = false;
+
+	// Update status bar
+	updateSelectionCount();
+
+	// Notify Lua scripts
+	if (!(flags & SUBTHREAD)) {
+		if (g_luaScripts.isInitialized()) {
+			g_luaScripts.emit("selectionChange");
+		}
+	}
 }
 
 void Selection::updateSelectionCount() {

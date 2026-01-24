@@ -18,6 +18,7 @@
 #include "main.h"
 
 #include "gui.h" // loadbar
+#include "lua/lua_script_manager.h"
 
 #include "map.h"
 
@@ -66,6 +67,9 @@ bool Map::open(const std::string file) {
 	wxFileName fn = wxstr(file);
 	filename = fn.GetFullPath().mb_str(wxConvUTF8);
 	name = fn.GetFullName().mb_str(wxConvUTF8);
+
+	name = fn.GetFullName().mb_str(wxConvUTF8);
+	g_luaScripts.emit("mapLoad");
 
 	// convert(getReplacementMapClassic(), true);
 
@@ -405,6 +409,7 @@ bool Map::addSpawn(Tile* tile) {
 			}
 		}
 		spawns.addSpawn(tile);
+		g_luaScripts.emit("spawnChange", "add", tile);
 		return true;
 	}
 	return false;
@@ -434,6 +439,7 @@ void Map::removeSpawn(Tile* tile) {
 	if (tile->spawn) {
 		removeSpawnInternal(tile);
 		spawns.removeSpawn(tile);
+		g_luaScripts.emit("spawnChange", "remove", tile);
 	}
 }
 

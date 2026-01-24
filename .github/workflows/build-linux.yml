@@ -1,4 +1,4 @@
-name: Build RME
+name: Build - Linux
 
 on:
   push:
@@ -33,8 +33,11 @@ jobs:
             freeglut3-dev \
             libarchive-dev \
             zlib1g-dev \
+            libarchive-dev \
+            zlib1g-dev \
             libxmu-dev \
-            libxi-dev
+            libxi-dev \
+            liblua5.3-dev
 
       - name: Setup ccache
         run: |
