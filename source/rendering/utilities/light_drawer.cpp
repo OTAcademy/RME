@@ -156,7 +156,7 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 void LightDrawer::initRenderResources() {
 	// Shader for GPU-based lighting
 	const char* vs = R"(
-		#version 330 core
+		#version 450 core
 		layout (location = 0) in vec2 aPos;
 		layout (location = 1) in vec2 aTexCoord;
 		out vec2 TexCoord;
@@ -174,7 +174,7 @@ void LightDrawer::initRenderResources() {
 	)";
 
 	const char* fs = R"(
-		#version 330 core
+		#version 450 core
 		in vec2 TexCoord;
 		out vec4 FragColor;
 

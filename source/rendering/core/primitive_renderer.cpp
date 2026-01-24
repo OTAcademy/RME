@@ -46,19 +46,18 @@ void PrimitiveRenderer::initialize() {
 	// Allocate buffer
 	glNamedBufferStorage(vbo_, MAX_VERTICES * sizeof(Vertex), nullptr, GL_DYNAMIC_STORAGE_BIT);
 
-	glBindVertexArray(vao_);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+	// DSA setup
+	glVertexArrayVertexBuffer(vao_, 0, vbo_, 0, sizeof(Vertex));
 
 	// Pos
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-	glEnableVertexAttribArray(0);
+	glEnableVertexArrayAttrib(vao_, 0);
+	glVertexArrayAttribFormat(vao_, 0, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, pos));
+	glVertexArrayAttribBinding(vao_, 0, 0);
 
 	// Color
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec2)));
-	glEnableVertexAttribArray(1);
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glEnableVertexArrayAttrib(vao_, 1);
+	glVertexArrayAttribFormat(vao_, 1, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex, color));
+	glVertexArrayAttribBinding(vao_, 1, 0);
 }
 
 void PrimitiveRenderer::shutdown() {

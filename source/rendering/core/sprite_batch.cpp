@@ -131,45 +131,44 @@ bool SpriteBatch::initialize() {
 	glNamedBufferStorage(quad_vbo_, sizeof(quad_vertices), quad_vertices, 0);
 	glNamedBufferStorage(quad_ebo_, sizeof(indices), indices, 0);
 
-	glBindVertexArray(vao_);
-
-	// Bind Quad VBO/EBO
-	glBindBuffer(GL_ARRAY_BUFFER, quad_vbo_);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quad_ebo_);
+	// Bind Quad VBO/EBO to VAO (DSA)
+	glVertexArrayVertexBuffer(vao_, 0, quad_vbo_, 0, 4 * sizeof(float));
+	glVertexArrayElementBuffer(vao_, quad_ebo_);
 
 	// Loc 0: position (vec2)
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	glEnableVertexArrayAttrib(vao_, 0);
+	glVertexArrayAttribFormat(vao_, 0, 2, GL_FLOAT, GL_FALSE, 0);
+	glVertexArrayAttribBinding(vao_, 0, 0);
 
 	// Loc 1: texcoord (vec2)
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	glEnableVertexArrayAttrib(vao_, 1);
+	glVertexArrayAttribFormat(vao_, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float));
+	glVertexArrayAttribBinding(vao_, 1, 0);
 
 	// Bind RingBuffer for instance data
-	glBindBuffer(GL_ARRAY_BUFFER, ring_buffer_.getBufferId());
+	// Bind RingBuffer for instance data to binding point 1 (DSA)
+	glVertexArrayVertexBuffer(vao_, 1, ring_buffer_.getBufferId(), 0, sizeof(SpriteInstance));
+	glVertexArrayBindingDivisor(vao_, 1, 1);
 
 	// Loc 2: rect (vec4) - instance
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(SpriteInstance), (void*)0);
-	glEnableVertexAttribArray(2);
-	glVertexAttribDivisor(2, 1);
+	glEnableVertexArrayAttrib(vao_, 2);
+	glVertexArrayAttribFormat(vao_, 2, 4, GL_FLOAT, GL_FALSE, offsetof(SpriteInstance, x));
+	glVertexArrayAttribBinding(vao_, 2, 1);
 
 	// Loc 3: uv (vec4) - instance
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(SpriteInstance), (void*)16);
-	glEnableVertexAttribArray(3);
-	glVertexAttribDivisor(3, 1);
+	glEnableVertexArrayAttrib(vao_, 3);
+	glVertexArrayAttribFormat(vao_, 3, 4, GL_FLOAT, GL_FALSE, offsetof(SpriteInstance, u_min));
+	glVertexArrayAttribBinding(vao_, 3, 1);
 
 	// Loc 4: tint (vec4) - instance
-	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(SpriteInstance), (void*)32);
-	glEnableVertexAttribArray(4);
-	glVertexAttribDivisor(4, 1);
+	glEnableVertexArrayAttrib(vao_, 4);
+	glVertexArrayAttribFormat(vao_, 4, 4, GL_FLOAT, GL_FALSE, offsetof(SpriteInstance, r));
+	glVertexArrayAttribBinding(vao_, 4, 1);
 
 	// Loc 5: layer (float) - instance
-	glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(SpriteInstance), (void*)48);
-	glEnableVertexAttribArray(5);
-	glVertexAttribDivisor(5, 1);
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glEnableVertexArrayAttrib(vao_, 5);
+	glVertexArrayAttribFormat(vao_, 5, 1, GL_FLOAT, GL_FALSE, offsetof(SpriteInstance, atlas_layer));
+	glVertexArrayAttribBinding(vao_, 5, 1);
 
 	// Initialize MDI
 	if (mdi_renderer_.initialize()) {
@@ -286,12 +285,8 @@ void SpriteBatch::flush(const AtlasManager& atlas_manager) {
 
 		mdi_renderer_.clear();
 
-		// Ensure attributes point to buffer start (baseInstance will handle offset)
-		size_t stride = sizeof(SpriteInstance);
-		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride, (void*)0);
-		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, stride, (void*)16);
-		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, stride, (void*)32);
-		glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, stride, (void*)48);
+		// DSA handles attribute binding, so we don't need to touch glVertexAttribPointer here.
+		// baseInstance in the Indirect command handles the offset into the buffer.
 
 		std::vector<size_t> used_sections;
 		size_t total = pending_sprites_.size();
@@ -370,12 +365,9 @@ void SpriteBatch::flush(const AtlasManager& atlas_manager) {
 
 			size_t offset = ring_buffer_.getCurrentSectionOffset();
 
-			// Fallback: update VAO pointers to section offset
-			size_t stride = sizeof(SpriteInstance);
-			glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride, (void*)(offset + 0));
-			glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, stride, (void*)(offset + 16));
-			glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, stride, (void*)(offset + 32));
-			glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, stride, (void*)(offset + 48));
+			// Fallback: update VAO binding offset (DSA)
+			// Binding point 1 is used for instance data (Attributes 2, 3, 4, 5)
+			glVertexArrayVertexBuffer(vao_, 1, ring_buffer_.getBufferId(), offset, sizeof(SpriteInstance));
 
 			glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, (GLsizei)batch_size);
 
