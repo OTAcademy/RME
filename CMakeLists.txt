@@ -14,11 +14,19 @@ if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE RelWithDebInfo)
 endif()
 
-set(CMAKE_CXX_FLAGS                "-Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-deprecated-declarations -Wno-overloaded-virtual -Wno-strict-aliasing -Wno-sign-compare -Wno-unused-function -Wunused-result")
-set(CMAKE_CXX_FLAGS_DEBUG          "-O0 -g -D__DEBUG__")
-set(CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE        "-O4 -DNDEBUG")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+if(MSVC)
+    set(CMAKE_CXX_FLAGS                "/W3 /D_CRT_SECURE_NO_WARNINGS")
+    set(CMAKE_CXX_FLAGS_DEBUG          "/Od /Zi /D__DEBUG__")
+    set(CMAKE_CXX_FLAGS_MINSIZEREL     "/O1 /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE        "/O2 /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/O2 /Zi")
+else()
+    set(CMAKE_CXX_FLAGS                "-Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-deprecated-declarations -Wno-overloaded-virtual -Wno-strict-aliasing -Wno-sign-compare -Wno-unused-function -Wunused-result")
+    set(CMAKE_CXX_FLAGS_DEBUG          "-O0 -g -D__DEBUG__")
+    set(CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE        "-O4 -DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+endif()
 
 find_package(OpenGL REQUIRED)
 
@@ -39,28 +47,9 @@ find_package(ZLIB REQUIRED)
 
 # Lua scripting support
 find_package(Lua REQUIRED)
-include(FetchContent)
-FetchContent_Declare(
-    sol2
-    GIT_REPOSITORY https://github.com/ThePhD/sol2.git
-    GIT_TAG        v3.3.0
-)
-FetchContent_MakeAvailable(sol2)
-set(SOL2_INCLUDE_DIRS ${sol2_SOURCE_DIR}/include)
-
-FetchContent_Declare(
-    cpr
-    GIT_REPOSITORY https://github.com/libcpr/cpr.git
-    GIT_TAG        1.10.5
-)
-FetchContent_MakeAvailable(cpr)
-
-FetchContent_Declare(
-    json
-    GIT_REPOSITORY https://github.com/nlohmann/json.git
-    GIT_TAG        v3.11.3
-)
-FetchContent_MakeAvailable(json)
+find_package(sol2 CONFIG REQUIRED)
+find_package(cpr CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 include(${wxWidgets_USE_FILE})
 include(source/CMakeLists.txt)
@@ -69,5 +58,5 @@ add_executable(rme ${rme_H} ${rme_SRC})
 set_target_properties(rme PROPERTIES CXX_STANDARD 17)
 set_target_properties(rme PROPERTIES CXX_STANDARD_REQUIRED ON)
 
-include_directories(${CMAKE_SOURCE_DIR}/source ${Boost_INCLUDE_DIRS} ${LibArchive_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${GLUT_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${SOL2_INCLUDE_DIRS})
-target_link_libraries(rme ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} ${LibArchive_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${ZLIB_LIBRARIES} ${LUA_LIBRARIES} cpr::cpr nlohmann_json::nlohmann_json)
+include_directories(${CMAKE_SOURCE_DIR}/source ${Boost_INCLUDE_DIRS} ${LibArchive_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${GLUT_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIR} ${LUA_INCLUDE_DIR})
+target_link_libraries(rme ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} ${LibArchive_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${ZLIB_LIBRARIES} ${LUA_LIBRARIES} cpr::cpr nlohmann_json::nlohmann_json sol2::sol2)
