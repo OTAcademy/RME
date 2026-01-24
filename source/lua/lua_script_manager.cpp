@@ -371,7 +371,7 @@ void LuaScriptManager::collectMapOverlayCommands(const MapViewInfo& view, std::v
 
 		if (opts["image"].valid() && opts["image"].is<LuaAPI::LuaImage>()) {
 			LuaAPI::LuaImage img = opts["image"].get<LuaAPI::LuaImage>();
-			if(img.isSpriteSource()) {
+			if (img.isSpriteSource()) {
 				MapOverlayCommand cmd;
 				cmd.type = MapOverlayCommand::Type::Sprite;
 				cmd.sprite_id = img.getSpriteId();
