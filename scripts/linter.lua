@@ -124,6 +124,11 @@ function TileClass:getPosition() return {x=0,y=0,z=0} end
 ---@field bounds table<string, Position>
 ---@field minPosition Position
 ---@field maxPosition Position
+local SelectionClass = {}
+--- Starts a batched selection operation (improves performance).
+function SelectionClass:start() end
+--- Finishes a batched selection operation and commits changes.
+function SelectionClass:finish() end
 
 ---@class Map
 ---@field name string
@@ -143,8 +148,12 @@ function MapClass:getTile(x, y, z) return nil end
 ---@field editor Editor
 ---@field events Events
 ---@field mapView MapView
+---@field keyboard Keyboard
 ---@field alert fun(message: string)
 ---@field refresh fun()
+---@field copy fun() Copies current selection to clipboard
+---@field cut fun() Cuts current selection to clipboard
+---@field paste fun() Pastes from clipboard
 ---@field transaction fun(name: string, callback: fun())
 ---@field addContextMenu fun(label: string, callback: fun())
 ---@field selectRaw fun(id: number)
@@ -153,6 +162,12 @@ function MapClass:getTile(x, y, z) return nil end
 ---@field yield fun() Yields to process pending UI events (prevents freeze during long operations)
 ---@field sleep fun(milliseconds: number) Sleeps for the given milliseconds (max 10000). Blocks UI.
 app = {}
+
+---@class Keyboard
+---@field isCtrlDown fun(): boolean
+---@field isShiftDown fun(): boolean
+---@field isAltDown fun(): boolean
+local Keyboard = {}
 
 ---@class Events
 ---@field on fun(self: Events, eventName: string, callback: fun()): number
@@ -313,6 +328,8 @@ function DialogClass:layout() end
 ---@field filled? boolean
 ---@field width? number
 ---@field screen? boolean
+---@field style? "solid"|"dotted"|"dashed"
+---@field dashed? boolean
 
 ---@class MapOverlayLineOptions
 ---@field x1 number
@@ -324,6 +341,8 @@ function DialogClass:layout() end
 ---@field color? {r?: number, g?: number, b?: number, a?: number}
 ---@field width? number
 ---@field screen? boolean
+---@field style? "solid"|"dotted"|"dashed"
+---@field dashed? boolean
 
 ---@class MapOverlayTextOptions
 ---@field x number

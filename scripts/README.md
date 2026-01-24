@@ -127,6 +127,7 @@ The `app` table provides access to global editor state and utility functions.
 | `app.apiVersion` | number | The API version number (currently 2). |
 | `app.map` | [Map](#map) | Returns the currently active Map object (or nil). |
 | `app.selection` | [Selection](#selection) | Returns the current Selection object. |
+| `app.keyboard` | [Keyboard](#keyboard) | State of modifier keys. |
 | `app.borders` | table | Table of all available borders. |
 | `app.brush` | [Brush](#brushes) | The currently selected brush. |
 | `app.brushSize` | number | Current brush size (radius). |
@@ -135,6 +136,9 @@ The `app` table provides access to global editor state and utility functions.
 | `app.getDataDirectory()` | function | Returns the absolute path to the data directory. |
 | `app.hasMap()` | function | Returns `true` if a map is currently open. |
 | `app.refresh()` | function | Refreshes the map view. |
+| `app.copy()` | function | Copies current selection to internal clipboard. |
+| `app.cut()` | function | Cuts current selection to internal clipboard. |
+| `app.paste()` | function | Pastes from internal clipboard to current map position. |
 | `app.setClipboard(text)` | function | Sets the system clipboard text. |
 | `app.setCameraPosition(x, y, z)` | function | Moves the camera to the specified map coordinates. |
 | `app.storage(name)` | function | Returns a per-script storage helper (`load/save/clear`) backed by JSON. |
@@ -142,6 +146,15 @@ The `app` table provides access to global editor state and utility functions.
 | `app.events` | [Events](#events) | Access to the event system. |
 | `app.yield()` | function | Yields to process pending UI events. Use in long-running loops to prevent UI freeze. |
 | `app.sleep(ms)` | function | Sleeps for the given milliseconds (max 10000). Blocks the UI thread. |
+
+#### Keyboard
+Access via `app.keyboard`.
+
+| Method | Description |
+| :--- | :--- |
+| `isCtrlDown()` | Returns true if Control key is pressed. |
+| `isShiftDown()` | Returns true if Shift key is pressed. |
+| `isAltDown()` | Returns true if Alt key is pressed. |
 
 #### Events
 The `app.events` object allows scripts to listen for global editor events.
