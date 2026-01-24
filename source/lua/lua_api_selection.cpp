@@ -106,48 +106,55 @@ namespace LuaAPI {
 			"start", [](Selection* sel) {
 				if (sel && !sel->isBusy()) {
 					sel->start(Selection::INTERNAL);
-				}
-			},
+				} },
 			"finish", [](Selection* sel) {
 				if (sel && sel->isBusy()) {
 					sel->finish(Selection::INTERNAL);
-				}
-			},
+				} },
 			"clear", [](Selection* sel) {
 				if (sel) {
 					bool managed = !sel->isBusy();
-					if (managed) sel->start(Selection::INTERNAL);
+					if (managed){ sel->start(Selection::INTERNAL);
+}
 					sel->clear();
-					if (managed) sel->finish(Selection::INTERNAL);
-				}
-			},
+					if (managed){ sel->finish(Selection::INTERNAL);
+}
+				} },
 
 			"add", sol::overload([](Selection* sel, Tile* tile) {
 				if (sel && tile) {
 					bool managed = !sel->isBusy();
-					if (managed) sel->start(Selection::INTERNAL);
+					if (managed){ sel->start(Selection::INTERNAL);
+}
 					sel->add(tile);
-					if (managed) sel->finish(Selection::INTERNAL);
+					if (managed){ sel->finish(Selection::INTERNAL);
+}
 				} }, [](Selection* sel, Tile* tile, Item* item) {
 				if (sel && tile && item) {
 					bool managed = !sel->isBusy();
-					if (managed) sel->start(Selection::INTERNAL);
+					if (managed){ sel->start(Selection::INTERNAL);
+}
 					sel->add(tile, item);
-					if (managed) sel->finish(Selection::INTERNAL);
+					if (managed){ sel->finish(Selection::INTERNAL);
+}
 				} }),
 
 			"remove", sol::overload([](Selection* sel, Tile* tile) {
 				if (sel && tile) {
 					bool managed = !sel->isBusy();
-					if (managed) sel->start(Selection::INTERNAL);
+					if (managed){ sel->start(Selection::INTERNAL);
+}
 					sel->remove(tile);
-					if (managed) sel->finish(Selection::INTERNAL);
+					if (managed){ sel->finish(Selection::INTERNAL);
+}
 				} }, [](Selection* sel, Tile* tile, Item* item) {
 				if (sel && tile && item) {
 					bool managed = !sel->isBusy();
-					if (managed) sel->start(Selection::INTERNAL);
+					if (managed){ sel->start(Selection::INTERNAL);
+}
 					sel->remove(tile, item);
-					if (managed) sel->finish(Selection::INTERNAL);
+					if (managed){ sel->finish(Selection::INTERNAL);
+}
 				} }),
 
 			// String representation
