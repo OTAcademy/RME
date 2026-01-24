@@ -32,9 +32,9 @@
 
 #include "common_windows.h"
 #include "result_window.h"
-#include "minimap_window.h"
+#include "rendering/ui/minimap_window.h"
 #include "palette_window.h"
-#include "map_display.h"
+#include "rendering/ui/map_display.h"
 #include "application.h"
 #include "welcome_dialog.h"
 
@@ -111,7 +111,9 @@ wxGLContext* GUI::GetGLContext(wxGLCanvas* win) {
 		*/
 		OGLContext = new wxGLContext(win, nullptr);
 #else
-		OGLContext = newd wxGLContext(win);
+		wxGLContextAttrs ctxAttrs;
+		ctxAttrs.PlatformDefaults().CoreProfile().MajorVersion(4).MinorVersion(5).EndList();
+		OGLContext = newd wxGLContext(win, nullptr, &ctxAttrs);
 #endif
 	}
 

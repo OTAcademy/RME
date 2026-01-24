@@ -38,12 +38,19 @@ find_package(wxWidgets COMPONENTS html aui gl adv core net base REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(ZLIB REQUIRED)
 
+
 # wxWidgets_USE_FILE is set by vcpkg/system wxWidgets, but empty with Conan
 if(wxWidgets_USE_FILE)
 	include(${wxWidgets_USE_FILE})
 endif()
 
+find_package(glad CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
+find_package(nanovg CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+
 include(source/CMakeLists.txt)
+# WIN32 is required for wxWidgets app entry point (WinMain)
 if(WIN32)
 	add_executable(rme WIN32 ${rme_H} ${rme_SRC})
 else()
@@ -70,6 +77,7 @@ target_include_directories(rme PRIVATE
 	${OPENGL_INCLUDE_DIR}
 	${GLUT_INCLUDE_DIRS}
 	${ZLIB_INCLUDE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/source
 )
 
 # Link other libraries (works with both vcpkg targets and Conan targets)
@@ -98,3 +106,7 @@ else()
 endif()
 
 target_link_libraries(rme PRIVATE ${OPENGL_LIBRARIES})
+target_link_libraries(rme PRIVATE glad::glad)
+target_link_libraries(rme PRIVATE glm::glm)
+target_link_libraries(rme PRIVATE nanovg::nanovg)
+target_link_libraries(rme PRIVATE spdlog::spdlog)

@@ -1,0 +1,57 @@
+#include "main.h"
+
+#ifdef __APPLE__
+	#include <GLUT/glut.h>
+#else
+	#include <GL/glut.h>
+#endif
+
+#include "rendering/drawers/overlays/selection_drawer.h"
+#include "rendering/core/batch_renderer.h"
+#include "rendering/core/render_view.h"
+#include "rendering/core/drawing_options.h"
+#include "rendering/ui/map_display.h"
+
+void SelectionDrawer::draw(const RenderView& view, const MapCanvas* canvas, const DrawingOptions& options) {
+	if (options.ingame) {
+		return;
+	}
+
+	// Draw bounding box
+
+	int last_click_rx = canvas->last_click_abs_x - view.view_scroll_x;
+	int last_click_ry = canvas->last_click_abs_y - view.view_scroll_y;
+	double cursor_rx = canvas->cursor_x * view.zoom;
+	double cursor_ry = canvas->cursor_y * view.zoom;
+
+	double lines[4][4];
+
+	lines[0][0] = last_click_rx;
+	lines[0][1] = last_click_ry;
+	lines[0][2] = cursor_rx;
+	lines[0][3] = last_click_ry;
+
+	lines[1][0] = cursor_rx;
+	lines[1][1] = last_click_ry;
+	lines[1][2] = cursor_rx;
+	lines[1][3] = cursor_ry;
+
+	lines[2][0] = cursor_rx;
+	lines[2][1] = cursor_ry;
+	lines[2][2] = last_click_rx;
+	lines[2][3] = cursor_ry;
+
+	lines[3][0] = last_click_rx;
+	lines[3][1] = cursor_ry;
+	lines[3][2] = last_click_rx;
+	lines[3][3] = last_click_ry;
+
+	// glLineStipple is deprecated in Core 4.5.
+	// We will draw solid lines for now. If stipple is needed, we need a shader solution.
+
+	glm::vec4 color(1.0f, 1.0f, 1.0f, 1.0f);
+
+	for (int i = 0; i < 4; i++) {
+		BatchRenderer::DrawLine(glm::vec2(lines[i][0], lines[i][1]), glm::vec2(lines[i][2], lines[i][3]), color);
+	}
+}

@@ -23,7 +23,7 @@
 #include "sprites.h"
 #include "map_tab.h"
 #include "editor_tabs.h"
-#include "map_display.h"
+#include "rendering/ui/map_display.h"
 
 MapTab::MapTab(MapTabbook* aui, Editor* editor) :
 	EditorTab(),

@@ -22,6 +22,7 @@
 #include <wx/listbook.h>
 #include <wx/collpane.h>
 #include <wx/clrpicker.h>
+#include <wx/spinctrl.h>
 
 class PreferencesWindow : public wxDialog {
 public:
@@ -77,6 +78,11 @@ protected:
 	wxCheckBox* hide_items_when_zoomed_chkbox;
 	wxColourPickerCtrl* cursor_color_pick;
 	wxColourPickerCtrl* cursor_alt_color_pick;
+
+	// FPS Settings
+	wxSpinCtrl* fps_limit_spin;
+	wxCheckBox* show_fps_chkbox;
+
 	/*
 	wxCheckBox* texture_managment_chkbox;
 	wxSpinCtrl* clean_interval_spin;

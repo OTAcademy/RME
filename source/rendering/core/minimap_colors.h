@@ -1,0 +1,109 @@
+//////////////////////////////////////////////////////////////////////
+// This file is part of Remere's Map Editor
+//////////////////////////////////////////////////////////////////////
+// Remere's Map Editor is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Remere's Map Editor is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//////////////////////////////////////////////////////////////////////
+
+#ifndef RME_MINIMAP_COLORS_H_
+#define RME_MINIMAP_COLORS_H_
+
+#include <cstdint>
+
+struct RGBQuad {
+	uint8_t red;
+	uint8_t green;
+	uint8_t blue;
+	uint8_t reserved;
+
+	RGBQuad(uint8_t r, uint8_t g, uint8_t b) :
+		red(r), green(g), blue(b), reserved(0) { }
+
+	operator uint32_t() {
+		return (blue << 0) | (green << 8) | (red << 16);
+	}
+
+	operator bool() {
+		return blue != 0 || red != 0 || green != 0;
+	}
+};
+
+// All 256 minimap colors
+static RGBQuad minimap_color[256] = {
+	RGBQuad(0, 0, 0), RGBQuad(0, 0, 51), RGBQuad(0, 0, 102), RGBQuad(0, 0, 153), // 0
+	RGBQuad(0, 0, 204), RGBQuad(0, 0, 255), RGBQuad(0, 51, 0), RGBQuad(0, 51, 51), // 4
+	RGBQuad(0, 51, 102), RGBQuad(0, 51, 153), RGBQuad(0, 51, 204), RGBQuad(0, 51, 255), // 8
+	RGBQuad(0, 102, 0), RGBQuad(0, 102, 51), RGBQuad(0, 102, 102), RGBQuad(0, 102, 153), // 12
+	RGBQuad(0, 102, 204), RGBQuad(0, 102, 255), RGBQuad(0, 153, 0), RGBQuad(0, 153, 51), // 16
+	RGBQuad(0, 153, 102), RGBQuad(0, 153, 153), RGBQuad(0, 153, 204), RGBQuad(0, 153, 255), // 20
+	RGBQuad(0, 204, 0), RGBQuad(0, 204, 51), RGBQuad(0, 204, 102), RGBQuad(0, 204, 153), // 24
+	RGBQuad(0, 204, 204), RGBQuad(0, 204, 255), RGBQuad(0, 255, 0), RGBQuad(0, 255, 51), // 28
+	RGBQuad(0, 255, 102), RGBQuad(0, 255, 153), RGBQuad(0, 255, 204), RGBQuad(0, 255, 255), // 32
+	RGBQuad(51, 0, 0), RGBQuad(51, 0, 51), RGBQuad(51, 0, 102), RGBQuad(51, 0, 153), // 36
+	RGBQuad(51, 0, 204), RGBQuad(51, 0, 255), RGBQuad(51, 51, 0), RGBQuad(51, 51, 51), // 40
+	RGBQuad(51, 51, 102), RGBQuad(51, 51, 153), RGBQuad(51, 51, 204), RGBQuad(51, 51, 255), // 44
+	RGBQuad(51, 102, 0), RGBQuad(51, 102, 51), RGBQuad(51, 102, 102), RGBQuad(51, 102, 153), // 48
+	RGBQuad(51, 102, 204), RGBQuad(51, 102, 255), RGBQuad(51, 153, 0), RGBQuad(51, 153, 51), // 52
+	RGBQuad(51, 153, 102), RGBQuad(51, 153, 153), RGBQuad(51, 153, 204), RGBQuad(51, 153, 255), // 56
+	RGBQuad(51, 204, 0), RGBQuad(51, 204, 51), RGBQuad(51, 204, 102), RGBQuad(51, 204, 153), // 60
+	RGBQuad(51, 204, 204), RGBQuad(51, 204, 255), RGBQuad(51, 255, 0), RGBQuad(51, 255, 51), // 64
+	RGBQuad(51, 255, 102), RGBQuad(51, 255, 153), RGBQuad(51, 255, 204), RGBQuad(51, 255, 255), // 68
+	RGBQuad(102, 0, 0), RGBQuad(102, 0, 51), RGBQuad(102, 0, 102), RGBQuad(102, 0, 153), // 72
+	RGBQuad(102, 0, 204), RGBQuad(102, 0, 255), RGBQuad(102, 51, 0), RGBQuad(102, 51, 51), // 76
+	RGBQuad(102, 51, 102), RGBQuad(102, 51, 153), RGBQuad(102, 51, 204), RGBQuad(102, 51, 255), // 80
+	RGBQuad(102, 102, 0), RGBQuad(102, 102, 51), RGBQuad(102, 102, 102), RGBQuad(102, 102, 153), // 84
+	RGBQuad(102, 102, 204), RGBQuad(102, 102, 255), RGBQuad(102, 153, 0), RGBQuad(102, 153, 51), // 88
+	RGBQuad(102, 153, 102), RGBQuad(102, 153, 153), RGBQuad(102, 153, 204), RGBQuad(102, 153, 255), // 92
+	RGBQuad(102, 204, 0), RGBQuad(102, 204, 51), RGBQuad(102, 204, 102), RGBQuad(102, 204, 153), // 96
+	RGBQuad(102, 204, 204), RGBQuad(102, 204, 255), RGBQuad(102, 255, 0), RGBQuad(102, 255, 51), // 100
+	RGBQuad(102, 255, 102), RGBQuad(102, 255, 153), RGBQuad(102, 255, 204), RGBQuad(102, 255, 255), // 104
+	RGBQuad(153, 0, 0), RGBQuad(153, 0, 51), RGBQuad(153, 0, 102), RGBQuad(153, 0, 153), // 108
+	RGBQuad(153, 0, 204), RGBQuad(153, 0, 255), RGBQuad(153, 51, 0), RGBQuad(153, 51, 51), // 112
+	RGBQuad(153, 51, 102), RGBQuad(153, 51, 153), RGBQuad(153, 51, 204), RGBQuad(153, 51, 255), // 116
+	RGBQuad(153, 102, 0), RGBQuad(153, 102, 51), RGBQuad(153, 102, 102), RGBQuad(153, 102, 153), // 120
+	RGBQuad(153, 102, 204), RGBQuad(153, 102, 255), RGBQuad(153, 153, 0), RGBQuad(153, 153, 51), // 124
+	RGBQuad(153, 153, 102), RGBQuad(153, 153, 153), RGBQuad(153, 153, 204), RGBQuad(153, 153, 255), // 128
+	RGBQuad(153, 204, 0), RGBQuad(153, 204, 51), RGBQuad(153, 204, 102), RGBQuad(153, 204, 153), // 132
+	RGBQuad(153, 204, 204), RGBQuad(153, 204, 255), RGBQuad(153, 255, 0), RGBQuad(153, 255, 51), // 136
+	RGBQuad(153, 255, 102), RGBQuad(153, 255, 153), RGBQuad(153, 255, 204), RGBQuad(153, 255, 255), // 140
+	RGBQuad(204, 0, 0), RGBQuad(204, 0, 51), RGBQuad(204, 0, 102), RGBQuad(204, 0, 153), // 144
+	RGBQuad(204, 0, 204), RGBQuad(204, 0, 255), RGBQuad(204, 51, 0), RGBQuad(204, 51, 51), // 148
+	RGBQuad(204, 51, 102), RGBQuad(204, 51, 153), RGBQuad(204, 51, 204), RGBQuad(204, 51, 255), // 152
+	RGBQuad(204, 102, 0), RGBQuad(204, 102, 51), RGBQuad(204, 102, 102), RGBQuad(204, 102, 153), // 156
+	RGBQuad(204, 102, 204), RGBQuad(204, 102, 255), RGBQuad(204, 153, 0), RGBQuad(204, 153, 51), // 160
+	RGBQuad(204, 153, 102), RGBQuad(204, 153, 153), RGBQuad(204, 153, 204), RGBQuad(204, 153, 255), // 164
+	RGBQuad(204, 204, 0), RGBQuad(204, 204, 51), RGBQuad(204, 204, 102), RGBQuad(204, 204, 153), // 168
+	RGBQuad(204, 204, 204), RGBQuad(204, 204, 255), RGBQuad(204, 255, 0), RGBQuad(204, 255, 51), // 172
+	RGBQuad(204, 255, 102), RGBQuad(204, 255, 153), RGBQuad(204, 255, 204), RGBQuad(204, 255, 255), // 176
+	RGBQuad(255, 0, 0), RGBQuad(255, 0, 51), RGBQuad(255, 0, 102), RGBQuad(255, 0, 153), // 180
+	RGBQuad(255, 0, 204), RGBQuad(255, 0, 255), RGBQuad(255, 51, 0), RGBQuad(255, 51, 51), // 184
+	RGBQuad(255, 51, 102), RGBQuad(255, 51, 153), RGBQuad(255, 51, 204), RGBQuad(255, 51, 255), // 188
+	RGBQuad(255, 102, 0), RGBQuad(255, 102, 51), RGBQuad(255, 102, 102), RGBQuad(255, 102, 153), // 192
+	RGBQuad(255, 102, 204), RGBQuad(255, 102, 255), RGBQuad(255, 153, 0), RGBQuad(255, 153, 51), // 196
+	RGBQuad(255, 153, 102), RGBQuad(255, 153, 153), RGBQuad(255, 153, 204), RGBQuad(255, 153, 255), // 200
+	RGBQuad(255, 204, 0), RGBQuad(255, 204, 51), RGBQuad(255, 204, 102), RGBQuad(255, 204, 153), // 204
+	RGBQuad(255, 204, 204), RGBQuad(255, 204, 255), RGBQuad(255, 255, 0), RGBQuad(255, 255, 51), // 208
+	RGBQuad(255, 255, 102), RGBQuad(255, 255, 153), RGBQuad(255, 255, 204), RGBQuad(255, 255, 255), // 212
+	RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), // 216
+	RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), // 220
+	RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), // 224
+	RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), // 228
+	RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), // 232
+	RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), // 236
+	RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), // 240
+	RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), // 244
+	RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), // 248
+	RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0), RGBQuad(0, 0, 0) // 252
+};
+
+#endif
