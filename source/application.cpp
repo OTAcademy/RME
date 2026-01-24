@@ -29,6 +29,8 @@
 #include "main_menubar.h"
 #include "updater.h"
 #include "artprovider.h"
+#include <wx/stattext.h>
+#include <wx/slider.h>
 
 #include "materials.h"
 #include "map.h"
@@ -403,6 +405,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	tool_bar = newd MainToolBar(this, g_gui.aui_manager);
 
 	g_gui.aui_manager->AddPane(g_gui.tabbook, wxAuiPaneInfo().CenterPane().Floatable(false).CloseButton(false).PaneBorder(false));
+
 	g_gui.aui_manager->Update();
 
 	UpdateMenubar();

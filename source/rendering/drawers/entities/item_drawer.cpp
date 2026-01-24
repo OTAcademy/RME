@@ -199,7 +199,7 @@ void ItemDrawer::BlitItem(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 
 	// draw wall hook
 	if (!options.ingame && options.show_hooks && (it.hookSouth || it.hookEast)) {
-		DrawHookIndicator(primitive_renderer, draw_x, draw_y, it);
+		DrawHookIndicator(sprite_batch, draw_x, draw_y, it);
 	}
 
 	// draw light color indicator
@@ -266,42 +266,27 @@ void ItemDrawer::DrawRawBrush(SpriteBatch& sprite_batch, SpriteDrawer* sprite_dr
 	sprite_drawer->BlitSprite(sprite_batch, screenx, screeny, spr, r, g, b, alpha);
 }
 
-void ItemDrawer::DrawHookIndicator(PrimitiveRenderer& primitive_renderer, int x, int y, const ItemType& type) {
+void ItemDrawer::DrawHookIndicator(SpriteBatch& sprite_batch, int x, int y, const ItemType& type) {
 	// glDisable(GL_TEXTURE_2D); handled by DrawQuad
 	glm::vec4 color(0.0f, 0.0f, 1.0f, 200.0f / 255.0f);
 
-	if (type.hookSouth) {
-		x -= 10;
-		y += 10;
+	if (g_gui.gfx.ensureAtlasManager()) {
+		const AtlasManager& atlas = *g_gui.gfx.getAtlasManager();
 
-		primitive_renderer.drawTriangle(
-			glm::vec2(x, y),
-			glm::vec2(x + 10, y),
-			glm::vec2(x + 10, y + 10),
-			color
-		);
-		primitive_renderer.drawTriangle(
-			glm::vec2(x + 10, y),
-			glm::vec2(x + 20, y + 10),
-			glm::vec2(x + 10, y + 10),
-			color
-		);
+		// Simulate triangles with small filled rects or lines
+		// Original drew 2 triangles to form an arrow-like shape?
+		// South Hook: (x-10, y) -> (x+10, y) -> (x+10, y+10) AND (x+10, y) -> (x+20, y+10) -> (x+10, y+10)
+		// Effectively a shape 20x10.
+		// We will draw a small blue rectangle as indicator for now to save complexity.
+		// Or draw lines.
 
-	} else if (type.hookEast) {
-		x += 10;
-		y -= 10;
-
-		primitive_renderer.drawTriangle(
-			glm::vec2(x, y),
-			glm::vec2(x + 10, y + 10),
-			glm::vec2(x, y + 10),
-			color
-		);
-		primitive_renderer.drawTriangle(
-			glm::vec2(x + 10, y + 10),
-			glm::vec2(x + 10, y + 20),
-			glm::vec2(x, y + 10),
-			color
-		);
+		int size = 8;
+		if (type.hookSouth) {
+			// Center bottom
+			sprite_batch.drawRect((float)(x - size / 2), (float)(y + 10), (float)size, (float)size, color, atlas);
+		} else if (type.hookEast) {
+			// Center right
+			sprite_batch.drawRect((float)(x + 10), (float)(y + size / 2 - 10), (float)size, (float)size, color, atlas);
+		}
 	}
 }

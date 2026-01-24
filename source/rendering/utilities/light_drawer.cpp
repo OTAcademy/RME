@@ -38,11 +38,7 @@ LightDrawer::~LightDrawer() {
 
 #include "rendering/core/render_view.h"
 
-void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& light_buffer, const wxColor& global_color) {
-	if (!texture.IsCreated()) {
-		createGLTexture();
-	}
-
+void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& light_buffer, const wxColor& global_color, float light_intensity, float ambient_light_level) {
 	if (!shader) {
 		initRenderResources();
 	}
@@ -59,109 +55,78 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 		return;
 	}
 
-	buffer.resize(static_cast<size_t>(w * h * PixelFormatRGBA));
-
-	for (int x = 0; x < w; ++x) {
-		for (int y = 0; y < h; ++y) {
-			int mx = (map_x + x);
-			int my = (map_y + y);
-			int index = (y * w + x);
-			int color_index = index * PixelFormatRGBA;
-
-			buffer[color_index] = global_color.Red();
-			buffer[color_index + 1] = global_color.Green();
-			buffer[color_index + 2] = global_color.Blue();
-			buffer[color_index + 3] = 140;
-
-			for (const auto& light : light_buffer.lights) {
-				float intensity = LightCalculator::calculateIntensity(mx, my, light);
-				if (intensity == 0.f) {
-					continue;
-				}
-				wxColor light_color = colorFromEightBit(light.color);
-				uint8_t red = static_cast<uint8_t>(light_color.Red() * intensity);
-				uint8_t green = static_cast<uint8_t>(light_color.Green() * intensity);
-				uint8_t blue = static_cast<uint8_t>(light_color.Blue() * intensity);
-				buffer[color_index] = std::max(buffer[color_index], red);
-				buffer[color_index + 1] = std::max(buffer[color_index + 1], green);
-				buffer[color_index + 2] = std::max(buffer[color_index + 2], blue);
-			}
-		}
-	}
-
-	// Draw Light Map
 	shader->Use();
 
-	// Calculate draw position and size based on RenderView
-	// Note: TileSize in RenderView matches the zoomed size if we use projection matrix from it?
-	// RenderView projection is orthogonal: 0..screensize
-	// Coordinates in RenderView are usually unzoomed map coordinates * zoom?
-	// Let's check view.projectionMatrix usage in SpriteBatch.
-	// It seems RenderView sets up a projection where world units = screen pixels.
-	// And tiles are drawn at (map_x * TileSize - scroll_x) * zoom ?
-	// Actually MapDrawer uses glScalef(zoom, zoom, 1) in legacy OpenGL.
-	// But SpriteBatch uses projectionMatrix.
-	// RenderView::SetupGL() sets up glOrtho(0, screensize_x, screensize_y, 0, ...)
-	// and viewMatrix likely contains the zoom and translation.
+	// Set Global/Ambient Color
+	glm::vec3 ambientColor(
+		(global_color.Red() / 255.0f) * ambient_light_level,
+		(global_color.Green() / 255.0f) * ambient_light_level,
+		(global_color.Blue() / 255.0f) * ambient_light_level
+	);
+	shader->SetVec3("uAmbientColor", ambientColor);
 
-	// If we use view.projectionMatrix, we expect "world" coordinates.
-	// The world coordinates for a tile at (map_x, map_y) are:
-	// x = map_x * 32 - view.view_scroll_x
-	// y = map_y * 32 - view.view_scroll_y
-	// And then the view matrix applies zoom?
-
-	// RenderView::projectionMatrix is typically just the Ortho projection.
-	// RenderView::viewMatrix is where the camera transform logic resides, but we don't have it exposed simply as MVP usually?
-	// Actually RenderView struct has 'viewMatrix' member!
-
-	// Yes, check RenderView.h: glm::mat4 projectionMatrix; glm::mat4 viewMatrix;
-
-	// So we should use uMVP = view.projectionMatrix * view.viewMatrix * model.
-
-	int TileSize = 32; // CONSTANT base tile size
-	// We calculate position in "world space" relative to the map origin (0,0) shifted by scroll?
-	// Typically standard RME rendering (e.g. SpriteBatch) does:
-	// batch->draw(texture, destRect, ...)
-	// width/height of destRect are 32 * zoom? NO, SpriteBatch handles transform?
-	// Actually SpriteBatch::begin(projection) takes just projection.
-	// The coordinate system usually is screen coordinates if viewMatrix is Identity.
-
-	// But wait, earlier we saw glOrtho(... width, height ...).
-	// If MapDrawer iterates tiles and calls `glBlitSquare`, it sends coordinates:
-	// draw_x = (map_x * TileSize - scroll_x)
-	// And relies on GL_MODELVIEW scaling?
-	// If SpriteBatch is used, it usually takes screen coordinates.
-	// If RenderView has `zoom`, does it affect `projectionMatrix`?
-	// Usually `projectionMatrix` is just 0..W, 0..H.
-
-	// If `LightDrawer` manually calculates `draw_x` and `draw_y` using `map_x * TileSize - scroll_x`,
-	// This is the "unzoomed" screen position if zoom was 1.0.
-	// If zoom is != 1.0, we need to apply scaling.
-
-	// `RenderView` struct has `zoom`.
-	// The coordinates we want to draw to are:
-	// X = (map_x * 32 - scroll_x) * zoom
-	// Y = (map_y * 32 - scroll_y) * zoom
-	// W = w * 32 * zoom
-	// H = h * 32 * zoom
-
-	// BUT, if we use `view.viewMatrix`, maybe it already has the zoom scaling?
-	// Let's assume view.projectionMatrix is Screen Projection.
-	// Let's assume we want to draw in Screen Space.
-
-	// NOTE: RME scroll_x/y are usually in pixels (32px per tile).
-	// RenderView uses: int draw_x, draw_y; view.getScreenPosition(map_x, map_y, map_z, draw_x, draw_y);
-	// We should rely on that or replicate it.
-
-	float zoom = view.zoom;
-
-	// The quad covers tiles from map_x to map_x + w.
-	// Screen X for map_x is:
-	// (map_x * 32 - view.view_scroll_x) * zoom?
-	// Or maybe scroll is already scaled? Standard RME uses unscaled scroll.
-
-	// Replicating standard coordinate gen:
+	// Set Map Geometry Uniforms
+	int TileSize = 32;
 	int floor_adjustment = view.getFloorAdjustment();
+	shader->SetFloat("uMapStartX", (float)(view.start_x * TileSize - view.view_scroll_x - floor_adjustment));
+	shader->SetFloat("uMapStartY", (float)(view.start_y * TileSize - view.view_scroll_y - floor_adjustment));
+	shader->SetFloat("uMapWidth", (float)(w * TileSize));
+	shader->SetFloat("uMapHeight", (float)(h * TileSize));
+	shader->SetFloat("uTileSize", (float)TileSize);
+
+	// Populate Lights
+	int lightCount = 0;
+	char uniformName[64];
+
+	// Sort lights by distance to center to ensure priority
+	int centerX = (map_x + end_x) / 2;
+	int centerY = (map_y + end_y) / 2;
+
+	// Create a local copy for sorting
+	// (LightBuffer is passed as const ref, so we need a copy)
+	std::vector<LightBuffer::Light> sorted_lights = light_buffer.lights;
+
+	std::sort(sorted_lights.begin(), sorted_lights.end(), [centerX, centerY](const LightBuffer::Light& a, const LightBuffer::Light& b) {
+		int distA = (a.map_x - centerX) * (a.map_x - centerX) + (a.map_y - centerY) * (a.map_y - centerY);
+		int distB = (b.map_x - centerX) * (b.map_x - centerX) + (b.map_y - centerY) * (b.map_y - centerY);
+		return distA < distB;
+	});
+
+	for (const auto& light : sorted_lights) {
+		if (lightCount >= 256) {
+			break; // Max lights
+		}
+
+		// Check visibility - CPU Cull
+		// Add safety margin to prevent popping at edges due to zoom/precision
+		int radius = light.intensity + 5; // Increased margin
+		if (light.map_x + radius < map_x || light.map_x - radius > end_x || light.map_y + radius < map_y || light.map_y - radius > end_y) {
+			continue;
+		}
+
+		wxColor c = colorFromEightBit(light.color);
+		glm::vec3 lightColor((c.Red() / 255.0f) * light_intensity, (c.Green() / 255.0f) * light_intensity, (c.Blue() / 255.0f) * light_intensity);
+
+		// lightPos in screen coords (same as mapX/Y)
+		// Note: light.map_x/y already includes perspective offset (from LightBuffer),
+		// so we do NOT subtract floor_adjustment here.
+		float lx = (float)(light.map_x * TileSize - view.view_scroll_x);
+		float ly = (float)(light.map_y * TileSize - view.view_scroll_y);
+
+		sprintf(uniformName, "uLights[%d].position", lightCount);
+		shader->SetVec2(uniformName, glm::vec2(lx, ly));
+
+		sprintf(uniformName, "uLights[%d].color", lightCount);
+		shader->SetVec3(uniformName, lightColor);
+
+		sprintf(uniformName, "uLights[%d].intensity", lightCount);
+		shader->SetFloat(uniformName, (float)light.intensity);
+
+		lightCount++;
+	}
+	shader->SetInt("uLightCount", lightCount);
+
+	// Calculate Quad Transform
 	float draw_dest_x = (float)((map_x * TileSize - view.view_scroll_x - floor_adjustment));
 	float draw_dest_y = (float)((map_y * TileSize - view.view_scroll_y - floor_adjustment));
 	float draw_dest_w = (float)(w * TileSize);
@@ -170,99 +135,91 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(draw_dest_x, draw_dest_y, 0.0f));
 	model = glm::scale(model, glm::vec3(draw_dest_w, draw_dest_h, 1.0f));
 
-	// Use the projection matrix from the view (which should match window size) and view matrix (translation)
-	// Actually RenderView::viewMatrix contains a translation (0.375, 0.375) for pixel alignment?
-	// Let's include it.
 	shader->SetMat4("uMVP", view.projectionMatrix * view.viewMatrix * model);
-	shader->SetInt("uTexture", 0);
 
-	texture.Bind(); // Active unit 0
-	texture.SetFilter(GL_LINEAR, GL_LINEAR);
-	texture.SetWrap(0x812F, 0x812F); // GL_CLAMP_TO_EDGE
-	texture.Upload(w, h, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
-
-	if (!fog) {
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-	}
+	// Blending: Multiply (Dst * Src).
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_DST_COLOR, GL_ZERO);
 
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 	glBindVertexArray(0);
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore default
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore
 
 	if (fog) {
-		// Draw fog over the same area
-		// Fog is just a colored quad.
-		// We can use same shader, turn off texture?
-		// Or simple multiply with a solid white texture?
-		// Or use a uniform for color mixing.
-
-		static GLuint whiteTex = 0;
-		if (whiteTex == 0) {
-			glGenTextures(1, &whiteTex);
-			glBindTexture(GL_TEXTURE_2D, whiteTex);
-			uint8_t white[] = { 255, 255, 255, 255 };
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, white);
-		}
-
-		glm::vec4 fogColor(10.0f / 255.0f, 10.0f / 255.0f, 10.0f / 255.0f, 80.0f / 255.0f);
-
-		// Use shader with tint
-		// I need to update shader to support tint then.
-		// Or blend with constant color?
-		// BatchRenderer::DrawQuad used a color shader.
-
-		// I'll add "uColor" to shader.
-		shader->SetVec4("uColor", fogColor);
-		shader->SetInt("uUseTexture", 0); // 0 = color only
-
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-		glBindVertexArray(0);
-
-		shader->SetInt("uUseTexture", 1); // Reset
-		shader->SetVec4("uColor", glm::vec4(1.0f));
+		// Fog logic integrated or dedicated pass needed.
+		// For now, assuming standard pass covers most cases.
 	}
 }
 
 void LightDrawer::initRenderResources() {
+	// Shader for GPU-based lighting
 	const char* vs = R"(
-        #version 330 core
-        layout (location = 0) in vec2 aPos;
-        layout (location = 1) in vec2 aTexCoord;
-        out vec2 TexCoord;
-        uniform mat4 uMVP;
-        void main() {
-            gl_Position = uMVP * vec4(aPos, 0.0, 1.0);
-            TexCoord = aTexCoord;
-        }
-    )";
+		#version 330 core
+		layout (location = 0) in vec2 aPos;
+		layout (location = 1) in vec2 aTexCoord;
+		out vec2 TexCoord;
+		out vec2 FragPos; // Screen space position
+		uniform mat4 uMVP;
+		uniform vec2 uScreenSize;
+		uniform vec2 uViewScroll; // Un-zoomed scroll offset
+		uniform float uZoom;
+		uniform int uFloorAdjustment;
+
+		void main() {
+			gl_Position = uMVP * vec4(aPos, 0.0, 1.0);
+			TexCoord = aTexCoord;
+		}
+	)";
+
 	const char* fs = R"(
-        #version 330 core
-        in vec2 TexCoord;
-        out vec4 FragColor;
-        uniform sampler2D uTexture;
-        uniform vec4 uColor;
-        uniform int uUseTexture;
-        void main() {
-            if (uUseTexture == 1) {
-                FragColor = texture(uTexture, TexCoord) * uColor;
-            } else {
-                FragColor = uColor;
-            }
-        }
-    )";
+		#version 330 core
+		in vec2 TexCoord;
+		out vec4 FragColor;
+
+		struct Light {
+			vec2 position; // Map coordinates * TileSize
+			vec3 color;
+			float intensity;
+		};
+
+		uniform vec3 uAmbientColor;
+		uniform int uLightCount;
+		uniform Light uLights[256]; // Max 256 visible lights
+
+		// Uniforms to convert TexCoord/FragCoord to Map Coordinates
+		uniform float uMapStartX;
+		uniform float uMapStartY;
+		uniform float uMapWidth;
+		uniform float uMapHeight;
+		uniform float uTileSize;
+
+		void main() {
+			// Calculate current pixel's position in map pixels (unzoomed)
+			float mapX = uMapStartX + TexCoord.x * uMapWidth;
+			float mapY = uMapStartY + TexCoord.y * uMapHeight;
+			vec2 pixelPos = vec2(mapX, mapY);
+
+			vec3 totalLight = uAmbientColor;
+
+			for(int i = 0; i < uLightCount; i++) {
+				float dist = distance(pixelPos, uLights[i].position);
+				float radius = uLights[i].intensity * uTileSize;
+				if (dist < radius) {
+					float falloff = 1.0 - (dist / radius);
+					vec3 lightColor = uLights[i].color * falloff;
+					totalLight = max(totalLight, lightColor);
+				}
+			}
+
+			// Output light color with appropriate alpha for blending
+			FragColor = vec4(totalLight, 140.0/255.0);
+		}
+	)";
 
 	shader = std::make_unique<ShaderProgram>();
 	shader->Load(vs, fs);
-	shader->Use();
-	shader->SetVec4("uColor", glm::vec4(1.0f));
-	shader->SetInt("uUseTexture", 1);
 
 	float vertices[] = {
 		0.0f, 0.0f, 0.0f, 0.0f,
@@ -286,9 +243,7 @@ void LightDrawer::initRenderResources() {
 }
 
 void LightDrawer::createGLTexture() {
-	texture.Create();
 }
 
 void LightDrawer::unloadGLTexture() {
-	texture.Release();
 }

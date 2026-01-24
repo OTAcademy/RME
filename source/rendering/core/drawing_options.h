@@ -51,6 +51,8 @@ struct DrawingOptions {
 
 	uint32_t current_house_id;
 	wxColor global_light_color;
+	float light_intensity;
+	float ambient_light_level;
 };
 
 #endif

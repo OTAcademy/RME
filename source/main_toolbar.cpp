@@ -30,6 +30,7 @@ const wxString MainToolBar::STANDARD_BAR_NAME = "standard_toolbar";
 const wxString MainToolBar::BRUSHES_BAR_NAME = "brushes_toolbar";
 const wxString MainToolBar::POSITION_BAR_NAME = "position_toolbar";
 const wxString MainToolBar::SIZES_BAR_NAME = "sizes_toolbar";
+const wxString MainToolBar::LIGHT_BAR_NAME = "light_toolbar";
 
 #define loadPNGFile(name) _wxGetBitmapFromMemory(name, sizeof(name))
 inline wxBitmap* _wxGetBitmapFromMemory(const unsigned char* data, int length) {
@@ -156,6 +157,26 @@ MainToolBar::MainToolBar(wxWindow* parent, wxAuiManager* manager) {
 	manager->AddPane(position_toolbar, wxAuiPaneInfo().Name(POSITION_BAR_NAME).ToolbarPane().Top().Row(1).Position(4).Floatable(false));
 	manager->AddPane(sizes_toolbar, wxAuiPaneInfo().Name(SIZES_BAR_NAME).ToolbarPane().Top().Row(1).Position(3).Floatable(false));
 
+	light_toolbar = newd wxAuiToolBar(parent, TOOLBAR_LIGHT, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE | wxAUI_TB_HORZ_TEXT);
+	light_toolbar->SetToolBitmapSize(icon_size);
+
+	wxStaticText* intensity_label = newd wxStaticText(light_toolbar, wxID_ANY, "Intensity:");
+	light_slider = newd wxSlider(light_toolbar, ID_LIGHT_INTENSITY_SLIDER, 100, 0, 200, wxDefaultPosition, parent->FromDIP(wxSize(100, 20)));
+	light_slider->SetToolTip("Global Light Intensity");
+
+	wxStaticText* ambient_label = newd wxStaticText(light_toolbar, wxID_ANY, "Ambient:");
+	ambient_slider = newd wxSlider(light_toolbar, ID_AMBIENT_LIGHT_SLIDER, 50, 0, 100, wxDefaultPosition, parent->FromDIP(wxSize(100, 20)));
+	ambient_slider->SetToolTip("Ambient Light Level");
+
+	light_toolbar->AddControl(intensity_label);
+	light_toolbar->AddControl(light_slider);
+	light_toolbar->AddSeparator();
+	light_toolbar->AddControl(ambient_label);
+	light_toolbar->AddControl(ambient_slider);
+
+	light_toolbar->Realize();
+	manager->AddPane(light_toolbar, wxAuiPaneInfo().Name(LIGHT_BAR_NAME).ToolbarPane().Top().Row(1).Position(5).Floatable(false));
+
 	standard_toolbar->Bind(wxEVT_COMMAND_MENU_SELECTED, &MainToolBar::OnStandardButtonClick, this);
 	brushes_toolbar->Bind(wxEVT_COMMAND_MENU_SELECTED, &MainToolBar::OnBrushesButtonClick, this);
 	x_control->Bind(wxEVT_TEXT_PASTE, &MainToolBar::OnPastePositionText, this);
@@ -166,6 +187,8 @@ MainToolBar::MainToolBar(wxWindow* parent, wxAuiManager* manager) {
 	z_control->Bind(wxEVT_KEY_UP, &MainToolBar::OnPositionKeyUp, this);
 	go_button->Bind(wxEVT_BUTTON, &MainToolBar::OnPositionButtonClick, this);
 	sizes_toolbar->Bind(wxEVT_COMMAND_MENU_SELECTED, &MainToolBar::OnSizesButtonClick, this);
+	light_slider->Bind(wxEVT_SLIDER, &MainToolBar::OnLightSlider, this);
+	ambient_slider->Bind(wxEVT_SLIDER, &MainToolBar::OnAmbientLightSlider, this);
 
 	HideAll();
 }
@@ -181,6 +204,8 @@ MainToolBar::~MainToolBar() {
 	z_control->Unbind(wxEVT_KEY_UP, &MainToolBar::OnPositionKeyUp, this);
 	go_button->Unbind(wxEVT_BUTTON, &MainToolBar::OnPositionButtonClick, this);
 	sizes_toolbar->Unbind(wxEVT_COMMAND_MENU_SELECTED, &MainToolBar::OnSizesButtonClick, this);
+	light_slider->Unbind(wxEVT_SLIDER, &MainToolBar::OnLightSlider, this);
+	ambient_slider->Unbind(wxEVT_SLIDER, &MainToolBar::OnAmbientLightSlider, this);
 }
 
 void MainToolBar::UpdateButtons() {
@@ -603,7 +628,18 @@ wxAuiPaneInfo& MainToolBar::GetPane(ToolBarID id) {
 			return manager->GetPane(POSITION_BAR_NAME);
 		case TOOLBAR_SIZES:
 			return manager->GetPane(SIZES_BAR_NAME);
+		case TOOLBAR_LIGHT:
+			return manager->GetPane(LIGHT_BAR_NAME);
 		default:
 			return wxAuiNullPaneInfo;
 	}
+}
+void MainToolBar::OnLightSlider(wxCommandEvent& event) {
+	g_gui.SetLightIntensity(event.GetInt() / 100.0f);
+	g_gui.RefreshView();
+}
+
+void MainToolBar::OnAmbientLightSlider(wxCommandEvent& event) {
+	g_gui.SetAmbientLightLevel(event.GetInt() / 100.0f);
+	g_gui.RefreshView();
 }

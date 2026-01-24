@@ -24,8 +24,6 @@
 #include <wx/glcanvas.h>
 #include "rendering/core/sprite_light.h"
 #include "rendering/core/light_buffer.h"
-#include "rendering/core/sprite_light.h"
-#include "rendering/core/light_buffer.h"
 #include "rendering/core/gl_texture.h"
 #include "rendering/core/shader_program.h"
 
@@ -36,7 +34,7 @@ class LightDrawer {
 public:
 	LightDrawer();
 	~LightDrawer();
-	void draw(const RenderView& view, bool fog, const LightBuffer& light_buffer, const wxColor& global_color);
+	void draw(const RenderView& view, bool fog, const LightBuffer& light_buffer, const wxColor& global_color, float light_intensity = 1.0f, float ambient_light_level = 0.5f);
 
 	void createGLTexture();
 	void unloadGLTexture();

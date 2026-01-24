@@ -262,6 +262,20 @@ public:
 	void SetSpawnTime(int time) {
 		creature_spawntime = time;
 	}
+
+	void SetLightIntensity(float v) {
+		light_intensity = v;
+	}
+	float GetLightIntensity() const {
+		return light_intensity;
+	}
+
+	void SetAmbientLightLevel(float v) {
+		ambient_light_level = v;
+	}
+	float GetAmbientLightLevel() const {
+		return ambient_light_level;
+	}
 	void SetBrushSize(int nz);
 	void SetBrushSizeInternal(int nz);
 	void SetBrushShape(BrushShape bs);
@@ -458,6 +472,8 @@ protected:
 	bool draw_locked_doors;
 	bool use_custom_thickness;
 	float custom_thickness_mod;
+	float light_intensity;
+	float ambient_light_level;
 
 	//=========================================================================
 	// Progress bar tracking

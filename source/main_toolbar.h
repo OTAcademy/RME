@@ -45,12 +45,15 @@ public:
 	void OnPositionKeyUp(wxKeyEvent& event);
 	void OnPastePositionText(wxClipboardTextEvent& event);
 	void OnSizesButtonClick(wxCommandEvent& event);
+	void OnLightSlider(wxCommandEvent& event);
+	void OnAmbientLightSlider(wxCommandEvent& event);
 
 private:
 	static const wxString STANDARD_BAR_NAME;
 	static const wxString BRUSHES_BAR_NAME;
 	static const wxString POSITION_BAR_NAME;
 	static const wxString SIZES_BAR_NAME;
+	static const wxString LIGHT_BAR_NAME;
 
 	wxAuiToolBar* standard_toolbar;
 	wxAuiToolBar* brushes_toolbar;
@@ -60,6 +63,9 @@ private:
 	NumberTextCtrl* z_control;
 	wxButton* go_button;
 	wxAuiToolBar* sizes_toolbar;
+	wxAuiToolBar* light_toolbar;
+	wxSlider* light_slider;
+	wxSlider* ambient_slider;
 };
 
 #endif // RME_MAINTOOLBAR_H_

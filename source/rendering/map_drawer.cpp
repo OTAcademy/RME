@@ -240,7 +240,7 @@ void MapDrawer::DrawMapLayer(int map_z, bool live_client) {
 }
 
 void MapDrawer::DrawLight() {
-	light_drawer->draw(view, options.experimental_fog, light_buffer, options.global_light_color);
+	light_drawer->draw(view, options.experimental_fog, light_buffer, options.global_light_color, options.light_intensity, options.ambient_light_level);
 }
 
 void MapDrawer::TakeScreenshot(uint8_t* screenshot_buffer) {
