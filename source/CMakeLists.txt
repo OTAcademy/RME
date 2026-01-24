@@ -26,6 +26,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/copybuffer.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/operations/draw_operations.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/selection_operations.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/editor_persistence.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_tabs.h
@@ -55,6 +56,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/live/live_client.h
     ${CMAKE_CURRENT_LIST_DIR}/live/live_packets.h
     ${CMAKE_CURRENT_LIST_DIR}/live/live_peer.h
+    ${CMAKE_CURRENT_LIST_DIR}/live/live_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/live/live_server.h
     ${CMAKE_CURRENT_LIST_DIR}/live/live_socket.h
     ${CMAKE_CURRENT_LIST_DIR}/live/live_tab.h
@@ -205,6 +207,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/copybuffer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/operations/draw_operations.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/selection_operations.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/editor_persistence.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_tabs.cpp
@@ -228,6 +231,7 @@ set(rme_SRC
     #${CMAKE_CURRENT_LIST_DIR}/io/iomap_otmm.cpp
     ${CMAKE_CURRENT_LIST_DIR}/live/live_action.cpp
     ${CMAKE_CURRENT_LIST_DIR}/live/live_client.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/live/live_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/live/live_peer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/live/live_server.cpp
     ${CMAKE_CURRENT_LIST_DIR}/live/live_socket.cpp

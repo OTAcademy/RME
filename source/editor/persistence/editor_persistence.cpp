@@ -17,6 +17,34 @@
 #include <ctime>
 #include <sstream>
 
+void EditorPersistence::loadMap(Editor& editor, const FileName& fn) {
+	MapVersion ver;
+	if (!IOMapOTBM::getVersionInfo(fn, ver)) {
+		throw std::runtime_error("Could not open file \"" + nstr(fn.GetFullPath()) + "\".\nThis is not a valid OTBM file or it does not exist.");
+	}
+
+	bool success = true;
+	if (g_gui.GetCurrentVersionID() != ver.client) {
+		wxString error;
+		wxArrayString warnings;
+		if (g_gui.CloseAllEditors()) {
+			success = g_gui.LoadVersion(ver.client, error, warnings);
+			if (!success) {
+				g_gui.PopupDialog("Error", error, wxOK);
+			} else {
+				g_gui.ListDialog("Warnings", warnings);
+			}
+		} else {
+			throw std::runtime_error("All maps of different versions were not closed.");
+		}
+	}
+
+	if (success) {
+		ScopedLoadingBar LoadingBar("Loading OTBM map...");
+		success = editor.map.open(nstr(fn.GetFullPath()));
+	}
+}
+
 void EditorPersistence::saveMap(Editor& editor, FileName filename, bool showdialog) {
 	std::string savefile = filename.GetFullPath().mb_str(wxConvUTF8).data();
 	bool save_as = false;
