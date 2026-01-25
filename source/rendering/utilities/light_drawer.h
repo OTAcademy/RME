@@ -26,6 +26,7 @@
 #include "rendering/core/light_buffer.h"
 #include "rendering/core/gl_texture.h"
 #include "rendering/core/shader_program.h"
+#include "rendering/core/gl_resources.h"
 
 struct DrawingOptions;
 struct RenderView;
@@ -46,8 +47,8 @@ private:
 	// It is owned by this class and should be released when context is destroyed
 
 	std::unique_ptr<ShaderProgram> shader;
-	GLuint vao = 0;
-	GLuint vbo = 0;
+	std::unique_ptr<GLVertexArray> vao;
+	std::unique_ptr<GLBuffer> vbo;
 
 	void initRenderResources();
 };
