@@ -249,8 +249,8 @@ void MainToolBar::UpdateButtons() {
 	z_control->Enable(has_map);
 
 	if (has_map) {
-		x_control->SetMaxValue(editor->getMapWidth());
-		y_control->SetMaxValue(editor->getMapHeight());
+		x_control->SetMaxValue(editor->map.getWidth());
+		y_control->SetMaxValue(editor->map.getHeight());
 	}
 
 	sizes_toolbar->EnableTool(TOOLBAR_SIZES_CIRCULAR, has_map);

@@ -600,7 +600,7 @@ void OldPropertiesWindow::OnChar(wxKeyEvent& evt) {
 	if (evt.GetKeyCode() == WXK_CONTROL_V) {
 		Position position;
 		const Editor* const editor = g_gui.GetCurrentEditor();
-		if (posFromClipboard(position, editor->getMapWidth(), editor->getMapHeight())) {
+		if (posFromClipboard(position, editor->map.getWidth(), editor->map.getHeight())) {
 			x_field->SetValue(position.x);
 			y_field->SetValue(position.y);
 			z_field->SetValue(position.z);

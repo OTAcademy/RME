@@ -48,6 +48,8 @@ public:
 private:
 	Position copyPos;
 	BaseMap* tiles;
+
+	friend class CopyOperations;
 };
 
 #endif

@@ -75,20 +75,7 @@ Editor::Editor(CopyBuffer& copybuffer) :
 	version.client = g_gui.GetCurrentVersionID();
 	map.convert(version);
 
-	map.height = 2048;
-	map.width = 2048;
-
-	static int unnamed_counter = 0;
-
-	std::string sname = "Untitled-" + i2s(++unnamed_counter);
-	map.name = sname + ".otbm";
-	map.spawnfile = sname + "-spawn.xml";
-	map.housefile = sname + "-house.xml";
-	map.waypointfile = sname + "-waypoint.xml";
-	map.description = "No map description available.";
-	map.unnamed = true;
-
-	map.doChange();
+	map.initializeEmpty();
 }
 
 Editor::Editor(CopyBuffer& copybuffer, const FileName& fn) :
