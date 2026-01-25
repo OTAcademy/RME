@@ -42,10 +42,10 @@ public:
 		return true;
 	}
 
-	bool canDraw(BaseMap* map, const Position& position) const override ;
+	bool canDraw(BaseMap* map, const Position& position) const override;
 	// Will ASSERT
-	void draw(BaseMap* map, Tile* tile, void* parameter) override ;
-	void undraw(BaseMap* map, Tile* tile) override ;
+	void draw(BaseMap* map, Tile* tile, void* parameter) override;
+	void undraw(BaseMap* map, Tile* tile) override;
 
 	bool canDrag() const override {
 		return false;

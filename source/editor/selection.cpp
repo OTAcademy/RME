@@ -236,16 +236,12 @@ void Selection::flush() {
 	temp.reserve(tiles.size());
 
 	// Remove
-	std::set_difference(tiles.begin(), tiles.end(),
-		pending_removes.begin(), pending_removes.end(),
-		std::back_inserter(temp), std::less<Tile*>());
+	std::set_difference(tiles.begin(), tiles.end(), pending_removes.begin(), pending_removes.end(), std::back_inserter(temp), std::less<Tile*>());
 
 	// Add
 	tiles.clear();
 	tiles.reserve(temp.size() + pending_adds.size());
-	std::set_union(temp.begin(), temp.end(),
-		pending_adds.begin(), pending_adds.end(),
-		std::back_inserter(tiles), std::less<Tile*>());
+	std::set_union(temp.begin(), temp.end(), pending_adds.begin(), pending_adds.end(), std::back_inserter(tiles), std::less<Tile*>());
 
 	pending_adds.clear();
 	pending_removes.clear();

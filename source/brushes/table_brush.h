@@ -38,11 +38,11 @@ public:
 		return static_cast<TableBrush*>(this);
 	}
 
-	bool load(pugi::xml_node node, wxArrayString& warnings) override ;
+	bool load(pugi::xml_node node, wxArrayString& warnings) override;
 
-	bool canDraw(BaseMap* map, const Position& position) const override ;
-	void draw(BaseMap* map, Tile* tile, void* parameter) override ;
-	void undraw(BaseMap* map, Tile* tile) override ;
+	bool canDraw(BaseMap* map, const Position& position) const override;
+	void draw(BaseMap* map, Tile* tile, void* parameter) override;
+	void undraw(BaseMap* map, Tile* tile) override;
 
 	static void doTables(BaseMap* map, Tile* tile);
 
