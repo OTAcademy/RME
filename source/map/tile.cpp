@@ -362,17 +362,9 @@ ItemVector Tile::popSelectedItems(bool ignoreTileSelected) {
 		ground = nullptr;
 	}
 
-	ItemVector::iterator it;
-
-	it = items.begin();
-	while (it != items.end()) {
-		if ((*it)->isSelected()) {
-			pop_items.push_back(*it);
-			it = items.erase(it);
-		} else {
-			++it;
-		}
-	}
+	auto split_point = std::stable_partition(items.begin(), items.end(), [](Item* i) { return !i->isSelected(); });
+	pop_items.insert(pop_items.end(), split_point, items.end());
+	items.erase(split_point, items.end());
 
 	statflags &= ~TILESTATE_SELECTED;
 	return pop_items;
@@ -537,18 +529,14 @@ GroundBrush* Tile::getGroundBrush() const {
 }
 
 void Tile::cleanBorders() {
-	ItemVector::iterator it;
+	auto first_to_remove = std::stable_partition(items.begin(), items.end(), [](Item* item) {
+		return !item->isBorder();
+	});
 
-	it = items.begin();
-	while (it != items.end()) {
-		if ((*it)->isBorder()) {
-			delete *it;
-			it = items.erase(it);
-		} else {
-			// Borders should only be on the bottom, we can ignore the rest of the items
-			return;
-		}
+	for (auto it = first_to_remove; it != items.end(); ++it) {
+		delete *it;
 	}
+	items.erase(first_to_remove, items.end());
 }
 
 void Tile::wallize(BaseMap* parent) {
@@ -604,49 +592,40 @@ void Tile::addWallItem(Item* item) {
 }
 
 void Tile::cleanWalls(bool dontdelete) {
-	ItemVector::iterator it;
+	auto first_to_remove = std::stable_partition(items.begin(), items.end(), [](Item* item) {
+		return !item->isWall();
+	});
 
-	it = items.begin();
-	while (it != items.end()) {
-		if ((*it)->isWall()) {
-			if (!dontdelete) {
-				delete *it;
-			}
-			it = items.erase(it);
-		} else {
-			++it;
+	if (!dontdelete) {
+		for (auto it = first_to_remove; it != items.end(); ++it) {
+			delete *it;
 		}
 	}
+	items.erase(first_to_remove, items.end());
 }
 
 void Tile::cleanWalls(WallBrush* wb) {
-	ItemVector::iterator it;
+	auto first_to_remove = std::stable_partition(items.begin(), items.end(), [wb](Item* item) {
+		return !(item->isWall() && wb->hasWall(item));
+	});
 
-	it = items.begin();
-	while (it != items.end()) {
-		if ((*it)->isWall() && wb->hasWall(*it)) {
-			delete *it;
-			it = items.erase(it);
-		} else {
-			++it;
-		}
+	for (auto it = first_to_remove; it != items.end(); ++it) {
+		delete *it;
 	}
+	items.erase(first_to_remove, items.end());
 }
 
 void Tile::cleanTables(bool dontdelete) {
-	ItemVector::iterator it;
+	auto first_to_remove = std::stable_partition(items.begin(), items.end(), [](Item* item) {
+		return !item->isTable();
+	});
 
-	it = items.begin();
-	while (it != items.end()) {
-		if ((*it)->isTable()) {
-			if (!dontdelete) {
-				delete *it;
-			}
-			it = items.erase(it);
-		} else {
-			++it;
+	if (!dontdelete) {
+		for (auto it = first_to_remove; it != items.end(); ++it) {
+			delete *it;
 		}
 	}
+	items.erase(first_to_remove, items.end());
 }
 
 void Tile::tableize(BaseMap* parent) {

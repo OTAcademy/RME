@@ -103,12 +103,17 @@ public:
 	}
 
 private:
+	void flush();
+
 	bool busy;
+	bool deferred;
 	Editor& editor;
 	BatchAction* session;
 	Action* subsession;
 
 	TileSet tiles;
+	std::vector<Tile*> pending_adds;
+	std::vector<Tile*> pending_removes;
 
 	friend class SelectionThread;
 };

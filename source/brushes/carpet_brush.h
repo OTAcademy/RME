@@ -29,38 +29,38 @@ public:
 	static void init();
 
 	CarpetBrush();
-	virtual ~CarpetBrush();
+	~CarpetBrush() override;
 
-	bool isCarpet() const {
+	bool isCarpet() const override {
 		return true;
 	}
-	CarpetBrush* asCarpet() {
+	CarpetBrush* asCarpet() override {
 		return static_cast<CarpetBrush*>(this);
 	}
 
-	virtual bool load(pugi::xml_node node, wxArrayString& warnings);
+	bool load(pugi::xml_node node, wxArrayString& warnings) override;
 
-	virtual bool canDraw(BaseMap* map, const Position& position) const;
-	virtual void draw(BaseMap* map, Tile* tile, void* parameter);
-	virtual void undraw(BaseMap* map, Tile* tile);
+	bool canDraw(BaseMap* map, const Position& position) const override;
+	void draw(BaseMap* map, Tile* tile, void* parameter) override;
+	void undraw(BaseMap* map, Tile* tile) override;
 
 	static void doCarpets(BaseMap* map, Tile* tile);
 
-	virtual bool canDrag() const {
+	bool canDrag() const override {
 		return true;
 	}
-	virtual bool needBorders() const {
+	bool needBorders() const override {
 		return true;
 	}
 
-	virtual int getLookID() const {
+	int getLookID() const override {
 		return look_id;
 	}
 
-	virtual std::string getName() const {
+	std::string getName() const override {
 		return name;
 	}
-	virtual void setName(const std::string& newName) {
+	void setName(const std::string& newName) override {
 		name = newName;
 	}
 

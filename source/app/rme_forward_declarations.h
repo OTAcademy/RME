@@ -48,10 +48,10 @@ class Brush;
 
 #include <unordered_set>
 
-using HouseExitList = std::vector<uint32_t>;
-using TileVector = std::vector<Tile*>;
-using TileSet = std::unordered_set<Tile*>;
-using ItemVector = std::vector<Item*>;
-using BrushVector = std::vector<Brush*>;
+typedef std::vector<uint32_t> HouseExitList;
+typedef std::vector<Tile*> TileVector;
+typedef std::vector<Tile*> TileSet;
+typedef std::vector<Item*> ItemVector;
+typedef std::vector<Brush*> BrushVector;
 
 #endif

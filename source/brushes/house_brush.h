@@ -29,40 +29,40 @@
 class HouseBrush : public Brush {
 public:
 	HouseBrush();
-	virtual ~HouseBrush();
+	~HouseBrush() override;
 
-	bool isHouse() const {
+	bool isHouse() const override {
 		return true;
 	}
-	HouseBrush* asHouse() {
+	HouseBrush* asHouse() override {
 		return static_cast<HouseBrush*>(this);
 	}
 
 	// Not used
-	virtual bool load(pugi::xml_node node, wxArrayString& warnings) {
+	bool load(pugi::xml_node node, wxArrayString& warnings) override {
 		return true;
 	}
 
 	// You can always draw house tiles!
-	virtual bool canDraw(BaseMap* map, const Position& position) const {
+	bool canDraw(BaseMap* map, const Position& position) const override {
 		return true;
 	}
 	// Draw the shit!
-	virtual void draw(BaseMap* map, Tile* tile, void* parameter);
+	void draw(BaseMap* map, Tile* tile, void* parameter) override;
 	// Undraw the shit!
-	virtual void undraw(BaseMap* map, Tile* tile);
+	void undraw(BaseMap* map, Tile* tile) override;
 
-	virtual bool canDrag() const {
+	bool canDrag() const override {
 		return true;
 	}
 
 	void setHouse(House* house);
 
 	uint32_t getHouseID() const;
-	virtual int getLookID() const {
+	int getLookID() const override {
 		return 0;
 	} // We don't have a graphic
-	virtual std::string getName() const {
+	std::string getName() const override {
 		return "House Brush";
 	}
 
