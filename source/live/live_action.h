@@ -42,7 +42,7 @@ protected:
 	~NetworkedBatchAction();
 
 public:
-	void addAndCommitAction(Action* action);
+	void addAndCommitAction(std::unique_ptr<Action> action);
 
 protected:
 	void commit();
@@ -57,8 +57,8 @@ public:
 	NetworkedActionQueue(Editor& editor);
 	~NetworkedActionQueue();
 
-	Action* createAction(ActionIdentifier ident);
-	BatchAction* createBatch(ActionIdentifier ident);
+	std::unique_ptr<Action> createAction(ActionIdentifier ident) override;
+	std::unique_ptr<BatchAction> createBatch(ActionIdentifier ident) override;
 
 protected:
 	void broadcast(DirtyList& dirty_list);

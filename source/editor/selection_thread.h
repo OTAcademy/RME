@@ -36,7 +36,7 @@ protected:
 	Editor& editor;
 	Position start, end;
 	Selection selection;
-	Action* result;
+	std::unique_ptr<Action> result;
 
 	friend class Selection;
 };

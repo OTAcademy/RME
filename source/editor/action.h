@@ -21,6 +21,8 @@
 #include "map/position.h"
 
 #include <deque>
+#include <memory>
+#include <vector>
 
 class Editor;
 class Tile;
@@ -65,7 +67,7 @@ public:
 	friend class Action;
 };
 
-using ChangeList = std::vector<Change*>;
+using ChangeList = std::vector<std::unique_ptr<Change>>;
 
 class DirtyList;
 
@@ -89,8 +91,8 @@ class Action {
 public:
 	virtual ~Action();
 
-	void addChange(Change* t) {
-		changes.push_back(t);
+	void addChange(std::unique_ptr<Change> t) {
+		changes.push_back(std::move(t));
 	}
 
 	// Get memory footprint
@@ -123,7 +125,7 @@ protected:
 	friend class ActionQueue;
 };
 
-using ActionVector = std::vector<Action*>;
+using ActionVector = std::vector<std::unique_ptr<Action>>;
 
 class BatchAction {
 public:
@@ -142,8 +144,8 @@ public:
 		return type;
 	}
 
-	virtual void addAction(Action* action);
-	virtual void addAndCommitAction(Action* action);
+	virtual void addAction(std::unique_ptr<Action> action);
+	virtual void addAndCommitAction(std::unique_ptr<Action> action);
 
 protected:
 	BatchAction(Editor& editor, ActionIdentifier ident);

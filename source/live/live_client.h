@@ -85,7 +85,7 @@ protected:
 	std::shared_ptr<boost::asio::ip::tcp::resolver> resolver;
 	std::shared_ptr<boost::asio::ip::tcp::socket> socket;
 
-	Editor* editor;
+	std::unique_ptr<Editor> editor;
 
 	bool stopped;
 };

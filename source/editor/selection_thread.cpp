@@ -64,7 +64,7 @@ wxThread::ExitCode SelectionThread::Entry() {
 	}
 	// Access wrapper to get subsession
 	// Since SelectionThread is friend of Selection, we can access private members of selection instance
-	result = selection.subsession;
+	result = std::move(selection.subsession);
 	selection.finish(Selection::SUBTHREAD);
 
 	return nullptr;

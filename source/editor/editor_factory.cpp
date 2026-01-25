@@ -29,7 +29,7 @@ void SetupCallbacks(Editor* editor) {
 	};
 }
 
-Editor* EditorFactory::CreateEmpty(CopyBuffer& copybuffer) {
+std::unique_ptr<Editor> EditorFactory::CreateEmpty(CopyBuffer& copybuffer) {
 	ClientVersionID defaultVersion = ClientVersionID(g_settings.getInteger(Config::DEFAULT_CLIENT_VERSION));
 	if (defaultVersion == CLIENT_VERSION_NONE) {
 		defaultVersion = ClientVersion::getLatestVersion()->getID();
@@ -43,12 +43,12 @@ Editor* EditorFactory::CreateEmpty(CopyBuffer& copybuffer) {
 	mapVersion.otbm = g_gui.GetCurrentVersion().getPrefferedMapVersionID();
 	mapVersion.client = g_gui.GetCurrentVersionID();
 
-	Editor* editor = newd Editor(copybuffer, mapVersion);
-	SetupCallbacks(editor);
+	std::unique_ptr<Editor> editor = std::make_unique<Editor>(copybuffer, mapVersion);
+	SetupCallbacks(editor.get());
 	return editor;
 }
 
-Editor* EditorFactory::LoadFromFile(CopyBuffer& copybuffer, const FileName& fn) {
+std::unique_ptr<Editor> EditorFactory::LoadFromFile(CopyBuffer& copybuffer, const FileName& fn) {
 	// For loading, we might want to query version from headers first, OR assume current GUI version is what we want?
 	// The original Editor constructor for file loading called EditorPersistence::loadMap.
 	// We'll pass current GUI version as a default context, though EditorPersistence might override map.
@@ -57,18 +57,18 @@ Editor* EditorFactory::LoadFromFile(CopyBuffer& copybuffer, const FileName& fn) 
 	mapVersion.otbm = g_gui.GetCurrentVersion().getPrefferedMapVersionID();
 	mapVersion.client = g_gui.GetCurrentVersionID();
 
-	Editor* editor = newd Editor(copybuffer, mapVersion, fn);
-	SetupCallbacks(editor);
+	std::unique_ptr<Editor> editor = std::make_unique<Editor>(copybuffer, mapVersion, fn);
+	SetupCallbacks(editor.get());
 	return editor;
 }
 
-Editor* EditorFactory::JoinLive(CopyBuffer& copybuffer, LiveClient* client) {
+std::unique_ptr<Editor> EditorFactory::JoinLive(CopyBuffer& copybuffer, LiveClient* client) {
 	MapVersion mapVersion;
 	mapVersion.otbm = g_gui.GetCurrentVersion().getPrefferedMapVersionID();
 	mapVersion.client = g_gui.GetCurrentVersionID();
 
-	Editor* editor = newd Editor(copybuffer, mapVersion, client);
-	SetupCallbacks(editor);
+	std::unique_ptr<Editor> editor = std::make_unique<Editor>(copybuffer, mapVersion, client);
+	SetupCallbacks(editor.get());
 	return editor;
 }
 

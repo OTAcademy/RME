@@ -50,16 +50,9 @@ std::istream& operator>>(std::istream& os, Hotkey& hotkey) {
 		os >> hotkey.pos;
 	} else if (type_s == "BRUSH") {
 		hotkey.type = Hotkey::BRUSH;
-		char buf[512];
-		os.getline(buf, 512);
-		std::string s = buf;
-		// Trim
-		size_t first = s.find_first_not_of(' ');
-		size_t last = s.find_last_not_of(' ');
-		if (first != std::string::npos && last != std::string::npos) {
-			s = s.substr(first, last - first + 1);
-		}
-		hotkey.brushname = s;
+		std::string brushname;
+		std::getline(os >> std::ws, brushname);
+		hotkey.brushname = brushname;
 	} else {
 		hotkey.type = Hotkey::NONE;
 	}

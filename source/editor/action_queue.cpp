@@ -30,21 +30,19 @@ ActionQueue::ActionQueue(Editor& editor) :
 }
 
 ActionQueue::~ActionQueue() {
-	for (auto* action : actions) {
-		delete action;
-	}
+	actions.clear();
 }
 
-Action* ActionQueue::createAction(ActionIdentifier ident) {
-	return newd Action(editor, ident);
+std::unique_ptr<Action> ActionQueue::createAction(ActionIdentifier ident) {
+	return std::unique_ptr<Action>(new Action(editor, ident));
 }
 
-Action* ActionQueue::createAction(BatchAction* batch) {
-	return newd Action(editor, batch->getType());
+std::unique_ptr<Action> ActionQueue::createAction(BatchAction* batch) {
+	return std::unique_ptr<Action>(new Action(editor, batch->getType()));
 }
 
-BatchAction* ActionQueue::createBatch(ActionIdentifier ident) {
-	return newd BatchAction(editor, ident);
+std::unique_ptr<BatchAction> ActionQueue::createBatch(ActionIdentifier ident) {
+	return std::unique_ptr<BatchAction>(new BatchAction(editor, ident));
 }
 
 void ActionQueue::resetTimer() {
@@ -53,12 +51,11 @@ void ActionQueue::resetTimer() {
 	}
 }
 
-void ActionQueue::addBatch(BatchAction* batch, int stacking_delay) {
+void ActionQueue::addBatch(std::unique_ptr<BatchAction> batch, int stacking_delay) {
 	ASSERT(batch);
 	ASSERT(current <= actions.size());
 
 	if (batch->size() == 0) {
-		delete batch;
 		return;
 	}
 
@@ -71,82 +68,71 @@ void ActionQueue::addBatch(BatchAction* batch, int stacking_delay) {
 	}
 
 	if (batch->getType() == ACTION_REMOTE) {
-		delete batch;
 		return;
 	}
 
 	while (current != actions.size()) {
 		memory_size -= actions.back()->memsize();
-		BatchAction* todelete = actions.back();
 		actions.pop_back();
-		delete todelete;
 	}
 
 	while (memory_size > size_t(1024 * 1024 * g_settings.getInteger(Config::UNDO_MEM_SIZE)) && !actions.empty()) {
 		memory_size -= actions.front()->memsize();
-		delete actions.front();
 		actions.pop_front();
 		current--;
 	}
 
 	if (actions.size() > size_t(g_settings.getInteger(Config::UNDO_SIZE)) && !actions.empty()) {
 		memory_size -= actions.front()->memsize();
-		BatchAction* todelete = actions.front();
 		actions.pop_front();
-		delete todelete;
 		current--;
 	}
 
 	do {
 		if (!actions.empty()) {
-			BatchAction* lastAction = actions.back();
+			BatchAction* lastAction = actions.back().get();
 			if (lastAction->getType() == batch->getType() && g_settings.getInteger(Config::GROUP_ACTIONS) && time(nullptr) - stacking_delay < lastAction->timestamp) {
-				lastAction->merge(batch);
+				lastAction->merge(batch.get());
 				lastAction->timestamp = time(nullptr);
 				memory_size -= lastAction->memsize();
 				memory_size += lastAction->memsize(true);
-				delete batch;
 				break;
 			}
 		}
 		memory_size += batch->memsize();
-		actions.push_back(batch);
 		batch->timestamp = time(nullptr);
+		actions.push_back(std::move(batch));
 		current++;
 	} while (false);
 }
 
-void ActionQueue::addAction(Action* action, int stacking_delay) {
-	BatchAction* batch = createBatch(action->getType());
-	batch->addAndCommitAction(action);
+void ActionQueue::addAction(std::unique_ptr<Action> action, int stacking_delay) {
+	std::unique_ptr<BatchAction> batch = createBatch(action->getType());
+	batch->addAndCommitAction(std::move(action)); // BatchAction takes ownership
 	if (batch->size() == 0) {
-		delete batch;
 		return;
 	}
 
-	addBatch(batch, stacking_delay);
+	addBatch(std::move(batch), stacking_delay);
 }
 
 void ActionQueue::undo() {
 	if (current > 0) {
 		current--;
-		BatchAction* batch = actions[current];
+		BatchAction* batch = actions[current].get();
 		batch->undo();
 	}
 }
 
 void ActionQueue::redo() {
 	if (current < actions.size()) {
-		BatchAction* batch = actions[current];
+		BatchAction* batch = actions[current].get();
 		batch->redo();
 		current++;
 	}
 }
 
 void ActionQueue::clear() {
-	for (auto* action : actions) {
-		delete action;
-	}
 	actions.clear();
 	current = 0;
 }

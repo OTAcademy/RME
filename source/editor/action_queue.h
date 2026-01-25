@@ -20,6 +20,7 @@
 
 #include <deque>
 #include <vector>
+#include <memory>
 #include "editor/action.h"
 
 class Editor;
@@ -31,16 +32,16 @@ public:
 	ActionQueue(Editor& editor);
 	virtual ~ActionQueue();
 
-	using ActionList = std::deque<BatchAction*>;
+	using ActionList = std::deque<std::unique_ptr<BatchAction>>;
 
 	void resetTimer();
 
-	virtual Action* createAction(ActionIdentifier ident);
-	virtual Action* createAction(BatchAction* parent);
-	virtual BatchAction* createBatch(ActionIdentifier ident);
+	virtual std::unique_ptr<Action> createAction(ActionIdentifier ident);
+	virtual std::unique_ptr<Action> createAction(BatchAction* parent);
+	virtual std::unique_ptr<BatchAction> createBatch(ActionIdentifier ident);
 
-	void addBatch(BatchAction* action, int stacking_delay = 0);
-	void addAction(Action* action, int stacking_delay = 0);
+	void addBatch(std::unique_ptr<BatchAction> action, int stacking_delay = 0);
+	void addAction(std::unique_ptr<Action> action, int stacking_delay = 0);
 
 	void undo();
 	void redo();

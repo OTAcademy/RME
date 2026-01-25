@@ -65,8 +65,8 @@ public: // Functions
 
 	// Adds an action to the action queue (this allows the user to undo the action)
 	// Invalidates the action pointer
-	void addBatch(BatchAction* action, int stacking_delay = 0);
-	void addAction(Action* action, int stacking_delay = 0);
+	void addBatch(std::unique_ptr<BatchAction> action, int stacking_delay = 0);
+	void addAction(std::unique_ptr<Action> action, int stacking_delay = 0);
 
 	// Selection
 	bool hasSelection() const {

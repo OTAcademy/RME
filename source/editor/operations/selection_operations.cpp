@@ -47,14 +47,14 @@ void SelectionOperations::borderizeSelection(Editor& editor) {
 		g_gui.SetStatusText("No items selected. Can't borderize.");
 	}
 
-	Action* action = editor.actionQueue->createAction(ACTION_BORDERIZE);
+	std::unique_ptr<Action> action = editor.actionQueue->createAction(ACTION_BORDERIZE);
 	for (Tile* tile : editor.selection) {
 		Tile* newTile = tile->deepCopy(editor.map);
 		newTile->borderize(&editor.map);
 		newTile->select();
-		action->addChange(newd Change(newTile));
+		action->addChange(std::make_unique<Change>(newTile));
 	}
-	editor.addAction(action);
+	editor.addAction(std::move(action));
 }
 
 void SelectionOperations::randomizeSelection(Editor& editor) {
@@ -62,7 +62,7 @@ void SelectionOperations::randomizeSelection(Editor& editor) {
 		g_gui.SetStatusText("No items selected. Can't randomize.");
 	}
 
-	Action* action = editor.actionQueue->createAction(ACTION_RANDOMIZE);
+	std::unique_ptr<Action> action = editor.actionQueue->createAction(ACTION_RANDOMIZE);
 	for (Tile* tile : editor.selection) {
 		Tile* newTile = tile->deepCopy(editor.map);
 		GroundBrush* groundBrush = newTile->getGroundBrush();
@@ -77,18 +77,18 @@ void SelectionOperations::randomizeSelection(Editor& editor) {
 			}
 
 			newTile->select();
-			action->addChange(newd Change(newTile));
+			action->addChange(std::make_unique<Change>(newTile));
 		}
 	}
-	editor.addAction(action);
+	editor.addAction(std::move(action));
 }
 
 void SelectionOperations::moveSelection(Editor& editor, Position offset) {
-	BatchAction* batchAction = editor.actionQueue->createBatch(ACTION_MOVE); // Our saved action batch, for undo!
-	Action* action;
+	std::unique_ptr<BatchAction> batchAction = editor.actionQueue->createBatch(ACTION_MOVE); // Our saved action batch, for undo!
+	std::unique_ptr<Action> action;
 
 	// Remove tiles from the map
-	action = editor.actionQueue->createAction(batchAction); // Our action!
+	action = editor.actionQueue->createAction(batchAction.get()); // Our action!
 	bool doborders = false;
 	TileSet tmp_storage;
 
@@ -136,14 +136,14 @@ void SelectionOperations::moveSelection(Editor& editor, Position offset) {
 
 		tmp_storage.push_back(tmp_storage_tile);
 		// Add the tile copy to the action
-		action->addChange(newd Change(new_src_tile));
+		action->addChange(std::make_unique<Change>(new_src_tile));
 	}
 	// Commit changes to map
-	batchAction->addAndCommitAction(action);
+	batchAction->addAndCommitAction(std::move(action));
 
 	// Remove old borders (and create some newd?)
 	if (g_settings.getInteger(Config::USE_AUTOMAGIC) && g_settings.getInteger(Config::BORDERIZE_DRAG) && editor.selection.size() < size_t(g_settings.getInteger(Config::BORDERIZE_DRAG_THRESHOLD))) {
-		action = editor.actionQueue->createAction(batchAction);
+		action = editor.actionQueue->createAction(batchAction.get());
 		TileList borderize_tiles;
 		// Go through all modified (selected) tiles (might be slow)
 		for (TileSet::iterator it = tmp_storage.begin(); it != tmp_storage.end(); ++it) {
@@ -203,14 +203,14 @@ void SelectionOperations::moveSelection(Editor& editor, Position offset) {
 			if (tile->ground && tile->ground->isSelected()) {
 				new_tile->selectGround();
 			}
-			action->addChange(newd Change(new_tile));
+			action->addChange(std::make_unique<Change>(new_tile));
 		}
 		// Commit changes to map
-		batchAction->addAndCommitAction(action);
+		batchAction->addAndCommitAction(std::move(action));
 	}
 
 	// New action for adding the destination tiles
-	action = editor.actionQueue->createAction(batchAction);
+	action = editor.actionQueue->createAction(batchAction.get());
 	for (TileSet::iterator it = tmp_storage.begin(); it != tmp_storage.end(); ++it) {
 		Tile* tile = (*it);
 		const Position old_pos = tile->getPosition();
@@ -242,15 +242,15 @@ void SelectionOperations::moveSelection(Editor& editor, Position offset) {
 			new_dest_tile = tile;
 		}
 
-		action->addChange(newd Change(new_dest_tile));
+		action->addChange(std::make_unique<Change>(new_dest_tile));
 	}
 
 	// Commit changes to the map
-	batchAction->addAndCommitAction(action);
+	batchAction->addAndCommitAction(std::move(action));
 
 	// Create borders
 	if (g_settings.getInteger(Config::USE_AUTOMAGIC) && g_settings.getInteger(Config::BORDERIZE_DRAG) && editor.selection.size() < size_t(g_settings.getInteger(Config::BORDERIZE_DRAG_THRESHOLD))) {
-		action = editor.actionQueue->createAction(batchAction);
+		action = editor.actionQueue->createAction(batchAction.get());
 		TileList borderize_tiles;
 		// Go through all modified (selected) tiles (might be slow)
 		for (TileSet::iterator it = editor.selection.begin(); it != editor.selection.end(); it++) {
@@ -328,16 +328,16 @@ void SelectionOperations::moveSelection(Editor& editor, Position offset) {
 						new_tile->selectGround();
 					}
 
-					action->addChange(newd Change(new_tile));
+					action->addChange(std::make_unique<Change>(new_tile));
 				}
 			}
 		}
 		// Commit changes to map
-		batchAction->addAndCommitAction(action);
+		batchAction->addAndCommitAction(std::move(action));
 	}
 
 	// Store the action for undo
-	editor.addBatch(batchAction);
+	editor.addBatch(std::move(batchAction));
 	editor.selection.updateSelectionCount();
 }
 
@@ -349,8 +349,8 @@ void SelectionOperations::destroySelection(Editor& editor) {
 		int item_count = 0;
 		PositionList tilestoborder;
 
-		BatchAction* batch = editor.actionQueue->createBatch(ACTION_DELETE_TILES);
-		Action* action = editor.actionQueue->createAction(batch);
+		std::unique_ptr<BatchAction> batch = editor.actionQueue->createBatch(ACTION_DELETE_TILES);
+		std::unique_ptr<Action> action = editor.actionQueue->createAction(batch.get());
 
 		for (TileSet::iterator it = editor.selection.begin(); it != editor.selection.end(); ++it) {
 			tile_count++;
@@ -384,17 +384,17 @@ void SelectionOperations::destroySelection(Editor& editor) {
 					}
 				}
 			}
-			action->addChange(newd Change(newtile));
+			action->addChange(std::make_unique<Change>(newtile));
 		}
 
-		batch->addAndCommitAction(action);
+		batch->addAndCommitAction(std::move(action));
 
 		if (g_settings.getInteger(Config::USE_AUTOMAGIC)) {
 			// Remove duplicates
 			tilestoborder.sort();
 			tilestoborder.unique();
 
-			action = editor.actionQueue->createAction(batch);
+			action = editor.actionQueue->createAction(batch.get());
 			for (PositionList::iterator it = tilestoborder.begin(); it != tilestoborder.end(); ++it) {
 				TileLocation* location = editor.map.createTileL(*it);
 				Tile* tile = location->get();
@@ -405,22 +405,22 @@ void SelectionOperations::destroySelection(Editor& editor) {
 					new_tile->wallize(&editor.map);
 					new_tile->tableize(&editor.map);
 					new_tile->carpetize(&editor.map);
-					action->addChange(newd Change(new_tile));
+					action->addChange(std::make_unique<Change>(new_tile));
 				} else {
 					Tile* new_tile = editor.map.allocator(location);
 					new_tile->borderize(&editor.map);
 					if (new_tile->size()) {
-						action->addChange(newd Change(new_tile));
+						action->addChange(std::make_unique<Change>(new_tile));
 					} else {
 						delete new_tile;
 					}
 				}
 			}
 
-			batch->addAndCommitAction(action);
+			batch->addAndCommitAction(std::move(action));
 		}
 
-		editor.addBatch(batch);
+		editor.addBatch(std::move(batch));
 		wxString ss;
 		ss << "Deleted " << tile_count << " tile" << (tile_count > 1 ? "s" : "") << " (" << item_count << " item" << (item_count > 1 ? "s" : "") << ")";
 		g_gui.SetStatusText(ss);

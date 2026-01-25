@@ -107,11 +107,7 @@ Action::Action(Editor& editor, ActionIdentifier ident) :
 }
 
 Action::~Action() {
-	ChangeList::const_reverse_iterator it = changes.rbegin();
-	while (it != changes.rend()) {
-		delete *it;
-		++it;
-	}
+	changes.clear();
 }
 
 size_t Action::approx_memsize() const {
@@ -125,7 +121,7 @@ size_t Action::memsize() const {
 	mem += sizeof(Change*) * 3 * changes.size();
 	ChangeList::const_iterator it = changes.begin();
 	while (it != changes.end()) {
-		Change* c = *it;
+		Change* c = it->get();
 		switch (c->type) {
 			case CHANGE_TILE: {
 				ASSERT(c->data);
@@ -145,7 +141,7 @@ void Action::commit(DirtyList* dirty_list) {
 	editor.selection.start(Selection::INTERNAL);
 	ChangeList::const_iterator it = changes.begin();
 	while (it != changes.end()) {
-		Change* c = *it;
+		Change* c = it->get();
 		switch (c->type) {
 			case CHANGE_TILE: {
 				void** data = &c->data;
@@ -293,7 +289,7 @@ void Action::undo(DirtyList* dirty_list) {
 	ChangeList::reverse_iterator it = changes.rbegin();
 
 	while (it != changes.rend()) {
-		Change* c = *it;
+		Change* c = it->get();
 		switch (c->type) {
 			case CHANGE_TILE: {
 				void** data = &c->data;
@@ -422,9 +418,7 @@ BatchAction::BatchAction(Editor& editor, ActionIdentifier ident) :
 }
 
 BatchAction::~BatchAction() {
-	for (Action* action : batch) {
-		delete action;
-	}
+	// batch is vector<unique_ptr>, destruction handled automatically
 	batch.clear();
 }
 
@@ -437,7 +431,7 @@ size_t BatchAction::memsize(bool recalc) const {
 	uint32_t mem = sizeof(*this);
 	mem += sizeof(Action*) * 3 * batch.size();
 
-	for (Action* action : batch) {
+	for (const auto& action : batch) {
 #ifdef __USE_EXACT_MEMSIZE__
 		mem += action->memsize();
 #else
@@ -450,45 +444,41 @@ size_t BatchAction::memsize(bool recalc) const {
 	return mem;
 }
 
-void BatchAction::addAction(Action* action) {
+void BatchAction::addAction(std::unique_ptr<Action> action) {
 	// If empty, do nothing.
 	if (action->size() == 0) {
-		delete action;
 		return;
 	}
 
 	ASSERT(action->getType() == type);
 
 	if (editor.live_manager.IsClient()) {
-		delete action;
 		return;
 	}
 
 	// Add it!
-	batch.push_back(action);
+	batch.push_back(std::move(action));
 	timestamp = time(nullptr);
 }
 
-void BatchAction::addAndCommitAction(Action* action) {
+void BatchAction::addAndCommitAction(std::unique_ptr<Action> action) {
 	// If empty, do nothing.
 	if (action->size() == 0) {
-		delete action;
 		return;
 	}
 
 	if (editor.live_manager.IsClient()) {
-		delete action;
 		return;
 	}
 
 	// Add it!
 	action->commit(nullptr);
-	batch.push_back(action);
+	batch.push_back(std::move(action));
 	timestamp = time(nullptr);
 }
 
 void BatchAction::commit() {
-	for (Action* action : batch) {
+	for (const auto& action : batch) {
 		if (!action->isCommited()) {
 			action->commit(nullptr);
 		}
@@ -496,18 +486,18 @@ void BatchAction::commit() {
 }
 
 void BatchAction::undo() {
-	for (Action* action : boost::adaptors::reverse(batch)) {
+	for (auto& action : boost::adaptors::reverse(batch)) {
 		action->undo(nullptr);
 	}
 }
 
 void BatchAction::redo() {
-	for (Action* action : batch) {
+	for (auto& action : batch) {
 		action->redo(nullptr);
 	}
 }
 
 void BatchAction::merge(BatchAction* other) {
-	batch.insert(batch.end(), other->batch.begin(), other->batch.end());
+	batch.insert(batch.end(), std::make_move_iterator(other->batch.begin()), std::make_move_iterator(other->batch.end()));
 	other->batch.clear();
 }

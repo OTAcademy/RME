@@ -53,9 +53,9 @@ void DialogHelper::OpenProperties(Editor& editor, Tile* tile) {
 	if (w) {
 		int ret = w->ShowModal();
 		if (ret != 0) {
-			Action* action = editor.actionQueue->createAction(ACTION_CHANGE_PROPERTIES);
-			action->addChange(newd Change(new_tile));
-			editor.addAction(action);
+			std::unique_ptr<Action> action = editor.actionQueue->createAction(ACTION_CHANGE_PROPERTIES);
+			action->addChange(std::make_unique<Change>(new_tile));
+			editor.addAction(std::move(action));
 		} else {
 			delete new_tile;
 		}

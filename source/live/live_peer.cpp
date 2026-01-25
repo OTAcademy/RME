@@ -269,20 +269,23 @@ void LivePeer::parseReceiveChanges(NetworkMessage& message) {
 	BinaryNode* rootNode = mapReader.getRootNode();
 	BinaryNode* tileNode = rootNode->getChild();
 
-	NetworkedAction* action = static_cast<NetworkedAction*>(editor.actionQueue->createAction(ACTION_REMOTE));
+	// We need ownership of the action, but createAction returns unique_ptr.
+	// We'll move it into a temporary unique_ptr, get the raw pointer for metadata, then move to queue.
+	std::unique_ptr<Action> rawAction = editor.actionQueue->createAction(ACTION_REMOTE);
+	NetworkedAction* action = static_cast<NetworkedAction*>(rawAction.get());
 	action->owner = clientId;
 
 	if (tileNode) {
 		do {
 			Tile* tile = readTile(tileNode, editor, nullptr);
 			if (tile) {
-				action->addChange(newd Change(tile));
+				action->addChange(std::make_unique<Change>(tile));
 			}
 		} while (tileNode->advance());
 	}
 	mapReader.close();
 
-	editor.actionQueue->addAction(action);
+	editor.actionQueue->addAction(std::move(rawAction));
 
 	g_gui.RefreshView();
 	g_gui.UpdateMinimap();

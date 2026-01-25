@@ -88,13 +88,13 @@ void Editor::notifyStateChange() {
 	}
 }
 
-void Editor::addBatch(BatchAction* action, int stacking_delay) {
-	actionQueue->addBatch(action, stacking_delay);
+void Editor::addBatch(std::unique_ptr<BatchAction> action, int stacking_delay) {
+	actionQueue->addBatch(std::move(action), stacking_delay);
 	notifyStateChange();
 }
 
-void Editor::addAction(Action* action, int stacking_delay) {
-	actionQueue->addAction(action, stacking_delay);
+void Editor::addAction(std::unique_ptr<Action> action, int stacking_delay) {
+	actionQueue->addAction(std::move(action), stacking_delay);
 	notifyStateChange();
 }
 

@@ -243,7 +243,7 @@ MapTab* LiveClient::createEditorWindow() {
 	MapTabbook* mtb = dynamic_cast<MapTabbook*>(g_gui.tabbook);
 	ASSERT(mtb);
 
-	MapTab* edit = newd MapTab(mtb, editor);
+	MapTab* edit = newd MapTab(mtb, editor.get());
 	edit->OnSwitchEditorMode(g_gui.IsSelectionMode() ? SELECTION_MODE : DRAWING_MODE);
 
 	return edit;
@@ -279,13 +279,13 @@ void LiveClient::sendNodeRequests() {
 }
 
 void LiveClient::sendChanges(DirtyList& dirtyList) {
-	ChangeList& changeList = dirtyList.GetChanges();
+	auto& changeList = dirtyList.GetChanges();
 	if (changeList.empty()) {
 		return;
 	}
 
 	mapWriter.reset();
-	for (Change* change : changeList) {
+	for (const auto& change : changeList) {
 		switch (change->getType()) {
 			case CHANGE_TILE: {
 				const Position& position = static_cast<Tile*>(change->getData())->getPosition();
@@ -423,9 +423,9 @@ void LiveClient::parseNode(NetworkMessage& message) {
 	int32_t ndy = (ind >> 4) & 0x3FFF;
 	bool underground = ind & 1;
 
-	Action* action = editor->actionQueue->createAction(ACTION_REMOTE);
-	receiveNode(message, *editor, action, ndx, ndy, underground);
-	editor->actionQueue->addAction(action);
+	std::unique_ptr<Action> action = editor->actionQueue->createAction(ACTION_REMOTE);
+	receiveNode(message, *editor, action.get(), ndx, ndy, underground);
+	editor->actionQueue->addAction(std::move(action));
 
 	g_gui.RefreshView();
 	g_gui.UpdateMinimap();

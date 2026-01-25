@@ -111,8 +111,8 @@ private:
 	bool busy;
 	bool deferred;
 	Editor& editor;
-	BatchAction* session;
-	Action* subsession;
+	std::unique_ptr<BatchAction> session;
+	std::unique_ptr<Action> subsession;
 
 	TileSet tiles;
 	std::vector<Tile*> pending_adds;

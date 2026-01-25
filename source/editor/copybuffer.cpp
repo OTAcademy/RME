@@ -24,7 +24,7 @@
 #include "game/creature.h"
 
 CopyBuffer::CopyBuffer() :
-	tiles(newd BaseMap()) {
+	tiles(std::make_unique<BaseMap>()) {
 	;
 }
 
@@ -47,8 +47,7 @@ Position CopyBuffer::getPosition() const {
 }
 
 void CopyBuffer::clear() {
-	delete tiles;
-	tiles = nullptr;
+	tiles.reset();
 }
 
 void CopyBuffer::copy(Editor& editor, int floor) {

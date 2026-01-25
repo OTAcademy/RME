@@ -21,7 +21,7 @@
 #include "app/application.h"
 #include "util/file_system.h"
 #include "editor/hotkey_manager.h"
-#include "ui/dialog_util.h"
+
 #include "game/sprites.h"
 #include "editor/editor.h"
 #include "ui/common_windows.h"

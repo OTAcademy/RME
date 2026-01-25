@@ -23,7 +23,7 @@ void CopyOperations::copy(Editor& editor, CopyBuffer& buffer, int floor) {
 	}
 
 	buffer.clear();
-	buffer.tiles = newd BaseMap();
+	buffer.tiles = std::make_unique<BaseMap>();
 
 	int tile_count = 0;
 	int item_count = 0;
@@ -78,14 +78,14 @@ void CopyOperations::cut(Editor& editor, CopyBuffer& buffer, int floor) {
 	}
 
 	buffer.clear();
-	buffer.tiles = newd BaseMap();
+	buffer.tiles = std::make_unique<BaseMap>();
 
 	int tile_count = 0;
 	int item_count = 0;
 	buffer.copyPos = Position(0xFFFF, 0xFFFF, floor);
 
-	BatchAction* batch = editor.actionQueue->createBatch(ACTION_CUT_TILES);
-	Action* action = editor.actionQueue->createAction(batch);
+	std::unique_ptr<BatchAction> batch = editor.actionQueue->createBatch(ACTION_CUT_TILES);
+	std::unique_ptr<Action> action = editor.actionQueue->createAction(batch.get());
 
 	PositionList tilestoborder;
 
@@ -137,39 +137,39 @@ void CopyOperations::cut(Editor& editor, CopyBuffer& buffer, int floor) {
 				}
 			}
 		}
-		action->addChange(newd Change(newtile));
+		action->addChange(std::make_unique<Change>(newtile));
 	}
 
-	batch->addAndCommitAction(action);
+	batch->addAndCommitAction(std::move(action));
 
 	// Remove duplicates
 	tilestoborder.sort();
 	tilestoborder.unique();
 
 	if (g_settings.getInteger(Config::USE_AUTOMAGIC)) {
-		action = editor.actionQueue->createAction(batch);
+		action = editor.actionQueue->createAction(batch.get());
 		for (const Position& pos : tilestoborder) {
 			TileLocation* location = editor.map.createTileL(pos);
 			if (location->get()) {
 				Tile* new_tile = location->get()->deepCopy(editor.map);
 				new_tile->borderize(&editor.map);
 				new_tile->wallize(&editor.map);
-				action->addChange(newd Change(new_tile));
+				action->addChange(std::make_unique<Change>(new_tile));
 			} else {
 				Tile* new_tile = editor.map.allocator(location);
 				new_tile->borderize(&editor.map);
 				if (new_tile->size()) {
-					action->addChange(newd Change(new_tile));
+					action->addChange(std::make_unique<Change>(new_tile));
 				} else {
 					delete new_tile;
 				}
 			}
 		}
 
-		batch->addAndCommitAction(action);
+		batch->addAndCommitAction(std::move(action));
 	}
 
-	editor.addBatch(batch);
+	editor.addBatch(std::move(batch));
 	std::stringstream ss;
 	ss << "Cut out " << tile_count << " tile" << (tile_count > 1 ? "s" : "") << " (" << item_count << " item" << (item_count > 1 ? "s" : "") << ")";
 	g_gui.SetStatusText(wxstr(ss.str()));
@@ -180,8 +180,8 @@ void CopyOperations::paste(Editor& editor, CopyBuffer& buffer, const Position& t
 		return;
 	}
 
-	BatchAction* batchAction = editor.actionQueue->createBatch(ACTION_PASTE_TILES);
-	Action* action = editor.actionQueue->createAction(batchAction);
+	std::unique_ptr<BatchAction> batchAction = editor.actionQueue->createBatch(ACTION_PASTE_TILES);
+	std::unique_ptr<Action> action = editor.actionQueue->createAction(batchAction.get());
 	for (TileLocation* location : *buffer.tiles) {
 		Tile* buffer_tile = location->get();
 		Position pos = buffer_tile->getPosition() - buffer.copyPos + toPosition;
@@ -190,17 +190,17 @@ void CopyOperations::paste(Editor& editor, CopyBuffer& buffer, const Position& t
 			continue;
 		}
 
-		TileLocation* location = editor.map.createTileL(pos);
+		TileLocation* dest_location = editor.map.createTileL(pos);
 		Tile* copy_tile = buffer_tile->deepCopy(editor.map);
-		Tile* old_dest_tile = location->get();
+		Tile* old_dest_tile = dest_location->get();
 		Tile* new_dest_tile = nullptr;
-		copy_tile->setLocation(location);
+		copy_tile->setLocation(dest_location);
 
 		if (g_settings.getInteger(Config::MERGE_PASTE) || !copy_tile->ground) {
 			if (old_dest_tile) {
 				new_dest_tile = old_dest_tile->deepCopy(editor.map);
 			} else {
-				new_dest_tile = editor.map.allocator(location);
+				new_dest_tile = editor.map.allocator(dest_location);
 			}
 			new_dest_tile->merge(copy_tile);
 			delete copy_tile;
@@ -219,12 +219,12 @@ void CopyOperations::paste(Editor& editor, CopyBuffer& buffer, const Position& t
 		editor.map.createTile(pos.x, pos.y + 1, pos.z);
 		editor.map.createTile(pos.x + 1, pos.y + 1, pos.z);
 
-		action->addChange(newd Change(new_dest_tile));
+		action->addChange(std::make_unique<Change>(new_dest_tile));
 	}
-	batchAction->addAndCommitAction(action);
+	batchAction->addAndCommitAction(std::move(action));
 
 	if (g_settings.getInteger(Config::USE_AUTOMAGIC) && g_settings.getInteger(Config::BORDERIZE_PASTE)) {
-		action = editor.actionQueue->createAction(batchAction);
+		action = editor.actionQueue->createAction(batchAction.get());
 		TileList borderize_tiles;
 		Map& map = editor.map;
 
@@ -295,13 +295,13 @@ void CopyOperations::paste(Editor& editor, CopyBuffer& buffer, const Position& t
 				}
 
 				newTile->wallize(&map);
-				action->addChange(newd Change(newTile));
+				action->addChange(std::make_unique<Change>(newTile));
 			}
 		}
 
 		// Commit changes to map
-		batchAction->addAndCommitAction(action);
+		batchAction->addAndCommitAction(std::move(action));
 	}
 
-	editor.addBatch(batchAction);
+	editor.addBatch(std::move(batchAction));
 }

@@ -376,7 +376,7 @@ void GUI::FitViewToMap(MapTab* mt) {
 bool GUI::NewMap() {
 	FinishWelcomeDialog();
 
-	Editor* editor;
+	std::unique_ptr<Editor> editor;
 	try {
 		editor = EditorFactory::CreateEmpty(copybuffer);
 	} catch (std::runtime_error& e) {
@@ -384,7 +384,7 @@ bool GUI::NewMap() {
 		return false;
 	}
 
-	auto* mapTab = newd MapTab(tabbook, editor);
+	auto* mapTab = newd MapTab(tabbook, editor.release());
 	mapTab->OnSwitchEditorMode(mode);
 	editor->map.clearChanges();
 
@@ -446,7 +446,7 @@ bool GUI::LoadMap(const FileName& fileName) {
 		g_gui.CloseCurrentEditor();
 	}
 
-	Editor* editor;
+	std::unique_ptr<Editor> editor;
 	try {
 		// Identify version first
 		MapVersion ver;
@@ -474,7 +474,7 @@ bool GUI::LoadMap(const FileName& fileName) {
 		return false;
 	}
 
-	auto* mapTab = newd MapTab(tabbook, editor);
+	auto* mapTab = newd MapTab(tabbook, editor.release());
 	mapTab->OnSwitchEditorMode(mode);
 
 	root->AddRecentFile(fileName);
