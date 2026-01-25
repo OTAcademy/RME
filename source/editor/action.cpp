@@ -152,7 +152,7 @@ void Action::commit(DirtyList* dirty_list) {
 				ASSERT(newtile);
 				Position pos = newtile->getPosition();
 
-				if (editor.IsLiveClient()) {
+				if (editor.live_manager.IsClient()) {
 					QTreeNode* nd = editor.map.getLeaf(pos.x, pos.y);
 					if (!nd || !nd->isVisible(pos.z > GROUND_LAYER)) {
 						// Delete all changes that affect tiles outside our view
@@ -166,7 +166,7 @@ void Action::commit(DirtyList* dirty_list) {
 				TileLocation* location = newtile->getLocation();
 
 				// Update other nodes in the network
-				if (editor.IsLiveServer() && dirty_list) {
+				if (editor.live_manager.IsServer() && dirty_list) {
 					dirty_list->AddPosition(pos.x, pos.y, pos.z);
 				}
 
@@ -227,7 +227,7 @@ void Action::commit(DirtyList* dirty_list) {
 				newtile->modify();
 
 				// Update client dirty list
-				if (editor.IsLiveClient() && dirty_list && type != ACTION_REMOTE) {
+				if (editor.live_manager.IsClient() && dirty_list && type != ACTION_REMOTE) {
 					// Local action, assemble changes
 					dirty_list->AddChange(c);
 				}
@@ -300,7 +300,7 @@ void Action::undo(DirtyList* dirty_list) {
 				ASSERT(oldtile);
 				Position pos = oldtile->getPosition();
 
-				if (editor.IsLiveClient()) {
+				if (editor.live_manager.IsClient()) {
 					QTreeNode* nd = editor.map.getLeaf(pos.x, pos.y);
 					if (!nd || !nd->isVisible(pos.z > GROUND_LAYER)) {
 						// Delete all changes that affect tiles outside our view
@@ -313,7 +313,7 @@ void Action::undo(DirtyList* dirty_list) {
 				Tile* newtile = editor.map.swapTile(pos, oldtile);
 
 				// Update server side change list (for broadcast)
-				if (editor.IsLiveServer() && dirty_list) {
+				if (editor.live_manager.IsServer() && dirty_list) {
 					dirty_list->AddPosition(pos.x, pos.y, pos.z);
 				}
 
@@ -355,7 +355,7 @@ void Action::undo(DirtyList* dirty_list) {
 				*data = newtile;
 
 				// Update client dirty list
-				if (editor.IsLiveClient() && dirty_list && type != ACTION_REMOTE) {
+				if (editor.live_manager.IsClient() && dirty_list && type != ACTION_REMOTE) {
 					// Local action, assemble changes
 					dirty_list->AddChange(c);
 				}
@@ -458,7 +458,7 @@ void BatchAction::addAction(Action* action) {
 
 	ASSERT(action->getType() == type);
 
-	if (!editor.CanEdit()) {
+	if (editor.live_manager.IsClient()) {
 		delete action;
 		return;
 	}
@@ -475,7 +475,7 @@ void BatchAction::addAndCommitAction(Action* action) {
 		return;
 	}
 
-	if (!editor.CanEdit()) {
+	if (editor.live_manager.IsClient()) {
 		delete action;
 		return;
 	}

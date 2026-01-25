@@ -47,29 +47,6 @@ Editor::Editor(CopyBuffer& copybuffer) :
 	selection(*this),
 	copybuffer(copybuffer),
 	replace_brush(nullptr) {
-	wxString error;
-	wxArrayString warnings;
-	bool ok = true;
-
-	ClientVersionID defaultVersion = ClientVersionID(g_settings.getInteger(Config::DEFAULT_CLIENT_VERSION));
-	if (defaultVersion == CLIENT_VERSION_NONE) {
-		defaultVersion = ClientVersion::getLatestVersion()->getID();
-	}
-
-	if (g_gui.GetCurrentVersionID() != defaultVersion) {
-		if (g_gui.CloseAllEditors()) {
-			ok = g_gui.LoadVersion(defaultVersion, error, warnings);
-			g_gui.PopupDialog("Error", error, wxOK);
-			g_gui.ListDialog("Warnings", warnings);
-		} else {
-			throw std::runtime_error("All maps of different versions were not closed.");
-		}
-	}
-
-	if (!ok) {
-		throw std::runtime_error("Couldn't load client version");
-	}
-
 	MapVersion version;
 	version.otbm = g_gui.GetCurrentVersion().getPrefferedMapVersionID();
 	version.client = g_gui.GetCurrentVersionID();
@@ -97,8 +74,8 @@ Editor::Editor(CopyBuffer& copybuffer, LiveClient* client) :
 }
 
 Editor::~Editor() {
-	if (IsLive()) {
-		CloseLiveServer();
+	if (live_manager.IsLive()) {
+		live_manager.CloseServer();
 	}
 
 	UnnamedRenderingLock();
@@ -114,26 +91,6 @@ void Editor::addBatch(BatchAction* action, int stacking_delay) {
 void Editor::addAction(Action* action, int stacking_delay) {
 	actionQueue->addAction(action, stacking_delay);
 	g_gui.UpdateMenus();
-}
-
-void Editor::saveMap(FileName filename, bool showdialog) {
-	EditorPersistence::saveMap(*this, filename, showdialog);
-}
-
-bool Editor::importMiniMap(FileName filename, int import, int import_x_offset, int import_y_offset, int import_z_offset) {
-	return false;
-}
-
-bool Editor::exportMiniMap(FileName filename, int floor /*= GROUND_LAYER*/, bool displaydialog) {
-	return map.exportMinimap(filename, floor, displaydialog);
-}
-
-bool Editor::exportSelectionAsMiniMap(FileName directory, wxString fileName) {
-	return EditorPersistence::exportSelectionAsMiniMap(*this, directory, fileName);
-}
-
-bool Editor::importMap(FileName filename, int import_x_offset, int import_y_offset, ImportType house_import_type, ImportType spawn_import_type) {
-	return EditorPersistence::importMap(*this, filename, import_x_offset, import_y_offset, house_import_type, spawn_import_type);
 }
 
 void Editor::borderizeSelection() {
@@ -184,54 +141,3 @@ void Editor::drawInternal(const PositionVector& tilestodraw, PositionVector& til
 
 ///////////////////////////////////////////////////////////////////////////////
 // Live!
-
-bool Editor::IsLiveClient() const {
-	return live_manager.IsClient();
-}
-
-bool Editor::IsLiveServer() const {
-	return live_manager.IsServer();
-}
-
-bool Editor::IsLive() const {
-	return live_manager.IsLive();
-}
-
-bool Editor::IsLocal() const {
-	return live_manager.IsLocal();
-}
-
-LiveClient* Editor::GetLiveClient() const {
-	return live_manager.GetClient();
-}
-
-LiveServer* Editor::GetLiveServer() const {
-	return live_manager.GetServer();
-}
-
-LiveSocket& Editor::GetLive() const {
-	return live_manager.GetSocket();
-}
-
-LiveServer* Editor::StartLiveServer() {
-	return live_manager.StartServer();
-}
-
-void Editor::BroadcastNodes(DirtyList& dirtyList) {
-	live_manager.BroadcastNodes(dirtyList);
-}
-
-void Editor::CloseLiveServer() {
-	live_manager.CloseServer();
-}
-
-void Editor::QueryNode(int ndx, int ndy, bool underground) {
-	ASSERT(live_manager.GetClient());
-	live_manager.GetClient()->queryNode(ndx, ndy, underground);
-}
-
-void Editor::SendNodeRequests() {
-	if (live_manager.GetClient()) {
-		live_manager.GetClient()->sendNodeRequests();
-	}
-}

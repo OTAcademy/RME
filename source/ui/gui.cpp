@@ -25,6 +25,7 @@
 #include "ui/main_menubar.h"
 
 #include "editor/editor.h"
+#include "editor/editor_factory.h"
 #include "brushes/brush.h"
 #include "map/map.h"
 #include "game/sprites.h"
@@ -451,7 +452,7 @@ void GUI::SaveCurrentMap(FileName filename, bool showdialog) {
 	if (mapTab) {
 		Editor* editor = mapTab->GetEditor();
 		if (editor) {
-			editor->saveMap(filename, showdialog);
+			EditorPersistence::saveMap(*editor, filename, showdialog);
 
 			const std::string& filename = editor->map.getFilename();
 			const Position& position = mapTab->GetScreenCenterPosition();
@@ -509,7 +510,7 @@ bool GUI::NewMap() {
 
 	Editor* editor;
 	try {
-		editor = newd Editor(copybuffer);
+		editor = EditorFactory::CreateEmpty(copybuffer);
 	} catch (std::runtime_error& e) {
 		PopupDialog(root, "Error!", wxString(e.what(), wxConvUTF8), wxOK);
 		return false;
@@ -579,7 +580,27 @@ bool GUI::LoadMap(const FileName& fileName) {
 
 	Editor* editor;
 	try {
-		editor = newd Editor(copybuffer, fileName);
+		// Identify version first
+		MapVersion ver;
+		if (!IOMapOTBM::getVersionInfo(fileName, ver)) {
+			throw std::runtime_error("Could not open file \"" + nstr(fileName.GetFullPath()) + "\".\nThis is not a valid OTBM file or it does not exist.");
+		}
+
+		if (g_gui.GetCurrentVersionID() != ver.client) {
+			wxString error;
+			wxArrayString warnings;
+			if (g_gui.CloseAllEditors()) {
+				if (!g_gui.LoadVersion(ver.client, error, warnings)) {
+					g_gui.PopupDialog("Error", error, wxOK);
+					return false;
+				}
+				g_gui.ListDialog("Warnings", warnings);
+			} else {
+				throw std::runtime_error("All maps of different versions were not closed.");
+			}
+		}
+
+		editor = EditorFactory::LoadFromFile(copybuffer, fileName);
 	} catch (std::runtime_error& e) {
 		PopupDialog(root, "Error!", wxString(e.what(), wxConvUTF8), wxOK);
 		return false;
@@ -690,7 +711,7 @@ bool GUI::CloseLiveEditors(LiveSocket* sock) {
 		auto* mapTab = dynamic_cast<MapTab*>(tabbook->GetTab(i));
 		if (mapTab) {
 			Editor* editor = mapTab->GetEditor();
-			if (editor->GetLiveClient() == sock) {
+			if (editor->live_manager.GetClient() == sock) {
 				tabbook->DeleteTab(i--);
 			}
 		}
@@ -1072,8 +1093,8 @@ void GUI::CreateLoadBar(wxString message, bool canCancel /* = false */) {
 
 	for (int idx = 0; idx < tabbook->GetTabCount(); ++idx) {
 		auto* mt = dynamic_cast<MapTab*>(tabbook->GetTab(idx));
-		if (mt && mt->GetEditor()->IsLiveServer()) {
-			mt->GetEditor()->GetLiveServer()->startOperation(progressText);
+		if (mt && mt->GetEditor()->live_manager.IsServer()) {
+			mt->GetEditor()->live_manager.GetServer()->startOperation(progressText);
 		}
 	}
 	progressBar->Update(0);
@@ -1112,7 +1133,7 @@ bool GUI::SetLoadDone(int32_t done, const wxString& newMessage) {
 	for (int32_t index = 0; index < tabbook->GetTabCount(); ++index) {
 		auto* mapTab = dynamic_cast<MapTab*>(tabbook->GetTab(index));
 		if (mapTab && mapTab->GetEditor()) {
-			LiveServer* server = mapTab->GetEditor()->GetLiveServer();
+			LiveServer* server = mapTab->GetEditor()->live_manager.GetServer();
 			if (server) {
 				server->updateOperation(newProgress);
 			}

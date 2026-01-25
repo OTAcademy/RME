@@ -37,7 +37,7 @@ class LiveSocket;
 
 #include "live/live_manager.h"
 
-class Editor : public wxFrame {
+class Editor {
 public:
 	Editor(CopyBuffer& copybuffer, LiveClient* client);
 	Editor(CopyBuffer& copybuffer, const FileName& fn);
@@ -56,34 +56,7 @@ public:
 	Map map; // The map that is being edited
 
 public: // Functions
-	// Live Server handling
-	LiveClient* GetLiveClient() const;
-	LiveServer* GetLiveServer() const;
-	LiveSocket& GetLive() const;
-	bool CanEdit() const {
-		return true;
-	}
-	bool IsLocal() const;
-	bool IsLive() const;
-	bool IsLiveServer() const;
-	bool IsLiveClient() const;
-
-	// Server side
-	LiveServer* StartLiveServer();
-	void CloseLiveServer();
-	void BroadcastNodes(DirtyList& dirty_list);
-
-	// Client side
-	void QueryNode(int ndx, int ndy, bool underground);
-	void SendNodeRequests();
-
 	// Map handling
-	void saveMap(FileName filename, bool showdialog); // "" means default filename
-
-	bool importMap(FileName filename, int import_x_offset, int import_y_offset, ImportType house_import_type, ImportType spawn_import_type);
-	bool importMiniMap(FileName filename, int import, int import_x_offset, int import_y_offset, int import_z_offset);
-	bool exportMiniMap(FileName filename, int floor /*= GROUND_LAYER*/, bool displaydialog);
-	bool exportSelectionAsMiniMap(FileName directory, wxString fileName);
 
 	// Adds an action to the action queue (this allows the user to undo the action)
 	// Invalidates the action pointer

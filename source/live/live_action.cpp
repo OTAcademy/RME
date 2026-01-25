@@ -114,5 +114,5 @@ BatchAction* NetworkedActionQueue::createBatch(ActionIdentifier ident) {
 }
 
 void NetworkedActionQueue::broadcast(DirtyList& dirty_list) {
-	editor.BroadcastNodes(dirty_list);
+	editor.live_manager.BroadcastNodes(dirty_list);
 }

@@ -26,6 +26,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/copybuffer.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/editor_factory.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/copy_operations.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/draw_operations.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/selection_operations.h
@@ -208,6 +209,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/copybuffer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/editor_factory.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/copy_operations.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/draw_operations.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/selection_operations.cpp

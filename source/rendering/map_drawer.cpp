@@ -190,7 +190,7 @@ void MapDrawer::DrawBackground() {
 }
 
 void MapDrawer::DrawMap() {
-	bool live_client = editor.IsLiveClient();
+	bool live_client = editor.live_manager.IsClient();
 
 	bool only_colors = options.show_as_minimap || options.show_only_colors;
 

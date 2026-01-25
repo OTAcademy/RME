@@ -319,8 +319,8 @@ void MainMenuBar::Update() {
 	bool loaded = g_gui.IsVersionLoaded();
 	bool has_map = editor != nullptr;
 	bool has_selection = editor && editor->hasSelection();
-	bool is_live = editor && editor->IsLive();
-	bool is_host = has_map && !editor->IsLiveClient();
+	bool is_live = editor && editor->live_manager.IsLive();
+	bool is_host = has_map && !editor->live_manager.IsClient();
 	bool is_local = has_map && !is_live;
 
 	EnableItem(CLOSE, is_local);
@@ -1902,7 +1902,7 @@ void MainMenuBar::OnStartLive(wxCommandEvent& event) {
 		g_gui.PopupDialog("Error", "You need to have a map open to start a live mapping session.", wxOK);
 		return;
 	}
-	if (editor->IsLive()) {
+	if (editor->live_manager.IsLive()) {
 		g_gui.PopupDialog("Error", "You can not start two live servers on the same map (or a server using a remote map).", wxOK);
 		return;
 	}
@@ -1944,7 +1944,7 @@ void MainMenuBar::OnStartLive(wxCommandEvent& event) {
 	while (true) {
 		int ret = live_host_dlg->ShowModal();
 		if (ret == wxID_OK) {
-			LiveServer* liveServer = editor->StartLiveServer();
+			LiveServer* liveServer = editor->live_manager.StartServer();
 			liveServer->setName(hostname->GetValue());
 			liveServer->setPassword(password->GetValue());
 			liveServer->setPort(port->GetValue());
@@ -1952,13 +1952,13 @@ void MainMenuBar::OnStartLive(wxCommandEvent& event) {
 			const wxString& error = liveServer->getLastError();
 			if (!error.empty()) {
 				g_gui.PopupDialog(live_host_dlg, "Error", error, wxOK);
-				editor->CloseLiveServer();
+				editor->live_manager.CloseServer();
 				continue;
 			}
 
 			if (!liveServer->bind()) {
 				g_gui.PopupDialog("Socket Error", "Could not bind socket! Try another port?", wxOK);
-				editor->CloseLiveServer();
+				editor->live_manager.CloseServer();
 			} else {
 				liveServer->createLogWindow(g_gui.tabbook);
 			}
@@ -2045,8 +2045,8 @@ void MainMenuBar::OnJoinLive(wxCommandEvent& event) {
 
 void MainMenuBar::OnCloseLive(wxCommandEvent& event) {
 	Editor* editor = g_gui.GetCurrentEditor();
-	if (editor && editor->IsLive()) {
-		g_gui.CloseLiveEditors(&editor->GetLive());
+	if (editor && editor->live_manager.IsLive()) {
+		g_gui.CloseLiveEditors(&editor->live_manager.GetSocket());
 	}
 
 	Update();

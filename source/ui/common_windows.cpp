@@ -434,7 +434,7 @@ void ImportMapWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 
 		EndModal(1);
 
-		editor.importMap(fn, x_offset_ctrl->GetValue(), y_offset_ctrl->GetValue(), house_import_type, spawn_import_type);
+		EditorPersistence::importMap(editor, fn, x_offset_ctrl->GetValue(), y_offset_ctrl->GetValue(), house_import_type, spawn_import_type);
 	}
 }
 
@@ -553,7 +553,8 @@ void ExportMiniMapWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 					g_gui.SetLoadScale(int(floor * (100.f / 16.f)), int((floor + 1) * (100.f / 16.f)));
 					FileName file(file_name_text_field->GetValue() + "_" + i2ws(floor) + ".bmp");
 					file.Normalize(wxPATH_NORM_ALL, directory.GetFullPath());
-					editor.exportMiniMap(file, floor, true);
+
+					EditorPersistence::exportMiniMap(editor, file, floor, true);
 				}
 				break;
 			}
@@ -561,7 +562,8 @@ void ExportMiniMapWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 			case 1: { // Ground floor
 				FileName file(file_name_text_field->GetValue() + "_" + i2ws(GROUND_LAYER) + ".bmp");
 				file.Normalize(wxPATH_NORM_ALL, directory.GetFullPath());
-				editor.exportMiniMap(file, GROUND_LAYER, true);
+
+				EditorPersistence::exportMiniMap(editor, file, GROUND_LAYER, true);
 				break;
 			}
 
@@ -569,12 +571,14 @@ void ExportMiniMapWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 				int floor = floor_number->GetValue();
 				FileName file(file_name_text_field->GetValue() + "_" + i2ws(floor) + ".bmp");
 				file.Normalize(wxPATH_NORM_ALL, directory.GetFullPath());
-				editor.exportMiniMap(file, floor, true);
+
+				EditorPersistence::exportMiniMap(editor, file, floor, true);
 				break;
 			}
 
 			case 3: { // Selected area
-				editor.exportSelectionAsMiniMap(directory, file_name_text_field->GetValue());
+
+				EditorPersistence::exportSelectionAsMiniMap(editor, directory, file_name_text_field->GetValue());
 				break;
 			}
 		}

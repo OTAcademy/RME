@@ -35,8 +35,8 @@ void MapStatusUpdater::Update(Editor& editor, int map_x, int map_y, int map_z) {
 	if (tile) {
 		ss = TileDescriber::GetDescription(tile, g_settings.getInteger(Config::SHOW_SPAWNS), g_settings.getInteger(Config::SHOW_CREATURES));
 
-		if (editor.IsLive()) {
-			editor.GetLive().updateCursor(Position(map_x, map_y, map_z));
+		if (editor.live_manager.IsLive()) {
+			editor.live_manager.GetSocket().updateCursor(Position(map_x, map_y, map_z));
 		}
 		g_gui.root->SetStatusText(ss, 1);
 	} else {

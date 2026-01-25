@@ -221,7 +221,7 @@ void MainToolBar::UpdateButtons() {
 	}
 
 	bool has_map = editor != nullptr;
-	bool is_host = has_map && !editor->IsLiveClient();
+	bool is_host = has_map && !editor->live_manager.IsClient();
 
 	standard_toolbar->EnableTool(wxID_SAVE, is_host);
 	standard_toolbar->EnableTool(wxID_SAVEAS, is_host);

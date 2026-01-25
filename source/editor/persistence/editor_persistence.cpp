@@ -25,18 +25,7 @@ void EditorPersistence::loadMap(Editor& editor, const FileName& fn) {
 
 	bool success = true;
 	if (g_gui.GetCurrentVersionID() != ver.client) {
-		wxString error;
-		wxArrayString warnings;
-		if (g_gui.CloseAllEditors()) {
-			success = g_gui.LoadVersion(ver.client, error, warnings);
-			if (!success) {
-				g_gui.PopupDialog("Error", error, wxOK);
-			} else {
-				g_gui.ListDialog("Warnings", warnings);
-			}
-		} else {
-			throw std::runtime_error("All maps of different versions were not closed.");
-		}
+		throw std::runtime_error("Client version mismatch. Expected " + i2s(ver.client) + " but got " + i2s(g_gui.GetCurrentVersionID()));
 	}
 
 	if (success) {
@@ -678,4 +667,12 @@ bool EditorPersistence::exportSelectionAsMiniMap(Editor& editor, FileName direct
 	}
 
 	return true;
+}
+
+bool EditorPersistence::exportMiniMap(Editor& editor, FileName filename, int floor, bool displaydialog) {
+	return editor.map.exportMinimap(filename, floor, displaydialog);
+}
+
+bool EditorPersistence::importMiniMap(Editor& editor, FileName filename, int import, int import_x_offset, int import_y_offset, int import_z_offset) {
+	return false;
 }
