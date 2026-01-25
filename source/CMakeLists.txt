@@ -38,7 +38,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/map_version_changer.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/editor_persistence.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/tileset_exporter.h
-    ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/minimap_exporter.h
+
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_tabs.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection_thread.h
@@ -181,7 +181,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/map_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/towns_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/import_map_window.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_minimap_window.h
+
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_tilesets_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui_ids.h
@@ -274,7 +274,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/map_version_changer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/editor_persistence.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/tileset_exporter.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/minimap_exporter.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_tabs.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection_thread.cpp
@@ -405,7 +405,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/map_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/towns_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/import_map_window.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_minimap_window.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_tilesets_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_menubar.cpp
