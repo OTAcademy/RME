@@ -23,6 +23,7 @@
 #include <wx/aui/auibar.h>
 
 #include "ui/gui_ids.h"
+#include "brushes/brush_enums.h"
 #include "ui/numbertextctrl.h"
 
 class MainToolBar : public wxEvtHandler {

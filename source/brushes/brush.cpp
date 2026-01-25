@@ -29,6 +29,7 @@
 #include "brushes/table_brush.h"
 #include "brushes/wall_brush.h"
 #include "brushes/waypoint_brush.h"
+#include "brushes/managers/brush_manager.h"
 
 #include "app/settings.h"
 
@@ -65,25 +66,25 @@ void Brushes::clear() {
 }
 
 void Brushes::init() {
-	addBrush(g_gui.optional_brush = newd OptionalBorderBrush());
-	addBrush(g_gui.eraser = newd EraserBrush());
-	addBrush(g_gui.spawn_brush = newd SpawnBrush());
-	addBrush(g_gui.normal_door_brush = newd DoorBrush(WALL_DOOR_NORMAL));
-	addBrush(g_gui.locked_door_brush = newd DoorBrush(WALL_DOOR_LOCKED));
-	addBrush(g_gui.magic_door_brush = newd DoorBrush(WALL_DOOR_MAGIC));
-	addBrush(g_gui.quest_door_brush = newd DoorBrush(WALL_DOOR_QUEST));
-	addBrush(g_gui.hatch_door_brush = newd DoorBrush(WALL_HATCH_WINDOW));
-	addBrush(g_gui.archway_door_brush = newd DoorBrush(WALL_ARCHWAY));
-	addBrush(g_gui.normal_door_alt_brush = newd DoorBrush(WALL_DOOR_NORMAL_ALT));
-	addBrush(g_gui.window_door_brush = newd DoorBrush(WALL_WINDOW));
-	addBrush(g_gui.house_brush = newd HouseBrush());
-	addBrush(g_gui.house_exit_brush = newd HouseExitBrush());
-	addBrush(g_gui.waypoint_brush = newd WaypointBrush());
+	addBrush(g_brush_manager.optional_brush = newd OptionalBorderBrush());
+	addBrush(g_brush_manager.eraser = newd EraserBrush());
+	addBrush(g_brush_manager.spawn_brush = newd SpawnBrush());
+	addBrush(g_brush_manager.normal_door_brush = newd DoorBrush(WALL_DOOR_NORMAL));
+	addBrush(g_brush_manager.locked_door_brush = newd DoorBrush(WALL_DOOR_LOCKED));
+	addBrush(g_brush_manager.magic_door_brush = newd DoorBrush(WALL_DOOR_MAGIC));
+	addBrush(g_brush_manager.quest_door_brush = newd DoorBrush(WALL_DOOR_QUEST));
+	addBrush(g_brush_manager.hatch_door_brush = newd DoorBrush(WALL_HATCH_WINDOW));
+	addBrush(g_brush_manager.archway_door_brush = newd DoorBrush(WALL_ARCHWAY));
+	addBrush(g_brush_manager.normal_door_alt_brush = newd DoorBrush(WALL_DOOR_NORMAL_ALT));
+	addBrush(g_brush_manager.window_door_brush = newd DoorBrush(WALL_WINDOW));
+	addBrush(g_brush_manager.house_brush = newd HouseBrush());
+	addBrush(g_brush_manager.house_exit_brush = newd HouseExitBrush());
+	addBrush(g_brush_manager.waypoint_brush = newd WaypointBrush());
 
-	addBrush(g_gui.pz_brush = newd FlagBrush(TILESTATE_PROTECTIONZONE));
-	addBrush(g_gui.rook_brush = newd FlagBrush(TILESTATE_NOPVP));
-	addBrush(g_gui.nolog_brush = newd FlagBrush(TILESTATE_NOLOGOUT));
-	addBrush(g_gui.pvp_brush = newd FlagBrush(TILESTATE_PVPZONE));
+	addBrush(g_brush_manager.pz_brush = newd FlagBrush(TILESTATE_PROTECTIONZONE));
+	addBrush(g_brush_manager.rook_brush = newd FlagBrush(TILESTATE_NOPVP));
+	addBrush(g_brush_manager.nolog_brush = newd FlagBrush(TILESTATE_NOLOGOUT));
+	addBrush(g_brush_manager.pvp_brush = newd FlagBrush(TILESTATE_PVPZONE));
 
 	GroundBrush::init();
 	WallBrush::init();

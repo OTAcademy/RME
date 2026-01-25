@@ -23,6 +23,7 @@
 #include "ui/dcbutton.h"
 #include "map/tileset.h"
 #include "ui/gui_ids.h"
+#include "brushes/brush_enums.h"
 #include "ui/common_windows.h"
 
 class GUI;

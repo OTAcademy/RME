@@ -18,6 +18,7 @@
 #include "app/main.h"
 #include "rendering/ui/brush_selector.h"
 #include "ui/gui.h"
+#include "brushes/managers/brush_manager.h"
 #include "editor/editor.h"
 #include "map/tile.h"
 #include "game/item.h"
@@ -148,8 +149,8 @@ void BrushSelector::SelectHouseBrush(Editor& editor, Selection& selection) {
 	if (tile->isHouseTile()) {
 		House* house = editor.map.houses.getHouse(tile->getHouseID());
 		if (house) {
-			g_gui.house_brush->setHouse(house);
-			g_gui.SelectBrush(g_gui.house_brush, TILESET_HOUSE);
+			g_brush_manager.house_brush->setHouse(house);
+			g_gui.SelectBrush(g_brush_manager.house_brush, TILESET_HOUSE);
 		}
 	}
 }
@@ -215,7 +216,7 @@ void BrushSelector::SelectCreatureBrush(Selection& selection) {
 }
 
 void BrushSelector::SelectSpawnBrush() {
-	g_gui.SelectBrush(g_gui.spawn_brush, TILESET_CREATURE);
+	g_gui.SelectBrush(g_brush_manager.spawn_brush, TILESET_CREATURE);
 }
 
 void BrushSelector::SelectSmartBrush(Editor& editor, Tile* tile) {

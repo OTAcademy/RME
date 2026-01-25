@@ -24,6 +24,7 @@
 #include "game/complexitem.h"
 #include "io/iomap.h"
 #include "game/item.h"
+#include "brushes/managers/brush_manager.h"
 
 #include "brushes/ground_brush.h"
 #include "brushes/carpet_brush.h"
@@ -343,35 +344,35 @@ DoorBrush* Item::getDoorBrush() const {
 	// Quite a horrible dependency on a global here, meh.
 	switch (door_type) {
 		case WALL_DOOR_NORMAL: {
-			door_brush = g_gui.normal_door_brush;
+			door_brush = g_brush_manager.normal_door_brush;
 			break;
 		}
 		case WALL_DOOR_LOCKED: {
-			door_brush = g_gui.locked_door_brush;
+			door_brush = g_brush_manager.locked_door_brush;
 			break;
 		}
 		case WALL_DOOR_QUEST: {
-			door_brush = g_gui.quest_door_brush;
+			door_brush = g_brush_manager.quest_door_brush;
 			break;
 		}
 		case WALL_DOOR_MAGIC: {
-			door_brush = g_gui.magic_door_brush;
+			door_brush = g_brush_manager.magic_door_brush;
 			break;
 		}
 		case WALL_DOOR_NORMAL_ALT: {
-			door_brush = g_gui.normal_door_alt_brush;
+			door_brush = g_brush_manager.normal_door_alt_brush;
 			break;
 		}
 		case WALL_ARCHWAY: {
-			door_brush = g_gui.archway_door_brush;
+			door_brush = g_brush_manager.archway_door_brush;
 			break;
 		}
 		case WALL_WINDOW: {
-			door_brush = g_gui.window_door_brush;
+			door_brush = g_brush_manager.window_door_brush;
 			break;
 		}
 		case WALL_HATCH_WINDOW: {
-			door_brush = g_gui.hatch_door_brush;
+			door_brush = g_brush_manager.hatch_door_brush;
 			break;
 		}
 		default: {

@@ -7,6 +7,7 @@
 #include "editor/editor.h"
 #include "editor/action_queue.h"
 #include "ui/gui.h"
+#include "brushes/managers/doodad_preview_manager.h"
 #include "brushes/brush.h"
 #include "brushes/doodad_brush.h"
 #include "brushes/ground_brush.h"
@@ -31,7 +32,7 @@ void DrawOperations::draw(Editor& editor, Position offset, bool alt, bool dodraw
 	if (brush->isDoodad()) {
 		std::unique_ptr<BatchAction> batch = editor.actionQueue->createBatch(ACTION_DRAW);
 		std::unique_ptr<Action> action = editor.actionQueue->createAction(batch.get());
-		BaseMap* buffer_map = g_gui.doodad_buffer_map;
+		BaseMap* buffer_map = g_doodad_preview.GetBufferMap();
 
 		Position delta_pos = offset - Position(0x8000, 0x8000, 0x8);
 		PositionList tilestoborder;
@@ -405,8 +406,8 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, Pos
 
 		if (alt && dodraw) {
 			// This is exempt from USE_AUTOMAGIC
-			g_gui.doodad_buffer_map->clear();
-			BaseMap* draw_map = g_gui.doodad_buffer_map;
+			g_doodad_preview.GetBufferMap()->clear();
+			BaseMap* draw_map = g_doodad_preview.GetBufferMap();
 
 			for (PositionVector::const_iterator it = tilestodraw.begin(); it != tilestodraw.end(); ++it) {
 				TileLocation* location = editor.map.createTileL(*it);

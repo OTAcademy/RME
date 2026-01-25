@@ -26,11 +26,6 @@ enum {
 	SELECT_VISIBLE_FLOORS,
 };
 
-enum BrushShape {
-	BRUSHSHAPE_CIRCLE,
-	BRUSHSHAPE_SQUARE,
-};
-
 enum EditorMode {
 	SELECTION_MODE,
 	DRAWING_MODE,

@@ -184,7 +184,7 @@ bool Materials::loadExtensions(FileName directoryName, wxString& error, wxArrayS
 		}
 
 		extensions.push_back(materialExtension);
-		if (materialExtension->isForVersion(g_gui.GetCurrentVersionID())) {
+		if (materialExtension->isForVersion(g_version.GetCurrentVersionID())) {
 			unserializeMaterials(filename, extensionNode, error, warnings);
 		}
 	} while (ext_dir.GetNext(&filename));

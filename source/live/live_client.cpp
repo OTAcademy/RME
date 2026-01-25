@@ -18,6 +18,7 @@
 #include "app/main.h"
 
 #include "ui/dialog_util.h"
+#include "app/managers/version_manager.h"
 #include "live/live_client.h"
 #include "live/live_tab.h"
 #include "live/live_action.h"
@@ -254,7 +255,7 @@ void LiveClient::sendHello() {
 	message.write<uint8_t>(PACKET_HELLO_FROM_CLIENT);
 	message.write<uint32_t>(__RME_VERSION_ID__);
 	message.write<uint32_t>(__LIVE_NET_VERSION__);
-	message.write<uint32_t>(g_gui.GetCurrentVersionID());
+	message.write<uint32_t>(g_version.GetCurrentVersionID());
 	message.write<std::string>(nstr(name));
 	message.write<std::string>(nstr(password));
 
@@ -401,7 +402,7 @@ void LiveClient::parseChangeClientVersion(NetworkMessage& message) {
 
 	wxString error;
 	wxArrayString warnings;
-	g_gui.LoadVersion(clientVersion, error, warnings);
+	g_version.LoadVersion(clientVersion, error, warnings);
 
 	sendReady();
 }

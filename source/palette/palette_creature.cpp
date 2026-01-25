@@ -20,6 +20,7 @@
 #include "app/settings.h"
 #include "brushes/brush.h"
 #include "ui/gui.h"
+#include "brushes/managers/brush_manager.h"
 #include "palette/palette_creature.h"
 #include "brushes/creature_brush.h"
 #include "brushes/spawn_brush.h"
@@ -99,13 +100,13 @@ Brush* CreaturePalettePanel::GetSelectedBrush() const {
 		}
 		Brush* brush = reinterpret_cast<Brush*>(creature_list->GetClientData(creature_list->GetSelection()));
 		if (brush && brush->isCreature()) {
-			g_gui.SetSpawnTime(creature_spawntime_spin->GetValue());
+			g_brush_manager.SetSpawnTime(creature_spawntime_spin->GetValue());
 			return brush;
 		}
 	} else if (spawn_brush_button->GetValue()) {
 		g_settings.setInteger(Config::CURRENT_SPAWN_RADIUS, spawn_size_spin->GetValue());
 		g_settings.setInteger(Config::DEFAULT_SPAWNTIME, creature_spawntime_spin->GetValue());
-		return g_gui.spawn_brush;
+		return g_brush_manager.spawn_brush;
 	}
 	return nullptr;
 }

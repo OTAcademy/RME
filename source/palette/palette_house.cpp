@@ -19,6 +19,7 @@
 
 #include "ui/dialog_util.h"
 #include "palette/palette_house.h"
+#include "brushes/managers/brush_manager.h"
 
 #include "app/settings.h"
 
@@ -105,7 +106,7 @@ HousePalettePanel::~HousePalettePanel() {
 }
 
 void HousePalettePanel::SetMap(Map* m) {
-	g_gui.house_brush->setHouse(nullptr);
+	g_brush_manager.house_brush->setHouse(nullptr);
 	map = m;
 	OnUpdate();
 }
@@ -138,12 +139,12 @@ Brush* HousePalettePanel::GetSelectedBrush() const {
 	if (select_position_button->GetValue()) {
 		House* house = GetCurrentlySelectedHouse();
 		if (house) {
-			g_gui.house_exit_brush->setHouse(house);
+			g_brush_manager.house_exit_brush->setHouse(house);
 		}
-		return (g_gui.house_exit_brush->getHouseID() != 0 ? g_gui.house_exit_brush : nullptr);
+		return (g_brush_manager.house_exit_brush->getHouseID() != 0 ? g_brush_manager.house_exit_brush : nullptr);
 	} else if (house_brush_button->GetValue()) {
-		g_gui.house_brush->setHouse(GetCurrentlySelectedHouse());
-		return (g_gui.house_brush->getHouseID() != 0 ? g_gui.house_brush : nullptr);
+		g_brush_manager.house_brush->setHouse(GetCurrentlySelectedHouse());
+		return (g_brush_manager.house_brush->getHouseID() != 0 ? g_brush_manager.house_brush : nullptr);
 	}
 	return nullptr;
 }

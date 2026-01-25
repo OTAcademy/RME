@@ -22,6 +22,7 @@
 #include "app/preferences.h"
 #include "ui/about_window.h"
 #include "rendering/ui/minimap_window.h"
+#include "app/managers/version_manager.h"
 #include "ui/dat_debug_view.h"
 #include "ui/result_window.h"
 #include "ui/extension_window.h"
@@ -318,7 +319,7 @@ void MainMenuBar::Update() {
 		EnableItem(PASTE, false);
 	}
 
-	bool loaded = g_gui.IsVersionLoaded();
+	bool loaded = g_version.IsVersionLoaded();
 	bool has_map = editor != nullptr;
 	bool has_selection = editor && editor->hasSelection();
 	bool is_live = editor && editor->live_manager.IsLive();
@@ -816,7 +817,7 @@ void MainMenuBar::OnDebugViewDat(wxCommandEvent& WXUNUSED(event)) {
 void MainMenuBar::OnReloadDataFiles(wxCommandEvent& WXUNUSED(event)) {
 	wxString error;
 	wxArrayString warnings;
-	g_gui.LoadVersion(g_gui.GetCurrentVersionID(), error, warnings, true);
+	g_version.LoadVersion(g_version.GetCurrentVersionID(), error, warnings, true);
 	DialogUtil::PopupDialog("Error", error, wxOK);
 	DialogUtil::ListDialog("Warnings", warnings);
 }
@@ -908,7 +909,7 @@ void MainMenuBar::OnSearchForItem(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MainMenuBar::OnReplaceItems(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsVersionLoaded()) {
+	if (!g_version.IsVersionLoaded()) {
 		return;
 	}
 
@@ -1096,7 +1097,7 @@ void MainMenuBar::OnSearchForItemOnSelection(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MainMenuBar::OnReplaceItemsOnSelection(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsVersionLoaded()) {
+	if (!g_version.IsVersionLoaded()) {
 		return;
 	}
 
@@ -1208,7 +1209,7 @@ void MainMenuBar::OnRandomizeMap(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MainMenuBar::OnJumpToBrush(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsVersionLoaded()) {
+	if (!g_version.IsVersionLoaded()) {
 		return;
 	}
 
@@ -1227,7 +1228,7 @@ void MainMenuBar::OnJumpToBrush(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MainMenuBar::OnJumpToItemBrush(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsVersionLoaded()) {
+	if (!g_version.IsVersionLoaded()) {
 		return;
 	}
 

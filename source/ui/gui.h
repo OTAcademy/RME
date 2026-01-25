@@ -12,6 +12,12 @@
 #include "ui/map_tab.h"
 #include "palette/palette_window.h"
 #include "app/client_version.h"
+#include "app/managers/version_manager.h"
+#include "ui/managers/loading_manager.h"
+#include "ui/managers/layout_manager.h"
+#include "ui/managers/minimap_manager.h"
+#include "brushes/managers/doodad_preview_manager.h"
+#include "ui/managers/status_manager.h"
 
 class BaseMap;
 class Map;
@@ -51,6 +57,9 @@ extern const wxEventType EVT_UPDATE_MENUS;
 		(wxObject*)nullptr                                                                      \
 	),
 
+#include "brushes/managers/brush_manager.h"
+#include "palette/managers/palette_manager.h"
+#include "editor/managers/editor_manager.h"
 #include "editor/hotkey_manager.h"
 
 class GUI {
@@ -68,42 +77,39 @@ public:
 	 * Saves the perspective to the configuration file
 	 * This is the position of all windows etc. in the editor
 	 */
-	void SavePerspective();
+	void SavePerspective() {
+		g_layout.SavePerspective();
+	}
 
 	/**
 	 * Loads the stored perspective from the configuration file
 	 */
-	void LoadPerspective();
+	void LoadPerspective() {
+		g_layout.LoadPerspective();
+	}
 
-	/**
-	 * Creates a loading bar with the specified message, title is always "Loading"
-	 * The default scale is 0 - 100
-	 */
-	void CreateLoadBar(wxString message, bool canCancel = false);
-
-	/**
-	 * Sets how much of the load has completed, the scale can be set with
-	 * SetLoadScale.
-	 * If this returns false, the user has hit the quit button and you should
-	 * abort the loading.
-	 */
-	bool SetLoadDone(int32_t done, const wxString& newMessage = "");
-
-	/**
-	 * Sets the scale of the loading bar.
-	 * Calling this with (50, 80) means that setting 50 as 'done',
-	 * it will display as 0% loaded, 80 will display as 100% loaded.
-	 */
-	void SetLoadScale(int32_t from, int32_t to);
+	void CreateLoadBar(wxString message, bool canCancel = false) {
+		g_loading.CreateLoadBar(message, canCancel);
+	}
+	void SetLoadScale(int32_t from, int32_t to) {
+		g_loading.SetLoadScale(from, to);
+	}
+	bool SetLoadDone(int32_t done, const wxString& newMessage = "") {
+		return g_loading.SetLoadDone(done, newMessage);
+	}
 
 	void ShowWelcomeDialog(const wxBitmap& icon);
+
 	void FinishWelcomeDialog();
 	bool IsWelcomeDialogShown();
 
 	/**
 	 * Destroys (hides) the current loading bar.
 	 */
-	void DestroyLoadBar();
+
+	void DestroyLoadBar() {
+		g_loading.DestroyLoadBar();
+	}
 
 	void UpdateMenubar();
 
@@ -128,11 +134,17 @@ protected:
 	}
 
 public:
-	void SetTitle(wxString newtitle);
-	void UpdateTitle();
+	void SetTitle(wxString newtitle) {
+		g_status.SetTitle(newtitle);
+	}
+	void UpdateTitle() {
+		g_status.UpdateTitle();
+	}
 	void UpdateMenus();
 	void ShowToolbar(ToolBarID id, bool show);
-	void SetStatusText(wxString text);
+	void SetStatusText(wxString text) {
+		g_status.SetStatusText(text);
+	}
 
 	// Get the current GL context
 	// Param is required if the context is to be created.
@@ -143,11 +155,21 @@ public:
 	void HideSearchWindow();
 
 	// Minimap
-	void CreateMinimap();
-	void HideMinimap();
-	void DestroyMinimap();
-	void UpdateMinimap(bool immediate = false);
-	bool IsMinimapVisible() const;
+	void CreateMinimap() {
+		g_minimap.Create();
+	}
+	void HideMinimap() {
+		g_minimap.Hide();
+	}
+	void DestroyMinimap() {
+		g_minimap.Destroy();
+	}
+	void UpdateMinimap(bool immediate = false) {
+		g_minimap.Update(immediate);
+	}
+	bool IsMinimapVisible() const {
+		return g_minimap.IsVisible();
+	}
 
 	int GetCurrentFloor();
 	void ChangeFloor(int newfloor);
@@ -184,23 +206,13 @@ public:
 	int GetSpawnTime() const;
 
 	// Additional brush parameters
-	void SetSpawnTime(int time) {
-		creature_spawntime = time;
-	}
+	void SetSpawnTime(int time);
 
-	void SetLightIntensity(float v) {
-		light_intensity = v;
-	}
-	float GetLightIntensity() const {
-		return light_intensity;
-	}
+	void SetLightIntensity(float v);
+	float GetLightIntensity() const;
 
-	void SetAmbientLightLevel(float v) {
-		ambient_light_level = v;
-	}
-	float GetAmbientLightLevel() const {
-		return ambient_light_level;
-	}
+	void SetAmbientLightLevel(float v);
+	float GetAmbientLightLevel() const;
 	void SetBrushSize(int nz);
 	void SetBrushSizeInternal(int nz);
 	void SetBrushShape(BrushShape bs);
@@ -213,18 +225,6 @@ public:
 	// Door brush options
 	void SetDoorLocked(bool on);
 	bool HasDoorLocked();
-
-	// Load/unload a client version (takes care of dialogs aswell)
-
-	void UnloadVersion();
-	bool LoadVersion(ClientVersionID ver, wxString& error, wxArrayString& warnings, bool force = false);
-	// The current version loaded (returns CLIENT_VERSION_NONE if no version is loaded)
-	const ClientVersion& GetCurrentVersion() const;
-	ClientVersionID GetCurrentVersionID() const;
-	// If any version is loaded at all
-	bool IsVersionLoaded() const {
-		return loaded_version != CLIENT_VERSION_NONE;
-	}
 
 	// Centers current view on position
 	void SetScreenCenterPosition(Position pos);
@@ -270,10 +270,8 @@ public:
 	Map& GetCurrentMap();
 	int GetOpenMapCount();
 	bool ShouldSave();
-	void SaveCurrentMap(FileName filename, bool showdialog); // "" means default filename
-	void SaveCurrentMap(bool showdialog = true) {
-		SaveCurrentMap(wxString(""), showdialog);
-	}
+	void SaveCurrentMap(FileName filename, bool showdialog);
+	void SaveCurrentMap(bool showdialog = true);
 	bool NewMap();
 	void OpenMap();
 	void SaveMap();
@@ -281,9 +279,8 @@ public:
 	bool LoadMap(const FileName& fileName);
 
 protected:
-	bool LoadDataFiles(wxString& error, wxArrayString& warnings);
 	ClientVersion* getLoadedVersion() const {
-		return loaded_version == CLIENT_VERSION_NONE ? nullptr : ClientVersion::get(loaded_version);
+		return g_version.getLoadedVersion();
 	}
 
 	//=========================================================================
@@ -312,10 +309,9 @@ public:
 	const std::list<PaletteWindow*>& GetPalettes();
 
 	void DestroyPalettes();
-	// Hidden from public view
-protected:
 	PaletteWindow* CreatePalette();
 
+protected:
 	//=========================================================================
 	// Public members
 	//=========================================================================
@@ -326,80 +322,23 @@ public:
 	WelcomeDialog* welcomeDialog;
 	CopyBuffer copybuffer;
 
-	MinimapWindow* minimap;
-	DCButton* gem; // The small gem in the lower-right corner
 	SearchResultWindow* search_result_window;
 	GraphicManager gfx;
 
 	BaseMap* secondary_map; // A buffer map
-	BaseMap* doodad_buffer_map; // The map in which doodads are temporarily stored
-
-	//=========================================================================
-	// Brush references
-	//=========================================================================
-
-	HouseBrush* house_brush;
-	HouseExitBrush* house_exit_brush;
-	WaypointBrush* waypoint_brush;
-	OptionalBorderBrush* optional_brush;
-	EraserBrush* eraser;
-	SpawnBrush* spawn_brush;
-	DoorBrush* normal_door_brush;
-	DoorBrush* locked_door_brush;
-	DoorBrush* magic_door_brush;
-	DoorBrush* quest_door_brush;
-	DoorBrush* hatch_door_brush;
-	DoorBrush* normal_door_alt_brush;
-	DoorBrush* archway_door_brush;
-	DoorBrush* window_door_brush;
-	FlagBrush* pz_brush;
-	FlagBrush* rook_brush;
-	FlagBrush* nolog_brush;
-	FlagBrush* pvp_brush;
-
-protected:
-	//=========================================================================
-	// Global GUI state
-	//=========================================================================
-	using PaletteList = std::list<PaletteWindow*>;
-	PaletteList palettes;
 
 	wxGLContext* OGLContext;
 
-	ClientVersionID loaded_version;
 	EditorMode mode;
+
 	bool pasting;
 
 	Hotkey hotkeys[10];
 	bool hotkeys_enabled;
 
-	//=========================================================================
-	// Internal brush data
-	//=========================================================================
-	Brush* current_brush;
-	Brush* previous_brush;
-	BrushShape brush_shape;
-	int brush_size;
-	int brush_variation;
-	int creature_spawntime;
-
-	bool draw_locked_doors;
-	bool use_custom_thickness;
-	float custom_thickness_mod;
-	float light_intensity;
-	float ambient_light_level;
-
-	//=========================================================================
-	// Progress bar tracking
-	//=========================================================================
-	wxString progressText;
-	wxGenericProgressDialog* progressBar;
-
-	int32_t progressFrom;
-	int32_t progressTo;
-	int32_t currentProgress;
-
+protected:
 	wxWindowDisabler* winDisabler;
+
 	int disabled_counter;
 
 	friend class RenderingLock;
@@ -434,18 +373,18 @@ public:
 class ScopedLoadingBar {
 public:
 	ScopedLoadingBar(wxString message, bool canCancel = false) {
-		g_gui.CreateLoadBar(message, canCancel);
+		g_loading.CreateLoadBar(message, canCancel);
 	}
 	~ScopedLoadingBar() {
-		g_gui.DestroyLoadBar();
+		g_loading.DestroyLoadBar();
 	}
 
 	void SetLoadDone(int32_t done, const wxString& newmessage = wxEmptyString) {
-		g_gui.SetLoadDone(done, newmessage);
+		g_loading.SetLoadDone(done, newmessage);
 	}
 
 	void SetLoadScale(int32_t from, int32_t to) {
-		g_gui.SetLoadScale(from, to);
+		g_loading.SetLoadScale(from, to);
 	}
 };
 
