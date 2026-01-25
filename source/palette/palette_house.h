@@ -19,6 +19,7 @@
 #define RME_PALETTE_HOUSE_H_
 
 #include "palette/palette_common.h"
+#include "ui/controls/sortable_list_box.h"
 
 class House;
 

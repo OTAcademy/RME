@@ -6,7 +6,7 @@
 #include "brushes/raw_brush.h"
 #include "ui/gui.h"
 #include "ui/dialog_util.h"
-#include "ui/common_windows.h"
+#include "ui/controls/sortable_list_box.h"
 #include "app/application.h" // For g_settings
 #include "ext/pugixml.hpp"
 

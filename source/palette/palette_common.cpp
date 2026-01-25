@@ -22,7 +22,7 @@
 #include "brushes/managers/brush_manager.h"
 #include "game/sprites.h"
 #include "ui/gui.h"
-#include "ui/common_windows.h"
+#include "ui/controls/item_buttons.h"
 #include "app/application.h"
 #include "palette/palette_waypoints.h"
 #include "palette/managers/palette_manager.h" // Added for g_palettes

@@ -20,7 +20,8 @@
 
 #include "app/main.h"
 
-#include "ui/common_windows.h"
+#include "ui/controls/item_buttons.h"
+#include "ui/properties/object_properties_base.h"
 
 class ContainerItemButton;
 class ContainerItemPopupMenu;

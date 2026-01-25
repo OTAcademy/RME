@@ -24,7 +24,7 @@
 
 #include "game/sprites.h"
 #include "editor/editor.h"
-#include "ui/common_windows.h"
+#include "ui/dialogs/goto_position_dialog.h"
 #include "palette/palette_window.h"
 #include "app/preferences.h"
 #include "ui/result_window.h"
@@ -33,6 +33,7 @@
 #include "ui/main_menubar.h"
 #include "app/updater.h"
 #include "ui/artprovider.h"
+#include "ui/map/export_tilesets_window.h"
 #include <wx/stattext.h>
 #include <wx/slider.h>
 

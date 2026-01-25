@@ -17,7 +17,8 @@
 
 #include "app/main.h"
 #include "ui/find_item_window.h"
-#include "ui/common_windows.h"
+#include "ui/dialogs/find_dialog.h"
+#include "ui/controls/sortable_list_box.h"
 #include "ui/gui.h"
 #include "game/items.h"
 #include "brushes/brush.h"

@@ -40,7 +40,7 @@
 #include "brushes/doodad_brush.h"
 #include "brushes/spawn_brush.h"
 
-#include "ui/common_windows.h"
+#include "ui/controls/item_buttons.h"
 #include "ui/result_window.h"
 #include "rendering/ui/minimap_window.h"
 #include "palette/palette_window.h"

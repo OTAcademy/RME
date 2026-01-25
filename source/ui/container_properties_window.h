@@ -18,7 +18,8 @@
 #ifndef _RME_CONTAINER_PROPS_H_
 #define _RME_CONTAINER_PROPS_H_
 
-#include "ui/common_windows.h"
+#include "ui/properties/object_properties_base.h"
+#include "ui/controls/item_buttons.h"
 
 class Container;
 class ContainerItemButton;

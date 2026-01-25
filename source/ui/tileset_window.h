@@ -19,8 +19,9 @@
 #define RME_TILESET_WINDOW_H_
 
 #include "app/main.h"
+#include "ui/properties/object_properties_base.h"
 
-#include "ui/common_windows.h"
+#include "ui/controls/item_buttons.h"
 
 class ContainerItemButton;
 class ContainerItemPopupMenu;

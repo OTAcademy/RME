@@ -1,6 +1,10 @@
 #include "ui/menubar/file_menu_handler.h"
+#include "app/application.h"
 #include "app/main.h"
 #include "ui/gui.h"
+#include "ui/map/export_tilesets_window.h"
+#include "ui/map/export_minimap_window.h"
+#include "ui/map/import_map_window.h"
 #include "ui/dialog_util.h"
 #include "ui/about_window.h"
 #include "ui/dat_debug_view.h"
@@ -8,7 +12,7 @@
 #include "ui/extension_window.h"
 #include "game/creatures.h"
 #include "app/managers/version_manager.h"
-#include "ui/common_windows.h"
+#include "ui/controls/sortable_list_box.h"
 
 FileMenuHandler::FileMenuHandler(MainFrame* frame, MainMenuBar* menubar) :
 	frame(frame), menubar(menubar) {
