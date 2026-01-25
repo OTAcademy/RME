@@ -26,6 +26,9 @@
 #include "ui/map/map_properties_window.h"
 #include "ui/map/towns_window.h"
 #include "ui/dialogs/find_dialog.h"
+#include "ui/map/import_map_window.h"
+#include "ui/map/export_minimap_window.h"
+#include "ui/map/export_tilesets_window.h"
 
 class GameSprite;
 class MapTab;
@@ -48,89 +51,6 @@ public:
 	ItemButton(wxWindow* parent, RenderSize size, uint16_t lookid, wxWindowID id = wxID_ANY) :
 		DCButton(parent, id, wxDefaultPosition, DC_BTN_NORMAL, size, lookid) { }
 	virtual ~ItemButton() { }
-};
-
-/**
- * The import map dialog
- * Allows selection of file path, offset and some weird options.
- */
-class ImportMapWindow : public wxDialog {
-public:
-	ImportMapWindow(wxWindow* parent, Editor& editor);
-	virtual ~ImportMapWindow();
-
-	void OnClickBrowse(wxCommandEvent&);
-	void OnClickOK(wxCommandEvent&);
-	void OnClickCancel(wxCommandEvent&);
-
-protected:
-	Editor& editor;
-
-	wxTextCtrl* file_text_field;
-	wxSpinCtrl* x_offset_ctrl;
-	wxSpinCtrl* y_offset_ctrl;
-
-	wxChoice* house_options;
-	wxChoice* spawn_options;
-
-	DECLARE_EVENT_TABLE();
-};
-
-/**
- * The export minimap dialog, select output path and what floors to export.
- */
-class ExportMiniMapWindow : public wxDialog {
-public:
-	ExportMiniMapWindow(wxWindow* parent, Editor& editor);
-	virtual ~ExportMiniMapWindow();
-
-	void OnClickBrowse(wxCommandEvent&);
-	void OnDirectoryChanged(wxKeyEvent&);
-	void OnFileNameChanged(wxKeyEvent&);
-	void OnClickOK(wxCommandEvent&);
-	void OnClickCancel(wxCommandEvent&);
-	void OnExportTypeChange(wxCommandEvent&);
-
-protected:
-	void CheckValues();
-
-	Editor& editor;
-
-	wxStaticText* error_field;
-	wxTextCtrl* directory_text_field;
-	wxTextCtrl* file_name_text_field;
-	wxChoice* floor_options;
-	wxSpinCtrl* floor_number;
-	wxButton* ok_button;
-
-	DECLARE_EVENT_TABLE();
-};
-
-/**
- * The export tilesets dialog, select output path.
- */
-class ExportTilesetsWindow : public wxDialog {
-public:
-	ExportTilesetsWindow(wxWindow* parent, Editor& editor);
-	virtual ~ExportTilesetsWindow();
-
-	void OnClickBrowse(wxCommandEvent&);
-	void OnDirectoryChanged(wxKeyEvent&);
-	void OnFileNameChanged(wxKeyEvent&);
-	void OnClickOK(wxCommandEvent&);
-	void OnClickCancel(wxCommandEvent&);
-
-protected:
-	void CheckValues();
-
-	Editor& editor;
-
-	wxStaticText* error_field;
-	wxTextCtrl* directory_text_field;
-	wxTextCtrl* file_name_text_field;
-	wxButton* ok_button;
-
-	DECLARE_EVENT_TABLE();
 };
 
 /**

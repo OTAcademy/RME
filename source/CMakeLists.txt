@@ -177,6 +177,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/find_dialog.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/map_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/towns_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/import_map_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_minimap_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_tilesets_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui_ids.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/loading_manager.h
@@ -396,6 +399,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/find_dialog.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/map_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/towns_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/import_map_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_minimap_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_tilesets_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_menubar.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/menubar_action_manager.cpp
