@@ -19,6 +19,7 @@
 #define RME_SELECTION_H
 
 #include "map/position.h"
+#include <functional>
 
 class Action;
 class Editor;
@@ -28,6 +29,8 @@ class SelectionThread;
 
 class Selection {
 public:
+	std::function<void(size_t)> onSelectionChange;
+
 	Selection(Editor& editor);
 	~Selection();
 

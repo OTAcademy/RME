@@ -6,6 +6,28 @@
 #include "app/settings.h"
 #include "io/iomap.h"
 
+void SetupCallbacks(Editor* editor) {
+	editor->onStateChange = []() {
+		g_gui.UpdateTitle();
+		g_gui.UpdateMenus();
+	};
+
+	editor->selection.onSelectionChange = [](size_t count) {
+		if (count > 0) {
+			wxString ss;
+			if (count == 1) {
+				ss << "One tile selected.";
+			} else {
+				ss << count << " tiles selected.";
+			}
+			g_gui.SetStatusText(ss);
+		} else {
+			// Optional: Clear status text if nothing selected, or keep previous behavior
+			// Previous behavior didn't clear it explicitly in updateSelectionCount if size <= 0
+		}
+	};
+}
+
 Editor* EditorFactory::CreateEmpty(CopyBuffer& copybuffer) {
 	ClientVersionID defaultVersion = ClientVersionID(g_settings.getInteger(Config::DEFAULT_CLIENT_VERSION));
 	if (defaultVersion == CLIENT_VERSION_NONE) {
@@ -16,17 +38,37 @@ Editor* EditorFactory::CreateEmpty(CopyBuffer& copybuffer) {
 		throw std::runtime_error("Couldn't load client version");
 	}
 
-	return newd Editor(copybuffer);
+	MapVersion mapVersion;
+	mapVersion.otbm = g_gui.GetCurrentVersion().getPrefferedMapVersionID();
+	mapVersion.client = g_gui.GetCurrentVersionID();
+
+	Editor* editor = newd Editor(copybuffer, mapVersion);
+	SetupCallbacks(editor);
+	return editor;
 }
 
 Editor* EditorFactory::LoadFromFile(CopyBuffer& copybuffer, const FileName& fn) {
-	// Editor constructor for File calls EditorPersistence::loadMap which handles version checking
-	// We might want to move that logic here later, but for now let's keep it consistent
-	return newd Editor(copybuffer, fn);
+	// For loading, we might want to query version from headers first, OR assume current GUI version is what we want?
+	// The original Editor constructor for file loading called EditorPersistence::loadMap.
+	// We'll pass current GUI version as a default context, though EditorPersistence might override map.
+
+	MapVersion mapVersion;
+	mapVersion.otbm = g_gui.GetCurrentVersion().getPrefferedMapVersionID();
+	mapVersion.client = g_gui.GetCurrentVersionID();
+
+	Editor* editor = newd Editor(copybuffer, mapVersion, fn);
+	SetupCallbacks(editor);
+	return editor;
 }
 
 Editor* EditorFactory::JoinLive(CopyBuffer& copybuffer, LiveClient* client) {
-	return newd Editor(copybuffer, client);
+	MapVersion mapVersion;
+	mapVersion.otbm = g_gui.GetCurrentVersion().getPrefferedMapVersionID();
+	mapVersion.client = g_gui.GetCurrentVersionID();
+
+	Editor* editor = newd Editor(copybuffer, mapVersion, client);
+	SetupCallbacks(editor);
+	return editor;
 }
 
 bool EditorFactory::EnsureVersion(ClientVersionID version) {

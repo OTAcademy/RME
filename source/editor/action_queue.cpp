@@ -21,7 +21,6 @@
 #include "editor/action.h"
 #include "editor/editor.h"
 #include "app/settings.h"
-#include "ui/gui.h"
 #include "map/map.h"
 #include "boost/range/adaptor/reversed.hpp"
 
@@ -68,7 +67,7 @@ void ActionQueue::addBatch(BatchAction* batch, int stacking_delay) {
 
 	// Update title
 	if (editor.map.doChange()) {
-		g_gui.UpdateTitle();
+		editor.notifyStateChange();
 	}
 
 	if (batch->getType() == ACTION_REMOTE) {

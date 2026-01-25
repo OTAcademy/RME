@@ -23,6 +23,7 @@
 #include "editor/editor.h"
 #include "editor/action_queue.h"
 #include "editor/dirty_list.h"
+#include "editor/editor_factory.h"
 
 #include <wx/event.h>
 
@@ -369,7 +370,7 @@ void LiveClient::parsePacket(NetworkMessage message) {
 
 void LiveClient::parseHello(NetworkMessage& message) {
 	ASSERT(editor == nullptr);
-	editor = newd Editor(g_gui.copybuffer, this);
+	editor = EditorFactory::JoinLive(g_gui.copybuffer, this);
 
 	Map& map = editor->map;
 	map.setName("Live Map - " + message.read<std::string>());

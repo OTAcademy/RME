@@ -42,36 +42,34 @@
 
 #include "editor/operations/draw_operations.h"
 
-Editor::Editor(CopyBuffer& copybuffer) :
+Editor::Editor(CopyBuffer& copybuffer, const MapVersion& version) :
 	live_manager(*this),
 	actionQueue(newd ActionQueue(*this)),
 	selection(*this),
 	copybuffer(copybuffer),
 	replace_brush(nullptr) {
-	MapVersion version;
-	version.otbm = g_gui.GetCurrentVersion().getPrefferedMapVersionID();
-	version.client = g_gui.GetCurrentVersionID();
 	map.convert(version);
-
 	map.initializeEmpty();
 }
 
-Editor::Editor(CopyBuffer& copybuffer, const FileName& fn) :
+Editor::Editor(CopyBuffer& copybuffer, const MapVersion& version, const FileName& fn) :
 	live_manager(*this),
 	actionQueue(newd ActionQueue(*this)),
 	selection(*this),
 	copybuffer(copybuffer),
 	replace_brush(nullptr) {
+	// EditorPersistence handles version checking internally or assumes compatibility
+	// Usage of "version" parameter here might be redundant for loading but good for consistency/future use
 	EditorPersistence::loadMap(*this, fn);
 }
 
-Editor::Editor(CopyBuffer& copybuffer, LiveClient* client) :
+Editor::Editor(CopyBuffer& copybuffer, const MapVersion& version, LiveClient* client) :
 	live_manager(*this, client),
 	actionQueue(newd NetworkedActionQueue(*this)),
 	selection(*this),
 	copybuffer(copybuffer),
 	replace_brush(nullptr) {
-	;
+	map.convert(version);
 }
 
 Editor::~Editor() {
@@ -84,14 +82,20 @@ Editor::~Editor() {
 	delete actionQueue;
 }
 
+void Editor::notifyStateChange() {
+	if (onStateChange) {
+		onStateChange();
+	}
+}
+
 void Editor::addBatch(BatchAction* action, int stacking_delay) {
 	actionQueue->addBatch(action, stacking_delay);
-	g_gui.UpdateMenus();
+	notifyStateChange();
 }
 
 void Editor::addAction(Action* action, int stacking_delay) {
 	actionQueue->addAction(action, stacking_delay);
-	g_gui.UpdateMenus();
+	notifyStateChange();
 }
 
 void Editor::borderizeSelection() {

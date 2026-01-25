@@ -322,14 +322,8 @@ void Selection::finish(SessionFlags flags) {
 }
 
 void Selection::updateSelectionCount() {
-	if (size() > 0) {
-		wxString ss;
-		if (size() == 1) {
-			ss << "One tile selected.";
-		} else {
-			ss << size() << " tiles selected.";
-		}
-		g_gui.SetStatusText(ss);
+	if (onSelectionChange) {
+		onSelectionChange(size());
 	}
 }
 

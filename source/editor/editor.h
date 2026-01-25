@@ -37,11 +37,13 @@ class LiveSocket;
 
 #include "live/live_manager.h"
 
+#include <functional>
+
 class Editor {
 public:
-	Editor(CopyBuffer& copybuffer, LiveClient* client);
-	Editor(CopyBuffer& copybuffer, const FileName& fn);
-	Editor(CopyBuffer& copybuffer);
+	Editor(CopyBuffer& copybuffer, const MapVersion& version, LiveClient* client);
+	Editor(CopyBuffer& copybuffer, const MapVersion& version, const FileName& fn);
+	Editor(CopyBuffer& copybuffer, const MapVersion& version);
 	~Editor();
 
 	// Live Manager
@@ -54,6 +56,9 @@ public:
 	CopyBuffer& copybuffer;
 	GroundBrush* replace_brush;
 	Map map; // The map that is being edited
+
+	std::function<void()> onStateChange;
+	void notifyStateChange();
 
 public: // Functions
 	// Map handling
