@@ -104,13 +104,20 @@ bool TextureAtlas::addLayer() {
 
 	// If we need more layers than allocated, reallocate
 	if (layer_count_ >= allocated_layers_) {
-		int new_allocated = std::min(allocated_layers_ * 2, MAX_LAYERS);
+		// Linear growth to prevent massive VRAM spikes
+		// 4 layers = ~268 MB VRAM
+		int new_allocated = std::min(allocated_layers_ + 4, MAX_LAYERS);
 
 		spdlog::info("TextureAtlas: Expanding {} -> {} layers", allocated_layers_, new_allocated);
 
 		// Create new larger texture array
 		GLuint new_texture;
 		glGenTextures(1, &new_texture);
+		if (new_texture == 0) {
+			spdlog::error("TextureAtlas: Failed to generate new texture id during expansion");
+			return false;
+		}
+
 		glBindTexture(GL_TEXTURE_2D_ARRAY, new_texture);
 
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -120,13 +127,22 @@ bool TextureAtlas::addLayer() {
 
 		glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, ATLAS_SIZE, ATLAS_SIZE, new_allocated, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
+		GLenum err = glGetError();
+		if (err != GL_NO_ERROR) {
+			spdlog::error("TextureAtlas: glTexImage3D failed during expansion (err={}). VRAM might be full.", err);
+			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+			glDeleteTextures(1, &new_texture);
+			return false;
+		}
+
 		// Copy existing layers using glCopyImageSubData (GL 4.3+)
 		glCopyImageSubData(texture_id_, GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, new_texture, GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, ATLAS_SIZE, ATLAS_SIZE, allocated_layers_);
 
 		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
-		// Sync and swap
-		glFinish();
+		// Removed glFinish() - it causes main thread to freeze waiting for GPU
+		// The driver should handle synchronization implicitly for the next draw call
+
 		glDeleteTextures(1, &texture_id_);
 		texture_id_ = new_texture;
 		allocated_layers_ = new_allocated;
