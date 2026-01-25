@@ -25,6 +25,7 @@
 #include "ui/common_windows.h"
 #include "app/application.h"
 #include "palette/palette_waypoints.h"
+#include "palette/managers/palette_manager.h" // Added for g_palettes
 
 // ============================================================================
 // Palette Panel
@@ -143,12 +144,12 @@ void PalettePanel::OnSwitchIn() {
 	for (ToolBarList::iterator iter = tool_bars.begin(); iter != tool_bars.end(); ++iter) {
 		(*iter)->OnSwitchIn();
 	}
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SetBrushSize(last_brush_size);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SetBrushSize(last_brush_size);
 }
 
 void PalettePanel::OnSwitchOut() {
-	last_brush_size = g_gui.GetBrushSize();
+	last_brush_size = g_brush_manager.GetBrushSize();
 	for (ToolBarList::iterator iter = tool_bars.begin(); iter != tool_bars.end(); ++iter) {
 		(*iter)->OnSwitchOut();
 	}
@@ -165,7 +166,7 @@ void PalettePanel::RefreshOtherPalettes() {
 }
 
 void PalettePanel::OnRefreshTimer(wxTimerEvent&) {
-	g_gui.RefreshOtherPalettes(GetParentPalette());
+	g_palettes.RefreshOtherPalettes(GetParentPalette());
 }
 
 // ============================================================================
@@ -368,18 +369,18 @@ void BrushSizePanel::OnUpdateBrushSize(BrushShape shape, int size) {
 }
 
 void BrushSizePanel::OnClickCircleBrush(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SetBrushShape(BRUSHSHAPE_CIRCLE);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SetBrushShape(BRUSHSHAPE_CIRCLE);
 }
 
 void BrushSizePanel::OnClickSquareBrush(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SetBrushShape(BRUSHSHAPE_SQUARE);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SetBrushShape(BRUSHSHAPE_SQUARE);
 }
 
 void BrushSizePanel::OnClickBrushSize(int which) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SetBrushSize(which);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SetBrushSize(which);
 }
 
 // ============================================================================
@@ -735,104 +736,104 @@ void BrushToolPanel::OnSwitchIn() {
 }
 
 void BrushToolPanel::OnClickGravelButton(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SelectBrush(g_brush_manager.optional_brush);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SelectBrush(g_brush_manager.optional_brush);
 }
 
 void BrushToolPanel::OnClickEraserButton(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SelectBrush(g_brush_manager.eraser);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SelectBrush(g_brush_manager.eraser);
 }
 
 void BrushToolPanel::OnClickNormalDoorButton(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SelectBrush(g_brush_manager.normal_door_brush);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SelectBrush(g_brush_manager.normal_door_brush);
 
 	// read checkbox settings
-	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
+	g_brush_manager.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickLockedDoorButton(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SelectBrush(g_brush_manager.locked_door_brush);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SelectBrush(g_brush_manager.locked_door_brush);
 
 	// read checkbox settings
-	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
+	g_brush_manager.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickMagicDoorButton(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SelectBrush(g_brush_manager.magic_door_brush);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SelectBrush(g_brush_manager.magic_door_brush);
 
 	// read checkbox settings
-	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
+	g_brush_manager.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickQuestDoorButton(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SelectBrush(g_brush_manager.quest_door_brush);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SelectBrush(g_brush_manager.quest_door_brush);
 
 	// read checkbox settings
-	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
+	g_brush_manager.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickHatchDoorButton(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SelectBrush(g_brush_manager.hatch_door_brush);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SelectBrush(g_brush_manager.hatch_door_brush);
 
 	// read checkbox settings
-	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
+	g_brush_manager.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickWindowDoorButton(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SelectBrush(g_brush_manager.window_door_brush);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SelectBrush(g_brush_manager.window_door_brush);
 
 	// read checkbox settings
-	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
+	g_brush_manager.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickNormalAltDoorButton(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SelectBrush(g_brush_manager.normal_door_alt_brush);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SelectBrush(g_brush_manager.normal_door_alt_brush);
 
 	// read checkbox settings
-	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
+	g_brush_manager.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickArchwayDoorButton(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SelectBrush(g_brush_manager.archway_door_brush);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SelectBrush(g_brush_manager.archway_door_brush);
 
 	// read checkbox settings
-	g_gui.SetDoorLocked(lockDoorCheckbox->GetValue());
+	g_brush_manager.SetDoorLocked(lockDoorCheckbox->GetValue());
 }
 
 void BrushToolPanel::OnClickPZBrushButton(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SelectBrush(g_brush_manager.pz_brush);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SelectBrush(g_brush_manager.pz_brush);
 }
 
 void BrushToolPanel::OnClickNOPVPBrushButton(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SelectBrush(g_brush_manager.rook_brush);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SelectBrush(g_brush_manager.rook_brush);
 }
 
 void BrushToolPanel::OnClickNoLogoutBrushButton(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SelectBrush(g_brush_manager.nolog_brush);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SelectBrush(g_brush_manager.nolog_brush);
 }
 
 void BrushToolPanel::OnClickPVPZoneBrushButton(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SelectBrush(g_brush_manager.pvp_brush);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SelectBrush(g_brush_manager.pvp_brush);
 }
 
 void BrushToolPanel::OnClickLockDoorCheckbox(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
+	g_palettes.ActivatePalette(GetParentPalette());
 
 	// apply to current brush
-	g_gui.SetDoorLocked(event.IsChecked());
+	g_brush_manager.SetDoorLocked(event.IsChecked());
 
 	// save user preference
 	g_settings.setInteger(Config::DRAW_LOCKED_DOOR, event.IsChecked());
@@ -913,17 +914,17 @@ void BrushThicknessPanel::OnScroll(wxScrollEvent& event) {
 	ASSERT(event.GetPosition() >= 1);
 	ASSERT(event.GetPosition() <= 10);
 
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SetBrushThickness(true, lookup_table[event.GetPosition() - 1], 100);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SetBrushThickness(true, lookup_table[event.GetPosition() - 1], 100);
 }
 
 void BrushThicknessPanel::OnClickCustomThickness(wxCommandEvent& event) {
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SetBrushThickness(event.IsChecked());
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SetBrushThickness(event.IsChecked());
 }
 
 void BrushThicknessPanel::OnSwitchIn() {
 	static const int lookup_table[10] = { 1, 2, 3, 5, 8, 13, 23, 35, 50, 80 };
-	g_gui.ActivatePalette(GetParentPalette());
-	g_gui.SetBrushThickness(lookup_table[slider->GetValue() - 1], 100);
+	g_palettes.ActivatePalette(GetParentPalette());
+	g_brush_manager.SetBrushThickness(lookup_table[slider->GetValue() - 1], 100);
 }
