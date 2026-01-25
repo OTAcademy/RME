@@ -15,6 +15,7 @@
 #include "ui/dialog_util.h"
 #include "ui/welcome_dialog.h"
 #include "app/application.h"
+#include "app/managers/version_manager.h"
 #include "ui/managers/status_manager.h"
 #include "palette/managers/palette_manager.h"
 #include "brushes/managers/brush_manager.h"
@@ -272,11 +273,11 @@ bool EditorManager::LoadMap(const FileName& fileName) {
 			throw std::runtime_error(std::format("Could not open file \"{}\".\nThis is not a valid OTBM file or it does not exist.", nstr(fileName.GetFullPath())));
 		}
 
-		if (g_gui.GetCurrentVersionID() != ver.client) {
+		if (g_version.GetCurrentVersionID() != ver.client) {
 			wxString error;
 			wxArrayString warnings;
 			if (CloseAllEditors()) {
-				if (!g_gui.LoadVersion(ver.client, error, warnings)) {
+				if (!g_version.LoadVersion(ver.client, error, warnings)) {
 					DialogUtil::PopupDialog("Error", error, wxOK);
 					return false;
 				}

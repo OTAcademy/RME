@@ -5,6 +5,8 @@
 #include "app/main.h"
 #include "app/managers/version_manager.h"
 
+#include <spdlog/spdlog.h>
+
 #include "ui/gui.h"
 #include "util/file_system.h"
 #include "game/sprites.h"
@@ -81,14 +83,6 @@ bool VersionManager::LoadDataFiles(wxString& error, wxArrayString& warnings) {
 	FileName client_path = getLoadedVersion()->getClientPath();
 	FileName extension_path = FileSystem::GetExtensionsDirectory();
 
-	FileName exec_directory;
-	try {
-		exec_directory = dynamic_cast<wxStandardPaths&>(wxStandardPaths::Get()).GetExecutablePath();
-	} catch (std::bad_cast&) {
-		error = "Couldn't establish working directory...";
-		return false;
-	}
-
 	g_gui.gfx.client_version = getLoadedVersion();
 
 	if (!g_gui.gfx.loadOTFI(client_path.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR), error, warnings)) {
@@ -143,7 +137,14 @@ bool VersionManager::LoadDataFiles(wxString& error, wxArrayString& warnings) {
 		cdb.SetFullName("creatures.xml");
 		wxString nerr;
 		wxArrayString nwarn;
-		g_creatures.loadFromXML(cdb, false, nerr, nwarn);
+		if (!g_creatures.loadFromXML(cdb, false, nerr, nwarn)) {
+			warnings.push_back("Couldn't load user creatures.xml: " + nerr);
+			spdlog::error("Couldn't load user creatures.xml: {}", nerr.ToStdString());
+		}
+		for (const auto& warn : nwarn) {
+			warnings.push_back(warn);
+			spdlog::warn("User creature XML warning: {}", warn.ToStdString());
+		}
 	}
 
 	g_loading.SetLoadDone(50, "Loading materials.xml ...");
@@ -153,7 +154,8 @@ bool VersionManager::LoadDataFiles(wxString& error, wxArrayString& warnings) {
 
 	g_loading.SetLoadDone(70, "Loading extensions...");
 	if (!g_materials.loadExtensions(extension_path, error, warnings)) {
-		// warnings.push_back("Couldn't load extensions: " + error);
+		warnings.push_back("Couldn't load extensions: " + error);
+		spdlog::warn("Couldn't load extensions: {}", error.ToStdString());
 	}
 
 	g_loading.SetLoadDone(70, "Finishing...");

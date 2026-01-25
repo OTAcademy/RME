@@ -14,6 +14,7 @@
 #include "map/map.h"
 #include "io/iomap.h"
 #include "app/settings.h"
+#include "app/managers/version_manager.h"
 #include "ui/gui.h"
 
 #include <fstream>
@@ -28,8 +29,8 @@ void EditorPersistence::loadMap(Editor& editor, const FileName& fn) {
 	}
 
 	bool success = true;
-	if (g_gui.GetCurrentVersionID() != ver.client) {
-		throw std::runtime_error(std::format("Client version mismatch. Expected {} but got {}", ver.client, g_gui.GetCurrentVersionID()));
+	if (g_version.GetCurrentVersionID() != ver.client) {
+		throw std::runtime_error(std::format("Client version mismatch. Expected {} but got {}", ver.client, g_version.GetCurrentVersionID()));
 	}
 
 	if (success) {

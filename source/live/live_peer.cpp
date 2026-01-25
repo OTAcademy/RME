@@ -18,6 +18,7 @@
 #include "app/main.h"
 
 #include "live/live_peer.h"
+#include "app/managers/version_manager.h"
 #include "live/live_server.h"
 #include "live/live_tab.h"
 #include "live/live_action.h"
@@ -200,9 +201,9 @@ void LivePeer::parseHello(NetworkMessage& message) {
 	log->Message(name + " (" + getHostName() + ") connected.");
 
 	NetworkMessage outMessage;
-	if (static_cast<ClientVersionID>(clientVersion) != g_gui.GetCurrentVersionID()) {
+	if (static_cast<ClientVersionID>(clientVersion) != g_version.GetCurrentVersionID()) {
 		outMessage.write<uint8_t>(PACKET_CHANGE_CLIENT_VERSION);
-		outMessage.write<uint32_t>(g_gui.GetCurrentVersionID());
+		outMessage.write<uint32_t>(g_version.GetCurrentVersionID());
 	} else {
 		outMessage.write<uint8_t>(PACKET_ACCEPTED_CLIENT);
 	}

@@ -3,6 +3,7 @@
 #include "editor/editor_factory.h"
 #include "editor/editor.h"
 #include "editor/persistence/editor_persistence.h"
+#include "app/managers/version_manager.h"
 #include "ui/gui.h"
 #include "app/settings.h"
 #include "io/iomap.h"
@@ -40,8 +41,8 @@ std::unique_ptr<Editor> EditorFactory::CreateEmpty(CopyBuffer& copybuffer) {
 	}
 
 	MapVersion mapVersion;
-	mapVersion.otbm = g_gui.GetCurrentVersion().getPrefferedMapVersionID();
-	mapVersion.client = g_gui.GetCurrentVersionID();
+	mapVersion.otbm = g_version.GetCurrentVersion().getPrefferedMapVersionID();
+	mapVersion.client = g_version.GetCurrentVersionID();
 
 	std::unique_ptr<Editor> editor = std::make_unique<Editor>(copybuffer, mapVersion);
 	SetupCallbacks(editor.get());
@@ -54,8 +55,8 @@ std::unique_ptr<Editor> EditorFactory::LoadFromFile(CopyBuffer& copybuffer, cons
 	// We'll pass current GUI version as a default context, though EditorPersistence might override map.
 
 	MapVersion mapVersion;
-	mapVersion.otbm = g_gui.GetCurrentVersion().getPrefferedMapVersionID();
-	mapVersion.client = g_gui.GetCurrentVersionID();
+	mapVersion.otbm = g_version.GetCurrentVersion().getPrefferedMapVersionID();
+	mapVersion.client = g_version.GetCurrentVersionID();
 
 	std::unique_ptr<Editor> editor = std::make_unique<Editor>(copybuffer, mapVersion, fn);
 	SetupCallbacks(editor.get());
@@ -64,8 +65,8 @@ std::unique_ptr<Editor> EditorFactory::LoadFromFile(CopyBuffer& copybuffer, cons
 
 std::unique_ptr<Editor> EditorFactory::JoinLive(CopyBuffer& copybuffer, LiveClient* client) {
 	MapVersion mapVersion;
-	mapVersion.otbm = g_gui.GetCurrentVersion().getPrefferedMapVersionID();
-	mapVersion.client = g_gui.GetCurrentVersionID();
+	mapVersion.otbm = g_version.GetCurrentVersion().getPrefferedMapVersionID();
+	mapVersion.client = g_version.GetCurrentVersionID();
 
 	std::unique_ptr<Editor> editor = std::make_unique<Editor>(copybuffer, mapVersion, client);
 	SetupCallbacks(editor.get());
@@ -73,7 +74,7 @@ std::unique_ptr<Editor> EditorFactory::JoinLive(CopyBuffer& copybuffer, LiveClie
 }
 
 bool EditorFactory::EnsureVersion(ClientVersionID version) {
-	if (g_gui.GetCurrentVersionID() == version) {
+	if (g_version.GetCurrentVersionID() == version) {
 		return true;
 	}
 
@@ -83,7 +84,7 @@ bool EditorFactory::EnsureVersion(ClientVersionID version) {
 
 	wxString error;
 	wxArrayString warnings;
-	if (g_gui.LoadVersion(version, error, warnings)) {
+	if (g_version.LoadVersion(version, error, warnings)) {
 		if (!warnings.IsEmpty()) {
 			DialogUtil::ListDialog("Warnings", warnings);
 		}

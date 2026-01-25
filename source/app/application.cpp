@@ -344,7 +344,7 @@ void Application::FixVersionDiscrapencies() {
 
 void Application::Unload() {
 	g_gui.CloseAllEditors();
-	g_gui.UnloadVersion();
+	g_version.UnloadVersion();
 	g_hotkeys.SaveHotkeys();
 	g_gui.SavePerspective();
 	g_gui.root->SaveRecentFiles();

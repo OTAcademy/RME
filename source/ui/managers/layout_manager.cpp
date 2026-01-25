@@ -4,6 +4,7 @@
 
 #include "app/main.h"
 #include "ui/managers/layout_manager.h"
+#include "app/managers/version_manager.h"
 #include "ui/gui.h"
 #include "app/application.h"
 #include "palette/palette_window.h"
@@ -26,7 +27,7 @@ LayoutManager::~LayoutManager() {
 }
 
 void LayoutManager::LoadPerspective() {
-	if (!g_gui.IsVersionLoaded()) {
+	if (!g_version.IsVersionLoaded()) {
 		if (g_settings.getInteger(Config::WINDOW_MAXIMIZED)) {
 			g_gui.root->Maximize();
 		} else {

@@ -31,6 +31,7 @@
 #include "palette/palette_window.h"
 #include "ui/gui.h"
 #include "app/application.h"
+#include "app/managers/version_manager.h"
 #include "ui/common_windows.h"
 #include "ui/positionctrl.h"
 #include "ui/dialog_util.h"
@@ -96,7 +97,7 @@ MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor&
 	grid_sizer->Add(newd wxStaticText(this, wxID_ANY, "Client Version"));
 	protocol_choice = newd wxChoice(this, wxID_ANY);
 
-	protocol_choice->SetStringSelection(wxstr(g_gui.GetCurrentVersion().getName()));
+	protocol_choice->SetStringSelection(wxstr(g_version.GetCurrentVersion().getName()));
 
 	grid_sizer->Add(protocol_choice, wxSizerFlags(1).Expand());
 
@@ -249,7 +250,7 @@ void MapPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 			map.convert(new_ver, true);
 
 			// Load the new version
-			if (!g_gui.LoadVersion(new_ver.client, error, warnings)) {
+			if (!g_version.LoadVersion(new_ver.client, error, warnings)) {
 				DialogUtil::ListDialog(this, "Warnings", warnings);
 				DialogUtil::PopupDialog(this, "Map Loader Error", error, wxOK);
 				DialogUtil::PopupDialog(this, "Conversion Error", "Could not convert map. The map will now be closed.", wxOK);
@@ -280,7 +281,7 @@ void MapPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 			map.cleanInvalidTiles(true);
 		} else {
 			UnnamedRenderingLock();
-			if (!g_gui.LoadVersion(new_ver.client, error, warnings)) {
+			if (!g_version.LoadVersion(new_ver.client, error, warnings)) {
 				DialogUtil::ListDialog(this, "Warnings", warnings);
 				DialogUtil::PopupDialog(this, "Map Loader Error", error, wxOK);
 				DialogUtil::PopupDialog(this, "Conversion Error", "Could not convert map. The map will now be closed.", wxOK);

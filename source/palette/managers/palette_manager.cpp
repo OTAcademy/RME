@@ -5,6 +5,7 @@
 #include "app/main.h"
 
 #include "palette/managers/palette_manager.h"
+#include "app/managers/version_manager.h"
 #include "ui/gui.h"
 #include "palette/palette_window.h"
 #include "game/materials.h"
@@ -101,7 +102,7 @@ void PaletteManager::DestroyPalettes() {
 }
 
 PaletteWindow* PaletteManager::CreatePalette() {
-	if (!g_gui.IsVersionLoaded()) {
+	if (!g_version.IsVersionLoaded()) {
 		return nullptr;
 	}
 

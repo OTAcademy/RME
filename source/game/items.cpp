@@ -18,6 +18,7 @@
 #include "app/main.h"
 
 #include "game/materials.h"
+#include "app/managers/version_manager.h"
 #include "ui/gui.h"
 #include <string.h> // memcpy
 
@@ -801,7 +802,7 @@ bool ItemDatabase::loadFromOtb(const FileName& datafile, wxString& error, wxArra
 	}
 
 	if (g_settings.getInteger(Config::CHECK_SIGNATURES)) {
-		if (g_gui.GetCurrentVersion().getOTBVersion().format_version != MajorVersion) {
+		if (g_version.GetCurrentVersion().getOTBVersion().format_version != MajorVersion) {
 			error = "Unsupported items.otb version (version " + i2ws(MajorVersion) + ")";
 			return false;
 		}
@@ -820,7 +821,7 @@ bool ItemDatabase::loadFromOtb(const FileName& datafile, wxString& error, wxArra
 }
 
 bool ItemDatabase::loadItemFromGameXml(pugi::xml_node itemNode, int id) {
-	ClientVersionID clientVersion = g_gui.GetCurrentVersionID();
+	ClientVersionID clientVersion = g_version.GetCurrentVersionID();
 	if (clientVersion < CLIENT_VERSION_980 && id > 20000 && id < 20100) {
 		itemNode = itemNode.next_sibling();
 		return true;

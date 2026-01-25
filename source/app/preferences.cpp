@@ -26,6 +26,7 @@
 #include "ui/gui.h"
 
 #include "ui/dialog_util.h"
+#include "app/managers/version_manager.h"
 #include "app/preferences.h"
 
 BEGIN_EVENT_TABLE(PreferencesWindow, wxDialog)
@@ -750,9 +751,10 @@ void PreferencesWindow::Apply() {
 		g_gui.RebuildPalettes();
 	} else {
 		// change palette structure
+
 		wxString error;
 		wxArrayString warnings;
-		g_gui.LoadVersion(g_gui.GetCurrentVersionID(), error, warnings, true);
+		g_version.LoadVersion(g_version.GetCurrentVersionID(), error, warnings, true);
 		DialogUtil::PopupDialog("Error", error, wxOK);
 		DialogUtil::ListDialog("Warnings", warnings);
 	}

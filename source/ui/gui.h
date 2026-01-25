@@ -226,26 +226,6 @@ public:
 	void SetDoorLocked(bool on);
 	bool HasDoorLocked();
 
-	// Load/unload a client version (takes care of dialogs aswell)
-
-	void UnloadVersion() {
-		g_version.UnloadVersion();
-	}
-	bool LoadVersion(ClientVersionID ver, wxString& error, wxArrayString& warnings, bool force = false) {
-		return g_version.LoadVersion(ver, error, warnings, force);
-	}
-	// The current version loaded (returns CLIENT_VERSION_NONE if no version is loaded)
-	const ClientVersion& GetCurrentVersion() const {
-		return g_version.GetCurrentVersion();
-	}
-	ClientVersionID GetCurrentVersionID() const {
-		return g_version.GetCurrentVersionID();
-	}
-	// If any version is loaded at all
-	bool IsVersionLoaded() const {
-		return g_version.IsVersionLoaded();
-	}
-
 	// Centers current view on position
 	void SetScreenCenterPosition(Position pos);
 	// Refresh the view canvas
@@ -329,7 +309,6 @@ public:
 	const std::list<PaletteWindow*>& GetPalettes();
 
 	void DestroyPalettes();
-	// Hidden from public view
 	PaletteWindow* CreatePalette();
 
 protected:

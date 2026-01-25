@@ -122,7 +122,7 @@ void DoodadPreviewManager::FillBuffer() {
 						doodad_buffer_map->setTile(tile->getPosition(), tile);
 					}
 					exit = true;
-				} else if (brush->hasSingleObjects(g_gui.GetBrushVariation())) {
+				} else if (brush->hasSingleObjects(g_brush_manager.GetBrushVariation())) {
 					Position pos = center_pos + Position(xpos, ypos, 0);
 					Tile* tile = doodad_buffer_map->getTile(pos);
 					if (tile) {
