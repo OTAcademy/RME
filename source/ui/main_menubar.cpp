@@ -40,6 +40,9 @@
 #include "ui/menubar/search_handler.h"
 #include "ui/menubar/view_settings_handler.h"
 #include "ui/menubar/map_actions_handler.h"
+#include "ui/menubar/file_menu_handler.h"
+#include "ui/menubar/navigation_menu_handler.h"
+#include "ui/menubar/palette_menu_handler.h"
 
 #include <wx/chartype.h>
 
@@ -62,6 +65,9 @@ MainMenuBar::MainMenuBar(MainFrame* frame) :
 	searchHandler = new SearchHandler(frame);
 	viewSettingsHandler = new ViewSettingsHandler(this);
 	mapActionsHandler = new MapActionsHandler(frame);
+	fileMenuHandler = new FileMenuHandler(frame, this);
+	navigationMenuHandler = new NavigationMenuHandler(frame, this);
+	paletteMenuHandler = new PaletteMenuHandler(frame, this);
 
 #define MAKE_ACTION(id, kind, handler) actions[#id] = new MenuBar::Action(#id, id, kind, wxCommandEventFunction(&MainMenuBar::handler))
 #define MAKE_SET_ACTION(id, kind, setting_, handler)                                                  \
@@ -254,6 +260,9 @@ MainMenuBar::~MainMenuBar() {
 	delete searchHandler;
 	delete viewSettingsHandler;
 	delete mapActionsHandler;
+	delete fileMenuHandler;
+	delete navigationMenuHandler;
+	delete paletteMenuHandler;
 }
 
 void MainMenuBar::EnableItem(MenuBar::ActionID id, bool enable) {
@@ -440,29 +449,14 @@ bool MainMenuBar::Load(const FileName& path, wxArrayString& warnings, wxString& 
 
 // LoadItem moved to MenuBarLoader
 
-void MainMenuBar::OnNew(wxCommandEvent& WXUNUSED(event)) {
-	g_gui.NewMap();
+// LoadItem moved to MenuBarLoader
+
+void MainMenuBar::OnNew(wxCommandEvent& event) {
+	fileMenuHandler->OnNew(event);
 }
 
-void MainMenuBar::OnGenerateMap(wxCommandEvent& WXUNUSED(event)) {
-	/*
-	if(!DoQuerySave()) return;
-
-	std::ostringstream os;
-	os << "Untitled-" << untitled_counter << ".otbm";
-	++untitled_counter;
-
-	editor.generateMap(wxstr(os.str()));
-
-	g_gui.SetStatusText("Generated newd map");
-
-	g_gui.UpdateTitle();
-	g_gui.RefreshPalettes();
-	g_gui.UpdateMinimap();
-	g_gui.FitViewToMap();
-	UpdateMenubar();
-	Refresh();
-	*/
+void MainMenuBar::OnGenerateMap(wxCommandEvent& event) {
+	fileMenuHandler->OnGenerateMap(event);
 }
 
 void MainMenuBar::OnOpenRecent(wxCommandEvent& event) {
@@ -470,110 +464,70 @@ void MainMenuBar::OnOpenRecent(wxCommandEvent& event) {
 	frame->LoadMap(fn);
 }
 
-void MainMenuBar::OnOpen(wxCommandEvent& WXUNUSED(event)) {
-	g_gui.OpenMap();
+void MainMenuBar::OnOpen(wxCommandEvent& event) {
+	fileMenuHandler->OnOpen(event);
 }
 
-void MainMenuBar::OnClose(wxCommandEvent& WXUNUSED(event)) {
-	frame->DoQuerySave(true); // It closes the editor too
+void MainMenuBar::OnClose(wxCommandEvent& event) {
+	fileMenuHandler->OnClose(event);
 }
 
-void MainMenuBar::OnSave(wxCommandEvent& WXUNUSED(event)) {
-	g_gui.SaveMap();
+void MainMenuBar::OnSave(wxCommandEvent& event) {
+	fileMenuHandler->OnSave(event);
 }
 
-void MainMenuBar::OnSaveAs(wxCommandEvent& WXUNUSED(event)) {
-	g_gui.SaveMapAs();
+void MainMenuBar::OnSaveAs(wxCommandEvent& event) {
+	fileMenuHandler->OnSaveAs(event);
 }
 
-void MainMenuBar::OnPreferences(wxCommandEvent& WXUNUSED(event)) {
-	PreferencesWindow dialog(frame);
-	dialog.ShowModal();
-	dialog.Destroy();
+void MainMenuBar::OnPreferences(wxCommandEvent& event) {
+	fileMenuHandler->OnPreferences(event);
 }
 
-void MainMenuBar::OnQuit(wxCommandEvent& WXUNUSED(event)) {
-	/*
-	while(g_gui.IsEditorOpen())
-		if(!frame->DoQuerySave(true))
-			return;
-			*/
-	//((Application*)wxTheApp)->Unload();
-	g_gui.root->Close();
+void MainMenuBar::OnQuit(wxCommandEvent& event) {
+	fileMenuHandler->OnQuit(event);
 }
 
-void MainMenuBar::OnImportMap(wxCommandEvent& WXUNUSED(event)) {
-	ASSERT(g_gui.GetCurrentEditor());
-	wxDialog* importmap = newd ImportMapWindow(frame, *g_gui.GetCurrentEditor());
-	importmap->ShowModal();
+void MainMenuBar::OnImportMap(wxCommandEvent& event) {
+	fileMenuHandler->OnImportMap(event);
 }
 
-void MainMenuBar::OnImportMonsterData(wxCommandEvent& WXUNUSED(event)) {
-	wxFileDialog dlg(g_gui.root, "Import monster/npc file", "", "", "*.xml", wxFD_OPEN | wxFD_MULTIPLE | wxFD_FILE_MUST_EXIST);
-	if (dlg.ShowModal() == wxID_OK) {
-		wxArrayString paths;
-		dlg.GetPaths(paths);
-		for (uint32_t i = 0; i < paths.GetCount(); ++i) {
-			wxString error;
-			wxArrayString warnings;
-			bool ok = g_creatures.importXMLFromOT(FileName(paths[i]), error, warnings);
-			if (ok) {
-				DialogUtil::ListDialog("Monster loader errors", warnings);
-			} else {
-				wxMessageBox("Error OT data file \"" + paths[i] + "\".\n" + error, "Error", wxOK | wxICON_INFORMATION, g_gui.root);
-			}
-		}
-	}
+void MainMenuBar::OnImportMonsterData(wxCommandEvent& event) {
+	fileMenuHandler->OnImportMonsterData(event);
 }
 
-void MainMenuBar::OnImportMinimap(wxCommandEvent& WXUNUSED(event)) {
-	ASSERT(g_gui.IsEditorOpen());
-	// wxDialog* importmap = newd ImportMapWindow();
-	// importmap->ShowModal();
+void MainMenuBar::OnImportMinimap(wxCommandEvent& event) {
+	fileMenuHandler->OnImportMinimap(event);
 }
 
-void MainMenuBar::OnExportMinimap(wxCommandEvent& WXUNUSED(event)) {
-	if (g_gui.GetCurrentEditor()) {
-		ExportMiniMapWindow dlg(frame, *g_gui.GetCurrentEditor());
-		dlg.ShowModal();
-		dlg.Destroy();
-	}
+void MainMenuBar::OnExportMinimap(wxCommandEvent& event) {
+	fileMenuHandler->OnExportMinimap(event);
 }
 
-void MainMenuBar::OnExportTilesets(wxCommandEvent& WXUNUSED(event)) {
-	if (g_gui.GetCurrentEditor()) {
-		ExportTilesetsWindow dlg(frame, *g_gui.GetCurrentEditor());
-		dlg.ShowModal();
-		dlg.Destroy();
-	}
+void MainMenuBar::OnExportTilesets(wxCommandEvent& event) {
+	fileMenuHandler->OnExportTilesets(event);
 }
 
-void MainMenuBar::OnDebugViewDat(wxCommandEvent& WXUNUSED(event)) {
+void MainMenuBar::OnDebugViewDat(wxCommandEvent& event) {
 	wxDialog dlg(frame, wxID_ANY, "Debug .dat file", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	new DatDebugView(&dlg);
 	dlg.ShowModal();
 }
 
-void MainMenuBar::OnReloadDataFiles(wxCommandEvent& WXUNUSED(event)) {
-	wxString error;
-	wxArrayString warnings;
-	g_version.LoadVersion(g_version.GetCurrentVersionID(), error, warnings, true);
-	DialogUtil::PopupDialog("Error", error, wxOK);
-	DialogUtil::ListDialog("Warnings", warnings);
+void MainMenuBar::OnReloadDataFiles(wxCommandEvent& event) {
+	fileMenuHandler->OnReloadDataFiles(event);
 }
 
-void MainMenuBar::OnListExtensions(wxCommandEvent& WXUNUSED(event)) {
-	ExtensionsDialog exts(frame);
-	exts.ShowModal();
+void MainMenuBar::OnListExtensions(wxCommandEvent& event) {
+	fileMenuHandler->OnListExtensions(event);
 }
 
-void MainMenuBar::OnGotoWebsite(wxCommandEvent& WXUNUSED(event)) {
-	::wxLaunchDefaultBrowser(__SITE_URL__, wxBROWSER_NEW_WINDOW);
+void MainMenuBar::OnGotoWebsite(wxCommandEvent& event) {
+	fileMenuHandler->OnGotoWebsite(event);
 }
 
-void MainMenuBar::OnAbout(wxCommandEvent& WXUNUSED(event)) {
-	AboutWindow about(frame);
-	about.ShowModal();
+void MainMenuBar::OnAbout(wxCommandEvent& event) {
+	fileMenuHandler->OnAbout(event);
 }
 
 void MainMenuBar::OnUndo(wxCommandEvent& WXUNUSED(event)) {
@@ -680,59 +634,20 @@ void MainMenuBar::OnRandomizeMap(wxCommandEvent& event) {
 	mapActionsHandler->OnRandomizeMap(event);
 }
 
-void MainMenuBar::OnJumpToBrush(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_version.IsVersionLoaded()) {
-		return;
-	}
-
-	// Create the jump to dialog
-	FindDialog* dlg = newd FindBrushDialog(frame);
-
-	// Display dialog to user
-	dlg->ShowModal();
-
-	// Retrieve result, if null user canceled
-	const Brush* brush = dlg->getResult();
-	if (brush) {
-		g_gui.SelectBrush(brush, TILESET_UNKNOWN);
-	}
-	delete dlg;
+void MainMenuBar::OnJumpToBrush(wxCommandEvent& event) {
+	navigationMenuHandler->OnJumpToBrush(event);
 }
 
-void MainMenuBar::OnJumpToItemBrush(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_version.IsVersionLoaded()) {
-		return;
-	}
-
-	// Create the jump to dialog
-	FindItemDialog dialog(frame, "Jump to Item");
-	dialog.setSearchMode((FindItemDialog::SearchMode)g_settings.getInteger(Config::JUMP_TO_ITEM_MODE));
-	if (dialog.ShowModal() == wxID_OK) {
-		// Retrieve result, if null user canceled
-		const Brush* brush = dialog.getResult();
-		if (brush) {
-			g_gui.SelectBrush(brush, TILESET_RAW);
-		}
-		g_settings.setInteger(Config::JUMP_TO_ITEM_MODE, (int)dialog.getSearchMode());
-	}
-	dialog.Destroy();
+void MainMenuBar::OnJumpToItemBrush(wxCommandEvent& event) {
+	navigationMenuHandler->OnJumpToItemBrush(event);
 }
 
-void MainMenuBar::OnGotoPreviousPosition(wxCommandEvent& WXUNUSED(event)) {
-	MapTab* mapTab = g_gui.GetCurrentMapTab();
-	if (mapTab) {
-		mapTab->GoToPreviousCenterPosition();
-	}
+void MainMenuBar::OnGotoPreviousPosition(wxCommandEvent& event) {
+	navigationMenuHandler->OnGotoPreviousPosition(event);
 }
 
-void MainMenuBar::OnGotoPosition(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsEditorOpen()) {
-		return;
-	}
-
-	// Display dialog, it also controls the actual jump
-	GotoPositionDialog dlg(frame, *g_gui.GetCurrentEditor());
-	dlg.ShowModal();
+void MainMenuBar::OnGotoPosition(wxCommandEvent& event) {
+	navigationMenuHandler->OnGotoPosition(event);
 }
 
 void MainMenuBar::OnMapRemoveItems(wxCommandEvent& event) {
@@ -825,17 +740,15 @@ void MainMenuBar::OnTakeScreenshot(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MainMenuBar::OnZoomIn(wxCommandEvent& event) {
-	double zoom = g_gui.GetCurrentZoom();
-	g_gui.SetCurrentZoom(zoom - 0.1);
+	navigationMenuHandler->OnZoomIn(event);
 }
 
 void MainMenuBar::OnZoomOut(wxCommandEvent& event) {
-	double zoom = g_gui.GetCurrentZoom();
-	g_gui.SetCurrentZoom(zoom + 0.1);
+	navigationMenuHandler->OnZoomOut(event);
 }
 
 void MainMenuBar::OnZoomNormal(wxCommandEvent& event) {
-	g_gui.SetCurrentZoom(1.0);
+	navigationMenuHandler->OnZoomNormal(event);
 }
 
 void MainMenuBar::OnChangeViewSettings(wxCommandEvent& event) {
@@ -843,20 +756,7 @@ void MainMenuBar::OnChangeViewSettings(wxCommandEvent& event) {
 }
 
 void MainMenuBar::OnChangeFloor(wxCommandEvent& event) {
-	// Workaround to stop events from looping
-	if (checking_programmaticly) {
-		return;
-	}
-
-	// this will have to be changed if you want to have more floors
-	// see MAKE_ACTION(FLOOR_0, wxITEM_RADIO, OnChangeFloor);
-	if (MAP_MAX_LAYER < 16) {
-		for (int i = 0; i < MAP_LAYERS; ++i) {
-			if (IsItemChecked(MenuBar::ActionID(MenuBar::FLOOR_0 + i))) {
-				g_gui.ChangeFloor(i);
-			}
-		}
-	}
+	navigationMenuHandler->OnChangeFloor(event);
 }
 
 void MainMenuBar::OnMinimapWindow(wxCommandEvent& event) {
@@ -864,39 +764,39 @@ void MainMenuBar::OnMinimapWindow(wxCommandEvent& event) {
 }
 
 void MainMenuBar::OnNewPalette(wxCommandEvent& event) {
-	g_gui.NewPalette();
+	paletteMenuHandler->OnNewPalette(event);
 }
 
-void MainMenuBar::OnSelectTerrainPalette(wxCommandEvent& WXUNUSED(event)) {
-	g_gui.SelectPalettePage(TILESET_TERRAIN);
+void MainMenuBar::OnSelectTerrainPalette(wxCommandEvent& event) {
+	paletteMenuHandler->OnSelectTerrainPalette(event);
 }
 
-void MainMenuBar::OnSelectDoodadPalette(wxCommandEvent& WXUNUSED(event)) {
-	g_gui.SelectPalettePage(TILESET_DOODAD);
+void MainMenuBar::OnSelectDoodadPalette(wxCommandEvent& event) {
+	paletteMenuHandler->OnSelectDoodadPalette(event);
 }
 
-void MainMenuBar::OnSelectItemPalette(wxCommandEvent& WXUNUSED(event)) {
-	g_gui.SelectPalettePage(TILESET_ITEM);
+void MainMenuBar::OnSelectItemPalette(wxCommandEvent& event) {
+	paletteMenuHandler->OnSelectItemPalette(event);
 }
 
-void MainMenuBar::OnSelectCollectionPalette(wxCommandEvent& WXUNUSED(event)) {
-	g_gui.SelectPalettePage(TILESET_COLLECTION);
+void MainMenuBar::OnSelectCollectionPalette(wxCommandEvent& event) {
+	paletteMenuHandler->OnSelectCollectionPalette(event);
 }
 
-void MainMenuBar::OnSelectHousePalette(wxCommandEvent& WXUNUSED(event)) {
-	g_gui.SelectPalettePage(TILESET_HOUSE);
+void MainMenuBar::OnSelectHousePalette(wxCommandEvent& event) {
+	paletteMenuHandler->OnSelectHousePalette(event);
 }
 
-void MainMenuBar::OnSelectCreaturePalette(wxCommandEvent& WXUNUSED(event)) {
-	g_gui.SelectPalettePage(TILESET_CREATURE);
+void MainMenuBar::OnSelectCreaturePalette(wxCommandEvent& event) {
+	paletteMenuHandler->OnSelectCreaturePalette(event);
 }
 
-void MainMenuBar::OnSelectWaypointPalette(wxCommandEvent& WXUNUSED(event)) {
-	g_gui.SelectPalettePage(TILESET_WAYPOINT);
+void MainMenuBar::OnSelectWaypointPalette(wxCommandEvent& event) {
+	paletteMenuHandler->OnSelectWaypointPalette(event);
 }
 
-void MainMenuBar::OnSelectRawPalette(wxCommandEvent& WXUNUSED(event)) {
-	g_gui.SelectPalettePage(TILESET_RAW);
+void MainMenuBar::OnSelectRawPalette(wxCommandEvent& event) {
+	paletteMenuHandler->OnSelectRawPalette(event);
 }
 
 void MainMenuBar::OnStartLive(wxCommandEvent& event) {

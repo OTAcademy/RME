@@ -164,68 +164,52 @@ class MainFrame;
 class SearchHandler;
 class ViewSettingsHandler;
 class MapActionsHandler;
+class FileMenuHandler;
+class NavigationMenuHandler;
+class PaletteMenuHandler;
 
 class MainMenuBar : public wxEvtHandler {
+	friend class MenuBarLoader;
+
 public:
 	MainMenuBar(MainFrame* frame);
-	virtual ~MainMenuBar();
+	~MainMenuBar();
 
-	bool Load(const FileName&, wxArrayString& warnings, wxString& error);
-
-	// Update
-	// Turn on/off all buttons according to current editor state
+	bool Load(const FileName& filename, wxArrayString& warnings, wxString& error);
 	void Update();
+	void LoadValues();
 	void UpdateFloorMenu(); // Only concerns the floor menu
 
 	RecentFilesManager recentFilesManager;
 
-	// Interface
 	void EnableItem(MenuBar::ActionID id, bool enable);
-	void CheckItem(MenuBar::ActionID id, bool enable);
+	void CheckItem(MenuBar::ActionID id, bool check);
 	bool IsItemChecked(MenuBar::ActionID id) const;
 
-	// Event handlers for all menu buttons
-	// File Menu
+	// Handlers
 	void OnNew(wxCommandEvent& event);
 	void OnOpen(wxCommandEvent& event);
-	void OnGenerateMap(wxCommandEvent& event);
-	void OnOpenRecent(wxCommandEvent& event);
 	void OnSave(wxCommandEvent& event);
 	void OnSaveAs(wxCommandEvent& event);
 	void OnClose(wxCommandEvent& event);
-	void OnPreferences(wxCommandEvent& event);
 	void OnQuit(wxCommandEvent& event);
+	void OnGenerateMap(wxCommandEvent& event);
 
-	// Import Menu
-	// Export Menu
 	void OnImportMap(wxCommandEvent& event);
 	void OnImportMonsterData(wxCommandEvent& event);
 	void OnImportMinimap(wxCommandEvent& event);
 	void OnExportMinimap(wxCommandEvent& event);
 	void OnExportTilesets(wxCommandEvent& event);
-	void OnReloadDataFiles(wxCommandEvent& event);
+	void OnReloadDataFiles(wxCommandEvent& event); // RELOAD_DATA
+	void OnPreferences(wxCommandEvent& event);
+	void OnListExtensions(wxCommandEvent& event);
+	void OnGotoWebsite(wxCommandEvent& event);
+	void OnAbout(wxCommandEvent& event);
 
-	// Edit Menu
+	// Edit
 	void OnUndo(wxCommandEvent& event);
 	void OnRedo(wxCommandEvent& event);
-	void OnBorderizeSelection(wxCommandEvent& event);
-	void OnBorderizeMap(wxCommandEvent& event);
-	void OnRandomizeSelection(wxCommandEvent& event);
-	void OnRandomizeMap(wxCommandEvent& event);
-	void OnJumpToBrush(wxCommandEvent& event);
-	void OnJumpToItemBrush(wxCommandEvent& event);
-	void OnGotoPreviousPosition(wxCommandEvent& event);
-	void OnGotoPosition(wxCommandEvent& event);
-	void OnMapRemoveItems(wxCommandEvent& event);
-	void OnMapRemoveCorpses(wxCommandEvent& event);
-	void OnMapRemoveUnreachable(wxCommandEvent& event);
-	void OnClearHouseTiles(wxCommandEvent& event);
-	void OnClearModifiedState(wxCommandEvent& event);
-	void OnToggleAutomagic(wxCommandEvent& event);
-	void OnSelectionTypeChange(wxCommandEvent& event);
-	void OnCut(wxCommandEvent& event);
-	void OnCopy(wxCommandEvent& event);
-	void OnPaste(wxCommandEvent& event);
+
 	void OnSearchForItem(wxCommandEvent& event);
 	void OnReplaceItems(wxCommandEvent& event);
 	void OnSearchForStuffOnMap(wxCommandEvent& event);
@@ -233,8 +217,6 @@ public:
 	void OnSearchForActionOnMap(wxCommandEvent& event);
 	void OnSearchForContainerOnMap(wxCommandEvent& event);
 	void OnSearchForWriteableOnMap(wxCommandEvent& event);
-
-	// Select menu
 	void OnSearchForStuffOnSelection(wxCommandEvent& event);
 	void OnSearchForUniqueOnSelection(wxCommandEvent& event);
 	void OnSearchForActionOnSelection(wxCommandEvent& event);
@@ -244,33 +226,59 @@ public:
 	void OnReplaceItemsOnSelection(wxCommandEvent& event);
 	void OnRemoveItemOnSelection(wxCommandEvent& event);
 
-	// Map menu
+	void OnSelectionTypeChange(wxCommandEvent& event);
+
+	void OnCopy(wxCommandEvent& event);
+	void OnCut(wxCommandEvent& event);
+	void OnPaste(wxCommandEvent& event);
+
+	void OnToggleAutomagic(wxCommandEvent& event);
+
+	void OnBorderizeSelection(wxCommandEvent& event);
+	void OnBorderizeMap(wxCommandEvent& event);
+	void OnRandomizeSelection(wxCommandEvent& event);
+	void OnRandomizeMap(wxCommandEvent& event);
+
+	void OnGotoPreviousPosition(wxCommandEvent& event);
+	void OnGotoPosition(wxCommandEvent& event);
+	void OnJumpToBrush(wxCommandEvent& event);
+	void OnJumpToItemBrush(wxCommandEvent& event);
+
+	void OnMapRemoveItems(wxCommandEvent& event);
+	void OnMapRemoveCorpses(wxCommandEvent& event);
+	void OnMapRemoveUnreachable(wxCommandEvent& event);
+	void OnClearHouseTiles(wxCommandEvent& event);
+	void OnClearModifiedState(wxCommandEvent& event);
+	void OnMapCleanHouseItems(wxCommandEvent& event);
+
 	void OnMapEditTowns(wxCommandEvent& event);
 	void OnMapEditItems(wxCommandEvent& event);
 	void OnMapEditMonsters(wxCommandEvent& event);
-	void OnMapCleanHouseItems(wxCommandEvent& event);
+
+	void OnMapStatistics(wxCommandEvent& event);
 	void OnMapCleanup(wxCommandEvent& event);
 	void OnMapProperties(wxCommandEvent& event);
-	void OnMapStatistics(wxCommandEvent& event);
 
-	// View Menu
 	void OnToolbars(wxCommandEvent& event);
 	void OnNewView(wxCommandEvent& event);
 	void OnToggleFullscreen(wxCommandEvent& event);
+
 	void OnZoomIn(wxCommandEvent& event);
 	void OnZoomOut(wxCommandEvent& event);
 	void OnZoomNormal(wxCommandEvent& event);
-	void OnChangeViewSettings(wxCommandEvent& event);
 
-	// Network menu
+	void OnTakeScreenshot(wxCommandEvent& event);
+
+	void OnChangeViewSettings(wxCommandEvent& event);
+	void OnChangeFloor(wxCommandEvent& event);
+
+	void OnMinimapWindow(wxCommandEvent& event);
+	void OnNewPalette(wxCommandEvent& event);
+
 	void OnStartLive(wxCommandEvent& event);
 	void OnJoinLive(wxCommandEvent& event);
 	void OnCloseLive(wxCommandEvent& event);
 
-	// Window Menu
-	void OnMinimapWindow(wxCommandEvent& event);
-	void OnNewPalette(wxCommandEvent& event);
-	void OnTakeScreenshot(wxCommandEvent& event);
 	void OnSelectTerrainPalette(wxCommandEvent& event);
 	void OnSelectDoodadPalette(wxCommandEvent& event);
 	void OnSelectItemPalette(wxCommandEvent& event);
@@ -280,25 +288,18 @@ public:
 	void OnSelectWaypointPalette(wxCommandEvent& event);
 	void OnSelectRawPalette(wxCommandEvent& event);
 
-	// Floor menu
-	void OnChangeFloor(wxCommandEvent& event);
-
-	// About Menu
 	void OnDebugViewDat(wxCommandEvent& event);
-	void OnListExtensions(wxCommandEvent& event);
-	void OnGotoWebsite(wxCommandEvent& event);
-	void OnAbout(wxCommandEvent& event);
 
-protected:
-	// Checks the items in the menus according to the settings (in config)
-	void LoadValues();
+	void OnOpenRecent(wxCommandEvent& event);
+
+	bool checking_programmaticly;
 
 protected:
 	MainFrame* frame;
 	wxMenuBar* menubar;
 
 	// Used so that calling Check on menu items don't trigger events (avoids infinite recursion)
-	bool checking_programmaticly;
+	// bool checking_programmaticly; // Already defined as public
 
 	std::map<MenuBar::ActionID, std::list<wxMenuItem*>> items;
 
@@ -307,6 +308,9 @@ protected:
 	SearchHandler* searchHandler;
 	ViewSettingsHandler* viewSettingsHandler;
 	MapActionsHandler* mapActionsHandler;
+	FileMenuHandler* fileMenuHandler;
+	NavigationMenuHandler* navigationMenuHandler;
+	PaletteMenuHandler* paletteMenuHandler;
 
 	DECLARE_EVENT_TABLE();
 };
