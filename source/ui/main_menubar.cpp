@@ -41,6 +41,9 @@
 #include "live/live_server.h"
 #include "editor/action_queue.h"
 
+#include "editor/operations/search_operations.h"
+#include "editor/operations/clean_operations.h"
+
 BEGIN_EVENT_TABLE(MainMenuBar, wxEvtHandler)
 END_EVENT_TABLE()
 
@@ -236,22 +239,6 @@ MainMenuBar::~MainMenuBar() {
 	for (std::map<std::string, MenuBar::Action*>::iterator ai = actions.begin(); ai != actions.end(); ++ai) {
 		delete ai->second;
 	}
-}
-
-namespace OnMapRemoveItems {
-	struct RemoveItemCondition {
-		RemoveItemCondition(uint16_t itemId) :
-			itemId(itemId) { }
-
-		uint16_t itemId;
-
-		bool operator()(Map& map, Item* item, int64_t removed, int64_t done) {
-			if (done % 0x8000 == 0) {
-				g_gui.SetLoadDone((uint32_t)(100 * done / map.getTileCount()));
-			}
-			return item->getID() == itemId && !item->isComplex();
-		}
-	};
 }
 
 void MainMenuBar::EnableItem(MenuBar::ActionID id, bool enable) {
@@ -824,35 +811,6 @@ void MainMenuBar::OnRedo(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.DoRedo();
 }
 
-namespace OnSearchForItem {
-	struct Finder {
-		Finder(uint16_t itemId, uint32_t maxCount) :
-			itemId(itemId), maxCount(maxCount) { }
-
-		uint16_t itemId;
-		uint32_t maxCount;
-		std::vector<std::pair<Tile*, Item*>> result;
-
-		bool limitReached() const {
-			return result.size() >= (size_t)maxCount;
-		}
-
-		void operator()(Map& map, Tile* tile, Item* item, long long done) {
-			if (result.size() >= (size_t)maxCount) {
-				return;
-			}
-
-			if (done % 0x8000 == 0) {
-				g_gui.SetLoadDone((unsigned int)(100 * done / map.getTileCount()));
-			}
-
-			if (item->getID() == itemId) {
-				result.push_back(std::make_pair(tile, item));
-			}
-		}
-	};
-}
-
 void MainMenuBar::OnSearchForItem(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
@@ -861,7 +819,7 @@ void MainMenuBar::OnSearchForItem(wxCommandEvent& WXUNUSED(event)) {
 	FindItemDialog dialog(frame, "Search for Item");
 	dialog.setSearchMode((FindItemDialog::SearchMode)g_settings.getInteger(Config::FIND_ITEM_MODE));
 	if (dialog.ShowModal() == wxID_OK) {
-		OnSearchForItem::Finder finder(dialog.getResultID(), (uint32_t)g_settings.getInteger(Config::REPLACE_SIZE));
+		EditorOperations::ItemSearcher finder(dialog.getResultID(), (uint32_t)g_settings.getInteger(Config::REPLACE_SIZE));
 		g_gui.CreateLoadBar("Searching map...");
 
 		foreach_ItemOnMap(g_gui.GetCurrentMap(), finder, false);
@@ -898,106 +856,6 @@ void MainMenuBar::OnReplaceItems(wxCommandEvent& WXUNUSED(event)) {
 			window->ShowReplaceItemsDialog(false);
 		}
 	}
-}
-
-namespace OnSearchForStuff {
-	struct Searcher {
-		Searcher() :
-			search_unique(false),
-			search_action(false),
-			search_container(false),
-			search_writeable(false) { }
-
-		bool search_unique;
-		bool search_action;
-		bool search_container;
-		bool search_writeable;
-		std::vector<std::pair<Tile*, Item*>> found;
-
-		void operator()(Map& map, Tile* tile, Item* item, long long done) {
-			if (done % 0x8000 == 0) {
-				g_gui.SetLoadDone((unsigned int)(100 * done / map.getTileCount()));
-			}
-			Container* container;
-			if ((search_unique && item->getUniqueID() > 0) || (search_action && item->getActionID() > 0) || (search_container && ((container = dynamic_cast<Container*>(item)) && container->getItemCount())) || (search_writeable && item->getText().length() > 0)) {
-				found.push_back(std::make_pair(tile, item));
-			}
-		}
-
-		wxString desc(Item* item) {
-			wxString label;
-			if (search_action) {
-				if (item->getActionID() > 0) {
-					label << "AID:" << item->getActionID() << " ";
-				}
-				if (item->getUniqueID() > 0) {
-					label << "UID:" << item->getUniqueID() << " ";
-				}
-			} else {
-				if (item->getUniqueID() > 0) {
-					label << "UID:" << item->getUniqueID() << " ";
-				}
-				if (item->getActionID() > 0) {
-					label << "AID:" << item->getActionID() << " ";
-				}
-			}
-
-			label << wxstr(item->getName());
-
-			if (dynamic_cast<Container*>(item)) {
-				label << " (Container) ";
-			}
-
-			if (item->getText().length() > 0) {
-				label << " (Text: " << wxstr(item->getText()) << ") ";
-			}
-
-			return label;
-		}
-
-		void sort() {
-			if (search_unique && !search_action) {
-				std::sort(found.begin(), found.end(), [](const std::pair<Tile*, Item*>& pair1, const std::pair<Tile*, Item*>& pair2) {
-					const Item* item1 = pair1.second;
-					const Item* item2 = pair2.second;
-
-					uint16_t u1 = item1->getUniqueID();
-					uint16_t u2 = item2->getUniqueID();
-					if (u1 != u2) {
-						return u1 < u2;
-					}
-					return item1->getActionID() < item2->getActionID();
-				});
-			} else if (search_action && !search_unique) {
-				std::sort(found.begin(), found.end(), [](const std::pair<Tile*, Item*>& pair1, const std::pair<Tile*, Item*>& pair2) {
-					const Item* item1 = pair1.second;
-					const Item* item2 = pair2.second;
-
-					uint16_t a1 = item1->getActionID();
-					uint16_t a2 = item2->getActionID();
-					if (a1 != a2) {
-						return a1 < a2;
-					}
-					return item1->getUniqueID() < item2->getUniqueID();
-				});
-			} else if (search_unique || search_action) {
-				std::sort(found.begin(), found.end(), Searcher::compare);
-			}
-		}
-
-		static bool compare(const std::pair<Tile*, Item*>& pair1, const std::pair<Tile*, Item*>& pair2) {
-			const Item* item1 = pair1.second;
-			const Item* item2 = pair2.second;
-
-			if (item1->getActionID() != 0 || item2->getActionID() != 0) {
-				return item1->getActionID() < item2->getActionID();
-			} else if (item1->getUniqueID() != 0 || item2->getUniqueID() != 0) {
-				return item1->getUniqueID() < item2->getUniqueID();
-			}
-
-			return false;
-		}
-	};
 }
 
 void MainMenuBar::OnSearchForStuffOnMap(wxCommandEvent& WXUNUSED(event)) {
@@ -1048,7 +906,7 @@ void MainMenuBar::OnSearchForItemOnSelection(wxCommandEvent& WXUNUSED(event)) {
 	FindItemDialog dialog(frame, "Search on Selection");
 	dialog.setSearchMode((FindItemDialog::SearchMode)g_settings.getInteger(Config::FIND_ITEM_MODE));
 	if (dialog.ShowModal() == wxID_OK) {
-		OnSearchForItem::Finder finder(dialog.getResultID(), (uint32_t)g_settings.getInteger(Config::REPLACE_SIZE));
+		EditorOperations::ItemSearcher finder(dialog.getResultID(), (uint32_t)g_settings.getInteger(Config::REPLACE_SIZE));
 		g_gui.CreateLoadBar("Searching on selected area...");
 
 		foreach_ItemOnMap(g_gui.GetCurrentMap(), finder, true);
@@ -1097,7 +955,7 @@ void MainMenuBar::OnRemoveItemOnSelection(wxCommandEvent& WXUNUSED(event)) {
 	if (dialog.ShowModal() == wxID_OK) {
 		g_gui.GetCurrentEditor()->actionQueue->clear();
 		g_gui.CreateLoadBar("Searching item on selection to remove...");
-		OnMapRemoveItems::RemoveItemCondition condition(dialog.getResultID());
+		EditorOperations::RemoveItemCondition condition(dialog.getResultID());
 		int64_t count = RemoveItemOnMap(g_gui.GetCurrentMap(), condition, true);
 		g_gui.DestroyLoadBar();
 
@@ -1255,7 +1113,7 @@ void MainMenuBar::OnMapRemoveItems(wxCommandEvent& WXUNUSED(event)) {
 		g_gui.GetCurrentEditor()->selection.clear();
 		g_gui.GetCurrentEditor()->actionQueue->clear();
 
-		OnMapRemoveItems::RemoveItemCondition condition(itemid);
+		EditorOperations::RemoveItemCondition condition(itemid);
 		g_gui.CreateLoadBar("Searching map for items to remove...");
 
 		int64_t count = RemoveItemOnMap(g_gui.GetCurrentMap(), condition, false);
@@ -1272,20 +1130,6 @@ void MainMenuBar::OnMapRemoveItems(wxCommandEvent& WXUNUSED(event)) {
 	dialog.Destroy();
 }
 
-namespace OnMapRemoveCorpses {
-	struct condition {
-		condition() { }
-
-		bool operator()(Map& map, Item* item, long long removed, long long done) {
-			if (done % 0x800 == 0) {
-				g_gui.SetLoadDone((unsigned int)(100 * done / map.getTileCount()));
-			}
-
-			return g_materials.isInTileset(item, "Corpses") & !item->isComplex();
-		}
-	};
-}
-
 void MainMenuBar::OnMapRemoveCorpses(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
@@ -1297,7 +1141,7 @@ void MainMenuBar::OnMapRemoveCorpses(wxCommandEvent& WXUNUSED(event)) {
 		g_gui.GetCurrentEditor()->selection.clear();
 		g_gui.GetCurrentEditor()->actionQueue->clear();
 
-		OnMapRemoveCorpses::condition func;
+		EditorOperations::RemoveCorpsesCondition func;
 		g_gui.CreateLoadBar("Searching map for items to remove...");
 
 		int64_t count = RemoveItemOnMap(g_gui.GetCurrentMap(), func, false);
@@ -1311,55 +1155,6 @@ void MainMenuBar::OnMapRemoveCorpses(wxCommandEvent& WXUNUSED(event)) {
 	}
 }
 
-namespace OnMapRemoveUnreachable {
-	struct condition {
-		condition() { }
-
-		bool isReachable(Tile* tile) {
-			if (tile == nullptr) {
-				return false;
-			}
-			if (!tile->isBlocking()) {
-				return true;
-			}
-			return false;
-		}
-
-		bool operator()(Map& map, Tile* tile, long long removed, long long done, long long total) {
-			if (done % 0x1000 == 0) {
-				g_gui.SetLoadDone((unsigned int)(100 * done / total));
-			}
-
-			Position pos = tile->getPosition();
-			int sx = std::max(pos.x - 10, 0);
-			int ex = std::min(pos.x + 10, 65535);
-			int sy = std::max(pos.y - 8, 0);
-			int ey = std::min(pos.y + 8, 65535);
-			int sz, ez;
-
-			if (pos.z <= GROUND_LAYER) {
-				sz = 0;
-				ez = 9;
-			} else {
-				// underground
-				sz = std::max(pos.z - 2, GROUND_LAYER);
-				ez = std::min(pos.z + 2, MAP_MAX_LAYER);
-			}
-
-			for (int z = sz; z <= ez; ++z) {
-				for (int y = sy; y <= ey; ++y) {
-					for (int x = sx; x <= ex; ++x) {
-						if (isReachable(map.getTile(x, y, z))) {
-							return false;
-						}
-					}
-				}
-			}
-			return true;
-		}
-	};
-}
-
 void MainMenuBar::OnMapRemoveUnreachable(wxCommandEvent& WXUNUSED(event)) {
 	if (!g_gui.IsEditorOpen()) {
 		return;
@@ -1371,7 +1166,7 @@ void MainMenuBar::OnMapRemoveUnreachable(wxCommandEvent& WXUNUSED(event)) {
 		g_gui.GetCurrentEditor()->selection.clear();
 		g_gui.GetCurrentEditor()->actionQueue->clear();
 
-		OnMapRemoveUnreachable::condition func;
+		EditorOperations::RemoveUnreachableCondition func;
 		g_gui.CreateLoadBar("Searching map for tiles to remove...");
 
 		long long removed = remove_if_TileOnMap(g_gui.GetCurrentMap(), func);
@@ -1911,7 +1706,24 @@ void MainMenuBar::SearchItems(bool unique, bool action, bool container, bool wri
 		g_gui.CreateLoadBar("Searching on map...");
 	}
 
-	std::vector<SearchResult> found = MapSearchUtility::SearchItems(g_gui.GetCurrentMap(), unique, action, container, writable, onSelection);
+	// Use the MapSearcher from EditorOperations
+	EditorOperations::MapSearcher finder;
+	finder.search_unique = unique;
+	finder.search_action = action;
+	finder.search_container = container;
+	finder.search_writeable = writable;
+
+	foreach_ItemOnMap(g_gui.GetCurrentMap(), finder, onSelection);
+	finder.sort();
+
+	std::vector<SearchResult> found;
+	for (const auto& pair : finder.found) {
+		SearchResult res;
+		res.tile = pair.first;
+		res.item = pair.second;
+		res.description = finder.desc(res.item).ToStdString();
+		found.push_back(res);
+	}
 
 	g_gui.DestroyLoadBar();
 
