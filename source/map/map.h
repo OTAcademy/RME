@@ -124,6 +124,8 @@ public:
 		unnamed = false;
 	}
 
+	void initializeEmpty();
+
 protected:
 	// Loads a map
 	bool open(const std::string identifier);

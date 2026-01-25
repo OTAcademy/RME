@@ -21,6 +21,8 @@
 #include "map/position.h"
 
 #include <deque>
+#include <memory>
+#include <vector>
 
 class Editor;
 class Tile;
@@ -65,43 +67,9 @@ public:
 	friend class Action;
 };
 
-using ChangeList = std::vector<Change*>;
+using ChangeList = std::vector<std::unique_ptr<Change>>;
 
-// A dirty list represents a list of all tiles that was changed in an action
-class DirtyList {
-public:
-	DirtyList();
-	~DirtyList();
-
-	struct ValueType {
-		uint32_t pos;
-		uint32_t floors;
-	};
-
-	uint32_t owner;
-
-protected:
-	struct Comparator {
-		bool operator()(const ValueType& a, const ValueType& b) const {
-			return a.pos < b.pos;
-		}
-	};
-
-public:
-	using SetType = std::set<ValueType, Comparator>;
-
-	void AddPosition(int x, int y, int z);
-	void AddChange(Change* c);
-	bool Empty() const {
-		return iset.empty() && ichanges.empty();
-	}
-	SetType& GetPosList();
-	ChangeList& GetChanges();
-
-protected:
-	SetType iset;
-	ChangeList ichanges;
-};
+class DirtyList;
 
 enum ActionIdentifier {
 	ACTION_MOVE,
@@ -123,8 +91,8 @@ class Action {
 public:
 	virtual ~Action();
 
-	void addChange(Change* t) {
-		changes.push_back(t);
+	void addChange(std::unique_ptr<Change> t) {
+		changes.push_back(std::move(t));
 	}
 
 	// Get memory footprint
@@ -157,7 +125,7 @@ protected:
 	friend class ActionQueue;
 };
 
-using ActionVector = std::vector<Action*>;
+using ActionVector = std::vector<std::unique_ptr<Action>>;
 
 class BatchAction {
 public:
@@ -176,8 +144,8 @@ public:
 		return type;
 	}
 
-	virtual void addAction(Action* action);
-	virtual void addAndCommitAction(Action* action);
+	virtual void addAction(std::unique_ptr<Action> action);
+	virtual void addAndCommitAction(std::unique_ptr<Action> action);
 
 protected:
 	BatchAction(Editor& editor, ActionIdentifier ident);
@@ -195,40 +163,6 @@ protected:
 	ActionVector batch;
 
 	friend class ActionQueue;
-};
-
-class ActionQueue {
-public:
-	ActionQueue(Editor& editor);
-	virtual ~ActionQueue();
-
-	using ActionList = std::deque<BatchAction*>;
-
-	void resetTimer();
-
-	virtual Action* createAction(ActionIdentifier ident);
-	virtual Action* createAction(BatchAction* parent);
-	virtual BatchAction* createBatch(ActionIdentifier ident);
-
-	void addBatch(BatchAction* action, int stacking_delay = 0);
-	void addAction(Action* action, int stacking_delay = 0);
-
-	void undo();
-	void redo();
-	void clear();
-
-	bool canUndo() {
-		return current > 0;
-	}
-	bool canRedo() {
-		return current < actions.size();
-	}
-
-protected:
-	size_t current;
-	size_t memory_size;
-	Editor& editor;
-	ActionList actions;
 };
 
 #endif

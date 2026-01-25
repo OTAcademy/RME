@@ -25,6 +25,7 @@
 
 #include "ui/gui.h"
 
+#include "ui/dialog_util.h"
 #include "app/preferences.h"
 
 BEGIN_EVENT_TABLE(PreferencesWindow, wxDialog)
@@ -741,7 +742,7 @@ void PreferencesWindow::Apply() {
 	g_settings.save();
 
 	if (must_restart) {
-		g_gui.PopupDialog(this, "Notice", "You must restart the editor for the changes to take effect.", wxOK);
+		DialogUtil::PopupDialog(this, "Notice", "You must restart the editor for the changes to take effect.", wxOK);
 	}
 
 	if (!palette_update_needed) {
@@ -752,7 +753,7 @@ void PreferencesWindow::Apply() {
 		wxString error;
 		wxArrayString warnings;
 		g_gui.LoadVersion(g_gui.GetCurrentVersionID(), error, warnings, true);
-		g_gui.PopupDialog("Error", error, wxOK);
-		g_gui.ListDialog("Warnings", warnings);
+		DialogUtil::PopupDialog("Error", error, wxOK);
+		DialogUtil::ListDialog("Warnings", warnings);
 	}
 }

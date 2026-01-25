@@ -19,6 +19,7 @@
 #define RME_SELECTION_H
 
 #include "map/position.h"
+#include <functional>
 
 class Action;
 class Editor;
@@ -28,6 +29,8 @@ class SelectionThread;
 
 class Selection {
 public:
+	std::function<void(size_t)> onSelectionChange;
+
 	Selection(Editor& editor);
 	~Selection();
 
@@ -108,30 +111,14 @@ private:
 	bool busy;
 	bool deferred;
 	Editor& editor;
-	BatchAction* session;
-	Action* subsession;
+	std::unique_ptr<BatchAction> session;
+	std::unique_ptr<Action> subsession;
 
 	TileSet tiles;
 	std::vector<Tile*> pending_adds;
 	std::vector<Tile*> pending_removes;
 
 	friend class SelectionThread;
-};
-
-class SelectionThread : public wxThread {
-public:
-	SelectionThread(Editor& editor, Position start, Position end);
-	virtual ~SelectionThread();
-
-	void Execute(); // Calls "Create" and then "Run"
-protected:
-	virtual ExitCode Entry();
-	Editor& editor;
-	Position start, end;
-	Selection selection;
-	Action* result;
-
-	friend class Selection;
 };
 
 #endif

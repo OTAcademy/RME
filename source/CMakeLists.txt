@@ -24,13 +24,19 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/brushes/wall_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/waypoint_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/action_queue.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/copybuffer.h
-    ${CMAKE_CURRENT_LIST_DIR}/editor/editor.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/dirty_list.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/hotkey_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/util/file_system.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/editor_factory.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/operations/copy_operations.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/draw_operations.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/selection_operations.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/editor_persistence.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_tabs.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/selection_thread.h
     ${CMAKE_CURRENT_LIST_DIR}/ext/pugiconfig.hpp
     ${CMAKE_CURRENT_LIST_DIR}/ext/pugixml.hpp
     ${CMAKE_CURRENT_LIST_DIR}/game/animation_timer.h
@@ -158,6 +164,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/dat_debug_view.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dcbutton.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialog_helper.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/dialog_util.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/extension_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/find_item_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.h
@@ -189,6 +196,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/app/preferences.cpp
     ${CMAKE_CURRENT_LIST_DIR}/app/settings.cpp
     ${CMAKE_CURRENT_LIST_DIR}/app/updater.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/hotkey_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_tables.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_utility.cpp
@@ -205,13 +213,18 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/brushes/wall_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/waypoint_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/action_queue.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/copybuffer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/dirty_list.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/editor_factory.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/operations/copy_operations.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/draw_operations.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/selection_operations.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/editor_persistence.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_tabs.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/selection_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ext/pugixml.cpp
     ${CMAKE_CURRENT_LIST_DIR}/game/animation_timer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/game/complexitem.cpp
@@ -328,6 +341,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/dat_debug_view.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dcbutton.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialog_helper.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/dialog_util.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/extension_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/find_item_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.cpp
@@ -346,5 +360,6 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/tileset_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/welcome_dialog.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/common.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/util/file_system.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/mt_rand.cpp
 )

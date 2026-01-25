@@ -15,26 +15,30 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "app/main.h"
-#include "ui/gui.h"
-#include "ui/dialog_util.h"
+#ifndef RME_EDITOR_SELECTION_THREAD_H
+#define RME_EDITOR_SELECTION_THREAD_H
 
-void IOMap::error(const wxString format, ...) {
-	va_list argp;
-	va_start(argp, format);
-	errorstr.PrintfV(format, argp);
-	va_end(argp);
+#include <wx/thread.h>
+#include "map/position.h"
+#include "editor/selection.h"
+
+class Editor;
+class Action;
+
+class SelectionThread : public wxThread {
+public:
+	SelectionThread(Editor& editor, Position start, Position end);
+	virtual ~SelectionThread();
+
+	void Execute(); // Calls "Create" and then "Run"
+protected:
+	virtual ExitCode Entry();
+	Editor& editor;
+	Position start, end;
+	Selection selection;
+	std::unique_ptr<Action> result;
+
+	friend class Selection;
 };
 
-void IOMap::warning(const wxString format, ...) {
-	wxString s;
-	va_list argp;
-	va_start(argp, format);
-	s.PrintfV(format, argp);
-	va_end(argp);
-	warnings.push_back(s);
-};
-
-bool IOMap::queryUser(const wxString& title, const wxString& text) {
-	return DialogUtil::PopupDialog(title, text, wxYES | wxNO) == wxID_YES;
-}
+#endif

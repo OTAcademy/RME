@@ -19,6 +19,7 @@
 #include "ui/main_toolbar.h"
 #include "ui/gui.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 #include "app/settings.h"
 #include "brushes/brush.h"
 #include "ui/pngfiles.h"
@@ -221,7 +222,7 @@ void MainToolBar::UpdateButtons() {
 	}
 
 	bool has_map = editor != nullptr;
-	bool is_host = has_map && !editor->IsLiveClient();
+	bool is_host = has_map && !editor->live_manager.IsClient();
 
 	standard_toolbar->EnableTool(wxID_SAVE, is_host);
 	standard_toolbar->EnableTool(wxID_SAVEAS, is_host);
@@ -249,8 +250,8 @@ void MainToolBar::UpdateButtons() {
 	z_control->Enable(has_map);
 
 	if (has_map) {
-		x_control->SetMaxValue(editor->getMapWidth());
-		y_control->SetMaxValue(editor->getMapHeight());
+		x_control->SetMaxValue(editor->map.getWidth());
+		y_control->SetMaxValue(editor->map.getHeight());
 	}
 
 	sizes_toolbar->EnableTool(TOOLBAR_SIZES_CIRCULAR, has_map);

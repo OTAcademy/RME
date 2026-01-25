@@ -11,11 +11,11 @@
 #include "ui/gui.h"
 
 void LiveCursorDrawer::draw(SpriteBatch& sprite_batch, const RenderView& view, Editor& editor, const DrawingOptions& options) {
-	if (options.ingame || !editor.IsLive()) {
+	if (options.ingame || !editor.live_manager.IsLive()) {
 		return;
 	}
 
-	LiveSocket& live = editor.GetLive();
+	LiveSocket& live = editor.live_manager.GetSocket();
 	for (LiveCursor& cursor : live.getCursorList()) {
 		if (cursor.pos.z <= GROUND_LAYER && view.floor > GROUND_LAYER) {
 			continue;

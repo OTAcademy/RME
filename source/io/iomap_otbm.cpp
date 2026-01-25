@@ -24,7 +24,8 @@
 #include <wx/datstrm.h>
 
 #include "app/settings.h"
-#include "ui/gui.h" // Loadbar
+#include "ui/gui.h"
+#include "ui/dialog_util.h" // Loadbar
 
 #include "game/creatures.h"
 #include "game/creature.h"
@@ -764,9 +765,9 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 
 	if (version.otbm > MAP_OTBM_4) {
 		// Failed to read version
-		if (g_gui.PopupDialog("Map error", "The loaded map appears to be a OTBM format that is not supported by the editor."
-										   "Do you still want to attempt to load the map?",
-							  wxYES | wxNO)
+		if (DialogUtil::PopupDialog("Map error", "The loaded map appears to be a OTBM format that is not supported by the editor."
+												 "Do you still want to attempt to load the map?",
+									wxYES | wxNO)
 			== wxID_YES) {
 			warning("Unsupported or damaged map version");
 		} else {
@@ -787,9 +788,9 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 	map.height = u16;
 
 	if (!root->getU32(u32) || u32 > (unsigned long)g_items.MajorVersion) { // OTB major version
-		if (g_gui.PopupDialog("Map error", "The loaded map appears to be a items.otb format that deviates from the "
-										   "items.otb loaded by the editor. Do you still want to attempt to load the map?",
-							  wxYES | wxNO)
+		if (DialogUtil::PopupDialog("Map error", "The loaded map appears to be a items.otb format that deviates from the "
+												 "items.otb loaded by the editor. Do you still want to attempt to load the map?",
+									wxYES | wxNO)
 			== wxID_YES) {
 			warning("Unsupported or damaged map version");
 		} else {
@@ -1620,7 +1621,7 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f) {
 	f.endNode();
 
 	if (waypointsWarning) {
-		g_gui.PopupDialog(g_gui.root, "Warning", "Waypoints were saved, but they are not supported in OTBM 2!\nIf your map fails to load, consider removing all waypoints and saving again.\n\nThis warning can be disabled in file->preferences.", wxOK);
+		DialogUtil::PopupDialog(g_gui.root, "Warning", "Waypoints were saved, but they are not supported in OTBM 2!\nIf your map fails to load, consider removing all waypoints and saving again.\n\nThis warning can be disabled in file->preferences.", wxOK);
 	}
 	return true;
 }

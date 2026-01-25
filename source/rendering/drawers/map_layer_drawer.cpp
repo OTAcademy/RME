@@ -20,6 +20,7 @@
 #include "rendering/drawers/tiles/tile_renderer.h"
 #include "rendering/drawers/overlays/grid_drawer.h"
 #include "editor/editor.h"
+#include "live/live_client.h"
 #include "map/map.h"
 #include "rendering/core/render_view.h"
 #include "rendering/core/drawing_options.h"
@@ -68,7 +69,9 @@ void MapLayerDrawer::Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 			} else {
 				if (!nd->isRequested(map_z > GROUND_LAYER)) {
 					// Request the node
-					editor->QueryNode(nd_map_x, nd_map_y, map_z > GROUND_LAYER);
+					if (editor->live_manager.GetClient()) {
+						editor->live_manager.GetClient()->queryNode(nd_map_x, nd_map_y, map_z > GROUND_LAYER);
+					}
 					nd->setRequested(map_z > GROUND_LAYER, true);
 				}
 				grid_drawer->DrawNodeLoadingPlaceholder(sprite_batch, nd_map_x, nd_map_y, view);

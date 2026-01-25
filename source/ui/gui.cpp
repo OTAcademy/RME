@@ -20,11 +20,16 @@
 #include <wx/wfstream.h>
 #include <spdlog/spdlog.h>
 #include <wx/display.h>
+#include <format>
 
 #include "ui/gui.h"
+#include "util/file_system.h"
 #include "ui/main_menubar.h"
+#include "ui/dialog_util.h"
 
 #include "editor/editor.h"
+#include "editor/action_queue.h"
+#include "editor/editor_factory.h"
 #include "brushes/brush.h"
 #include "map/map.h"
 #include "game/sprites.h"
@@ -79,7 +84,6 @@ GUI::GUI() :
 	loaded_version(CLIENT_VERSION_NONE),
 	mode(SELECTION_MODE),
 	pasting(false),
-	hotkeys_enabled(true),
 
 	current_brush(nullptr),
 	previous_brush(nullptr),
@@ -132,129 +136,6 @@ wxGLContext* GUI::GetGLContext(wxGLCanvas* win) {
 	return OGLContext;
 }
 
-wxString GUI::GetDataDirectory() {
-	std::string cfg_str = g_settings.getString(Config::DATA_DIRECTORY);
-	if (!cfg_str.empty()) {
-		FileName dir;
-		dir.Assign(wxstr(cfg_str));
-		wxString path;
-		if (dir.DirExists()) {
-			path = dir.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-			return path;
-		}
-	}
-
-	// Silently reset directory
-	FileName exec_directory;
-	try {
-		exec_directory = dynamic_cast<wxStandardPaths&>(wxStandardPaths::Get()).GetExecutablePath();
-	} catch (const std::bad_cast) {
-		throw; // Crash application (this should never happend anyways...)
-	}
-
-	exec_directory.AppendDir("data");
-	return exec_directory.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-}
-
-wxString GUI::GetExecDirectory() {
-	// Silently reset directory
-	FileName exec_directory;
-	try {
-		exec_directory = dynamic_cast<wxStandardPaths&>(wxStandardPaths::Get()).GetExecutablePath();
-	} catch (const std::bad_cast) {
-		wxLogError("Could not fetch executable directory.");
-	}
-	return exec_directory.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-}
-
-wxString GUI::GetLocalDataDirectory() {
-	if (g_settings.getInteger(Config::INDIRECTORY_INSTALLATION)) {
-		FileName dir = GetDataDirectory();
-		dir.AppendDir("user");
-		dir.AppendDir("data");
-		dir.Mkdir(0755, wxPATH_MKDIR_FULL);
-		return dir.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-		;
-	} else {
-		FileName dir = dynamic_cast<wxStandardPaths&>(wxStandardPaths::Get()).GetUserDataDir();
-#ifdef __WINDOWS__
-		dir.AppendDir("Remere's Map Editor");
-#else
-		dir.AppendDir(".rme");
-#endif
-		dir.AppendDir("data");
-		dir.Mkdir(0755, wxPATH_MKDIR_FULL);
-		return dir.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-	}
-}
-
-wxString GUI::GetLocalDirectory() {
-	if (g_settings.getInteger(Config::INDIRECTORY_INSTALLATION)) {
-		FileName dir = GetDataDirectory();
-		dir.AppendDir("user");
-		dir.Mkdir(0755, wxPATH_MKDIR_FULL);
-		return dir.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-		;
-	} else {
-		FileName dir = dynamic_cast<wxStandardPaths&>(wxStandardPaths::Get()).GetUserDataDir();
-#ifdef __WINDOWS__
-		dir.AppendDir("Remere's Map Editor");
-#else
-		dir.AppendDir(".rme");
-#endif
-		dir.Mkdir(0755, wxPATH_MKDIR_FULL);
-		return dir.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-	}
-}
-
-wxString GUI::GetExtensionsDirectory() {
-	std::string cfg_str = g_settings.getString(Config::EXTENSIONS_DIRECTORY);
-	if (!cfg_str.empty()) {
-		FileName dir;
-		dir.Assign(wxstr(cfg_str));
-		wxString path;
-		if (dir.DirExists()) {
-			path = dir.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-			return path;
-		}
-	}
-
-	// Silently reset directory
-	FileName local_directory = GetLocalDirectory();
-	local_directory.AppendDir("extensions");
-	local_directory.Mkdir(0755, wxPATH_MKDIR_FULL);
-	return local_directory.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-}
-
-void GUI::discoverDataDirectory(const wxString& existentFile) {
-	wxString currentDir = wxGetCwd();
-	wxString execDir = GetExecDirectory();
-
-	wxString possiblePaths[] = {
-		execDir,
-		currentDir + "/",
-
-		// these are used usually when running from build directories
-		execDir + "/../",
-		execDir + "/../../",
-		execDir + "/../../../",
-		currentDir + "/../",
-	};
-
-	bool found = false;
-	for (const wxString& path : possiblePaths) {
-		if (wxFileName(path + "data/" + existentFile).FileExists()) {
-			m_dataDirectory = path + "data/";
-			found = true;
-			break;
-		}
-	}
-
-	if (!found) {
-		wxLogError(wxString() + "Could not find data directory.\n");
-	}
-}
-
 bool GUI::LoadVersion(ClientVersionID version, wxString& error, wxArrayString& warnings, bool force) {
 	if (ClientVersion::get(version) == nullptr) {
 		error = "Unsupported client version! (8)";
@@ -296,18 +177,6 @@ bool GUI::LoadVersion(ClientVersionID version, wxString& error, wxArrayString& w
 	return true;
 }
 
-void GUI::EnableHotkeys() {
-	hotkeys_enabled = true;
-}
-
-void GUI::DisableHotkeys() {
-	hotkeys_enabled = false;
-}
-
-bool GUI::AreHotkeysEnabled() const {
-	return hotkeys_enabled;
-}
-
 ClientVersionID GUI::GetCurrentVersionID() const {
 	if (loaded_version != CLIENT_VERSION_NONE) {
 		return getLoadedVersion()->getID();
@@ -327,7 +196,7 @@ void GUI::CycleTab(bool forward) {
 bool GUI::LoadDataFiles(wxString& error, wxArrayString& warnings) {
 	FileName data_path = getLoadedVersion()->getDataPath();
 	FileName client_path = getLoadedVersion()->getClientPath();
-	FileName extension_path = GetExtensionsDirectory();
+	FileName extension_path = FileSystem::GetExtensionsDirectory();
 
 	FileName exec_directory;
 	try {
@@ -451,7 +320,7 @@ void GUI::SaveCurrentMap(FileName filename, bool showdialog) {
 	if (mapTab) {
 		Editor* editor = mapTab->GetEditor();
 		if (editor) {
-			editor->saveMap(filename, showdialog);
+			EditorPersistence::saveMap(*editor, filename, showdialog);
 
 			const std::string& filename = editor->map.getFilename();
 			const Position& position = mapTab->GetScreenCenterPosition();
@@ -507,15 +376,15 @@ void GUI::FitViewToMap(MapTab* mt) {
 bool GUI::NewMap() {
 	FinishWelcomeDialog();
 
-	Editor* editor;
+	std::unique_ptr<Editor> editor;
 	try {
-		editor = newd Editor(copybuffer);
+		editor = EditorFactory::CreateEmpty(copybuffer);
 	} catch (std::runtime_error& e) {
-		PopupDialog(root, "Error!", wxString(e.what(), wxConvUTF8), wxOK);
+		DialogUtil::PopupDialog(root, "Error!", wxString(e.what(), wxConvUTF8), wxOK);
 		return false;
 	}
 
-	auto* mapTab = newd MapTab(tabbook, editor);
+	auto* mapTab = newd MapTab(tabbook, editor.release());
 	mapTab->OnSwitchEditorMode(mode);
 	editor->map.clearChanges();
 
@@ -577,22 +446,42 @@ bool GUI::LoadMap(const FileName& fileName) {
 		g_gui.CloseCurrentEditor();
 	}
 
-	Editor* editor;
+	std::unique_ptr<Editor> editor;
 	try {
-		editor = newd Editor(copybuffer, fileName);
+		// Identify version first
+		MapVersion ver;
+		if (!IOMapOTBM::getVersionInfo(fileName, ver)) {
+			throw std::runtime_error(std::format("Could not open file \"{}\".\nThis is not a valid OTBM file or it does not exist.", nstr(fileName.GetFullPath())));
+		}
+
+		if (g_gui.GetCurrentVersionID() != ver.client) {
+			wxString error;
+			wxArrayString warnings;
+			if (g_gui.CloseAllEditors()) {
+				if (!g_gui.LoadVersion(ver.client, error, warnings)) {
+					DialogUtil::PopupDialog("Error", error, wxOK);
+					return false;
+				}
+				DialogUtil::ListDialog("Warnings", warnings);
+			} else {
+				throw std::runtime_error("All maps of different versions were not closed.");
+			}
+		}
+
+		editor = EditorFactory::LoadFromFile(copybuffer, fileName);
 	} catch (std::runtime_error& e) {
-		PopupDialog(root, "Error!", wxString(e.what(), wxConvUTF8), wxOK);
+		DialogUtil::PopupDialog(root, "Error!", wxString(e.what(), wxConvUTF8), wxOK);
 		return false;
 	}
 
-	auto* mapTab = newd MapTab(tabbook, editor);
+	auto* mapTab = newd MapTab(tabbook, editor.release());
 	mapTab->OnSwitchEditorMode(mode);
 
 	root->AddRecentFile(fileName);
 
 	mapTab->GetView()->FitToMap();
 	UpdateTitle();
-	ListDialog("Map loader errors", mapTab->GetMap()->getWarnings());
+	DialogUtil::ListDialog("Map loader errors", mapTab->GetMap()->getWarnings());
 	root->DoQueryImportCreatures();
 
 	FitViewToMap(mapTab);
@@ -690,7 +579,7 @@ bool GUI::CloseLiveEditors(LiveSocket* sock) {
 		auto* mapTab = dynamic_cast<MapTab*>(tabbook->GetTab(i));
 		if (mapTab) {
 			Editor* editor = mapTab->GetEditor();
-			if (editor->GetLiveClient() == sock) {
+			if (editor->live_manager.GetClient() == sock) {
 				tabbook->DeleteTab(i--);
 			}
 		}
@@ -1072,8 +961,8 @@ void GUI::CreateLoadBar(wxString message, bool canCancel /* = false */) {
 
 	for (int idx = 0; idx < tabbook->GetTabCount(); ++idx) {
 		auto* mt = dynamic_cast<MapTab*>(tabbook->GetTab(idx));
-		if (mt && mt->GetEditor()->IsLiveServer()) {
-			mt->GetEditor()->GetLiveServer()->startOperation(progressText);
+		if (mt && mt->GetEditor()->live_manager.IsServer()) {
+			mt->GetEditor()->live_manager.GetServer()->startOperation(progressText);
 		}
 	}
 	progressBar->Update(0);
@@ -1112,7 +1001,7 @@ bool GUI::SetLoadDone(int32_t done, const wxString& newMessage) {
 	for (int32_t index = 0; index < tabbook->GetTabCount(); ++index) {
 		auto* mapTab = dynamic_cast<MapTab*>(tabbook->GetTab(index));
 		if (mapTab && mapTab->GetEditor()) {
-			LiveServer* server = mapTab->GetEditor()->GetLiveServer();
+			LiveServer* server = mapTab->GetEditor()->live_manager.GetServer();
 			if (server) {
 				server->updateOperation(newProgress);
 			}
@@ -1813,172 +1702,6 @@ void GUI::FillDoodadPreviewBuffer() {
 			doodad_buffer_map->setTile(center_pos, tile);
 		}
 	}
-}
-
-long GUI::PopupDialog(wxWindow* parent, wxString title, wxString text, long style, wxString confisavename, uint32_t configsavevalue) {
-	if (text.empty()) {
-		return wxID_ANY;
-	}
-
-	wxMessageDialog dlg(parent, text, title, style);
-	return dlg.ShowModal();
-}
-
-long GUI::PopupDialog(wxString title, wxString text, long style, wxString configsavename, uint32_t configsavevalue) {
-	return g_gui.PopupDialog(g_gui.root, title, text, style, configsavename, configsavevalue);
-}
-
-void GUI::ListDialog(wxWindow* parent, wxString title, const wxArrayString& param_items) {
-	if (param_items.empty()) {
-		return;
-	}
-
-	wxArrayString list_items(param_items);
-
-	// Create the window
-	wxDialog* dlg = newd wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX);
-
-	wxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
-	wxListBox* item_list = newd wxListBox(dlg, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, nullptr, wxLB_SINGLE);
-	item_list->SetMinSize(wxSize(500, 300));
-
-	for (size_t i = 0; i != list_items.GetCount();) {
-		wxString str = list_items[i];
-		size_t pos = str.find("\n");
-		if (pos != wxString::npos) {
-			// Split string!
-			item_list->Append(str.substr(0, pos));
-			list_items[i] = str.substr(pos + 1);
-			continue;
-		}
-		item_list->Append(list_items[i]);
-		++i;
-	}
-	sizer->Add(item_list, 1, wxEXPAND);
-
-	wxSizer* stdsizer = newd wxBoxSizer(wxHORIZONTAL);
-	stdsizer->Add(newd wxButton(dlg, wxID_OK, "OK"), wxSizerFlags(1).Center());
-	sizer->Add(stdsizer, wxSizerFlags(0).Center());
-
-	dlg->SetSizerAndFit(sizer);
-
-	// Show the window
-	dlg->ShowModal();
-	delete dlg;
-}
-
-void GUI::ShowTextBox(wxWindow* parent, wxString title, wxString content) {
-	wxDialog* dlg = newd wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX);
-	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
-	wxTextCtrl* text_field = newd wxTextCtrl(dlg, wxID_ANY, content, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY);
-	text_field->SetMinSize(wxSize(400, 550));
-	topsizer->Add(text_field, wxSizerFlags(5).Expand());
-
-	wxSizer* choicesizer = newd wxBoxSizer(wxHORIZONTAL);
-	choicesizer->Add(newd wxButton(dlg, wxID_CANCEL, "OK"), wxSizerFlags(1).Center());
-	topsizer->Add(choicesizer, wxSizerFlags(0).Center());
-	dlg->SetSizerAndFit(topsizer);
-
-	dlg->ShowModal();
-}
-
-void GUI::SetHotkey(int index, Hotkey& hotkey) {
-	ASSERT(index >= 0 && index <= 9);
-	hotkeys[index] = hotkey;
-	SetStatusText("Set hotkey " + i2ws(index) + ".");
-}
-
-const Hotkey& GUI::GetHotkey(int index) const {
-	ASSERT(index >= 0 && index <= 9);
-	return hotkeys[index];
-}
-
-void GUI::SaveHotkeys() const {
-	std::ostringstream os;
-	for (const auto& hotkey : hotkeys) {
-		os << hotkey << '\n';
-	}
-	g_settings.setString(Config::NUMERICAL_HOTKEYS, os.str());
-}
-
-void GUI::LoadHotkeys() {
-	std::istringstream is;
-	is.str(g_settings.getString(Config::NUMERICAL_HOTKEYS));
-
-	std::string line;
-	int index = 0;
-	while (getline(is, line)) {
-		std::istringstream line_is;
-		line_is.str(line);
-		line_is >> hotkeys[index];
-
-		++index;
-	}
-}
-
-Hotkey::Hotkey() :
-	type(NONE) {
-	////
-}
-
-Hotkey::Hotkey(Position _pos) :
-	type(POSITION), pos(_pos) {
-	////
-}
-
-Hotkey::Hotkey(Brush* brush) :
-	type(BRUSH), brushname(brush->getName()) {
-	////
-}
-
-Hotkey::Hotkey(std::string _name) :
-	type(BRUSH), brushname(_name) {
-	////
-}
-
-Hotkey::~Hotkey() {
-	////
-}
-
-std::ostream& operator<<(std::ostream& os, const Hotkey& hotkey) {
-	switch (hotkey.type) {
-		case Hotkey::POSITION: {
-			os << "pos:{" << hotkey.pos << "}";
-		} break;
-		case Hotkey::BRUSH: {
-			if (hotkey.brushname.find('{') != std::string::npos || hotkey.brushname.find('}') != std::string::npos) {
-				break;
-			}
-			os << "brush:{" << hotkey.brushname << "}";
-		} break;
-		default: {
-			os << "none:{}";
-		} break;
-	}
-	return os;
-}
-
-std::istream& operator>>(std::istream& is, Hotkey& hotkey) {
-	std::string type;
-	getline(is, type, ':');
-	if (type == "none") {
-		is.ignore(2); // ignore "{}"
-	} else if (type == "pos") {
-		is.ignore(1); // ignore "{"
-		Position pos;
-		is >> pos;
-		hotkey = Hotkey(pos);
-		is.ignore(1); // ignore "}"
-	} else if (type == "brush") {
-		is.ignore(1); // ignore "{"
-		std::string brushname;
-		getline(is, brushname, '}');
-		hotkey = Hotkey(brushname);
-	} else {
-		// Do nothing...
-	}
-
-	return is;
 }
 
 void SetWindowToolTip(wxWindow* a, const wxString& tip) {

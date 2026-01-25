@@ -18,6 +18,7 @@
 #include "app/main.h"
 
 #include "editor/action.h"
+#include "editor/dirty_list.h"
 #include "app/settings.h"
 #include "map/map.h"
 #include "editor/editor.h"
@@ -106,11 +107,7 @@ Action::Action(Editor& editor, ActionIdentifier ident) :
 }
 
 Action::~Action() {
-	ChangeList::const_reverse_iterator it = changes.rbegin();
-	while (it != changes.rend()) {
-		delete *it;
-		++it;
-	}
+	changes.clear();
 }
 
 size_t Action::approx_memsize() const {
@@ -124,7 +121,7 @@ size_t Action::memsize() const {
 	mem += sizeof(Change*) * 3 * changes.size();
 	ChangeList::const_iterator it = changes.begin();
 	while (it != changes.end()) {
-		Change* c = *it;
+		Change* c = it->get();
 		switch (c->type) {
 			case CHANGE_TILE: {
 				ASSERT(c->data);
@@ -144,7 +141,7 @@ void Action::commit(DirtyList* dirty_list) {
 	editor.selection.start(Selection::INTERNAL);
 	ChangeList::const_iterator it = changes.begin();
 	while (it != changes.end()) {
-		Change* c = *it;
+		Change* c = it->get();
 		switch (c->type) {
 			case CHANGE_TILE: {
 				void** data = &c->data;
@@ -152,7 +149,7 @@ void Action::commit(DirtyList* dirty_list) {
 				ASSERT(newtile);
 				Position pos = newtile->getPosition();
 
-				if (editor.IsLiveClient()) {
+				if (editor.live_manager.IsClient()) {
 					QTreeNode* nd = editor.map.getLeaf(pos.x, pos.y);
 					if (!nd || !nd->isVisible(pos.z > GROUND_LAYER)) {
 						// Delete all changes that affect tiles outside our view
@@ -166,7 +163,7 @@ void Action::commit(DirtyList* dirty_list) {
 				TileLocation* location = newtile->getLocation();
 
 				// Update other nodes in the network
-				if (editor.IsLiveServer() && dirty_list) {
+				if (editor.live_manager.IsServer() && dirty_list) {
 					dirty_list->AddPosition(pos.x, pos.y, pos.z);
 				}
 
@@ -227,7 +224,7 @@ void Action::commit(DirtyList* dirty_list) {
 				newtile->modify();
 
 				// Update client dirty list
-				if (editor.IsLiveClient() && dirty_list && type != ACTION_REMOTE) {
+				if (editor.live_manager.IsClient() && dirty_list && type != ACTION_REMOTE) {
 					// Local action, assemble changes
 					dirty_list->AddChange(c);
 				}
@@ -292,7 +289,7 @@ void Action::undo(DirtyList* dirty_list) {
 	ChangeList::reverse_iterator it = changes.rbegin();
 
 	while (it != changes.rend()) {
-		Change* c = *it;
+		Change* c = it->get();
 		switch (c->type) {
 			case CHANGE_TILE: {
 				void** data = &c->data;
@@ -300,7 +297,7 @@ void Action::undo(DirtyList* dirty_list) {
 				ASSERT(oldtile);
 				Position pos = oldtile->getPosition();
 
-				if (editor.IsLiveClient()) {
+				if (editor.live_manager.IsClient()) {
 					QTreeNode* nd = editor.map.getLeaf(pos.x, pos.y);
 					if (!nd || !nd->isVisible(pos.z > GROUND_LAYER)) {
 						// Delete all changes that affect tiles outside our view
@@ -313,7 +310,7 @@ void Action::undo(DirtyList* dirty_list) {
 				Tile* newtile = editor.map.swapTile(pos, oldtile);
 
 				// Update server side change list (for broadcast)
-				if (editor.IsLiveServer() && dirty_list) {
+				if (editor.live_manager.IsServer() && dirty_list) {
 					dirty_list->AddPosition(pos.x, pos.y, pos.z);
 				}
 
@@ -355,7 +352,7 @@ void Action::undo(DirtyList* dirty_list) {
 				*data = newtile;
 
 				// Update client dirty list
-				if (editor.IsLiveClient() && dirty_list && type != ACTION_REMOTE) {
+				if (editor.live_manager.IsClient() && dirty_list && type != ACTION_REMOTE) {
 					// Local action, assemble changes
 					dirty_list->AddChange(c);
 				}
@@ -421,9 +418,7 @@ BatchAction::BatchAction(Editor& editor, ActionIdentifier ident) :
 }
 
 BatchAction::~BatchAction() {
-	for (Action* action : batch) {
-		delete action;
-	}
+	// batch is vector<unique_ptr>, destruction handled automatically
 	batch.clear();
 }
 
@@ -436,7 +431,7 @@ size_t BatchAction::memsize(bool recalc) const {
 	uint32_t mem = sizeof(*this);
 	mem += sizeof(Action*) * 3 * batch.size();
 
-	for (Action* action : batch) {
+	for (const auto& action : batch) {
 #ifdef __USE_EXACT_MEMSIZE__
 		mem += action->memsize();
 #else
@@ -449,45 +444,41 @@ size_t BatchAction::memsize(bool recalc) const {
 	return mem;
 }
 
-void BatchAction::addAction(Action* action) {
+void BatchAction::addAction(std::unique_ptr<Action> action) {
 	// If empty, do nothing.
 	if (action->size() == 0) {
-		delete action;
 		return;
 	}
 
 	ASSERT(action->getType() == type);
 
-	if (!editor.CanEdit()) {
-		delete action;
+	if (editor.live_manager.IsClient()) {
 		return;
 	}
 
 	// Add it!
-	batch.push_back(action);
+	batch.push_back(std::move(action));
 	timestamp = time(nullptr);
 }
 
-void BatchAction::addAndCommitAction(Action* action) {
+void BatchAction::addAndCommitAction(std::unique_ptr<Action> action) {
 	// If empty, do nothing.
 	if (action->size() == 0) {
-		delete action;
 		return;
 	}
 
-	if (!editor.CanEdit()) {
-		delete action;
+	if (editor.live_manager.IsClient()) {
 		return;
 	}
 
 	// Add it!
 	action->commit(nullptr);
-	batch.push_back(action);
+	batch.push_back(std::move(action));
 	timestamp = time(nullptr);
 }
 
 void BatchAction::commit() {
-	for (Action* action : batch) {
+	for (const auto& action : batch) {
 		if (!action->isCommited()) {
 			action->commit(nullptr);
 		}
@@ -495,181 +486,18 @@ void BatchAction::commit() {
 }
 
 void BatchAction::undo() {
-	for (Action* action : boost::adaptors::reverse(batch)) {
+	for (auto& action : boost::adaptors::reverse(batch)) {
 		action->undo(nullptr);
 	}
 }
 
 void BatchAction::redo() {
-	for (Action* action : batch) {
+	for (auto& action : batch) {
 		action->redo(nullptr);
 	}
 }
 
 void BatchAction::merge(BatchAction* other) {
-	batch.insert(batch.end(), other->batch.begin(), other->batch.end());
+	batch.insert(batch.end(), std::make_move_iterator(other->batch.begin()), std::make_move_iterator(other->batch.end()));
 	other->batch.clear();
-}
-
-ActionQueue::ActionQueue(Editor& editor) :
-	current(0), memory_size(0), editor(editor) {
-	////
-}
-
-ActionQueue::~ActionQueue() {
-	for (auto it = actions.begin(); it != actions.end(); it = actions.erase(it)) {
-		delete *it;
-	}
-}
-
-Action* ActionQueue::createAction(ActionIdentifier ident) {
-	return newd Action(editor, ident);
-}
-
-Action* ActionQueue::createAction(BatchAction* batch) {
-	return newd Action(editor, batch->getType());
-}
-
-BatchAction* ActionQueue::createBatch(ActionIdentifier ident) {
-	return newd BatchAction(editor, ident);
-}
-
-void ActionQueue::resetTimer() {
-	if (!actions.empty()) {
-		actions.back()->resetTimer();
-	}
-}
-
-void ActionQueue::addBatch(BatchAction* batch, int stacking_delay) {
-	ASSERT(batch);
-	ASSERT(current <= actions.size());
-
-	if (batch->size() == 0) {
-		delete batch;
-		return;
-	}
-
-	// Commit any uncommited actions...
-	batch->commit();
-
-	// Update title
-	if (editor.map.doChange()) {
-		g_gui.UpdateTitle();
-	}
-
-	if (batch->type == ACTION_REMOTE) {
-		delete batch;
-		return;
-	}
-
-	while (current != actions.size()) {
-		memory_size -= actions.back()->memsize();
-		BatchAction* todelete = actions.back();
-		actions.pop_back();
-		delete todelete;
-	}
-
-	while (memory_size > size_t(1024 * 1024 * g_settings.getInteger(Config::UNDO_MEM_SIZE)) && !actions.empty()) {
-		memory_size -= actions.front()->memsize();
-		delete actions.front();
-		actions.pop_front();
-		current--;
-	}
-
-	if (actions.size() > size_t(g_settings.getInteger(Config::UNDO_SIZE)) && !actions.empty()) {
-		memory_size -= actions.front()->memsize();
-		BatchAction* todelete = actions.front();
-		actions.pop_front();
-		delete todelete;
-		current--;
-	}
-
-	do {
-		if (!actions.empty()) {
-			BatchAction* lastAction = actions.back();
-			if (lastAction->type == batch->type && g_settings.getInteger(Config::GROUP_ACTIONS) && time(nullptr) - stacking_delay < lastAction->timestamp) {
-				lastAction->merge(batch);
-				lastAction->timestamp = time(nullptr);
-				memory_size -= lastAction->memsize();
-				memory_size += lastAction->memsize(true);
-				delete batch;
-				break;
-			}
-		}
-		memory_size += batch->memsize();
-		actions.push_back(batch);
-		batch->timestamp = time(nullptr);
-		current++;
-	} while (false);
-}
-
-void ActionQueue::addAction(Action* action, int stacking_delay) {
-	BatchAction* batch = createBatch(action->getType());
-	batch->addAndCommitAction(action);
-	if (batch->size() == 0) {
-		delete batch;
-		return;
-	}
-
-	addBatch(batch, stacking_delay);
-}
-
-void ActionQueue::undo() {
-	if (current > 0) {
-		current--;
-		BatchAction* batch = actions[current];
-		batch->undo();
-	}
-}
-
-void ActionQueue::redo() {
-	if (current < actions.size()) {
-		BatchAction* batch = actions[current];
-		batch->redo();
-		current++;
-	}
-}
-
-void ActionQueue::clear() {
-	for (ActionList::iterator it = actions.begin(); it != actions.end();) {
-		delete *it;
-		it = actions.erase(it);
-	}
-	current = 0;
-}
-
-DirtyList::DirtyList() :
-	owner(0) {
-	;
-}
-
-DirtyList::~DirtyList() {
-	;
-}
-
-void DirtyList::AddPosition(int x, int y, int z) {
-	uint32_t m = ((x >> 2) << 18) | ((y >> 2) << 4);
-	ValueType fi = { m, 0 };
-	SetType::iterator s = iset.find(fi);
-	if (s != iset.end()) {
-		ValueType v = *s;
-		iset.erase(s);
-		v.floors = (1 << z) | v.floors;
-		iset.insert(v);
-	} else {
-		ValueType v = { m, (uint32_t)(1 << z) };
-		iset.insert(v);
-	}
-}
-
-void DirtyList::AddChange(Change* c) {
-	ichanges.push_back(c);
-}
-
-DirtyList::SetType& DirtyList::GetPosList() {
-	return iset;
-}
-
-ChangeList& DirtyList::GetChanges() {
-	return ichanges;
 }

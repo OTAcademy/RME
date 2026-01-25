@@ -17,10 +17,14 @@
 
 #include "app/main.h"
 
+#include "ui/dialog_util.h"
 #include "live/live_client.h"
 #include "live/live_tab.h"
 #include "live/live_action.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
+#include "editor/dirty_list.h"
+#include "editor/editor_factory.h"
 
 #include <wx/event.h>
 
@@ -239,7 +243,7 @@ MapTab* LiveClient::createEditorWindow() {
 	MapTabbook* mtb = dynamic_cast<MapTabbook*>(g_gui.tabbook);
 	ASSERT(mtb);
 
-	MapTab* edit = newd MapTab(mtb, editor);
+	MapTab* edit = newd MapTab(mtb, editor.get());
 	edit->OnSwitchEditorMode(g_gui.IsSelectionMode() ? SELECTION_MODE : DRAWING_MODE);
 
 	return edit;
@@ -275,13 +279,13 @@ void LiveClient::sendNodeRequests() {
 }
 
 void LiveClient::sendChanges(DirtyList& dirtyList) {
-	ChangeList& changeList = dirtyList.GetChanges();
+	auto& changeList = dirtyList.GetChanges();
 	if (changeList.empty()) {
 		return;
 	}
 
 	mapWriter.reset();
-	for (Change* change : changeList) {
+	for (const auto& change : changeList) {
 		switch (change->getType()) {
 			case CHANGE_TILE: {
 				const Position& position = static_cast<Tile*>(change->getData())->getPosition();
@@ -367,7 +371,7 @@ void LiveClient::parsePacket(NetworkMessage message) {
 
 void LiveClient::parseHello(NetworkMessage& message) {
 	ASSERT(editor == nullptr);
-	editor = newd Editor(g_gui.copybuffer, this);
+	editor = EditorFactory::JoinLive(g_gui.copybuffer, this);
 
 	Map& map = editor->map;
 	map.setName("Live Map - " + message.read<std::string>());
@@ -381,7 +385,7 @@ void LiveClient::parseKick(NetworkMessage& message) {
 	const std::string& kickMessage = message.read<std::string>();
 	close();
 
-	g_gui.PopupDialog("Disconnected", wxstr(kickMessage), wxOK);
+	DialogUtil::PopupDialog("Disconnected", wxstr(kickMessage), wxOK);
 }
 
 void LiveClient::parseClientAccepted(NetworkMessage& message) {
@@ -419,9 +423,9 @@ void LiveClient::parseNode(NetworkMessage& message) {
 	int32_t ndy = (ind >> 4) & 0x3FFF;
 	bool underground = ind & 1;
 
-	Action* action = editor->actionQueue->createAction(ACTION_REMOTE);
-	receiveNode(message, *editor, action, ndx, ndy, underground);
-	editor->actionQueue->addAction(action);
+	std::unique_ptr<Action> action = editor->actionQueue->createAction(ACTION_REMOTE);
+	receiveNode(message, *editor, action.get(), ndx, ndy, underground);
+	editor->actionQueue->addAction(std::move(action));
 
 	g_gui.RefreshView();
 	g_gui.UpdateMinimap();

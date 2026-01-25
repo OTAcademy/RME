@@ -31,6 +31,7 @@
 #include "map/tileset.h"
 
 #include "ui/gui.h"
+#include "ui/dialog_util.h"
 #include "app/application.h"
 #include "ui/add_tileset_window.h"
 #include "ui/container_properties_window.h"
@@ -146,11 +147,11 @@ void AddTilesetWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		std::string tilesetName = std::string(tileset_name_field->GetValue().mb_str());
 		g_materials.addToTileset(tilesetName, it.id, category_type);
 		g_materials.modify();
-		g_gui.PopupDialog("Added Tileset", "'" + it.name + "' has been added to new tileset '" + tilesetName + "'", wxOK);
+		DialogUtil::PopupDialog("Added Tileset", "'" + it.name + "' has been added to new tileset '" + tilesetName + "'", wxOK);
 
 		EndModal(1);
 	} else {
-		g_gui.PopupDialog(this, "Error", "Item does not exist.", wxOK);
+		DialogUtil::PopupDialog(this, "Error", "Item does not exist.", wxOK);
 	}
 }
 

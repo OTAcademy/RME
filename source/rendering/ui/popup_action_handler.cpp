@@ -18,6 +18,7 @@
 #include "app/main.h"
 #include "rendering/ui/popup_action_handler.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 #include "map/tile.h"
 #include "game/item.h"
 #include "ui/gui.h"
@@ -29,7 +30,7 @@
 void PopupActionHandler::RotateItem(Editor& editor) {
 	Tile* tile = editor.selection.getSelectedTile();
 
-	Action* action = editor.actionQueue->createAction(ACTION_ROTATE_ITEM);
+	std::unique_ptr<Action> action = editor.actionQueue->createAction(ACTION_ROTATE_ITEM);
 
 	Tile* new_tile = tile->deepCopy(editor.map);
 
@@ -38,9 +39,9 @@ void PopupActionHandler::RotateItem(Editor& editor) {
 
 	selected_items.front()->doRotate();
 
-	action->addChange(newd Change(new_tile));
+	action->addChange(std::make_unique<Change>(new_tile));
 
-	editor.actionQueue->addAction(action);
+	editor.actionQueue->addAction(std::move(action));
 	g_gui.RefreshView();
 }
 
@@ -58,7 +59,7 @@ void PopupActionHandler::GotoDestination(Editor& editor) {
 void PopupActionHandler::SwitchDoor(Editor& editor) {
 	Tile* tile = editor.selection.getSelectedTile();
 
-	Action* action = editor.actionQueue->createAction(ACTION_SWITCHDOOR);
+	std::unique_ptr<Action> action = editor.actionQueue->createAction(ACTION_SWITCHDOOR);
 
 	Tile* new_tile = tile->deepCopy(editor.map);
 
@@ -67,9 +68,9 @@ void PopupActionHandler::SwitchDoor(Editor& editor) {
 
 	DoorBrush::switchDoor(selected_items.front());
 
-	action->addChange(newd Change(new_tile));
+	action->addChange(std::make_unique<Change>(new_tile));
 
-	editor.actionQueue->addAction(action);
+	editor.actionQueue->addAction(std::move(action));
 	g_gui.RefreshView();
 }
 
@@ -89,9 +90,9 @@ void PopupActionHandler::BrowseTile(Editor& editor, int cursor_x, int cursor_y) 
 
 	int ret = w->ShowModal();
 	if (ret != 0) {
-		Action* action = editor.actionQueue->createAction(ACTION_DELETE_TILES);
-		action->addChange(newd Change(new_tile));
-		editor.addAction(action);
+		std::unique_ptr<Action> action = editor.actionQueue->createAction(ACTION_DELETE_TILES);
+		action->addChange(std::make_unique<Change>(new_tile));
+		editor.addAction(std::move(action));
 	} else {
 		// Cancel
 		delete new_tile;
@@ -144,9 +145,9 @@ void PopupActionHandler::SelectMoveTo(Editor& editor) {
 
 	int ret = w->ShowModal();
 	if (ret != 0) {
-		Action* action = editor.actionQueue->createAction(ACTION_CHANGE_PROPERTIES);
-		action->addChange(newd Change(new_tile));
-		editor.addAction(action);
+		std::unique_ptr<Action> action = editor.actionQueue->createAction(ACTION_CHANGE_PROPERTIES);
+		action->addChange(std::make_unique<Change>(new_tile));
+		editor.addAction(std::move(action));
 
 		g_gui.RebuildPalettes();
 	} else {

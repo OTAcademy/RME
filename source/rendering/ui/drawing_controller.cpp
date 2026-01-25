@@ -6,6 +6,7 @@
 #include "rendering/ui/drawing_controller.h"
 #include "rendering/ui/map_display.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 #include "map/map.h"
 #include "map/tile.h"
 #include "brushes/brush.h"

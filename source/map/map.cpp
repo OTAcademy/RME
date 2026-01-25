@@ -37,6 +37,23 @@ Map::Map() :
 	mapVersion.client = CLIENT_VERSION_NONE;
 }
 
+void Map::initializeEmpty() {
+	height = 2048;
+	width = 2048;
+
+	static int unnamed_counter = 0;
+
+	std::string sname = "Untitled-" + i2s(++unnamed_counter);
+	name = sname + ".otbm";
+	spawnfile = sname + "-spawn.xml";
+	housefile = sname + "-house.xml";
+	waypointfile = sname + "-waypoint.xml";
+	description = "No map description available.";
+	unnamed = true;
+
+	doChange();
+}
+
 Map::~Map() {
 	////
 }

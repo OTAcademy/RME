@@ -15,26 +15,50 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "app/main.h"
-#include "ui/gui.h"
-#include "ui/dialog_util.h"
+#ifndef RME_EDITOR_DIRTY_LIST_H
+#define RME_EDITOR_DIRTY_LIST_H
 
-void IOMap::error(const wxString format, ...) {
-	va_list argp;
-	va_start(argp, format);
-	errorstr.PrintfV(format, argp);
-	va_end(argp);
+#include <vector>
+#include <set>
+#include <cstdint>
+
+class Change;
+
+// A dirty list represents a list of all tiles that was changed in an action
+class DirtyList {
+public:
+	DirtyList();
+	~DirtyList();
+
+	struct ValueType {
+		uint32_t pos;
+		uint32_t floors;
+	};
+
+	uint32_t owner;
+
+protected:
+	struct Comparator {
+		bool operator()(const ValueType& a, const ValueType& b) const {
+			return a.pos < b.pos;
+		}
+	};
+
+public:
+	using SetType = std::set<ValueType, Comparator>;
+	using ChangeList = std::vector<Change*>;
+
+	void AddPosition(int x, int y, int z);
+	void AddChange(Change* c);
+	bool Empty() const {
+		return iset.empty() && ichanges.empty();
+	}
+	SetType& GetPosList();
+	ChangeList& GetChanges();
+
+protected:
+	SetType iset;
+	ChangeList ichanges;
 };
 
-void IOMap::warning(const wxString format, ...) {
-	wxString s;
-	va_list argp;
-	va_start(argp, format);
-	s.PrintfV(format, argp);
-	va_end(argp);
-	warnings.push_back(s);
-};
-
-bool IOMap::queryUser(const wxString& title, const wxString& text) {
-	return DialogUtil::PopupDialog(title, text, wxYES | wxNO) == wxID_YES;
-}
+#endif

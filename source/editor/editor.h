@@ -37,11 +37,13 @@ class LiveSocket;
 
 #include "live/live_manager.h"
 
-class Editor : public wxFrame {
+#include <functional>
+
+class Editor {
 public:
-	Editor(CopyBuffer& copybuffer, LiveClient* client);
-	Editor(CopyBuffer& copybuffer, const FileName& fn);
-	Editor(CopyBuffer& copybuffer);
+	Editor(CopyBuffer& copybuffer, const MapVersion& version, LiveClient* client);
+	Editor(CopyBuffer& copybuffer, const MapVersion& version, const FileName& fn);
+	Editor(CopyBuffer& copybuffer, const MapVersion& version);
 	~Editor();
 
 	// Live Manager
@@ -55,50 +57,16 @@ public:
 	GroundBrush* replace_brush;
 	Map map; // The map that is being edited
 
+	std::function<void()> onStateChange;
+	void notifyStateChange();
+
 public: // Functions
-	// Live Server handling
-	LiveClient* GetLiveClient() const;
-	LiveServer* GetLiveServer() const;
-	LiveSocket& GetLive() const;
-	bool CanEdit() const {
-		return true;
-	}
-	bool IsLocal() const;
-	bool IsLive() const;
-	bool IsLiveServer() const;
-	bool IsLiveClient() const;
-
-	// Server side
-	LiveServer* StartLiveServer();
-	void CloseLiveServer();
-	void BroadcastNodes(DirtyList& dirty_list);
-
-	// Client side
-	void QueryNode(int ndx, int ndy, bool underground);
-	void SendNodeRequests();
-
 	// Map handling
-	void saveMap(FileName filename, bool showdialog); // "" means default filename
-
-	uint16_t getMapWidth() const {
-		return map.width;
-	}
-	uint16_t getMapHeight() const {
-		return map.height;
-	}
-
-	wxString getLoaderError() const {
-		return map.getError();
-	}
-	bool importMap(FileName filename, int import_x_offset, int import_y_offset, ImportType house_import_type, ImportType spawn_import_type);
-	bool importMiniMap(FileName filename, int import, int import_x_offset, int import_y_offset, int import_z_offset);
-	bool exportMiniMap(FileName filename, int floor /*= GROUND_LAYER*/, bool displaydialog);
-	bool exportSelectionAsMiniMap(FileName directory, wxString fileName);
 
 	// Adds an action to the action queue (this allows the user to undo the action)
 	// Invalidates the action pointer
-	void addBatch(BatchAction* action, int stacking_delay = 0);
-	void addAction(Action* action, int stacking_delay = 0);
+	void addBatch(std::unique_ptr<BatchAction> action, int stacking_delay = 0);
+	void addAction(std::unique_ptr<Action> action, int stacking_delay = 0);
 
 	// Selection
 	bool hasSelection() const {

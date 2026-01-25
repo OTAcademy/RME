@@ -22,6 +22,7 @@
 #include "rendering/ui/map_display.h"
 #include "ui/map_window.h"
 #include "ui/gui.h"
+#include "editor/hotkey_manager.h"
 #include "editor/editor.h"
 #include "brushes/brush.h"
 
@@ -184,9 +185,9 @@ void KeyboardHandler::HandleHotkeys(MapCanvas* canvas, wxKeyEvent& event) {
 		} else {
 			return;
 		}
-		g_gui.SetHotkey(index, hk);
+		g_hotkeys.SetHotkey(index, hk);
 	} else {
-		Hotkey hk = g_gui.GetHotkey(index);
+		Hotkey hk = g_hotkeys.GetHotkey(index);
 		if (hk.IsPosition()) {
 			g_gui.SetSelectionMode();
 

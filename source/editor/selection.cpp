@@ -18,10 +18,12 @@
 #include "app/main.h"
 
 #include "editor/selection.h"
+#include "editor/selection_thread.h"
 #include "map/tile.h"
 #include "game/creature.h"
 #include "game/item.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 #include "ui/gui.h"
 
 Selection::Selection(Editor& editor) :
@@ -32,10 +34,8 @@ Selection::Selection(Editor& editor) :
 	subsession(nullptr) {
 	////
 }
-
 Selection::~Selection() {
-	delete subsession;
-	delete session;
+	//
 }
 
 Position Selection::minPosition() const {
@@ -92,7 +92,7 @@ void Selection::add(Tile* tile, Item* item) {
 		}
 	}
 
-	subsession->addChange(newd Change(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile));
 }
 
 void Selection::add(Tile* tile, Spawn* spawn) {
@@ -109,7 +109,7 @@ void Selection::add(Tile* tile, Spawn* spawn) {
 	Tile* new_tile = tile->deepCopy(editor.map);
 	spawn->deselect();
 
-	subsession->addChange(newd Change(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile));
 }
 
 void Selection::add(Tile* tile, Creature* creature) {
@@ -126,7 +126,7 @@ void Selection::add(Tile* tile, Creature* creature) {
 	Tile* new_tile = tile->deepCopy(editor.map);
 	creature->deselect();
 
-	subsession->addChange(newd Change(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile));
 }
 
 void Selection::add(Tile* tile) {
@@ -136,7 +136,7 @@ void Selection::add(Tile* tile) {
 	Tile* new_tile = tile->deepCopy(editor.map);
 	new_tile->select();
 
-	subsession->addChange(newd Change(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile));
 }
 
 void Selection::remove(Tile* tile, Item* item) {
@@ -154,7 +154,7 @@ void Selection::remove(Tile* tile, Item* item) {
 		new_tile->deselectGround();
 	}
 
-	subsession->addChange(newd Change(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile));
 }
 
 void Selection::remove(Tile* tile, Spawn* spawn) {
@@ -169,7 +169,7 @@ void Selection::remove(Tile* tile, Spawn* spawn) {
 		spawn->select();
 	}
 
-	subsession->addChange(newd Change(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile));
 }
 
 void Selection::remove(Tile* tile, Creature* creature) {
@@ -184,7 +184,7 @@ void Selection::remove(Tile* tile, Creature* creature) {
 		creature->select();
 	}
 
-	subsession->addChange(newd Change(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile));
 }
 
 void Selection::remove(Tile* tile) {
@@ -193,7 +193,7 @@ void Selection::remove(Tile* tile) {
 	Tile* new_tile = tile->deepCopy(editor.map);
 	new_tile->deselect();
 
-	subsession->addChange(newd Change(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile));
 }
 
 void Selection::addInternal(Tile* tile) {
@@ -252,7 +252,7 @@ void Selection::clear() {
 		for (TileSet::iterator it = tiles.begin(); it != tiles.end(); it++) {
 			Tile* new_tile = (*it)->deepCopy(editor.map);
 			new_tile->deselect();
-			subsession->addChange(newd Change(new_tile));
+			subsession->addChange(std::make_unique<Change>(new_tile));
 		}
 	} else {
 		for (TileSet::iterator it = tiles.begin(); it != tiles.end(); it++) {
@@ -267,7 +267,7 @@ void Selection::start(SessionFlags flags) {
 		if (flags & SUBTHREAD) {
 			;
 		} else {
-			session = editor.actionQueue->createBatch(ACTION_SELECT);
+			session = std::move(editor.actionQueue->createBatch(ACTION_SELECT));
 		}
 		subsession = editor.actionQueue->createAction(ACTION_SELECT);
 	} else {
@@ -282,15 +282,15 @@ void Selection::commit() {
 	if (session) {
 		ASSERT(subsession);
 		// We need to step out of the session before we do the action, else peril awaits us!
-		BatchAction* tmp = session;
+		std::unique_ptr<BatchAction> tmp = std::move(session);
 		session = nullptr;
 
 		// Do the action
-		tmp->addAndCommitAction(subsession);
+		tmp->addAndCommitAction(std::move(subsession));
 
 		// Create a newd action for subsequent selects
 		subsession = editor.actionQueue->createAction(ACTION_SELECT);
-		session = tmp;
+		session = std::move(tmp);
 	}
 }
 
@@ -303,11 +303,11 @@ void Selection::finish(SessionFlags flags) {
 			ASSERT(session);
 			ASSERT(subsession);
 			// We need to exit the session before we do the action, else peril awaits us!
-			BatchAction* tmp = session;
+			std::unique_ptr<BatchAction> tmp = std::move(session);
 			session = nullptr;
 
-			tmp->addAndCommitAction(subsession);
-			editor.addBatch(tmp, 2);
+			tmp->addAndCommitAction(std::move(subsession));
+			editor.addBatch(std::move(tmp), 2);
 
 			session = nullptr;
 			subsession = nullptr;
@@ -320,14 +320,8 @@ void Selection::finish(SessionFlags flags) {
 }
 
 void Selection::updateSelectionCount() {
-	if (size() > 0) {
-		wxString ss;
-		if (size() == 1) {
-			ss << "One tile selected.";
-		} else {
-			ss << size() << " tiles selected.";
-		}
-		g_gui.SetStatusText(ss);
+	if (onSelectionChange) {
+		onSelectionChange(size());
 	}
 }
 
@@ -335,53 +329,8 @@ void Selection::join(SelectionThread* thread) {
 	thread->Wait();
 
 	ASSERT(session);
-	session->addAction(thread->result);
+	session->addAction(std::move(thread->result));
 	thread->selection.subsession = nullptr;
 
 	delete thread;
-}
-
-SelectionThread::SelectionThread(Editor& editor, Position start, Position end) :
-	wxThread(wxTHREAD_JOINABLE),
-	editor(editor),
-	start(start),
-	end(end),
-	selection(editor),
-	result(nullptr) {
-	////
-}
-
-SelectionThread::~SelectionThread() {
-	////
-}
-
-void SelectionThread::Execute() {
-	Create();
-	Run();
-}
-
-wxThread::ExitCode SelectionThread::Entry() {
-	selection.start(Selection::SUBTHREAD);
-	for (int z = start.z; z >= end.z; --z) {
-		for (int x = start.x; x <= end.x; ++x) {
-			for (int y = start.y; y <= end.y; ++y) {
-				Tile* tile = editor.map.getTile(x, y, z);
-				if (!tile) {
-					continue;
-				}
-
-				selection.add(tile);
-			}
-		}
-		if (z <= GROUND_LAYER && g_settings.getInteger(Config::COMPENSATED_SELECT)) {
-			++start.x;
-			++start.y;
-			++end.x;
-			++end.y;
-		}
-	}
-	result = selection.subsession;
-	selection.finish(Selection::SUBTHREAD);
-
-	return nullptr;
 }

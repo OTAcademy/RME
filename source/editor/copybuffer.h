@@ -19,6 +19,7 @@
 #define RME_COPYBUFFER_H_
 
 #include <wx/dataobj.h>
+#include <memory>
 
 #include "map/position.h"
 #include "map/basemap.h"
@@ -47,7 +48,9 @@ public:
 
 private:
 	Position copyPos;
-	BaseMap* tiles;
+	std::unique_ptr<BaseMap> tiles;
+
+	friend class CopyOperations;
 };
 
 #endif

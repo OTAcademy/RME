@@ -31,6 +31,7 @@
 #include "map/tileset.h"
 
 #include "ui/gui.h"
+#include "ui/dialog_util.h"
 #include "app/application.h"
 #include "ui/add_item_window.h"
 #include "ui/container_properties_window.h"
@@ -99,11 +100,11 @@ void AddItemWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	if (it.id != 0) {
 		g_materials.addToTileset(tileset_item->name, it.id, category_type);
 		g_materials.modify();
-		g_gui.PopupDialog("Item added to Tileset", "'" + it.name + "' has been added to tileset '" + tileset_item->name + "'", wxOK);
+		DialogUtil::PopupDialog("Item added to Tileset", "'" + it.name + "' has been added to tileset '" + tileset_item->name + "'", wxOK);
 
 		EndModal(1);
 	} else {
-		g_gui.PopupDialog("Something went wrong", "You need to select any item", wxOK);
+		DialogUtil::PopupDialog("Something went wrong", "You need to select any item", wxOK);
 	}
 }
 

@@ -20,6 +20,7 @@
 #include "game/materials.h"
 #include "brushes/brush.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 
 #include "game/items.h"
 #include "map/map.h"
@@ -32,6 +33,7 @@
 #include "app/application.h"
 #include "ui/common_windows.h"
 #include "ui/positionctrl.h"
+#include "ui/dialog_util.h"
 
 #ifdef _MSC_VER
 	#pragma warning(disable : 4018) // signed/unsigned mismatch
@@ -222,7 +224,7 @@ void MapPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 
 	if (new_ver.client != old_ver.client) {
 		if (g_gui.GetOpenMapCount() > 1) {
-			g_gui.PopupDialog(this, "Error", "You can not change editor version with multiple maps open", wxOK);
+			DialogUtil::PopupDialog(this, "Error", "You can not change editor version with multiple maps open", wxOK);
 			return;
 		}
 		wxString error;
@@ -233,7 +235,7 @@ void MapPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		g_gui.GetCurrentEditor()->actionQueue->clear();
 
 		if (new_ver.client < old_ver.client) {
-			int ret = g_gui.PopupDialog(this, "Notice", "Converting to a previous version may have serious side-effects, are you sure you want to do this?", wxYES | wxNO);
+			int ret = DialogUtil::PopupDialog(this, "Notice", "Converting to a previous version may have serious side-effects, are you sure you want to do this?", wxYES | wxNO);
 			if (ret != wxID_YES) {
 				return;
 			}
@@ -248,9 +250,9 @@ void MapPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 
 			// Load the new version
 			if (!g_gui.LoadVersion(new_ver.client, error, warnings)) {
-				g_gui.ListDialog(this, "Warnings", warnings);
-				g_gui.PopupDialog(this, "Map Loader Error", error, wxOK);
-				g_gui.PopupDialog(this, "Conversion Error", "Could not convert map. The map will now be closed.", wxOK);
+				DialogUtil::ListDialog(this, "Warnings", warnings);
+				DialogUtil::PopupDialog(this, "Map Loader Error", error, wxOK);
+				DialogUtil::PopupDialog(this, "Conversion Error", "Could not convert map. The map will now be closed.", wxOK);
 
 				EndModal(0);
 				return;
@@ -266,7 +268,7 @@ void MapPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 			}
 
 			if (conversion_context.creature_types.size() > 0) {
-				int add = g_gui.PopupDialog(this, "Unrecognized creatures", "There were creatures on the old version that are not present in this and were on the map, do you want to add them to this version as well?", wxYES | wxNO);
+				int add = DialogUtil::PopupDialog(this, "Unrecognized creatures", "There were creatures on the old version that are not present in this and were on the map, do you want to add them to this version as well?", wxYES | wxNO);
 				if (add == wxID_YES) {
 					for (MapConversionContext::CreatureMap::iterator cs = conversion_context.creature_types.begin(); cs != conversion_context.creature_types.end(); ++cs) {
 						MapConversionContext::CreatureInfo info = cs->second;
@@ -279,9 +281,9 @@ void MapPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		} else {
 			UnnamedRenderingLock();
 			if (!g_gui.LoadVersion(new_ver.client, error, warnings)) {
-				g_gui.ListDialog(this, "Warnings", warnings);
-				g_gui.PopupDialog(this, "Map Loader Error", error, wxOK);
-				g_gui.PopupDialog(this, "Conversion Error", "Could not convert map. The map will now be closed.", wxOK);
+				DialogUtil::ListDialog(this, "Warnings", warnings);
+				DialogUtil::PopupDialog(this, "Map Loader Error", error, wxOK);
+				DialogUtil::PopupDialog(this, "Conversion Error", "Could not convert map. The map will now be closed.", wxOK);
 
 				EndModal(0);
 				return;
@@ -401,7 +403,7 @@ void ImportMapWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	if (Validate() && TransferDataFromWindow()) {
 		wxFileName fn = file_text_field->GetValue();
 		if (!fn.FileExists()) {
-			g_gui.PopupDialog(this, "Error", "The specified map file doesn't exist", wxOK);
+			DialogUtil::PopupDialog(this, "Error", "The specified map file doesn't exist", wxOK);
 			return;
 		}
 
@@ -434,7 +436,7 @@ void ImportMapWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 
 		EndModal(1);
 
-		editor.importMap(fn, x_offset_ctrl->GetValue(), y_offset_ctrl->GetValue(), house_import_type, spawn_import_type);
+		EditorPersistence::importMap(editor, fn, x_offset_ctrl->GetValue(), y_offset_ctrl->GetValue(), house_import_type, spawn_import_type);
 	}
 }
 
@@ -553,7 +555,8 @@ void ExportMiniMapWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 					g_gui.SetLoadScale(int(floor * (100.f / 16.f)), int((floor + 1) * (100.f / 16.f)));
 					FileName file(file_name_text_field->GetValue() + "_" + i2ws(floor) + ".bmp");
 					file.Normalize(wxPATH_NORM_ALL, directory.GetFullPath());
-					editor.exportMiniMap(file, floor, true);
+
+					EditorPersistence::exportMiniMap(editor, file, floor, true);
 				}
 				break;
 			}
@@ -561,7 +564,8 @@ void ExportMiniMapWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 			case 1: { // Ground floor
 				FileName file(file_name_text_field->GetValue() + "_" + i2ws(GROUND_LAYER) + ".bmp");
 				file.Normalize(wxPATH_NORM_ALL, directory.GetFullPath());
-				editor.exportMiniMap(file, GROUND_LAYER, true);
+
+				EditorPersistence::exportMiniMap(editor, file, GROUND_LAYER, true);
 				break;
 			}
 
@@ -569,17 +573,19 @@ void ExportMiniMapWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 				int floor = floor_number->GetValue();
 				FileName file(file_name_text_field->GetValue() + "_" + i2ws(floor) + ".bmp");
 				file.Normalize(wxPATH_NORM_ALL, directory.GetFullPath());
-				editor.exportMiniMap(file, floor, true);
+
+				EditorPersistence::exportMiniMap(editor, file, floor, true);
 				break;
 			}
 
 			case 3: { // Selected area
-				editor.exportSelectionAsMiniMap(directory, file_name_text_field->GetValue());
+
+				EditorPersistence::exportSelectionAsMiniMap(editor, directory, file_name_text_field->GetValue());
 				break;
 			}
 		}
 	} catch (std::bad_alloc&) {
-		g_gui.PopupDialog("Error", "There is not enough memory available to complete the operation.", wxOK);
+		DialogUtil::PopupDialog("Error", "There is not enough memory available to complete the operation.", wxOK);
 	}
 
 	g_gui.DestroyLoadBar();
@@ -765,10 +771,10 @@ void ExportTilesetsWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		}
 
 		doc.save_file(file.GetFullPath().mb_str());
-		g_gui.PopupDialog("Successfully saved Tilesets", "Saved tilesets to '" + std::string(file.GetFullPath().mb_str()) + "'", wxOK);
+		DialogUtil::PopupDialog("Successfully saved Tilesets", "Saved tilesets to '" + std::string(file.GetFullPath().mb_str()) + "'", wxOK);
 		g_materials.modify(false);
 	} catch (std::bad_alloc&) {
-		g_gui.PopupDialog("Error", "There is not enough memory available to complete the operation.", wxOK);
+		DialogUtil::PopupDialog("Error", "There is not enough memory available to complete the operation.", wxOK);
 	}
 
 	g_gui.DestroyLoadBar();
@@ -1508,7 +1514,7 @@ void EditTownsDialog::OnClickRemove(wxCommandEvent& WXUNUSED(event)) {
 		for (HouseMap::iterator house_iter = map.houses.begin(); house_iter != map.houses.end(); ++house_iter) {
 			House* house = house_iter->second;
 			if (house->townid == town->getID()) {
-				g_gui.PopupDialog(this, "Error", "You cannot delete a town which still has houses associated with it.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "You cannot delete a town which still has houses associated with it.", wxOK);
 				return;
 			}
 		}
@@ -1567,13 +1573,13 @@ void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		for (std::vector<Town*>::iterator town_iter = town_list.begin(); town_iter != town_list.end(); ++town_iter) {
 			Town* town = *town_iter;
 			if (town->getName() == "") {
-				g_gui.PopupDialog(this, "Error", "You can't have a town with an empty name.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "You can't have a town with an empty name.", wxOK);
 				return;
 			}
 			if (!town->getTemplePosition().isValid() || town->getTemplePosition().x > editor.map.getWidth() || town->getTemplePosition().y > editor.map.getHeight()) {
 				wxString msg;
 				msg << "The town " << wxstr(town->getName()) << " has an invalid temple position.";
-				g_gui.PopupDialog(this, "Error", msg, wxOK);
+				DialogUtil::PopupDialog(this, "Error", msg, wxOK);
 				return;
 			}
 		}

@@ -16,52 +16,41 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "app/main.h"
+#include "editor/dirty_list.h"
+#include "editor/action.h"
 
-#include "editor/copybuffer.h"
-#include "editor/editor.h"
-#include "editor/operations/copy_operations.h"
-#include "ui/gui.h"
-#include "game/creature.h"
-
-CopyBuffer::CopyBuffer() :
-	tiles(std::make_unique<BaseMap>()) {
+DirtyList::DirtyList() :
+	owner(0) {
 	;
 }
 
-size_t CopyBuffer::GetTileCount() {
-	return tiles ? (size_t)tiles->size() : 0;
+DirtyList::~DirtyList() {
+	;
 }
 
-BaseMap& CopyBuffer::getBufferMap() {
-	ASSERT(tiles);
-	return *tiles;
+void DirtyList::AddPosition(int x, int y, int z) {
+	uint32_t m = ((x >> 2) << 18) | ((y >> 2) << 4);
+	ValueType fi = { m, 0 };
+	SetType::iterator s = iset.find(fi);
+	if (s != iset.end()) {
+		ValueType v = *s;
+		iset.erase(s);
+		v.floors = (1 << z) | v.floors;
+		iset.insert(v);
+	} else {
+		ValueType v = { m, (uint32_t)(1 << z) };
+		iset.insert(v);
+	}
 }
 
-CopyBuffer::~CopyBuffer() {
-	clear();
+void DirtyList::AddChange(Change* c) {
+	ichanges.push_back(c);
 }
 
-Position CopyBuffer::getPosition() const {
-	ASSERT(tiles);
-	return copyPos;
+DirtyList::SetType& DirtyList::GetPosList() {
+	return iset;
 }
 
-void CopyBuffer::clear() {
-	tiles.reset();
-}
-
-void CopyBuffer::copy(Editor& editor, int floor) {
-	CopyOperations::copy(editor, *this, floor);
-}
-
-void CopyBuffer::cut(Editor& editor, int floor) {
-	CopyOperations::cut(editor, *this, floor);
-}
-
-void CopyBuffer::paste(Editor& editor, const Position& toPosition) {
-	CopyOperations::paste(editor, *this, toPosition);
-}
-
-bool CopyBuffer::canPaste() const {
-	return tiles && tiles->size() != 0;
+DirtyList::ChangeList& DirtyList::GetChanges() {
+	return ichanges;
 }

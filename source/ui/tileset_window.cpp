@@ -31,6 +31,7 @@
 #include "map/tileset.h"
 
 #include "ui/gui.h"
+#include "ui/dialog_util.h"
 #include "app/application.h"
 #include "ui/tileset_window.h"
 #include "ui/container_properties_window.h"
@@ -115,7 +116,7 @@ void TilesetWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		std::string tilesetName = *static_cast<std::string*>(tileset_field->GetClientData(tileset_field->GetSelection()));
 
 		g_materials.addToTileset(tilesetName, edit_item->getID(), categoryType);
-		g_gui.PopupDialog("Added to Tileset", "'" + edit_item->getName() + "' has been added to tileset '" + tilesetName + "' of palette '" + palette_field->GetStringSelection() + "'", wxOK);
+		DialogUtil::PopupDialog("Added to Tileset", "'" + edit_item->getName() + "' has been added to tileset '" + tilesetName + "' of palette '" + palette_field->GetStringSelection() + "'", wxOK);
 	}
 	EndModal(1);
 }

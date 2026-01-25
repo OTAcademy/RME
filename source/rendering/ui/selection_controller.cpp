@@ -4,8 +4,10 @@
 
 #include "app/main.h"
 #include "rendering/ui/selection_controller.h"
+#include "editor/selection_thread.h"
 #include "rendering/ui/map_display.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 #include "map/map.h"
 #include "map/tile.h"
 #include "game/item.h"

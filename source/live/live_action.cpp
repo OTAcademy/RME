@@ -18,6 +18,7 @@
 #include "app/main.h"
 
 #include "live/live_action.h"
+#include "editor/dirty_list.h"
 #include "editor/editor.h"
 
 NetworkedAction::NetworkedAction(Editor& editor, ActionIdentifier ident) :
@@ -40,23 +41,22 @@ NetworkedBatchAction::~NetworkedBatchAction() {
 	;
 }
 
-void NetworkedBatchAction::addAndCommitAction(Action* action) {
+void NetworkedBatchAction::addAndCommitAction(std::unique_ptr<Action> action) {
 	// If empty, do nothing.
 	if (action->size() == 0) {
-		delete action;
 		return;
 	}
 
 	// Track changed nodes...
 	DirtyList dirty_list;
-	NetworkedAction* netact = dynamic_cast<NetworkedAction*>(action);
+	NetworkedAction* netact = dynamic_cast<NetworkedAction*>(action.get());
 	if (netact) {
 		dirty_list.owner = netact->owner;
 	}
 
 	// Add it!
-	action->commit(type != ACTION_SELECT ? &dirty_list : nullptr);
-	batch.push_back(action);
+	action->commit(type != (ActionIdentifier)ACTION_SELECT ? &dirty_list : nullptr);
+	batch.push_back(std::move(action));
 	timestamp = time(nullptr);
 
 	// Broadcast changes!
@@ -68,7 +68,7 @@ void NetworkedBatchAction::commit() {
 	DirtyList dirty_list;
 
 	for (ActionVector::iterator it = batch.begin(); it != batch.end(); ++it) {
-		NetworkedAction* action = static_cast<NetworkedAction*>(*it);
+		NetworkedAction* action = static_cast<NetworkedAction*>(it->get());
 		if (!action->isCommited()) {
 			action->commit(type != ACTION_SELECT ? &dirty_list : nullptr);
 			if (action->owner != 0) {
@@ -105,14 +105,14 @@ NetworkedActionQueue::NetworkedActionQueue(Editor& editor) :
 NetworkedActionQueue::~NetworkedActionQueue() {
 }
 
-Action* NetworkedActionQueue::createAction(ActionIdentifier ident) {
-	return newd NetworkedAction(editor, ident);
+std::unique_ptr<Action> NetworkedActionQueue::createAction(ActionIdentifier ident) {
+	return std::unique_ptr<Action>(new NetworkedAction(editor, ident));
 }
 
-BatchAction* NetworkedActionQueue::createBatch(ActionIdentifier ident) {
-	return newd NetworkedBatchAction(editor, *this, ident);
+std::unique_ptr<BatchAction> NetworkedActionQueue::createBatch(ActionIdentifier ident) {
+	return std::unique_ptr<BatchAction>(new NetworkedBatchAction(editor, *this, ident));
 }
 
 void NetworkedActionQueue::broadcast(DirtyList& dirty_list) {
-	editor.BroadcastNodes(dirty_list);
+	editor.live_manager.BroadcastNodes(dirty_list);
 }

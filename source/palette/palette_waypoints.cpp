@@ -21,6 +21,7 @@
 #include "app/main.h"
 
 #include "ui/gui.h"
+#include "editor/hotkey_manager.h"
 #include "palette/palette_waypoints.h"
 #include "brushes/waypoint_brush.h"
 #include "map/map.h"
@@ -141,7 +142,7 @@ void WaypointPalettePanel::OnClickWaypoint(wxListEvent& event) {
 
 void WaypointPalettePanel::OnBeginEditWaypointLabel(wxListEvent& event) {
 	// We need to disable all hotkeys, so we can type properly
-	g_gui.DisableHotkeys();
+	g_hotkeys.DisableHotkeys();
 }
 
 void WaypointPalettePanel::OnEditWaypointLabel(wxListEvent& event) {
@@ -190,7 +191,7 @@ void WaypointPalettePanel::OnEditWaypointLabel(wxListEvent& event) {
 	}
 
 	if (event.IsAllowed()) {
-		g_gui.EnableHotkeys();
+		g_hotkeys.EnableHotkeys();
 	}
 }
 

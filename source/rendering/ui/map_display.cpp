@@ -25,6 +25,7 @@
 
 #include "ui/gui.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 #include "brushes/brush.h"
 #include "game/sprites.h"
 #include "map/map.h"
@@ -43,6 +44,7 @@
 #include "rendering/core/text_renderer.h"
 #include "app/application.h"
 #include "live/live_server.h"
+#include "live/live_client.h"
 #include "ui/browse_tile_window.h"
 #include "ui/dialog_helper.h"
 #include "game/animation_timer.h"
@@ -237,7 +239,9 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 	frame_pacer.UpdateAndLimit(g_settings.getInteger(Config::FRAME_RATE_LIMIT), g_settings.getBoolean(Config::SHOW_FPS_COUNTER));
 
 	// Send newd node requests
-	editor.SendNodeRequests();
+	if (editor.live_manager.GetClient()) {
+		editor.live_manager.GetClient()->sendNodeRequests();
+	}
 }
 
 void MapCanvas::TakeScreenshot(wxFileName path, wxString format) {

@@ -18,6 +18,7 @@
 #include "app/main.h"
 
 #include "ui/gui.h"
+#include "ui/dialog_util.h"
 
 #include "ui/about_window.h"
 #include <fstream>
@@ -247,7 +248,7 @@ void AboutWindow::OnClickLicense(wxCommandEvent& WXUNUSED(event)) {
 		gpl_str += ch;
 	}
 
-	g_gui.ShowTextBox(this, "License", wxstr(gpl_str.size() ? gpl_str : "The COPYING.txt file is not available."));
+	DialogUtil::ShowTextBox(this, "License", wxstr(gpl_str.size() ? gpl_str : "The COPYING.txt file is not available."));
 }
 
 void AboutWindow::OnTetris(wxCommandEvent&) {
@@ -598,7 +599,7 @@ void TetrisPanel::MoveBlock(int x, int y) {
 		if (y == 1) { // moving down...
 			if (block.y < 1) { // Out of bounds!
 				dead = true;
-				g_gui.PopupDialog("Game Over", "You reached a score of " + i2ws(score) + "!", wxOK);
+				DialogUtil::PopupDialog("Game Over", "You reached a score of " + i2ws(score) + "!", wxOK);
 				NewGame();
 				SetFocus();
 			} else {
@@ -710,8 +711,7 @@ void SnakePanel::Render(wxDC& pdc) {
 					int(255.0 * (1.0 - abs(lred - snook))),
 					int(255.0 * (1.0 - abs(lgreen - snook))),
 					int(255.0 * (1.0 - abs(lblue - snook)))
-				)
-				);
+				));
 				pdc.SetBrush(snakebrush);
 				pdc.DrawRectangle(x * 16, y * 16, 16, 16);
 			}
@@ -860,7 +860,7 @@ void SnakePanel::Move(int dir) {
 	if (map[nx][ny] > 0 || nx < 0 || ny < 0 || nx >= SNAKE_MAPWIDTH || ny >= SNAKE_MAPHEIGHT) {
 		// Crash
 		dead = true;
-		g_gui.PopupDialog("Game Over", "You reached a length of " + i2ws(length) + "!", wxOK);
+		DialogUtil::PopupDialog("Game Over", "You reached a length of " + i2ws(length) + "!", wxOK);
 		NewGame();
 		SetFocus();
 	} else {
