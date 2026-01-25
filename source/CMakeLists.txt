@@ -173,6 +173,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui_ids.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/loading_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/layout_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/minimap_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/doodad_preview_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/status_manager.h
 
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_menubar.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_toolbar.h
@@ -356,6 +359,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_toolbar.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/loading_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/layout_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/minimap_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/doodad_preview_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/status_manager.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_popup_menu.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_tab.cpp

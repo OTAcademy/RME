@@ -30,6 +30,9 @@
 #include "editor/editor.h"
 #include "editor/action_queue.h"
 #include "editor/editor_factory.h"
+#include "ui/managers/minimap_manager.h"
+#include "brushes/managers/doodad_preview_manager.h"
+#include "ui/managers/status_manager.h"
 #include "brushes/brush.h"
 #include "map/map.h"
 #include "game/sprites.h"
@@ -62,11 +65,8 @@ GUI g_gui;
 GUI::GUI() :
 	aui_manager(nullptr),
 	root(nullptr),
-	minimap(nullptr),
-	gem(nullptr),
 	search_result_window(nullptr),
 	secondary_map(nullptr),
-	doodad_buffer_map(nullptr),
 
 	house_brush(nullptr),
 	house_exit_brush(nullptr),
@@ -97,12 +97,9 @@ GUI::GUI() :
 	light_intensity(1.0f),
 	ambient_light_level(0.5f),
 	disabled_counter(0) {
-
-	doodad_buffer_map = newd BaseMap();
 }
 
 GUI::~GUI() {
-	delete doodad_buffer_map;
 	delete g_gui.aui_manager;
 	delete OGLContext;
 }
@@ -474,7 +471,6 @@ SearchResultWindow* GUI::ShowSearchWindow() {
 	return search_result_window;
 }
 
-//=============================================================================
 // Palette Window Interface implementation
 
 PaletteWindow* GUI::GetPalette() {
@@ -578,59 +574,6 @@ void GUI::SelectPalettePage(PaletteType pt) {
 }
 
 //=============================================================================
-// Minimap Window Interface Implementation
-
-void GUI::CreateMinimap() {
-	if (!IsVersionLoaded()) {
-		return;
-	}
-
-	if (minimap) {
-		aui_manager->GetPane(minimap).Show(true);
-	} else {
-		minimap = newd MinimapWindow(root);
-		minimap->Show(true);
-		aui_manager->AddPane(minimap, wxAuiPaneInfo().Caption("Minimap"));
-	}
-	aui_manager->Update();
-}
-
-void GUI::HideMinimap() {
-	if (minimap) {
-		aui_manager->GetPane(minimap).Show(false);
-		aui_manager->Update();
-	}
-}
-
-void GUI::DestroyMinimap() {
-	if (minimap) {
-		aui_manager->DetachPane(minimap);
-		aui_manager->Update();
-		minimap->Destroy();
-		minimap = nullptr;
-	}
-}
-
-void GUI::UpdateMinimap(bool immediate) {
-	if (IsMinimapVisible()) {
-		if (immediate) {
-			minimap->Refresh();
-		} else {
-			minimap->DelayedUpdate();
-		}
-	}
-}
-
-bool GUI::IsMinimapVisible() const {
-	if (minimap) {
-		const wxAuiPaneInfo& pi = aui_manager->GetPane(minimap);
-		if (pi.IsShown()) {
-			return true;
-		}
-	}
-	return false;
-}
-
 //=============================================================================
 
 void GUI::RefreshView() {
@@ -828,62 +771,6 @@ void GUI::ChangeFloor(int new_floor) {
 	}
 }
 
-void GUI::SetStatusText(wxString text) {
-	g_gui.root->SetStatusText(text, 0);
-}
-
-void GUI::SetTitle(wxString title) {
-	if (g_gui.root == nullptr) {
-		return;
-	}
-
-#ifdef NIGHTLY_BUILD
-	#ifdef SVN_BUILD
-		#define TITLE_APPEND (wxString(" (Nightly Build #") << i2ws(SVN_BUILD) << ")")
-	#else
-		#define TITLE_APPEND (wxString(" (Nightly Build)"))
-	#endif
-#else
-	#ifdef SVN_BUILD
-		#define TITLE_APPEND (wxString(" (Build #") << i2ws(SVN_BUILD) << ")")
-	#else
-		#define TITLE_APPEND (wxString(""))
-	#endif
-#endif
-#ifdef __EXPERIMENTAL__
-	if (title != "") {
-		g_gui.root->SetTitle(title << " - OTAcademy Map Editor BETA" << TITLE_APPEND);
-	} else {
-		g_gui.root->SetTitle(wxString("OTAcademy Map Editor BETA") << TITLE_APPEND);
-	}
-#elif __SNAPSHOT__
-	if (title != "") {
-		g_gui.root->SetTitle(title << " - OTAcademy Map Editor - SNAPSHOT" << TITLE_APPEND);
-	} else {
-		g_gui.root->SetTitle(wxString("OTAcademy Map Editor - SNAPSHOT") << TITLE_APPEND);
-	}
-#else
-	if (!title.empty()) {
-		g_gui.root->SetTitle(title << " - OTAcademy Map Editor" << TITLE_APPEND);
-	} else {
-		g_gui.root->SetTitle(wxString("OTAcademy Map Editor") << TITLE_APPEND);
-	}
-#endif
-}
-
-void GUI::UpdateTitle() {
-	if (tabbook->GetTabCount() > 0) {
-		SetTitle(tabbook->GetCurrentTab()->GetTitle());
-		for (int idx = 0; idx < tabbook->GetTabCount(); ++idx) {
-			if (tabbook->GetTab(idx)) {
-				tabbook->SetTabLabel(idx, tabbook->GetTab(idx)->GetTitle());
-			}
-		}
-	} else {
-		SetTitle("");
-	}
-}
-
 void GUI::UpdateMenus() {
 	wxCommandEvent evt(EVT_UPDATE_MENUS);
 	g_gui.root->AddPendingEvent(evt);
@@ -938,7 +825,7 @@ void GUI::SetDrawingMode() {
 	}
 
 	if (current_brush && current_brush->isDoodad()) {
-		secondary_map = doodad_buffer_map;
+		secondary_map = g_doodad_preview.GetBufferMap();
 	} else {
 		secondary_map = nullptr;
 	}
@@ -951,7 +838,7 @@ void GUI::SetBrushSizeInternal(int nz) {
 	if (nz != brush_size && current_brush && current_brush->isDoodad() && !current_brush->oneSizeFitsAll()) {
 		brush_size = nz;
 		FillDoodadPreviewBuffer();
-		secondary_map = doodad_buffer_map;
+		secondary_map = g_doodad_preview.GetBufferMap();
 	} else {
 		brush_size = nz;
 	}
@@ -972,7 +859,7 @@ void GUI::SetBrushVariation(int nz) {
 		// Monkey!
 		brush_variation = nz;
 		FillDoodadPreviewBuffer();
-		secondary_map = doodad_buffer_map;
+		secondary_map = g_doodad_preview.GetBufferMap();
 	}
 }
 
@@ -981,7 +868,7 @@ void GUI::SetBrushShape(BrushShape bs) {
 		// Donkey!
 		brush_shape = bs;
 		FillDoodadPreviewBuffer();
-		secondary_map = doodad_buffer_map;
+		secondary_map = g_doodad_preview.GetBufferMap();
 	}
 	brush_shape = bs;
 
@@ -1171,7 +1058,7 @@ void GUI::SelectBrushInternal(Brush* brush) {
 	brush_variation = min(brush_variation, brush->getMaxVariation());
 	FillDoodadPreviewBuffer();
 	if (brush->isDoodad()) {
-		secondary_map = doodad_buffer_map;
+		secondary_map = g_doodad_preview.GetBufferMap();
 	}
 
 	SetDrawingMode();
@@ -1184,155 +1071,7 @@ void GUI::SelectPreviousBrush() {
 	}
 }
 
-void GUI::FillDoodadPreviewBuffer() {
-	if (!current_brush || !current_brush->isDoodad()) {
-		return;
-	}
-
-	doodad_buffer_map->clear();
-
-	DoodadBrush* brush = current_brush->asDoodad();
-	if (brush->isEmpty(GetBrushVariation())) {
-		return;
-	}
-
-	int object_count = 0;
-	int area;
-	if (GetBrushShape() == BRUSHSHAPE_SQUARE) {
-		area = 2 * GetBrushSize();
-		area = area * area + 1;
-	} else {
-		if (GetBrushSize() == 1) {
-			// There is a huge deviation here with the other formula.
-			area = 5;
-		} else {
-			area = int(0.5 + GetBrushSize() * GetBrushSize() * PI);
-		}
-	}
-	const int object_range = (use_custom_thickness ? int(area * custom_thickness_mod) : brush->getThickness() * area / max(1, brush->getThicknessCeiling()));
-	const int final_object_count = max(1, object_range + random(object_range));
-
-	Position center_pos(0x8000, 0x8000, 0x8);
-
-	if (brush_size > 0 && !brush->oneSizeFitsAll()) {
-		while (object_count < final_object_count) {
-			int retries = 0;
-			bool exit = false;
-
-			// Try to place objects 5 times
-			while (retries < 5 && !exit) {
-
-				int pos_retries = 0;
-				int xpos = 0, ypos = 0;
-				bool found_pos = false;
-				if (GetBrushShape() == BRUSHSHAPE_CIRCLE) {
-					while (pos_retries < 5 && !found_pos) {
-						xpos = random(-brush_size, brush_size);
-						ypos = random(-brush_size, brush_size);
-						float distance = sqrt(float(xpos * xpos) + float(ypos * ypos));
-						if (distance < g_gui.GetBrushSize() + 0.005) {
-							found_pos = true;
-						} else {
-							++pos_retries;
-						}
-					}
-				} else {
-					found_pos = true;
-					xpos = random(-brush_size, brush_size);
-					ypos = random(-brush_size, brush_size);
-				}
-
-				if (!found_pos) {
-					++retries;
-					continue;
-				}
-
-				// Decide whether the zone should have a composite or several single objects.
-				bool fail = false;
-				if (random(brush->getTotalChance(GetBrushVariation())) <= brush->getCompositeChance(GetBrushVariation())) {
-					// Composite
-					const CompositeTileList& composites = brush->getComposite(GetBrushVariation());
-
-					// Figure out if the placement is valid
-					for (const auto& composite : composites) {
-						Position pos = center_pos + composite.first + Position(xpos, ypos, 0);
-						if (Tile* tile = doodad_buffer_map->getTile(pos)) {
-							if (!tile->empty()) {
-								fail = true;
-								break;
-							}
-						}
-					}
-					if (fail) {
-						++retries;
-						break;
-					}
-
-					// Transfer items to the stack
-					for (const auto& composite : composites) {
-						Position pos = center_pos + composite.first + Position(xpos, ypos, 0);
-						const ItemVector& items = composite.second;
-						Tile* tile = doodad_buffer_map->getTile(pos);
-
-						if (!tile) {
-							tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
-						}
-
-						for (auto item : items) {
-							tile->addItem(item->deepCopy());
-						}
-						doodad_buffer_map->setTile(tile->getPosition(), tile);
-					}
-					exit = true;
-				} else if (brush->hasSingleObjects(GetBrushVariation())) {
-					Position pos = center_pos + Position(xpos, ypos, 0);
-					Tile* tile = doodad_buffer_map->getTile(pos);
-					if (tile) {
-						if (!tile->empty()) {
-							fail = true;
-							break;
-						}
-					} else {
-						tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
-					}
-					int variation = GetBrushVariation();
-					brush->draw(doodad_buffer_map, tile, &variation);
-					doodad_buffer_map->setTile(tile->getPosition(), tile);
-					exit = true;
-				}
-				if (fail) {
-					++retries;
-					break;
-				}
-			}
-			++object_count;
-		}
-	} else {
-		if (brush->hasCompositeObjects(GetBrushVariation()) && random(brush->getTotalChance(GetBrushVariation())) <= brush->getCompositeChance(GetBrushVariation())) {
-			// Composite
-			const CompositeTileList& composites = brush->getComposite(GetBrushVariation());
-
-			// All placement is valid...
-
-			// Transfer items to the buffer
-			for (const auto& composite : composites) {
-				Position pos = center_pos + composite.first;
-				const ItemVector& items = composite.second;
-				Tile* tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
-
-				for (auto item : items) {
-					tile->addItem(item->deepCopy());
-				}
-				doodad_buffer_map->setTile(tile->getPosition(), tile);
-			}
-		} else if (brush->hasSingleObjects(GetBrushVariation())) {
-			Tile* tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(center_pos));
-			int variation = GetBrushVariation();
-			brush->draw(doodad_buffer_map, tile, &variation);
-			doodad_buffer_map->setTile(center_pos, tile);
-		}
-	}
-}
+// Refactored to DoodadPreviewManager
 
 void SetWindowToolTip(wxWindow* a, const wxString& tip) {
 	a->SetToolTip(tip);

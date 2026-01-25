@@ -12,6 +12,9 @@
 #include "ui/main_menubar.h"
 #include "ui/main_toolbar.h"
 #include <wx/display.h>
+#include "ui/managers/minimap_manager.h"
+#include "brushes/managers/doodad_preview_manager.h"
+#include "ui/managers/status_manager.h"
 
 LayoutManager g_layout;
 
@@ -73,22 +76,22 @@ void LayoutManager::LoadPerspective() {
 		}
 
 		if (g_settings.getInteger(Config::MINIMAP_VISIBLE)) {
-			if (!g_gui.minimap) {
+			if (!g_minimap.GetWindow()) {
 				wxAuiPaneInfo info;
 
 				const wxString& data = wxstr(g_settings.getString(Config::MINIMAP_LAYOUT));
 				g_gui.aui_manager->LoadPaneInfo(data, info);
 
-				g_gui.minimap = newd MinimapWindow(g_gui.root);
-				g_gui.aui_manager->AddPane(g_gui.minimap, info);
+				g_minimap.SetWindow(newd MinimapWindow(g_gui.root));
+				g_gui.aui_manager->AddPane(g_minimap.GetWindow(), info);
 			} else {
-				wxAuiPaneInfo& info = g_gui.aui_manager->GetPane(g_gui.minimap);
+				wxAuiPaneInfo& info = g_gui.aui_manager->GetPane(g_minimap.GetWindow());
 
 				const wxString& data = wxstr(g_settings.getString(Config::MINIMAP_LAYOUT));
 				g_gui.aui_manager->LoadPaneInfo(data, info);
 			}
 
-			wxAuiPaneInfo& info = g_gui.aui_manager->GetPane(g_gui.minimap);
+			wxAuiPaneInfo& info = g_gui.aui_manager->GetPane(g_minimap.GetWindow());
 			if (info.IsFloatable()) {
 				bool offscreen = true;
 				for (uint32_t index = 0; index < wxDisplay::GetCount(); ++index) {
@@ -107,6 +110,7 @@ void LayoutManager::LoadPerspective() {
 		}
 
 		g_gui.aui_manager->Update();
+		g_status.UpdateTitle();
 		g_gui.root->UpdateMenubar();
 	}
 
@@ -118,7 +122,7 @@ void LayoutManager::SavePerspective() {
 	g_settings.setInteger(Config::WINDOW_WIDTH, g_gui.root->GetSize().GetWidth());
 	g_settings.setInteger(Config::WINDOW_HEIGHT, g_gui.root->GetSize().GetHeight());
 
-	g_settings.setInteger(Config::MINIMAP_VISIBLE, g_gui.minimap ? 1 : 0);
+	g_settings.setInteger(Config::MINIMAP_VISIBLE, g_minimap.GetWindow() ? 1 : 0);
 
 	wxString pinfo;
 	for (auto& palette : g_gui.palettes) {
@@ -128,8 +132,8 @@ void LayoutManager::SavePerspective() {
 	}
 	g_settings.setString(Config::PALETTE_LAYOUT, nstr(pinfo));
 
-	if (g_gui.minimap) {
-		wxString s = g_gui.aui_manager->SavePaneInfo(g_gui.aui_manager->GetPane(g_gui.minimap));
+	if (g_minimap.GetWindow()) {
+		wxString s = g_gui.aui_manager->SavePaneInfo(g_gui.aui_manager->GetPane(g_minimap.GetWindow()));
 		g_settings.setString(Config::MINIMAP_LAYOUT, nstr(s));
 	}
 

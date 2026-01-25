@@ -15,6 +15,9 @@
 #include "app/managers/version_manager.h"
 #include "ui/managers/loading_manager.h"
 #include "ui/managers/layout_manager.h"
+#include "ui/managers/minimap_manager.h"
+#include "brushes/managers/doodad_preview_manager.h"
+#include "ui/managers/status_manager.h"
 
 class BaseMap;
 class Map;
@@ -128,11 +131,17 @@ protected:
 	}
 
 public:
-	void SetTitle(wxString newtitle);
-	void UpdateTitle();
+	void SetTitle(wxString newtitle) {
+		g_status.SetTitle(newtitle);
+	}
+	void UpdateTitle() {
+		g_status.UpdateTitle();
+	}
 	void UpdateMenus();
 	void ShowToolbar(ToolBarID id, bool show);
-	void SetStatusText(wxString text);
+	void SetStatusText(wxString text) {
+		g_status.SetStatusText(text);
+	}
 
 	// Get the current GL context
 	// Param is required if the context is to be created.
@@ -143,11 +152,21 @@ public:
 	void HideSearchWindow();
 
 	// Minimap
-	void CreateMinimap();
-	void HideMinimap();
-	void DestroyMinimap();
-	void UpdateMinimap(bool immediate = false);
-	bool IsMinimapVisible() const;
+	void CreateMinimap() {
+		g_minimap.Create();
+	}
+	void HideMinimap() {
+		g_minimap.Hide();
+	}
+	void DestroyMinimap() {
+		g_minimap.Destroy();
+	}
+	void UpdateMinimap(bool immediate = false) {
+		g_minimap.Update(immediate);
+	}
+	bool IsMinimapVisible() const {
+		return g_minimap.IsVisible();
+	}
 
 	int GetCurrentFloor();
 	void ChangeFloor(int newfloor);
@@ -166,7 +185,9 @@ public:
 	}
 
 	// Brushes
-	void FillDoodadPreviewBuffer();
+	void FillDoodadPreviewBuffer() {
+		g_doodad_preview.FillBuffer();
+	}
 	// Selects the currently seleceted brush in the active palette
 	void SelectBrush();
 	// Updates the palette AND selects the brush, second parameter is first palette to look in
@@ -333,13 +354,10 @@ public:
 	WelcomeDialog* welcomeDialog;
 	CopyBuffer copybuffer;
 
-	MinimapWindow* minimap;
-	DCButton* gem; // The small gem in the lower-right corner
 	SearchResultWindow* search_result_window;
 	GraphicManager gfx;
 
 	BaseMap* secondary_map; // A buffer map
-	BaseMap* doodad_buffer_map; // The map in which doodads are temporarily stored
 
 	using PaletteList = std::list<PaletteWindow*>;
 	PaletteList palettes;
