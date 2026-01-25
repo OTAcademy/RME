@@ -13,7 +13,8 @@
 
 DoodadPreviewManager g_doodad_preview;
 
-DoodadPreviewManager::DoodadPreviewManager() : doodad_buffer_map(std::make_unique<BaseMap>()) {
+DoodadPreviewManager::DoodadPreviewManager() :
+	doodad_buffer_map(std::make_unique<BaseMap>()) {
 }
 
 DoodadPreviewManager::~DoodadPreviewManager() = default;
