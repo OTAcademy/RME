@@ -1,0 +1,90 @@
+#include "editor/persistence/tileset_exporter.h"
+
+#include "game/materials.h"
+#include "game/items.h"
+#include "brushes/brush.h"
+#include "brushes/raw_brush.h"
+#include "ui/gui.h"
+#include "ui/dialog_util.h"
+#include "ui/common_windows.h"
+#include "app/application.h" // For g_settings
+#include "ext/pugixml.hpp"
+
+void TilesetExporter::exportTilesets(const FileName& directory, const std::string& filename) {
+	g_gui.CreateLoadBar("Exporting Tilesets");
+
+	try {
+
+		FileName file(filename + ".xml");
+		file.Normalize(wxPATH_NORM_ALL, directory.GetFullPath());
+
+		pugi::xml_document doc;
+		pugi::xml_node node = doc.append_child("materials");
+
+		std::map<std::string, TilesetCategoryType> palettes {
+			{ "Terrain", TILESET_TERRAIN },
+			{ "Doodad", TILESET_DOODAD },
+			{ "Items", TILESET_ITEM },
+			{ "Collection", TILESET_COLLECTION },
+			{ "Raw", TILESET_RAW }
+		};
+		for (TilesetContainer::iterator iter = g_materials.tilesets.begin(); iter != g_materials.tilesets.end(); ++iter) {
+			std::string _data = iter->second->name;
+			std::transform(_data.begin(), _data.end(), _data.begin(), [](unsigned char c) { return std::tolower(c); });
+			if (_data == "others") {
+				bool blocked = 1;
+
+				for (const auto& kv : palettes) {
+					TilesetCategory* tilesetCategory = iter->second->getCategory(kv.second);
+
+					if (kv.second != TILESET_RAW && tilesetCategory->brushlist.size() > 0) {
+						blocked = 0;
+					}
+				}
+
+				if (blocked) {
+					continue;
+				}
+			}
+
+			pugi::xml_node tileset = node.append_child("tileset");
+			tileset.append_attribute("name") = iter->second->name.c_str();
+
+			for (const auto& kv : palettes) {
+				TilesetCategory* tilesetCategory = iter->second->getCategory(kv.second);
+
+				if (tilesetCategory->brushlist.size() > 0) {
+					std::string data = kv.first;
+					std::transform(data.begin(), data.end(), data.begin(), [](unsigned char c) { return std::tolower(c); });
+
+					pugi::xml_node palette = tileset.append_child(data.c_str());
+					for (BrushVector::const_iterator _iter = tilesetCategory->brushlist.begin(); _iter != tilesetCategory->brushlist.end(); ++_iter) {
+						if (!(*_iter)->isRaw()) {
+							pugi::xml_node brush = palette.append_child("brush");
+							brush.append_attribute("name") = (*_iter)->getName().c_str();
+						} else {
+							ItemType& it = g_items[(*_iter)->asRaw()->getItemID()];
+							if (it.id != 0) {
+								pugi::xml_node item = palette.append_child("item");
+								item.append_attribute("id") = it.id;
+							}
+						}
+					}
+				}
+			}
+
+			size_t n = std::distance(tileset.begin(), tileset.end());
+			if (n <= 0) {
+				node.remove_child(tileset);
+			}
+		}
+
+		doc.save_file(file.GetFullPath().mb_str());
+		DialogUtil::PopupDialog("Successfully saved Tilesets", "Saved tilesets to '" + std::string(file.GetFullPath().mb_str()) + "'", wxOK);
+		g_materials.modify(false);
+	} catch (std::bad_alloc&) {
+		DialogUtil::PopupDialog("Error", "There is not enough memory available to complete the operation.", wxOK);
+	}
+
+	g_gui.DestroyLoadBar();
+}

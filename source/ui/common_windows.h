@@ -23,6 +23,10 @@
 #include "ui/dcbutton.h"
 #include "ui/positionctrl.h"
 
+#include "ui/map/map_properties_window.h"
+#include "ui/map/towns_window.h"
+#include "ui/dialogs/find_dialog.h"
+
 class GameSprite;
 class MapTab;
 
@@ -44,36 +48,6 @@ public:
 	ItemButton(wxWindow* parent, RenderSize size, uint16_t lookid, wxWindowID id = wxID_ANY) :
 		DCButton(parent, id, wxDefaultPosition, DC_BTN_NORMAL, size, lookid) { }
 	virtual ~ItemButton() { }
-};
-
-/**
- * The map properties window
- * Change map size, protocol etc.
- */
-class MapPropertiesWindow : public wxDialog {
-public:
-	MapPropertiesWindow(wxWindow* parent, MapTab* tab, Editor& editor);
-	virtual ~MapPropertiesWindow();
-
-	void OnChangeVersion(wxCommandEvent&);
-
-	void OnClickOK(wxCommandEvent&);
-	void OnClickCancel(wxCommandEvent&);
-
-protected:
-	void UpdateProtocolList();
-
-	MapTab* view;
-	Editor& editor;
-	wxSpinCtrl* height_spin;
-	wxSpinCtrl* width_spin;
-	wxChoice* version_choice;
-	wxChoice* protocol_choice;
-	wxTextCtrl* description_ctrl;
-	wxTextCtrl* house_filename_ctrl;
-	wxTextCtrl* spawn_filename_ctrl;
-
-	DECLARE_EVENT_TABLE();
 };
 
 /**
@@ -160,43 +134,6 @@ protected:
 };
 
 /**
- * Text control that will forward up/down pgup / pgdown keys to parent window
- */
-class KeyForwardingTextCtrl : public wxTextCtrl {
-public:
-	KeyForwardingTextCtrl(wxWindow* parent, wxWindowID id, const wxString& value = "", const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxTextCtrlNameStr) :
-		wxTextCtrl(parent, id, value, pos, size, style, validator, name) { }
-	~KeyForwardingTextCtrl() { }
-
-	void OnKeyDown(wxKeyEvent&);
-
-	DECLARE_EVENT_TABLE()
-};
-
-/**
- * The list inside a find dialog
- * Presents a list of brushes
- */
-class FindDialogListBox : public wxVListBox {
-public:
-	FindDialogListBox(wxWindow* parent, wxWindowID id);
-	~FindDialogListBox();
-
-	void Clear();
-	void SetNoMatches();
-	void AddBrush(Brush*);
-	Brush* GetSelectedBrush();
-
-	void OnDrawItem(wxDC& dc, const wxRect& rect, size_t index) const;
-	wxCoord OnMeasureItem(size_t index) const;
-
-protected:
-	bool cleared;
-	bool no_matches;
-	std::vector<Brush*> brushlist;
-};
-
-/**
  * A wxListBox that can be sorted without using style wxLB_SORT.
  * wxLB_SORT does not work properly on Windows and causes errors on macOS.
  */
@@ -208,59 +145,6 @@ public:
 
 private:
 	void DoSort();
-};
-
-/**
- * A generic find dialog
- * ShowModal will return 0 or the item id for item dialogs
- * 0 or 1 for brush dialogs
- */
-class FindDialog : public wxDialog {
-public:
-	FindDialog(wxWindow* parent, wxString title);
-	virtual ~FindDialog();
-
-	void OnKeyDown(wxKeyEvent&);
-	void OnTextChange(wxCommandEvent&);
-	void OnTextIdle(wxTimerEvent&);
-	void OnClickList(wxCommandEvent&);
-	void OnClickOK(wxCommandEvent&);
-	void OnClickCancel(wxCommandEvent&);
-
-	void RefreshContents();
-	virtual const Brush* getResult() const {
-		return result_brush;
-	}
-	virtual int getResultID() const {
-		return result_id;
-	}
-
-protected:
-	virtual void RefreshContentsInternal() = 0;
-	virtual void OnClickListInternal(wxCommandEvent&) = 0;
-	virtual void OnClickOKInternal() = 0;
-
-	FindDialogListBox* item_list;
-	KeyForwardingTextCtrl* search_field;
-	wxTimer idle_input_timer;
-	const Brush* result_brush;
-	int result_id;
-
-	DECLARE_EVENT_TABLE()
-};
-
-/**
- * Find a brush dialog
- * Find out what brush was returned through GetResult
- */
-class FindBrushDialog : public FindDialog {
-public:
-	FindBrushDialog(wxWindow* parent, wxString title = "Jump to Brush");
-	virtual ~FindBrushDialog();
-
-	virtual void RefreshContentsInternal();
-	virtual void OnClickListInternal(wxCommandEvent&);
-	virtual void OnClickOKInternal();
 };
 
 /**
@@ -318,43 +202,6 @@ protected:
 	Item* edit_item;
 	Creature* edit_creature;
 	Spawn* edit_spawn;
-};
-
-/**
- * The edit towns dialog, ugly as sin.
- */
-class EditTownsDialog : public wxDialog {
-public:
-	EditTownsDialog(wxWindow* parent, Editor& editor);
-	virtual ~EditTownsDialog();
-
-	void OnListBoxChange(wxCommandEvent&);
-	void OnClickSelectTemplePosition(wxCommandEvent&);
-	void OnClickAdd(wxCommandEvent&);
-	void OnClickRemove(wxCommandEvent&);
-	void OnClickOK(wxCommandEvent&);
-	void OnClickCancel(wxCommandEvent&);
-
-protected:
-	void BuildListBox(bool doselect);
-	void UpdateSelection(int new_selection);
-
-	Editor& editor;
-
-	std::vector<Town*> town_list;
-	uint32_t max_town_id;
-
-	wxListBox* town_listbox;
-	wxString town_name, town_id;
-
-	wxTextCtrl* name_field;
-	wxTextCtrl* id_field;
-
-	PositionCtrl* temple_position;
-	wxButton* remove_button;
-	wxButton* select_position_button;
-
-	DECLARE_EVENT_TABLE();
 };
 
 #endif
