@@ -25,6 +25,7 @@
 #include "ui/main_menubar.h"
 
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 #include "editor/editor_factory.h"
 #include "brushes/brush.h"
 #include "map/map.h"

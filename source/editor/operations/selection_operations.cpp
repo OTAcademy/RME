@@ -7,6 +7,7 @@
 #include "editor/operations/selection_operations.h"
 #include "editor/editor.h"
 #include "editor/action.h"
+#include "editor/action_queue.h"
 #include "editor/selection.h"
 #include "map/map.h"
 #include "brushes/ground_brush.h"

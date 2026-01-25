@@ -67,41 +67,7 @@ public:
 
 using ChangeList = std::vector<Change*>;
 
-// A dirty list represents a list of all tiles that was changed in an action
-class DirtyList {
-public:
-	DirtyList();
-	~DirtyList();
-
-	struct ValueType {
-		uint32_t pos;
-		uint32_t floors;
-	};
-
-	uint32_t owner;
-
-protected:
-	struct Comparator {
-		bool operator()(const ValueType& a, const ValueType& b) const {
-			return a.pos < b.pos;
-		}
-	};
-
-public:
-	using SetType = std::set<ValueType, Comparator>;
-
-	void AddPosition(int x, int y, int z);
-	void AddChange(Change* c);
-	bool Empty() const {
-		return iset.empty() && ichanges.empty();
-	}
-	SetType& GetPosList();
-	ChangeList& GetChanges();
-
-protected:
-	SetType iset;
-	ChangeList ichanges;
-};
+class DirtyList;
 
 enum ActionIdentifier {
 	ACTION_MOVE,
@@ -195,40 +161,6 @@ protected:
 	ActionVector batch;
 
 	friend class ActionQueue;
-};
-
-class ActionQueue {
-public:
-	ActionQueue(Editor& editor);
-	virtual ~ActionQueue();
-
-	using ActionList = std::deque<BatchAction*>;
-
-	void resetTimer();
-
-	virtual Action* createAction(ActionIdentifier ident);
-	virtual Action* createAction(BatchAction* parent);
-	virtual BatchAction* createBatch(ActionIdentifier ident);
-
-	void addBatch(BatchAction* action, int stacking_delay = 0);
-	void addAction(Action* action, int stacking_delay = 0);
-
-	void undo();
-	void redo();
-	void clear();
-
-	bool canUndo() {
-		return current > 0;
-	}
-	bool canRedo() {
-		return current < actions.size();
-	}
-
-protected:
-	size_t current;
-	size_t memory_size;
-	Editor& editor;
-	ActionList actions;
 };
 
 #endif

@@ -21,6 +21,7 @@
 #include "live/live_peer.h"
 #include "live/live_tab.h"
 #include "live/live_action.h"
+#include "editor/dirty_list.h"
 
 #include "editor/editor.h"
 

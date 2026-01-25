@@ -18,10 +18,12 @@
 #include "app/main.h"
 
 #include "editor/selection.h"
+#include "editor/selection_thread.h"
 #include "map/tile.h"
 #include "game/creature.h"
 #include "game/item.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 #include "ui/gui.h"
 
 Selection::Selection(Editor& editor) :
@@ -339,49 +341,4 @@ void Selection::join(SelectionThread* thread) {
 	thread->selection.subsession = nullptr;
 
 	delete thread;
-}
-
-SelectionThread::SelectionThread(Editor& editor, Position start, Position end) :
-	wxThread(wxTHREAD_JOINABLE),
-	editor(editor),
-	start(start),
-	end(end),
-	selection(editor),
-	result(nullptr) {
-	////
-}
-
-SelectionThread::~SelectionThread() {
-	////
-}
-
-void SelectionThread::Execute() {
-	Create();
-	Run();
-}
-
-wxThread::ExitCode SelectionThread::Entry() {
-	selection.start(Selection::SUBTHREAD);
-	for (int z = start.z; z >= end.z; --z) {
-		for (int x = start.x; x <= end.x; ++x) {
-			for (int y = start.y; y <= end.y; ++y) {
-				Tile* tile = editor.map.getTile(x, y, z);
-				if (!tile) {
-					continue;
-				}
-
-				selection.add(tile);
-			}
-		}
-		if (z <= GROUND_LAYER && g_settings.getInteger(Config::COMPENSATED_SELECT)) {
-			++start.x;
-			++start.y;
-			++end.x;
-			++end.y;
-		}
-	}
-	result = selection.subsession;
-	selection.finish(Selection::SUBTHREAD);
-
-	return nullptr;
 }

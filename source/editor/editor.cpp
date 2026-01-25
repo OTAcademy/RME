@@ -18,6 +18,7 @@
 #include "app/main.h"
 
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 #include "game/materials.h"
 #include "map/map.h"
 #include "game/complexitem.h"

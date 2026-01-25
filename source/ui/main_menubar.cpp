@@ -36,6 +36,7 @@
 #include "game/materials.h"
 #include "live/live_client.h"
 #include "live/live_server.h"
+#include "editor/action_queue.h"
 
 BEGIN_EVENT_TABLE(MainMenuBar, wxEvtHandler)
 END_EVENT_TABLE()

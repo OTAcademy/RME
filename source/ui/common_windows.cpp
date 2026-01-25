@@ -20,6 +20,7 @@
 #include "game/materials.h"
 #include "brushes/brush.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 
 #include "game/items.h"
 #include "map/map.h"

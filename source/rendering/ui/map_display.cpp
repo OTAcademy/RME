@@ -25,6 +25,7 @@
 
 #include "ui/gui.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 #include "brushes/brush.h"
 #include "game/sprites.h"
 #include "map/map.h"

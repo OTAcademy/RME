@@ -15,55 +15,50 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#ifndef _RME_NETWORK_ACTION_H_
-#define _RME_NETWORK_ACTION_H_
+#ifndef RME_EDITOR_DIRTY_LIST_H
+#define RME_EDITOR_DIRTY_LIST_H
 
-#include "editor/action.h"
-#include "editor/action_queue.h"
+#include <vector>
+#include <set>
+#include <cstdint>
 
-class NetworkedActionQueue;
+class Change;
 
-class NetworkedAction : public Action {
-protected:
-	NetworkedAction(Editor& editor, ActionIdentifier ident);
-	~NetworkedAction();
-
+// A dirty list represents a list of all tiles that was changed in an action
+class DirtyList {
 public:
+	DirtyList();
+	~DirtyList();
+
+	struct ValueType {
+		uint32_t pos;
+		uint32_t floors;
+	};
+
 	uint32_t owner;
 
-	friend class NetworkedActionQueue;
-};
-
-class NetworkedBatchAction : public BatchAction {
-	NetworkedActionQueue& queue;
-
 protected:
-	NetworkedBatchAction(Editor& editor, NetworkedActionQueue& queue, ActionIdentifier ident);
-	~NetworkedBatchAction();
+	struct Comparator {
+		bool operator()(const ValueType& a, const ValueType& b) const {
+			return a.pos < b.pos;
+		}
+	};
 
 public:
-	void addAndCommitAction(Action* action);
+	using SetType = std::set<ValueType, Comparator>;
+	using ChangeList = std::vector<Change*>;
+
+	void AddPosition(int x, int y, int z);
+	void AddChange(Change* c);
+	bool Empty() const {
+		return iset.empty() && ichanges.empty();
+	}
+	SetType& GetPosList();
+	ChangeList& GetChanges();
 
 protected:
-	void commit();
-	void undo();
-	void redo();
-
-	friend class NetworkedActionQueue;
-};
-
-class NetworkedActionQueue : public ActionQueue {
-public:
-	NetworkedActionQueue(Editor& editor);
-	~NetworkedActionQueue();
-
-	Action* createAction(ActionIdentifier ident);
-	BatchAction* createBatch(ActionIdentifier ident);
-
-protected:
-	void broadcast(DirtyList& dirty_list);
-
-	friend class NetworkedBatchAction;
+	SetType iset;
+	ChangeList ichanges;
 };
 
 #endif

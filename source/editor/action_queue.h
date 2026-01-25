@@ -15,55 +15,49 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#ifndef _RME_NETWORK_ACTION_H_
-#define _RME_NETWORK_ACTION_H_
+#ifndef RME_EDITOR_ACTION_QUEUE_H
+#define RME_EDITOR_ACTION_QUEUE_H
 
+#include <deque>
+#include <vector>
 #include "editor/action.h"
-#include "editor/action_queue.h"
 
-class NetworkedActionQueue;
+class Editor;
+class Action;
+class BatchAction;
 
-class NetworkedAction : public Action {
-protected:
-	NetworkedAction(Editor& editor, ActionIdentifier ident);
-	~NetworkedAction();
-
+class ActionQueue {
 public:
-	uint32_t owner;
+	ActionQueue(Editor& editor);
+	virtual ~ActionQueue();
 
-	friend class NetworkedActionQueue;
-};
+	using ActionList = std::deque<BatchAction*>;
 
-class NetworkedBatchAction : public BatchAction {
-	NetworkedActionQueue& queue;
+	void resetTimer();
 
-protected:
-	NetworkedBatchAction(Editor& editor, NetworkedActionQueue& queue, ActionIdentifier ident);
-	~NetworkedBatchAction();
+	virtual Action* createAction(ActionIdentifier ident);
+	virtual Action* createAction(BatchAction* parent);
+	virtual BatchAction* createBatch(ActionIdentifier ident);
 
-public:
-	void addAndCommitAction(Action* action);
+	void addBatch(BatchAction* action, int stacking_delay = 0);
+	void addAction(Action* action, int stacking_delay = 0);
 
-protected:
-	void commit();
 	void undo();
 	void redo();
+	void clear();
 
-	friend class NetworkedActionQueue;
-};
-
-class NetworkedActionQueue : public ActionQueue {
-public:
-	NetworkedActionQueue(Editor& editor);
-	~NetworkedActionQueue();
-
-	Action* createAction(ActionIdentifier ident);
-	BatchAction* createBatch(ActionIdentifier ident);
+	bool canUndo() {
+		return current > 0;
+	}
+	bool canRedo() {
+		return current < actions.size();
+	}
 
 protected:
-	void broadcast(DirtyList& dirty_list);
-
-	friend class NetworkedBatchAction;
+	size_t current;
+	size_t memory_size;
+	Editor& editor;
+	ActionList actions;
 };
 
 #endif

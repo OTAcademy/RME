@@ -18,6 +18,7 @@
 #include "app/main.h"
 #include "rendering/ui/popup_action_handler.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 #include "map/tile.h"
 #include "game/item.h"
 #include "ui/gui.h"

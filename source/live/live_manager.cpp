@@ -5,6 +5,7 @@
 #include "app/main.h"
 #include "live/live_manager.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 #include "live/live_server.h"
 #include "live/live_client.h"
 #include "live/live_action.h"

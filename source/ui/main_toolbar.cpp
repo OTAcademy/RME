@@ -19,6 +19,7 @@
 #include "ui/main_toolbar.h"
 #include "ui/gui.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 #include "app/settings.h"
 #include "brushes/brush.h"
 #include "ui/pngfiles.h"

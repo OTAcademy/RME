@@ -7,6 +7,7 @@
 #include "editor/persistence/editor_persistence.h"
 #include "editor/editor.h"
 #include "editor/action.h"
+#include "editor/action_queue.h"
 #include "editor/selection.h"
 #include "map/map.h"
 #include "io/iomap.h"

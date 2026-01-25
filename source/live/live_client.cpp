@@ -21,6 +21,8 @@
 #include "live/live_tab.h"
 #include "live/live_action.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
+#include "editor/dirty_list.h"
 
 #include <wx/event.h>
 

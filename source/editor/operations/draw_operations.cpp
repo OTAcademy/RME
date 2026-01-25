@@ -5,6 +5,7 @@
 #include "app/main.h"
 #include "editor/operations/draw_operations.h"
 #include "editor/editor.h"
+#include "editor/action_queue.h"
 #include "ui/gui.h"
 #include "brushes/brush.h"
 #include "brushes/doodad_brush.h"

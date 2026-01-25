@@ -11,6 +11,7 @@
 #include "game/spawn.h"
 #include "map/map.h"
 #include "editor/action.h"
+#include "editor/action_queue.h"
 #include "app/settings.h"
 
 #include <sstream>

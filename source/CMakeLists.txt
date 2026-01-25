@@ -24,7 +24,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/brushes/wall_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/waypoint_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/action_queue.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/copybuffer.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/dirty_list.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_factory.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/copy_operations.h
@@ -33,6 +35,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/editor_persistence.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_tabs.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/selection_thread.h
     ${CMAKE_CURRENT_LIST_DIR}/ext/pugiconfig.hpp
     ${CMAKE_CURRENT_LIST_DIR}/ext/pugixml.hpp
     ${CMAKE_CURRENT_LIST_DIR}/game/animation_timer.h
@@ -207,7 +210,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/brushes/wall_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/waypoint_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/action_queue.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/copybuffer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/dirty_list.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_factory.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/copy_operations.cpp
@@ -216,6 +221,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/editor_persistence.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_tabs.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/selection_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ext/pugixml.cpp
     ${CMAKE_CURRENT_LIST_DIR}/game/animation_timer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/game/complexitem.cpp

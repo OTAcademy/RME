@@ -118,20 +118,4 @@ private:
 	friend class SelectionThread;
 };
 
-class SelectionThread : public wxThread {
-public:
-	SelectionThread(Editor& editor, Position start, Position end);
-	virtual ~SelectionThread();
-
-	void Execute(); // Calls "Create" and then "Run"
-protected:
-	virtual ExitCode Entry();
-	Editor& editor;
-	Position start, end;
-	Selection selection;
-	Action* result;
-
-	friend class Selection;
-};
-
 #endif
