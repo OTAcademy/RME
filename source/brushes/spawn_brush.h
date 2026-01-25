@@ -35,12 +35,12 @@ public:
 		return static_cast<SpawnBrush*>(this);
 	}
 
-	bool canDraw(BaseMap* map, const Position& position) const override;
-	void draw(BaseMap* map, Tile* tile, void* parameter) override; // parameter is brush size
-	void undraw(BaseMap* map, Tile* tile) override;
+	bool canDraw(BaseMap* map, const Position& position) const override ;
+	void draw(BaseMap* map, Tile* tile, void* parameter) override ; // parameter is brush size
+	void undraw(BaseMap* map, Tile* tile) override ;
 
-	int getLookID() const override; // We don't have a look, sorry!
-	std::string getName() const override;
+	int getLookID() const override ; // We don't have a look, sorry!
+	std::string getName() const override ;
 	bool canDrag() const override {
 		return true;
 	}

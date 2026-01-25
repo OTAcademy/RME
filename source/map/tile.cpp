@@ -531,13 +531,14 @@ GroundBrush* Tile::getGroundBrush() const {
 }
 
 void Tile::cleanBorders() {
-	std::erase_if(items, [](Item* item) {
-		if (item->isBorder()) {
-			delete item;
-			return true;
-		}
-		return false;
+	auto first_to_remove = std::stable_partition(items.begin(), items.end(), [](Item* item) {
+		return !item->isBorder();
 	});
+
+	for (auto it = first_to_remove; it != items.end(); ++it) {
+		delete *it;
+	}
+	items.erase(first_to_remove, items.end());
 }
 
 void Tile::wallize(BaseMap* parent) {
@@ -593,37 +594,40 @@ void Tile::addWallItem(Item* item) {
 }
 
 void Tile::cleanWalls(bool dontdelete) {
-	std::erase_if(items, [dontdelete](Item* item) {
-		if (item->isWall()) {
-			if (!dontdelete) {
-				delete item;
-			}
-			return true;
-		}
-		return false;
+	auto first_to_remove = std::stable_partition(items.begin(), items.end(), [](Item* item) {
+		return !item->isWall();
 	});
+
+	if (!dontdelete) {
+		for (auto it = first_to_remove; it != items.end(); ++it) {
+			delete *it;
+		}
+	}
+	items.erase(first_to_remove, items.end());
 }
 
 void Tile::cleanWalls(WallBrush* wb) {
-	std::erase_if(items, [wb](Item* item) {
-		if (item->isWall() && wb->hasWall(item)) {
-			delete item;
-			return true;
-		}
-		return false;
+	auto first_to_remove = std::stable_partition(items.begin(), items.end(), [wb](Item* item) {
+		return !(item->isWall() && wb->hasWall(item));
 	});
+
+	for (auto it = first_to_remove; it != items.end(); ++it) {
+		delete *it;
+	}
+	items.erase(first_to_remove, items.end());
 }
 
 void Tile::cleanTables(bool dontdelete) {
-	std::erase_if(items, [dontdelete](Item* item) {
-		if (item->isTable()) {
-			if (!dontdelete) {
-				delete item;
-			}
-			return true;
-		}
-		return false;
+	auto first_to_remove = std::stable_partition(items.begin(), items.end(), [](Item* item) {
+		return !item->isTable();
 	});
+
+	if (!dontdelete) {
+		for (auto it = first_to_remove; it != items.end(); ++it) {
+			delete *it;
+		}
+	}
+	items.erase(first_to_remove, items.end());
 }
 
 void Tile::tableize(BaseMap* parent) {

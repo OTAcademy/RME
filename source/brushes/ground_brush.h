@@ -39,10 +39,10 @@ public:
 		return static_cast<GroundBrush*>(this);
 	}
 
-	bool load(pugi::xml_node node, wxArrayString& warnings) override;
+	bool load(pugi::xml_node node, wxArrayString& warnings) override ;
 
-	void draw(BaseMap* map, Tile* tile, void* parameter) override;
-	void undraw(BaseMap* map, Tile* tile) override;
+	void draw(BaseMap* map, Tile* tile, void* parameter) override ;
+	void undraw(BaseMap* map, Tile* tile) override ;
 	static void doBorders(BaseMap* map, Tile* tile);
 	static const BorderBlock* getBrushTo(GroundBrush* first, GroundBrush* second);
 
