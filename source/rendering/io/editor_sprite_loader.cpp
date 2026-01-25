@@ -19,20 +19,13 @@
 
 // Needs to be defined or included to access png files
 #include "ui/pngfiles.h"
+#include "rendering/utilities/wx_utils.h"
 
 #include <wx/mstream.h>
 #include <memory>
 
-// Helper logic duplicated or moved from graphics.cpp
+// Helper logic moved to wx_utils.h
 #define loadPNGFile(name) _wxGetBitmapFromMemory(name, sizeof(name))
-inline std::unique_ptr<wxBitmap> _wxGetBitmapFromMemory(const unsigned char* data, int length) {
-	wxMemoryInputStream is(data, length);
-	wxImage img(is, "image/png");
-	if (!img.IsOk()) {
-		return nullptr;
-	}
-	return std::make_unique<wxBitmap>(img, -1);
-}
 
 bool EditorSpriteLoader::Load(GraphicManager* gm) {
 	// Unused graphics MIGHT be loaded here, but it's a neglectable loss

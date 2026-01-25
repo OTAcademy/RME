@@ -29,6 +29,7 @@
 #include <wx/mstream.h>
 #include <wx/dir.h>
 #include "ui/pngfiles.h"
+#include "rendering/utilities/wx_utils.h"
 
 #include "../../../brushes/door_normal.xpm"
 #include "../../../brushes/door_normal_small.xpm"
@@ -154,14 +155,6 @@ uint16_t GraphicManager::getCreatureSpriteMaxID() const {
 }
 
 #define loadPNGFile(name) _wxGetBitmapFromMemory(name, sizeof(name))
-inline std::unique_ptr<wxBitmap> _wxGetBitmapFromMemory(const unsigned char* data, int length) {
-	wxMemoryInputStream is(data, length);
-	wxImage img(is, "image/png");
-	if (!img.IsOk()) {
-		return nullptr;
-	}
-	return std::make_unique<wxBitmap>(img, -1);
-}
 
 #include "rendering/io/game_sprite_loader.h"
 
