@@ -21,7 +21,7 @@
 
 #include "ui/gui_ids.h"
 #include "game/complexitem.h"
-#include "ui/container_properties_window.h"
+#include "ui/properties/container_properties_window.h"
 
 #include <wx/grid.h>
 

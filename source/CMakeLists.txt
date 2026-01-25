@@ -174,7 +174,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/spawn_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/container_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/podium_properties_window.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/container_properties_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/writable_properties_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/splash_properties_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/depot_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dat_debug_view.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dcbutton.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialog_helper.h
@@ -402,7 +404,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/spawn_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/container_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/podium_properties_window.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/container_properties_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/writable_properties_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/splash_properties_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/depot_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dat_debug_view.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dcbutton.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialog_helper.cpp

@@ -6,7 +6,6 @@
 #include "ui/properties/container_properties_window.h"
 
 #include "game/complexitem.h"
-#include "ui/container_properties_window.h" // For ContainerItemButton
 #include "ui/dialog_util.h"
 #include "app/application.h"
 
