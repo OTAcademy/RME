@@ -10,7 +10,8 @@
 
 MinimapManager g_minimap;
 
-MinimapManager::MinimapManager() : minimap(nullptr) {
+MinimapManager::MinimapManager() :
+	minimap(nullptr) {
 }
 
 MinimapManager::~MinimapManager() {
