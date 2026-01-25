@@ -9,6 +9,8 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/app/settings.h
     ${CMAKE_CURRENT_LIST_DIR}/app/threads.h
     ${CMAKE_CURRENT_LIST_DIR}/app/updater.h
+    ${CMAKE_CURRENT_LIST_DIR}/app/managers/version_manager.h
+
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_enums.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_utility.h
@@ -169,6 +171,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/find_item_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui_ids.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/loading_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/layout_manager.h
+
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_menubar.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_toolbar.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_popup_menu.h
@@ -196,6 +201,8 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/app/preferences.cpp
     ${CMAKE_CURRENT_LIST_DIR}/app/settings.cpp
     ${CMAKE_CURRENT_LIST_DIR}/app/updater.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/app/managers/version_manager.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/editor/hotkey_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_tables.cpp
@@ -347,6 +354,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_menubar.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_toolbar.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/loading_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/layout_manager.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_popup_menu.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_tab.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_window.cpp

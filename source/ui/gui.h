@@ -12,6 +12,9 @@
 #include "ui/map_tab.h"
 #include "palette/palette_window.h"
 #include "app/client_version.h"
+#include "app/managers/version_manager.h"
+#include "ui/managers/loading_manager.h"
+#include "ui/managers/layout_manager.h"
 
 class BaseMap;
 class Map;
@@ -68,42 +71,39 @@ public:
 	 * Saves the perspective to the configuration file
 	 * This is the position of all windows etc. in the editor
 	 */
-	void SavePerspective();
+	void SavePerspective() {
+		g_layout.SavePerspective();
+	}
 
 	/**
 	 * Loads the stored perspective from the configuration file
 	 */
-	void LoadPerspective();
+	void LoadPerspective() {
+		g_layout.LoadPerspective();
+	}
 
-	/**
-	 * Creates a loading bar with the specified message, title is always "Loading"
-	 * The default scale is 0 - 100
-	 */
-	void CreateLoadBar(wxString message, bool canCancel = false);
-
-	/**
-	 * Sets how much of the load has completed, the scale can be set with
-	 * SetLoadScale.
-	 * If this returns false, the user has hit the quit button and you should
-	 * abort the loading.
-	 */
-	bool SetLoadDone(int32_t done, const wxString& newMessage = "");
-
-	/**
-	 * Sets the scale of the loading bar.
-	 * Calling this with (50, 80) means that setting 50 as 'done',
-	 * it will display as 0% loaded, 80 will display as 100% loaded.
-	 */
-	void SetLoadScale(int32_t from, int32_t to);
+	void CreateLoadBar(wxString message, bool canCancel = false) {
+		g_loading.CreateLoadBar(message, canCancel);
+	}
+	void SetLoadScale(int32_t from, int32_t to) {
+		g_loading.SetLoadScale(from, to);
+	}
+	bool SetLoadDone(int32_t done, const wxString& newMessage = "") {
+		return g_loading.SetLoadDone(done, newMessage);
+	}
 
 	void ShowWelcomeDialog(const wxBitmap& icon);
+
 	void FinishWelcomeDialog();
 	bool IsWelcomeDialogShown();
 
 	/**
 	 * Destroys (hides) the current loading bar.
 	 */
-	void DestroyLoadBar();
+
+	void DestroyLoadBar() {
+		g_loading.DestroyLoadBar();
+	}
 
 	void UpdateMenubar();
 
@@ -216,14 +216,22 @@ public:
 
 	// Load/unload a client version (takes care of dialogs aswell)
 
-	void UnloadVersion();
-	bool LoadVersion(ClientVersionID ver, wxString& error, wxArrayString& warnings, bool force = false);
+	void UnloadVersion() {
+		g_version.UnloadVersion();
+	}
+	bool LoadVersion(ClientVersionID ver, wxString& error, wxArrayString& warnings, bool force = false) {
+		return g_version.LoadVersion(ver, error, warnings, force);
+	}
 	// The current version loaded (returns CLIENT_VERSION_NONE if no version is loaded)
-	const ClientVersion& GetCurrentVersion() const;
-	ClientVersionID GetCurrentVersionID() const;
+	const ClientVersion& GetCurrentVersion() const {
+		return g_version.GetCurrentVersion();
+	}
+	ClientVersionID GetCurrentVersionID() const {
+		return g_version.GetCurrentVersionID();
+	}
 	// If any version is loaded at all
 	bool IsVersionLoaded() const {
-		return loaded_version != CLIENT_VERSION_NONE;
+		return g_version.IsVersionLoaded();
 	}
 
 	// Centers current view on position
@@ -281,9 +289,8 @@ public:
 	bool LoadMap(const FileName& fileName);
 
 protected:
-	bool LoadDataFiles(wxString& error, wxArrayString& warnings);
 	ClientVersion* getLoadedVersion() const {
-		return loaded_version == CLIENT_VERSION_NONE ? nullptr : ClientVersion::get(loaded_version);
+		return g_version.getLoadedVersion();
 	}
 
 	//=========================================================================
@@ -313,9 +320,9 @@ public:
 
 	void DestroyPalettes();
 	// Hidden from public view
-protected:
 	PaletteWindow* CreatePalette();
 
+protected:
 	//=========================================================================
 	// Public members
 	//=========================================================================
@@ -333,6 +340,18 @@ public:
 
 	BaseMap* secondary_map; // A buffer map
 	BaseMap* doodad_buffer_map; // The map in which doodads are temporarily stored
+
+	using PaletteList = std::list<PaletteWindow*>;
+	PaletteList palettes;
+
+	wxGLContext* OGLContext;
+
+	EditorMode mode;
+
+	bool pasting;
+
+	Hotkey hotkeys[10];
+	bool hotkeys_enabled;
 
 	//=========================================================================
 	// Brush references
@@ -357,22 +376,6 @@ public:
 	FlagBrush* nolog_brush;
 	FlagBrush* pvp_brush;
 
-protected:
-	//=========================================================================
-	// Global GUI state
-	//=========================================================================
-	using PaletteList = std::list<PaletteWindow*>;
-	PaletteList palettes;
-
-	wxGLContext* OGLContext;
-
-	ClientVersionID loaded_version;
-	EditorMode mode;
-	bool pasting;
-
-	Hotkey hotkeys[10];
-	bool hotkeys_enabled;
-
 	//=========================================================================
 	// Internal brush data
 	//=========================================================================
@@ -389,17 +392,9 @@ protected:
 	float light_intensity;
 	float ambient_light_level;
 
-	//=========================================================================
-	// Progress bar tracking
-	//=========================================================================
-	wxString progressText;
-	wxGenericProgressDialog* progressBar;
-
-	int32_t progressFrom;
-	int32_t progressTo;
-	int32_t currentProgress;
-
+protected:
 	wxWindowDisabler* winDisabler;
+
 	int disabled_counter;
 
 	friend class RenderingLock;
@@ -434,18 +429,18 @@ public:
 class ScopedLoadingBar {
 public:
 	ScopedLoadingBar(wxString message, bool canCancel = false) {
-		g_gui.CreateLoadBar(message, canCancel);
+		g_loading.CreateLoadBar(message, canCancel);
 	}
 	~ScopedLoadingBar() {
-		g_gui.DestroyLoadBar();
+		g_loading.DestroyLoadBar();
 	}
 
 	void SetLoadDone(int32_t done, const wxString& newmessage = wxEmptyString) {
-		g_gui.SetLoadDone(done, newmessage);
+		g_loading.SetLoadDone(done, newmessage);
 	}
 
 	void SetLoadScale(int32_t from, int32_t to) {
-		g_gui.SetLoadScale(from, to);
+		g_loading.SetLoadScale(from, to);
 	}
 };
 
