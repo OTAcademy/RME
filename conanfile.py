@@ -21,6 +21,7 @@ class RMERecipe(ConanFile):
         self.requires("zlib/1.3.1")
         self.requires("opengl/system")
         self.requires("glew/2.2.0")
+        # Override wayland to resolve conflict with freeglut
         self.requires("wayland/1.23.92", override=True)
     
     def layout(self):

@@ -21,6 +21,10 @@
 #include "game/outfit.h"
 #include "util/common.h"
 #include <deque>
+#include <memory>
+#include <map>
+#include <list>
+#include <vector>
 
 #include "app/client_version.h"
 
@@ -69,9 +73,9 @@ public:
 	const AtlasRegion* getAtlasRegion(int _x, int _y, int _layer, int _subtype, int _pattern_x, int _pattern_y, int _pattern_z, int _frame);
 	const AtlasRegion* getAtlasRegion(int _x, int _y, int _dir, int _addon, int _pattern_z, const Outfit& _outfit, int _frame);
 
-	virtual void DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width = -1, int height = -1);
+	virtual void DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width = -1, int height = -1) override;
 
-	virtual void unloadDC();
+	virtual void unloadDC() override;
 
 	void clean(int time);
 
@@ -126,20 +130,20 @@ protected:
 
 		// This contains the pixel data
 		uint16_t size;
-		uint8_t* dump;
+		std::unique_ptr<uint8_t[]> dump;
 
 		virtual void clean(int time);
 
-		virtual GLuint getHardwareID();
-		virtual uint8_t* getRGBData();
-		virtual uint8_t* getRGBAData();
+		virtual GLuint getHardwareID() override;
+		virtual uint8_t* getRGBData() override;
+		virtual uint8_t* getRGBAData() override;
 
 		// Phase 2: Get atlas region (ensures loaded first)
 		const AtlasRegion* getAtlasRegion();
 
 	protected:
-		virtual void createGLTexture(GLuint ignored = 0);
-		virtual void unloadGLTexture(GLuint ignored = 0);
+		virtual void createGLTexture(GLuint ignored = 0) override;
+		virtual void unloadGLTexture(GLuint ignored = 0) override;
 	};
 
 	class TemplateImage : public Image {
@@ -147,9 +151,9 @@ protected:
 		TemplateImage(GameSprite* parent, int v, const Outfit& outfit);
 		virtual ~TemplateImage();
 
-		virtual GLuint getHardwareID();
-		virtual uint8_t* getRGBData();
-		virtual uint8_t* getRGBAData();
+		virtual GLuint getHardwareID() override;
+		virtual uint8_t* getRGBData() override;
+		virtual uint8_t* getRGBAData() override;
 
 		const AtlasRegion* getAtlasRegion();
 		const AtlasRegion* atlas_region;
@@ -163,12 +167,12 @@ protected:
 		uint8_t lookFeet;
 
 	protected:
-		virtual void createGLTexture(GLuint ignored = 0);
-		virtual void unloadGLTexture(GLuint ignored = 0);
+		virtual void createGLTexture(GLuint ignored = 0) override;
+		virtual void unloadGLTexture(GLuint ignored = 0) override;
 	};
 
 	uint32_t id;
-	wxMemoryDC* dc[SPRITE_SIZE_COUNT];
+	std::unique_ptr<wxMemoryDC> dc[SPRITE_SIZE_COUNT];
 
 public:
 	// GameSprite info
@@ -181,7 +185,7 @@ public:
 	uint8_t frames;
 	uint32_t numsprites;
 
-	Animator* animator;
+	std::unique_ptr<Animator> animator;
 
 	uint16_t draw_height;
 	uint16_t drawoffset_x;
@@ -193,7 +197,7 @@ public:
 	SpriteLight light;
 
 	std::vector<NormalImage*> spriteList;
-	std::list<TemplateImage*> instanced_templates; // Templates that use this sprite
+	std::list<std::unique_ptr<TemplateImage>> instanced_templates; // Templates that use this sprite
 
 	friend class GraphicManager;
 	friend class GameSpriteLoader;
@@ -211,8 +215,12 @@ public:
 
 	Sprite* getSprite(int id);
 	GameSprite* getCreatureSprite(int id);
+	void insertSprite(int id, std::unique_ptr<Sprite> sprite) {
+		sprite_space[id] = std::move(sprite);
+	}
+	// Overload for compatibility with existing raw pointer calls (takes ownership)
 	void insertSprite(int id, Sprite* sprite) {
-		sprite_space[id] = sprite;
+		sprite_space[id] = std::unique_ptr<Sprite>(sprite);
 	}
 
 	long getElapsedTime() const {
@@ -252,7 +260,7 @@ public:
 
 	// Sprite Atlas (Phase 2) - manages all game sprites in a texture array
 	AtlasManager* getAtlasManager() {
-		return atlas_manager_;
+		return atlas_manager_.get();
 	}
 	bool hasAtlasManager() const {
 		return atlas_manager_ != nullptr && atlas_manager_->isValid();
@@ -264,10 +272,10 @@ private:
 	bool unloaded;
 	// This is used if memcaching is NOT on
 	std::string spritefile;
-	bool loadSpriteDump(uint8_t*& target, uint16_t& size, int sprite_id);
+	bool loadSpriteDump(std::unique_ptr<uint8_t[]>& target, uint16_t& size, int sprite_id);
 
 	// Atlas manager for Phase 2 texture array rendering
-	AtlasManager* atlas_manager_ = nullptr;
+	std::unique_ptr<AtlasManager> atlas_manager_ = nullptr;
 
 	using SpriteMap = std::map<int, Sprite*>;
 	SpriteMap sprite_space;
@@ -287,7 +295,7 @@ private:
 
 	TextureGarbageCollector collector;
 
-	RenderTimer* animation_timer;
+	std::unique_ptr<RenderTimer> animation_timer;
 
 	friend class GameSprite::Image;
 	friend class GameSprite::NormalImage;
