@@ -37,6 +37,10 @@
 #include "app/preferences.h"
 #include "ui/result_window.h"
 
+#include "ui/menubar/search_handler.h"
+#include "ui/menubar/view_settings_handler.h"
+#include "ui/menubar/map_actions_handler.h"
+
 #include <wx/chartype.h>
 
 #include "editor/editor.h"
@@ -54,6 +58,10 @@ MainMenuBar::MainMenuBar(MainFrame* frame) :
 	frame(frame) {
 	using namespace MenuBar;
 	checking_programmaticly = false;
+
+	searchHandler = new SearchHandler(frame);
+	viewSettingsHandler = new ViewSettingsHandler(this);
+	mapActionsHandler = new MapActionsHandler(frame);
 
 #define MAKE_ACTION(id, kind, handler) actions[#id] = new MenuBar::Action(#id, id, kind, wxCommandEventFunction(&MainMenuBar::handler))
 #define MAKE_SET_ACTION(id, kind, setting_, handler)                                                  \
@@ -242,6 +250,10 @@ MainMenuBar::~MainMenuBar() {
 	for (std::map<std::string, MenuBar::Action*>::iterator ai = actions.begin(); ai != actions.end(); ++ai) {
 		delete ai->second;
 	}
+
+	delete searchHandler;
+	delete viewSettingsHandler;
+	delete mapActionsHandler;
 }
 
 void MainMenuBar::EnableItem(MenuBar::ActionID id, bool enable) {
@@ -401,67 +413,7 @@ void MainMenuBar::Update() {
 }
 
 void MainMenuBar::LoadValues() {
-	using namespace MenuBar;
-
-	CheckItem(VIEW_TOOLBARS_BRUSHES, g_settings.getBoolean(Config::SHOW_TOOLBAR_BRUSHES));
-	CheckItem(VIEW_TOOLBARS_POSITION, g_settings.getBoolean(Config::SHOW_TOOLBAR_POSITION));
-	CheckItem(VIEW_TOOLBARS_SIZES, g_settings.getBoolean(Config::SHOW_TOOLBAR_SIZES));
-	CheckItem(VIEW_TOOLBARS_STANDARD, g_settings.getBoolean(Config::SHOW_TOOLBAR_STANDARD));
-
-	CheckItem(SELECT_MODE_COMPENSATE, g_settings.getBoolean(Config::COMPENSATED_SELECT));
-
-	if (IsItemChecked(MenuBar::SELECT_MODE_CURRENT)) {
-		g_settings.setInteger(Config::SELECTION_TYPE, SELECT_CURRENT_FLOOR);
-	} else if (IsItemChecked(MenuBar::SELECT_MODE_LOWER)) {
-		g_settings.setInteger(Config::SELECTION_TYPE, SELECT_ALL_FLOORS);
-	} else if (IsItemChecked(MenuBar::SELECT_MODE_VISIBLE)) {
-		g_settings.setInteger(Config::SELECTION_TYPE, SELECT_VISIBLE_FLOORS);
-	}
-
-	switch (g_settings.getInteger(Config::SELECTION_TYPE)) {
-		case SELECT_CURRENT_FLOOR:
-			CheckItem(SELECT_MODE_CURRENT, true);
-			break;
-		case SELECT_ALL_FLOORS:
-			CheckItem(SELECT_MODE_LOWER, true);
-			break;
-		default:
-		case SELECT_VISIBLE_FLOORS:
-			CheckItem(SELECT_MODE_VISIBLE, true);
-			break;
-	}
-
-	CheckItem(AUTOMAGIC, g_settings.getBoolean(Config::USE_AUTOMAGIC));
-
-	CheckItem(SHOW_SHADE, g_settings.getBoolean(Config::SHOW_SHADE));
-	CheckItem(SHOW_INGAME_BOX, g_settings.getBoolean(Config::SHOW_INGAME_BOX));
-	CheckItem(SHOW_LIGHTS, g_settings.getBoolean(Config::SHOW_LIGHTS));
-	CheckItem(SHOW_LIGHT_STR, g_settings.getBoolean(Config::SHOW_LIGHT_STR));
-	CheckItem(SHOW_TECHNICAL_ITEMS, g_settings.getBoolean(Config::SHOW_TECHNICAL_ITEMS));
-	CheckItem(SHOW_WAYPOINTS, g_settings.getBoolean(Config::SHOW_WAYPOINTS));
-	CheckItem(SHOW_ALL_FLOORS, g_settings.getBoolean(Config::SHOW_ALL_FLOORS));
-	CheckItem(GHOST_ITEMS, g_settings.getBoolean(Config::TRANSPARENT_ITEMS));
-	CheckItem(GHOST_HIGHER_FLOORS, g_settings.getBoolean(Config::TRANSPARENT_FLOORS));
-	CheckItem(SHOW_EXTRA, !g_settings.getBoolean(Config::SHOW_EXTRA));
-	CheckItem(SHOW_GRID, g_settings.getBoolean(Config::SHOW_GRID));
-	CheckItem(HIGHLIGHT_ITEMS, g_settings.getBoolean(Config::HIGHLIGHT_ITEMS));
-	CheckItem(HIGHLIGHT_LOCKED_DOORS, g_settings.getBoolean(Config::HIGHLIGHT_LOCKED_DOORS));
-	CheckItem(SHOW_CREATURES, g_settings.getBoolean(Config::SHOW_CREATURES));
-	CheckItem(SHOW_SPAWNS, g_settings.getBoolean(Config::SHOW_SPAWNS));
-	CheckItem(SHOW_SPECIAL, g_settings.getBoolean(Config::SHOW_SPECIAL_TILES));
-	CheckItem(SHOW_AS_MINIMAP, g_settings.getBoolean(Config::SHOW_AS_MINIMAP));
-	CheckItem(SHOW_ONLY_COLORS, g_settings.getBoolean(Config::SHOW_ONLY_TILEFLAGS));
-	CheckItem(SHOW_ONLY_MODIFIED, g_settings.getBoolean(Config::SHOW_ONLY_MODIFIED_TILES));
-	CheckItem(SHOW_HOUSES, g_settings.getBoolean(Config::SHOW_HOUSES));
-	CheckItem(SHOW_PATHING, g_settings.getBoolean(Config::SHOW_BLOCKING));
-	CheckItem(SHOW_TOOLTIPS, g_settings.getBoolean(Config::SHOW_TOOLTIPS));
-	CheckItem(SHOW_PREVIEW, g_settings.getBoolean(Config::SHOW_PREVIEW));
-	CheckItem(SHOW_WALL_HOOKS, g_settings.getBoolean(Config::SHOW_WALL_HOOKS));
-	CheckItem(SHOW_TOWNS, g_settings.getBoolean(Config::SHOW_TOWNS));
-	CheckItem(ALWAYS_SHOW_ZONES, g_settings.getBoolean(Config::ALWAYS_SHOW_ZONES));
-	CheckItem(EXT_HOUSE_SHADER, g_settings.getBoolean(Config::EXT_HOUSE_SHADER));
-
-	CheckItem(EXPERIMENTAL_FOG, g_settings.getBoolean(Config::EXPERIMENTAL_FOG));
+	viewSettingsHandler->LoadValues();
 }
 
 void MainMenuBar::UpdateFloorMenu() {
@@ -632,173 +584,68 @@ void MainMenuBar::OnRedo(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.DoRedo();
 }
 
-void MainMenuBar::OnSearchForItem(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsEditorOpen()) {
-		return;
-	}
-
-	FindItemDialog dialog(frame, "Search for Item");
-	dialog.setSearchMode((FindItemDialog::SearchMode)g_settings.getInteger(Config::FIND_ITEM_MODE));
-	if (dialog.ShowModal() == wxID_OK) {
-		EditorOperations::ItemSearcher finder(dialog.getResultID(), (uint32_t)g_settings.getInteger(Config::REPLACE_SIZE));
-		g_gui.CreateLoadBar("Searching map...");
-
-		foreach_ItemOnMap(g_gui.GetCurrentMap(), finder, false);
-		std::vector<std::pair<Tile*, Item*>>& result = finder.result;
-
-		g_gui.DestroyLoadBar();
-
-		if (finder.limitReached()) {
-			wxString msg;
-			msg << "The configured limit has been reached. Only " << finder.maxCount << " results will be displayed.";
-			DialogUtil::PopupDialog("Notice", msg, wxOK);
-		}
-
-		SearchResultWindow* window = g_gui.ShowSearchWindow();
-		window->Clear();
-		for (std::vector<std::pair<Tile*, Item*>>::const_iterator iter = result.begin(); iter != result.end(); ++iter) {
-			Tile* tile = iter->first;
-			Item* item = iter->second;
-			window->AddPosition(wxstr(item->getName()), tile->getPosition());
-		}
-
-		g_settings.setInteger(Config::FIND_ITEM_MODE, (int)dialog.getSearchMode());
-	}
-	dialog.Destroy();
+void MainMenuBar::OnSearchForItem(wxCommandEvent& event) {
+	searchHandler->OnSearchForItem(event);
 }
 
-void MainMenuBar::OnReplaceItems(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_version.IsVersionLoaded()) {
-		return;
-	}
-
-	if (MapTab* tab = g_gui.GetCurrentMapTab()) {
-		if (MapWindow* window = tab->GetView()) {
-			window->ShowReplaceItemsDialog(false);
-		}
-	}
+void MainMenuBar::OnReplaceItems(wxCommandEvent& event) {
+	searchHandler->OnReplaceItems(event);
 }
 
-void MainMenuBar::OnSearchForStuffOnMap(wxCommandEvent& WXUNUSED(event)) {
-	SearchItems(true, true, true, true);
+void MainMenuBar::OnSearchForStuffOnMap(wxCommandEvent& event) {
+	searchHandler->OnSearchForStuffOnMap(event);
 }
 
-void MainMenuBar::OnSearchForUniqueOnMap(wxCommandEvent& WXUNUSED(event)) {
-	SearchItems(true, false, false, false);
+void MainMenuBar::OnSearchForUniqueOnMap(wxCommandEvent& event) {
+	searchHandler->OnSearchForUniqueOnMap(event);
 }
 
-void MainMenuBar::OnSearchForActionOnMap(wxCommandEvent& WXUNUSED(event)) {
-	SearchItems(false, true, false, false);
+void MainMenuBar::OnSearchForActionOnMap(wxCommandEvent& event) {
+	searchHandler->OnSearchForActionOnMap(event);
 }
 
-void MainMenuBar::OnSearchForContainerOnMap(wxCommandEvent& WXUNUSED(event)) {
-	SearchItems(false, false, true, false);
+void MainMenuBar::OnSearchForContainerOnMap(wxCommandEvent& event) {
+	searchHandler->OnSearchForContainerOnMap(event);
 }
 
-void MainMenuBar::OnSearchForWriteableOnMap(wxCommandEvent& WXUNUSED(event)) {
-	SearchItems(false, false, false, true);
+void MainMenuBar::OnSearchForWriteableOnMap(wxCommandEvent& event) {
+	searchHandler->OnSearchForWriteableOnMap(event);
 }
 
-void MainMenuBar::OnSearchForStuffOnSelection(wxCommandEvent& WXUNUSED(event)) {
-	SearchItems(true, true, true, true, true);
+void MainMenuBar::OnSearchForStuffOnSelection(wxCommandEvent& event) {
+	searchHandler->OnSearchForStuffOnSelection(event);
 }
 
-void MainMenuBar::OnSearchForUniqueOnSelection(wxCommandEvent& WXUNUSED(event)) {
-	SearchItems(true, false, false, false, true);
+void MainMenuBar::OnSearchForUniqueOnSelection(wxCommandEvent& event) {
+	searchHandler->OnSearchForUniqueOnSelection(event);
 }
 
-void MainMenuBar::OnSearchForActionOnSelection(wxCommandEvent& WXUNUSED(event)) {
-	SearchItems(false, true, false, false, true);
+void MainMenuBar::OnSearchForActionOnSelection(wxCommandEvent& event) {
+	searchHandler->OnSearchForActionOnSelection(event);
 }
 
-void MainMenuBar::OnSearchForContainerOnSelection(wxCommandEvent& WXUNUSED(event)) {
-	SearchItems(false, false, true, false, true);
+void MainMenuBar::OnSearchForContainerOnSelection(wxCommandEvent& event) {
+	searchHandler->OnSearchForContainerOnSelection(event);
 }
 
-void MainMenuBar::OnSearchForWriteableOnSelection(wxCommandEvent& WXUNUSED(event)) {
-	SearchItems(false, false, false, true, true);
+void MainMenuBar::OnSearchForWriteableOnSelection(wxCommandEvent& event) {
+	searchHandler->OnSearchForWriteableOnSelection(event);
 }
 
-void MainMenuBar::OnSearchForItemOnSelection(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsEditorOpen()) {
-		return;
-	}
-
-	FindItemDialog dialog(frame, "Search on Selection");
-	dialog.setSearchMode((FindItemDialog::SearchMode)g_settings.getInteger(Config::FIND_ITEM_MODE));
-	if (dialog.ShowModal() == wxID_OK) {
-		EditorOperations::ItemSearcher finder(dialog.getResultID(), (uint32_t)g_settings.getInteger(Config::REPLACE_SIZE));
-		g_gui.CreateLoadBar("Searching on selected area...");
-
-		foreach_ItemOnMap(g_gui.GetCurrentMap(), finder, true);
-		std::vector<std::pair<Tile*, Item*>>& result = finder.result;
-
-		g_gui.DestroyLoadBar();
-
-		if (finder.limitReached()) {
-			wxString msg;
-			msg << "The configured limit has been reached. Only " << finder.maxCount << " results will be displayed.";
-			DialogUtil::PopupDialog("Notice", msg, wxOK);
-		}
-
-		SearchResultWindow* window = g_gui.ShowSearchWindow();
-		window->Clear();
-		for (std::vector<std::pair<Tile*, Item*>>::const_iterator iter = result.begin(); iter != result.end(); ++iter) {
-			Tile* tile = iter->first;
-			Item* item = iter->second;
-			window->AddPosition(wxstr(item->getName()), tile->getPosition());
-		}
-
-		g_settings.setInteger(Config::FIND_ITEM_MODE, (int)dialog.getSearchMode());
-	}
-
-	dialog.Destroy();
+void MainMenuBar::OnSearchForItemOnSelection(wxCommandEvent& event) {
+	searchHandler->OnSearchForItemOnSelection(event);
 }
 
-void MainMenuBar::OnReplaceItemsOnSelection(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_version.IsVersionLoaded()) {
-		return;
-	}
-
-	if (MapTab* tab = g_gui.GetCurrentMapTab()) {
-		if (MapWindow* window = tab->GetView()) {
-			window->ShowReplaceItemsDialog(true);
-		}
-	}
+void MainMenuBar::OnReplaceItemsOnSelection(wxCommandEvent& event) {
+	searchHandler->OnReplaceItemsOnSelection(event);
 }
 
-void MainMenuBar::OnRemoveItemOnSelection(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsEditorOpen()) {
-		return;
-	}
-
-	FindItemDialog dialog(frame, "Remove Item on Selection");
-	if (dialog.ShowModal() == wxID_OK) {
-		g_gui.GetCurrentEditor()->actionQueue->clear();
-		g_gui.CreateLoadBar("Searching item on selection to remove...");
-		EditorOperations::RemoveItemCondition condition(dialog.getResultID());
-		int64_t count = RemoveItemOnMap(g_gui.GetCurrentMap(), condition, true);
-		g_gui.DestroyLoadBar();
-
-		wxString msg;
-		msg << count << " items removed.";
-		DialogUtil::PopupDialog("Remove Item", msg, wxOK);
-		g_gui.GetCurrentMap().doChange();
-		g_gui.RefreshView();
-	}
-	dialog.Destroy();
+void MainMenuBar::OnRemoveItemOnSelection(wxCommandEvent& event) {
+	searchHandler->OnRemoveItemOnSelection(event);
 }
 
-void MainMenuBar::OnSelectionTypeChange(wxCommandEvent& WXUNUSED(event)) {
-	g_settings.setInteger(Config::COMPENSATED_SELECT, IsItemChecked(MenuBar::SELECT_MODE_COMPENSATE));
-
-	if (IsItemChecked(MenuBar::SELECT_MODE_CURRENT)) {
-		g_settings.setInteger(Config::SELECTION_TYPE, SELECT_CURRENT_FLOOR);
-	} else if (IsItemChecked(MenuBar::SELECT_MODE_LOWER)) {
-		g_settings.setInteger(Config::SELECTION_TYPE, SELECT_ALL_FLOORS);
-	} else if (IsItemChecked(MenuBar::SELECT_MODE_VISIBLE)) {
-		g_settings.setInteger(Config::SELECTION_TYPE, SELECT_VISIBLE_FLOORS);
-	}
+void MainMenuBar::OnSelectionTypeChange(wxCommandEvent& event) {
+	viewSettingsHandler->OnSelectionTypeChange(event);
 }
 
 void MainMenuBar::OnCopy(wxCommandEvent& WXUNUSED(event)) {
@@ -813,58 +660,24 @@ void MainMenuBar::OnPaste(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.PreparePaste();
 }
 
-void MainMenuBar::OnToggleAutomagic(wxCommandEvent& WXUNUSED(event)) {
-	g_settings.setInteger(Config::USE_AUTOMAGIC, IsItemChecked(MenuBar::AUTOMAGIC));
-	g_settings.setInteger(Config::BORDER_IS_GROUND, IsItemChecked(MenuBar::AUTOMAGIC));
-	if (g_settings.getInteger(Config::USE_AUTOMAGIC)) {
-		g_gui.SetStatusText("Automagic enabled.");
-	} else {
-		g_gui.SetStatusText("Automagic disabled.");
-	}
+void MainMenuBar::OnToggleAutomagic(wxCommandEvent& event) {
+	viewSettingsHandler->OnToggleAutomagic(event);
 }
 
-void MainMenuBar::OnBorderizeSelection(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsEditorOpen()) {
-		return;
-	}
-
-	g_gui.GetCurrentEditor()->borderizeSelection();
-	g_gui.RefreshView();
+void MainMenuBar::OnBorderizeSelection(wxCommandEvent& event) {
+	mapActionsHandler->OnBorderizeSelection(event);
 }
 
-void MainMenuBar::OnBorderizeMap(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsEditorOpen()) {
-		return;
-	}
-
-	int ret = DialogUtil::PopupDialog("Borderize Map", "Are you sure you want to borderize the entire map (this action cannot be undone)?", wxYES | wxNO);
-	if (ret == wxID_YES) {
-		g_gui.GetCurrentEditor()->borderizeMap(true);
-	}
-
-	g_gui.RefreshView();
+void MainMenuBar::OnBorderizeMap(wxCommandEvent& event) {
+	mapActionsHandler->OnBorderizeMap(event);
 }
 
-void MainMenuBar::OnRandomizeSelection(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsEditorOpen()) {
-		return;
-	}
-
-	g_gui.GetCurrentEditor()->randomizeSelection();
-	g_gui.RefreshView();
+void MainMenuBar::OnRandomizeSelection(wxCommandEvent& event) {
+	mapActionsHandler->OnRandomizeSelection(event);
 }
 
-void MainMenuBar::OnRandomizeMap(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsEditorOpen()) {
-		return;
-	}
-
-	int ret = DialogUtil::PopupDialog("Randomize Map", "Are you sure you want to randomize the entire map (this action cannot be undone)?", wxYES | wxNO);
-	if (ret == wxID_YES) {
-		g_gui.GetCurrentEditor()->randomizeMap(true);
-	}
-
-	g_gui.RefreshView();
+void MainMenuBar::OnRandomizeMap(wxCommandEvent& event) {
+	mapActionsHandler->OnRandomizeMap(event);
 }
 
 void MainMenuBar::OnJumpToBrush(wxCommandEvent& WXUNUSED(event)) {
@@ -922,145 +735,28 @@ void MainMenuBar::OnGotoPosition(wxCommandEvent& WXUNUSED(event)) {
 	dlg.ShowModal();
 }
 
-void MainMenuBar::OnMapRemoveItems(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsEditorOpen()) {
-		return;
-	}
-
-	FindItemDialog dialog(frame, "Item Type to Remove");
-	if (dialog.ShowModal() == wxID_OK) {
-		uint16_t itemid = dialog.getResultID();
-
-		g_gui.GetCurrentEditor()->selection.clear();
-		g_gui.GetCurrentEditor()->actionQueue->clear();
-
-		EditorOperations::RemoveItemCondition condition(itemid);
-		g_gui.CreateLoadBar("Searching map for items to remove...");
-
-		int64_t count = RemoveItemOnMap(g_gui.GetCurrentMap(), condition, false);
-
-		g_gui.DestroyLoadBar();
-
-		wxString msg;
-		msg << count << " items deleted.";
-
-		DialogUtil::PopupDialog("Search completed", msg, wxOK);
-		g_gui.GetCurrentMap().doChange();
-		g_gui.RefreshView();
-	}
-	dialog.Destroy();
+void MainMenuBar::OnMapRemoveItems(wxCommandEvent& event) {
+	mapActionsHandler->OnMapRemoveItems(event);
 }
 
-void MainMenuBar::OnMapRemoveCorpses(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsEditorOpen()) {
-		return;
-	}
-
-	int ok = DialogUtil::PopupDialog("Remove Corpses", "Do you want to remove all corpses from the map?", wxYES | wxNO);
-
-	if (ok == wxID_YES) {
-		g_gui.GetCurrentEditor()->selection.clear();
-		g_gui.GetCurrentEditor()->actionQueue->clear();
-
-		EditorOperations::RemoveCorpsesCondition func;
-		g_gui.CreateLoadBar("Searching map for items to remove...");
-
-		int64_t count = RemoveItemOnMap(g_gui.GetCurrentMap(), func, false);
-
-		g_gui.DestroyLoadBar();
-
-		wxString msg;
-		msg << count << " items deleted.";
-		DialogUtil::PopupDialog("Search completed", msg, wxOK);
-		g_gui.GetCurrentMap().doChange();
-	}
+void MainMenuBar::OnMapRemoveCorpses(wxCommandEvent& event) {
+	mapActionsHandler->OnMapRemoveCorpses(event);
 }
 
-void MainMenuBar::OnMapRemoveUnreachable(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsEditorOpen()) {
-		return;
-	}
-
-	int ok = DialogUtil::PopupDialog("Remove Unreachable Tiles", "Do you want to remove all unreachable items from the map?", wxYES | wxNO);
-
-	if (ok == wxID_YES) {
-		g_gui.GetCurrentEditor()->selection.clear();
-		g_gui.GetCurrentEditor()->actionQueue->clear();
-
-		EditorOperations::RemoveUnreachableCondition func;
-		g_gui.CreateLoadBar("Searching map for tiles to remove...");
-
-		long long removed = remove_if_TileOnMap(g_gui.GetCurrentMap(), func);
-
-		g_gui.DestroyLoadBar();
-
-		wxString msg;
-		msg << removed << " tiles deleted.";
-
-		DialogUtil::PopupDialog("Search completed", msg, wxOK);
-
-		g_gui.GetCurrentMap().doChange();
-	}
+void MainMenuBar::OnMapRemoveUnreachable(wxCommandEvent& event) {
+	mapActionsHandler->OnMapRemoveUnreachable(event);
 }
 
-void MainMenuBar::OnClearHouseTiles(wxCommandEvent& WXUNUSED(event)) {
-	Editor* editor = g_gui.GetCurrentEditor();
-	if (!editor) {
-		return;
-	}
-
-	int ret = DialogUtil::PopupDialog(
-		"Clear Invalid House Tiles",
-		"Are you sure you want to remove all house tiles that do not belong to a house (this action cannot be undone)?",
-		wxYES | wxNO
-	);
-
-	if (ret == wxID_YES) {
-		// Editor will do the work
-		editor->clearInvalidHouseTiles(true);
-	}
-
-	g_gui.RefreshView();
+void MainMenuBar::OnClearHouseTiles(wxCommandEvent& event) {
+	mapActionsHandler->OnClearHouseTiles(event);
 }
 
-void MainMenuBar::OnClearModifiedState(wxCommandEvent& WXUNUSED(event)) {
-	Editor* editor = g_gui.GetCurrentEditor();
-	if (!editor) {
-		return;
-	}
-
-	int ret = DialogUtil::PopupDialog(
-		"Clear Modified State",
-		"This will have the same effect as closing the map and opening it again. Do you want to proceed?",
-		wxYES | wxNO
-	);
-
-	if (ret == wxID_YES) {
-		// Editor will do the work
-		editor->clearModifiedTileState(true);
-	}
-
-	g_gui.RefreshView();
+void MainMenuBar::OnClearModifiedState(wxCommandEvent& event) {
+	mapActionsHandler->OnClearModifiedState(event);
 }
 
-void MainMenuBar::OnMapCleanHouseItems(wxCommandEvent& WXUNUSED(event)) {
-	Editor* editor = g_gui.GetCurrentEditor();
-	if (!editor) {
-		return;
-	}
-
-	int ret = DialogUtil::PopupDialog(
-		"Clear Moveable House Items",
-		"Are you sure you want to remove all items inside houses that can be moved (this action cannot be undone)?",
-		wxYES | wxNO
-	);
-
-	if (ret == wxID_YES) {
-		// Editor will do the work
-		// editor->removeHouseItems(true);
-	}
-
-	g_gui.RefreshView();
+void MainMenuBar::OnMapCleanHouseItems(wxCommandEvent& event) {
+	mapActionsHandler->OnMapCleanHouseItems(event);
 }
 
 void MainMenuBar::OnMapEditTowns(wxCommandEvent& WXUNUSED(event)) {
@@ -1083,12 +779,8 @@ void MainMenuBar::OnMapStatistics(wxCommandEvent& WXUNUSED(event)) {
 	MapStatisticsDialog::Show(frame);
 }
 
-void MainMenuBar::OnMapCleanup(wxCommandEvent& WXUNUSED(event)) {
-	int ok = DialogUtil::PopupDialog("Clean map", "Do you want to remove all invalid items from the map?", wxYES | wxNO);
-
-	if (ok == wxID_YES) {
-		g_gui.GetCurrentMap().cleanInvalidTiles(true);
-	}
+void MainMenuBar::OnMapCleanup(wxCommandEvent& event) {
+	mapActionsHandler->OnMapCleanup(event);
 }
 
 void MainMenuBar::OnMapProperties(wxCommandEvent& WXUNUSED(event)) {
@@ -1106,29 +798,7 @@ void MainMenuBar::OnMapProperties(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MainMenuBar::OnToolbars(wxCommandEvent& event) {
-	using namespace MenuBar;
-
-	ActionID id = static_cast<ActionID>(event.GetId() - (wxID_HIGHEST + 1));
-	switch (id) {
-		case VIEW_TOOLBARS_BRUSHES:
-			g_gui.ShowToolbar(TOOLBAR_BRUSHES, event.IsChecked());
-			g_settings.setInteger(Config::SHOW_TOOLBAR_BRUSHES, event.IsChecked());
-			break;
-		case VIEW_TOOLBARS_POSITION:
-			g_gui.ShowToolbar(TOOLBAR_POSITION, event.IsChecked());
-			g_settings.setInteger(Config::SHOW_TOOLBAR_POSITION, event.IsChecked());
-			break;
-		case VIEW_TOOLBARS_SIZES:
-			g_gui.ShowToolbar(TOOLBAR_SIZES, event.IsChecked());
-			g_settings.setInteger(Config::SHOW_TOOLBAR_SIZES, event.IsChecked());
-			break;
-		case VIEW_TOOLBARS_STANDARD:
-			g_gui.ShowToolbar(TOOLBAR_STANDARD, event.IsChecked());
-			g_settings.setInteger(Config::SHOW_TOOLBAR_STANDARD, event.IsChecked());
-			break;
-		default:
-			break;
-	}
+	viewSettingsHandler->OnToolbars(event);
 }
 
 void MainMenuBar::OnNewView(wxCommandEvent& WXUNUSED(event)) {
@@ -1169,47 +839,7 @@ void MainMenuBar::OnZoomNormal(wxCommandEvent& event) {
 }
 
 void MainMenuBar::OnChangeViewSettings(wxCommandEvent& event) {
-	g_settings.setInteger(Config::SHOW_ALL_FLOORS, IsItemChecked(MenuBar::SHOW_ALL_FLOORS));
-	if (IsItemChecked(MenuBar::SHOW_ALL_FLOORS)) {
-		EnableItem(MenuBar::SELECT_MODE_VISIBLE, true);
-		EnableItem(MenuBar::SELECT_MODE_LOWER, true);
-	} else {
-		EnableItem(MenuBar::SELECT_MODE_VISIBLE, false);
-		EnableItem(MenuBar::SELECT_MODE_LOWER, false);
-		CheckItem(MenuBar::SELECT_MODE_CURRENT, true);
-		g_settings.setInteger(Config::SELECTION_TYPE, SELECT_CURRENT_FLOOR);
-	}
-	g_settings.setInteger(Config::TRANSPARENT_FLOORS, IsItemChecked(MenuBar::GHOST_HIGHER_FLOORS));
-	g_settings.setInteger(Config::TRANSPARENT_ITEMS, IsItemChecked(MenuBar::GHOST_ITEMS));
-	g_settings.setInteger(Config::SHOW_INGAME_BOX, IsItemChecked(MenuBar::SHOW_INGAME_BOX));
-	g_settings.setInteger(Config::SHOW_LIGHTS, IsItemChecked(MenuBar::SHOW_LIGHTS));
-	g_settings.setInteger(Config::SHOW_LIGHT_STR, IsItemChecked(MenuBar::SHOW_LIGHT_STR));
-	g_settings.setInteger(Config::SHOW_TECHNICAL_ITEMS, IsItemChecked(MenuBar::SHOW_TECHNICAL_ITEMS));
-	g_settings.setInteger(Config::SHOW_WAYPOINTS, IsItemChecked(MenuBar::SHOW_WAYPOINTS));
-	g_settings.setInteger(Config::SHOW_GRID, IsItemChecked(MenuBar::SHOW_GRID));
-	g_settings.setInteger(Config::SHOW_EXTRA, !IsItemChecked(MenuBar::SHOW_EXTRA));
-
-	g_settings.setInteger(Config::SHOW_SHADE, IsItemChecked(MenuBar::SHOW_SHADE));
-	g_settings.setInteger(Config::SHOW_SPECIAL_TILES, IsItemChecked(MenuBar::SHOW_SPECIAL));
-	g_settings.setInteger(Config::SHOW_AS_MINIMAP, IsItemChecked(MenuBar::SHOW_AS_MINIMAP));
-	g_settings.setInteger(Config::SHOW_ONLY_TILEFLAGS, IsItemChecked(MenuBar::SHOW_ONLY_COLORS));
-	g_settings.setInteger(Config::SHOW_ONLY_MODIFIED_TILES, IsItemChecked(MenuBar::SHOW_ONLY_MODIFIED));
-	g_settings.setInteger(Config::SHOW_CREATURES, IsItemChecked(MenuBar::SHOW_CREATURES));
-	g_settings.setInteger(Config::SHOW_SPAWNS, IsItemChecked(MenuBar::SHOW_SPAWNS));
-	g_settings.setInteger(Config::SHOW_HOUSES, IsItemChecked(MenuBar::SHOW_HOUSES));
-	g_settings.setInteger(Config::HIGHLIGHT_ITEMS, IsItemChecked(MenuBar::HIGHLIGHT_ITEMS));
-	g_settings.setInteger(Config::HIGHLIGHT_LOCKED_DOORS, IsItemChecked(MenuBar::HIGHLIGHT_LOCKED_DOORS));
-	g_settings.setInteger(Config::SHOW_BLOCKING, IsItemChecked(MenuBar::SHOW_PATHING));
-	g_settings.setInteger(Config::SHOW_TOOLTIPS, IsItemChecked(MenuBar::SHOW_TOOLTIPS));
-	g_settings.setInteger(Config::SHOW_PREVIEW, IsItemChecked(MenuBar::SHOW_PREVIEW));
-	g_settings.setInteger(Config::SHOW_WALL_HOOKS, IsItemChecked(MenuBar::SHOW_WALL_HOOKS));
-	g_settings.setInteger(Config::SHOW_TOWNS, IsItemChecked(MenuBar::SHOW_TOWNS));
-	g_settings.setInteger(Config::ALWAYS_SHOW_ZONES, IsItemChecked(MenuBar::ALWAYS_SHOW_ZONES));
-	g_settings.setInteger(Config::EXT_HOUSE_SHADER, IsItemChecked(MenuBar::EXT_HOUSE_SHADER));
-
-	g_settings.setInteger(Config::EXPERIMENTAL_FOG, IsItemChecked(MenuBar::EXPERIMENTAL_FOG));
-
-	g_gui.RefreshView();
+	viewSettingsHandler->OnChangeViewSettings(event);
 }
 
 void MainMenuBar::OnChangeFloor(wxCommandEvent& event) {
@@ -1285,47 +915,4 @@ void MainMenuBar::OnCloseLive(wxCommandEvent& event) {
 	}
 
 	Update();
-}
-
-void MainMenuBar::SearchItems(bool unique, bool action, bool container, bool writable, bool onSelection /* = false*/) {
-	if (!unique && !action && !container && !writable) {
-		return;
-	}
-
-	if (!g_gui.IsEditorOpen()) {
-		return;
-	}
-
-	if (onSelection) {
-		g_gui.CreateLoadBar("Searching on selected area...");
-	} else {
-		g_gui.CreateLoadBar("Searching on map...");
-	}
-
-	// Use the MapSearcher from EditorOperations
-	EditorOperations::MapSearcher finder;
-	finder.search_unique = unique;
-	finder.search_action = action;
-	finder.search_container = container;
-	finder.search_writeable = writable;
-
-	foreach_ItemOnMap(g_gui.GetCurrentMap(), finder, onSelection);
-	finder.sort();
-
-	std::vector<SearchResult> found;
-	for (const auto& pair : finder.found) {
-		SearchResult res;
-		res.tile = pair.first;
-		res.item = pair.second;
-		res.description = finder.desc(res.item).ToStdString();
-		found.push_back(res);
-	}
-
-	g_gui.DestroyLoadBar();
-
-	SearchResultWindow* result = g_gui.ShowSearchWindow();
-	result->Clear();
-	for (const auto& res : found) {
-		result->AddPosition(wxstr(res.description), res.tile->getPosition());
-	}
 }

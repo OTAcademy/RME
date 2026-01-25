@@ -187,6 +187,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/gl_context_manager.h
 
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_menubar.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/search_handler.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/view_settings_handler.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/map_actions_handler.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_toolbar.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_popup_menu.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_tab.h
@@ -370,6 +373,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/find_item_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_menubar.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/search_handler.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/view_settings_handler.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/map_actions_handler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_toolbar.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/loading_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/layout_manager.cpp

@@ -161,6 +161,9 @@ namespace MenuBar {
 }
 
 class MainFrame;
+class SearchHandler;
+class ViewSettingsHandler;
+class MapActionsHandler;
 
 class MainMenuBar : public wxEvtHandler {
 public:
@@ -289,7 +292,6 @@ public:
 protected:
 	// Checks the items in the menus according to the settings (in config)
 	void LoadValues();
-	void SearchItems(bool unique, bool action, bool container, bool writable, bool onSelection = false);
 
 protected:
 	MainFrame* frame;
@@ -301,6 +303,10 @@ protected:
 	std::map<MenuBar::ActionID, std::list<wxMenuItem*>> items;
 
 	std::map<std::string, MenuBar::Action*> actions;
+
+	SearchHandler* searchHandler;
+	ViewSettingsHandler* viewSettingsHandler;
+	MapActionsHandler* mapActionsHandler;
 
 	DECLARE_EVENT_TABLE();
 };
