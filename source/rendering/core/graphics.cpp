@@ -78,20 +78,13 @@ bool GraphicManager::isUnloaded() const {
 }
 
 void GraphicManager::clear() {
-	SpriteMap new_sprite_space;
-	for (auto it = sprite_space.begin(); it != sprite_space.end();) {
-		if (it->first >= 0) { // Don't clean internal sprites
-			// Unique pointer handles deletion
-			it = sprite_space.erase(it);
-		} else {
-			new_sprite_space.insert(std::make_pair(it->first, std::move(it->second)));
-			it = sprite_space.erase(it);
-		}
-	}
+	// Erase all non-internal sprites. The unique_ptrs will be automatically destroyed.
+	std::erase_if(sprite_space, [](const auto& pair) {
+		return pair.first >= 0;
+	});
 
 	// Image space cleaned automatically by clear()
 	image_space.clear();
-	sprite_space = std::move(new_sprite_space);
 
 	item_count = 0;
 	creature_count = 0;

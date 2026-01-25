@@ -164,12 +164,13 @@ bool GameSpriteLoader::LoadSpriteMetadata(GraphicManager* manager, const wxFileN
 					sprite_id = u16;
 				}
 
-				if (manager->image_space.find(sprite_id) == manager->image_space.end()) {
+				auto [it, inserted] = manager->image_space.try_emplace(sprite_id, nullptr);
+				if (inserted) {
 					auto img = std::make_unique<GameSprite::NormalImage>();
 					img->id = sprite_id;
-					manager->image_space[sprite_id] = std::move(img);
+					it->second = std::move(img);
 				}
-				sType->spriteList.push_back(static_cast<GameSprite::NormalImage*>(manager->image_space[sprite_id].get()));
+				sType->spriteList.push_back(static_cast<GameSprite::NormalImage*>(it->second.get()));
 			}
 		}
 		++id;
