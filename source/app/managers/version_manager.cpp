@@ -114,7 +114,8 @@ bool VersionManager::LoadDataFiles(wxString& error, wxArrayString& warnings) {
 	}
 
 	g_loading.SetLoadDone(20, "Loading items.otb file...");
-	if (!g_items.loadFromOtb(wxString(data_path.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR) + "items.otb"), error, warnings)) {
+	wxString base_data_path = data_path.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
+	if (!g_items.loadFromOtb(base_data_path + "items.otb", error, warnings)) {
 		error = "Couldn't load items.otb: " + error;
 		g_loading.DestroyLoadBar();
 		UnloadVersion();
@@ -122,12 +123,12 @@ bool VersionManager::LoadDataFiles(wxString& error, wxArrayString& warnings) {
 	}
 
 	g_loading.SetLoadDone(30, "Loading items.xml ...");
-	if (!g_items.loadFromGameXml(wxString(data_path.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR) + "items.xml"), error, warnings)) {
+	if (!g_items.loadFromGameXml(base_data_path + "items.xml", error, warnings)) {
 		warnings.push_back("Couldn't load items.xml: " + error);
 	}
 
 	g_loading.SetLoadDone(45, "Loading creatures.xml ...");
-	if (!g_creatures.loadFromXML(wxString(data_path.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR) + "creatures.xml"), true, error, warnings)) {
+	if (!g_creatures.loadFromXML(base_data_path + "creatures.xml", true, error, warnings)) {
 		warnings.push_back("Couldn't load creatures.xml: " + error);
 	}
 
@@ -148,7 +149,7 @@ bool VersionManager::LoadDataFiles(wxString& error, wxArrayString& warnings) {
 	}
 
 	g_loading.SetLoadDone(50, "Loading materials.xml ...");
-	if (!g_materials.loadMaterials(wxString(data_path.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR) + "materials.xml"), error, warnings)) {
+	if (!g_materials.loadMaterials(base_data_path + "materials.xml", error, warnings)) {
 		warnings.push_back("Couldn't load materials.xml: " + error);
 	}
 

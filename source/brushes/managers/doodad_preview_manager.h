@@ -6,6 +6,7 @@
 #define RME_DOODAD_PREVIEW_MANAGER_H_
 
 #include "app/main.h"
+#include <memory>
 
 class BaseMap;
 
@@ -16,11 +17,11 @@ public:
 
 	void FillBuffer();
 	BaseMap* GetBufferMap() {
-		return doodad_buffer_map;
+		return doodad_buffer_map.get();
 	}
 
 private:
-	BaseMap* doodad_buffer_map;
+	std::unique_ptr<BaseMap> doodad_buffer_map;
 };
 
 extern DoodadPreviewManager g_doodad_preview;

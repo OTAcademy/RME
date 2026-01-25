@@ -13,13 +13,10 @@
 
 DoodadPreviewManager g_doodad_preview;
 
-DoodadPreviewManager::DoodadPreviewManager() {
-	doodad_buffer_map = newd BaseMap();
+DoodadPreviewManager::DoodadPreviewManager() : doodad_buffer_map(std::make_unique<BaseMap>()) {
 }
 
-DoodadPreviewManager::~DoodadPreviewManager() {
-	delete doodad_buffer_map;
-}
+DoodadPreviewManager::~DoodadPreviewManager() = default;
 
 void DoodadPreviewManager::FillBuffer() {
 	Brush* current_brush = g_brush_manager.GetCurrentBrush();
@@ -134,7 +131,8 @@ void DoodadPreviewManager::FillBuffer() {
 						tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
 					}
 					int variation = g_brush_manager.GetBrushVariation();
-					brush->draw(doodad_buffer_map, tile, &variation);
+					brush->draw(doodad_buffer_map.get(), tile, &variation);
+
 					doodad_buffer_map->setTile(tile->getPosition(), tile);
 					exit = true;
 				}
@@ -166,7 +164,8 @@ void DoodadPreviewManager::FillBuffer() {
 		} else if (brush->hasSingleObjects(g_brush_manager.GetBrushVariation())) {
 			Tile* tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(center_pos));
 			int variation = g_brush_manager.GetBrushVariation();
-			brush->draw(doodad_buffer_map, tile, &variation);
+			brush->draw(doodad_buffer_map.get(), tile, &variation);
+
 			doodad_buffer_map->setTile(center_pos, tile);
 		}
 	}
