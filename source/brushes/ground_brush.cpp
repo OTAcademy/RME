@@ -17,6 +17,7 @@
 
 #include "app/main.h"
 
+#include <algorithm>
 #include "brushes/ground_brush.h"
 #include "game/items.h"
 #include "map/basemap.h"
@@ -762,9 +763,7 @@ void GroundBrush::doBorders(BaseMap* map, Tile* tile) {
 										}
 
 										if (!borderBlock->specific_cases.empty()) {
-											if (std::find(specificList.begin(), specificList.end(), borderBlock) == specificList.end()) {
-												specificList.push_back(borderBlock);
-											}
+											specificList.push_back(borderBlock);
 										}
 
 										found = true;
@@ -780,9 +779,7 @@ void GroundBrush::doBorders(BaseMap* map, Tile* tile) {
 
 									borderList.push_back(borderCluster);
 									if (!borderBlock->specific_cases.empty()) {
-										if (std::find(specificList.begin(), specificList.end(), borderBlock) == specificList.end()) {
-											specificList.push_back(borderBlock);
-										}
+										specificList.push_back(borderBlock);
 									}
 								}
 							}
@@ -816,9 +813,7 @@ void GroundBrush::doBorders(BaseMap* map, Tile* tile) {
 					}
 
 					if (!borderBlock->specific_cases.empty()) {
-						if (std::find(specificList.begin(), specificList.end(), borderBlock) == specificList.end()) {
-							specificList.push_back(borderBlock);
-						}
+						specificList.push_back(borderBlock);
 					}
 				}
 				continue;
@@ -847,9 +842,7 @@ void GroundBrush::doBorders(BaseMap* map, Tile* tile) {
 					}
 
 					if (!borderBlock->specific_cases.empty()) {
-						if (std::find(specificList.begin(), specificList.end(), borderBlock) == specificList.end()) {
-							specificList.push_back(borderBlock);
-						}
+						specificList.push_back(borderBlock);
 					}
 				}
 
@@ -871,6 +864,11 @@ void GroundBrush::doBorders(BaseMap* map, Tile* tile) {
 	}
 
 	std::sort(borderList.begin(), borderList.end());
+
+	std::sort(specificList.begin(), specificList.end());
+	auto last = std::unique(specificList.begin(), specificList.end());
+	specificList.erase(last, specificList.end());
+
 	tile->cleanBorders();
 
 	while (!borderList.empty()) {
