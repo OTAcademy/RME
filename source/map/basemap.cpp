@@ -164,22 +164,17 @@ MapIterator BaseMap::begin() {
 		MapIterator::NodeIndex& current = it.nodestack.back();
 		QTreeNode* node = current.node;
 		int& index = current.index;
-		// printf("Contemplating %p of %p (stack size %d)\n", node, this, it.nodestack.size());
 
 		bool unwind = false;
 		for (; index < MAP_LAYERS; ++index) {
-			// printf("\tChecking index %d of %p\n", index, node);
 			if (QTreeNode* child = node->child[index]) {
 				if (child->isLeaf) {
 					QTreeNode* leaf = child;
-					// printf("\t%p is leaf\n", child);
 					for (it.local_z = 0; it.local_z < MAP_LAYERS; ++it.local_z) {
 						if (Floor* floor = leaf->array[it.local_z]) {
 							for (it.local_i = 0; it.local_i < MAP_LAYERS; ++it.local_i) {
-								// printf("\tit(%d;%d;%d)\n", it.local_x, it.local_y, it.local_z);
 								TileLocation& t = floor->locs[it.local_i];
 								if (t.get()) {
-									// printf("return it\n");
 									it.current_tile = &t;
 									return it;
 								}
@@ -187,7 +182,6 @@ MapIterator BaseMap::begin() {
 						}
 					}
 				} else {
-					// printf("\tAdding %p\n", child);
 					++index;
 					it.nodestack.push_back(MapIterator::NodeIndex(child));
 					unwind = true;
@@ -199,7 +193,6 @@ MapIterator BaseMap::begin() {
 			continue;
 		}
 
-		// printf("Discarding dead node %p\n", node);
 		it.nodestack.pop_back();
 		if (it.nodestack.empty()) {
 			break;
@@ -224,32 +217,24 @@ TileLocation* MapIterator::operator->() {
 }
 
 MapIterator& MapIterator::operator++() {
-	// printf("MapIterator::operator++");
 	bool increased = false;
 	bool first = true;
 	while (true) {
 		MapIterator::NodeIndex& current = nodestack.back();
 		QTreeNode* node = current.node;
 		int& index = current.index;
-		// printf("Contemplating %p (stack size %d)\n", node, nodestack.size());
 
 		bool unwind = false;
 		for (; index < MAP_LAYERS; ++index) {
-			// printf("\tChecking index %d of %p\n", index, node);
 			if (QTreeNode* child = node->child[index]) {
 				if (child->isLeaf) {
 					QTreeNode* leaf = child;
-					// printf("\t%p is leaf\n", child);
 					for (; local_z < MAP_LAYERS; ++local_z) {
-						// printf("\t\tIterating over Z:%d of %p", local_z, child);
 						if (Floor* floor = leaf->array[local_z]) {
-							// printf("\n");
 							for (; local_i < MAP_LAYERS; ++local_i) {
-								// printf("\t\tIterating over Y:%d of %p\n", local_y, child);
 								TileLocation& t = floor->locs[local_i];
 								if (t.get()) {
 									if (increased) {
-										// printf("Modified %p to %p\n", current_tile, t);
 										current_tile = &t;
 										return *this;
 									} else {
@@ -262,19 +247,15 @@ MapIterator& MapIterator::operator++() {
 							}
 
 							if (local_i > MAP_MAX_LAYER) {
-								// printf("\t\tReset local_x\n");
 								local_i = 0;
 							}
 						} else {
-							// printf(":dead floor\n");
 						}
 					}
 					if (local_z == MAP_LAYERS) {
-						// printf("\t\tReset local_z\n");
 						local_z = 0;
 					}
 				} else {
-					// printf("\tAdding %p\n", child);
 					++index;
 					nodestack.push_back(MapIterator::NodeIndex(child));
 					unwind = true;
@@ -286,11 +267,9 @@ MapIterator& MapIterator::operator++() {
 			continue;
 		}
 
-		// printf("Discarding dead node %p\n", node);
 		nodestack.pop_back();
 		if (nodestack.size() == 0) {
 			// Set all values to "end"
-			// printf("END\n");
 			local_z = -1;
 			local_i = -1;
 			return *this;

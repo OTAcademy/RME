@@ -53,7 +53,7 @@ private:
 	Position templepos;
 };
 
-typedef std::map<uint32_t, Town*> TownMap;
+using TownMap = std::map<uint32_t, Town*>;
 
 class Towns {
 public:

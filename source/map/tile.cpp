@@ -61,7 +61,6 @@ Tile::~Tile() {
 		items.pop_back();
 	}
 	delete creature;
-	// printf("%d,%d,%d,%p\n", tilePos.x, tilePos.y, tilePos.z, ground);
 	delete ground;
 	delete spawn;
 }
@@ -252,7 +251,6 @@ void Tile::addItem(Item* item) {
 		return;
 	}
 	if (item->isGroundTile()) {
-		// printf("ADDING GROUND\n");
 		delete ground;
 		ground = item;
 		return;

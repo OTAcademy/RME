@@ -10,7 +10,6 @@ class RMERecipe(ConanFile):
     
     settings = "os", "compiler", "build_type", "arch"
     
-    # Dependencies matching vcpkg.json
     def requirements(self):
         self.requires("wxwidgets/3.2.6")
         self.requires("freeglut/3.4.0")
@@ -22,8 +21,9 @@ class RMERecipe(ConanFile):
         self.requires("zlib/1.3.1")
         self.requires("opengl/system")
         self.requires("glew/2.2.0")
+        # Override wayland to resolve conflict with freeglut
         self.requires("wayland/1.23.92", override=True)
-
+    
     def layout(self):
         cmake_layout(self)
     
@@ -49,4 +49,3 @@ class RMERecipe(ConanFile):
         self.options["wxwidgets/*"].aui = True
         self.options["wxwidgets/*"].html = True
         self.options["wxwidgets/*"].unicode = True
-

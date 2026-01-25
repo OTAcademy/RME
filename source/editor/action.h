@@ -65,7 +65,7 @@ public:
 	friend class Action;
 };
 
-typedef std::vector<Change*> ChangeList;
+using ChangeList = std::vector<Change*>;
 
 // A dirty list represents a list of all tiles that was changed in an action
 class DirtyList {
@@ -88,7 +88,7 @@ protected:
 	};
 
 public:
-	typedef std::set<ValueType, Comparator> SetType;
+	using SetType = std::set<ValueType, Comparator>;
 
 	void AddPosition(int x, int y, int z);
 	void AddChange(Change* c);
@@ -157,7 +157,7 @@ protected:
 	friend class ActionQueue;
 };
 
-typedef std::vector<Action*> ActionVector;
+using ActionVector = std::vector<Action*>;
 
 class BatchAction {
 public:
@@ -202,7 +202,7 @@ public:
 	ActionQueue(Editor& editor);
 	virtual ~ActionQueue();
 
-	typedef std::deque<BatchAction*> ActionList;
+	using ActionList = std::deque<BatchAction*>;
 
 	void resetTimer();
 

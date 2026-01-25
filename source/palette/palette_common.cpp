@@ -912,7 +912,6 @@ void BrushThicknessPanel::OnScroll(wxScrollEvent& event) {
 	ASSERT(event.GetPosition() >= 1);
 	ASSERT(event.GetPosition() <= 10);
 
-	// printf("SELECT[%d] = %d\n", event.GetPosition()-1, lookup_table[event.GetPosition()-1]);
 	g_gui.ActivatePalette(GetParentPalette());
 	g_gui.SetBrushThickness(true, lookup_table[event.GetPosition() - 1], 100);
 }

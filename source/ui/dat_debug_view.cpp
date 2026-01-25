@@ -34,7 +34,7 @@ public:
 	wxCoord OnMeasureItem(size_t index) const;
 
 protected:
-	typedef std::map<int, Sprite*> SpriteMap;
+	using SpriteMap = std::map<int, Sprite*>;
 	SpriteMap sprites;
 };
 

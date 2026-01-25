@@ -109,7 +109,7 @@ void ClientVersion::loadVersions() {
 
 	// Assign a default if there isn't one.
 	if (!latest_version && !client_versions.empty()) {
-		latest_version = client_versions.begin()->second;
+		latest_version = client_versions.begin()->second.get();
 	}
 
 	// Load the data directory info
@@ -131,9 +131,6 @@ void ClientVersion::loadVersions() {
 }
 
 void ClientVersion::unloadVersions() {
-	for (VersionMap::iterator it = client_versions.begin(); it != client_versions.end(); ++it) {
-		delete it->second;
-	}
 	client_versions.clear();
 	latest_version = nullptr;
 	otb_versions.clear();
@@ -198,7 +195,7 @@ void ClientVersion::loadVersion(pugi::xml_node versionNode) {
 		return;
 	}
 
-	ClientVersion* version = newd ClientVersion(otb_versions[otbVersionName], versionName, wxstr(dataPath));
+	std::unique_ptr<ClientVersion> version = std::unique_ptr<ClientVersion>(newd ClientVersion(otb_versions[otbVersionName], versionName, wxstr(dataPath)));
 
 	bool should_be_default = versionNode.attribute("default").as_bool();
 	version->visible = versionNode.attribute("visible").as_bool();
@@ -269,14 +266,13 @@ void ClientVersion::loadVersion(pugi::xml_node versionNode) {
 
 	if (client_versions[version->getID()]) {
 		wxLogError("Duplicate version id %i, discarding version '%s'.", version->getID(), version->name);
-		delete version;
 		return;
 	}
 
-	client_versions[version->getID()] = version;
 	if (should_be_default) {
-		latest_version = version;
+		latest_version = version.get();
 	}
+	client_versions[version->getID()] = std::move(version);
 }
 
 void ClientVersion::loadVersionExtensions(pugi::xml_node versionNode) {
@@ -309,15 +305,15 @@ void ClientVersion::loadVersionExtensions(pugi::xml_node versionNode) {
 		}
 
 		if (!fromVersion) {
-			fromVersion = client_versions.begin()->second;
+			fromVersion = client_versions.begin()->second.get();
 		}
 
 		if (!toVersion) {
-			toVersion = client_versions.rbegin()->second;
+			toVersion = client_versions.rbegin()->second.get();
 		}
 
 		for (const auto& versionEntry : client_versions) {
-			ClientVersion* version = versionEntry.second;
+			ClientVersion* version = versionEntry.second.get();
 			if (version->getID() >= fromVersion->getID() && version->getID() <= toVersion->getID()) {
 				version->extension_versions.push_back(version);
 			}
@@ -352,13 +348,13 @@ ClientVersion* ClientVersion::get(ClientVersionID id) {
 	if (i == client_versions.end()) {
 		return nullptr;
 	}
-	return i->second;
+	return i->second.get();
 }
 
 ClientVersion* ClientVersion::get(std::string id) {
 	for (VersionMap::iterator i = client_versions.begin(); i != client_versions.end(); ++i) {
 		if (i->second->getName() == id) {
-			return i->second;
+			return i->second.get();
 		}
 	}
 	return nullptr;
@@ -367,7 +363,7 @@ ClientVersion* ClientVersion::get(std::string id) {
 ClientVersionList ClientVersion::getAll() {
 	ClientVersionList l;
 	for (VersionMap::iterator i = client_versions.begin(); i != client_versions.end(); ++i) {
-		l.push_back(i->second);
+		l.push_back(i->second.get());
 	}
 	return l;
 }
@@ -376,7 +372,7 @@ ClientVersionList ClientVersion::getAllVisible() {
 	ClientVersionList l;
 	for (VersionMap::iterator i = client_versions.begin(); i != client_versions.end(); ++i) {
 		if (i->second->isVisible()) {
-			l.push_back(i->second);
+			l.push_back(i->second.get());
 		}
 	}
 	return l;
@@ -388,7 +384,7 @@ ClientVersionList ClientVersion::getAllForOTBMVersion(MapVersionID id) {
 		if (i->second->isVisible()) {
 			for (std::vector<MapVersionID>::iterator v = i->second->map_versions_supported.begin(); v != i->second->map_versions_supported.end(); ++v) {
 				if (*v == id) {
-					list.push_back(i->second);
+					list.push_back(i->second.get());
 				}
 			}
 		}
@@ -542,7 +538,7 @@ ClientVersionList ClientVersion::getExtensionsSupported() const {
 ClientVersionList ClientVersion::getAllVersionsSupportedForClientVersion(ClientVersion* clientVersion) {
 	ClientVersionList versionList;
 	for (const auto& versionEntry : client_versions) {
-		ClientVersion* version = versionEntry.second;
+		ClientVersion* version = versionEntry.second.get();
 		for (ClientVersion* checkVersion : version->getExtensionsSupported()) {
 			if (clientVersion == checkVersion) {
 				versionList.push_back(version);

@@ -23,7 +23,7 @@
 //=============================================================================
 // Doodadbrush, add doodads!
 
-typedef std::vector<std::pair<Position, ItemVector>> CompositeTileList;
+using CompositeTileList = std::vector<std::pair<Position, ItemVector>>;
 
 class DoodadBrush : public Brush {
 public:

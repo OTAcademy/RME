@@ -572,7 +572,6 @@ void GroundBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 }
 
 const GroundBrush::BorderBlock* GroundBrush::getBrushTo(GroundBrush* first, GroundBrush* second) {
-	// printf("Border from %s to %s : ", first->getName().c_str(), second->getName().c_str());
 	if (first) {
 		if (second) {
 			if (first->getZ() < second->getZ() && second->hasOuterBorder()) {
@@ -582,7 +581,6 @@ const GroundBrush::BorderBlock* GroundBrush::getBrushTo(GroundBrush* first, Grou
 						if (bb->outer) {
 							continue;
 						} else if (bb->to == second->getID() || bb->to == 0xFFFFFFFF) {
-							// printf("%d\n", bb->autoborder);
 							return bb;
 						}
 					}
@@ -592,10 +590,8 @@ const GroundBrush::BorderBlock* GroundBrush::getBrushTo(GroundBrush* first, Grou
 					if (!bb->outer) {
 						continue;
 					} else if (bb->to == first->getID()) {
-						// printf("%d\n", bb->autoborder);
 						return bb;
 					} else if (bb->to == 0xFFFFFFFF) {
-						// printf("%d\n", bb->autoborder);
 						return bb;
 					}
 				}
@@ -605,10 +601,8 @@ const GroundBrush::BorderBlock* GroundBrush::getBrushTo(GroundBrush* first, Grou
 					if (bb->outer) {
 						continue;
 					} else if (bb->to == second->getID()) {
-						// printf("%d\n", bb->autoborder);
 						return bb;
 					} else if (bb->to == 0xFFFFFFFF) {
-						// printf("%d\n", bb->autoborder);
 						return bb;
 					}
 				}
@@ -619,7 +613,6 @@ const GroundBrush::BorderBlock* GroundBrush::getBrushTo(GroundBrush* first, Grou
 				if (bb->outer) {
 					continue;
 				} else if (bb->to == 0) {
-					// printf("%d\n", bb->autoborder);
 					return bb;
 				}
 			}
@@ -630,12 +623,10 @@ const GroundBrush::BorderBlock* GroundBrush::getBrushTo(GroundBrush* first, Grou
 			if (!bb->outer) {
 				continue;
 			} else if (bb->to == 0) {
-				// printf("%d\n", bb->autoborder);
 				return bb;
 			}
 		}
 	}
-	// printf("None\n");
 	return nullptr;
 }
 
@@ -720,15 +711,10 @@ void GroundBrush::doBorders(BaseMap* map, Tile* tile) {
 			continue;
 		}
 
-		// printf("Checking neighbour #%d\n", i);
-		// printf("\tNeighbour not checked before\n");
-
 		GroundBrush* other = neighbourPair.second;
 		if (borderBrush) {
 			if (other) {
-				// printf("\tNeighbour has brush\n");
 				if (other->getID() == borderBrush->getID()) {
-					// printf("\tNeighbour has same brush as we\n");
 					continue;
 				}
 
@@ -947,24 +933,19 @@ void GroundBrush::doBorders(BaseMap* map, Tile* tile) {
 				}
 
 				if (specificCaseBlock->match_group > 0) {
-					// printf("Matching %d == %d : %d == %d\n", item->getBorderGroup(), specificCaseBlock->match_group, item->getBorderAlignment(), specificCaseBlock->group_match_alignment);
 					if (item->getBorderGroup() == specificCaseBlock->match_group && item->getBorderAlignment() == specificCaseBlock->group_match_alignment) {
-						// printf("Successfully matched %d == %d : %d == %d\n", item->getBorderGroup(), specificCaseBlock->match_group, item->getBorderAlignment(), specificCaseBlock->group_match_alignment);
 						++matches;
 						continue;
 					}
 				}
 
-				// printf("\tInvestigating first item id:%d\n", item->getID());
 				for (uint16_t matchId : specificCaseBlock->items_to_match) {
 					if (item->getID() == matchId) {
-						// printf("\t\tMatched item id %d\n", item->getID());
 						++matches;
 					}
 				}
 			}
 
-			// printf("\t\t%d matches of %d\n", matches, scb->items_to_match.size());
 			if (matches >= specificCaseBlock->items_to_match.size()) {
 				auto& tileItems = tile->items;
 				auto it = tileItems.begin();

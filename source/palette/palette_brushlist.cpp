@@ -370,8 +370,6 @@ Brush* BrushPanel::GetSelectedBrush() const {
 
 bool BrushPanel::SelectBrush(const Brush* whatbrush) {
 	if (loaded) {
-		// std::cout << loaded << std::endl;
-		// std::cout << brushbox << std::endl;
 		ASSERT(brushbox != nullptr);
 		return brushbox->SelectBrush(whatbrush);
 	}

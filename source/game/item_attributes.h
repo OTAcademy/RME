@@ -70,7 +70,7 @@ private:
 	char data[sizeof(std::string) > sizeof(double) ? sizeof(std::string) : sizeof(double)];
 };
 
-typedef std::map<std::string, ItemAttribute> ItemAttributeMap;
+using ItemAttributeMap = std::map<std::string, ItemAttribute>;
 
 class ItemAttributes {
 public:
