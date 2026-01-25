@@ -43,6 +43,6 @@ private:
 	MaterialsExtension& operator=(const MaterialsExtension&);
 };
 
-typedef std::vector<MaterialsExtension*> MaterialsExtensionList;
+using MaterialsExtensionList = std::vector<MaterialsExtension*>;
 
 #endif

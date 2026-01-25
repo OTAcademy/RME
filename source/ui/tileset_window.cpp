@@ -72,7 +72,7 @@ TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* t
 	palette_field->Append("Raw", newd int(TILESET_RAW));
 	palette_field->SetSelection(3);
 
-	palette_field->Connect(wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(TilesetWindow::OnChangePalette), NULL, this);
+	palette_field->Connect(wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(TilesetWindow::OnChangePalette), nullptr, this);
 	subsizer->Add(palette_field, wxSizerFlags(1).Expand());
 
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Tileset"));

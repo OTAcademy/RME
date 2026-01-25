@@ -93,8 +93,8 @@ AddTilesetWindow::AddTilesetWindow(wxWindow* win_parent, TilesetCategoryType cat
 	SetSizerAndFit(topsizer);
 	Centre(wxBOTH);
 
-	item_id_field->Connect(wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler(AddTilesetWindow::OnChangeItemId), NULL, this);
-	item_button->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(AddTilesetWindow::OnItemClicked), NULL, this);
+	item_id_field->Connect(wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler(AddTilesetWindow::OnChangeItemId), nullptr, this);
+	item_button->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(AddTilesetWindow::OnItemClicked), nullptr, this);
 }
 
 void AddTilesetWindow::OnChangeItemId(wxCommandEvent& WXUNUSED(event)) {

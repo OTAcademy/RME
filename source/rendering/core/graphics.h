@@ -269,9 +269,9 @@ private:
 	// Atlas manager for Phase 2 texture array rendering
 	AtlasManager* atlas_manager_ = nullptr;
 
-	typedef std::map<int, Sprite*> SpriteMap;
+	using SpriteMap = std::map<int, Sprite*>;
 	SpriteMap sprite_space;
-	typedef std::map<int, GameSprite::Image*> ImageMap;
+	using ImageMap = std::map<int, GameSprite::Image*>;
 	ImageMap image_space;
 
 	DatFormat dat_format;

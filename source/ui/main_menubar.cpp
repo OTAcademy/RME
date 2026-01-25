@@ -1706,9 +1706,7 @@ void MainMenuBar::OnMapStatistics(wxCommandEvent& WXUNUSED(event)) {
 	int ret = dg->ShowModal();
 
 	if (ret == wxID_OK) {
-		// std::cout << "XML EXPORT";
 	} else if (ret == wxID_CANCEL) {
-		// std::cout << "OK";
 	}
 }
 

@@ -542,7 +542,6 @@ bool Map::exportMinimap(FileName filename, int floor /*= GROUND_LAYER*/, bool di
 				continue;
 			}
 
-			// std::cout << "Pixel : " << (tile->getY() - min_y) * width + (tile->getX() - min_x) << std::endl;
 			uint32_t pixelpos = (tile->getY() - min_y) * minimap_width + (tile->getX() - min_x);
 			uint8_t& pixel = pic[pixelpos];
 
