@@ -29,19 +29,12 @@
 
 #include "ui/toolbar/toolbar_persistence.h"
 
+#include "ui/toolbar/toolbar_factory.h"
+#include "ui/toolbar/toolbar_layout.h"
+
 MainToolBar::MainToolBar(wxWindow* parent, wxAuiManager* manager) {
-	standard_toolbar_component = newd StandardToolBar(parent);
-
-	brush_toolbar_component = newd BrushToolBar(parent);
-	position_toolbar_component = newd PositionToolBar(parent);
-	size_toolbar_component = newd SizeToolBar(parent);
-	light_toolbar_component = newd LightToolBar(parent);
-
-	manager->AddPane(standard_toolbar_component->GetToolbar(), wxAuiPaneInfo().Name(StandardToolBar::PANE_NAME).ToolbarPane().Top().Row(1).Position(1).Floatable(false));
-	manager->AddPane(brush_toolbar_component->GetToolbar(), wxAuiPaneInfo().Name(BrushToolBar::PANE_NAME).ToolbarPane().Top().Row(1).Position(2).Floatable(false));
-	manager->AddPane(size_toolbar_component->GetToolbar(), wxAuiPaneInfo().Name(SizeToolBar::PANE_NAME).ToolbarPane().Top().Row(1).Position(3).Floatable(false));
-	manager->AddPane(position_toolbar_component->GetToolbar(), wxAuiPaneInfo().Name(PositionToolBar::PANE_NAME).ToolbarPane().Top().Row(1).Position(4).Floatable(false));
-	manager->AddPane(light_toolbar_component->GetToolbar(), wxAuiPaneInfo().Name(LightToolBar::PANE_NAME).ToolbarPane().Top().Row(1).Position(5).Floatable(false));
+	registry = ToolbarFactory::CreateToolbars(parent);
+	ToolbarLayout::Configure(manager, registry.get());
 
 	HideAll();
 	UpdateButtons();
@@ -49,28 +42,24 @@ MainToolBar::MainToolBar(wxWindow* parent, wxAuiManager* manager) {
 }
 
 MainToolBar::~MainToolBar() {
-	delete standard_toolbar_component;
-	delete brush_toolbar_component;
-	delete position_toolbar_component;
-	delete size_toolbar_component;
-	delete light_toolbar_component;
+	// Unique ptr handles deletion
 }
 
 void MainToolBar::UpdateButtons() {
-	standard_toolbar_component->Update();
-
-	brush_toolbar_component->Update();
-	position_toolbar_component->Update();
-	size_toolbar_component->Update();
+	registry->UpdateAll();
 }
 
 void MainToolBar::UpdateBrushButtons() {
-	brush_toolbar_component->Update();
+	if (auto tb = registry->GetBrushToolbar()) {
+		tb->Update();
+	}
 	g_gui.GetAuiManager()->Update();
 }
 
 void MainToolBar::UpdateBrushSize(BrushShape shape, int size) {
-	size_toolbar_component->UpdateBrushSize(shape, size);
+	if (auto tb = registry->GetSizeToolbar()) {
+		tb->UpdateBrushSize(shape, size);
+	}
 }
 
 void MainToolBar::Show(ToolBarID id, bool show) {
@@ -113,23 +102,5 @@ void MainToolBar::SavePerspective() {
 }
 
 wxAuiPaneInfo& MainToolBar::GetPane(ToolBarID id) {
-	wxAuiManager* manager = g_gui.GetAuiManager();
-	if (!manager) {
-		return wxAuiNullPaneInfo;
-	}
-
-	switch (id) {
-		case TOOLBAR_STANDARD:
-			return manager->GetPane(StandardToolBar::PANE_NAME);
-		case TOOLBAR_BRUSHES:
-			return manager->GetPane(BrushToolBar::PANE_NAME);
-		case TOOLBAR_POSITION:
-			return manager->GetPane(PositionToolBar::PANE_NAME);
-		case TOOLBAR_SIZES:
-			return manager->GetPane(SizeToolBar::PANE_NAME);
-		case TOOLBAR_LIGHT:
-			return manager->GetPane(LightToolBar::PANE_NAME);
-		default:
-			return wxAuiNullPaneInfo;
-	}
+	return registry->GetPane(id, g_gui.GetAuiManager());
 }

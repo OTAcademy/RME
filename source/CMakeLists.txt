@@ -205,6 +205,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/standard_toolbar.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/light_toolbar.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_persistence.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_registry.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_factory.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_layout.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/old_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/pngfiles.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/positionctrl.h
@@ -414,6 +417,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/standard_toolbar.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/light_toolbar.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_persistence.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_registry.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_factory.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_layout.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/old_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/pngfiles.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/positionctrl.cpp

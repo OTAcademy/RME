@@ -31,6 +31,8 @@
 #include "ui/toolbar/size_toolbar.h"
 #include "ui/toolbar/standard_toolbar.h"
 #include "ui/toolbar/light_toolbar.h"
+#include "ui/toolbar/toolbar_registry.h"
+#include <memory>
 
 class MainToolBar : public wxEvtHandler {
 public:
@@ -54,11 +56,24 @@ private:
 	static const wxString STANDARD_BAR_NAME;
 	static const wxString LIGHT_BAR_NAME;
 
-	StandardToolBar* standard_toolbar_component;
-	LightToolBar* light_toolbar_component;
-	BrushToolBar* brush_toolbar_component;
-	PositionToolBar* position_toolbar_component;
-	SizeToolBar* size_toolbar_component;
+	StandardToolBar* GetStandardToolbar() {
+		return registry->GetStandardToolbar();
+	}
+	BrushToolBar* GetBrushToolbar() {
+		return registry->GetBrushToolbar();
+	}
+	PositionToolBar* GetPositionToolbar() {
+		return registry->GetPositionToolbar();
+	}
+	SizeToolBar* GetSizeToolbar() {
+		return registry->GetSizeToolbar();
+	}
+	LightToolBar* GetLightToolbar() {
+		return registry->GetLightToolbar();
+	}
+
+private:
+	std::unique_ptr<ToolbarRegistry> registry;
 };
 
 #endif // RME_MAINTOOLBAR_H_
