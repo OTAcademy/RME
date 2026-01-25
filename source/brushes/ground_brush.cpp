@@ -711,6 +711,7 @@ void GroundBrush::doBorders(BaseMap* map, Tile* tile) {
 			continue;
 		}
 
+
 		GroundBrush* other = neighbourPair.second;
 		if (borderBrush) {
 			if (other) {

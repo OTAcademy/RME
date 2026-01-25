@@ -257,7 +257,7 @@ private:
 	static void loadVersionExtensions(pugi::xml_node client_node);
 
 	// All versions
-	using VersionMap = std::map<ClientVersionID, ClientVersion*>;
+	using VersionMap = std::map<ClientVersionID, std::unique_ptr<ClientVersion>>;
 	static VersionMap client_versions;
 	static ClientVersion* latest_version;
 
