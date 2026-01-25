@@ -410,8 +410,8 @@ private:
 	Item& operator==(const Item& i); // Can't compare
 };
 
-typedef std::vector<Item*> ItemVector;
-typedef std::list<Item*> ItemList;
+using ItemVector = std::vector<Item*>;
+using ItemList = std::list<Item*>;
 
 Item* transformItem(Item* old_item, uint16_t new_id, Tile* parent = nullptr);
 

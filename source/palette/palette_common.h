@@ -32,7 +32,7 @@ class BrushSizePanel;
 class BrushPalettePanel;
 class PaletteWindow;
 
-typedef TilesetCategoryType PaletteType;
+using PaletteType = TilesetCategoryType;
 
 class BrushButton : public ItemToggleButton {
 public:
@@ -92,7 +92,7 @@ public:
 	void RefreshOtherPalettes();
 
 protected:
-	typedef std::vector<PalettePanel*> ToolBarList;
+	using ToolBarList = std::vector<PalettePanel*>;
 	ToolBarList tool_bars;
 	wxTimer refresh_timer;
 	int last_brush_size;

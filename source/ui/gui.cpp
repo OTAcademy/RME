@@ -1778,7 +1778,6 @@ void GUI::FillDoodadPreviewBuffer() {
 					}
 					int variation = GetBrushVariation();
 					brush->draw(doodad_buffer_map, tile, &variation);
-					// std::cout << "\tpos: " << tile->getPosition() << std::endl;
 					doodad_buffer_map->setTile(tile->getPosition(), tile);
 					exit = true;
 				}
@@ -1801,7 +1800,6 @@ void GUI::FillDoodadPreviewBuffer() {
 				Position pos = center_pos + composite.first;
 				const ItemVector& items = composite.second;
 				Tile* tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
-				// std::cout << pos << " = " << center_pos << " + " << buffer_tile->getPosition() << std::endl;
 
 				for (auto item : items) {
 					tile->addItem(item->deepCopy());

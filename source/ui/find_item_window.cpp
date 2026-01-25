@@ -178,59 +178,35 @@ FindItemDialog::FindItemDialog(wxWindow* parent, const wxString& title, bool onl
 	this->RefreshContentsInternal();
 
 	// Connect Events
-	options_radio_box->Connect(wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler(FindItemDialog::OnOptionChange), NULL, this);
-	server_id_spin->Connect(wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler(FindItemDialog::OnServerIdChange), NULL, this);
-	server_id_spin->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(FindItemDialog::OnServerIdChange), NULL, this);
-	client_id_spin->Connect(wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler(FindItemDialog::OnClientIdChange), NULL, this);
-	client_id_spin->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(FindItemDialog::OnClientIdChange), NULL, this);
-	name_text_input->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(FindItemDialog::OnText), NULL, this);
+	options_radio_box->Bind(wxEVT_COMMAND_RADIOBOX_SELECTED, &FindItemDialog::OnOptionChange, this);
+	server_id_spin->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &FindItemDialog::OnServerIdChange, this);
+	server_id_spin->Bind(wxEVT_COMMAND_TEXT_UPDATED, &FindItemDialog::OnServerIdChange, this);
+	client_id_spin->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &FindItemDialog::OnClientIdChange, this);
+	client_id_spin->Bind(wxEVT_COMMAND_TEXT_UPDATED, &FindItemDialog::OnClientIdChange, this);
+	name_text_input->Bind(wxEVT_COMMAND_TEXT_UPDATED, &FindItemDialog::OnText, this);
 
-	types_radio_box->Connect(wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler(FindItemDialog::OnTypeChange), NULL, this);
+	types_radio_box->Bind(wxEVT_COMMAND_RADIOBOX_SELECTED, &FindItemDialog::OnTypeChange, this);
 
-	unpassable->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	unmovable->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	block_missiles->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	block_pathfinder->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	readable->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	writeable->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	pickupable->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	stackable->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	rotatable->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	hangable->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	hook_east->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	hook_south->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	has_elevation->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	ignore_look->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	floor_change->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	invalid_item->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
+	unpassable->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	unmovable->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	block_missiles->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	block_pathfinder->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	readable->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	writeable->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	pickupable->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	stackable->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	rotatable->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	hangable->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	hook_east->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	hook_south->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	has_elevation->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	ignore_look->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	floor_change->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
+	invalid_item->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &FindItemDialog::OnPropertyChange, this);
 }
 
 FindItemDialog::~FindItemDialog() {
-	// Disconnect Events
-	options_radio_box->Disconnect(wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler(FindItemDialog::OnOptionChange), NULL, this);
-	server_id_spin->Disconnect(wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler(FindItemDialog::OnServerIdChange), NULL, this);
-	server_id_spin->Disconnect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(FindItemDialog::OnServerIdChange), NULL, this);
-	client_id_spin->Disconnect(wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler(FindItemDialog::OnClientIdChange), NULL, this);
-	client_id_spin->Disconnect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(FindItemDialog::OnClientIdChange), NULL, this);
-	name_text_input->Disconnect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(FindItemDialog::OnText), NULL, this);
-
-	types_radio_box->Disconnect(wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler(FindItemDialog::OnTypeChange), NULL, this);
-
-	unpassable->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	unmovable->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	block_missiles->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	block_pathfinder->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	readable->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	writeable->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	pickupable->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	stackable->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	rotatable->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	hangable->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	hook_east->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	hook_south->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	has_elevation->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	ignore_look->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
-	floor_change->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(FindItemDialog::OnPropertyChange), NULL, this);
+	// Events are automatically unbound when the object is destroyed or when Bind target is destroyed.
 }
 
 FindItemDialog::SearchMode FindItemDialog::getSearchMode() const {
