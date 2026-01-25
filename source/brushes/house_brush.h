@@ -48,9 +48,9 @@ public:
 		return true;
 	}
 	// Draw the shit!
-	void draw(BaseMap* map, Tile* tile, void* parameter) override ;
+	void draw(BaseMap* map, Tile* tile, void* parameter) override;
 	// Undraw the shit!
-	void undraw(BaseMap* map, Tile* tile) override ;
+	void undraw(BaseMap* map, Tile* tile) override;
 
 	bool canDrag() const override {
 		return true;

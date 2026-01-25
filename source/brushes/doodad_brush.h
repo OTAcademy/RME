@@ -42,14 +42,14 @@ protected:
 
 public:
 	bool loadAlternative(pugi::xml_node node, wxArrayString& warnings, AlternativeBlock* which = nullptr);
-	bool load(pugi::xml_node node, wxArrayString& warnings) override ;
+	bool load(pugi::xml_node node, wxArrayString& warnings) override;
 
 	bool canDraw(BaseMap* map, const Position& position) const override {
 		return true;
 	}
-	void draw(BaseMap* map, Tile* tile, void* parameter) override ;
+	void draw(BaseMap* map, Tile* tile, void* parameter) override;
 	const CompositeTileList& getComposite(int variation) const;
-	void undraw(BaseMap* map, Tile* tile) override ;
+	void undraw(BaseMap* map, Tile* tile) override;
 
 	bool isEmpty(int variation) const;
 

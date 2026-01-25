@@ -35,17 +35,17 @@ public:
 		return static_cast<CreatureBrush*>(this);
 	}
 
-	bool canDraw(BaseMap* map, const Position& position) const override ;
-	void draw(BaseMap* map, Tile* tile, void* parameter) override ;
+	bool canDraw(BaseMap* map, const Position& position) const override;
+	void draw(BaseMap* map, Tile* tile, void* parameter) override;
 	void draw_creature(BaseMap* map, Tile* tile);
-	void undraw(BaseMap* map, Tile* tile) override ;
+	void undraw(BaseMap* map, Tile* tile) override;
 
 	CreatureType* getType() const {
 		return creature_type;
 	}
 
-	int getLookID() const override ; // We don't have a look type, this will always return 0
-	std::string getName() const override ;
+	int getLookID() const override; // We don't have a look type, this will always return 0
+	std::string getName() const override;
 	bool canDrag() const override {
 		return false;
 	}
