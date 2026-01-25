@@ -423,7 +423,14 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 MainFrame::~MainFrame() = default;
 
 void MainFrame::OnIdle(wxIdleEvent& event) {
-	////
+	if (menu_bar) {
+		menu_bar->Update();
+	}
+	if (tool_bar) {
+		tool_bar->UpdateButtons();
+	}
+	event.RequestMore();
+	event.Skip();
 }
 
 #ifdef _USE_UPDATER_
@@ -661,19 +668,19 @@ void MainFrame::OnExit(wxCloseEvent& event) {
 }
 
 void MainFrame::AddRecentFile(const FileName& file) {
-	menu_bar->AddRecentFile(file);
+	menu_bar->recentFilesManager.AddFile(file);
 }
 
 void MainFrame::LoadRecentFiles() {
-	menu_bar->LoadRecentFiles();
+	menu_bar->recentFilesManager.Load(&g_settings.getConfigObject());
 }
 
 void MainFrame::SaveRecentFiles() {
-	menu_bar->SaveRecentFiles();
+	menu_bar->recentFilesManager.Save(&g_settings.getConfigObject());
 }
 
 std::vector<wxString> MainFrame::GetRecentFiles() {
-	return menu_bar->GetRecentFiles();
+	return menu_bar->recentFilesManager.GetFiles();
 }
 
 void MainFrame::PrepareDC(wxDC& dc) {

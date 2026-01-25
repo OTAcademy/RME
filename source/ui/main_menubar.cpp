@@ -18,19 +18,20 @@
 #include "app/main.h"
 
 #include "ui/main_menubar.h"
-#include "app/application.h"
-#include "app/preferences.h"
-#include "ui/about_window.h"
-#include "rendering/ui/minimap_window.h"
-#include "app/managers/version_manager.h"
-#include "ui/dat_debug_view.h"
-#include "ui/result_window.h"
-#include "ui/extension_window.h"
-#include "ui/find_item_window.h"
-#include "app/settings.h"
-
 #include "ui/dialog_util.h"
 #include "ui/gui.h"
+
+#include "map/map_statistics.h"
+#include "map/map_search.h"
+#include "map/map_search.h"
+#include "ui/managers/recent_files_manager.h"
+
+#include "ui/about_window.h"
+#include "ui/dat_debug_view.h"
+#include "ui/extension_window.h"
+#include "ui/find_item_window.h"
+#include "app/preferences.h"
+#include "ui/result_window.h"
 
 #include <wx/chartype.h>
 
@@ -225,7 +226,7 @@ MainMenuBar::MainMenuBar(MainFrame* frame) :
 		frame->Connect(MAIN_FRAME_MENU + ai->second->id, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)(wxEventFunction)(ai->second->handler), nullptr, this);
 	}
 	for (size_t i = 0; i < 10; ++i) {
-		frame->Connect(recentFiles.GetBaseId() + i, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainMenuBar::OnOpenRecent), nullptr, this);
+		frame->Connect(recentFilesManager.GetBaseId() + i, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainMenuBar::OnOpenRecent), nullptr, this);
 	}
 }
 
@@ -473,26 +474,6 @@ void MainMenuBar::LoadValues() {
 	CheckItem(EXPERIMENTAL_FOG, g_settings.getBoolean(Config::EXPERIMENTAL_FOG));
 }
 
-void MainMenuBar::LoadRecentFiles() {
-	recentFiles.Load(g_settings.getConfigObject());
-}
-
-void MainMenuBar::SaveRecentFiles() {
-	recentFiles.Save(g_settings.getConfigObject());
-}
-
-void MainMenuBar::AddRecentFile(FileName file) {
-	recentFiles.AddFileToHistory(file.GetFullPath());
-}
-
-std::vector<wxString> MainMenuBar::GetRecentFiles() {
-	std::vector<wxString> files(recentFiles.GetCount());
-	for (size_t i = 0; i < recentFiles.GetCount(); ++i) {
-		files[i] = recentFiles.GetHistoryFile(i);
-	}
-	return files;
-}
-
 void MainMenuBar::UpdateFloorMenu() {
 	// this will have to be changed if you want to have more floors
 	// see MAKE_ACTION(FLOOR_0, wxITEM_RADIO, OnChangeFloor);
@@ -608,7 +589,6 @@ bool MainMenuBar::Load(const FileName& path, wxArrayString& warnings, wxString& 
 	RenewClients();
 	*/
 
-	recentFiles.AddFilesToMenu();
 	Update();
 	LoadValues();
 	return true;
@@ -628,7 +608,7 @@ wxObject* MainMenuBar::LoadItem(pugi::xml_node node, wxMenu* parent, wxArrayStri
 
 		wxMenu* menu = newd wxMenu;
 		if ((attribute = node.attribute("special")) && std::string(attribute.as_string()) == "RECENT_FILES") {
-			recentFiles.UseMenu(menu);
+			recentFilesManager.UseMenu(menu);
 		} else {
 			for (pugi::xml_node menuNode = node.first_child(); menuNode; menuNode = menuNode.next_sibling()) {
 				// Load an add each item in order
@@ -726,7 +706,7 @@ void MainMenuBar::OnGenerateMap(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MainMenuBar::OnOpenRecent(wxCommandEvent& event) {
-	FileName fn(recentFiles.GetHistoryFile(event.GetId() - recentFiles.GetBaseId()));
+	FileName fn(recentFilesManager.GetFile(event.GetId() - recentFilesManager.GetBaseId()));
 	frame->LoadMap(fn);
 }
 
@@ -1491,148 +1471,7 @@ void MainMenuBar::OnMapStatistics(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.CreateLoadBar("Collecting data...");
 
 	Map* map = &g_gui.GetCurrentMap();
-
-	int load_counter = 0;
-
-	uint64_t tile_count = 0;
-	uint64_t detailed_tile_count = 0;
-	uint64_t blocking_tile_count = 0;
-	uint64_t walkable_tile_count = 0;
-	double percent_pathable = 0.0;
-	double percent_detailed = 0.0;
-	uint64_t spawn_count = 0;
-	uint64_t creature_count = 0;
-	double creatures_per_spawn = 0.0;
-
-	uint64_t item_count = 0;
-	uint64_t loose_item_count = 0;
-	uint64_t depot_count = 0;
-	uint64_t action_item_count = 0;
-	uint64_t unique_item_count = 0;
-	uint64_t container_count = 0; // Only includes containers containing more than 1 item
-
-	int town_count = map->towns.count();
-	int house_count = map->houses.count();
-	std::map<uint32_t, uint32_t> town_sqm_count;
-	const Town* largest_town = nullptr;
-	uint64_t largest_town_size = 0;
-	uint64_t total_house_sqm = 0;
-	const House* largest_house = nullptr;
-	uint64_t largest_house_size = 0;
-	double houses_per_town = 0.0;
-	double sqm_per_house = 0.0;
-	double sqm_per_town = 0.0;
-
-	for (MapIterator mit = map->begin(); mit != map->end(); ++mit) {
-		Tile* tile = (*mit)->get();
-		if (load_counter % 8192 == 0) {
-			g_gui.SetLoadDone((unsigned int)(int64_t(load_counter) * 95ll / int64_t(map->getTileCount())));
-		}
-
-		if (tile->empty()) {
-			continue;
-		}
-
-		tile_count += 1;
-
-		bool is_detailed = false;
-#define ANALYZE_ITEM(_item)                                         \
-	{                                                               \
-		item_count += 1;                                            \
-		if (!(_item)->isGroundTile() && !(_item)->isBorder()) {     \
-			is_detailed = true;                                     \
-			ItemType& it = g_items[(_item)->getID()];               \
-			if (it.moveable) {                                      \
-				loose_item_count += 1;                              \
-			}                                                       \
-			if (it.isDepot()) {                                     \
-				depot_count += 1;                                   \
-			}                                                       \
-			if ((_item)->getActionID() > 0) {                       \
-				action_item_count += 1;                             \
-			}                                                       \
-			if ((_item)->getUniqueID() > 0) {                       \
-				unique_item_count += 1;                             \
-			}                                                       \
-			if (Container* c = dynamic_cast<Container*>((_item))) { \
-				if (c->getVector().size()) {                        \
-					container_count += 1;                           \
-				}                                                   \
-			}                                                       \
-		}                                                           \
-	}
-
-		if (tile->ground) {
-			ANALYZE_ITEM(tile->ground);
-		}
-
-		for (ItemVector::const_iterator item_iter = tile->items.begin(); item_iter != tile->items.end(); ++item_iter) {
-			Item* item = *item_iter;
-			ANALYZE_ITEM(item);
-		}
-#undef ANALYZE_ITEM
-
-		if (tile->spawn) {
-			spawn_count += 1;
-		}
-
-		if (tile->creature) {
-			creature_count += 1;
-		}
-
-		if (tile->isBlocking()) {
-			blocking_tile_count += 1;
-		} else {
-			walkable_tile_count += 1;
-		}
-
-		if (is_detailed) {
-			detailed_tile_count += 1;
-		}
-
-		load_counter += 1;
-	}
-
-	creatures_per_spawn = (spawn_count != 0 ? double(creature_count) / double(spawn_count) : -1.0);
-	percent_pathable = 100.0 * (tile_count != 0 ? double(walkable_tile_count) / double(tile_count) : -1.0);
-	percent_detailed = 100.0 * (tile_count != 0 ? double(detailed_tile_count) / double(tile_count) : -1.0);
-
-	load_counter = 0;
-	Houses& houses = map->houses;
-	for (HouseMap::const_iterator hit = houses.begin(); hit != houses.end(); ++hit) {
-		const House* house = hit->second;
-
-		if (load_counter % 64) {
-			g_gui.SetLoadDone((unsigned int)(95ll + int64_t(load_counter) * 5ll / int64_t(house_count)));
-		}
-
-		if (house->size() > largest_house_size) {
-			largest_house = house;
-			largest_house_size = house->size();
-		}
-		total_house_sqm += house->size();
-		town_sqm_count[house->townid] += house->size();
-	}
-
-	houses_per_town = (town_count != 0 ? double(house_count) / double(town_count) : -1.0);
-	sqm_per_house = (house_count != 0 ? double(total_house_sqm) / double(house_count) : -1.0);
-	sqm_per_town = (town_count != 0 ? double(total_house_sqm) / double(town_count) : -1.0);
-
-	Towns& towns = map->towns;
-	for (std::map<uint32_t, uint32_t>::iterator town_iter = town_sqm_count.begin();
-		 town_iter != town_sqm_count.end();
-		 ++town_iter) {
-		// No load bar for this, load is non-existant
-		uint32_t town_id = town_iter->first;
-		uint32_t town_sqm = town_iter->second;
-		Town* town = towns.getTown(town_id);
-		if (town && town_sqm > largest_town_size) {
-			largest_town = town;
-			largest_town_size = town_sqm;
-		} else {
-			// Non-existant town!
-		}
-	}
+	MapStatistics stats = MapStatisticsCollector::Collect(map);
 
 	g_gui.DestroyLoadBar();
 
@@ -1641,55 +1480,57 @@ void MainMenuBar::OnMapStatistics(wxCommandEvent& WXUNUSED(event)) {
 	os.precision(2);
 	os << "Map statistics for the map \"" << map->getMapDescription() << "\"\n";
 	os << "\tTile data:\n";
-	os << "\t\tTotal number of tiles: " << tile_count << "\n";
-	os << "\t\tNumber of pathable tiles: " << walkable_tile_count << "\n";
-	os << "\t\tNumber of unpathable tiles: " << blocking_tile_count << "\n";
-	if (percent_pathable >= 0.0) {
-		os << "\t\tPercent walkable tiles: " << percent_pathable << "%\n";
+	os << "\t\tTotal number of tiles: " << stats.tile_count << "\n";
+	os << "\t\tNumber of pathable tiles: " << stats.walkable_tile_count << "\n";
+	os << "\t\tNumber of unpathable tiles: " << stats.blocking_tile_count << "\n";
+	if (stats.percent_pathable >= 0.0) {
+		os << "\t\tPercent walkable tiles: " << stats.percent_pathable << "%\n";
 	}
-	os << "\t\tDetailed tiles: " << detailed_tile_count << "\n";
-	if (percent_detailed >= 0.0) {
-		os << "\t\tPercent detailed tiles: " << percent_detailed << "%\n";
+	os << "\t\tDetailed tiles: " << stats.detailed_tile_count << "\n";
+	if (stats.percent_detailed >= 0.0) {
+		os << "\t\tPercent detailed tiles: " << stats.percent_detailed << "%\n";
 	}
 
 	os << "\tItem data:\n";
-	os << "\t\tTotal number of items: " << item_count << "\n";
-	os << "\t\tNumber of moveable tiles: " << loose_item_count << "\n";
-	os << "\t\tNumber of depots: " << depot_count << "\n";
-	os << "\t\tNumber of containers: " << container_count << "\n";
-	os << "\t\tNumber of items with Action ID: " << action_item_count << "\n";
-	os << "\t\tNumber of items with Unique ID: " << unique_item_count << "\n";
+	os << "\t\tTotal number of items: " << stats.item_count << "\n";
+	os << "\t\tNumber of moveable tiles: " << stats.loose_item_count << "\n";
+	os << "\t\tNumber of depots: " << stats.depot_count << "\n";
+	os << "\t\tNumber of containers: " << stats.container_count << "\n";
+	os << "\t\tNumber of items with Action ID: " << stats.action_item_count << "\n";
+	os << "\t\tNumber of items with Unique ID: " << stats.unique_item_count << "\n";
 
 	os << "\tCreature data:\n";
-	os << "\t\tTotal creature count: " << creature_count << "\n";
-	os << "\t\tTotal spawn count: " << spawn_count << "\n";
-	if (creatures_per_spawn >= 0) {
-		os << "\t\tMean creatures per spawn: " << creatures_per_spawn << "\n";
+	os << "\t\tTotal creature count: " << stats.creature_count << "\n";
+	os << "\t\tTotal spawn count: " << stats.spawn_count << "\n";
+	if (stats.creatures_per_spawn >= 0) {
+		os << "\t\tMean creatures per spawn: " << stats.creatures_per_spawn << "\n";
 	}
 
 	os << "\tTown/House data:\n";
-	os << "\t\tTotal number of towns: " << town_count << "\n";
-	os << "\t\tTotal number of houses: " << house_count << "\n";
-	if (houses_per_town >= 0) {
-		os << "\t\tMean houses per town: " << houses_per_town << "\n";
+	os << "\t\tTotal number of towns: " << stats.town_count << "\n";
+	os << "\t\tTotal number of houses: " << stats.house_count << "\n";
+	if (stats.houses_per_town >= 0) {
+		os << "\t\tMean houses per town: " << stats.houses_per_town << "\n";
 	}
-	os << "\t\tTotal amount of housetiles: " << total_house_sqm << "\n";
-	if (sqm_per_house >= 0) {
-		os << "\t\tMean tiles per house: " << sqm_per_house << "\n";
+	os << "\t\tTotal amount of housetiles: " << stats.total_house_sqm << "\n";
+	if (stats.sqm_per_house >= 0) {
+		os << "\t\tMean tiles per house: " << stats.sqm_per_house << "\n";
 	}
-	if (sqm_per_town >= 0) {
-		os << "\t\tMean tiles per town: " << sqm_per_town << "\n";
+	if (stats.sqm_per_town >= 0) {
+		os << "\t\tMean tiles per town: " << stats.sqm_per_town << "\n";
 	}
 
-	if (largest_town) {
-		os << "\t\tLargest Town: \"" << largest_town->getName() << "\" (" << largest_town_size << " sqm)\n";
+	if (stats.largest_town) {
+		os << "\t\tLargest Town: \"" << stats.largest_town->getName() << "\" (" << stats.largest_town_size << " sqm)\n";
 	}
-	if (largest_house) {
-		os << "\t\tLargest House: \"" << largest_house->name << "\" (" << largest_house_size << " sqm)\n";
+	if (stats.largest_house) {
+		os << "\t\tLargest House: \"" << stats.largest_house->name << "\" (" << stats.largest_house_size << " sqm)\n";
 	}
 
 	os << "\n";
 	os << "Generated by Remere's Map Editor version " + __RME_VERSION__ + "\n";
+
+	g_gui.DestroyLoadBar();
 
 	wxDialog* dg = newd wxDialog(frame, wxID_ANY, "Map Statistics", wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX);
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
@@ -2070,21 +1911,13 @@ void MainMenuBar::SearchItems(bool unique, bool action, bool container, bool wri
 		g_gui.CreateLoadBar("Searching on map...");
 	}
 
-	OnSearchForStuff::Searcher searcher;
-	searcher.search_unique = unique;
-	searcher.search_action = action;
-	searcher.search_container = container;
-	searcher.search_writeable = writable;
-
-	foreach_ItemOnMap(g_gui.GetCurrentMap(), searcher, onSelection);
-	searcher.sort();
-	std::vector<std::pair<Tile*, Item*>>& found = searcher.found;
+	std::vector<SearchResult> found = MapSearchUtility::SearchItems(g_gui.GetCurrentMap(), unique, action, container, writable, onSelection);
 
 	g_gui.DestroyLoadBar();
 
 	SearchResultWindow* result = g_gui.ShowSearchWindow();
 	result->Clear();
-	for (std::vector<std::pair<Tile*, Item*>>::iterator iter = found.begin(); iter != found.end(); ++iter) {
-		result->AddPosition(searcher.desc(iter->second), iter->first->getPosition());
+	for (const auto& res : found) {
+		result->AddPosition(wxstr(res.description), res.tile->getPosition());
 	}
 }

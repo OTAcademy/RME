@@ -19,6 +19,7 @@
 #define RME_MAIN_BAR_H_
 
 #include <wx/docview.h>
+#include "ui/managers/recent_files_manager.h"
 
 namespace MenuBar {
 	struct Action;
@@ -173,10 +174,7 @@ public:
 	void Update();
 	void UpdateFloorMenu(); // Only concerns the floor menu
 
-	void AddRecentFile(FileName file);
-	void LoadRecentFiles();
-	void SaveRecentFiles();
-	std::vector<wxString> GetRecentFiles();
+	RecentFilesManager recentFilesManager;
 
 	// Interface
 	void EnableItem(MenuBar::ActionID id, bool enable);
@@ -303,9 +301,6 @@ protected:
 	bool checking_programmaticly;
 
 	std::map<MenuBar::ActionID, std::list<wxMenuItem*>> items;
-
-	// Hardcoded recent files
-	wxFileHistory recentFiles;
 
 	std::map<std::string, MenuBar::Action*> actions;
 

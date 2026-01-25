@@ -73,6 +73,8 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/map/map_allocator.h
     ${CMAKE_CURRENT_LIST_DIR}/map/operations/map_processor.h
     ${CMAKE_CURRENT_LIST_DIR}/map/map_region.h
+    ${CMAKE_CURRENT_LIST_DIR}/map/map_search.h
+    ${CMAKE_CURRENT_LIST_DIR}/map/map_statistics.h
     ${CMAKE_CURRENT_LIST_DIR}/map/otml.h
     ${CMAKE_CURRENT_LIST_DIR}/map/position.h
     ${CMAKE_CURRENT_LIST_DIR}/map/tile.h
@@ -178,6 +180,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/status_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/brush_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/palette/managers/palette_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/recent_files_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/managers/editor_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/search_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/welcome_manager.h
@@ -269,6 +272,8 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/map/map.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/operations/map_processor.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/map_region.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/map/map_search.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/map/map_statistics.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/tile.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/tileset.cpp
     ${CMAKE_CURRENT_LIST_DIR}/mkpch.cpp
@@ -370,6 +375,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/status_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/brush_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/palette/managers/palette_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/recent_files_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/managers/editor_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/search_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/welcome_manager.cpp

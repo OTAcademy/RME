@@ -193,6 +193,8 @@ MainToolBar::MainToolBar(wxWindow* parent, wxAuiManager* manager) {
 	ambient_slider->Bind(wxEVT_SLIDER, &MainToolBar::OnAmbientLightSlider, this);
 
 	HideAll();
+	UpdateButtons();
+	UpdateBrushButtons();
 }
 
 MainToolBar::~MainToolBar() {
@@ -264,6 +266,11 @@ void MainToolBar::UpdateButtons() {
 	sizes_toolbar->EnableTool(TOOLBAR_SIZES_5, has_map);
 	sizes_toolbar->EnableTool(TOOLBAR_SIZES_6, has_map);
 	sizes_toolbar->EnableTool(TOOLBAR_SIZES_7, has_map);
+
+	standard_toolbar->Refresh();
+	brushes_toolbar->Refresh();
+	position_toolbar->Refresh();
+	sizes_toolbar->Refresh();
 }
 
 void MainToolBar::UpdateBrushButtons() {
