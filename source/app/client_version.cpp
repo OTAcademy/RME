@@ -22,6 +22,8 @@
 
 #include "ui/gui.h"
 
+#include "util/file_system.h"
+#include "ui/dialog_util.h"
 #include "app/client_version.h"
 #include "map/otml.h"
 #include <wx/dir.h>
@@ -40,15 +42,15 @@ void ClientVersion::loadVersions() {
 	wxFileName file_to_load;
 
 	wxFileName exec_dir_client_xml;
-	exec_dir_client_xml.Assign(g_gui.GetExecDirectory());
+	exec_dir_client_xml.Assign(FileSystem::GetExecDirectory());
 	exec_dir_client_xml.SetFullName("clients.xml");
 
 	wxFileName data_dir_client_xml;
-	data_dir_client_xml.Assign(g_gui.GetDataDirectory());
+	data_dir_client_xml.Assign(FileSystem::GetDataDirectory());
 	data_dir_client_xml.SetFullName("clients.xml");
 
 	wxFileName work_dir_client_xml;
-	work_dir_client_xml.Assign(g_gui.getFoundDataDirectory());
+	work_dir_client_xml.Assign(FileSystem::GetFoundDataDirectory());
 	work_dir_client_xml.SetFullName("clients.xml");
 
 	file_to_load = exec_dir_client_xml;
@@ -397,15 +399,15 @@ ClientVersion* ClientVersion::getLatestVersion() {
 }
 
 FileName ClientVersion::getDataPath() const {
-	wxString basePath = g_gui.GetDataDirectory();
+	wxString basePath = FileSystem::GetDataDirectory();
 	if (!wxFileName(basePath).DirExists()) {
-		basePath = g_gui.getFoundDataDirectory();
+		basePath = FileSystem::GetFoundDataDirectory();
 	}
 	return basePath + data_path + FileName::GetPathSeparator();
 }
 
 FileName ClientVersion::getLocalDataPath() const {
-	FileName f = g_gui.GetLocalDataDirectory() + data_path + FileName::GetPathSeparator();
+	FileName f = FileSystem::GetLocalDataDirectory() + data_path + FileName::GetPathSeparator();
 	f.Mkdir(0755, wxPATH_MKDIR_FULL);
 	return f;
 }
@@ -480,7 +482,7 @@ bool ClientVersion::loadValidPaths() {
 		message << "Attempted metadata file: %s\n";
 		message << "Attempted sprites file: %s\n";
 
-		g_gui.PopupDialog("Error", wxString::Format(message, name, metadata_path.GetFullPath(), sprites_path.GetFullPath()), wxOK);
+		DialogUtil::PopupDialog("Error", wxString::Format(message, name, metadata_path.GetFullPath(), sprites_path.GetFullPath()), wxOK);
 
 		wxString dirHelpText("Select assets directory.");
 		wxDirDialog file_dlg(nullptr, dirHelpText, "", wxDD_DIR_MUST_EXIST);

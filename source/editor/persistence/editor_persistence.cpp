@@ -4,6 +4,8 @@
 
 #include "app/main.h"
 
+#include "ui/dialog_util.h"
+#include "util/file_system.h"
 #include "editor/persistence/editor_persistence.h"
 #include "editor/editor.h"
 #include "editor/action.h"
@@ -110,7 +112,7 @@ void EditorPersistence::saveMap(Editor& editor, FileName filename, bool showdial
 
 	// Save the map
 	{
-		std::string n = nstr(g_gui.GetLocalDataDirectory()) + ".saving.txt";
+		std::string n = nstr(FileSystem::GetLocalDataDirectory()) + ".saving.txt";
 		std::ofstream f(n.c_str(), std::ios::trunc | std::ios::out);
 		f << backup_otbm << std::endl
 		  << backup_house << std::endl
@@ -164,12 +166,12 @@ void EditorPersistence::saveMap(Editor& editor, FileName filename, bool showdial
 			}
 
 			// Display the error
-			g_gui.PopupDialog("Error", "Could not save, unable to open target for writing.", wxOK);
+			DialogUtil::PopupDialog("Error", "Could not save, unable to open target for writing.", wxOK);
 		}
 
 		// Remove temporary save runfile
 		{
-			std::string n = nstr(g_gui.GetLocalDataDirectory()) + ".saving.txt";
+			std::string n = nstr(FileSystem::GetLocalDataDirectory()) + ".saving.txt";
 			std::remove(n.c_str());
 		}
 
@@ -240,10 +242,10 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 	bool loaded = imported_map.open(nstr(filename.GetFullPath()));
 
 	if (!loaded) {
-		g_gui.PopupDialog("Error", "Error loading map!\n" + imported_map.getError(), wxOK | wxICON_INFORMATION);
+		DialogUtil::PopupDialog("Error", "Error loading map!\n" + imported_map.getError(), wxOK | wxICON_INFORMATION);
 		return false;
 	}
-	g_gui.ListDialog("Warning", imported_map.getWarnings());
+	DialogUtil::ListDialog("Warning", imported_map.getWarnings());
 
 	Position offset(import_x_offset, import_y_offset, 0);
 
@@ -488,7 +490,7 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 				continue;
 			} else {
 				resize_asked = true;
-				int ret = g_gui.PopupDialog("Collision", "The imported tiles are outside the current map scope. Do you want to resize the map? (Else additional tiles will be removed)", wxYES | wxNO);
+				int ret = DialogUtil::PopupDialog("Collision", "The imported tiles are outside the current map scope. Do you want to resize the map? (Else additional tiles will be removed)", wxYES | wxNO);
 
 				if (ret == wxID_YES) {
 					// ...
@@ -560,7 +562,7 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 
 	editor.map.setWidth(newsize_x);
 	editor.map.setHeight(newsize_y);
-	g_gui.PopupDialog("Success", "Map imported successfully, " + i2ws(discarded_tiles) + " tiles were discarded as invalid.", wxOK);
+	DialogUtil::PopupDialog("Success", "Map imported successfully, " + i2ws(discarded_tiles) + " tiles were discarded as invalid.", wxOK);
 
 	g_gui.RefreshPalettes();
 	g_gui.FitViewToMap();
@@ -615,7 +617,7 @@ bool EditorPersistence::exportSelectionAsMiniMap(Editor& editor, FileName direct
 	}
 
 	if (minimap_width > 2048 || minimap_height > 2048) {
-		g_gui.PopupDialog("Error", "Minimap size greater than 2048px.", wxOK);
+		DialogUtil::PopupDialog("Error", "Minimap size greater than 2048px.", wxOK);
 		return false;
 	}
 

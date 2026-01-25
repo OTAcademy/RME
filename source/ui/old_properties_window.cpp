@@ -29,6 +29,7 @@
 #include "game/creature.h"
 
 #include "ui/gui.h"
+#include "ui/dialog_util.h"
 #include "app/application.h"
 #include "ui/old_properties_window.h"
 #include "ui/container_properties_window.h"
@@ -619,15 +620,15 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 			int new_aid = action_id_field->GetValue();
 
 			if ((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
-				g_gui.PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
 				return;
 			}
 			if (/* there is no item with the same UID */ false) {
-				g_gui.PopupDialog(this, "Error", "Unique ID must be unique, this UID is already taken.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "Unique ID must be unique, this UID is already taken.", wxOK);
 				return;
 			}
 			if ((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
-				g_gui.PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
 				return;
 			}
 
@@ -640,23 +641,23 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 			std::string text = nstr(text_field->GetValue());
 
 			if ((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
-				g_gui.PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
 				return;
 			}
 			if (/* there is no item with the same UID */ false) {
-				g_gui.PopupDialog(this, "Error", "Unique ID must be unique, this UID is already taken.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "Unique ID must be unique, this UID is already taken.", wxOK);
 				return;
 			}
 			if ((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
-				g_gui.PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
 				return;
 			}
 			if (text.length() >= 0xFFFF) {
-				g_gui.PopupDialog(this, "Error", "Text is longer than 65535 characters, this is not supported by OpenTibia. Reduce the length of the text.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "Text is longer than 65535 characters, this is not supported by OpenTibia. Reduce the length of the text.", wxOK);
 				return;
 			}
 			if (edit_item->canHoldText() && text.length() > edit_item->getMaxWriteLength()) {
-				int ret = g_gui.PopupDialog(this, "Error", "Text is longer than the maximum supported length of this book type, do you still want to change it?", wxYES | wxNO);
+				int ret = DialogUtil::PopupDialog(this, "Error", "Text is longer than the maximum supported length of this book type, do you still want to change it?", wxYES | wxNO);
 				if (ret != wxID_YES) {
 					return;
 				}
@@ -672,15 +673,15 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 			int* new_type = reinterpret_cast<int*>(splash_type_field->GetClientData(splash_type_field->GetSelection()));
 
 			if ((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
-				g_gui.PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
 				return;
 			}
 			if (/* there is no item with the same UID */ false) {
-				g_gui.PopupDialog(this, "Error", "Unique ID must be unique, this UID is already taken.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "Unique ID must be unique, this UID is already taken.", wxOK);
 				return;
 			}
 			if ((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
-				g_gui.PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
 				return;
 			}
 			if (new_type) {
@@ -720,26 +721,26 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 			}
 
 			if ((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
-				g_gui.PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
 				return;
 			}
 			if (/* there is no item with the same UID */ false) {
-				g_gui.PopupDialog(this, "Error", "Unique ID must be unique, this UID is already taken.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "Unique ID must be unique, this UID is already taken.", wxOK);
 				return;
 			}
 			if ((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
-				g_gui.PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
 				return;
 			}
 			if (new_tier < 0 || new_tier > 0xFF) {
-				g_gui.PopupDialog(this, "Error", "Item tier must be between 0 and 255.", wxOK);
+				DialogUtil::PopupDialog(this, "Error", "Item tier must be between 0 and 255.", wxOK);
 				return;
 			}
 
 			/*
 			if(edit_item->canHoldDescription()) {
 				if(new_desc.length() > 127) {
-					g_gui.PopupDialog("Error", "Description must be shorter than 127 characters.", wxOK);
+					DialogUtil::PopupDialog("Error", "Description must be shorter than 127 characters.", wxOK);
 					return;
 				}
 			}
@@ -753,7 +754,7 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 						if (pos == Position()) {
 							// Do nothing
 						} else if (pos != edit_tile->getPosition()) {
-							int ret = g_gui.PopupDialog(this, "Warning", "This doorid conflicts with another one in this house, are you sure you want to continue?", wxYES | wxNO);
+							int ret = DialogUtil::PopupDialog(this, "Warning", "This doorid conflicts with another one in this house, are you sure you want to continue?", wxYES | wxNO);
 							if (ret == wxID_NO) {
 								return;
 							}
@@ -764,7 +765,7 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 
 			if (teleport) {
 				if (edit_map->getTile(new_dest) == nullptr || edit_map->getTile(new_dest)->isBlocking()) {
-					int ret = g_gui.PopupDialog(this, "Warning", "This teleport leads nowhere, or to an invalid location. Do you want to change the destination?", wxYES | wxNO);
+					int ret = DialogUtil::PopupDialog(this, "Warning", "This teleport leads nowhere, or to an invalid location. Do you want to change the destination?", wxYES | wxNO);
 					if (ret == wxID_YES) {
 						return;
 					}
@@ -777,7 +778,7 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 				int newMount = look_mount->GetValue();
 
 				if (newLookType < 0 || newLookType > 0xFFFF || newMount < 0 || newMount > 0xFFFF) {
-					g_gui.PopupDialog(this, "Error", "LookType and Mount must be between 0 and 65535.", wxOK);
+					DialogUtil::PopupDialog(this, "Error", "LookType and Mount must be between 0 and 65535.", wxOK);
 					return;
 				}
 
@@ -793,13 +794,13 @@ void OldPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 				if (newHead < 0 || newHead > OUTFIT_COLOR_MAX || newBody < 0 || newBody > OUTFIT_COLOR_MAX || newLegs < 0 || newLegs > OUTFIT_COLOR_MAX || newFeet < 0 || newFeet > OUTFIT_COLOR_MAX || newMountHead < 0 || newMountHead > OUTFIT_COLOR_MAX || newMountBody < 0 || newMountBody > OUTFIT_COLOR_MAX || newMountLegs < 0 || newMountLegs > OUTFIT_COLOR_MAX || newMountFeet < 0 || newMountFeet > OUTFIT_COLOR_MAX) {
 					wxString response = "Outfit and mount colors must be between 0 and ";
 					response << i2ws(OUTFIT_COLOR_MAX) << ".";
-					g_gui.PopupDialog(this, "Error", response, wxOK);
+					DialogUtil::PopupDialog(this, "Error", response, wxOK);
 					return;
 				}
 
 				int newAddon = look_addon->GetValue();
 				if (newAddon < 0 || newAddon > 3) {
-					g_gui.PopupDialog(this, "Error", "Addons value must be between 0 and 3.", wxOK);
+					DialogUtil::PopupDialog(this, "Error", "Addons value must be between 0 and 3.", wxOK);
 					return;
 				}
 

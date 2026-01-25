@@ -28,6 +28,7 @@
 #include "ui/find_item_window.h"
 #include "app/settings.h"
 
+#include "ui/dialog_util.h"
 #include "ui/gui.h"
 
 #include <wx/chartype.h>
@@ -776,7 +777,7 @@ void MainMenuBar::OnImportMonsterData(wxCommandEvent& WXUNUSED(event)) {
 			wxArrayString warnings;
 			bool ok = g_creatures.importXMLFromOT(FileName(paths[i]), error, warnings);
 			if (ok) {
-				g_gui.ListDialog("Monster loader errors", warnings);
+				DialogUtil::ListDialog("Monster loader errors", warnings);
 			} else {
 				wxMessageBox("Error OT data file \"" + paths[i] + "\".\n" + error, "Error", wxOK | wxICON_INFORMATION, g_gui.root);
 			}
@@ -816,8 +817,8 @@ void MainMenuBar::OnReloadDataFiles(wxCommandEvent& WXUNUSED(event)) {
 	wxString error;
 	wxArrayString warnings;
 	g_gui.LoadVersion(g_gui.GetCurrentVersionID(), error, warnings, true);
-	g_gui.PopupDialog("Error", error, wxOK);
-	g_gui.ListDialog("Warnings", warnings);
+	DialogUtil::PopupDialog("Error", error, wxOK);
+	DialogUtil::ListDialog("Warnings", warnings);
 }
 
 void MainMenuBar::OnListExtensions(wxCommandEvent& WXUNUSED(event)) {
@@ -890,7 +891,7 @@ void MainMenuBar::OnSearchForItem(wxCommandEvent& WXUNUSED(event)) {
 		if (finder.limitReached()) {
 			wxString msg;
 			msg << "The configured limit has been reached. Only " << finder.maxCount << " results will be displayed.";
-			g_gui.PopupDialog("Notice", msg, wxOK);
+			DialogUtil::PopupDialog("Notice", msg, wxOK);
 		}
 
 		SearchResultWindow* window = g_gui.ShowSearchWindow();
@@ -1077,7 +1078,7 @@ void MainMenuBar::OnSearchForItemOnSelection(wxCommandEvent& WXUNUSED(event)) {
 		if (finder.limitReached()) {
 			wxString msg;
 			msg << "The configured limit has been reached. Only " << finder.maxCount << " results will be displayed.";
-			g_gui.PopupDialog("Notice", msg, wxOK);
+			DialogUtil::PopupDialog("Notice", msg, wxOK);
 		}
 
 		SearchResultWindow* window = g_gui.ShowSearchWindow();
@@ -1121,7 +1122,7 @@ void MainMenuBar::OnRemoveItemOnSelection(wxCommandEvent& WXUNUSED(event)) {
 
 		wxString msg;
 		msg << count << " items removed.";
-		g_gui.PopupDialog("Remove Item", msg, wxOK);
+		DialogUtil::PopupDialog("Remove Item", msg, wxOK);
 		g_gui.GetCurrentMap().doChange();
 		g_gui.RefreshView();
 	}
@@ -1176,7 +1177,7 @@ void MainMenuBar::OnBorderizeMap(wxCommandEvent& WXUNUSED(event)) {
 		return;
 	}
 
-	int ret = g_gui.PopupDialog("Borderize Map", "Are you sure you want to borderize the entire map (this action cannot be undone)?", wxYES | wxNO);
+	int ret = DialogUtil::PopupDialog("Borderize Map", "Are you sure you want to borderize the entire map (this action cannot be undone)?", wxYES | wxNO);
 	if (ret == wxID_YES) {
 		g_gui.GetCurrentEditor()->borderizeMap(true);
 	}
@@ -1198,7 +1199,7 @@ void MainMenuBar::OnRandomizeMap(wxCommandEvent& WXUNUSED(event)) {
 		return;
 	}
 
-	int ret = g_gui.PopupDialog("Randomize Map", "Are you sure you want to randomize the entire map (this action cannot be undone)?", wxYES | wxNO);
+	int ret = DialogUtil::PopupDialog("Randomize Map", "Are you sure you want to randomize the entire map (this action cannot be undone)?", wxYES | wxNO);
 	if (ret == wxID_YES) {
 		g_gui.GetCurrentEditor()->randomizeMap(true);
 	}
@@ -1283,7 +1284,7 @@ void MainMenuBar::OnMapRemoveItems(wxCommandEvent& WXUNUSED(event)) {
 		wxString msg;
 		msg << count << " items deleted.";
 
-		g_gui.PopupDialog("Search completed", msg, wxOK);
+		DialogUtil::PopupDialog("Search completed", msg, wxOK);
 		g_gui.GetCurrentMap().doChange();
 		g_gui.RefreshView();
 	}
@@ -1309,7 +1310,7 @@ void MainMenuBar::OnMapRemoveCorpses(wxCommandEvent& WXUNUSED(event)) {
 		return;
 	}
 
-	int ok = g_gui.PopupDialog("Remove Corpses", "Do you want to remove all corpses from the map?", wxYES | wxNO);
+	int ok = DialogUtil::PopupDialog("Remove Corpses", "Do you want to remove all corpses from the map?", wxYES | wxNO);
 
 	if (ok == wxID_YES) {
 		g_gui.GetCurrentEditor()->selection.clear();
@@ -1324,7 +1325,7 @@ void MainMenuBar::OnMapRemoveCorpses(wxCommandEvent& WXUNUSED(event)) {
 
 		wxString msg;
 		msg << count << " items deleted.";
-		g_gui.PopupDialog("Search completed", msg, wxOK);
+		DialogUtil::PopupDialog("Search completed", msg, wxOK);
 		g_gui.GetCurrentMap().doChange();
 	}
 }
@@ -1383,7 +1384,7 @@ void MainMenuBar::OnMapRemoveUnreachable(wxCommandEvent& WXUNUSED(event)) {
 		return;
 	}
 
-	int ok = g_gui.PopupDialog("Remove Unreachable Tiles", "Do you want to remove all unreachable items from the map?", wxYES | wxNO);
+	int ok = DialogUtil::PopupDialog("Remove Unreachable Tiles", "Do you want to remove all unreachable items from the map?", wxYES | wxNO);
 
 	if (ok == wxID_YES) {
 		g_gui.GetCurrentEditor()->selection.clear();
@@ -1399,7 +1400,7 @@ void MainMenuBar::OnMapRemoveUnreachable(wxCommandEvent& WXUNUSED(event)) {
 		wxString msg;
 		msg << removed << " tiles deleted.";
 
-		g_gui.PopupDialog("Search completed", msg, wxOK);
+		DialogUtil::PopupDialog("Search completed", msg, wxOK);
 
 		g_gui.GetCurrentMap().doChange();
 	}
@@ -1411,7 +1412,7 @@ void MainMenuBar::OnClearHouseTiles(wxCommandEvent& WXUNUSED(event)) {
 		return;
 	}
 
-	int ret = g_gui.PopupDialog(
+	int ret = DialogUtil::PopupDialog(
 		"Clear Invalid House Tiles",
 		"Are you sure you want to remove all house tiles that do not belong to a house (this action cannot be undone)?",
 		wxYES | wxNO
@@ -1431,7 +1432,7 @@ void MainMenuBar::OnClearModifiedState(wxCommandEvent& WXUNUSED(event)) {
 		return;
 	}
 
-	int ret = g_gui.PopupDialog(
+	int ret = DialogUtil::PopupDialog(
 		"Clear Modified State",
 		"This will have the same effect as closing the map and opening it again. Do you want to proceed?",
 		wxYES | wxNO
@@ -1451,7 +1452,7 @@ void MainMenuBar::OnMapCleanHouseItems(wxCommandEvent& WXUNUSED(event)) {
 		return;
 	}
 
-	int ret = g_gui.PopupDialog(
+	int ret = DialogUtil::PopupDialog(
 		"Clear Moveable House Items",
 		"Are you sure you want to remove all items inside houses that can be moved (this action cannot be undone)?",
 		wxYES | wxNO
@@ -1712,7 +1713,7 @@ void MainMenuBar::OnMapStatistics(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MainMenuBar::OnMapCleanup(wxCommandEvent& WXUNUSED(event)) {
-	int ok = g_gui.PopupDialog("Clean map", "Do you want to remove all invalid items from the map?", wxYES | wxNO);
+	int ok = DialogUtil::PopupDialog("Clean map", "Do you want to remove all invalid items from the map?", wxYES | wxNO);
 
 	if (ok == wxID_YES) {
 		g_gui.GetCurrentMap().cleanInvalidTiles(true);
@@ -1900,11 +1901,11 @@ void MainMenuBar::OnSelectRawPalette(wxCommandEvent& WXUNUSED(event)) {
 void MainMenuBar::OnStartLive(wxCommandEvent& event) {
 	Editor* editor = g_gui.GetCurrentEditor();
 	if (!editor) {
-		g_gui.PopupDialog("Error", "You need to have a map open to start a live mapping session.", wxOK);
+		DialogUtil::PopupDialog("Error", "You need to have a map open to start a live mapping session.", wxOK);
 		return;
 	}
 	if (editor->live_manager.IsLive()) {
-		g_gui.PopupDialog("Error", "You can not start two live servers on the same map (or a server using a remote map).", wxOK);
+		DialogUtil::PopupDialog("Error", "You can not start two live servers on the same map (or a server using a remote map).", wxOK);
 		return;
 	}
 
@@ -1952,13 +1953,13 @@ void MainMenuBar::OnStartLive(wxCommandEvent& event) {
 
 			const wxString& error = liveServer->getLastError();
 			if (!error.empty()) {
-				g_gui.PopupDialog(live_host_dlg, "Error", error, wxOK);
+				DialogUtil::PopupDialog(live_host_dlg, "Error", error, wxOK);
 				editor->live_manager.CloseServer();
 				continue;
 			}
 
 			if (!liveServer->bind()) {
-				g_gui.PopupDialog("Socket Error", "Could not bind socket! Try another port?", wxOK);
+				DialogUtil::PopupDialog("Socket Error", "Could not bind socket! Try another port?", wxOK);
 				editor->live_manager.CloseServer();
 			} else {
 				liveServer->createLogWindow(g_gui.tabbook);
@@ -2021,7 +2022,7 @@ void MainMenuBar::OnJoinLive(wxCommandEvent& event) {
 
 			const wxString& error = liveClient->getLastError();
 			if (!error.empty()) {
-				g_gui.PopupDialog(live_join_dlg, "Error", error, wxOK);
+				DialogUtil::PopupDialog(live_join_dlg, "Error", error, wxOK);
 				delete liveClient;
 				continue;
 			}
@@ -2031,7 +2032,7 @@ void MainMenuBar::OnJoinLive(wxCommandEvent& event) {
 
 			liveClient->createLogWindow(g_gui.tabbook);
 			if (!liveClient->connect(nstr(address), portNumber)) {
-				g_gui.PopupDialog("Connection Error", liveClient->getLastError(), wxOK);
+				DialogUtil::PopupDialog("Connection Error", liveClient->getLastError(), wxOK);
 				delete liveClient;
 			}
 

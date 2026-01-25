@@ -23,6 +23,7 @@
 #include "ui/properties_window.h"
 #include "ui/find_item_window.h"
 #include "ui/gui.h"
+#include "ui/dialog_util.h"
 #include "game/complexitem.h"
 #include "map/map.h"
 
@@ -128,7 +129,7 @@ void ContainerItemButton::OnEditItem(wxCommandEvent& WXUNUSED(event)) {
 
 void ContainerItemButton::OnRemoveItem(wxCommandEvent& WXUNUSED(event)) {
 	ASSERT(edit_item);
-	int32_t ret = g_gui.PopupDialog(GetParent(), "Remove Item", "Are you sure you want to remove this item from the container?", wxYES | wxNO);
+	int32_t ret = DialogUtil::PopupDialog(GetParent(), "Remove Item", "Are you sure you want to remove this item from the container?", wxYES | wxNO);
 
 	if (ret != wxID_YES) {
 		return;

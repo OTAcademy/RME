@@ -17,7 +17,11 @@
 
 #include "app/main.h"
 
+#include "ui/dialog_util.h"
 #include "app/application.h"
+#include "util/file_system.h"
+#include "editor/hotkey_manager.h"
+#include "ui/dialog_util.h"
 #include "game/sprites.h"
 #include "editor/editor.h"
 #include "ui/common_windows.h"
@@ -124,7 +128,7 @@ bool Application::OnInit() {
 	srand(time(nullptr));
 
 	// Discover data directory
-	g_gui.discoverDataDirectory("clients.xml");
+	FileSystem::DiscoverDataDirectory("clients.xml");
 
 	// Tell that we are the real thing
 	wxAppConsole::SetInstance(this);
@@ -139,7 +143,7 @@ bool Application::OnInit() {
 	// Load some internal stuff
 	g_settings.load();
 	FixVersionDiscrapencies();
-	g_gui.LoadHotkeys();
+	g_hotkeys.LoadHotkeys();
 	ClientVersion::loadVersions();
 
 #ifdef _USE_PROCESS_COM
@@ -214,7 +218,7 @@ bool Application::OnInit() {
 	// Check for updates
 #ifdef _USE_UPDATER_
 	if (g_settings.getInteger(Config::USE_UPDATER) == -1) {
-		int ret = g_gui.PopupDialog(
+		int ret = DialogUtil::PopupDialog(
 			"Notice",
 			"Do you want the editor to automatically check for updates?\n"
 			"It will connect to the internet if you choose yes.\n"
@@ -233,7 +237,7 @@ bool Application::OnInit() {
 	}
 #endif
 
-	FileName save_failed_file = GUI::GetLocalDataDirectory();
+	FileName save_failed_file = FileSystem::GetLocalDataDirectory();
 	save_failed_file.SetName(".saving.txt");
 	if (save_failed_file.FileExists()) {
 		std::ifstream f(nstr(save_failed_file.GetFullPath()).c_str(), std::ios::in);
@@ -250,7 +254,7 @@ bool Application::OnInit() {
 
 		// Query file retrieval if possible
 		if (!backup_otbm.empty()) {
-			long ret = g_gui.PopupDialog(
+			long ret = DialogUtil::PopupDialog(
 				"Editor Crashed",
 				wxString(
 					"IMPORTANT! THE EDITOR CRASHED WHILE SAVING!\n\n"
@@ -341,7 +345,7 @@ void Application::FixVersionDiscrapencies() {
 void Application::Unload() {
 	g_gui.CloseAllEditors();
 	g_gui.UnloadVersion();
-	g_gui.SaveHotkeys();
+	g_hotkeys.SaveHotkeys();
 	g_gui.SavePerspective();
 	g_gui.root->SaveRecentFiles();
 	ClientVersion::saveVersions();
@@ -390,9 +394,9 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	wxString error;
 
 	wxFileName filename;
-	filename.Assign(g_gui.getFoundDataDirectory() + "menubar.xml");
+	filename.Assign(FileSystem::GetFoundDataDirectory() + "menubar.xml");
 	if (!filename.FileExists()) {
-		filename = FileName(GUI::GetDataDirectory() + "menubar.xml");
+		filename = FileName(FileSystem::GetDataDirectory() + "menubar.xml");
 	}
 
 	if (!menu_bar->Load(filename, warnings, error)) {
@@ -438,7 +442,7 @@ void MainFrame::OnUpdateReceived(wxCommandEvent& event) {
 	std::string url = (second_colon == data.size() ? "" : data.substr(second_colon + 1));
 
 	if (update == "yes") {
-		int ret = g_gui.PopupDialog(
+		int ret = DialogUtil::PopupDialog(
 			"Update Notice",
 			wxString("There is a newd update available (") << wxstr(verstr) << "). Do you want to go to the website and download it?",
 			wxYES | wxNO,
@@ -460,7 +464,7 @@ void MainFrame::OnUpdateMenus(wxCommandEvent&) {
 
 #ifdef __WINDOWS__
 bool MainFrame::MSWTranslateMessage(WXMSG* msg) {
-	if (g_gui.AreHotkeysEnabled()) {
+	if (g_hotkeys.AreHotkeysEnabled()) {
 		if (wxFrame::MSWTranslateMessage(msg)) {
 			return true;
 		}
@@ -482,7 +486,7 @@ bool MainFrame::DoQueryClose() {
 	Editor* editor = g_gui.GetCurrentEditor();
 	if (editor) {
 		if (editor->live_manager.IsLive()) {
-			long ret = g_gui.PopupDialog(
+			long ret = DialogUtil::PopupDialog(
 				"Must Close Server",
 				wxString("You are currently connected to a live server, to close this map the connection must be severed."),
 				wxOK | wxCANCEL
@@ -504,7 +508,7 @@ bool MainFrame::DoQuerySaveTileset(bool doclose) {
 		return true;
 	}
 
-	long ret = g_gui.PopupDialog(
+	long ret = DialogUtil::PopupDialog(
 		"Export tileset",
 		"Do you want to export your tileset changes before exiting?",
 		wxYES | wxNO | wxCANCEL
@@ -539,7 +543,7 @@ bool MainFrame::DoQuerySave(bool doclose) {
 
 	Editor& editor = *g_gui.GetCurrentEditor();
 	if (editor.live_manager.IsClient()) {
-		long ret = g_gui.PopupDialog(
+		long ret = DialogUtil::PopupDialog(
 			"Disconnect",
 			"Do you want to disconnect?",
 			wxYES | wxNO
@@ -552,7 +556,7 @@ bool MainFrame::DoQuerySave(bool doclose) {
 		editor.live_manager.CloseServer();
 		return DoQuerySave(doclose);
 	} else if (editor.live_manager.IsServer()) {
-		long ret = g_gui.PopupDialog(
+		long ret = DialogUtil::PopupDialog(
 			"Shutdown",
 			"Do you want to shut down the server? (any clients will be disconnected)",
 			wxYES | wxNO
@@ -565,7 +569,7 @@ bool MainFrame::DoQuerySave(bool doclose) {
 		editor.live_manager.CloseServer();
 		return DoQuerySave(doclose);
 	} else if (g_gui.ShouldSave()) {
-		long ret = g_gui.PopupDialog(
+		long ret = DialogUtil::PopupDialog(
 			"Save changes",
 			"Do you want to save your changes to \"" + wxstr(g_gui.GetCurrentMap().getName()) + "\"?",
 			wxYES | wxNO | wxCANCEL
@@ -598,7 +602,7 @@ bool MainFrame::DoQuerySave(bool doclose) {
 
 bool MainFrame::DoQueryImportCreatures() {
 	if (g_creatures.hasMissing()) {
-		long ret = g_gui.PopupDialog("Missing creatures", "There are missing creatures and/or NPC in the editor, do you want to load them from an OT monster/npc file?", wxYES | wxNO);
+		long ret = DialogUtil::PopupDialog("Missing creatures", "There are missing creatures and/or NPC in the editor, do you want to load them from an OT monster/npc file?", wxYES | wxNO);
 		if (ret == wxID_YES) {
 			do {
 				wxFileDialog dlg(g_gui.root, "Import monster/npc file", "", "", "*.xml", wxFD_OPEN | wxFD_MULTIPLE | wxFD_FILE_MUST_EXIST);
@@ -610,7 +614,7 @@ bool MainFrame::DoQueryImportCreatures() {
 						wxArrayString warnings;
 						bool ok = g_creatures.importXMLFromOT(FileName(paths[i]), error, warnings);
 						if (ok) {
-							g_gui.ListDialog("Monster loader errors", warnings);
+							DialogUtil::ListDialog("Monster loader errors", warnings);
 						} else {
 							wxMessageBox("Error OT data file \"" + paths[i] + "\".\n" + error, "Error", wxOK | wxICON_INFORMATION, g_gui.root);
 						}

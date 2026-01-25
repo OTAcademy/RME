@@ -23,6 +23,7 @@
 #include "live/live_tab.h"
 #include "live/live_socket.h"
 #include "live/live_peer.h"
+#include "editor/hotkey_manager.h"
 
 class myGrid : public wxGrid {
 public:
@@ -188,11 +189,11 @@ void LiveLogTab::OnResizeClientList(wxSizeEvent& evt) {
 }
 
 void LiveLogTab::OnSelectChatbox(wxFocusEvent& evt) {
-	g_gui.DisableHotkeys();
+	g_hotkeys.DisableHotkeys();
 }
 
 void LiveLogTab::OnDeselectChatbox(wxFocusEvent& evt) {
-	g_gui.EnableHotkeys();
+	g_hotkeys.EnableHotkeys();
 }
 
 void LiveLogTab::UpdateClientList(const std::unordered_map<uint32_t, LivePeer*>& updatedClients) {

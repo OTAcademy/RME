@@ -1,4 +1,5 @@
 #include "app/main.h"
+#include "ui/dialog_util.h"
 #include "editor/editor_factory.h"
 #include "editor/editor.h"
 #include "editor/persistence/editor_persistence.h"
@@ -84,11 +85,11 @@ bool EditorFactory::EnsureVersion(ClientVersionID version) {
 	wxArrayString warnings;
 	if (g_gui.LoadVersion(version, error, warnings)) {
 		if (!warnings.IsEmpty()) {
-			g_gui.ListDialog("Warnings", warnings);
+			DialogUtil::ListDialog("Warnings", warnings);
 		}
 		return true;
 	} else {
-		g_gui.PopupDialog("Error", error, wxOK);
+		DialogUtil::PopupDialog("Error", error, wxOK);
 		return false;
 	}
 }

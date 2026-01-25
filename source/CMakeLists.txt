@@ -27,7 +27,8 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/editor/action_queue.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/copybuffer.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/dirty_list.h
-    ${CMAKE_CURRENT_LIST_DIR}/editor/editor.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/hotkey_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/util/file_system.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_factory.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/copy_operations.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/draw_operations.h
@@ -163,6 +164,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/dat_debug_view.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dcbutton.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialog_helper.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/dialog_util.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/extension_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/find_item_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.h
@@ -194,6 +196,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/app/preferences.cpp
     ${CMAKE_CURRENT_LIST_DIR}/app/settings.cpp
     ${CMAKE_CURRENT_LIST_DIR}/app/updater.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/hotkey_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_tables.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_utility.cpp
@@ -338,6 +341,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/dat_debug_view.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dcbutton.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialog_helper.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/dialog_util.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/extension_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/find_item_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.cpp
@@ -356,5 +360,6 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/tileset_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/welcome_dialog.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/common.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/util/file_system.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/mt_rand.cpp
 )

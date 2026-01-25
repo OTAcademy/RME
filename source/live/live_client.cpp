@@ -17,6 +17,7 @@
 
 #include "app/main.h"
 
+#include "ui/dialog_util.h"
 #include "live/live_client.h"
 #include "live/live_tab.h"
 #include "live/live_action.h"
@@ -384,7 +385,7 @@ void LiveClient::parseKick(NetworkMessage& message) {
 	const std::string& kickMessage = message.read<std::string>();
 	close();
 
-	g_gui.PopupDialog("Disconnected", wxstr(kickMessage), wxOK);
+	DialogUtil::PopupDialog("Disconnected", wxstr(kickMessage), wxOK);
 }
 
 void LiveClient::parseClientAccepted(NetworkMessage& message) {

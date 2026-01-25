@@ -1,20 +1,3 @@
-//////////////////////////////////////////////////////////////////////
-// This file is part of Remere's Map Editor
-//////////////////////////////////////////////////////////////////////
-// Remere's Map Editor is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Remere's Map Editor is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
-//////////////////////////////////////////////////////////////////////
-
 #ifndef RME_GUI_H_
 #define RME_GUI_H_
 
@@ -68,45 +51,7 @@ extern const wxEventType EVT_UPDATE_MENUS;
 		(wxObject*)nullptr                                                                      \
 	),
 
-class Hotkey {
-public:
-	Hotkey();
-	Hotkey(Position pos);
-	Hotkey(Brush* brush);
-	Hotkey(std::string _brushname);
-	~Hotkey();
-
-	bool IsPosition() const {
-		return type == POSITION;
-	}
-	bool IsBrush() const {
-		return type == BRUSH;
-	}
-	Position GetPosition() const {
-		ASSERT(IsPosition());
-		return pos;
-	}
-	std::string GetBrushname() const {
-		ASSERT(IsBrush());
-		return brushname;
-	}
-
-private:
-	enum {
-		NONE,
-		POSITION,
-		BRUSH,
-	} type;
-
-	Position pos;
-	std::string brushname;
-
-	friend std::ostream& operator<<(std::ostream& os, const Hotkey& hotkey);
-	friend std::istream& operator>>(std::istream& os, Hotkey& hotkey);
-};
-
-std::ostream& operator<<(std::ostream& os, const Hotkey& hotkey);
-std::istream& operator>>(std::istream& os, Hotkey& hotkey);
+#include "editor/hotkey_manager.h"
 
 class GUI {
 public: // dtor and ctor
@@ -166,9 +111,7 @@ public:
 		return disabled_counter == 0;
 	}
 
-	void EnableHotkeys();
-	void DisableHotkeys();
-	bool AreHotkeysEnabled() const;
+	// Hotkey methods removed (moved to HotkeyManager)
 
 	// This sends the event to the main window (redirecting from other controls)
 	void AddPendingCanvasEvent(wxEvent& event);
@@ -190,19 +133,6 @@ public:
 	void UpdateMenus();
 	void ShowToolbar(ToolBarID id, bool show);
 	void SetStatusText(wxString text);
-
-	long PopupDialog(wxWindow* parent, wxString title, wxString text, long style, wxString configsavename = wxEmptyString, uint32_t configsavevalue = 0);
-	long PopupDialog(wxString title, wxString text, long style, wxString configsavename = wxEmptyString, uint32_t configsavevalue = 0);
-
-	void ListDialog(wxWindow* parent, wxString title, const wxArrayString& vec);
-	void ListDialog(const wxString& title, const wxArrayString& vec) {
-		ListDialog(nullptr, title, vec);
-	}
-
-	void ShowTextBox(wxWindow* parent, wxString title, wxString contents);
-	void ShowTextBox(const wxString& title, const wxString& contents) {
-		ShowTextBox(nullptr, title, contents);
-	}
 
 	// Get the current GL context
 	// Param is required if the context is to be created.
@@ -234,11 +164,6 @@ public:
 	bool IsDrawingMode() const {
 		return mode == DRAWING_MODE;
 	}
-
-	void SetHotkey(int index, Hotkey& hotkey);
-	const Hotkey& GetHotkey(int index) const;
-	void SaveHotkeys() const;
-	void LoadHotkeys();
 
 	// Brushes
 	void FillDoodadPreviewBuffer();
@@ -289,19 +214,8 @@ public:
 	void SetDoorLocked(bool on);
 	bool HasDoorLocked();
 
-	// Fetch different useful directories
-	static wxString GetExecDirectory();
-	static wxString GetDataDirectory();
-	static wxString GetLocalDataDirectory();
-	static wxString GetLocalDirectory();
-	static wxString GetExtensionsDirectory();
-
-	void discoverDataDirectory(const wxString& existentFile);
-	wxString getFoundDataDirectory() {
-		return m_dataDirectory;
-	}
-
 	// Load/unload a client version (takes care of dialogs aswell)
+
 	void UnloadVersion();
 	bool LoadVersion(ClientVersionID ver, wxString& error, wxArrayString& warnings, bool force = false);
 	// The current version loaded (returns CLIENT_VERSION_NONE if no version is loaded)
@@ -374,6 +288,7 @@ protected:
 
 	//=========================================================================
 	// Palette Interface
+	//=========================================================================
 public:
 	// Spawn a newd palette
 	PaletteWindow* NewPalette();
@@ -405,7 +320,6 @@ protected:
 	// Public members
 	//=========================================================================
 public:
-	wxString m_dataDirectory;
 	wxAuiManager* aui_manager;
 	MapTabbook* tabbook;
 	MainFrame* root; // The main frame

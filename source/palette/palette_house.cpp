@@ -17,6 +17,7 @@
 
 #include "app/main.h"
 
+#include "ui/dialog_util.h"
 #include "palette/palette_house.h"
 
 #include "app/settings.h"
@@ -556,20 +557,20 @@ void EditHouseDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		long new_house_rent;
 		house_rent.ToLong(&new_house_rent);
 		if (new_house_rent < 0) {
-			g_gui.PopupDialog(this, "Error", "House rent cannot be less than 0.", wxOK);
+			DialogUtil::PopupDialog(this, "Error", "House rent cannot be less than 0.", wxOK);
 			return;
 		}
 
 		// Verify the new house id
 		uint32_t new_house_id = id_field->GetValue();
 		if (new_house_id < 1) {
-			g_gui.PopupDialog(this, "Error", "House id cannot be less than 1.", wxOK);
+			DialogUtil::PopupDialog(this, "Error", "House id cannot be less than 1.", wxOK);
 			return;
 		}
 
 		// Verify the new house name
 		if (house_name.length() == 0) {
-			g_gui.PopupDialog(this, "Error", "House name cannot be empty.", wxOK);
+			DialogUtil::PopupDialog(this, "Error", "House name cannot be empty.", wxOK);
 			return;
 		}
 
@@ -580,12 +581,12 @@ void EditHouseDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 				ASSERT(house);
 
 				if (house->getID() == new_house_id && new_house_id != what_house->getID()) {
-					g_gui.PopupDialog(this, "Error", "This house id is already in use.", wxOK);
+					DialogUtil::PopupDialog(this, "Error", "This house id is already in use.", wxOK);
 					return;
 				}
 
 				if (wxstr(house->name) == house_name && house->getID() != what_house->getID()) {
-					int ret = g_gui.PopupDialog(this, "Warning", "This house name is already in use, are you sure you want to continue?", wxYES | wxNO);
+					int ret = DialogUtil::PopupDialog(this, "Warning", "This house name is already in use, are you sure you want to continue?", wxYES | wxNO);
 					if (ret == wxID_NO) {
 						return;
 					}
@@ -594,7 +595,7 @@ void EditHouseDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		}
 
 		if (new_house_id != what_house->getID()) {
-			int ret = g_gui.PopupDialog(this, "Warning", "Changing existing house ids on a production server WILL HAVE DATABASE CONSEQUENCES such as potential item loss, house owner change or invalidating guest lists.\nYou are doing it at own risk!\n\nAre you ABSOLUTELY sure you want to continue?", wxYES | wxNO);
+			int ret = DialogUtil::PopupDialog(this, "Warning", "Changing existing house ids on a production server WILL HAVE DATABASE CONSEQUENCES such as potential item loss, house owner change or invalidating guest lists.\nYou are doing it at own risk!\n\nAre you ABSOLUTELY sure you want to continue?", wxYES | wxNO);
 			if (ret == wxID_NO) {
 				return;
 			}
@@ -608,7 +609,7 @@ void EditHouseDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		// Transfer to house
 		int* new_town_id = reinterpret_cast<int*>(town_id_field->GetClientData(town_id_field->GetSelection()));
 		if (!new_town_id) {
-			g_gui.PopupDialog(this, "Error", "Invalid town selected.", wxOK);
+			DialogUtil::PopupDialog(this, "Error", "Invalid town selected.", wxOK);
 			return;
 		}
 

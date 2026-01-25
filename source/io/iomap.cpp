@@ -17,6 +17,7 @@
 
 #include "app/main.h"
 #include "ui/gui.h"
+#include "ui/dialog_util.h"
 
 void IOMap::error(const wxString format, ...) {
 	va_list argp;
@@ -35,5 +36,5 @@ void IOMap::warning(const wxString format, ...) {
 };
 
 bool IOMap::queryUser(const wxString& title, const wxString& text) {
-	return g_gui.PopupDialog(title, text, wxYES | wxNO) == wxID_YES;
+	return DialogUtil::PopupDialog(title, text, wxYES | wxNO) == wxID_YES;
 }

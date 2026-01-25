@@ -20,6 +20,7 @@
 #include "ui/extension_window.h"
 
 #include "ui/gui.h"
+#include "util/file_system.h"
 #include "game/materials.h"
 
 extern Materials g_materials;
@@ -60,7 +61,7 @@ void ExtensionsDialog::OnClickOK(wxCommandEvent& evt) {
 }
 
 void ExtensionsDialog::OnClickOpenFolder(wxCommandEvent& evt) {
-	wxString cmd, extensionsDir = g_gui.GetExtensionsDirectory();
+	wxString cmd, extensionsDir = FileSystem::GetExtensionsDirectory();
 #if defined __WINDOWS__
 	cmd << "explorer";
 #elif defined __APPLE__
