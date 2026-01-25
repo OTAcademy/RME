@@ -170,6 +170,10 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/controls/sortable_list_box.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/goto_position_dialog.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/object_properties_base.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/creature_properties_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/spawn_properties_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/container_properties_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/podium_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/container_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dat_debug_view.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dcbutton.h
@@ -394,6 +398,10 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/controls/sortable_list_box.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/goto_position_dialog.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/object_properties_base.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/creature_properties_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/spawn_properties_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/container_properties_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/podium_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/container_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dat_debug_view.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dcbutton.cpp

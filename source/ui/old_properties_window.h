@@ -29,8 +29,6 @@ class ContainerItemPopupMenu;
 class OldPropertiesWindow : public ObjectPropertiesWindowBase {
 public:
 	OldPropertiesWindow(wxWindow* parent, const Map* map, const Tile* tile, Item* item, wxPoint = wxDefaultPosition);
-	OldPropertiesWindow(wxWindow* parent, const Map* map, const Tile* tile, Creature* creature, wxPoint = wxDefaultPosition);
-	OldPropertiesWindow(wxWindow* parent, const Map* map, const Tile* tile, Spawn* spawn, wxPoint = wxDefaultPosition);
 	virtual ~OldPropertiesWindow();
 
 	void OnFocusChange(wxFocusEvent&);
@@ -38,8 +36,6 @@ public:
 
 	void OnClickOK(wxCommandEvent&);
 	void OnClickCancel(wxCommandEvent&);
-
-	void Update();
 
 protected:
 	// item
@@ -57,31 +53,6 @@ protected:
 	wxSpinCtrl* x_field;
 	wxSpinCtrl* y_field;
 	wxSpinCtrl* z_field;
-
-	// podium
-	wxCheckBox* show_outfit;
-	wxCheckBox* show_mount;
-	wxCheckBox* show_platform;
-	wxSpinCtrl* look_type;
-	wxSpinCtrl* look_head;
-	wxSpinCtrl* look_body;
-	wxSpinCtrl* look_legs;
-	wxSpinCtrl* look_feet;
-	wxSpinCtrl* look_addon;
-	wxSpinCtrl* look_mount;
-	wxSpinCtrl* look_mounthead;
-	wxSpinCtrl* look_mountbody;
-	wxSpinCtrl* look_mountlegs;
-	wxSpinCtrl* look_mountfeet;
-
-	// podium and creature
-	wxChoice* direction_field;
-
-	// container
-	std::vector<ContainerItemButton*> container_items;
-
-	friend class ContainerItemButton;
-	friend class ContainerItemPopupMenu;
 
 	DECLARE_EVENT_TABLE();
 };

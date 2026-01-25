@@ -11,6 +11,10 @@
 #include "map/tile.h"
 #include "ui/gui.h"
 #include "app/settings.h"
+#include "ui/properties/creature_properties_window.h"
+#include "ui/properties/spawn_properties_window.h"
+#include "ui/properties/container_properties_window.h"
+#include "ui/properties/podium_properties_window.h"
 #include "ui/old_properties_window.h"
 #include "ui/properties_window.h"
 
@@ -23,9 +27,9 @@ void DialogHelper::OpenProperties(Editor& editor, Tile* tile) {
 	wxDialog* w = nullptr;
 
 	if (new_tile->spawn && g_settings.getInteger(Config::SHOW_SPAWNS)) {
-		w = newd OldPropertiesWindow(g_gui.root, &editor.map, new_tile, new_tile->spawn);
+		w = newd SpawnPropertiesWindow(g_gui.root, &editor.map, new_tile, new_tile->spawn);
 	} else if (new_tile->creature && g_settings.getInteger(Config::SHOW_CREATURES)) {
-		w = newd OldPropertiesWindow(g_gui.root, &editor.map, new_tile, new_tile->creature);
+		w = newd CreaturePropertiesWindow(g_gui.root, &editor.map, new_tile, new_tile->creature);
 	} else {
 		ItemVector selected_items = new_tile->getSelectedItems();
 		Item* item = nullptr;
@@ -42,7 +46,11 @@ void DialogHelper::OpenProperties(Editor& editor, Tile* tile) {
 		}
 
 		if (item) {
-			if (editor.map.getVersion().otbm >= MAP_OTBM_4) {
+			if (dynamic_cast<Container*>(item)) {
+				w = newd ContainerPropertiesWindow(g_gui.root, &editor.map, new_tile, item);
+			} else if (dynamic_cast<Podium*>(item)) {
+				w = newd PodiumPropertiesWindow(g_gui.root, &editor.map, new_tile, item);
+			} else if (editor.map.getVersion().otbm >= MAP_OTBM_4) {
 				w = newd PropertiesWindow(g_gui.root, &editor.map, new_tile, item);
 			} else {
 				w = newd OldPropertiesWindow(g_gui.root, &editor.map, new_tile, item);

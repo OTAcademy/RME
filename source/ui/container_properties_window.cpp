@@ -21,6 +21,8 @@
 
 #include "ui/old_properties_window.h"
 #include "ui/properties_window.h"
+#include "ui/properties/container_properties_window.h"
+#include "ui/properties/podium_properties_window.h"
 #include "ui/find_item_window.h"
 #include "ui/gui.h"
 #include "ui/dialog_util.h"
@@ -117,7 +119,11 @@ void ContainerItemButton::OnEditItem(wxCommandEvent& WXUNUSED(event)) {
 
 	wxDialog* d;
 
-	if (edit_map->getVersion().otbm >= MAP_OTBM_4) {
+	if (dynamic_cast<Container*>(edit_item)) {
+		d = newd ContainerPropertiesWindow(this, edit_map, nullptr, edit_item, newDialogAt);
+	} else if (dynamic_cast<Podium*>(edit_item)) {
+		d = newd PodiumPropertiesWindow(this, edit_map, nullptr, edit_item, newDialogAt);
+	} else if (edit_map->getVersion().otbm >= MAP_OTBM_4) {
 		d = newd PropertiesWindow(this, edit_map, nullptr, edit_item, newDialogAt);
 	} else {
 		d = newd OldPropertiesWindow(this, edit_map, nullptr, edit_item, newDialogAt);
