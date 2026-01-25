@@ -170,6 +170,7 @@ class PaletteMenuHandler;
 
 class MainMenuBar : public wxEvtHandler {
 	friend class MenuBarLoader;
+	friend class MenuBarActionManager;
 
 public:
 	MainMenuBar(MainFrame* frame);
