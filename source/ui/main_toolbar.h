@@ -29,6 +29,8 @@
 #include "ui/toolbar/brush_toolbar.h"
 #include "ui/toolbar/position_toolbar.h"
 #include "ui/toolbar/size_toolbar.h"
+#include "ui/toolbar/standard_toolbar.h"
+#include "ui/toolbar/light_toolbar.h"
 
 class MainToolBar : public wxEvtHandler {
 public:
@@ -52,11 +54,8 @@ private:
 	static const wxString STANDARD_BAR_NAME;
 	static const wxString LIGHT_BAR_NAME;
 
-	wxAuiToolBar* standard_toolbar;
-	wxAuiToolBar* light_toolbar;
-	wxSlider* light_slider;
-	wxSlider* ambient_slider;
-
+	StandardToolBar* standard_toolbar_component;
+	LightToolBar* light_toolbar_component;
 	BrushToolBar* brush_toolbar_component;
 	PositionToolBar* position_toolbar_component;
 	SizeToolBar* size_toolbar_component;
