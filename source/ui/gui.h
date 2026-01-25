@@ -447,7 +447,7 @@ protected:
 	//=========================================================================
 	// Global GUI state
 	//=========================================================================
-	typedef std::list<PaletteWindow*> PaletteList;
+	using PaletteList = std::list<PaletteWindow*>;
 	PaletteList palettes;
 
 	wxGLContext* OGLContext;

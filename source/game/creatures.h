@@ -26,15 +26,15 @@
 class CreatureType;
 class CreatureBrush;
 
-typedef std::map<std::string, CreatureType*> CreatureMap;
+using CreatureMap = std::map<std::string, CreatureType*>;
 
 class CreatureDatabase {
 protected:
 	CreatureMap creature_map;
 
 public:
-	typedef CreatureMap::iterator iterator;
-	typedef CreatureMap::const_iterator const_iterator;
+	using iterator = CreatureMap::iterator;
+	using const_iterator = CreatureMap::const_iterator;
 
 	CreatureDatabase();
 	~CreatureDatabase();

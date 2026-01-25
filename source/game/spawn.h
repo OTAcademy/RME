@@ -65,8 +65,8 @@ protected:
 	bool selected;
 };
 
-typedef std::set<Position> SpawnPositionList;
-typedef std::list<Spawn*> SpawnList;
+using SpawnPositionList = std::set<Position>;
+using SpawnList = std::list<Spawn*>;
 
 class Spawns {
 public:
