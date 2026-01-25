@@ -19,6 +19,7 @@
 #include "rendering/utilities/light_drawer.h"
 #include "rendering/utilities/light_calculator.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <format>
 #include "map/tile.h"
 #include "game/item.h"
 #include "rendering/core/drawing_options.h"
@@ -28,12 +29,8 @@ LightDrawer::LightDrawer() {
 
 LightDrawer::~LightDrawer() {
 	unloadGLTexture();
-	if (vao) {
-		glDeleteVertexArrays(1, &vao);
-	}
-	if (vbo) {
-		glDeleteBuffers(1, &vbo);
-	}
+	vao.reset();
+	vbo.reset();
 }
 
 #include "rendering/core/render_view.h"
@@ -76,7 +73,6 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 
 	// Populate Lights
 	int lightCount = 0;
-	char uniformName[64];
 
 	// Sort lights by distance to center to ensure priority
 	int centerX = (map_x + end_x) / 2;
@@ -113,14 +109,9 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 		float lx = (float)(light.map_x * TileSize - view.view_scroll_x);
 		float ly = (float)(light.map_y * TileSize - view.view_scroll_y);
 
-		sprintf(uniformName, "uLights[%d].position", lightCount);
-		shader->SetVec2(uniformName, glm::vec2(lx, ly));
-
-		sprintf(uniformName, "uLights[%d].color", lightCount);
-		shader->SetVec3(uniformName, lightColor);
-
-		sprintf(uniformName, "uLights[%d].intensity", lightCount);
-		shader->SetFloat(uniformName, (float)light.intensity);
+		shader->SetVec2(std::format("uLights[{}].position", lightCount), glm::vec2(lx, ly));
+		shader->SetVec3(std::format("uLights[{}].color", lightCount), lightColor);
+		shader->SetFloat(std::format("uLights[{}].intensity", lightCount), (float)light.intensity);
 
 		lightCount++;
 	}
@@ -141,7 +132,7 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_DST_COLOR, GL_ZERO);
 
-	glBindVertexArray(vao);
+	glBindVertexArray(*vao);
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 	glBindVertexArray(0);
 
@@ -228,10 +219,11 @@ void LightDrawer::initRenderResources() {
 		0.0f, 1.0f, 0.0f, 1.0f
 	};
 
-	glGenVertexArrays(1, &vao);
-	glGenBuffers(1, &vbo);
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	vao = std::make_unique<GLVertexArray>();
+	vbo = std::make_unique<GLBuffer>();
+
+	glBindVertexArray(*vao);
+	glBindBuffer(GL_ARRAY_BUFFER, *vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);

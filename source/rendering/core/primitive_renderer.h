@@ -3,6 +3,7 @@
 
 #include "app/main.h"
 #include "rendering/core/shader_program.h"
+#include "rendering/core/gl_resources.h"
 #include <vector>
 #include <memory>
 #include <glm/glm.hpp>
@@ -39,8 +40,8 @@ private:
 	void flushLines();
 
 	std::unique_ptr<ShaderProgram> shader_;
-	GLuint vao_ = 0;
-	GLuint vbo_ = 0;
+	std::unique_ptr<GLVertexArray> vao_;
+	std::unique_ptr<GLBuffer> vbo_;
 
 	std::vector<Vertex> triangle_verts_;
 	std::vector<Vertex> line_verts_;
