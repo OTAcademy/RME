@@ -45,20 +45,20 @@ void PrimitiveRenderer::initialize() {
 	vbo_ = std::make_unique<GLBuffer>();
 
 	// Allocate buffer
-	glNamedBufferStorage(*vbo_, MAX_VERTICES * sizeof(Vertex), nullptr, GL_DYNAMIC_STORAGE_BIT);
+	glNamedBufferStorage(vbo_->GetID(), MAX_VERTICES * sizeof(Vertex), nullptr, GL_DYNAMIC_STORAGE_BIT);
 
 	// DSA setup
-	glVertexArrayVertexBuffer(*vao_, 0, *vbo_, 0, sizeof(Vertex));
+	glVertexArrayVertexBuffer(vao_->GetID(), 0, vbo_->GetID(), 0, sizeof(Vertex));
 
 	// Pos
-	glEnableVertexArrayAttrib(*vao_, 0);
-	glVertexArrayAttribFormat(*vao_, 0, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, pos));
-	glVertexArrayAttribBinding(*vao_, 0, 0);
+	glEnableVertexArrayAttrib(vao_->GetID(), 0);
+	glVertexArrayAttribFormat(vao_->GetID(), 0, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, pos));
+	glVertexArrayAttribBinding(vao_->GetID(), 0, 0);
 
 	// Color
-	glEnableVertexArrayAttrib(*vao_, 1);
-	glVertexArrayAttribFormat(*vao_, 1, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex, color));
-	glVertexArrayAttribBinding(*vao_, 1, 0);
+	glEnableVertexArrayAttrib(vao_->GetID(), 1);
+	glVertexArrayAttribFormat(vao_->GetID(), 1, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex, color));
+	glVertexArrayAttribBinding(vao_->GetID(), 1, 0);
 
 	spdlog::info("PrimitiveRenderer initialized (VAO: {}, VBO: {})", vao_->GetID(), vbo_->GetID());
 }
@@ -102,9 +102,9 @@ void PrimitiveRenderer::flushTriangles() {
 	shader_->Use();
 	shader_->SetMat4("uMVP", projection_);
 
-	glNamedBufferSubData(*vbo_, 0, triangle_verts_.size() * sizeof(Vertex), triangle_verts_.data());
+	glNamedBufferSubData(vbo_->GetID(), 0, triangle_verts_.size() * sizeof(Vertex), triangle_verts_.data());
 
-	glBindVertexArray(*vao_);
+	glBindVertexArray(vao_->GetID());
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)triangle_verts_.size());
 	glBindVertexArray(0);
 
@@ -119,9 +119,9 @@ void PrimitiveRenderer::flushLines() {
 	shader_->Use();
 	shader_->SetMat4("uMVP", projection_);
 
-	glNamedBufferSubData(*vbo_, 0, line_verts_.size() * sizeof(Vertex), line_verts_.data());
+	glNamedBufferSubData(vbo_->GetID(), 0, line_verts_.size() * sizeof(Vertex), line_verts_.data());
 
-	glBindVertexArray(*vao_);
+	glBindVertexArray(vao_->GetID());
 	glDrawArrays(GL_LINES, 0, (GLsizei)line_verts_.size());
 	glBindVertexArray(0);
 

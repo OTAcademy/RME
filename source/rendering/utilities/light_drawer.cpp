@@ -132,7 +132,7 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_DST_COLOR, GL_ZERO);
 
-	glBindVertexArray(*vao);
+	glBindVertexArray(vao->GetID());
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 	glBindVertexArray(0);
 
@@ -222,14 +222,17 @@ void LightDrawer::initRenderResources() {
 	vao = std::make_unique<GLVertexArray>();
 	vbo = std::make_unique<GLBuffer>();
 
-	glBindVertexArray(*vao);
-	glBindBuffer(GL_ARRAY_BUFFER, *vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glNamedBufferData(vbo->GetID(), sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	glVertexArrayVertexBuffer(vao->GetID(), 0, vbo->GetID(), 0, 4 * sizeof(float));
+
+	glEnableVertexArrayAttrib(vao->GetID(), 0);
+	glVertexArrayAttribFormat(vao->GetID(), 0, 2, GL_FLOAT, GL_FALSE, 0);
+	glVertexArrayAttribBinding(vao->GetID(), 0, 0);
+
+	glEnableVertexArrayAttrib(vao->GetID(), 1);
+	glVertexArrayAttribFormat(vao->GetID(), 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float));
+	glVertexArrayAttribBinding(vao->GetID(), 1, 0);
 
 	glBindVertexArray(0);
 }

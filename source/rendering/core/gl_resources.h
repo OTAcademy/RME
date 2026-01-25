@@ -27,17 +27,15 @@ public:
 		id(std::exchange(other.id, 0)) { }
 
 	GLBuffer& operator=(GLBuffer&& other) noexcept {
-		if (this != &other) {
-			if (id) {
-				glDeleteBuffers(1, &id);
-			}
-			id = std::exchange(other.id, 0);
+		if (id) {
+			glDeleteBuffers(1, &id);
 		}
+		id = std::exchange(other.id, 0);
 		return *this;
 	}
 
-	// Implicit conversion to GLuint for GL functions
-	operator GLuint() const {
+	// Explicit conversion
+	explicit operator GLuint() const {
 		return id;
 	}
 	GLuint GetID() const {
@@ -70,17 +68,15 @@ public:
 		id(std::exchange(other.id, 0)) { }
 
 	GLVertexArray& operator=(GLVertexArray&& other) noexcept {
-		if (this != &other) {
-			if (id) {
-				glDeleteVertexArrays(1, &id);
-			}
-			id = std::exchange(other.id, 0);
+		if (id) {
+			glDeleteVertexArrays(1, &id);
 		}
+		id = std::exchange(other.id, 0);
 		return *this;
 	}
 
-	// Implicit conversion
-	operator GLuint() const {
+	// Explicit conversion
+	explicit operator GLuint() const {
 		return id;
 	}
 	GLuint GetID() const {
