@@ -267,7 +267,7 @@ bool tilePositionLessThan(const Tile* a, const Tile* b);
 bool tilePositionVisualLessThan(const Tile* a, const Tile* b);
 
 typedef std::vector<Tile*> TileVector;
-typedef std::unordered_set<Tile*> TileSet;
+typedef std::vector<Tile*> TileSet;
 typedef std::list<Tile*> TileList;
 
 inline bool Tile::hasWall() const {

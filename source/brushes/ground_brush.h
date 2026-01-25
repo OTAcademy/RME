@@ -30,23 +30,23 @@ public:
 	static void init();
 
 	GroundBrush();
-	virtual ~GroundBrush();
+	~GroundBrush() override;
 
-	bool isGround() const {
+	bool isGround() const override {
 		return true;
 	}
-	GroundBrush* asGround() {
+	GroundBrush* asGround() override {
 		return static_cast<GroundBrush*>(this);
 	}
 
-	virtual bool load(pugi::xml_node node, wxArrayString& warnings);
+	bool load(pugi::xml_node node, wxArrayString& warnings) override ;
 
-	virtual void draw(BaseMap* map, Tile* tile, void* parameter);
-	virtual void undraw(BaseMap* map, Tile* tile);
+	void draw(BaseMap* map, Tile* tile, void* parameter) override ;
+	void undraw(BaseMap* map, Tile* tile) override ;
 	static void doBorders(BaseMap* map, Tile* tile);
 	static const BorderBlock* getBrushTo(GroundBrush* first, GroundBrush* second);
 
-	virtual int32_t getZ() const {
+	int32_t getZ() const override {
 		return z_order;
 	}
 	bool useSoloOptionalBorder() const {

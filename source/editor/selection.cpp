@@ -26,6 +26,7 @@
 
 Selection::Selection(Editor& editor) :
 	busy(false),
+	deferred(false),
 	editor(editor),
 	session(nullptr),
 	subsession(nullptr) {
@@ -198,12 +199,56 @@ void Selection::remove(Tile* tile) {
 void Selection::addInternal(Tile* tile) {
 	ASSERT(tile);
 
-	tiles.insert(tile);
+	if (deferred) {
+		pending_adds.push_back(tile);
+	} else {
+		auto it = std::lower_bound(tiles.begin(), tiles.end(), tile, std::less<Tile*>());
+		if (it == tiles.end() || *it != tile) {
+			tiles.insert(it, tile);
+		}
+	}
 }
 
 void Selection::removeInternal(Tile* tile) {
 	ASSERT(tile);
-	tiles.erase(tile);
+	if (deferred) {
+		pending_removes.push_back(tile);
+	} else {
+		auto it = std::lower_bound(tiles.begin(), tiles.end(), tile, std::less<Tile*>());
+		if (it != tiles.end() && *it == tile) {
+			tiles.erase(it);
+		}
+	}
+}
+
+void Selection::flush() {
+	if (pending_adds.empty() && pending_removes.empty()) {
+		return;
+	}
+
+	std::sort(pending_adds.begin(), pending_adds.end(), std::less<Tile*>());
+	pending_adds.erase(std::unique(pending_adds.begin(), pending_adds.end()), pending_adds.end());
+
+	std::sort(pending_removes.begin(), pending_removes.end(), std::less<Tile*>());
+	pending_removes.erase(std::unique(pending_removes.begin(), pending_removes.end()), pending_removes.end());
+
+	TileSet temp;
+	temp.reserve(tiles.size());
+
+	// Remove
+	std::set_difference(tiles.begin(), tiles.end(),
+		pending_removes.begin(), pending_removes.end(),
+		std::back_inserter(temp), std::less<Tile*>());
+
+	// Add
+	tiles.clear();
+	tiles.reserve(temp.size() + pending_adds.size());
+	std::set_union(temp.begin(), temp.end(),
+		pending_adds.begin(), pending_adds.end(),
+		std::back_inserter(tiles), std::less<Tile*>());
+
+	pending_adds.clear();
+	pending_removes.clear();
 }
 
 void Selection::clear() {
@@ -229,6 +274,10 @@ void Selection::start(SessionFlags flags) {
 			session = editor.actionQueue->createBatch(ACTION_SELECT);
 		}
 		subsession = editor.actionQueue->createAction(ACTION_SELECT);
+	} else {
+		deferred = true;
+		pending_adds.clear();
+		pending_removes.clear();
 	}
 	busy = true;
 }
@@ -267,6 +316,9 @@ void Selection::finish(SessionFlags flags) {
 			session = nullptr;
 			subsession = nullptr;
 		}
+	} else {
+		flush();
+		deferred = false;
 	}
 	busy = false;
 }

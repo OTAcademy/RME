@@ -28,12 +28,12 @@ typedef std::vector<std::pair<Position, ItemVector>> CompositeTileList;
 class DoodadBrush : public Brush {
 public:
 	DoodadBrush();
-	virtual ~DoodadBrush();
+	~DoodadBrush() override;
 
-	bool isDoodad() const {
+	bool isDoodad() const override {
 		return true;
 	}
-	DoodadBrush* asDoodad() {
+	DoodadBrush* asDoodad() override {
 		return static_cast<DoodadBrush*>(this);
 	}
 
@@ -42,14 +42,14 @@ protected:
 
 public:
 	bool loadAlternative(pugi::xml_node node, wxArrayString& warnings, AlternativeBlock* which = nullptr);
-	virtual bool load(pugi::xml_node node, wxArrayString& warnings);
+	bool load(pugi::xml_node node, wxArrayString& warnings) override ;
 
-	virtual bool canDraw(BaseMap* map, const Position& position) const {
+	bool canDraw(BaseMap* map, const Position& position) const override {
 		return true;
 	}
-	virtual void draw(BaseMap* map, Tile* tile, void* parameter);
+	void draw(BaseMap* map, Tile* tile, void* parameter) override ;
 	const CompositeTileList& getComposite(int variation) const;
-	virtual void undraw(BaseMap* map, Tile* tile);
+	void undraw(BaseMap* map, Tile* tile) override ;
 
 	bool isEmpty(int variation) const;
 
@@ -78,25 +78,25 @@ public:
 	}
 	bool ownsItem(Item* item) const;
 
-	virtual bool canSmear() const {
+	bool canSmear() const override {
 		return draggable;
 	}
-	virtual bool canDrag() const {
+	bool canDrag() const override {
 		return false;
 	}
-	virtual bool oneSizeFitsAll() const {
+	bool oneSizeFitsAll() const override {
 		return one_size;
 	}
-	virtual int getLookID() const {
+	int getLookID() const override {
 		return look_id;
 	}
-	virtual int getMaxVariation() const {
+	int getMaxVariation() const override {
 		return alternatives.size();
 	}
-	virtual std::string getName() const {
+	std::string getName() const override {
 		return name;
 	}
-	virtual void setName(const std::string& newName) {
+	void setName(const std::string& newName) override {
 		name = newName;
 	}
 

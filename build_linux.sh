@@ -28,7 +28,7 @@ fi
 echo "[2/4] Installing dependencies with Conan..."
 echo "[2/4] Installing dependencies..." >> "$LOG_FILE"
 
-conan install "$SCRIPT_DIR" -of "$BUILD_DIR" --build=missing -s build_type=Release -s compiler.cppstd=20 >> "$LOG_FILE" 2>&1
+conan install "$SCRIPT_DIR" -of "$BUILD_DIR" --build=missing -s build_type=Release -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True >> "$LOG_FILE" 2>&1
 
 echo "[3/4] Configuring CMake..."
 echo "[3/4] Configuring CMake..." >> "$LOG_FILE"
