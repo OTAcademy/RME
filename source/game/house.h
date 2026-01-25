@@ -69,7 +69,7 @@ protected:
 	friend class Houses;
 };
 
-typedef std::map<uint32_t, House*> HouseMap;
+using HouseMap = std::map<uint32_t, House*>;
 
 class Houses {
 public:

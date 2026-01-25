@@ -183,7 +183,7 @@ struct MapConversionContext {
 		bool is_npc;
 		Outfit outfit;
 	};
-	typedef std::map<std::string, CreatureInfo> CreatureMap;
+	using CreatureMap = std::map<std::string, CreatureInfo>;
 	CreatureMap creature_types;
 
 	void operator()(Map& map, Tile* tile, long long done) {
@@ -522,7 +522,7 @@ void ExportMiniMapWindow::OnExportTypeChange(wxCommandEvent& event) {
 }
 
 void ExportMiniMapWindow::OnClickBrowse(wxCommandEvent& WXUNUSED(event)) {
-	wxDirDialog dialog(NULL, "Select the output folder", "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+	wxDirDialog dialog(nullptr, "Select the output folder", "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
 	if (dialog.ShowModal() == wxID_OK) {
 		const wxString& directory = dialog.GetPath();
 		directory_text_field->ChangeValue(directory);
@@ -675,7 +675,7 @@ ExportTilesetsWindow::ExportTilesetsWindow(wxWindow* parent, Editor& editor) :
 ExportTilesetsWindow::~ExportTilesetsWindow() = default;
 
 void ExportTilesetsWindow::OnClickBrowse(wxCommandEvent& WXUNUSED(event)) {
-	wxDirDialog dialog(NULL, "Select the output folder", "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+	wxDirDialog dialog(nullptr, "Select the output folder", "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
 	if (dialog.ShowModal() == wxID_OK) {
 		const wxString& directory = dialog.GetPath();
 		directory_text_field->ChangeValue(directory);
@@ -1419,8 +1419,6 @@ void EditTownsDialog::UpdateSelection(int new_selection) {
 
 				editor.map.getOrCreateTile(templePos)->getLocation()->increaseTownCount();
 
-				// printf("Changed town %d:%s\n", old_town_id, old_town->getName().c_str());
-				// printf("New values %d:%s:%d:%d:%d\n", town_id, town_name.c_str(), templepos.x, templepos.y, templepos.z);
 				old_town->setTemplePosition(templePos);
 
 				wxString new_name = name_field->GetValue();
@@ -1448,7 +1446,6 @@ void EditTownsDialog::UpdateSelection(int new_selection) {
 		Town* town = town_list[new_selection];
 		ASSERT(town);
 
-		// printf("Selected %d:%s\n", new_selection, town->getName().c_str());
 		town_name << wxstr(town->getName());
 		name_field->SetValue(town_name);
 		town_id << long(town->getID());
@@ -1551,8 +1548,6 @@ void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 
 				editor.map.getOrCreateTile(templePos)->getLocation()->increaseTownCount();
 
-				// printf("Changed town %d:%s\n", old_town_id, old_town->getName().c_str());
-				// printf("New values %d:%s:%d:%d:%d\n", town_id, town_name.c_str(), templepos.x, templepos.y, templepos.z);
 				old_town->setTemplePosition(templePos);
 
 				wxString new_name = name_field->GetValue();

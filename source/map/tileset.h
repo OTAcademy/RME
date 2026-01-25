@@ -62,7 +62,7 @@ private:
 	TilesetCategory operator=(const TilesetCategory&);
 };
 
-typedef std::vector<TilesetCategory*> TilesetCategoryArray;
+using TilesetCategoryArray = std::vector<TilesetCategory*>;
 
 class Tileset {
 public:
@@ -92,6 +92,6 @@ protected:
 	friend class TilesetCategory;
 };
 
-typedef std::map<std::string, Tileset*> TilesetContainer;
+using TilesetContainer = std::map<std::string, Tileset*>;
 
 #endif

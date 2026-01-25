@@ -26,7 +26,7 @@ public:
 	Position pos;
 };
 
-typedef std::map<std::string, Waypoint*> WaypointMap;
+using WaypointMap = std::map<std::string, Waypoint*>;
 
 class Waypoints {
 	Map& map;
