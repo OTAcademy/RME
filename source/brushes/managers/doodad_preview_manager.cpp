@@ -8,6 +8,7 @@
 #include "map/map.h"
 #include "brushes/doodad_brush.h"
 #include "brushes/brush.h"
+#include "brushes/managers/brush_manager.h"
 #include "game/sprites.h"
 
 DoodadPreviewManager g_doodad_preview;
@@ -21,7 +22,7 @@ DoodadPreviewManager::~DoodadPreviewManager() {
 }
 
 void DoodadPreviewManager::FillBuffer() {
-	Brush* current_brush = g_gui.GetCurrentBrush();
+	Brush* current_brush = g_brush_manager.GetCurrentBrush();
 	if (!current_brush || !current_brush->isDoodad()) {
 		return;
 	}
@@ -29,29 +30,29 @@ void DoodadPreviewManager::FillBuffer() {
 	doodad_buffer_map->clear();
 
 	DoodadBrush* brush = current_brush->asDoodad();
-	if (brush->isEmpty(g_gui.GetBrushVariation())) {
+	if (brush->isEmpty(g_brush_manager.GetBrushVariation())) {
 		return;
 	}
 
 	int object_count = 0;
 	int area;
-	if (g_gui.GetBrushShape() == BRUSHSHAPE_SQUARE) {
-		area = 2 * g_gui.GetBrushSize();
+	if (g_brush_manager.GetBrushShape() == BRUSHSHAPE_SQUARE) {
+		area = 2 * g_brush_manager.GetBrushSize();
 		area = area * area + 1;
 	} else {
-		if (g_gui.GetBrushSize() == 1) {
+		if (g_brush_manager.GetBrushSize() == 1) {
 			// There is a huge deviation here with the other formula.
 			area = 5;
 		} else {
-			area = int(0.5 + g_gui.GetBrushSize() * g_gui.GetBrushSize() * PI);
+			area = int(0.5 + g_brush_manager.GetBrushSize() * g_brush_manager.GetBrushSize() * PI);
 		}
 	}
-	const int object_range = (g_gui.use_custom_thickness ? int(area * g_gui.custom_thickness_mod) : brush->getThickness() * area / max(1, brush->getThicknessCeiling()));
-	const int final_object_count = max(1, object_range + random(object_range));
+	const int object_range = (g_brush_manager.UseCustomThickness() ? int(area * g_brush_manager.GetCustomThicknessMod()) : brush->getThickness() * area / std::max(1, brush->getThicknessCeiling()));
+	const int final_object_count = std::max(1, object_range + random(object_range));
 
 	Position center_pos(0x8000, 0x8000, 0x8);
 
-	if (g_gui.GetBrushSize() > 0 && !brush->oneSizeFitsAll()) {
+	if (g_brush_manager.GetBrushSize() > 0 && !brush->oneSizeFitsAll()) {
 		while (object_count < final_object_count) {
 			int retries = 0;
 			bool exit = false;
@@ -62,12 +63,12 @@ void DoodadPreviewManager::FillBuffer() {
 				int pos_retries = 0;
 				int xpos = 0, ypos = 0;
 				bool found_pos = false;
-				if (g_gui.GetBrushShape() == BRUSHSHAPE_CIRCLE) {
+				if (g_brush_manager.GetBrushShape() == BRUSHSHAPE_CIRCLE) {
 					while (pos_retries < 5 && !found_pos) {
-						xpos = random(-g_gui.GetBrushSize(), g_gui.GetBrushSize());
-						ypos = random(-g_gui.GetBrushSize(), g_gui.GetBrushSize());
+						xpos = random(-g_brush_manager.GetBrushSize(), g_brush_manager.GetBrushSize());
+						ypos = random(-g_brush_manager.GetBrushSize(), g_brush_manager.GetBrushSize());
 						float distance = sqrt(float(xpos * xpos) + float(ypos * ypos));
-						if (distance < g_gui.GetBrushSize() + 0.005) {
+						if (distance < g_brush_manager.GetBrushSize() + 0.005) {
 							found_pos = true;
 						} else {
 							++pos_retries;
@@ -75,8 +76,8 @@ void DoodadPreviewManager::FillBuffer() {
 					}
 				} else {
 					found_pos = true;
-					xpos = random(-g_gui.GetBrushSize(), g_gui.GetBrushSize());
-					ypos = random(-g_gui.GetBrushSize(), g_gui.GetBrushSize());
+					xpos = random(-g_brush_manager.GetBrushSize(), g_brush_manager.GetBrushSize());
+					ypos = random(-g_brush_manager.GetBrushSize(), g_brush_manager.GetBrushSize());
 				}
 
 				if (!found_pos) {
@@ -86,9 +87,9 @@ void DoodadPreviewManager::FillBuffer() {
 
 				// Decide whether the zone should have a composite or several single objects.
 				bool fail = false;
-				if (random(brush->getTotalChance(g_gui.GetBrushVariation())) <= brush->getCompositeChance(g_gui.GetBrushVariation())) {
+				if (random(brush->getTotalChance(g_brush_manager.GetBrushVariation())) <= brush->getCompositeChance(g_brush_manager.GetBrushVariation())) {
 					// Composite
-					const CompositeTileList& composites = brush->getComposite(g_gui.GetBrushVariation());
+					const CompositeTileList& composites = brush->getComposite(g_brush_manager.GetBrushVariation());
 
 					// Figure out if the placement is valid
 					for (const auto& composite : composites) {
@@ -132,7 +133,7 @@ void DoodadPreviewManager::FillBuffer() {
 					} else {
 						tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
 					}
-					int variation = g_gui.GetBrushVariation();
+					int variation = g_brush_manager.GetBrushVariation();
 					brush->draw(doodad_buffer_map, tile, &variation);
 					doodad_buffer_map->setTile(tile->getPosition(), tile);
 					exit = true;
@@ -145,9 +146,9 @@ void DoodadPreviewManager::FillBuffer() {
 			++object_count;
 		}
 	} else {
-		if (brush->hasCompositeObjects(g_gui.GetBrushVariation()) && random(brush->getTotalChance(g_gui.GetBrushVariation())) <= brush->getCompositeChance(g_gui.GetBrushVariation())) {
+		if (brush->hasCompositeObjects(g_brush_manager.GetBrushVariation()) && random(brush->getTotalChance(g_brush_manager.GetBrushVariation())) <= brush->getCompositeChance(g_brush_manager.GetBrushVariation())) {
 			// Composite
-			const CompositeTileList& composites = brush->getComposite(g_gui.GetBrushVariation());
+			const CompositeTileList& composites = brush->getComposite(g_brush_manager.GetBrushVariation());
 
 			// All placement is valid...
 
@@ -162,9 +163,9 @@ void DoodadPreviewManager::FillBuffer() {
 				}
 				doodad_buffer_map->setTile(tile->getPosition(), tile);
 			}
-		} else if (brush->hasSingleObjects(g_gui.GetBrushVariation())) {
+		} else if (brush->hasSingleObjects(g_brush_manager.GetBrushVariation())) {
 			Tile* tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(center_pos));
-			int variation = g_gui.GetBrushVariation();
+			int variation = g_brush_manager.GetBrushVariation();
 			brush->draw(doodad_buffer_map, tile, &variation);
 			doodad_buffer_map->setTile(center_pos, tile);
 		}

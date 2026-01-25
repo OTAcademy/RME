@@ -10,6 +10,7 @@
 #include "game/sprites.h"
 #include "game/materials.h"
 #include "brushes/brush.h"
+#include "brushes/managers/brush_manager.h"
 #include "ui/managers/loading_manager.h"
 
 VersionManager g_version;
@@ -166,20 +167,7 @@ bool VersionManager::LoadDataFiles(wxString& error, wxArrayString& warnings) {
 void VersionManager::UnloadVersion() {
 	UnnamedRenderingLock();
 	g_gui.gfx.clear();
-	g_gui.current_brush = nullptr;
-	g_gui.previous_brush = nullptr;
-
-	g_gui.house_brush = nullptr;
-	g_gui.house_exit_brush = nullptr;
-	g_gui.waypoint_brush = nullptr;
-	g_gui.optional_brush = nullptr;
-	g_gui.eraser = nullptr;
-	g_gui.normal_door_brush = nullptr;
-	g_gui.locked_door_brush = nullptr;
-	g_gui.magic_door_brush = nullptr;
-	g_gui.quest_door_brush = nullptr;
-	g_gui.hatch_door_brush = nullptr;
-	g_gui.window_door_brush = nullptr;
+	g_brush_manager.Clear();
 
 	if (loaded_version != CLIENT_VERSION_NONE) {
 		g_materials.clear();

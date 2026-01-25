@@ -21,6 +21,7 @@
 #include "app/main.h"
 
 #include "ui/gui.h"
+#include "brushes/managers/brush_manager.h"
 #include "editor/hotkey_manager.h"
 #include "palette/palette_waypoints.h"
 #include "brushes/waypoint_brush.h"
@@ -75,14 +76,14 @@ void WaypointPalettePanel::SelectFirstBrush() {
 
 Brush* WaypointPalettePanel::GetSelectedBrush() const {
 	long item = waypoint_list->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-	g_gui.waypoint_brush->setWaypoint(
+	g_brush_manager.waypoint_brush->setWaypoint(
 		item == -1 ? nullptr : map->waypoints.getWaypoint(nstr(waypoint_list->GetItemText(item)))
 	);
-	return g_gui.waypoint_brush;
+	return g_brush_manager.waypoint_brush;
 }
 
 bool WaypointPalettePanel::SelectBrush(const Brush* whatbrush) {
-	ASSERT(whatbrush == g_gui.waypoint_brush);
+	ASSERT(whatbrush == g_brush_manager.waypoint_brush);
 	return false;
 }
 
@@ -136,7 +137,7 @@ void WaypointPalettePanel::OnClickWaypoint(wxListEvent& event) {
 	Waypoint* wp = map->waypoints.getWaypoint(wpname);
 	if (wp) {
 		g_gui.SetScreenCenterPosition(wp->pos);
-		g_gui.waypoint_brush->setWaypoint(wp);
+		g_brush_manager.waypoint_brush->setWaypoint(wp);
 	}
 }
 
@@ -182,7 +183,7 @@ void WaypointPalettePanel::OnEditWaypointLabel(wxListEvent& event) {
 				}
 
 				map->waypoints.addWaypoint(nwp);
-				g_gui.waypoint_brush->setWaypoint(nwp);
+				g_brush_manager.waypoint_brush->setWaypoint(nwp);
 
 				// Refresh other palettes
 				refresh_timer.Start(300, true);

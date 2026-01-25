@@ -18,19 +18,9 @@
 #ifndef RME_TILESET_H_
 #define RME_TILESET_H_
 
-class Brushes;
+#include "brushes/brush_enums.h"
 
-enum TilesetCategoryType {
-	TILESET_UNKNOWN,
-	TILESET_TERRAIN,
-	TILESET_CREATURE,
-	TILESET_DOODAD,
-	TILESET_COLLECTION,
-	TILESET_ITEM,
-	TILESET_RAW,
-	TILESET_HOUSE,
-	TILESET_WAYPOINT,
-};
+class Brushes;
 
 class TilesetCategory {
 public:

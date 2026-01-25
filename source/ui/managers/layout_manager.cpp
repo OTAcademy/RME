@@ -7,6 +7,7 @@
 #include "ui/gui.h"
 #include "app/application.h"
 #include "palette/palette_window.h"
+#include "palette/managers/palette_manager.h"
 
 #include "rendering/ui/minimap_window.h"
 #include "ui/main_menubar.h"
@@ -125,7 +126,7 @@ void LayoutManager::SavePerspective() {
 	g_settings.setInteger(Config::MINIMAP_VISIBLE, g_minimap.GetWindow() ? 1 : 0);
 
 	wxString pinfo;
-	for (auto& palette : g_gui.palettes) {
+	for (auto& palette : g_palettes.palettes) {
 		if (g_gui.aui_manager->GetPane(palette).IsShown()) {
 			pinfo << g_gui.aui_manager->SavePaneInfo(g_gui.aui_manager->GetPane(palette)) << "|";
 		}

@@ -57,6 +57,9 @@ extern const wxEventType EVT_UPDATE_MENUS;
 		(wxObject*)nullptr                                                                      \
 	),
 
+#include "brushes/managers/brush_manager.h"
+#include "palette/managers/palette_manager.h"
+#include "editor/managers/editor_manager.h"
 #include "editor/hotkey_manager.h"
 
 class GUI {
@@ -185,9 +188,7 @@ public:
 	}
 
 	// Brushes
-	void FillDoodadPreviewBuffer() {
-		g_doodad_preview.FillBuffer();
-	}
+	void FillDoodadPreviewBuffer();
 	// Selects the currently seleceted brush in the active palette
 	void SelectBrush();
 	// Updates the palette AND selects the brush, second parameter is first palette to look in
@@ -205,23 +206,13 @@ public:
 	int GetSpawnTime() const;
 
 	// Additional brush parameters
-	void SetSpawnTime(int time) {
-		creature_spawntime = time;
-	}
+	void SetSpawnTime(int time);
 
-	void SetLightIntensity(float v) {
-		light_intensity = v;
-	}
-	float GetLightIntensity() const {
-		return light_intensity;
-	}
+	void SetLightIntensity(float v);
+	float GetLightIntensity() const;
 
-	void SetAmbientLightLevel(float v) {
-		ambient_light_level = v;
-	}
-	float GetAmbientLightLevel() const {
-		return ambient_light_level;
-	}
+	void SetAmbientLightLevel(float v);
+	float GetAmbientLightLevel() const;
 	void SetBrushSize(int nz);
 	void SetBrushSizeInternal(int nz);
 	void SetBrushShape(BrushShape bs);
@@ -299,10 +290,8 @@ public:
 	Map& GetCurrentMap();
 	int GetOpenMapCount();
 	bool ShouldSave();
-	void SaveCurrentMap(FileName filename, bool showdialog); // "" means default filename
-	void SaveCurrentMap(bool showdialog = true) {
-		SaveCurrentMap(wxString(""), showdialog);
-	}
+	void SaveCurrentMap(FileName filename, bool showdialog);
+	void SaveCurrentMap(bool showdialog = true);
 	bool NewMap();
 	void OpenMap();
 	void SaveMap();
@@ -359,9 +348,6 @@ public:
 
 	BaseMap* secondary_map; // A buffer map
 
-	using PaletteList = std::list<PaletteWindow*>;
-	PaletteList palettes;
-
 	wxGLContext* OGLContext;
 
 	EditorMode mode;
@@ -370,45 +356,6 @@ public:
 
 	Hotkey hotkeys[10];
 	bool hotkeys_enabled;
-
-	//=========================================================================
-	// Brush references
-	//=========================================================================
-
-	HouseBrush* house_brush;
-	HouseExitBrush* house_exit_brush;
-	WaypointBrush* waypoint_brush;
-	OptionalBorderBrush* optional_brush;
-	EraserBrush* eraser;
-	SpawnBrush* spawn_brush;
-	DoorBrush* normal_door_brush;
-	DoorBrush* locked_door_brush;
-	DoorBrush* magic_door_brush;
-	DoorBrush* quest_door_brush;
-	DoorBrush* hatch_door_brush;
-	DoorBrush* normal_door_alt_brush;
-	DoorBrush* archway_door_brush;
-	DoorBrush* window_door_brush;
-	FlagBrush* pz_brush;
-	FlagBrush* rook_brush;
-	FlagBrush* nolog_brush;
-	FlagBrush* pvp_brush;
-
-	//=========================================================================
-	// Internal brush data
-	//=========================================================================
-	Brush* current_brush;
-	Brush* previous_brush;
-	BrushShape brush_shape;
-	int brush_size;
-	int brush_variation;
-	int creature_spawntime;
-
-	bool draw_locked_doors;
-	bool use_custom_thickness;
-	float custom_thickness_mod;
-	float light_intensity;
-	float ambient_light_level;
 
 protected:
 	wxWindowDisabler* winDisabler;
