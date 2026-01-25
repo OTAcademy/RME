@@ -1,6 +1,7 @@
 #include "ui/managers/recent_files_manager.h"
 
-RecentFilesManager::RecentFilesManager() : recentFiles(10) {
+RecentFilesManager::RecentFilesManager() :
+	recentFiles(10) {
 }
 
 RecentFilesManager::~RecentFilesManager() {
