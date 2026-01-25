@@ -23,7 +23,8 @@ public:
 	GLBuffer& operator=(const GLBuffer&) = delete;
 
 	// Enable move
-	GLBuffer(GLBuffer&& other) noexcept : id(std::exchange(other.id, 0)) {}
+	GLBuffer(GLBuffer&& other) noexcept :
+		id(std::exchange(other.id, 0)) { }
 
 	GLBuffer& operator=(GLBuffer&& other) noexcept {
 		if (this != &other) {
@@ -36,8 +37,12 @@ public:
 	}
 
 	// Implicit conversion to GLuint for GL functions
-	operator GLuint() const { return id; }
-	GLuint GetID() const { return id; }
+	operator GLuint() const {
+		return id;
+	}
+	GLuint GetID() const {
+		return id;
+	}
 
 private:
 	GLuint id = 0;
@@ -61,7 +66,8 @@ public:
 	GLVertexArray& operator=(const GLVertexArray&) = delete;
 
 	// Enable move
-	GLVertexArray(GLVertexArray&& other) noexcept : id(std::exchange(other.id, 0)) {}
+	GLVertexArray(GLVertexArray&& other) noexcept :
+		id(std::exchange(other.id, 0)) { }
 
 	GLVertexArray& operator=(GLVertexArray&& other) noexcept {
 		if (this != &other) {
@@ -74,8 +80,12 @@ public:
 	}
 
 	// Implicit conversion
-	operator GLuint() const { return id; }
-	GLuint GetID() const { return id; }
+	operator GLuint() const {
+		return id;
+	}
+	GLuint GetID() const {
+		return id;
+	}
 
 private:
 	GLuint id = 0;
