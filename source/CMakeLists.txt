@@ -200,6 +200,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/result_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/tileset_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/welcome_dialog.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map_statistics_dialog.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/live_dialogs.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar_loader.h
     ${CMAKE_CURRENT_LIST_DIR}/util/common.h
     ${CMAKE_CURRENT_LIST_DIR}/util/con_vector.h
     ${CMAKE_CURRENT_LIST_DIR}/util/json.h
@@ -393,6 +396,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/result_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/tileset_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/welcome_dialog.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map_statistics_dialog.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/live_dialogs.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar_loader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/common.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/file_system.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/mt_rand.cpp

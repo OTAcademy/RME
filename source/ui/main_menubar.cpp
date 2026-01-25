@@ -28,6 +28,10 @@
 
 #include "ui/about_window.h"
 #include "ui/dat_debug_view.h"
+#include "ui/menubar_loader.h"
+#include "ui/map_statistics_dialog.h"
+#include "ui/live_dialogs.h"
+
 #include "ui/extension_window.h"
 #include "ui/find_item_window.h"
 #include "app/preferences.h"
@@ -38,7 +42,6 @@
 #include "editor/editor.h"
 #include "game/materials.h"
 #include "live/live_client.h"
-#include "live/live_server.h"
 #include "editor/action_queue.h"
 
 #include "editor/operations/search_operations.h"
@@ -475,197 +478,15 @@ void MainMenuBar::UpdateFloorMenu() {
 }
 
 bool MainMenuBar::Load(const FileName& path, wxArrayString& warnings, wxString& error) {
-	// Open the XML file
-	pugi::xml_document doc;
-	pugi::xml_parse_result result = doc.load_file(path.GetFullPath().mb_str());
-	if (!result) {
-		error = "Could not open " + path.GetFullName() + " (file not found or syntax error)";
-		return false;
+	if (MenuBarLoader::Load(path, menubar, items, actions, recentFilesManager, warnings, error)) {
+		Update();
+		LoadValues();
+		return true;
 	}
-
-	pugi::xml_node node = doc.child("menubar");
-	if (!node) {
-		error = path.GetFullName() + ": Invalid rootheader.";
-		return false;
-	}
-
-	// Clear the menu
-	while (menubar->GetMenuCount() > 0) {
-		menubar->Remove(0);
-	}
-
-	// Load succeded
-	for (pugi::xml_node menuNode = node.first_child(); menuNode; menuNode = menuNode.next_sibling()) {
-		// For each child node, load it
-		wxObject* i = LoadItem(menuNode, nullptr, warnings, error);
-		wxMenu* m = dynamic_cast<wxMenu*>(i);
-		if (m) {
-			menubar->Append(m, m->GetTitle());
-#ifdef __APPLE__
-			m->SetTitle(m->GetTitle());
-#else
-			m->SetTitle("");
-#endif
-		} else if (i) {
-			delete i;
-			warnings.push_back(path.GetFullName() + ": Only menus can be subitems of main menu");
-		}
-	}
-
-#ifdef __LINUX__
-	const int count = 44;
-	wxAcceleratorEntry entries[count];
-	// Edit
-	entries[0].Set(wxACCEL_CTRL, (int)'Z', MAIN_FRAME_MENU + MenuBar::UNDO);
-	entries[1].Set(wxACCEL_CTRL | wxACCEL_SHIFT, (int)'Z', MAIN_FRAME_MENU + MenuBar::REDO);
-	entries[2].Set(wxACCEL_CTRL, (int)'F', MAIN_FRAME_MENU + MenuBar::FIND_ITEM);
-	entries[3].Set(wxACCEL_CTRL | wxACCEL_SHIFT, (int)'F', MAIN_FRAME_MENU + MenuBar::REPLACE_ITEMS);
-	entries[4].Set(wxACCEL_NORMAL, (int)'A', MAIN_FRAME_MENU + MenuBar::AUTOMAGIC);
-	entries[5].Set(wxACCEL_CTRL, (int)'B', MAIN_FRAME_MENU + MenuBar::BORDERIZE_SELECTION);
-	entries[6].Set(wxACCEL_NORMAL, (int)'P', MAIN_FRAME_MENU + MenuBar::GOTO_PREVIOUS_POSITION);
-	entries[7].Set(wxACCEL_CTRL, (int)'G', MAIN_FRAME_MENU + MenuBar::GOTO_POSITION);
-	entries[8].Set(wxACCEL_NORMAL, (int)'J', MAIN_FRAME_MENU + MenuBar::JUMP_TO_BRUSH);
-	entries[9].Set(wxACCEL_CTRL, (int)'X', MAIN_FRAME_MENU + MenuBar::CUT);
-	entries[10].Set(wxACCEL_CTRL, (int)'C', MAIN_FRAME_MENU + MenuBar::COPY);
-	entries[11].Set(wxACCEL_CTRL, (int)'V', MAIN_FRAME_MENU + MenuBar::PASTE);
-	// View
-	entries[12].Set(wxACCEL_CTRL, (int)'=', MAIN_FRAME_MENU + MenuBar::ZOOM_IN);
-	entries[13].Set(wxACCEL_CTRL, (int)'-', MAIN_FRAME_MENU + MenuBar::ZOOM_OUT);
-	entries[14].Set(wxACCEL_CTRL, (int)'0', MAIN_FRAME_MENU + MenuBar::ZOOM_NORMAL);
-	entries[15].Set(wxACCEL_NORMAL, (int)'Q', MAIN_FRAME_MENU + MenuBar::SHOW_SHADE);
-	entries[16].Set(wxACCEL_CTRL, (int)'W', MAIN_FRAME_MENU + MenuBar::SHOW_ALL_FLOORS);
-	entries[17].Set(wxACCEL_NORMAL, (int)'Q', MAIN_FRAME_MENU + MenuBar::GHOST_ITEMS);
-	entries[18].Set(wxACCEL_CTRL, (int)'L', MAIN_FRAME_MENU + MenuBar::GHOST_HIGHER_FLOORS);
-	entries[19].Set(wxACCEL_SHIFT, (int)'I', MAIN_FRAME_MENU + MenuBar::SHOW_INGAME_BOX);
-	entries[20].Set(wxACCEL_SHIFT, (int)'L', MAIN_FRAME_MENU + MenuBar::SHOW_LIGHTS);
-	entries[21].Set(wxACCEL_SHIFT, (int)'G', MAIN_FRAME_MENU + MenuBar::SHOW_GRID);
-	entries[22].Set(wxACCEL_NORMAL, (int)'V', MAIN_FRAME_MENU + MenuBar::HIGHLIGHT_ITEMS);
-	entries[23].Set(wxACCEL_NORMAL, (int)'X', MAIN_FRAME_MENU + MenuBar::HIGHLIGHT_LOCKED_DOORS);
-	entries[24].Set(wxACCEL_NORMAL, (int)'F', MAIN_FRAME_MENU + MenuBar::SHOW_CREATURES);
-	entries[25].Set(wxACCEL_NORMAL, (int)'S', MAIN_FRAME_MENU + MenuBar::SHOW_SPAWNS);
-	entries[26].Set(wxACCEL_NORMAL, (int)'E', MAIN_FRAME_MENU + MenuBar::SHOW_SPECIAL);
-	entries[27].Set(wxACCEL_SHIFT, (int)'E', MAIN_FRAME_MENU + MenuBar::SHOW_AS_MINIMAP);
-	entries[28].Set(wxACCEL_CTRL, (int)'E', MAIN_FRAME_MENU + MenuBar::SHOW_ONLY_COLORS);
-	entries[29].Set(wxACCEL_CTRL, (int)'M', MAIN_FRAME_MENU + MenuBar::SHOW_ONLY_MODIFIED);
-	entries[30].Set(wxACCEL_CTRL, (int)'H', MAIN_FRAME_MENU + MenuBar::SHOW_HOUSES);
-	entries[31].Set(wxACCEL_NORMAL, (int)'O', MAIN_FRAME_MENU + MenuBar::SHOW_PATHING);
-	entries[32].Set(wxACCEL_NORMAL, (int)'Y', MAIN_FRAME_MENU + MenuBar::SHOW_TOOLTIPS);
-	entries[33].Set(wxACCEL_NORMAL, (int)'L', MAIN_FRAME_MENU + MenuBar::SHOW_PREVIEW);
-	entries[34].Set(wxACCEL_NORMAL, (int)'K', MAIN_FRAME_MENU + MenuBar::SHOW_WALL_HOOKS);
-
-	// Window
-	entries[35].Set(wxACCEL_NORMAL, (int)'M', MAIN_FRAME_MENU + MenuBar::WIN_MINIMAP);
-	entries[36].Set(wxACCEL_NORMAL, (int)'T', MAIN_FRAME_MENU + MenuBar::SELECT_TERRAIN);
-	entries[37].Set(wxACCEL_NORMAL, (int)'D', MAIN_FRAME_MENU + MenuBar::SELECT_DOODAD);
-	entries[38].Set(wxACCEL_NORMAL, (int)'I', MAIN_FRAME_MENU + MenuBar::SELECT_ITEM);
-	entries[39].Set(wxACCEL_NORMAL, (int)'N', MAIN_FRAME_MENU + MenuBar::SELECT_COLLECTION);
-	entries[40].Set(wxACCEL_NORMAL, (int)'H', MAIN_FRAME_MENU + MenuBar::SELECT_HOUSE);
-	entries[41].Set(wxACCEL_NORMAL, (int)'C', MAIN_FRAME_MENU + MenuBar::SELECT_CREATURE);
-	entries[42].Set(wxACCEL_NORMAL, (int)'W', MAIN_FRAME_MENU + MenuBar::SELECT_WAYPOINT);
-	entries[43].Set(wxACCEL_NORMAL, (int)'R', MAIN_FRAME_MENU + MenuBar::SELECT_RAW);
-
-	wxAcceleratorTable accelerator(count, entries);
-	frame->SetAcceleratorTable(accelerator);
-#endif
-
-	/*
-	// Create accelerator table
-	accelerator_table = newd wxAcceleratorTable(accelerators.size(), &accelerators[0]);
-
-	// Tell all clients of the renewed accelerators
-	RenewClients();
-	*/
-
-	Update();
-	LoadValues();
-	return true;
+	return false;
 }
 
-wxObject* MainMenuBar::LoadItem(pugi::xml_node node, wxMenu* parent, wxArrayString& warnings, wxString& error) {
-	pugi::xml_attribute attribute;
-
-	const std::string& nodeName = as_lower_str(node.name());
-	if (nodeName == "menu") {
-		if (!(attribute = node.attribute("name"))) {
-			return nullptr;
-		}
-
-		std::string name = attribute.as_string();
-		std::replace(name.begin(), name.end(), '$', '&');
-
-		wxMenu* menu = newd wxMenu;
-		if ((attribute = node.attribute("special")) && std::string(attribute.as_string()) == "RECENT_FILES") {
-			recentFilesManager.UseMenu(menu);
-		} else {
-			for (pugi::xml_node menuNode = node.first_child(); menuNode; menuNode = menuNode.next_sibling()) {
-				// Load an add each item in order
-				LoadItem(menuNode, menu, warnings, error);
-			}
-		}
-
-		// If we have a parent, add ourselves.
-		// If not, we just return the item and the parent function
-		// is responsible for adding us to wherever
-		if (parent) {
-			parent->AppendSubMenu(menu, wxstr(name));
-		} else {
-			menu->SetTitle((name));
-		}
-		return menu;
-	} else if (nodeName == "item") {
-		// We must have a parent when loading items
-		if (!parent) {
-			return nullptr;
-		} else if (!(attribute = node.attribute("name"))) {
-			return nullptr;
-		}
-
-		std::string name = attribute.as_string();
-		std::replace(name.begin(), name.end(), '$', '&');
-		if (!(attribute = node.attribute("action"))) {
-			return nullptr;
-		}
-
-		const std::string& action = attribute.as_string();
-		std::string hotkey = node.attribute("hotkey").as_string();
-		if (!hotkey.empty()) {
-			hotkey = '\t' + hotkey;
-		}
-
-		const std::string& help = node.attribute("help").as_string();
-		name += hotkey;
-
-		auto it = actions.find(action);
-		if (it == actions.end()) {
-			warnings.push_back("Invalid action type '" + wxstr(action) + "'.");
-			return nullptr;
-		}
-
-		const MenuBar::Action& act = *it->second;
-		wxAcceleratorEntry* entry = wxAcceleratorEntry::Create(wxstr(hotkey));
-		if (entry) {
-			delete entry; // accelerators.push_back(entry);
-		} else {
-			warnings.push_back("Invalid hotkey.");
-		}
-
-		wxMenuItem* tmp = parent->Append(
-			MAIN_FRAME_MENU + act.id, // ID
-			wxstr(name), // Title of button
-			wxstr(help), // Help text
-			act.kind // Kind of item
-		);
-		items[MenuBar::ActionID(act.id)].push_back(tmp);
-		return tmp;
-	} else if (nodeName == "separator") {
-		// We must have a parent when loading items
-		if (!parent) {
-			return nullptr;
-		}
-		return parent->AppendSeparator();
-	}
-	return nullptr;
-}
+// LoadItem moved to MenuBarLoader
 
 void MainMenuBar::OnNew(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.NewMap();
@@ -1259,94 +1080,7 @@ void MainMenuBar::OnMapEditMonsters(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MainMenuBar::OnMapStatistics(wxCommandEvent& WXUNUSED(event)) {
-	if (!g_gui.IsEditorOpen()) {
-		return;
-	}
-
-	g_gui.CreateLoadBar("Collecting data...");
-
-	Map* map = &g_gui.GetCurrentMap();
-	MapStatistics stats = MapStatisticsCollector::Collect(map);
-
-	g_gui.DestroyLoadBar();
-
-	std::ostringstream os;
-	os.setf(std::ios::fixed, std::ios::floatfield);
-	os.precision(2);
-	os << "Map statistics for the map \"" << map->getMapDescription() << "\"\n";
-	os << "\tTile data:\n";
-	os << "\t\tTotal number of tiles: " << stats.tile_count << "\n";
-	os << "\t\tNumber of pathable tiles: " << stats.walkable_tile_count << "\n";
-	os << "\t\tNumber of unpathable tiles: " << stats.blocking_tile_count << "\n";
-	if (stats.percent_pathable >= 0.0) {
-		os << "\t\tPercent walkable tiles: " << stats.percent_pathable << "%\n";
-	}
-	os << "\t\tDetailed tiles: " << stats.detailed_tile_count << "\n";
-	if (stats.percent_detailed >= 0.0) {
-		os << "\t\tPercent detailed tiles: " << stats.percent_detailed << "%\n";
-	}
-
-	os << "\tItem data:\n";
-	os << "\t\tTotal number of items: " << stats.item_count << "\n";
-	os << "\t\tNumber of moveable tiles: " << stats.loose_item_count << "\n";
-	os << "\t\tNumber of depots: " << stats.depot_count << "\n";
-	os << "\t\tNumber of containers: " << stats.container_count << "\n";
-	os << "\t\tNumber of items with Action ID: " << stats.action_item_count << "\n";
-	os << "\t\tNumber of items with Unique ID: " << stats.unique_item_count << "\n";
-
-	os << "\tCreature data:\n";
-	os << "\t\tTotal creature count: " << stats.creature_count << "\n";
-	os << "\t\tTotal spawn count: " << stats.spawn_count << "\n";
-	if (stats.creatures_per_spawn >= 0) {
-		os << "\t\tMean creatures per spawn: " << stats.creatures_per_spawn << "\n";
-	}
-
-	os << "\tTown/House data:\n";
-	os << "\t\tTotal number of towns: " << stats.town_count << "\n";
-	os << "\t\tTotal number of houses: " << stats.house_count << "\n";
-	if (stats.houses_per_town >= 0) {
-		os << "\t\tMean houses per town: " << stats.houses_per_town << "\n";
-	}
-	os << "\t\tTotal amount of housetiles: " << stats.total_house_sqm << "\n";
-	if (stats.sqm_per_house >= 0) {
-		os << "\t\tMean tiles per house: " << stats.sqm_per_house << "\n";
-	}
-	if (stats.sqm_per_town >= 0) {
-		os << "\t\tMean tiles per town: " << stats.sqm_per_town << "\n";
-	}
-
-	if (stats.largest_town) {
-		os << "\t\tLargest Town: \"" << stats.largest_town->getName() << "\" (" << stats.largest_town_size << " sqm)\n";
-	}
-	if (stats.largest_house) {
-		os << "\t\tLargest House: \"" << stats.largest_house->name << "\" (" << stats.largest_house_size << " sqm)\n";
-	}
-
-	os << "\n";
-	os << "Generated by Remere's Map Editor version " + __RME_VERSION__ + "\n";
-
-	g_gui.DestroyLoadBar();
-
-	wxDialog* dg = newd wxDialog(frame, wxID_ANY, "Map Statistics", wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX);
-	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
-	wxTextCtrl* text_field = newd wxTextCtrl(dg, wxID_ANY, wxstr(os.str()), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY);
-	text_field->SetMinSize(wxSize(400, 300));
-	topsizer->Add(text_field, wxSizerFlags(5).Expand());
-
-	wxSizer* choicesizer = newd wxBoxSizer(wxHORIZONTAL);
-	wxButton* export_button = newd wxButton(dg, wxID_OK, "Export as XML");
-	choicesizer->Add(export_button, wxSizerFlags(1).Center());
-	export_button->Enable(false);
-	choicesizer->Add(newd wxButton(dg, wxID_CANCEL, "OK"), wxSizerFlags(1).Center());
-	topsizer->Add(choicesizer, wxSizerFlags(1).Center());
-	dg->SetSizerAndFit(topsizer);
-	dg->Centre(wxBOTH);
-
-	int ret = dg->ShowModal();
-
-	if (ret == wxID_OK) {
-	} else if (ret == wxID_CANCEL) {
-	}
+	MapStatisticsDialog::Show(frame);
 }
 
 void MainMenuBar::OnMapCleanup(wxCommandEvent& WXUNUSED(event)) {
@@ -1536,149 +1270,11 @@ void MainMenuBar::OnSelectRawPalette(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MainMenuBar::OnStartLive(wxCommandEvent& event) {
-	Editor* editor = g_gui.GetCurrentEditor();
-	if (!editor) {
-		DialogUtil::PopupDialog("Error", "You need to have a map open to start a live mapping session.", wxOK);
-		return;
-	}
-	if (editor->live_manager.IsLive()) {
-		DialogUtil::PopupDialog("Error", "You can not start two live servers on the same map (or a server using a remote map).", wxOK);
-		return;
-	}
-
-	wxDialog* live_host_dlg = newd wxDialog(frame, wxID_ANY, "Host Live Server", wxDefaultPosition, wxDefaultSize);
-
-	wxSizer* top_sizer = newd wxBoxSizer(wxVERTICAL);
-	wxFlexGridSizer* gsizer = newd wxFlexGridSizer(2, 10, 10);
-	gsizer->AddGrowableCol(0, 2);
-	gsizer->AddGrowableCol(1, 3);
-
-	// Data fields
-	wxTextCtrl* hostname;
-	wxSpinCtrl* port;
-	wxTextCtrl* password;
-	wxCheckBox* allow_copy;
-
-	gsizer->Add(newd wxStaticText(live_host_dlg, wxID_ANY, "Server Name:"));
-	gsizer->Add(hostname = newd wxTextCtrl(live_host_dlg, wxID_ANY, "RME Live Server"), 0, wxEXPAND);
-
-	gsizer->Add(newd wxStaticText(live_host_dlg, wxID_ANY, "Port:"));
-	gsizer->Add(port = newd wxSpinCtrl(live_host_dlg, wxID_ANY, "31313", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 65535, 31313), 0, wxEXPAND);
-
-	gsizer->Add(newd wxStaticText(live_host_dlg, wxID_ANY, "Password:"));
-	gsizer->Add(password = newd wxTextCtrl(live_host_dlg, wxID_ANY), 0, wxEXPAND);
-
-	top_sizer->Add(gsizer, 0, wxALL, 20);
-
-	top_sizer->Add(allow_copy = newd wxCheckBox(live_host_dlg, wxID_ANY, "Allow copy & paste between maps."), 0, wxRIGHT | wxLEFT, 20);
-	allow_copy->SetToolTip("Allows remote clients to copy & paste from the hosted map to local maps.");
-
-	wxSizer* ok_sizer = newd wxBoxSizer(wxHORIZONTAL);
-	ok_sizer->Add(newd wxButton(live_host_dlg, wxID_OK, "OK"), 1, wxCENTER);
-	ok_sizer->Add(newd wxButton(live_host_dlg, wxID_CANCEL, "Cancel"), wxCENTER, 1);
-	top_sizer->Add(ok_sizer, 0, wxCENTER | wxALL, 20);
-
-	live_host_dlg->SetSizerAndFit(top_sizer);
-
-	while (true) {
-		int ret = live_host_dlg->ShowModal();
-		if (ret == wxID_OK) {
-			LiveServer* liveServer = editor->live_manager.StartServer();
-			liveServer->setName(hostname->GetValue());
-			liveServer->setPassword(password->GetValue());
-			liveServer->setPort(port->GetValue());
-
-			const wxString& error = liveServer->getLastError();
-			if (!error.empty()) {
-				DialogUtil::PopupDialog(live_host_dlg, "Error", error, wxOK);
-				editor->live_manager.CloseServer();
-				continue;
-			}
-
-			if (!liveServer->bind()) {
-				DialogUtil::PopupDialog("Socket Error", "Could not bind socket! Try another port?", wxOK);
-				editor->live_manager.CloseServer();
-			} else {
-				liveServer->createLogWindow(g_gui.tabbook);
-			}
-			break;
-		} else {
-			break;
-		}
-	}
-	live_host_dlg->Destroy();
-	Update();
+	LiveDialogs::ShowHostDialog(frame, g_gui.GetCurrentEditor());
 }
 
 void MainMenuBar::OnJoinLive(wxCommandEvent& event) {
-	wxDialog* live_join_dlg = newd wxDialog(frame, wxID_ANY, "Join Live Server", wxDefaultPosition, wxDefaultSize);
-
-	wxSizer* top_sizer = newd wxBoxSizer(wxVERTICAL);
-	wxFlexGridSizer* gsizer = newd wxFlexGridSizer(2, 10, 10);
-	gsizer->AddGrowableCol(0, 2);
-	gsizer->AddGrowableCol(1, 3);
-
-	// Data fields
-	wxTextCtrl* name;
-	wxTextCtrl* ip;
-	wxSpinCtrl* port;
-	wxTextCtrl* password;
-
-	gsizer->Add(newd wxStaticText(live_join_dlg, wxID_ANY, "Name:"));
-	gsizer->Add(name = newd wxTextCtrl(live_join_dlg, wxID_ANY, ""), 0, wxEXPAND);
-
-	gsizer->Add(newd wxStaticText(live_join_dlg, wxID_ANY, "IP:"));
-	gsizer->Add(ip = newd wxTextCtrl(live_join_dlg, wxID_ANY, "localhost"), 0, wxEXPAND);
-
-	gsizer->Add(newd wxStaticText(live_join_dlg, wxID_ANY, "Port:"));
-	gsizer->Add(port = newd wxSpinCtrl(live_join_dlg, wxID_ANY, "31313", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 65535, 31313), 0, wxEXPAND);
-
-	gsizer->Add(newd wxStaticText(live_join_dlg, wxID_ANY, "Password:"));
-	gsizer->Add(password = newd wxTextCtrl(live_join_dlg, wxID_ANY), 0, wxEXPAND);
-
-	top_sizer->Add(gsizer, 0, wxALL, 20);
-
-	wxSizer* ok_sizer = newd wxBoxSizer(wxHORIZONTAL);
-	ok_sizer->Add(newd wxButton(live_join_dlg, wxID_OK, "OK"), 1, wxRIGHT);
-	ok_sizer->Add(newd wxButton(live_join_dlg, wxID_CANCEL, "Cancel"), 1, wxRIGHT);
-	top_sizer->Add(ok_sizer, 0, wxCENTER | wxALL, 20);
-
-	live_join_dlg->SetSizerAndFit(top_sizer);
-
-	while (true) {
-		int ret = live_join_dlg->ShowModal();
-		if (ret == wxID_OK) {
-			LiveClient* liveClient = newd LiveClient();
-			liveClient->setPassword(password->GetValue());
-
-			wxString tmp = name->GetValue();
-			if (tmp.empty()) {
-				tmp = "User";
-			}
-			liveClient->setName(tmp);
-
-			const wxString& error = liveClient->getLastError();
-			if (!error.empty()) {
-				DialogUtil::PopupDialog(live_join_dlg, "Error", error, wxOK);
-				delete liveClient;
-				continue;
-			}
-
-			const wxString& address = ip->GetValue();
-			int32_t portNumber = port->GetValue();
-
-			liveClient->createLogWindow(g_gui.tabbook);
-			if (!liveClient->connect(nstr(address), portNumber)) {
-				DialogUtil::PopupDialog("Connection Error", liveClient->getLastError(), wxOK);
-				delete liveClient;
-			}
-
-			break;
-		} else {
-			break;
-		}
-	}
-	live_join_dlg->Destroy();
+	LiveDialogs::ShowJoinDialog(frame);
 	Update();
 }
 
