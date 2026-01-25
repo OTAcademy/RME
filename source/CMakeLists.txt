@@ -199,6 +199,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_tab.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/numbertextctrl.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/brush_toolbar.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/position_toolbar.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/size_toolbar.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/old_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/pngfiles.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/positionctrl.h
@@ -402,6 +405,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_tab.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/numbertextctrl.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/brush_toolbar.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/position_toolbar.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/size_toolbar.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/old_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/pngfiles.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/positionctrl.cpp

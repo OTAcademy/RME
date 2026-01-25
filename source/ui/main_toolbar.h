@@ -26,6 +26,10 @@
 #include "brushes/brush_enums.h"
 #include "ui/numbertextctrl.h"
 
+#include "ui/toolbar/brush_toolbar.h"
+#include "ui/toolbar/position_toolbar.h"
+#include "ui/toolbar/size_toolbar.h"
+
 class MainToolBar : public wxEvtHandler {
 public:
 	MainToolBar(wxWindow* parent, wxAuiManager* manager);
@@ -41,32 +45,21 @@ public:
 	void SavePerspective();
 
 	void OnStandardButtonClick(wxCommandEvent& event);
-	void OnBrushesButtonClick(wxCommandEvent& event);
-	void OnPositionButtonClick(wxCommandEvent& event);
-	void OnPositionKeyUp(wxKeyEvent& event);
-	void OnPastePositionText(wxClipboardTextEvent& event);
-	void OnSizesButtonClick(wxCommandEvent& event);
 	void OnLightSlider(wxCommandEvent& event);
 	void OnAmbientLightSlider(wxCommandEvent& event);
 
 private:
 	static const wxString STANDARD_BAR_NAME;
-	static const wxString BRUSHES_BAR_NAME;
-	static const wxString POSITION_BAR_NAME;
-	static const wxString SIZES_BAR_NAME;
 	static const wxString LIGHT_BAR_NAME;
 
 	wxAuiToolBar* standard_toolbar;
-	wxAuiToolBar* brushes_toolbar;
-	wxAuiToolBar* position_toolbar;
-	NumberTextCtrl* x_control;
-	NumberTextCtrl* y_control;
-	NumberTextCtrl* z_control;
-	wxButton* go_button;
-	wxAuiToolBar* sizes_toolbar;
 	wxAuiToolBar* light_toolbar;
 	wxSlider* light_slider;
 	wxSlider* ambient_slider;
+
+	BrushToolBar* brush_toolbar_component;
+	PositionToolBar* position_toolbar_component;
+	SizeToolBar* size_toolbar_component;
 };
 
 #endif // RME_MAINTOOLBAR_H_
