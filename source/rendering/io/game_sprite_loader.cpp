@@ -10,6 +10,7 @@
 #include "app/settings.h"
 #include "map/otml.h"
 #include <wx/dir.h>
+#include <memory>
 
 bool GameSpriteLoader::LoadOTFI(GraphicManager* manager, const wxFileName& filename, wxString& error, wxArrayString& warnings) {
 	wxDir dir(filename.GetFullPath());
@@ -83,8 +84,9 @@ bool GameSpriteLoader::LoadSpriteMetadata(GraphicManager* manager, const wxFileN
 	uint16_t id = minID;
 	// loop through all ItemDatabase until we reach the end of file
 	while (id <= maxID) {
-		GameSprite* sType = newd GameSprite();
-		manager->sprite_space[id] = sType;
+		auto sTypeUnique = std::make_unique<GameSprite>();
+		GameSprite* sType = sTypeUnique.get();
+		manager->sprite_space[id] = std::move(sTypeUnique);
 
 		sType->id = id;
 
@@ -135,7 +137,7 @@ bool GameSpriteLoader::LoadSpriteMetadata(GraphicManager* manager, const wxFileN
 					file.get32(loop_count);
 					file.getSByte(start_frame);
 				}
-				sType->animator = newd Animator(sType->frames, start_frame, loop_count, async == 1);
+				sType->animator = std::make_unique<Animator>(sType->frames, start_frame, loop_count, async == 1);
 				if (manager->has_frame_durations) {
 					for (int i = 0; i < sType->frames; i++) {
 						uint32_t min;
@@ -162,12 +164,12 @@ bool GameSpriteLoader::LoadSpriteMetadata(GraphicManager* manager, const wxFileN
 					sprite_id = u16;
 				}
 
-				if (manager->image_space[sprite_id] == nullptr) {
-					GameSprite::NormalImage* img = newd GameSprite::NormalImage();
+				if (manager->image_space.find(sprite_id) == manager->image_space.end()) {
+					auto img = std::make_unique<GameSprite::NormalImage>();
 					img->id = sprite_id;
-					manager->image_space[sprite_id] = img;
+					manager->image_space[sprite_id] = std::move(img);
 				}
-				sType->spriteList.push_back(static_cast<GameSprite::NormalImage*>(manager->image_space[sprite_id]));
+				sType->spriteList.push_back(static_cast<GameSprite::NormalImage*>(manager->image_space[sprite_id].get()));
 			}
 		}
 		++id;
@@ -411,9 +413,9 @@ bool GameSpriteLoader::LoadSpriteData(GraphicManager* manager, const wxFileName&
 		uint16_t size;
 		safe_get(U16, size);
 
-		GraphicManager::ImageMap::iterator it = manager->image_space.find(id);
+		auto it = manager->image_space.find(id);
 		if (it != manager->image_space.end()) {
-			GameSprite::NormalImage* spr = dynamic_cast<GameSprite::NormalImage*>(it->second);
+			GameSprite::NormalImage* spr = dynamic_cast<GameSprite::NormalImage*>(it->second.get());
 			if (spr && size > 0) {
 				if (spr->size > 0) {
 					wxString ss;
@@ -423,8 +425,8 @@ bool GameSpriteLoader::LoadSpriteData(GraphicManager* manager, const wxFileName&
 				} else {
 					spr->id = id;
 					spr->size = size;
-					spr->dump = newd uint8_t[size];
-					if (!fh.getRAW(spr->dump, size)) {
+					spr->dump = std::make_unique<uint8_t[]>(size);
+					if (!fh.getRAW(spr->dump.get(), size)) {
 						error = wxstr(fh.getErrorMessage());
 						return false;
 					}
@@ -439,11 +441,11 @@ bool GameSpriteLoader::LoadSpriteData(GraphicManager* manager, const wxFileName&
 	return true;
 }
 
-bool GameSpriteLoader::LoadSpriteDump(GraphicManager* manager, uint8_t*& target, uint16_t& size, int sprite_id) {
+bool GameSpriteLoader::LoadSpriteDump(GraphicManager* manager, std::unique_ptr<uint8_t[]>& target, uint16_t& size, int sprite_id) {
 	if (sprite_id == 0) {
 		// Empty GameSprite
 		size = 0;
-		target = nullptr;
+		target.reset();
 		return true;
 	}
 
@@ -466,13 +468,12 @@ bool GameSpriteLoader::LoadSpriteDump(GraphicManager* manager, uint8_t*& target,
 		fh.seek(to_seek + 3);
 		uint16_t sprite_size;
 		if (fh.getU16(sprite_size)) {
-			target = newd uint8_t[sprite_size];
-			if (fh.getRAW(target, sprite_size)) {
+			target = std::make_unique<uint8_t[]>(sprite_size);
+			if (fh.getRAW(target.get(), sprite_size)) {
 				size = sprite_size;
 				return true;
 			}
-			delete[] target;
-			target = nullptr;
+			target.reset();
 		}
 	}
 	return false;

@@ -21,21 +21,22 @@
 #include "ui/pngfiles.h"
 
 #include <wx/mstream.h>
+#include <memory>
 
 // Helper logic duplicated or moved from graphics.cpp
 #define loadPNGFile(name) _wxGetBitmapFromMemory(name, sizeof(name))
-inline wxBitmap* _wxGetBitmapFromMemory(const unsigned char* data, int length) {
+inline std::unique_ptr<wxBitmap> _wxGetBitmapFromMemory(const unsigned char* data, int length) {
 	wxMemoryInputStream is(data, length);
 	wxImage img(is, "image/png");
 	if (!img.IsOk()) {
 		return nullptr;
 	}
-	return newd wxBitmap(img, -1);
+	return std::make_unique<wxBitmap>(img, -1);
 }
 
 bool EditorSpriteLoader::Load(GraphicManager* gm) {
 	// Unused graphics MIGHT be loaded here, but it's a neglectable loss
-	gm->insertSprite(EDITOR_SPRITE_SELECTION_MARKER, newd EditorSprite(newd wxBitmap(selection_marker_xpm16x16), newd wxBitmap(selection_marker_xpm32x32)));
+	gm->insertSprite(EDITOR_SPRITE_SELECTION_MARKER, newd EditorSprite(std::make_unique<wxBitmap>(selection_marker_xpm16x16), std::make_unique<wxBitmap>(selection_marker_xpm32x32)));
 	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_1x1, newd EditorSprite(loadPNGFile(circular_1_small_png), loadPNGFile(circular_1_png)));
 	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_3x3, newd EditorSprite(loadPNGFile(circular_2_small_png), loadPNGFile(circular_2_png)));
 	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_5x5, newd EditorSprite(loadPNGFile(circular_3_small_png), loadPNGFile(circular_3_png)));
@@ -58,12 +59,12 @@ bool EditorSpriteLoader::Load(GraphicManager* gm) {
 	gm->insertSprite(EDITOR_SPRITE_NOLOG_TOOL, newd EditorSprite(loadPNGFile(no_logout_small_png), loadPNGFile(no_logout_png)));
 	gm->insertSprite(EDITOR_SPRITE_NOPVP_TOOL, newd EditorSprite(loadPNGFile(no_pvp_small_png), loadPNGFile(no_pvp_png)));
 
-	gm->insertSprite(EDITOR_SPRITE_DOOR_NORMAL, newd EditorSprite(newd wxBitmap(door_normal_small_xpm), newd wxBitmap(door_normal_xpm)));
-	gm->insertSprite(EDITOR_SPRITE_DOOR_LOCKED, newd EditorSprite(newd wxBitmap(door_locked_small_xpm), newd wxBitmap(door_locked_xpm)));
-	gm->insertSprite(EDITOR_SPRITE_DOOR_MAGIC, newd EditorSprite(newd wxBitmap(door_magic_small_xpm), newd wxBitmap(door_magic_xpm)));
-	gm->insertSprite(EDITOR_SPRITE_DOOR_QUEST, newd EditorSprite(newd wxBitmap(door_quest_small_xpm), newd wxBitmap(door_quest_xpm)));
-	gm->insertSprite(EDITOR_SPRITE_DOOR_NORMAL_ALT, newd EditorSprite(newd wxBitmap(door_normal_alt_small_xpm), newd wxBitmap(door_normal_alt_xpm)));
-	gm->insertSprite(EDITOR_SPRITE_DOOR_ARCHWAY, newd EditorSprite(newd wxBitmap(door_archway_small_xpm), newd wxBitmap(door_archway_xpm)));
+	gm->insertSprite(EDITOR_SPRITE_DOOR_NORMAL, newd EditorSprite(std::make_unique<wxBitmap>(door_normal_small_xpm), std::make_unique<wxBitmap>(door_normal_xpm)));
+	gm->insertSprite(EDITOR_SPRITE_DOOR_LOCKED, newd EditorSprite(std::make_unique<wxBitmap>(door_locked_small_xpm), std::make_unique<wxBitmap>(door_locked_xpm)));
+	gm->insertSprite(EDITOR_SPRITE_DOOR_MAGIC, newd EditorSprite(std::make_unique<wxBitmap>(door_magic_small_xpm), std::make_unique<wxBitmap>(door_magic_xpm)));
+	gm->insertSprite(EDITOR_SPRITE_DOOR_QUEST, newd EditorSprite(std::make_unique<wxBitmap>(door_quest_small_xpm), std::make_unique<wxBitmap>(door_quest_xpm)));
+	gm->insertSprite(EDITOR_SPRITE_DOOR_NORMAL_ALT, newd EditorSprite(std::make_unique<wxBitmap>(door_normal_alt_small_xpm), std::make_unique<wxBitmap>(door_normal_alt_xpm)));
+	gm->insertSprite(EDITOR_SPRITE_DOOR_ARCHWAY, newd EditorSprite(std::make_unique<wxBitmap>(door_archway_small_xpm), std::make_unique<wxBitmap>(door_archway_xpm)));
 	gm->insertSprite(EDITOR_SPRITE_WINDOW_NORMAL, newd EditorSprite(loadPNGFile(window_normal_small_png), loadPNGFile(window_normal_png)));
 	gm->insertSprite(EDITOR_SPRITE_WINDOW_HATCH, newd EditorSprite(loadPNGFile(window_hatch_small_png), loadPNGFile(window_hatch_png)));
 

@@ -57,26 +57,15 @@ GraphicManager::GraphicManager() :
 	has_transparency(false),
 	has_frame_durations(false),
 	has_frame_groups(false) {
-	animation_timer = newd RenderTimer();
+	animation_timer = std::make_unique<RenderTimer>();
 	animation_timer->Start();
 }
 
 GraphicManager::~GraphicManager() {
-	for (SpriteMap::iterator iter = sprite_space.begin(); iter != sprite_space.end(); ++iter) {
-		delete iter->second;
-	}
-
-	for (ImageMap::iterator iter = image_space.begin(); iter != image_space.end(); ++iter) {
-		delete iter->second;
-	}
-
-	delete animation_timer;
-
-	// Cleanup atlas manager
+	// Unique pointers handle deletion automatically
+	// atlas_manager_ clean up still good to be explicit if it has custom clear logic
 	if (atlas_manager_) {
 		atlas_manager_->clear();
-		delete atlas_manager_;
-		atlas_manager_ = nullptr;
 	}
 }
 
@@ -90,23 +79,20 @@ bool GraphicManager::isUnloaded() const {
 
 void GraphicManager::clear() {
 	SpriteMap new_sprite_space;
-	for (SpriteMap::iterator iter = sprite_space.begin(); iter != sprite_space.end(); ++iter) {
-		if (iter->first >= 0) { // Don't clean internal sprites
-			delete iter->second;
+	for (auto it = sprite_space.begin(); it != sprite_space.end(); ) {
+		if (it->first >= 0) { // Don't clean internal sprites
+			// Unique pointer handles deletion
+			it = sprite_space.erase(it);
 		} else {
-			new_sprite_space.insert(std::make_pair(iter->first, iter->second));
+			new_sprite_space.insert(std::make_pair(it->first, std::move(it->second)));
+			it = sprite_space.erase(it);
 		}
 	}
 
-	for (ImageMap::iterator iter = image_space.begin(); iter != image_space.end(); ++iter) {
-		delete iter->second;
-	}
-
-	sprite_space.swap(new_sprite_space);
+	// Image space cleaned automatically by clear()
 	image_space.clear();
+	sprite_space = std::move(new_sprite_space);
 
-	item_count = 0;
-	creature_count = 0;
 	item_count = 0;
 	creature_count = 0;
 	collector.Clear();
@@ -115,8 +101,7 @@ void GraphicManager::clear() {
 	// Cleanup atlas manager (will be reinitialized lazily when needed)
 	if (atlas_manager_) {
 		atlas_manager_->clear();
-		delete atlas_manager_;
-		atlas_manager_ = nullptr;
+		atlas_manager_.reset();
 	}
 
 	unloaded = true;
@@ -134,14 +119,13 @@ bool GraphicManager::ensureAtlasManager() {
 
 	// Create and initialize on first use
 	if (!atlas_manager_) {
-		atlas_manager_ = newd AtlasManager();
+		atlas_manager_ = std::make_unique<AtlasManager>();
 	}
 
 	// Lazy initialization happens inside AtlasManager::ensureInitialized()
 	if (!atlas_manager_->ensureInitialized()) {
 		std::cerr << "GraphicManager: Failed to initialize atlas manager" << std::endl;
-		delete atlas_manager_;
-		atlas_manager_ = nullptr;
+		atlas_manager_.reset();
 		return false;
 	}
 
@@ -149,9 +133,9 @@ bool GraphicManager::ensureAtlasManager() {
 }
 
 Sprite* GraphicManager::getSprite(int id) {
-	SpriteMap::iterator it = sprite_space.find(id);
+	auto it = sprite_space.find(id);
 	if (it != sprite_space.end()) {
-		return it->second;
+		return it->second.get();
 	}
 	return nullptr;
 }
@@ -161,9 +145,9 @@ GameSprite* GraphicManager::getCreatureSprite(int id) {
 		return nullptr;
 	}
 
-	SpriteMap::iterator it = sprite_space.find(id + item_count);
+	auto it = sprite_space.find(id + item_count);
 	if (it != sprite_space.end()) {
-		return static_cast<GameSprite*>(it->second);
+		return static_cast<GameSprite*>(it->second.get());
 	}
 	return nullptr;
 }
@@ -177,13 +161,13 @@ uint16_t GraphicManager::getCreatureSpriteMaxID() const {
 }
 
 #define loadPNGFile(name) _wxGetBitmapFromMemory(name, sizeof(name))
-inline wxBitmap* _wxGetBitmapFromMemory(const unsigned char* data, int length) {
+inline std::unique_ptr<wxBitmap> _wxGetBitmapFromMemory(const unsigned char* data, int length) {
 	wxMemoryInputStream is(data, length);
 	wxImage img(is, "image/png");
 	if (!img.IsOk()) {
 		return nullptr;
 	}
-	return newd wxBitmap(img, -1);
+	return std::make_unique<wxBitmap>(img, -1);
 }
 
 #include "rendering/io/game_sprite_loader.h"
@@ -204,7 +188,8 @@ bool GraphicManager::loadSpriteData(const FileName& datafile, wxString& error, w
 	return GameSpriteLoader::LoadSpriteData(this, datafile, error, warnings);
 }
 
-bool GraphicManager::loadSpriteDump(uint8_t*& target, uint16_t& size, int sprite_id) {
+bool GraphicManager::loadSpriteDump(std::unique_ptr<uint8_t[]>& target, uint16_t& size, int sprite_id) {
+	// Pass via reference to unique_ptr to loader
 	return GameSpriteLoader::LoadSpriteDump(this, target, size, sprite_id);
 }
 
@@ -214,8 +199,8 @@ void GraphicManager::addSpriteToCleanup(GameSprite* spr) {
 
 void GraphicManager::garbageCollection() {
 	std::map<int, void*> generic_image_space;
-	for (auto pair : image_space) {
-		generic_image_space[pair.first] = (void*)pair.second;
+	for (auto& pair : image_space) {
+		generic_image_space[pair.first] = (void*)pair.second.get();
 	}
 	collector.GarbageCollect(sprite_space, generic_image_space);
 }
@@ -235,32 +220,23 @@ GameSprite::GameSprite() :
 	drawoffset_x(0),
 	drawoffset_y(0),
 	minimap_color(0) {
-	dc[SPRITE_SIZE_16x16] = nullptr;
-	dc[SPRITE_SIZE_32x32] = nullptr;
+	// dc initialized to nullptr by unique_ptr default ctor
 }
 
 GameSprite::~GameSprite() {
 	unloadDC();
-	for (std::list<TemplateImage*>::iterator iter = instanced_templates.begin(); iter != instanced_templates.end(); ++iter) {
-		delete *iter;
-	}
-
-	delete animator;
+	// instanced_templates and animator cleaned up automatically by unique_ptr
 }
 
 void GameSprite::clean(int time) {
-	for (std::list<TemplateImage*>::iterator iter = instanced_templates.begin();
-		 iter != instanced_templates.end();
-		 ++iter) {
-		(*iter)->clean(time);
+	for (auto& iter : instanced_templates) {
+		iter->clean(time);
 	}
 }
 
 void GameSprite::unloadDC() {
-	delete dc[SPRITE_SIZE_16x16];
-	delete dc[SPRITE_SIZE_32x32];
-	dc[SPRITE_SIZE_16x16] = nullptr;
-	dc[SPRITE_SIZE_32x32] = nullptr;
+	dc[SPRITE_SIZE_16x16].reset();
+	dc[SPRITE_SIZE_32x32].reset();
 }
 
 int GameSprite::getDrawHeight() const {
@@ -314,24 +290,19 @@ const AtlasRegion* GameSprite::getAtlasRegion(int _x, int _y, int _layer, int _c
 }
 
 GameSprite::TemplateImage* GameSprite::getTemplateImage(int sprite_index, const Outfit& outfit) {
-	if (instanced_templates.empty()) {
-		TemplateImage* img = newd TemplateImage(this, sprite_index, outfit);
-		instanced_templates.push_back(img);
-		return img;
-	}
 	// While this is linear lookup, it is very rare for the list to contain more than 4-8 entries, so it's faster than a hashmap anyways.
-	for (std::list<TemplateImage*>::iterator iter = instanced_templates.begin(); iter != instanced_templates.end(); ++iter) {
-		TemplateImage* img = *iter;
+	for (auto& img : instanced_templates) {
 		if (img->sprite_index == sprite_index) {
 			uint32_t lookHash = img->lookHead << 24 | img->lookBody << 16 | img->lookLegs << 8 | img->lookFeet;
 			if (outfit.getColorHash() == lookHash) {
-				return img;
+				return img.get();
 			}
 		}
 	}
-	TemplateImage* img = newd TemplateImage(this, sprite_index, outfit);
-	instanced_templates.push_back(img);
-	return img;
+	auto img = std::make_unique<TemplateImage>(this, sprite_index, outfit);
+	TemplateImage* ptr = img.get();
+	instanced_templates.push_back(std::move(img));
+	return ptr;
 }
 
 GLuint GameSprite::getHardwareID(int _x, int _y, int _dir, int _addon, int _pattern_z, const Outfit& _outfit, int _frame) {
@@ -372,10 +343,10 @@ wxMemoryDC* GameSprite::getDC(SpriteSize size) {
 	ASSERT(size == SPRITE_SIZE_16x16 || size == SPRITE_SIZE_32x32);
 
 	if (!dc[size]) {
-		dc[size] = SpriteIconGenerator::Generate(this, size);
+		dc[size] = std::unique_ptr<wxMemoryDC>(SpriteIconGenerator::Generate(this, size));
 		g_gui.gfx.addSpriteToCleanup(this);
 	}
-	return dc[size];
+	return dc[size].get();
 }
 
 void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width, int height) {
@@ -462,14 +433,13 @@ GameSprite::NormalImage::NormalImage() :
 }
 
 GameSprite::NormalImage::~NormalImage() {
-	delete[] dump;
+	// dump auto-deleted
 }
 
 void GameSprite::NormalImage::clean(int time) {
 	Image::clean(time);
 	if (time - lastaccess > 5 && !g_settings.getInteger(Config::USE_MEMCACHED_SPRITES)) { // We keep dumps around for 5 seconds.
-		delete[] dump;
-		dump = nullptr;
+		dump.reset();
 	}
 }
 
