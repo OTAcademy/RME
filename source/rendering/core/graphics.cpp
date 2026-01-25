@@ -79,7 +79,7 @@ bool GraphicManager::isUnloaded() const {
 
 void GraphicManager::clear() {
 	SpriteMap new_sprite_space;
-	for (auto it = sprite_space.begin(); it != sprite_space.end(); ) {
+	for (auto it = sprite_space.begin(); it != sprite_space.end();) {
 		if (it->first >= 0) { // Don't clean internal sprites
 			// Unique pointer handles deletion
 			it = sprite_space.erase(it);
