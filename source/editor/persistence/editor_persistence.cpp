@@ -19,6 +19,7 @@
 #include <fstream>
 #include <ctime>
 #include <sstream>
+#include <format>
 
 void EditorPersistence::loadMap(Editor& editor, const FileName& fn) {
 	MapVersion ver;
@@ -28,7 +29,7 @@ void EditorPersistence::loadMap(Editor& editor, const FileName& fn) {
 
 	bool success = true;
 	if (g_gui.GetCurrentVersionID() != ver.client) {
-		throw std::runtime_error("Client version mismatch. Expected " + i2s(ver.client) + " but got " + i2s(g_gui.GetCurrentVersionID()));
+		throw std::runtime_error(std::format("Client version mismatch. Expected {} but got {}", ver.client, g_gui.GetCurrentVersionID()));
 	}
 
 	if (success) {

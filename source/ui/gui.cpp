@@ -20,6 +20,7 @@
 #include <wx/wfstream.h>
 #include <spdlog/spdlog.h>
 #include <wx/display.h>
+#include <format>
 
 #include "ui/gui.h"
 #include "util/file_system.h"
@@ -450,7 +451,7 @@ bool GUI::LoadMap(const FileName& fileName) {
 		// Identify version first
 		MapVersion ver;
 		if (!IOMapOTBM::getVersionInfo(fileName, ver)) {
-			throw std::runtime_error("Could not open file \"" + nstr(fileName.GetFullPath()) + "\".\nThis is not a valid OTBM file or it does not exist.");
+			throw std::runtime_error(std::format("Could not open file \"{}\".\nThis is not a valid OTBM file or it does not exist.", nstr(fileName.GetFullPath())));
 		}
 
 		if (g_gui.GetCurrentVersionID() != ver.client) {

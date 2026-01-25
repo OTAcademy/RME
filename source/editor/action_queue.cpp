@@ -30,8 +30,8 @@ ActionQueue::ActionQueue(Editor& editor) :
 }
 
 ActionQueue::~ActionQueue() {
-	for (auto it = actions.begin(); it != actions.end(); it = actions.erase(it)) {
-		delete *it;
+	for (auto* action : actions) {
+		delete action;
 	}
 }
 
@@ -144,9 +144,9 @@ void ActionQueue::redo() {
 }
 
 void ActionQueue::clear() {
-	for (ActionList::iterator it = actions.begin(); it != actions.end();) {
-		delete *it;
-		it = actions.erase(it);
+	for (auto* action : actions) {
+		delete action;
 	}
+	actions.clear();
 	current = 0;
 }
