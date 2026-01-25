@@ -461,7 +461,6 @@ void BinaryNode::load() {
 			default:
 				break;
 		}
-		// std::cout << "Appending..." << std::endl;
 		data.append(1, op);
 	}
 }

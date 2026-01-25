@@ -21,7 +21,7 @@
 #include "app/main.h"
 #include "app/settings.h"
 
-typedef int ClientVersionID;
+using ClientVersionID = int;
 
 // Client versions
 enum ClientVersions {
@@ -185,7 +185,7 @@ struct ClientData {
 
 // typedef the client version
 class ClientVersion;
-typedef std::vector<ClientVersion*> ClientVersionList;
+using ClientVersionList = std::vector<ClientVersion*>;
 
 class ClientVersion : boost::noncopyable {
 public:
@@ -257,12 +257,12 @@ private:
 	static void loadVersionExtensions(pugi::xml_node client_node);
 
 	// All versions
-	typedef std::map<ClientVersionID, ClientVersion*> VersionMap;
+	using VersionMap = std::map<ClientVersionID, ClientVersion*>;
 	static VersionMap client_versions;
 	static ClientVersion* latest_version;
 
 	// All otbs
-	typedef std::map<std::string, OtbVersion> OtbMap;
+	using OtbMap = std::map<std::string, OtbVersion>;
 	static OtbMap otb_versions;
 };
 

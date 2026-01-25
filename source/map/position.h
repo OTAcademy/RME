@@ -145,7 +145,7 @@ inline Position abs(const Position& position) {
 	);
 }
 
-typedef std::vector<Position> PositionVector;
-typedef std::list<Position> PositionList;
+using PositionVector = std::vector<Position>;
+using PositionList = std::list<Position>;
 
 #endif

@@ -33,7 +33,7 @@ bool ShaderProgram::Load(const std::string& vertexSource, const std::string& fra
 	glGetProgramiv(program_id, GL_LINK_STATUS, &success);
 	if (!success) {
 		char infoLog[1024];
-		glGetProgramInfoLog(program_id, 1024, NULL, infoLog);
+		glGetProgramInfoLog(program_id, 1024, nullptr, infoLog);
 		std::cerr << "SHADER PROGRAM LINKING ERROR: " << infoLog << std::endl;
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
@@ -62,7 +62,6 @@ GLint ShaderProgram::GetUniformLocation(const std::string& name) const {
 
 	GLint location = glGetUniformLocation(program_id, name.c_str());
 	if (location == -1) {
-		// std::cout << "Warning: Uniform '" << name << "' doesn't exist!" << std::endl;
 	}
 
 	uniform_cache[name] = location;
@@ -107,7 +106,7 @@ GLuint ShaderProgram::CompileShader(GLenum type, const std::string& source) {
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		char infoLog[1024];
-		glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+		glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
 		std::cerr << "SHADER COMPILATION ERROR (" << (type == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT") << "):\n"
 				  << infoLog << std::endl;
 		glDeleteShader(shader);

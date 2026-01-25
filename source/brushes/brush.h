@@ -31,7 +31,7 @@ class BaseMap;
 class House;
 class Item;
 class Tile;
-typedef std::vector<Tile*> TileVector;
+using TileVector = std::vector<Tile*>;
 class AutoBorder;
 class Brush;
 class RAWBrush;
@@ -55,7 +55,7 @@ class EraserBrush;
 //=============================================================================
 // Brushes, holds all brushes
 
-typedef std::multimap<std::string, Brush*> BrushMap;
+using BrushMap = std::multimap<std::string, Brush*>;
 
 class Brushes {
 public:
@@ -77,7 +77,7 @@ public:
 	}
 
 protected:
-	typedef std::map<uint32_t, AutoBorder*> BorderMap;
+	using BorderMap = std::map<uint32_t, AutoBorder*>;
 	BrushMap brushes;
 	BorderMap borders;
 

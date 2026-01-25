@@ -222,14 +222,11 @@ bool TerrainBrush::friendOf(TerrainBrush* other) {
 	uint32_t borderID = other->getID();
 	for (uint32_t friendId : friends) {
 		if (friendId == borderID) {
-			// printf("%s is friend of %s\n", getName().c_str(), other->getName().c_str());
 			return !hate_friends;
 		} else if (friendId == 0xFFFFFFFF) {
-			// printf("%s is generic friend of %s\n", getName().c_str(), other->getName().c_str());
 			return !hate_friends;
 		}
 	}
-	// printf("%s is enemy of %s\n", getName().c_str(), other->getName().c_str());
 	return hate_friends;
 }
 

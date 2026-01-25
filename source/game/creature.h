@@ -122,7 +122,7 @@ inline CreatureBrush* Creature::getBrush() const {
 	return nullptr;
 }
 
-typedef std::vector<Creature*> CreatureVector;
-typedef std::list<Creature*> CreatureList;
+using CreatureVector = std::vector<Creature*>;
+using CreatureList = std::list<Creature*>;
 
 #endif

@@ -22,9 +22,9 @@
 
 struct ConversionMap {
 	// Many to Many
-	typedef std::map<std::vector<uint16_t>, std::vector<uint16_t>> MTM;
+	using MTM = std::map<std::vector<uint16_t>, std::vector<uint16_t>>;
 	// Single to Many
-	typedef std::map<uint16_t, std::vector<uint16_t>> STM;
+	using STM = std::map<uint16_t, std::vector<uint16_t>>;
 
 	MTM mtm;
 	STM stm;

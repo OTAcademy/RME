@@ -37,8 +37,8 @@
 
 #include "io/iomap_otbm.h"
 
-typedef uint8_t attribute_t;
-typedef uint32_t flags_t;
+using attribute_t = uint8_t;
+using flags_t = uint32_t;
 
 // H4X
 void reform(Map* map, Tile* tile, Item* item) {
@@ -816,7 +816,6 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 				if (!mapHeaderNode->getString(map.description)) {
 					warning("Invalid map description tag");
 				}
-				// std::cout << "Map description: " << mapDescription << std::endl;
 				break;
 			}
 			case OTBM_ATTR_EXT_SPAWN_FILE: {
@@ -875,7 +874,6 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 					continue;
 				}
 				if (tile_type == OTBM_TILE || tile_type == OTBM_HOUSETILE) {
-					// printf("Start\n");
 					uint8_t x_offset, y_offset;
 					if (!tileNode->getU8(x_offset) || !tileNode->getU8(y_offset)) {
 						warning("Could not read position of tile");
@@ -908,7 +906,6 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 						}
 					}
 
-					// printf("So far so good\n");
 
 					uint8_t attribute;
 					while (tileNode->getU8(attribute)) {
@@ -936,7 +933,6 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 						}
 					}
 
-					// printf("Didn't die in loop\n");
 
 					for (BinaryNode* itemNode = tileNode->getChild(); itemNode != nullptr; itemNode = itemNode->advance()) {
 						Item* item = nullptr;
