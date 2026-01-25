@@ -10,6 +10,13 @@
 
 namespace EditorOperations {
 
+	constexpr int PROGRESS_UPDATE_INTERVAL = 0x8000;
+	constexpr int PROGRESS_UPDATE_INTERVAL_SMALL = 0x800;
+	constexpr int PROGRESS_UPDATE_INTERVAL_UNREACHABLE = 0x1000;
+	constexpr int UNREACHABLE_SEARCH_RADIUS_X = 10;
+	constexpr int UNREACHABLE_SEARCH_RADIUS_Y = 8;
+	constexpr int UNREACHABLE_SEARCH_RADIUS_Z = 2;
+
 	struct RemoveItemCondition {
 		RemoveItemCondition(uint16_t itemId) :
 			itemId(itemId) { }
@@ -17,7 +24,7 @@ namespace EditorOperations {
 		uint16_t itemId;
 
 		bool operator()(Map& map, Item* item, int64_t removed, int64_t done) {
-			if (done % 0x8000 == 0) {
+			if (done % PROGRESS_UPDATE_INTERVAL == 0) {
 				g_gui.SetLoadDone((uint32_t)(100 * done / map.getTileCount()));
 			}
 			return item->getID() == itemId && !item->isComplex();
@@ -28,11 +35,11 @@ namespace EditorOperations {
 		RemoveCorpsesCondition() { }
 
 		bool operator()(Map& map, Item* item, long long removed, long long done) {
-			if (done % 0x800 == 0) {
+			if (done % PROGRESS_UPDATE_INTERVAL_SMALL == 0) {
 				g_gui.SetLoadDone((unsigned int)(100 * done / map.getTileCount()));
 			}
 
-			return g_materials.isInTileset(item, "Corpses") & !item->isComplex();
+			return g_materials.isInTileset(item, "Corpses") && !item->isComplex();
 		}
 	};
 
@@ -50,15 +57,15 @@ namespace EditorOperations {
 		}
 
 		bool operator()(Map& map, Tile* tile, long long removed, long long done, long long total) {
-			if (done % 0x1000 == 0) {
+			if (done % PROGRESS_UPDATE_INTERVAL_UNREACHABLE == 0) {
 				g_gui.SetLoadDone((unsigned int)(100 * done / total));
 			}
 
 			Position pos = tile->getPosition();
-			int sx = std::max(pos.x - 10, 0);
-			int ex = std::min(pos.x + 10, 65535);
-			int sy = std::max(pos.y - 8, 0);
-			int ey = std::min(pos.y + 8, 65535);
+			int sx = std::max(pos.x - UNREACHABLE_SEARCH_RADIUS_X, 0);
+			int ex = std::min(pos.x + UNREACHABLE_SEARCH_RADIUS_X, 65535);
+			int sy = std::max(pos.y - UNREACHABLE_SEARCH_RADIUS_Y, 0);
+			int ey = std::min(pos.y + UNREACHABLE_SEARCH_RADIUS_Y, 65535);
 			int sz, ez;
 
 			if (pos.z <= GROUND_LAYER) {
@@ -66,8 +73,8 @@ namespace EditorOperations {
 				ez = 9;
 			} else {
 				// underground
-				sz = std::max(pos.z - 2, GROUND_LAYER);
-				ez = std::min(pos.z + 2, MAP_MAX_LAYER);
+				sz = std::max(pos.z - UNREACHABLE_SEARCH_RADIUS_Z, GROUND_LAYER);
+				ez = std::min(pos.z + UNREACHABLE_SEARCH_RADIUS_Z, MAP_MAX_LAYER);
 			}
 
 			for (int z = sz; z <= ez; ++z) {

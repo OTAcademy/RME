@@ -75,19 +75,14 @@ bool MapVersionChanger::changeMapVersion(wxWindow* parent, Editor& editor, MapVe
 			}
 
 			// Remove all creatures that were present are present in the new version
-			for (MapConversionContext::CreatureMap::iterator cs = conversion_context.creature_types.begin(); cs != conversion_context.creature_types.end();) {
-				if (g_creatures[cs->first]) {
-					cs = conversion_context.creature_types.erase(cs);
-				} else {
-					++cs;
-				}
-			}
+			std::erase_if(conversion_context.creature_types, [](const auto& pair) {
+				return g_creatures[pair.first] != nullptr;
+			});
 
-			if (conversion_context.creature_types.size() > 0) {
+			if (!conversion_context.creature_types.empty()) {
 				int add = DialogUtil::PopupDialog(parent, "Unrecognized creatures", "There were creatures on the old version that are not present in this and were on the map, do you want to add them to this version as well?", wxYES | wxNO);
 				if (add == wxID_YES) {
-					for (MapConversionContext::CreatureMap::iterator cs = conversion_context.creature_types.begin(); cs != conversion_context.creature_types.end(); ++cs) {
-						MapConversionContext::CreatureInfo info = cs->second;
+					for (const auto& [name, info] : conversion_context.creature_types) {
 						g_creatures.addCreatureType(info.name, info.is_npc, info.outfit);
 					}
 				}
