@@ -9,6 +9,8 @@
 
 namespace EditorOperations {
 
+	constexpr int SEARCH_UPDATE_INTERVAL = 0x8000;
+
 	struct ItemSearcher {
 		ItemSearcher(uint16_t itemId, uint32_t maxCount) :
 			itemId(itemId), maxCount(maxCount) { }
@@ -26,7 +28,7 @@ namespace EditorOperations {
 				return;
 			}
 
-			if (done % 0x8000 == 0) {
+			if (done % SEARCH_UPDATE_INTERVAL == 0) {
 				g_gui.SetLoadDone((unsigned int)(100 * done / map.getTileCount()));
 			}
 
@@ -50,7 +52,7 @@ namespace EditorOperations {
 		std::vector<std::pair<Tile*, Item*>> found;
 
 		void operator()(Map& map, Tile* tile, Item* item, long long done) {
-			if (done % 0x8000 == 0) {
+			if (done % SEARCH_UPDATE_INTERVAL == 0) {
 				g_gui.SetLoadDone((unsigned int)(100 * done / map.getTileCount()));
 			}
 			Container* container;

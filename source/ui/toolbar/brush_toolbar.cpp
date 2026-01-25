@@ -16,20 +16,20 @@
 const wxString BrushToolBar::PANE_NAME = "brushes_toolbar";
 
 #define loadPNGFile(name) _wxGetBitmapFromMemory(name, sizeof(name))
-inline wxBitmap* _wxGetBitmapFromMemory(const unsigned char* data, int length) {
+inline wxBitmap _wxGetBitmapFromMemory(const unsigned char* data, int length) {
 	wxMemoryInputStream is(data, length);
 	wxImage img(is, "image/png");
 	if (!img.IsOk()) {
-		return nullptr;
+		return wxBitmap();
 	}
-	return newd wxBitmap(img, -1);
+	return wxBitmap(img, -1);
 }
 
 BrushToolBar::BrushToolBar(wxWindow* parent) {
 	wxSize icon_size = FROM_DIP(parent, wxSize(16, 16));
 
-	wxBitmap* border_bitmap = loadPNGFile(optional_border_small_png);
-	wxBitmap* eraser_bitmap = loadPNGFile(eraser_small_png);
+	wxBitmap border_bitmap = loadPNGFile(optional_border_small_png);
+	wxBitmap eraser_bitmap = loadPNGFile(eraser_small_png);
 	wxBitmap pz_bitmap = wxArtProvider::GetBitmap(ART_PZ_BRUSH, wxART_TOOLBAR, icon_size);
 	wxBitmap nopvp_bitmap = wxArtProvider::GetBitmap(ART_NOPVP_BRUSH, wxART_TOOLBAR, icon_size);
 	wxBitmap nologout_bitmap = wxArtProvider::GetBitmap(ART_NOLOOUT_BRUSH, wxART_TOOLBAR, icon_size);
@@ -41,13 +41,13 @@ BrushToolBar::BrushToolBar(wxWindow* parent) {
 	wxBitmap normal_alt_bitmap = wxArtProvider::GetBitmap(ART_DOOR_NORMAL_ALT_SMALL, wxART_TOOLBAR, icon_size);
 	wxBitmap archway_bitmap = wxArtProvider::GetBitmap(ART_DOOR_ARCHWAY_SMALL, wxART_TOOLBAR, icon_size);
 
-	wxBitmap* hatch_bitmap = loadPNGFile(window_hatch_small_png);
-	wxBitmap* window_bitmap = loadPNGFile(window_normal_small_png);
+	wxBitmap hatch_bitmap = loadPNGFile(window_hatch_small_png);
+	wxBitmap window_bitmap = loadPNGFile(window_normal_small_png);
 
 	toolbar = newd wxAuiToolBar(parent, TOOLBAR_BRUSHES, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
 	toolbar->SetToolBitmapSize(icon_size);
-	toolbar->AddTool(PALETTE_TERRAIN_OPTIONAL_BORDER_TOOL, wxEmptyString, *border_bitmap, wxNullBitmap, wxITEM_CHECK, "Border", wxEmptyString, nullptr);
-	toolbar->AddTool(PALETTE_TERRAIN_ERASER, wxEmptyString, *eraser_bitmap, wxNullBitmap, wxITEM_CHECK, "Eraser", wxEmptyString, nullptr);
+	toolbar->AddTool(PALETTE_TERRAIN_OPTIONAL_BORDER_TOOL, wxEmptyString, border_bitmap, wxNullBitmap, wxITEM_CHECK, "Border", wxEmptyString, nullptr);
+	toolbar->AddTool(PALETTE_TERRAIN_ERASER, wxEmptyString, eraser_bitmap, wxNullBitmap, wxITEM_CHECK, "Eraser", wxEmptyString, nullptr);
 	toolbar->AddSeparator();
 	toolbar->AddTool(PALETTE_TERRAIN_PZ_TOOL, wxEmptyString, pz_bitmap, wxNullBitmap, wxITEM_CHECK, "Protected Zone", wxEmptyString, nullptr);
 	toolbar->AddTool(PALETTE_TERRAIN_NOPVP_TOOL, wxEmptyString, nopvp_bitmap, wxNullBitmap, wxITEM_CHECK, "No PvP Zone", wxEmptyString, nullptr);
@@ -62,8 +62,8 @@ BrushToolBar::BrushToolBar(wxWindow* parent) {
 	toolbar->AddTool(PALETTE_TERRAIN_NORMAL_ALT_DOOR, wxEmptyString, normal_alt_bitmap, wxNullBitmap, wxITEM_CHECK, "Normal Door (alt)", wxEmptyString, nullptr);
 	toolbar->AddTool(PALETTE_TERRAIN_ARCHWAY_DOOR, wxEmptyString, archway_bitmap, wxNullBitmap, wxITEM_CHECK, "Archway", wxEmptyString, nullptr);
 	toolbar->AddSeparator();
-	toolbar->AddTool(PALETTE_TERRAIN_HATCH_DOOR, wxEmptyString, *hatch_bitmap, wxNullBitmap, wxITEM_CHECK, "Hatch Window", wxEmptyString, nullptr);
-	toolbar->AddTool(PALETTE_TERRAIN_WINDOW_DOOR, wxEmptyString, *window_bitmap, wxNullBitmap, wxITEM_CHECK, "Window", wxEmptyString, nullptr);
+	toolbar->AddTool(PALETTE_TERRAIN_HATCH_DOOR, wxEmptyString, hatch_bitmap, wxNullBitmap, wxITEM_CHECK, "Hatch Window", wxEmptyString, nullptr);
+	toolbar->AddTool(PALETTE_TERRAIN_WINDOW_DOOR, wxEmptyString, window_bitmap, wxNullBitmap, wxITEM_CHECK, "Window", wxEmptyString, nullptr);
 	toolbar->Realize();
 
 	toolbar->Bind(wxEVT_COMMAND_MENU_SELECTED, &BrushToolBar::OnToolbarClick, this);

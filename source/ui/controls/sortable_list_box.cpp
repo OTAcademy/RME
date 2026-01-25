@@ -4,6 +4,9 @@
 
 #include "app/main.h"
 #include "ui/controls/sortable_list_box.h"
+#include <algorithm>
+#include <vector>
+#include <utility>
 
 // ============================================================================
 // wxListBox that can be sorted
@@ -30,56 +33,33 @@ void SortableListBox::DoSort() {
 		return;
 	}
 
-	int selection = GetSelection();
-	wxClientDataType dataType = GetClientDataType();
-
-	wxArrayString stringList;
-	wxArrayPtrVoid dataList;
-
-	for (size_t i = 0; i < count; ++i) {
-		stringList.Add(GetString(i));
-		if (dataType == wxClientData_Void) {
-			dataList.Add(GetClientData(i));
-		}
+	int selection_index = GetSelection();
+	wxString selection_string;
+	if (selection_index != wxNOT_FOUND) {
+		selection_string = GetString(selection_index);
 	}
 
-	// Insertion sort
+	std::vector<std::pair<wxString, void*>> items;
+	items.reserve(count);
 	for (size_t i = 0; i < count; ++i) {
-		size_t j = i;
-		while (j > 0 && stringList[j].CmpNoCase(stringList[j - 1]) < 0) {
-
-			wxString tmpString = stringList[j];
-			stringList[j] = stringList[j - 1];
-			stringList[j - 1] = tmpString;
-
-			if (dataType == wxClientData_Void) {
-				void* tmpData = dataList[j];
-				dataList[j] = dataList[j - 1];
-				dataList[j - 1] = tmpData;
-			}
-
-			if (selection == j - 1) {
-				selection++;
-			} else if (selection == j) {
-				selection--;
-			}
-
-			j--;
-		}
+		items.emplace_back(GetString(i), GetClientData(i));
 	}
+
+	std::stable_sort(items.begin(), items.end(), [](const auto& a, const auto& b) {
+		return a.first.CmpNoCase(b.first) < 0;
+	});
 
 	Freeze();
 	Clear();
-	for (size_t i = 0; i < count; ++i) {
-		if (dataType == wxClientData_Void) {
-			Append(stringList[i], dataList[i]);
-		} else {
-			Append(stringList[i]);
-		}
+	for (const auto& item : items) {
+		Append(item.first, item.second);
 	}
 	Thaw();
 
-	if (selection != wxNOT_FOUND) {
-		SetSelection(selection);
+	if (selection_index != wxNOT_FOUND) {
+		int new_selection = FindString(selection_string);
+		if (new_selection != wxNOT_FOUND) {
+			SetSelection(new_selection);
+		}
 	}
 }

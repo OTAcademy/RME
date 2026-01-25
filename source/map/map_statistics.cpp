@@ -12,8 +12,8 @@ MapStatistics MapStatisticsCollector::Collect(Map* map) {
 
 	std::map<uint32_t, uint32_t> town_sqm_count;
 
-	for (MapIterator mit = map->begin(); mit != map->end(); ++mit) {
-		Tile* tile = (*mit)->get();
+	for (auto tile_location : *map) {
+		Tile* tile = tile_location->get();
 		if (load_counter % 8192 == 0) {
 			g_gui.SetLoadDone((unsigned int)(int64_t(load_counter) * 95ll / int64_t(map->getTileCount())));
 		}
@@ -54,8 +54,7 @@ MapStatistics MapStatisticsCollector::Collect(Map* map) {
 			analyze_item(tile->ground);
 		}
 
-		for (ItemVector::const_iterator item_iter = tile->items.begin(); item_iter != tile->items.end(); ++item_iter) {
-			Item* item = *item_iter;
+		for (Item* item : tile->items) {
 			analyze_item(item);
 		}
 
@@ -89,8 +88,7 @@ MapStatistics MapStatisticsCollector::Collect(Map* map) {
 	stats.house_count = map->houses.count();
 
 	Houses& houses = map->houses;
-	for (HouseMap::const_iterator hit = houses.begin(); hit != houses.end(); ++hit) {
-		const House* house = hit->second;
+	for (const auto& [house_id, house] : houses) {
 
 		if (load_counter % 64) {
 			g_gui.SetLoadDone((unsigned int)(95ll + int64_t(load_counter) * 5ll / int64_t(stats.house_count)));
@@ -110,11 +108,7 @@ MapStatistics MapStatisticsCollector::Collect(Map* map) {
 	stats.sqm_per_town = (stats.town_count != 0 ? double(stats.total_house_sqm) / double(stats.town_count) : -1.0);
 
 	Towns& towns = map->towns;
-	for (std::map<uint32_t, uint32_t>::iterator town_iter = town_sqm_count.begin();
-		 town_iter != town_sqm_count.end();
-		 ++town_iter) {
-		uint32_t town_id = town_iter->first;
-		uint32_t town_sqm = town_iter->second;
+	for (const auto& [town_id, town_sqm] : town_sqm_count) {
 		Town* town = towns.getTown(town_id);
 		if (town && town_sqm > stats.largest_town_size) {
 			stats.largest_town = town;

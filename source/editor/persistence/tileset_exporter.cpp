@@ -28,14 +28,14 @@ void TilesetExporter::exportTilesets(const FileName& directory, const std::strin
 			{ "Collection", TILESET_COLLECTION },
 			{ "Raw", TILESET_RAW }
 		};
-		for (TilesetContainer::iterator iter = g_materials.tilesets.begin(); iter != g_materials.tilesets.end(); ++iter) {
-			std::string _data = iter->second->name;
+		for (auto& [iter_name, tileset_ptr] : g_materials.tilesets) {
+			std::string _data = tileset_ptr->name;
 			std::transform(_data.begin(), _data.end(), _data.begin(), [](unsigned char c) { return std::tolower(c); });
 			if (_data == "others") {
 				bool blocked = 1;
 
 				for (const auto& kv : palettes) {
-					TilesetCategory* tilesetCategory = iter->second->getCategory(kv.second);
+					TilesetCategory* tilesetCategory = tileset_ptr->getCategory(kv.second);
 
 					if (kv.second != TILESET_RAW && tilesetCategory->brushlist.size() > 0) {
 						blocked = 0;
@@ -48,22 +48,22 @@ void TilesetExporter::exportTilesets(const FileName& directory, const std::strin
 			}
 
 			pugi::xml_node tileset = node.append_child("tileset");
-			tileset.append_attribute("name") = iter->second->name.c_str();
+			tileset.append_attribute("name") = tileset_ptr->name.c_str();
 
 			for (const auto& kv : palettes) {
-				TilesetCategory* tilesetCategory = iter->second->getCategory(kv.second);
+				TilesetCategory* tilesetCategory = tileset_ptr->getCategory(kv.second);
 
 				if (tilesetCategory->brushlist.size() > 0) {
 					std::string data = kv.first;
 					std::transform(data.begin(), data.end(), data.begin(), [](unsigned char c) { return std::tolower(c); });
 
 					pugi::xml_node palette = tileset.append_child(data.c_str());
-					for (BrushVector::const_iterator _iter = tilesetCategory->brushlist.begin(); _iter != tilesetCategory->brushlist.end(); ++_iter) {
-						if (!(*_iter)->isRaw()) {
+					for (const auto& brush_ptr : tilesetCategory->brushlist) {
+						if (!brush_ptr->isRaw()) {
 							pugi::xml_node brush = palette.append_child("brush");
-							brush.append_attribute("name") = (*_iter)->getName().c_str();
+							brush.append_attribute("name") = brush_ptr->getName().c_str();
 						} else {
-							ItemType& it = g_items[(*_iter)->asRaw()->getItemID()];
+							ItemType& it = g_items[brush_ptr->asRaw()->getItemID()];
 							if (it.id != 0) {
 								pugi::xml_node item = palette.append_child("item");
 								item.append_attribute("id") = it.id;

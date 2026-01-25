@@ -7,6 +7,7 @@
 #include "game/materials.h"
 #include "ui/gui.h"
 #include <algorithm>
+#include <limits>
 
 namespace EditorOperations {
 
@@ -25,7 +26,7 @@ namespace EditorOperations {
 
 		bool operator()(Map& map, Item* item, int64_t removed, int64_t done) {
 			if (done % PROGRESS_UPDATE_INTERVAL == 0) {
-				g_gui.SetLoadDone((uint32_t)(100 * done / map.getTileCount()));
+				g_gui.SetLoadDone(static_cast<uint32_t>(100 * done / map.getTileCount()));
 			}
 			return item->getID() == itemId && !item->isComplex();
 		}
@@ -36,7 +37,7 @@ namespace EditorOperations {
 
 		bool operator()(Map& map, Item* item, long long removed, long long done) {
 			if (done % PROGRESS_UPDATE_INTERVAL_SMALL == 0) {
-				g_gui.SetLoadDone((unsigned int)(100 * done / map.getTileCount()));
+				g_gui.SetLoadDone(static_cast<uint32_t>(100 * done / map.getTileCount()));
 			}
 
 			return g_materials.isInTileset(item, "Corpses") && !item->isComplex();
@@ -58,14 +59,14 @@ namespace EditorOperations {
 
 		bool operator()(Map& map, Tile* tile, long long removed, long long done, long long total) {
 			if (done % PROGRESS_UPDATE_INTERVAL_UNREACHABLE == 0) {
-				g_gui.SetLoadDone((unsigned int)(100 * done / total));
+				g_gui.SetLoadDone(static_cast<uint32_t>(100 * done / total));
 			}
 
 			Position pos = tile->getPosition();
 			int sx = std::max(pos.x - UNREACHABLE_SEARCH_RADIUS_X, 0);
-			int ex = std::min(pos.x + UNREACHABLE_SEARCH_RADIUS_X, 65535);
+			int ex = std::min(pos.x + UNREACHABLE_SEARCH_RADIUS_X, (int)std::numeric_limits<uint16_t>::max());
 			int sy = std::max(pos.y - UNREACHABLE_SEARCH_RADIUS_Y, 0);
-			int ey = std::min(pos.y + UNREACHABLE_SEARCH_RADIUS_Y, 65535);
+			int ey = std::min(pos.y + UNREACHABLE_SEARCH_RADIUS_Y, (int)std::numeric_limits<uint16_t>::max());
 			int sz, ez;
 
 			if (pos.z <= GROUND_LAYER) {

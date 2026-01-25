@@ -169,8 +169,8 @@ void FindBrushDialog::OnClickOKInternal() {
 
 			if (do_search) {
 				const BrushMap& map = g_brushes.getMap();
-				for (BrushMap::const_iterator iter = map.begin(); iter != map.end(); ++iter) {
-					const Brush* brush = iter->second;
+				for (const auto& [name, brush_ptr] : map) {
+					const Brush* brush = brush_ptr;
 					if (as_lower_str(brush->getName()).find(search_string) == std::string::npos) {
 						continue;
 					}
@@ -232,8 +232,8 @@ void FindBrushDialog::RefreshContentsInternal() {
 		// We store the raws so they display last of all results
 		std::deque<const RAWBrush*> raws;
 
-		for (BrushMap::const_iterator iter = brushes_map.begin(); iter != brushes_map.end(); ++iter) {
-			const Brush* brush = iter->second;
+		for (const auto& [name, brush_ptr] : brushes_map) {
+			const Brush* brush = brush_ptr;
 
 			if (as_lower_str(brush->getName()).find(search_string) == std::string::npos) {
 				continue;
