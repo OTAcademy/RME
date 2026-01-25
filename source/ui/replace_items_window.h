@@ -19,7 +19,7 @@
 #define RME_REPLACE_ITEMS_WINDOW_H_
 
 #include "app/main.h"
-#include "ui/common_windows.h"
+#include "ui/controls/item_buttons.h"
 #include "editor/editor.h"
 
 struct ReplacingItem {

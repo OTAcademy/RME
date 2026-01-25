@@ -18,6 +18,7 @@
 #include "app/main.h"
 
 #include "ui/dialog_util.h"
+#include "ui/controls/sortable_list_box.h"
 #include "palette/palette_house.h"
 #include "brushes/managers/brush_manager.h"
 

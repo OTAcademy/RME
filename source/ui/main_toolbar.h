@@ -26,6 +26,14 @@
 #include "brushes/brush_enums.h"
 #include "ui/numbertextctrl.h"
 
+#include "ui/toolbar/brush_toolbar.h"
+#include "ui/toolbar/position_toolbar.h"
+#include "ui/toolbar/size_toolbar.h"
+#include "ui/toolbar/standard_toolbar.h"
+#include "ui/toolbar/light_toolbar.h"
+#include "ui/toolbar/toolbar_registry.h"
+#include <memory>
+
 class MainToolBar : public wxEvtHandler {
 public:
 	MainToolBar(wxWindow* parent, wxAuiManager* manager);
@@ -41,32 +49,31 @@ public:
 	void SavePerspective();
 
 	void OnStandardButtonClick(wxCommandEvent& event);
-	void OnBrushesButtonClick(wxCommandEvent& event);
-	void OnPositionButtonClick(wxCommandEvent& event);
-	void OnPositionKeyUp(wxKeyEvent& event);
-	void OnPastePositionText(wxClipboardTextEvent& event);
-	void OnSizesButtonClick(wxCommandEvent& event);
 	void OnLightSlider(wxCommandEvent& event);
 	void OnAmbientLightSlider(wxCommandEvent& event);
 
 private:
 	static const wxString STANDARD_BAR_NAME;
-	static const wxString BRUSHES_BAR_NAME;
-	static const wxString POSITION_BAR_NAME;
-	static const wxString SIZES_BAR_NAME;
 	static const wxString LIGHT_BAR_NAME;
 
-	wxAuiToolBar* standard_toolbar;
-	wxAuiToolBar* brushes_toolbar;
-	wxAuiToolBar* position_toolbar;
-	NumberTextCtrl* x_control;
-	NumberTextCtrl* y_control;
-	NumberTextCtrl* z_control;
-	wxButton* go_button;
-	wxAuiToolBar* sizes_toolbar;
-	wxAuiToolBar* light_toolbar;
-	wxSlider* light_slider;
-	wxSlider* ambient_slider;
+	StandardToolBar* GetStandardToolbar() {
+		return registry->GetStandardToolbar();
+	}
+	BrushToolBar* GetBrushToolbar() {
+		return registry->GetBrushToolbar();
+	}
+	PositionToolBar* GetPositionToolbar() {
+		return registry->GetPositionToolbar();
+	}
+	SizeToolBar* GetSizeToolbar() {
+		return registry->GetSizeToolbar();
+	}
+	LightToolBar* GetLightToolbar() {
+		return registry->GetLightToolbar();
+	}
+
+private:
+	std::unique_ptr<ToolbarRegistry> registry;
 };
 
 #endif // RME_MAINTOOLBAR_H_

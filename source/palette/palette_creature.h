@@ -19,6 +19,7 @@
 #define RME_TILESET_CREATURE_H_
 
 #include "palette/palette_common.h"
+#include "ui/controls/sortable_list_box.h"
 
 class CreaturePalettePanel : public PalettePanel {
 public:

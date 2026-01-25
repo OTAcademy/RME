@@ -80,7 +80,7 @@ void ContainerItemButton::OnMouseRightRelease(wxMouseEvent& WXUNUSED(event)) {
 }
 
 void ContainerItemButton::OnAddItem(wxCommandEvent& WXUNUSED(event)) {
-	FindItemDialog dialog(GetParent(), "Choose Item to add", true);
+	FindItemDialog dialog(this->GetParent(), "Choose Item to add", true);
 
 	if (dialog.ShowModal() == wxID_OK) {
 		Container* container = getParentContainer();
@@ -129,7 +129,7 @@ void ContainerItemButton::OnEditItem(wxCommandEvent& WXUNUSED(event)) {
 
 void ContainerItemButton::OnRemoveItem(wxCommandEvent& WXUNUSED(event)) {
 	ASSERT(edit_item);
-	int32_t ret = DialogUtil::PopupDialog(GetParent(), "Remove Item", "Are you sure you want to remove this item from the container?", wxYES | wxNO);
+	int32_t ret = DialogUtil::PopupDialog(this->GetParent(), "Remove Item", "Are you sure you want to remove this item from the container?", wxYES | wxNO);
 
 	if (ret != wxID_YES) {
 		return;

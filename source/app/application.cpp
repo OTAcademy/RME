@@ -24,7 +24,7 @@
 
 #include "game/sprites.h"
 #include "editor/editor.h"
-#include "ui/common_windows.h"
+#include "ui/dialogs/goto_position_dialog.h"
 #include "palette/palette_window.h"
 #include "app/preferences.h"
 #include "ui/result_window.h"
@@ -33,6 +33,7 @@
 #include "ui/main_menubar.h"
 #include "app/updater.h"
 #include "ui/artprovider.h"
+#include "ui/map/export_tilesets_window.h"
 #include <wx/stattext.h>
 #include <wx/slider.h>
 
@@ -423,7 +424,14 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 MainFrame::~MainFrame() = default;
 
 void MainFrame::OnIdle(wxIdleEvent& event) {
-	////
+	if (menu_bar) {
+		menu_bar->Update();
+	}
+	if (tool_bar) {
+		tool_bar->UpdateButtons();
+	}
+	event.RequestMore();
+	event.Skip();
 }
 
 #ifdef _USE_UPDATER_
@@ -661,19 +669,19 @@ void MainFrame::OnExit(wxCloseEvent& event) {
 }
 
 void MainFrame::AddRecentFile(const FileName& file) {
-	menu_bar->AddRecentFile(file);
+	menu_bar->recentFilesManager.AddFile(file);
 }
 
 void MainFrame::LoadRecentFiles() {
-	menu_bar->LoadRecentFiles();
+	menu_bar->recentFilesManager.Load(&g_settings.getConfigObject());
 }
 
 void MainFrame::SaveRecentFiles() {
-	menu_bar->SaveRecentFiles();
+	menu_bar->recentFilesManager.Save(&g_settings.getConfigObject());
 }
 
 std::vector<wxString> MainFrame::GetRecentFiles() {
-	return menu_bar->GetRecentFiles();
+	return menu_bar->recentFilesManager.GetFiles();
 }
 
 void MainFrame::PrepareDC(wxDC& dc) {

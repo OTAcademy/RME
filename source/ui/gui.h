@@ -18,6 +18,9 @@
 #include "ui/managers/minimap_manager.h"
 #include "brushes/managers/doodad_preview_manager.h"
 #include "ui/managers/status_manager.h"
+#include "ui/managers/search_manager.h"
+#include "ui/managers/welcome_manager.h"
+#include "ui/managers/gl_context_manager.h"
 
 class BaseMap;
 class Map;
@@ -98,10 +101,15 @@ public:
 		return g_loading.SetLoadDone(done, newMessage);
 	}
 
-	void ShowWelcomeDialog(const wxBitmap& icon);
-
-	void FinishWelcomeDialog();
-	bool IsWelcomeDialogShown();
+	void ShowWelcomeDialog(const wxBitmap& icon) {
+		g_welcome.ShowWelcomeDialog(icon);
+	}
+	void FinishWelcomeDialog() {
+		g_welcome.FinishWelcomeDialog();
+	}
+	bool IsWelcomeDialogShown() {
+		return g_welcome.IsWelcomeDialogShown();
+	}
 
 	/**
 	 * Destroys (hides) the current loading bar.
@@ -121,9 +129,6 @@ public:
 
 	// This sends the event to the main window (redirecting from other controls)
 	void AddPendingCanvasEvent(wxEvent& event);
-
-	void OnWelcomeDialogClosed(wxCloseEvent& event);
-	void OnWelcomeDialogAction(wxCommandEvent& event);
 
 protected:
 	void DisableRendering() {
@@ -148,11 +153,17 @@ public:
 
 	// Get the current GL context
 	// Param is required if the context is to be created.
-	wxGLContext* GetGLContext(wxGLCanvas* win);
+	wxGLContext* GetGLContext(wxGLCanvas* win) {
+		return g_gl_context.GetGLContext(win);
+	}
 
 	// Search Results
-	SearchResultWindow* ShowSearchWindow();
-	void HideSearchWindow();
+	SearchResultWindow* ShowSearchWindow() {
+		return g_search.ShowSearchWindow();
+	}
+	void HideSearchWindow() {
+		g_search.HideSearchWindow();
+	}
 
 	// Minimap
 	void CreateMinimap() {
@@ -319,15 +330,11 @@ public:
 	wxAuiManager* aui_manager;
 	MapTabbook* tabbook;
 	MainFrame* root; // The main frame
-	WelcomeDialog* welcomeDialog;
 	CopyBuffer copybuffer;
 
-	SearchResultWindow* search_result_window;
 	GraphicManager gfx;
 
 	BaseMap* secondary_map; // A buffer map
-
-	wxGLContext* OGLContext;
 
 	EditorMode mode;
 

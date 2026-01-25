@@ -35,7 +35,10 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/copy_operations.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/draw_operations.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/selection_operations.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/operations/map_version_changer.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/editor_persistence.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/tileset_exporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/minimap_exporter.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_tabs.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection_thread.h
@@ -73,6 +76,8 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/map/map_allocator.h
     ${CMAKE_CURRENT_LIST_DIR}/map/operations/map_processor.h
     ${CMAKE_CURRENT_LIST_DIR}/map/map_region.h
+    ${CMAKE_CURRENT_LIST_DIR}/map/map_search.h
+    ${CMAKE_CURRENT_LIST_DIR}/map/map_statistics.h
     ${CMAKE_CURRENT_LIST_DIR}/map/otml.h
     ${CMAKE_CURRENT_LIST_DIR}/map/position.h
     ${CMAKE_CURRENT_LIST_DIR}/map/tile.h
@@ -161,7 +166,10 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/add_tileset_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/artprovider.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/browse_tile_window.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/common_windows.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/controls/item_buttons.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/controls/sortable_list_box.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/goto_position_dialog.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/object_properties_base.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/container_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dat_debug_view.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dcbutton.h
@@ -169,6 +177,12 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialog_util.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/extension_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/find_item_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/find_dialog.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/map_properties_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/towns_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/import_map_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_minimap_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_tilesets_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui_ids.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/loading_manager.h
@@ -178,14 +192,34 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/status_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/brush_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/palette/managers/palette_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/recent_files_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/managers/editor_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/search_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/welcome_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/gl_context_manager.h
 
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_menubar.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/menubar_action_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/search_handler.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/view_settings_handler.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/map_actions_handler.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/file_menu_handler.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/navigation_menu_handler.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/palette_menu_handler.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_toolbar.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_popup_menu.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_tab.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/numbertextctrl.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/brush_toolbar.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/position_toolbar.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/size_toolbar.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/standard_toolbar.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/light_toolbar.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_persistence.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_registry.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_factory.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_layout.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/old_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/pngfiles.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/positionctrl.h
@@ -194,6 +228,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/result_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/tileset_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/welcome_dialog.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map_statistics_dialog.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/live_dialogs.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar_loader.h
     ${CMAKE_CURRENT_LIST_DIR}/util/common.h
     ${CMAKE_CURRENT_LIST_DIR}/util/con_vector.h
     ${CMAKE_CURRENT_LIST_DIR}/util/json.h
@@ -234,7 +271,10 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/copy_operations.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/draw_operations.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/selection_operations.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/operations/map_version_changer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/editor_persistence.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/tileset_exporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/minimap_exporter.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_tabs.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection_thread.cpp
@@ -266,6 +306,8 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/map/map.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/operations/map_processor.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/map_region.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/map/map_search.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/map/map_statistics.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/tile.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/tileset.cpp
     ${CMAKE_CURRENT_LIST_DIR}/mkpch.cpp
@@ -349,7 +391,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/add_tileset_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/artprovider.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/browse_tile_window.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/common_windows.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/controls/sortable_list_box.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/goto_position_dialog.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/object_properties_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/container_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dat_debug_view.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dcbutton.cpp
@@ -357,8 +401,21 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialog_util.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/extension_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/find_item_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/find_dialog.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/map_properties_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/towns_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/import_map_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_minimap_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_tilesets_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_menubar.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/menubar_action_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/search_handler.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/view_settings_handler.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/map_actions_handler.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/file_menu_handler.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/navigation_menu_handler.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/palette_menu_handler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_toolbar.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/loading_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/layout_manager.cpp
@@ -367,12 +424,25 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/status_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/brush_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/palette/managers/palette_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/recent_files_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/managers/editor_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/search_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/welcome_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/gl_context_manager.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_popup_menu.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_tab.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/numbertextctrl.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/brush_toolbar.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/position_toolbar.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/size_toolbar.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/standard_toolbar.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/light_toolbar.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_persistence.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_registry.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_factory.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_layout.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/old_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/pngfiles.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/positionctrl.cpp
@@ -381,6 +451,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/result_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/tileset_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/welcome_dialog.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map_statistics_dialog.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/live_dialogs.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/menubar_loader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/common.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/file_system.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/mt_rand.cpp

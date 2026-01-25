@@ -253,7 +253,7 @@ void EditorManager::SaveMapAs() {
 	if (dialog.ShowModal() == wxID_OK) {
 		SaveCurrentMap(dialog.GetPath(), true);
 		g_status.UpdateTitle();
-		g_gui.root->GetMainMenuBar()->AddRecentFile(dialog.GetPath());
+		g_gui.root->AddRecentFile(dialog.GetPath());
 		g_gui.root->UpdateMenubar();
 	}
 }

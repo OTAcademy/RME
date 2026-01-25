@@ -16,6 +16,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "app/main.h"
+#include "ui/controls/sortable_list_box.h"
 
 #include "app/settings.h"
 #include "brushes/brush.h"
@@ -25,6 +26,7 @@
 #include "brushes/creature_brush.h"
 #include "brushes/spawn_brush.h"
 #include "game/materials.h"
+#include "ui/controls/sortable_list_box.h"
 
 // ============================================================================
 // Creature palette
