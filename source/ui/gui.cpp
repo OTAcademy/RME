@@ -65,10 +65,7 @@ GUI g_gui;
 GUI::GUI() :
 	aui_manager(nullptr),
 	root(nullptr),
-	search_result_window(nullptr),
 	secondary_map(nullptr),
-
-	OGLContext(nullptr),
 	mode(SELECTION_MODE),
 	pasting(false),
 	disabled_counter(0),
@@ -77,30 +74,9 @@ GUI::GUI() :
 
 GUI::~GUI() {
 	delete aui_manager;
-	delete OGLContext;
 }
 
-wxGLContext* GUI::GetGLContext(wxGLCanvas* win) {
-	if (OGLContext == nullptr) {
-#ifdef __WXOSX__
-		OGLContext = new wxGLContext(win, nullptr);
-#else
-		wxGLContextAttrs ctxAttrs;
-		ctxAttrs.PlatformDefaults().CoreProfile().MajorVersion(4).MinorVersion(5).EndList();
-		OGLContext = newd wxGLContext(win, nullptr, &ctxAttrs);
-		spdlog::info("GUI: Created new OpenGL 4.5 Core Profile context");
-#endif
-		// Initialize GLAD for the new context
-		win->SetCurrent(*OGLContext);
-		if (!gladLoadGL()) {
-			spdlog::error("GUI: Failed to initialize GLAD!");
-		} else {
-			spdlog::info("GUI: GLAD initialized successfully");
-		}
-	}
-
-	return OGLContext;
-}
+// OpenGL context management moved to GLContextManager
 
 void GUI::AddPendingCanvasEvent(wxEvent& event) {
 	MapTab* mapTab = GetCurrentMapTab();
@@ -196,40 +172,7 @@ void GUI::RefreshView() {
 	}
 }
 
-void GUI::ShowWelcomeDialog(const wxBitmap& icon) {
-	std::vector<wxString> recent_files = root->GetRecentFiles();
-	welcomeDialog = newd WelcomeDialog(__W_RME_APPLICATION_NAME__, "Version " + __W_RME_VERSION__, FROM_DIP(root, wxSize(800, 480)), icon, recent_files);
-	welcomeDialog->Bind(wxEVT_CLOSE_WINDOW, &GUI::OnWelcomeDialogClosed, this);
-	welcomeDialog->Bind(WELCOME_DIALOG_ACTION, &GUI::OnWelcomeDialogAction, this);
-	welcomeDialog->Show();
-	UpdateMenubar();
-}
-
-void GUI::FinishWelcomeDialog() {
-	if (welcomeDialog != nullptr) {
-		welcomeDialog->Hide();
-		root->Show();
-		welcomeDialog->Destroy();
-		welcomeDialog = nullptr;
-	}
-}
-
-bool GUI::IsWelcomeDialogShown() {
-	return welcomeDialog != nullptr && welcomeDialog->IsShown();
-}
-
-void GUI::OnWelcomeDialogClosed(wxCloseEvent& event) {
-	welcomeDialog->Destroy();
-	root->Close();
-}
-
-void GUI::OnWelcomeDialogAction(wxCommandEvent& event) {
-	if (event.GetId() == wxID_NEW) {
-		NewMap();
-	} else if (event.GetId() == wxID_OPEN) {
-		LoadMap(FileName(event.GetString()));
-	}
-}
+// Welcome Dialog moved to WelcomeManager
 
 void GUI::UpdateMenubar() {
 	root->UpdateMenubar();
@@ -309,23 +252,7 @@ void GUI::SetCurrentZoom(double zoom) {
 	}
 }
 
-void GUI::HideSearchWindow() {
-	if (search_result_window) {
-		aui_manager->GetPane(search_result_window).Show(false);
-		aui_manager->Update();
-	}
-}
-
-SearchResultWindow* GUI::ShowSearchWindow() {
-	if (search_result_window == nullptr) {
-		search_result_window = newd SearchResultWindow(root);
-		aui_manager->AddPane(search_result_window, wxAuiPaneInfo().Caption("Search Results"));
-	} else {
-		aui_manager->GetPane(search_result_window).Show();
-	}
-	aui_manager->Update();
-	return search_result_window;
-}
+// Search Results moved to SearchManager
 
 void GUI::FitViewToMap() {
 	for (int index = 0; index < tabbook->GetTabCount(); ++index) {

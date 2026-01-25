@@ -179,6 +179,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/brush_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/palette/managers/palette_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/managers/editor_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/search_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/welcome_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/gl_context_manager.h
 
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_menubar.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_toolbar.h
@@ -368,6 +371,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/brush_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/palette/managers/palette_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/managers/editor_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/search_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/welcome_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/managers/gl_context_manager.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_popup_menu.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_tab.cpp
