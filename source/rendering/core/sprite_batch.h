@@ -8,7 +8,6 @@
 #include "rendering/core/shader_program.h"
 #include "rendering/core/texture_atlas.h"
 #include "rendering/core/atlas_manager.h"
-#include "rendering/core/gl_resources.h"
 #include <vector>
 #include <memory>
 #include <glm/glm.hpp>
@@ -102,9 +101,9 @@ private:
 
 	std::unique_ptr<ShaderProgram> shader_;
 
-	std::unique_ptr<GLVertexArray> vao_;
-	std::unique_ptr<GLBuffer> quad_vbo_;
-	std::unique_ptr<GLBuffer> quad_ebo_;
+	GLuint vao_ = 0;
+	GLuint quad_vbo_ = 0;
+	GLuint quad_ebo_ = 0;
 
 	RingBuffer ring_buffer_;
 	MultiDrawIndirectRenderer mdi_renderer_;
