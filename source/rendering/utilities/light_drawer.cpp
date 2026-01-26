@@ -24,13 +24,7 @@
 #include "game/item.h"
 #include "rendering/core/drawing_options.h"
 
-struct GPULight {
-	float x, y; // 8 bytes (offset 0)
-	float intensity; // 4 bytes (offset 8)
-	float padding; // 4 bytes (offset 12) -> Total 16 bytes alignment
-	float r, g, b; // 12 bytes (offset 16)
-	float a; // 4 bytes (offset 28) -> Total 32 bytes
-};
+// GPULight struct moved to header
 
 LightDrawer::LightDrawer() {
 }
@@ -81,9 +75,8 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	shader->SetFloat("uTileSize", (float)TileSize);
 
 	// Populate Lights
-	static std::vector<GPULight> gpu_lights;
-	gpu_lights.clear();
-	gpu_lights.reserve(light_buffer.lights.size()); // Pre-allocate
+	gpu_lights_.clear();
+	gpu_lights_.reserve(light_buffer.lights.size()); // Pre-allocate
 
 	for (const auto& light : light_buffer.lights) {
 		// Check visibility - CPU Cull
@@ -99,25 +92,17 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 		float lx = (float)(light.map_x * TileSize - view.view_scroll_x);
 		float ly = (float)(light.map_y * TileSize - view.view_scroll_y);
 
-		gpu_lights.push_back({
-			lx, ly,
-			(float)light.intensity,
-			0.0f, // padding
-			(c.Red() / 255.0f) * light_intensity,
-			(c.Green() / 255.0f) * light_intensity,
-			(c.Blue() / 255.0f) * light_intensity,
-			1.0f // alpha (unused)
-		});
+		gpu_lights_.push_back({ .position = { lx, ly }, .intensity = static_cast<float>(light.intensity), .padding = 0.0f, .color = { (c.Red() / 255.0f) * light_intensity, (c.Green() / 255.0f) * light_intensity, (c.Blue() / 255.0f) * light_intensity, 1.0f } });
 	}
 
-	if (!gpu_lights.empty()) {
+	if (!gpu_lights_.empty()) {
 		// Reallocate buffer if needed, or just map/update.
 		// Using glNamedBufferData with GL_DYNAMIC_DRAW is simple and handles resizing.
-		glNamedBufferData(light_ssbo->GetID(), gpu_lights.size() * sizeof(GPULight), gpu_lights.data(), GL_DYNAMIC_DRAW);
+		glNamedBufferData(light_ssbo->GetID(), gpu_lights_.size() * sizeof(GPULight), gpu_lights_.data(), GL_DYNAMIC_DRAW);
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, light_ssbo->GetID());
 	}
 
-	shader->SetInt("uLightCount", (int)gpu_lights.size());
+	shader->SetInt("uLightCount", static_cast<int>(gpu_lights_.size()));
 
 	// Calculate Quad Transform
 	float draw_dest_x = (float)((map_x * TileSize - view.view_scroll_x - floor_adjustment));
