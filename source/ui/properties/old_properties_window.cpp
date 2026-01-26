@@ -16,7 +16,7 @@
 #include "ui/gui.h"
 #include "ui/dialog_util.h"
 #include "app/application.h"
-#include "ui/old_properties_window.h"
+#include "ui/properties/old_properties_window.h"
 #include "ui/properties/property_validator.h"
 #include "ui/properties/property_applier.h"
 #include "ui/properties/teleport_service.h"

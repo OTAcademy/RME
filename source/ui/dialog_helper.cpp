@@ -18,8 +18,8 @@
 #include "ui/properties/writable_properties_window.h"
 #include "ui/properties/splash_properties_window.h"
 #include "ui/properties/depot_properties_window.h"
-#include "ui/old_properties_window.h"
-#include "ui/properties_window.h"
+#include "ui/properties/old_properties_window.h"
+#include "ui/properties/properties_window.h"
 
 void DialogHelper::OpenProperties(Editor& editor, Tile* tile) {
 	if (!tile) {

@@ -172,6 +172,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/object_properties_base.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_validator.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_applier.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/attribute_service.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/teleport_service.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/creature_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/spawn_properties_window.h
@@ -229,10 +230,10 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_registry.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_factory.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_layout.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/old_properties_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/old_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/pngfiles.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/positionctrl.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_items_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/result_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/tileset_window.h
@@ -405,6 +406,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/object_properties_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_validator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_applier.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/attribute_service.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/teleport_service.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/creature_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/spawn_properties_window.cpp
@@ -461,10 +463,10 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_registry.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_factory.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_layout.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/old_properties_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/old_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/pngfiles.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/positionctrl.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_items_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/result_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/tileset_window.cpp
