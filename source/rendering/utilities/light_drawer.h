@@ -20,8 +20,10 @@
 
 #include <cstdint>
 #include <vector>
+#include <memory>
 #include <wx/wx.h>
 #include <wx/glcanvas.h>
+#include <glm/glm.hpp>
 #include "rendering/core/sprite_light.h"
 #include "rendering/core/light_buffer.h"
 #include "rendering/core/gl_texture.h"
@@ -31,6 +33,14 @@
 struct DrawingOptions;
 struct RenderView;
 class TileLocation;
+
+struct GPULight {
+	glm::vec2 position; // 8 bytes (offset 0)
+	float intensity; // 4 bytes (offset 8)
+	float padding; // 4 bytes (offset 12) -> Aligns color to 16 bytes
+	glm::vec4 color; // 16 bytes (offset 16) -> Total 32 bytes
+};
+
 class LightDrawer {
 public:
 	LightDrawer();
@@ -49,6 +59,9 @@ private:
 	std::unique_ptr<ShaderProgram> shader;
 	std::unique_ptr<GLVertexArray> vao;
 	std::unique_ptr<GLBuffer> vbo;
+	std::unique_ptr<GLBuffer> light_ssbo;
+
+	std::vector<GPULight> gpu_lights_;
 
 	void initRenderResources();
 };

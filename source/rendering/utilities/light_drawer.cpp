@@ -24,6 +24,8 @@
 #include "game/item.h"
 #include "rendering/core/drawing_options.h"
 
+// GPULight struct moved to header
+
 LightDrawer::LightDrawer() {
 }
 
@@ -31,6 +33,7 @@ LightDrawer::~LightDrawer() {
 	unloadGLTexture();
 	vao.reset();
 	vbo.reset();
+	light_ssbo.reset();
 }
 
 #include "rendering/core/render_view.h"
@@ -72,27 +75,10 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	shader->SetFloat("uTileSize", (float)TileSize);
 
 	// Populate Lights
-	int lightCount = 0;
+	gpu_lights_.clear();
+	gpu_lights_.reserve(light_buffer.lights.size()); // Pre-allocate
 
-	// Sort lights by distance to center to ensure priority
-	int centerX = (map_x + end_x) / 2;
-	int centerY = (map_y + end_y) / 2;
-
-	// Create a local copy for sorting
-	// (LightBuffer is passed as const ref, so we need a copy)
-	std::vector<LightBuffer::Light> sorted_lights = light_buffer.lights;
-
-	std::sort(sorted_lights.begin(), sorted_lights.end(), [centerX, centerY](const LightBuffer::Light& a, const LightBuffer::Light& b) {
-		int distA = (a.map_x - centerX) * (a.map_x - centerX) + (a.map_y - centerY) * (a.map_y - centerY);
-		int distB = (b.map_x - centerX) * (b.map_x - centerX) + (b.map_y - centerY) * (b.map_y - centerY);
-		return distA < distB;
-	});
-
-	for (const auto& light : sorted_lights) {
-		if (lightCount >= 256) {
-			break; // Max lights
-		}
-
+	for (const auto& light : light_buffer.lights) {
 		// Check visibility - CPU Cull
 		// Add safety margin to prevent popping at edges due to zoom/precision
 		int radius = light.intensity + 5; // Increased margin
@@ -101,21 +87,22 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 		}
 
 		wxColor c = colorFromEightBit(light.color);
-		glm::vec3 lightColor((c.Red() / 255.0f) * light_intensity, (c.Green() / 255.0f) * light_intensity, (c.Blue() / 255.0f) * light_intensity);
 
 		// lightPos in screen coords (same as mapX/Y)
-		// Note: light.map_x/y already includes perspective offset (from LightBuffer),
-		// so we do NOT subtract floor_adjustment here.
 		float lx = (float)(light.map_x * TileSize - view.view_scroll_x);
 		float ly = (float)(light.map_y * TileSize - view.view_scroll_y);
 
-		shader->SetVec2(std::format("uLights[{}].position", lightCount), glm::vec2(lx, ly));
-		shader->SetVec3(std::format("uLights[{}].color", lightCount), lightColor);
-		shader->SetFloat(std::format("uLights[{}].intensity", lightCount), (float)light.intensity);
-
-		lightCount++;
+		gpu_lights_.push_back({ .position = { lx, ly }, .intensity = static_cast<float>(light.intensity), .padding = 0.0f, .color = { (c.Red() / 255.0f) * light_intensity, (c.Green() / 255.0f) * light_intensity, (c.Blue() / 255.0f) * light_intensity, 1.0f } });
 	}
-	shader->SetInt("uLightCount", lightCount);
+
+	if (!gpu_lights_.empty()) {
+		// Reallocate buffer if needed, or just map/update.
+		// Using glNamedBufferData with GL_DYNAMIC_DRAW is simple and handles resizing.
+		glNamedBufferData(light_ssbo->GetID(), gpu_lights_.size() * sizeof(GPULight), gpu_lights_.data(), GL_DYNAMIC_DRAW);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, light_ssbo->GetID());
+	}
+
+	shader->SetInt("uLightCount", static_cast<int>(gpu_lights_.size()));
 
 	// Calculate Quad Transform
 	float draw_dest_x = (float)((map_x * TileSize - view.view_scroll_x - floor_adjustment));
@@ -171,13 +158,17 @@ void LightDrawer::initRenderResources() {
 
 		struct Light {
 			vec2 position; // Map coordinates * TileSize
-			vec3 color;
 			float intensity;
+			float padding;
+			vec4 color;
+		};
+
+		layout(std430, binding = 0) buffer LightBlock {
+			Light uLights[];
 		};
 
 		uniform vec3 uAmbientColor;
 		uniform int uLightCount;
-		uniform Light uLights[256]; // Max 256 visible lights
 
 		// Uniforms to convert TexCoord/FragCoord to Map Coordinates
 		uniform float uMapStartX;
@@ -199,7 +190,7 @@ void LightDrawer::initRenderResources() {
 				float radius = uLights[i].intensity * uTileSize;
 				if (dist < radius) {
 					float falloff = 1.0 - (dist / radius);
-					vec3 lightColor = uLights[i].color * falloff;
+					vec3 lightColor = uLights[i].color.rgb * falloff;
 					totalLight = max(totalLight, lightColor);
 				}
 			}
@@ -221,6 +212,7 @@ void LightDrawer::initRenderResources() {
 
 	vao = std::make_unique<GLVertexArray>();
 	vbo = std::make_unique<GLBuffer>();
+	light_ssbo = std::make_unique<GLBuffer>();
 
 	glNamedBufferData(vbo->GetID(), sizeof(vertices), vertices, GL_STATIC_DRAW);
 
