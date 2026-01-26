@@ -82,6 +82,7 @@ Tile* Tile::deepCopy(BaseMap& map) {
 
 	ItemVector::iterator it;
 
+	copy->items.reserve(items.size());
 	it = items.begin();
 	while (it != items.end()) {
 		copy->items.push_back((*it)->deepCopy());
@@ -170,6 +171,7 @@ void Tile::merge(Tile* other) {
 
 	ItemVector::iterator it;
 
+	items.reserve(items.size() + other->items.size());
 	it = other->items.begin();
 	while (it != other->items.end()) {
 		addItem(*it);
