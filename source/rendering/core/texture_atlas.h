@@ -70,7 +70,7 @@ public:
 	/**
 	 * Unbind texture.
 	 */
-	void unbind() const;
+	void unbind(uint32_t slot = 0) const;
 
 	/**
 	 * Get layer count.

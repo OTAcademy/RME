@@ -214,8 +214,8 @@ void TextureAtlas::bind(uint32_t slot) const {
 	glBindTextureUnit(slot, texture_->GetID());
 }
 
-void TextureAtlas::unbind() const {
-	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+void TextureAtlas::unbind(uint32_t slot) const {
+	glBindTextureUnit(slot, 0);
 }
 
 void TextureAtlas::release() {
