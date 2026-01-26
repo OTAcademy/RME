@@ -30,7 +30,8 @@ static const unsigned long UPPER_MASK = 0x80000000UL;
 /* least significant r bits */
 static const unsigned long LOWER_MASK = 0x7fffffffUL;
 
-struct mt_state_t {
+struct mt_state_t
+{
 	unsigned long mt[N];
 	int mti;
 };
