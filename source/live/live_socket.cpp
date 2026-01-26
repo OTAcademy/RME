@@ -129,7 +129,7 @@ void LiveSocket::sendNode(uint32_t clientId, QTreeNode* node, int32_t ndx, int32
 	// Send message
 	NetworkMessage message;
 	message.write<uint8_t>(PACKET_NODE);
-	message.write<uint32_t>((ndx << 18) | (ndy << 4) | ((floorMask & 0xFF00) ? 1 : 0));
+	message.write<uint32_t>((static_cast<uint32_t>(ndx) << 18) | (static_cast<uint32_t>(ndy) << 4) | ((floorMask & 0xFF00) ? 1 : 0));
 
 	if (!node) {
 		message.write<uint8_t>(0x00);
