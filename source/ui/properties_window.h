@@ -26,9 +26,6 @@
 class ContainerItemButton;
 class ContainerItemPopupMenu;
 class ItemAttribute;
-class wxSpinCtrl;
-class wxFlexGridSizer;
-class wxPanel;
 
 class PropertiesWindow : public ObjectPropertiesWindowBase {
 public:
@@ -63,19 +60,8 @@ protected:
 	void SetGridValue(wxGrid* grid, int rowIndex, std::string name, const ItemAttribute& attr);
 
 protected:
-	wxSpinCtrl* action_id_field;
-	wxSpinCtrl* unique_id_field;
-	wxSpinCtrl* count_field;
-	wxSpinCtrl* tier_field;
-
-protected:
 	wxNotebook* notebook;
 	wxWindow* currentPanel;
-
-private:
-	void createUI();
-	void createGeneralFields(wxFlexGridSizer* sizer, wxWindow* parent);
-	void createClassificationFields(wxFlexGridSizer* sizer, wxWindow* parent);
 
 	DECLARE_EVENT_TABLE()
 };

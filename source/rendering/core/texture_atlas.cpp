@@ -12,13 +12,12 @@ TextureAtlas::~TextureAtlas() {
 
 TextureAtlas::TextureAtlas(TextureAtlas&& other) noexcept
 	:
-	texture_id_(other.texture_id_),
+	texture_(std::move(other.texture_)),
 	layer_count_(other.layer_count_),
 	allocated_layers_(other.allocated_layers_),
 	total_sprite_count_(other.total_sprite_count_),
 	current_layer_(other.current_layer_), next_x_(other.next_x_),
 	next_y_(other.next_y_) {
-	other.texture_id_ = 0;
 	other.layer_count_ = 0;
 	other.allocated_layers_ = 0;
 	other.total_sprite_count_ = 0;
@@ -30,14 +29,13 @@ TextureAtlas::TextureAtlas(TextureAtlas&& other) noexcept
 TextureAtlas& TextureAtlas::operator=(TextureAtlas&& other) noexcept {
 	if (this != &other) {
 		release();
-		texture_id_ = other.texture_id_;
+		texture_ = std::move(other.texture_);
 		layer_count_ = other.layer_count_;
 		allocated_layers_ = other.allocated_layers_;
 		total_sprite_count_ = other.total_sprite_count_;
 		current_layer_ = other.current_layer_;
 		next_x_ = other.next_x_;
 		next_y_ = other.next_y_;
-		other.texture_id_ = 0;
 		other.layer_count_ = 0;
 		other.allocated_layers_ = 0;
 		other.total_sprite_count_ = 0;
@@ -49,7 +47,7 @@ TextureAtlas& TextureAtlas::operator=(TextureAtlas&& other) noexcept {
 }
 
 bool TextureAtlas::initialize(int initial_layers) {
-	if (texture_id_ != 0) {
+	if (texture_) {
 		return true; // Already initialized
 	}
 
@@ -60,24 +58,16 @@ bool TextureAtlas::initialize(int initial_layers) {
 		initial_layers = MAX_LAYERS;
 	}
 
-	glGenTextures(1, &texture_id_);
-	if (texture_id_ == 0) {
-		spdlog::error("TextureAtlas: Failed to generate texture");
-		return false;
-	}
+	texture_ = std::make_unique<GLTextureResource>(GL_TEXTURE_2D_ARRAY);
 
-	glBindTexture(GL_TEXTURE_2D_ARRAY, texture_id_);
+	// Set texture parameters (DSA)
+	glTextureParameteri(texture_->GetID(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTextureParameteri(texture_->GetID(), GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(texture_->GetID(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(texture_->GetID(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	// Set texture parameters
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	// Allocate texture array storage
-	glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, ATLAS_SIZE, ATLAS_SIZE, initial_layers, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-
-	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+	// Allocate texture array storage (DSA)
+	glTextureStorage3D(texture_->GetID(), 1, GL_RGBA8, ATLAS_SIZE, ATLAS_SIZE, initial_layers);
 
 	allocated_layers_ = initial_layers;
 	layer_count_ = 1; // Start with one active layer
@@ -92,7 +82,7 @@ bool TextureAtlas::initialize(int initial_layers) {
 		return false;
 	}
 
-	spdlog::info("TextureAtlas created: {}x{} x {} layers, id={}", ATLAS_SIZE, ATLAS_SIZE, initial_layers, texture_id_);
+	spdlog::info("TextureAtlas created: {}x{} x {} layers, id={}", ATLAS_SIZE, ATLAS_SIZE, initial_layers, texture_->GetID());
 	return true;
 }
 
@@ -111,40 +101,26 @@ bool TextureAtlas::addLayer() {
 		spdlog::info("TextureAtlas: Expanding {} -> {} layers", allocated_layers_, new_allocated);
 
 		// Create new larger texture array
-		GLuint new_texture;
-		glGenTextures(1, &new_texture);
-		if (new_texture == 0) {
-			spdlog::error("TextureAtlas: Failed to generate new texture id during expansion");
-			return false;
-		}
+		auto new_texture = std::make_unique<GLTextureResource>(GL_TEXTURE_2D_ARRAY);
 
-		glBindTexture(GL_TEXTURE_2D_ARRAY, new_texture);
+		glTextureParameteri(new_texture->GetID(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTextureParameteri(new_texture->GetID(), GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(new_texture->GetID(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTextureParameteri(new_texture->GetID(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, ATLAS_SIZE, ATLAS_SIZE, new_allocated, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+		glTextureStorage3D(new_texture->GetID(), 1, GL_RGBA8, ATLAS_SIZE, ATLAS_SIZE, new_allocated);
 
 		GLenum err = glGetError();
 		if (err != GL_NO_ERROR) {
-			spdlog::error("TextureAtlas: glTexImage3D failed during expansion (err={}). VRAM might be full.", err);
-			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-			glDeleteTextures(1, &new_texture);
+			spdlog::error("TextureAtlas: glTextureStorage3D failed during expansion (err={}). VRAM might be full.", err);
 			return false;
 		}
 
 		// Copy existing layers using glCopyImageSubData (GL 4.3+)
-		glCopyImageSubData(texture_id_, GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, new_texture, GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, ATLAS_SIZE, ATLAS_SIZE, allocated_layers_);
+		glCopyImageSubData(texture_->GetID(), GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, new_texture->GetID(), GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, ATLAS_SIZE, ATLAS_SIZE, allocated_layers_);
 
-		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-
-		// Removed glFinish() - it causes main thread to freeze waiting for GPU
-		// The driver should handle synchronization implicitly for the next draw call
-
-		glDeleteTextures(1, &texture_id_);
-		texture_id_ = new_texture;
+		// Swap and auto-release old texture
+		texture_ = std::move(new_texture);
 		allocated_layers_ = new_allocated;
 	}
 
@@ -188,10 +164,8 @@ std::optional<AtlasRegion> TextureAtlas::addSprite(const uint8_t* rgba_data) {
 
 			pbo_->bind(); // Binds GL_PIXEL_UNPACK_BUFFER
 
-			glBindTexture(GL_TEXTURE_2D_ARRAY, texture_id_);
-			// Offset is 0 in PBO
-			glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, pixel_x, pixel_y, current_layer_, SPRITE_SIZE, SPRITE_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+			// DSA upload from PBO
+			glTextureSubImage3D(texture_->GetID(), 0, pixel_x, pixel_y, current_layer_, SPRITE_SIZE, SPRITE_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 			pbo_->unbind();
 			pbo_->advance();
@@ -201,9 +175,7 @@ std::optional<AtlasRegion> TextureAtlas::addSprite(const uint8_t* rgba_data) {
 
 	if (!uploaded) {
 		// Fallback synchronously
-		glBindTexture(GL_TEXTURE_2D_ARRAY, texture_id_);
-		glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, pixel_x, pixel_y, current_layer_, SPRITE_SIZE, SPRITE_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, rgba_data);
-		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+		glTextureSubImage3D(texture_->GetID(), 0, pixel_x, pixel_y, current_layer_, SPRITE_SIZE, SPRITE_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, rgba_data);
 	}
 
 	// Calculate UV coordinates with half-texel inset to prevent bleeding
@@ -229,8 +201,7 @@ std::optional<AtlasRegion> TextureAtlas::addSprite(const uint8_t* rgba_data) {
 }
 
 void TextureAtlas::bind(uint32_t slot) const {
-	glActiveTexture(GL_TEXTURE0 + slot);
-	glBindTexture(GL_TEXTURE_2D_ARRAY, texture_id_);
+	glBindTextureUnit(slot, texture_->GetID());
 }
 
 void TextureAtlas::unbind() const {
@@ -238,10 +209,7 @@ void TextureAtlas::unbind() const {
 }
 
 void TextureAtlas::release() {
-	if (texture_id_ != 0) {
-		glDeleteTextures(1, &texture_id_);
-		texture_id_ = 0;
-	}
+	texture_.reset();
 	layer_count_ = 0;
 	allocated_layers_ = 0;
 	total_sprite_count_ = 0;

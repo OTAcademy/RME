@@ -15,47 +15,52 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#ifndef RME_OLD_PROPERTIES_WINDOW_H_
-#define RME_OLD_PROPERTIES_WINDOW_H_
+#ifndef _RME_CONTAINER_PROPS_H_
+#define _RME_CONTAINER_PROPS_H_
 
-#include "app/main.h"
-
-#include "ui/controls/item_buttons.h"
 #include "ui/properties/object_properties_base.h"
+#include "ui/controls/item_buttons.h"
 
+class Container;
 class ContainerItemButton;
-class ContainerItemPopupMenu;
 
-class OldPropertiesWindow : public ObjectPropertiesWindowBase {
+// Right-click popup menu
+class ContainerItemPopupMenu : public wxMenu {
 public:
-	OldPropertiesWindow(wxWindow* parent, const Map* map, const Tile* tile, Item* item, wxPoint = wxDefaultPosition);
-	virtual ~OldPropertiesWindow();
+	ContainerItemPopupMenu();
+	virtual ~ContainerItemPopupMenu();
 
-	void OnFocusChange(wxFocusEvent&);
-	void OnChar(wxKeyEvent& evt);
+	void Update(ContainerItemButton* what);
+};
 
-	void OnClickOK(wxCommandEvent&);
-	void OnClickCancel(wxCommandEvent&);
+// Container Item Button
+class ContainerItemButton : public ItemButton {
+	DECLARE_EVENT_TABLE()
+public:
+	ContainerItemButton(wxWindow* parent, bool large, int index, const Map* map, Item* item);
+	~ContainerItemButton();
 
-protected:
-	// item
-	wxSpinCtrl* count_field;
-	wxSpinCtrl* action_id_field;
-	wxSpinCtrl* unique_id_field;
-	wxSpinCtrl* door_id_field;
-	wxSpinCtrl* tier_field;
+	void OnMouseDoubleLeftClick(wxMouseEvent& event);
+	void OnMouseRightRelease(wxMouseEvent& event);
 
-	// teleport
-	wxSpinCtrl* x_field;
-	wxSpinCtrl* y_field;
-	wxSpinCtrl* z_field;
+	void OnAddItem(wxCommandEvent& event);
+	void OnEditItem(wxCommandEvent& event);
+	void OnRemoveItem(wxCommandEvent& event);
+
+	ObjectPropertiesWindowBase* getParentContainerWindow();
+	Container* getParentContainer();
+
+	void setItem(Item* item);
 
 private:
-	void createHeaderFields(wxFlexGridSizer* sizer);
-	void createGenericFields(wxFlexGridSizer* sizer);
-	void createClassificationFields(wxFlexGridSizer* sizer);
-	void createDoorFields(wxFlexGridSizer* sizer);
-	void createTeleportFields(wxFlexGridSizer* sizer);
+	static std::unique_ptr<ContainerItemPopupMenu> popup_menu;
+
+	const Map* edit_map;
+	Item* edit_item;
+
+	size_t index;
+
+	friend class ContainerItemPopupMenu;
 };
 
 #endif

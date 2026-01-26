@@ -34,7 +34,7 @@
 #include "ui/dialog_util.h"
 #include "app/application.h"
 #include "ui/tileset_window.h"
-#include "ui/properties/container_properties_window.h"
+#include "ui/container_properties_window.h"
 
 // ============================================================================
 // Tileset Window

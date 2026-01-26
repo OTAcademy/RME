@@ -2,8 +2,10 @@
 #define RME_RENDERING_CORE_MULTI_DRAW_INDIRECT_RENDERER_H_
 
 #include "app/main.h"
+#include "rendering/core/gl_resources.h"
 #include <vector>
 #include <cstdint>
+#include <memory>
 
 /**
  * GPU command buffer for glMultiDrawElementsIndirect (GL 4.3+).
@@ -89,7 +91,7 @@ public:
 
 private:
 	std::vector<DrawElementsIndirectCommand> commands_;
-	GLuint command_buffer_ = 0;
+	std::unique_ptr<GLBuffer> command_buffer_;
 	bool available_ = false;
 	bool initialized_ = false;
 };
