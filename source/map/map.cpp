@@ -23,6 +23,7 @@
 
 #include <sstream>
 #include <algorithm>
+#include <unordered_set>
 
 Map::Map() :
 	BaseMap(),
@@ -149,6 +150,11 @@ bool Map::convert(const ConversionMap& rm, bool showdialog) {
 		g_gui.CreateLoadBar("Converting map ...");
 	}
 
+	std::map<const std::vector<uint16_t>*, std::unordered_set<uint16_t>> mtm_lookups;
+	for (const auto& entry : rm.mtm) {
+		mtm_lookups.emplace(&entry.first, std::unordered_set<uint16_t>(entry.first.begin(), entry.first.end()));
+	}
+
 	uint64_t tiles_done = 0;
 	std::vector<uint16_t> id_list;
 
@@ -191,19 +197,20 @@ bool Map::convert(const ConversionMap& rm, bool showdialog) {
 
 		if (cfmtm != rm.mtm.end()) {
 			const std::vector<uint16_t>& v = cfmtm->first;
+			const auto& ids_to_remove = mtm_lookups[&v];
 
-			if (tile->ground && std::find(v.begin(), v.end(), tile->ground->getID()) != v.end()) {
+			if (tile->ground && ids_to_remove.contains(tile->ground->getID())) {
 				delete tile->ground;
 				tile->ground = nullptr;
 			}
 
-			auto part_iter = std::stable_partition(tile->items.begin(), tile->items.end(), [&v](Item* item) {
-				return std::find(v.begin(), v.end(), item->getID()) == v.end();
+			auto part_iter = std::stable_partition(tile->items.begin(), tile->items.end(), [&ids_to_remove](Item* item) {
+				return !ids_to_remove.contains(item->getID());
 			});
 
-			for (ItemVector::iterator item_iter = part_iter; item_iter != tile->items.end(); ++item_iter) {
-				delete *item_iter;
-			}
+			std::for_each(part_iter, tile->items.end(), [](Item* item) {
+				delete item;
+			});
 			tile->items.erase(part_iter, tile->items.end());
 
 			const std::vector<uint16_t>& new_items = cfmtm->second;
@@ -296,9 +303,9 @@ void Map::cleanInvalidTiles(bool showdialog) {
 			return g_items.typeExists(item->getID());
 		});
 
-		for (ItemVector::iterator item_iter = part_iter; item_iter != tile->items.end(); ++item_iter) {
-			delete *item_iter;
-		}
+		std::for_each(part_iter, tile->items.end(), [](Item* item) {
+			delete item;
+		});
 		tile->items.erase(part_iter, tile->items.end());
 
 		++tiles_done;
