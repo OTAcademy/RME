@@ -24,6 +24,8 @@
 #include "editor/editor.h"
 #include "ui/gui.h"
 
+#include <ranges>
+
 Change::Change() :
 	type(CHANGE_NONE), data(nullptr) {
 	////
@@ -486,7 +488,7 @@ void BatchAction::commit() {
 }
 
 void BatchAction::undo() {
-	for (auto& action : boost::adaptors::reverse(batch)) {
+	for (auto& action : std::ranges::reverse_view(batch)) {
 		action->undo(nullptr);
 	}
 }
