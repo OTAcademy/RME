@@ -22,6 +22,8 @@
 #include "map/map.h"
 
 #include <sstream>
+#include <algorithm>
+#include <unordered_set>
 
 Map::Map() :
 	BaseMap(),
@@ -165,6 +167,11 @@ bool Map::convert(const ConversionMap& rm, bool showdialog) {
 		g_gui.CreateLoadBar("Converting map ...");
 	}
 
+	std::map<const std::vector<uint16_t>*, std::unordered_set<uint16_t>> mtm_lookups;
+	for (const auto& entry : rm.mtm) {
+		mtm_lookups.emplace(&entry.first, std::unordered_set<uint16_t>(entry.first.begin(), entry.first.end()));
+	}
+
 	uint64_t tiles_done = 0;
 	std::vector<uint16_t> id_list;
 
@@ -208,20 +215,21 @@ bool Map::convert(const ConversionMap& rm, bool showdialog) {
 
 		if (cfmtm != rm.mtm.end()) {
 			const std::vector<uint16_t>& v = cfmtm->first;
+			const auto& ids_to_remove = mtm_lookups.at(&v);
 
-			if (tile->ground && std::find(v.begin(), v.end(), tile->ground->getID()) != v.end()) {
+			if (tile->ground && ids_to_remove.contains(tile->ground->getID())) {
 				delete tile->ground;
 				tile->ground = nullptr;
 			}
 
-			for (ItemVector::iterator item_iter = tile->items.begin(); item_iter != tile->items.end();) {
-				if (std::find(v.begin(), v.end(), (*item_iter)->getID()) != v.end()) {
-					delete *item_iter;
-					item_iter = tile->items.erase(item_iter);
-				} else {
-					++item_iter;
-				}
-			}
+			auto part_iter = std::stable_partition(tile->items.begin(), tile->items.end(), [&ids_to_remove](Item* item) {
+				return !ids_to_remove.contains(item->getID());
+			});
+
+			std::for_each(part_iter, tile->items.end(), [](Item* item) {
+				delete item;
+			});
+			tile->items.erase(part_iter, tile->items.end());
 
 			const std::vector<uint16_t>& new_items = cfmtm->second;
 			for (std::vector<uint16_t>::const_iterator iit = new_items.begin(); iit != new_items.end(); ++iit) {
@@ -309,14 +317,14 @@ void Map::cleanInvalidTiles(bool showdialog) {
 			continue;
 		}
 
-		for (ItemVector::iterator item_iter = tile->items.begin(); item_iter != tile->items.end();) {
-			if (g_items.typeExists((*item_iter)->getID())) {
-				++item_iter;
-			} else {
-				delete *item_iter;
-				item_iter = tile->items.erase(item_iter);
-			}
-		}
+		auto part_iter = std::stable_partition(tile->items.begin(), tile->items.end(), [](Item* item) {
+			return g_items.typeExists(item->getID());
+		});
+
+		std::for_each(part_iter, tile->items.end(), [](Item* item) {
+			delete item;
+		});
+		tile->items.erase(part_iter, tile->items.end());
 
 		++tiles_done;
 		if (showdialog && tiles_done % 0x10000 == 0) {
