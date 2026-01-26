@@ -17,15 +17,11 @@
 
 #include "app/main.h"
 
-#include "ui/properties/properties_window.h"
+#include "ui/properties_window.h"
 
 #include "ui/gui_ids.h"
 #include "game/complexitem.h"
-#include "ui/properties/container_properties_window.h"
-#include "ui/properties/attribute_service.h"
-#include "ui/properties/property_validator.h"
-#include "ui/properties/property_applier.h"
-#include "ui/properties/teleport_service.h"
+#include "ui/container_properties_window.h"
 
 #include <wx/grid.h>
 
@@ -43,20 +39,12 @@ END_EVENT_TABLE()
 
 PropertiesWindow::PropertiesWindow(wxWindow* parent, const Map* map, const Tile* tile_parent, Item* item, wxPoint pos) :
 	ObjectPropertiesWindowBase(parent, "Item Properties", map, tile_parent, item, pos),
-	action_id_field(nullptr),
-	unique_id_field(nullptr),
-	count_field(nullptr),
-	tier_field(nullptr),
 	currentPanel(nullptr) {
 	ASSERT(edit_item);
-	createUI();
-}
-
-void PropertiesWindow::createUI() {
 	notebook = newd wxNotebook(this, wxID_ANY, wxDefaultPosition, wxSize(600, 300));
 
 	notebook->AddPage(createGeneralPanel(notebook), "Simple", true);
-	if (dynamic_cast<Container*>(edit_item)) {
+	if (dynamic_cast<Container*>(item)) {
 		notebook->AddPage(createContainerPanel(notebook), "Contents");
 	}
 	notebook->AddPage(createAttributesPanel(notebook), "Advanced");
@@ -92,49 +80,20 @@ wxWindow* PropertiesWindow::createGeneralPanel(wxWindow* parent) {
 	wxFlexGridSizer* gridsizer = newd wxFlexGridSizer(2, 10, 10);
 	gridsizer->AddGrowableCol(1);
 
-	createGeneralFields(gridsizer, panel);
-	createClassificationFields(gridsizer, panel);
-
-	panel->SetSizerAndFit(gridsizer);
-	return panel;
-}
-
-void PropertiesWindow::createGeneralFields(wxFlexGridSizer* gridsizer, wxWindow* panel) {
 	gridsizer->Add(newd wxStaticText(panel, wxID_ANY, "ID " + i2ws(edit_item->getID())));
 	gridsizer->Add(newd wxStaticText(panel, wxID_ANY, "\"" + wxstr(edit_item->getName()) + "\""));
 
-	gridsizer->Add(newd wxStaticText(panel, wxID_ANY, (edit_item->isCharged() ? "Charges" : "Count")));
-	int max_count = 100;
-	if (edit_item->isClientCharged()) {
-		max_count = 250;
-	}
-	if (edit_item->isExtraCharged()) {
-		max_count = 65500;
-	}
-	count_field = newd wxSpinCtrl(panel, wxID_ANY, i2ws(edit_item->getCount()), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, max_count, edit_item->getCount());
-	if (!edit_item->isStackable() && !edit_item->isCharged()) {
-		count_field->Enable(false);
-	}
-	gridsizer->Add(count_field, wxSizerFlags(1).Expand());
-
 	gridsizer->Add(newd wxStaticText(panel, wxID_ANY, "Action ID"));
-	action_id_field = newd wxSpinCtrl(panel, wxID_ANY, i2ws(edit_item->getActionID()), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 0xFFFF, edit_item->getActionID());
+	wxSpinCtrl* action_id_field = newd wxSpinCtrl(panel, wxID_ANY, i2ws(edit_item->getActionID()), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 0xFFFF, edit_item->getActionID());
 	gridsizer->Add(action_id_field, wxSizerFlags(1).Expand());
 
 	gridsizer->Add(newd wxStaticText(panel, wxID_ANY, "Unique ID"));
-	unique_id_field = newd wxSpinCtrl(panel, wxID_ANY, i2ws(edit_item->getUniqueID()), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, 0xFFFF, edit_item->getUniqueID());
+	wxSpinCtrl* unique_id_field = newd wxSpinCtrl(panel, wxID_ANY, i2ws(edit_item->getUniqueID()), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, 0xFFFF, edit_item->getUniqueID());
 	gridsizer->Add(unique_id_field, wxSizerFlags(1).Expand());
-}
 
-void PropertiesWindow::createClassificationFields(wxFlexGridSizer* gridsizer, wxWindow* panel) {
-	if (g_items.MajorVersion >= 3 && g_items.MinorVersion >= 60 && (edit_item->getClassification() > 0 || edit_item->isWeapon() || edit_item->isWearableEquipment())) {
-		gridsizer->Add(newd wxStaticText(panel, wxID_ANY, "Classification"));
-		gridsizer->Add(newd wxStaticText(panel, wxID_ANY, i2ws(edit_item->getClassification())));
+	panel->SetSizerAndFit(gridsizer);
 
-		gridsizer->Add(newd wxStaticText(panel, wxID_ANY, "Tier"));
-		tier_field = newd wxSpinCtrl(panel, wxID_ANY, i2ws(edit_item->getTier()), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, 0xFF, edit_item->getTier());
-		gridsizer->Add(tier_field, wxSizerFlags(1).Expand());
-	}
+	return panel;
 }
 
 wxWindow* PropertiesWindow::createContainerPanel(wxWindow* parent) {
@@ -196,7 +155,7 @@ wxWindow* PropertiesWindow::createAttributesPanel(wxWindow* parent) {
 	attributesGrid->AppendRows(attrs.size());
 	int i = 0;
 	for (ItemAttributeMap::iterator aiter = attrs.begin(); aiter != attrs.end(); ++aiter, ++i) {
-		AttributeService::setGridValue(attributesGrid, i, aiter->first, aiter->second);
+		SetGridValue(attributesGrid, i, aiter->first, aiter->second);
 	}
 
 	wxSizer* optSizer = newd wxBoxSizer(wxHORIZONTAL);
@@ -210,7 +169,51 @@ wxWindow* PropertiesWindow::createAttributesPanel(wxWindow* parent) {
 }
 
 void PropertiesWindow::SetGridValue(wxGrid* grid, int rowIndex, std::string label, const ItemAttribute& attr) {
-	AttributeService::setGridValue(grid, rowIndex, label, attr);
+	wxArrayString types;
+	types.Add("Number");
+	types.Add("Float");
+	types.Add("Boolean");
+	types.Add("String");
+
+	grid->SetCellValue(rowIndex, 0, label);
+	switch (attr.type) {
+		case ItemAttribute::STRING: {
+			grid->SetCellValue(rowIndex, 1, "String");
+			grid->SetCellValue(rowIndex, 2, wxstr(*attr.getString()));
+			break;
+		}
+		case ItemAttribute::INTEGER: {
+			grid->SetCellValue(rowIndex, 1, "Number");
+			grid->SetCellValue(rowIndex, 2, i2ws(*attr.getInteger()));
+			grid->SetCellEditor(rowIndex, 2, new wxGridCellNumberEditor);
+			break;
+		}
+		case ItemAttribute::DOUBLE:
+		case ItemAttribute::FLOAT: {
+			grid->SetCellValue(rowIndex, 1, "Float");
+			wxString f;
+			f << *attr.getFloat();
+			grid->SetCellValue(rowIndex, 2, f);
+			grid->SetCellEditor(rowIndex, 2, new wxGridCellFloatEditor);
+			break;
+		}
+		case ItemAttribute::BOOLEAN: {
+			grid->SetCellValue(rowIndex, 1, "Boolean");
+			grid->SetCellValue(rowIndex, 2, *attr.getBoolean() ? "1" : "");
+			grid->SetCellRenderer(rowIndex, 2, new wxGridCellBoolRenderer);
+			grid->SetCellEditor(rowIndex, 2, new wxGridCellBoolEditor);
+			break;
+		}
+		default: {
+			grid->SetCellValue(rowIndex, 1, "Unknown");
+			grid->SetCellBackgroundColour(rowIndex, 1, *wxLIGHT_GREY);
+			grid->SetCellBackgroundColour(rowIndex, 2, *wxLIGHT_GREY);
+			grid->SetReadOnly(rowIndex, 1, true);
+			grid->SetReadOnly(rowIndex, 2, true);
+			break;
+		}
+	}
+	grid->SetCellEditor(rowIndex, 1, new wxGridCellChoiceEditor(types));
 }
 
 void PropertiesWindow::OnResize(wxSizeEvent& evt) {
@@ -247,14 +250,7 @@ void PropertiesWindow::OnNotebookPageChanged(wxNotebookEvent& evt) {
 }
 
 void PropertiesWindow::saveGeneralPanel() {
-	if (edit_item) {
-		int new_uid = unique_id_field->GetValue();
-		int new_aid = action_id_field->GetValue();
-		int new_count = count_field->GetValue();
-		int new_tier = (tier_field ? tier_field->GetValue() : 0);
-
-		PropertyApplier::applyItemProperties(edit_item, new_count, new_uid, new_aid, new_tier);
-	}
+	////
 }
 
 void PropertiesWindow::saveContainerPanel() {
@@ -262,7 +258,29 @@ void PropertiesWindow::saveContainerPanel() {
 }
 
 void PropertiesWindow::saveAttributesPanel() {
-	AttributeService::saveAttributesFromGrid(edit_item, attributesGrid);
+	edit_item->clearAllAttributes();
+	for (int32_t rowIndex = 0; rowIndex < attributesGrid->GetNumberRows(); ++rowIndex) {
+		ItemAttribute attr;
+		wxString type = attributesGrid->GetCellValue(rowIndex, 1);
+		if (type == "String") {
+			attr.set(nstr(attributesGrid->GetCellValue(rowIndex, 2)));
+		} else if (type == "Float") {
+			double value;
+			if (attributesGrid->GetCellValue(rowIndex, 2).ToDouble(&value)) {
+				attr.set(value);
+			}
+		} else if (type == "Number") {
+			long value;
+			if (attributesGrid->GetCellValue(rowIndex, 2).ToLong(&value)) {
+				attr.set(static_cast<int32_t>(value));
+			}
+		} else if (type == "Boolean") {
+			attr.set(attributesGrid->GetCellValue(rowIndex, 2) == "1");
+		} else {
+			continue;
+		}
+		edit_item->setAttribute(nstr(attributesGrid->GetCellValue(rowIndex, 0)), attr);
+	}
 }
 
 void PropertiesWindow::OnGridValueChanged(wxGridEvent& event) {
@@ -272,21 +290,21 @@ void PropertiesWindow::OnGridValueChanged(wxGridEvent& event) {
 			return;
 		}
 
-		ItemAttribute attr = AttributeService::createFromTypeAndValue(newType, attributesGrid->GetCellValue(event.GetRow(), 2));
-		AttributeService::setGridValue(attributesGrid, event.GetRow(), nstr(attributesGrid->GetCellValue(event.GetRow(), 0)), attr);
+		ItemAttribute attr;
+		if (newType == "String") {
+			attr.set("");
+		} else if (newType == "Float") {
+			attr.set(0.0f);
+		} else if (newType == "Number") {
+			attr.set(0);
+		} else if (newType == "Boolean") {
+			attr.set(false);
+		}
+		SetGridValue(attributesGrid, event.GetRow(), nstr(attributesGrid->GetCellValue(event.GetRow(), 0)), attr);
 	}
 }
 
 void PropertiesWindow::OnClickOK(wxCommandEvent&) {
-	int new_uid = unique_id_field->GetValue();
-	int new_aid = action_id_field->GetValue();
-	int new_tier = (tier_field ? tier_field->GetValue() : 0);
-
-	if (!PropertyValidator::validateItemProperties(this, new_uid, new_aid, new_tier)) {
-		return;
-	}
-
-	saveGeneralPanel();
 	saveAttributesPanel();
 	EndModal(1);
 }

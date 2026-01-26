@@ -27,12 +27,10 @@ public:
 		id(std::exchange(other.id, 0)) { }
 
 	GLBuffer& operator=(GLBuffer&& other) noexcept {
-		if (this != &other) {
-			if (id) {
-				glDeleteBuffers(1, &id);
-			}
-			id = std::exchange(other.id, 0);
+		if (id) {
+			glDeleteBuffers(1, &id);
 		}
+		id = std::exchange(other.id, 0);
 		return *this;
 	}
 
@@ -70,12 +68,10 @@ public:
 		id(std::exchange(other.id, 0)) { }
 
 	GLVertexArray& operator=(GLVertexArray&& other) noexcept {
-		if (this != &other) {
-			if (id) {
-				glDeleteVertexArrays(1, &id);
-			}
-			id = std::exchange(other.id, 0);
+		if (id) {
+			glDeleteVertexArrays(1, &id);
 		}
+		id = std::exchange(other.id, 0);
 		return *this;
 	}
 
@@ -111,16 +107,14 @@ public:
 
 	// Enable move
 	GLTextureResource(GLTextureResource&& other) noexcept :
-		id(std::exchange(other.id, 0)), target(other.target) { }
+		id(std::exchange(other.id, 0)), target(other.target) {}
 
 	GLTextureResource& operator=(GLTextureResource&& other) noexcept {
-		if (this != &other) {
-			if (id) {
-				glDeleteTextures(1, &id);
-			}
-			id = std::exchange(other.id, 0);
-			target = other.target;
+		if (id) {
+			glDeleteTextures(1, &id);
 		}
+		id = std::exchange(other.id, 0);
+		target = other.target;
 		return *this;
 	}
 

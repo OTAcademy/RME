@@ -12,7 +12,6 @@ TextureAtlas::~TextureAtlas() {
 
 TextureAtlas::TextureAtlas(TextureAtlas&& other) noexcept
 	:
-	pbo_(std::move(other.pbo_)),
 	texture_(std::move(other.texture_)),
 	layer_count_(other.layer_count_),
 	allocated_layers_(other.allocated_layers_),
@@ -30,7 +29,6 @@ TextureAtlas::TextureAtlas(TextureAtlas&& other) noexcept
 TextureAtlas& TextureAtlas::operator=(TextureAtlas&& other) noexcept {
 	if (this != &other) {
 		release();
-		pbo_ = std::move(other.pbo_);
 		texture_ = std::move(other.texture_);
 		layer_count_ = other.layer_count_;
 		allocated_layers_ = other.allocated_layers_;
@@ -61,10 +59,6 @@ bool TextureAtlas::initialize(int initial_layers) {
 	}
 
 	texture_ = std::make_unique<GLTextureResource>(GL_TEXTURE_2D_ARRAY);
-	if (texture_->GetID() == 0) {
-		spdlog::error("TextureAtlas: Failed to generate texture");
-		return false;
-	}
 
 	// Set texture parameters (DSA)
 	glTextureParameteri(texture_->GetID(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -108,10 +102,6 @@ bool TextureAtlas::addLayer() {
 
 		// Create new larger texture array
 		auto new_texture = std::make_unique<GLTextureResource>(GL_TEXTURE_2D_ARRAY);
-		if (new_texture->GetID() == 0) {
-			spdlog::error("TextureAtlas: Failed to generate new texture id during expansion");
-			return false;
-		}
 
 		glTextureParameteri(new_texture->GetID(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTextureParameteri(new_texture->GetID(), GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -214,8 +204,8 @@ void TextureAtlas::bind(uint32_t slot) const {
 	glBindTextureUnit(slot, texture_->GetID());
 }
 
-void TextureAtlas::unbind(uint32_t slot) const {
-	glBindTextureUnit(slot, 0);
+void TextureAtlas::unbind() const {
+	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 }
 
 void TextureAtlas::release() {

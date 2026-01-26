@@ -3,8 +3,10 @@
 
 #include "app/main.h"
 #include "rendering/core/sync_handle.h"
+#include "rendering/core/gl_resources.h"
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 
 /**
  * Triple-buffered ring buffer with persistent mapping for zero-copy GPU uploads.
@@ -77,7 +79,7 @@ public:
 	 * Get the OpenGL buffer ID.
 	 */
 	GLuint getBufferId() const {
-		return buffer_id_;
+		return buffer_ ? buffer_->GetID() : 0;
 	}
 
 	/**
@@ -100,7 +102,7 @@ public:
 	}
 
 private:
-	GLuint buffer_id_ = 0;
+	std::unique_ptr<GLBuffer> buffer_;
 	void* mapped_ptr_ = nullptr;
 	SyncHandle fences_[BUFFER_COUNT];
 

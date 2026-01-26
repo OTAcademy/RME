@@ -30,14 +30,15 @@ static const unsigned long UPPER_MASK = 0x80000000UL;
 /* least significant r bits */
 static const unsigned long LOWER_MASK = 0x7fffffffUL;
 
-struct mt_state_t {
+typedef struct
+{
 	unsigned long mt[N];
 	int mti;
-};
+} mt_state_t;
 
 static inline unsigned long
 mt_get(void* vstate) {
-	mt_state_t* state = static_cast<mt_state_t*>(vstate);
+	mt_state_t* state = (mt_state_t*)vstate;
 
 	unsigned long k;
 	unsigned long int* const mt = state->mt;
@@ -84,7 +85,7 @@ mt_get_double(void* vstate) {
 
 static void
 mt_set(void* vstate, unsigned long int s) {
-	mt_state_t* state = static_cast<mt_state_t*>(vstate);
+	mt_state_t* state = (mt_state_t*)vstate;
 	int i;
 
 	if (s == 0) {

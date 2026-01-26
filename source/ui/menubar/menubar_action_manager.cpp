@@ -26,7 +26,7 @@ void MenuBarActionManager::RegisterActions(MainMenuBar* mb, std::map<std::string
 	MAKE_ACTION(IMPORT_MAP, wxITEM_NORMAL, OnImportMap);
 	MAKE_ACTION(IMPORT_MONSTERS, wxITEM_NORMAL, OnImportMonsterData);
 	MAKE_ACTION(IMPORT_MINIMAP, wxITEM_NORMAL, OnImportMinimap);
-
+	MAKE_ACTION(EXPORT_MINIMAP, wxITEM_NORMAL, OnExportMinimap);
 	MAKE_ACTION(EXPORT_TILESETS, wxITEM_NORMAL, OnExportTilesets);
 
 	MAKE_ACTION(RELOAD_DATA, wxITEM_NORMAL, OnReloadDataFiles);
@@ -205,7 +205,7 @@ void MenuBarActionManager::UpdateState(MainMenuBar* mb) {
 	mb->EnableItem(IMPORT_MAP, is_local);
 	mb->EnableItem(IMPORT_MONSTERS, is_local);
 	mb->EnableItem(IMPORT_MINIMAP, false);
-
+	mb->EnableItem(EXPORT_MINIMAP, is_local);
 	mb->EnableItem(EXPORT_TILESETS, loaded);
 
 	mb->EnableItem(FIND_ITEM, is_host);
