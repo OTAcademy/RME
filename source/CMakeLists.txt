@@ -170,6 +170,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/controls/sortable_list_box.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/goto_position_dialog.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/object_properties_base.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_validator.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_applier.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/teleport_service.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/creature_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/spawn_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/container_properties_window.h
@@ -400,6 +403,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/controls/sortable_list_box.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/goto_position_dialog.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/object_properties_base.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_validator.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_applier.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/teleport_service.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/creature_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/spawn_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/container_properties_window.cpp

@@ -50,6 +50,13 @@ protected:
 	wxSpinCtrl* y_field;
 	wxSpinCtrl* z_field;
 
+private:
+	void createHeaderFields(wxFlexGridSizer* sizer);
+	void createGenericFields(wxFlexGridSizer* sizer);
+	void createClassificationFields(wxFlexGridSizer* sizer);
+	void createDoorFields(wxFlexGridSizer* sizer);
+	void createTeleportFields(wxFlexGridSizer* sizer);
+
 	DECLARE_EVENT_TABLE();
 };
 
