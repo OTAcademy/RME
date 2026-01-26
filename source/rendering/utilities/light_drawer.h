@@ -49,6 +49,7 @@ private:
 	std::unique_ptr<ShaderProgram> shader;
 	std::unique_ptr<GLVertexArray> vao;
 	std::unique_ptr<GLBuffer> vbo;
+	std::unique_ptr<GLBuffer> light_ssbo;
 
 	void initRenderResources();
 };
