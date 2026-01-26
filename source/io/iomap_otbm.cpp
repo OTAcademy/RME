@@ -23,6 +23,7 @@
 #include <wx/mstream.h>
 #include <wx/datstrm.h>
 
+#include <format>
 #include <fstream>
 #include <vector>
 
@@ -722,7 +723,8 @@ bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
 
 	std::ifstream file(nstr(filename.GetFullPath()), std::ios::binary | std::ios::ate);
 	if (!file.is_open()) {
-		error("Couldn't open file for reading: %s", filename.GetFullPath().c_str());
+		std::string err = std::format("Couldn't open file for reading: {}", filename.GetFullPath().ToStdString());
+		error("%s", err.c_str());
 		return false;
 	}
 
@@ -732,24 +734,39 @@ bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
 		return false;
 	}
 
-	file.seekg(0, std::ios::beg);
+	// Memory optimization/Safety:
+	// For files larger than 512MB, stream from disk to avoid OOM on systems with limited RAM.
+	// Otherwise, read the entire file into memory for faster parsing.
+	if (size > 512 * 1024 * 1024) {
+		file.close();
+		DiskNodeFileReadHandle f(nstr(filename.GetFullPath()), StringVector(1, "OTBM"));
+		if (!f.isOk()) {
+			error("%s", wxstr(f.getErrorMessage()));
+			return false;
+		}
+		if (!loadMap(map, f)) {
+			return false;
+		}
+	} else {
+		file.seekg(0, std::ios::beg);
 
-	std::vector<uint8_t> buffer(size);
-	if (!file.read(reinterpret_cast<char*>(buffer.data()), size)) {
-		error("Failed to read file.");
-		return false;
-	}
+		std::vector<uint8_t> buffer(size);
+		if (!file.read(reinterpret_cast<char*>(buffer.data()), size)) {
+			error("Failed to read file.");
+			return false;
+		}
 
-	// Verify magic bytes
-	if (memcmp(buffer.data(), "OTBM", 4) != 0 && memcmp(buffer.data(), "\0\0\0\0", 4) != 0) {
-		error("File magic number not recognized");
-		return false;
-	}
+		// Verify magic bytes
+		if (memcmp(buffer.data(), "OTBM", 4) != 0 && memcmp(buffer.data(), "\0\0\0\0", 4) != 0) {
+			error("File magic number not recognized");
+			return false;
+		}
 
-	// Create memory handle (skips first 4 bytes)
-	MemoryNodeFileReadHandle f(buffer.data() + 4, size - 4);
-	if (!loadMap(map, f)) {
-		return false;
+		// Create memory handle (skips first 4 bytes)
+		MemoryNodeFileReadHandle f(buffer.data() + 4, size - 4);
+		if (!loadMap(map, f)) {
+			return false;
+		}
 	}
 
 	// Read auxilliary files
