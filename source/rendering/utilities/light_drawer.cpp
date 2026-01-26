@@ -83,8 +83,8 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	std::vector<LightBuffer::Light> sorted_lights = light_buffer.lights;
 
 	std::sort(sorted_lights.begin(), sorted_lights.end(), [centerX, centerY](const LightBuffer::Light& a, const LightBuffer::Light& b) {
-		int distA = (a.map_x - centerX) * (a.map_x - centerX) + (a.map_y - centerY) * (a.map_y - centerY);
-		int distB = (b.map_x - centerX) * (b.map_x - centerX) + (b.map_y - centerY) * (b.map_y - centerY);
+		int64_t distA = static_cast<int64_t>(a.map_x - centerX) * (a.map_x - centerX) + static_cast<int64_t>(a.map_y - centerY) * (a.map_y - centerY);
+		int64_t distB = static_cast<int64_t>(b.map_x - centerX) * (b.map_x - centerX) + static_cast<int64_t>(b.map_y - centerY) * (b.map_y - centerY);
 		return distA < distB;
 	});
 

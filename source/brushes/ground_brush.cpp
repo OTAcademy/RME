@@ -917,15 +917,6 @@ void GroundBrush::doBorders(BaseMap* map, Tile* tile) {
 
 	for (const BorderBlock* borderBlock : specificList) {
 		for (const SpecificCaseBlock* specificCaseBlock : borderBlock->specific_cases) {
-			/*
-			printf("New round\n");
-			if(specificCaseBlock->to_replace_id == 0) {
-				continue;
-			}
-			if(specificCaseBlock->with_id == 0) {
-				continue;
-			}
-			*/
 			uint32_t matches = 0;
 			for (Item* item : tile->items) {
 				if (!item->isBorder()) {
