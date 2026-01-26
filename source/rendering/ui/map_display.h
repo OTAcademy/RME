@@ -112,7 +112,7 @@ public:
 
 	static bool processed[BLOCK_SIZE * BLOCK_SIZE];
 	Editor& editor;
-	MapDrawer* drawer;
+	std::unique_ptr<MapDrawer> drawer;
 	int keyCode;
 
 	// View related
@@ -149,8 +149,8 @@ public:
 	uint32_t current_house_id;
 
 	wxStopWatch refresh_watch;
-	MapPopupMenu* popup_menu;
-	AnimationTimer* animation_timer;
+	std::unique_ptr<MapPopupMenu> popup_menu;
+	std::unique_ptr<AnimationTimer> animation_timer;
 
 	FramePacer frame_pacer;
 
