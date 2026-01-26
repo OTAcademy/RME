@@ -78,7 +78,7 @@ void Change::clear() {
 		default:
 #ifdef __DEBUG_MODE__
 			if (data) {
-				printf("UNHANDLED CHANGE TYPE! Leak!");
+				std::cerr << "UNHANDLED CHANGE TYPE! Leak!" << std::endl;
 			}
 #endif
 			break;
