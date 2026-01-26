@@ -56,8 +56,6 @@ private:
 	void createClassificationFields(wxFlexGridSizer* sizer);
 	void createDoorFields(wxFlexGridSizer* sizer);
 	void createTeleportFields(wxFlexGridSizer* sizer);
-
-	DECLARE_EVENT_TABLE();
 };
 
 #endif

@@ -7,15 +7,18 @@
 #include "map/tile.h"
 #include "game/item.h"
 #include "ui/dialog_util.h"
+#include "ui/properties/property_validator.h"
 #include "ui/properties/splash_properties_window.h"
 
 // ============================================================================
 // Splash Properties Window
 
+/*
 BEGIN_EVENT_TABLE(SplashPropertiesWindow, wxDialog)
 EVT_BUTTON(wxID_OK, SplashPropertiesWindow::OnClickOK)
 EVT_BUTTON(wxID_CANCEL, SplashPropertiesWindow::OnClickCancel)
 END_EVENT_TABLE()
+*/
 
 SplashPropertiesWindow::SplashPropertiesWindow(wxWindow* parent, const Map* map, const Tile* tile, Item* item, wxPoint pos) :
 	ObjectPropertiesWindowBase(parent, "Splash Properties", map, tile, item, pos),
@@ -23,6 +26,9 @@ SplashPropertiesWindow::SplashPropertiesWindow(wxWindow* parent, const Map* map,
 	unique_id_field(nullptr),
 	splash_type_field(nullptr) {
 	ASSERT(edit_item);
+
+	Bind(wxEVT_BUTTON, &SplashPropertiesWindow::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &SplashPropertiesWindow::OnClickCancel, this, wxID_CANCEL);
 
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
 	wxSizer* boxsizer = newd wxStaticBoxSizer(wxVERTICAL, this, "Splash Properties");
@@ -38,17 +44,17 @@ SplashPropertiesWindow::SplashPropertiesWindow(wxWindow* parent, const Map* map,
 	// Splash types
 	splash_type_field = newd wxChoice(this, wxID_ANY);
 	if (edit_item->isFluidContainer()) {
-		splash_type_field->Append(wxstr(Item::LiquidID2Name(LIQUID_NONE)), newd int32_t(LIQUID_NONE));
+		splash_type_field->Append(wxstr(Item::LiquidID2Name(LIQUID_NONE)), (void*)(intptr_t)(LIQUID_NONE));
 	}
 
 	for (SplashType splashType = LIQUID_FIRST; splashType != LIQUID_LAST; ++splashType) {
-		splash_type_field->Append(wxstr(Item::LiquidID2Name(splashType)), newd int32_t(splashType));
+		splash_type_field->Append(wxstr(Item::LiquidID2Name(splashType)), (void*)(intptr_t)(splashType));
 	}
 
 	if (item->getSubtype()) {
 		const std::string& what = Item::LiquidID2Name(item->getSubtype());
 		if (what == "Unknown") {
-			splash_type_field->Append(wxstr(Item::LiquidID2Name(LIQUID_NONE)), newd int32_t(LIQUID_NONE));
+			splash_type_field->Append(wxstr(Item::LiquidID2Name(LIQUID_NONE)), (void*)(intptr_t)(LIQUID_NONE));
 		}
 		splash_type_field->SetStringSelection(wxstr(what));
 	} else {
@@ -79,29 +85,21 @@ SplashPropertiesWindow::SplashPropertiesWindow(wxWindow* parent, const Map* map,
 }
 
 SplashPropertiesWindow::~SplashPropertiesWindow() {
-	if (splash_type_field) {
-		for (uint32_t i = 0; i < splash_type_field->GetCount(); ++i) {
-			delete reinterpret_cast<int*>(splash_type_field->GetClientData(i));
-		}
-	}
+	// No cleanup needed
 }
 
 void SplashPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	if (edit_item) {
 		int new_uid = unique_id_field->GetValue();
 		int new_aid = action_id_field->GetValue();
-		int* new_type = reinterpret_cast<int*>(splash_type_field->GetClientData(splash_type_field->GetSelection()));
+		int new_type = (int)(intptr_t)splash_type_field->GetClientData(splash_type_field->GetSelection());
 
-		if ((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
-			DialogUtil::PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
+		if (!PropertyValidator::validateItemProperties(this, new_uid, new_aid, 0)) {
 			return;
 		}
-		if ((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
-			DialogUtil::PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
-			return;
-		}
+
 		if (new_type) {
-			edit_item->setSubtype(*new_type);
+			edit_item->setSubtype(new_type);
 		}
 		edit_item->setUniqueID(new_uid);
 		edit_item->setActionID(new_aid);

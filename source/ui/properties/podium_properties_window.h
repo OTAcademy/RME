@@ -36,8 +36,6 @@ protected:
 	wxSpinCtrl* look_mountbody;
 	wxSpinCtrl* look_mountlegs;
 	wxSpinCtrl* look_mountfeet;
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

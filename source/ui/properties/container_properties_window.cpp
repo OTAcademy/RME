@@ -7,12 +7,15 @@
 
 #include "game/complexitem.h"
 #include "ui/dialog_util.h"
+#include "ui/properties/property_validator.h"
 #include "app/application.h"
 
+/*
 BEGIN_EVENT_TABLE(ContainerPropertiesWindow, wxDialog)
 EVT_BUTTON(wxID_OK, ContainerPropertiesWindow::OnClickOK)
 EVT_BUTTON(wxID_CANCEL, ContainerPropertiesWindow::OnClickCancel)
 END_EVENT_TABLE()
+*/
 
 ContainerPropertiesWindow::ContainerPropertiesWindow(wxWindow* win_parent, const Map* map, const Tile* tile_parent, Item* item, wxPoint pos) :
 	ObjectPropertiesWindowBase(win_parent, "Container Properties", map, tile_parent, item, pos),
@@ -21,6 +24,9 @@ ContainerPropertiesWindow::ContainerPropertiesWindow(wxWindow* win_parent, const
 	ASSERT(edit_item);
 	Container* container = dynamic_cast<Container*>(edit_item);
 	ASSERT(container);
+
+	Bind(wxEVT_BUTTON, &ContainerPropertiesWindow::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &ContainerPropertiesWindow::OnClickCancel, this, wxID_CANCEL);
 
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
 	wxSizer* boxsizer = newd wxStaticBoxSizer(wxVERTICAL, this, "Container Properties");
@@ -95,12 +101,7 @@ void ContainerPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	int new_uid = unique_id_field->GetValue();
 	int new_aid = action_id_field->GetValue();
 
-	if ((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
-		DialogUtil::PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
-		return;
-	}
-	if ((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
-		DialogUtil::PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
+	if (!PropertyValidator::validateItemProperties(this, new_uid, new_aid, 0)) {
 		return;
 	}
 

@@ -19,8 +19,6 @@ public:
 protected:
 	wxSpinCtrl* count_field;
 	wxChoice* direction_field;
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

@@ -8,16 +8,21 @@
 #include "game/creature.h"
 #include "ui/gui.h"
 
+/*
 BEGIN_EVENT_TABLE(CreaturePropertiesWindow, wxDialog)
 EVT_BUTTON(wxID_OK, CreaturePropertiesWindow::OnClickOK)
 EVT_BUTTON(wxID_CANCEL, CreaturePropertiesWindow::OnClickCancel)
 END_EVENT_TABLE()
+*/
 
 CreaturePropertiesWindow::CreaturePropertiesWindow(wxWindow* win_parent, const Map* map, const Tile* tile_parent, Creature* creature, wxPoint pos) :
 	ObjectPropertiesWindowBase(win_parent, "Creature Properties", map, tile_parent, creature, pos),
 	count_field(nullptr),
 	direction_field(nullptr) {
 	ASSERT(edit_creature);
+
+	Bind(wxEVT_BUTTON, &CreaturePropertiesWindow::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &CreaturePropertiesWindow::OnClickCancel, this, wxID_CANCEL);
 
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
 	wxSizer* boxsizer = newd wxStaticBoxSizer(wxVERTICAL, this, "Creature Properties");
@@ -36,7 +41,7 @@ CreaturePropertiesWindow::CreaturePropertiesWindow(wxWindow* win_parent, const M
 	direction_field = newd wxChoice(this, wxID_ANY);
 
 	for (Direction dir = DIRECTION_FIRST; dir <= DIRECTION_LAST; ++dir) {
-		direction_field->Append(wxstr(Creature::DirID2Name(dir)), newd int32_t(dir));
+		direction_field->Append(wxstr(Creature::DirID2Name(dir)), (void*)(intptr_t)(dir));
 	}
 	direction_field->SetSelection(edit_creature->getDirection());
 	subsizer->Add(direction_field, wxSizerFlags(1).Expand());
@@ -55,23 +60,16 @@ CreaturePropertiesWindow::CreaturePropertiesWindow(wxWindow* win_parent, const M
 }
 
 CreaturePropertiesWindow::~CreaturePropertiesWindow() {
-	if (direction_field) {
-		for (uint32_t i = 0; i < direction_field->GetCount(); ++i) {
-			delete reinterpret_cast<int*>(direction_field->GetClientData(i));
-		}
-	}
+	// No cleanup needed
 }
 
 void CreaturePropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	int new_spawntime = count_field->GetValue();
 	edit_creature->setSpawnTime(new_spawntime);
 
-	int* new_dir = reinterpret_cast<int*>(direction_field->GetClientData(
-		direction_field->GetSelection()
-	));
-
-	if (new_dir) {
-		edit_creature->setDirection((Direction)*new_dir);
+	if (direction_field->GetSelection() != wxNOT_FOUND) {
+		int new_dir = (int)(intptr_t)direction_field->GetClientData(direction_field->GetSelection());
+		edit_creature->setDirection((Direction)new_dir);
 	}
 	EndModal(1);
 }

@@ -18,8 +18,6 @@ public:
 
 protected:
 	wxChoice* depot_id_field;
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

@@ -20,8 +20,6 @@ protected:
 	wxSpinCtrl* action_id_field;
 	wxSpinCtrl* unique_id_field;
 	wxChoice* splash_type_field;
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

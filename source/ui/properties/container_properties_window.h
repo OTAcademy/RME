@@ -47,8 +47,6 @@ protected:
 	wxSpinCtrl* action_id_field;
 	wxSpinCtrl* unique_id_field;
 	std::vector<ContainerItemButton*> container_items;
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

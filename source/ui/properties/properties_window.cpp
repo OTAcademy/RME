@@ -253,10 +253,6 @@ void PropertiesWindow::saveGeneralPanel() {
 		int new_count = count_field->GetValue();
 		int new_tier = (tier_field ? tier_field->GetValue() : 0);
 
-		if (!PropertyValidator::validateItemProperties(this, new_uid, new_aid, new_tier)) {
-			return;
-		}
-
 		PropertyApplier::applyItemProperties(edit_item, new_count, new_uid, new_aid, new_tier);
 	}
 }
@@ -282,6 +278,14 @@ void PropertiesWindow::OnGridValueChanged(wxGridEvent& event) {
 }
 
 void PropertiesWindow::OnClickOK(wxCommandEvent&) {
+	int new_uid = unique_id_field->GetValue();
+	int new_aid = action_id_field->GetValue();
+	int new_tier = (tier_field ? tier_field->GetValue() : 0);
+
+	if (!PropertyValidator::validateItemProperties(this, new_uid, new_aid, new_tier)) {
+		return;
+	}
+
 	saveGeneralPanel();
 	saveAttributesPanel();
 	EndModal(1);

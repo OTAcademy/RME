@@ -10,18 +10,25 @@
 #include "ui/gui.h"
 #include "ui/dialog_util.h"
 
+#include "ui/properties/property_validator.h"
+
 static constexpr int OUTFIT_COLOR_MAX = 133;
 
+/*
 BEGIN_EVENT_TABLE(PodiumPropertiesWindow, wxDialog)
 EVT_BUTTON(wxID_OK, PodiumPropertiesWindow::OnClickOK)
 EVT_BUTTON(wxID_CANCEL, PodiumPropertiesWindow::OnClickCancel)
 END_EVENT_TABLE()
+*/
 
 PodiumPropertiesWindow::PodiumPropertiesWindow(wxWindow* win_parent, const Map* map, const Tile* tile_parent, Item* item, wxPoint pos) :
 	ObjectPropertiesWindowBase(win_parent, "Podium Properties", map, tile_parent, item, pos) {
 	ASSERT(edit_item);
 	Podium* podium = dynamic_cast<Podium*>(edit_item);
 	ASSERT(podium);
+
+	Bind(wxEVT_BUTTON, &PodiumPropertiesWindow::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &PodiumPropertiesWindow::OnClickCancel, this, wxID_CANCEL);
 
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
 	wxSizer* boxsizer = newd wxStaticBoxSizer(wxVERTICAL, this, "Podium Properties");
@@ -55,7 +62,7 @@ PodiumPropertiesWindow::PodiumPropertiesWindow(wxWindow* win_parent, const Map* 
 	direction_field = newd wxChoice(this, wxID_ANY);
 
 	for (Direction dir = DIRECTION_FIRST; dir <= DIRECTION_LAST; ++dir) {
-		direction_field->Append(wxstr(Creature::DirID2Name(dir)), newd int32_t(dir));
+		direction_field->Append(wxstr(Creature::DirID2Name(dir)), (void*)(intptr_t)(dir));
 	}
 	direction_field->SetSelection(static_cast<Direction>(podium->getDirection()));
 	subsizer->Add(direction_field, wxSizerFlags(1).Expand());
@@ -150,11 +157,7 @@ PodiumPropertiesWindow::PodiumPropertiesWindow(wxWindow* win_parent, const Map* 
 }
 
 PodiumPropertiesWindow::~PodiumPropertiesWindow() {
-	if (direction_field) {
-		for (uint32_t i = 0; i < direction_field->GetCount(); ++i) {
-			delete reinterpret_cast<int*>(direction_field->GetClientData(i));
-		}
-	}
+	// No cleanup needed
 }
 
 void PodiumPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
@@ -164,69 +167,37 @@ void PodiumPropertiesWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 	int new_aid = action_id_field->GetValue();
 	int new_tier = tier_field ? tier_field->GetValue() : 0;
 
-	if ((new_uid < 1000 || new_uid > 0xFFFF) && new_uid != 0) {
-		DialogUtil::PopupDialog(this, "Error", "Unique ID must be between 1000 and 65535.", wxOK);
-		return;
-	}
-	if ((new_aid < 100 || new_aid > 0xFFFF) && new_aid != 0) {
-		DialogUtil::PopupDialog(this, "Error", "Action ID must be between 100 and 65535.", wxOK);
-		return;
-	}
-	if (new_tier < 0 || new_tier > 0xFF) {
-		DialogUtil::PopupDialog(this, "Error", "Item tier must be between 0 and 255.", wxOK);
+	if (!PropertyValidator::validateItemProperties(this, new_uid, new_aid, new_tier)) {
 		return;
 	}
 
 	int newLookType = look_type->GetValue();
 	int newMount = look_mount->GetValue();
 
-	if (newLookType < 0 || newLookType > 0xFFFF || newMount < 0 || newMount > 0xFFFF) {
-		DialogUtil::PopupDialog(this, "Error", "LookType and Mount must be between 0 and 65535.", wxOK);
-		return;
-	}
-
-	int newHead = look_head->GetValue();
-	int newBody = look_body->GetValue();
-	int newLegs = look_legs->GetValue();
-	int newFeet = look_feet->GetValue();
-	int newMountHead = look_mounthead->GetValue();
-	int newMountBody = look_mountbody->GetValue();
-	int newMountLegs = look_mountlegs->GetValue();
-	int newMountFeet = look_mountfeet->GetValue();
-
-	if (newHead < 0 || newHead > OUTFIT_COLOR_MAX || newBody < 0 || newBody > OUTFIT_COLOR_MAX || newLegs < 0 || newLegs > OUTFIT_COLOR_MAX || newFeet < 0 || newFeet > OUTFIT_COLOR_MAX || newMountHead < 0 || newMountHead > OUTFIT_COLOR_MAX || newMountBody < 0 || newMountBody > OUTFIT_COLOR_MAX || newMountLegs < 0 || newMountLegs > OUTFIT_COLOR_MAX || newMountFeet < 0 || newMountFeet > OUTFIT_COLOR_MAX) {
-		wxString response = "Outfit and mount colors must be between 0 and ";
-		response << i2ws(OUTFIT_COLOR_MAX) << ".";
-		DialogUtil::PopupDialog(this, "Error", response, wxOK);
-		return;
-	}
-
-	int newAddon = look_addon->GetValue();
-	if (newAddon < 0 || newAddon > 3) {
-		DialogUtil::PopupDialog(this, "Error", "Addons value must be between 0 and 3.", wxOK);
-		return;
-	}
-
 	Outfit newOutfit;
 	newOutfit.lookType = newLookType;
-	newOutfit.lookHead = newHead;
-	newOutfit.lookBody = newBody;
-	newOutfit.lookLegs = newLegs;
-	newOutfit.lookFeet = newFeet;
-	newOutfit.lookAddon = newAddon;
+	newOutfit.lookHead = look_head->GetValue();
+	newOutfit.lookBody = look_body->GetValue();
+	newOutfit.lookLegs = look_legs->GetValue();
+	newOutfit.lookFeet = look_feet->GetValue();
+	newOutfit.lookAddon = look_addon->GetValue();
 	newOutfit.lookMount = newMount;
-	newOutfit.lookMountHead = newMountHead;
-	newOutfit.lookMountBody = newMountBody;
-	newOutfit.lookMountLegs = newMountLegs;
-	newOutfit.lookMountFeet = newMountFeet;
+	newOutfit.lookMountHead = look_mounthead->GetValue();
+	newOutfit.lookMountBody = look_mountbody->GetValue();
+	newOutfit.lookMountLegs = look_mountlegs->GetValue();
+	newOutfit.lookMountFeet = look_mountfeet->GetValue();
+
+	if (!PropertyValidator::validatePodiumProperties(this, new_tier, newOutfit, newMount)) {
+		return;
+	}
 
 	podium->setShowOutfit(show_outfit->GetValue());
 	podium->setShowMount(show_mount->GetValue());
 	podium->setShowPlatform(show_platform->GetValue());
 
-	int* new_dir = reinterpret_cast<int*>(direction_field->GetClientData(direction_field->GetSelection()));
-	if (new_dir) {
-		podium->setDirection((Direction)*new_dir);
+	if (direction_field->GetSelection() != wxNOT_FOUND) {
+		int new_dir = (int)(intptr_t)direction_field->GetClientData(direction_field->GetSelection());
+		podium->setDirection((Direction)new_dir);
 	}
 
 	podium->setOutfit(newOutfit);

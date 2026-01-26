@@ -20,8 +20,6 @@ protected:
 	wxSpinCtrl* action_id_field;
 	wxSpinCtrl* unique_id_field;
 	wxTextCtrl* text_field;
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

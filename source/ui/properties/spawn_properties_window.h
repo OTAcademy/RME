@@ -18,8 +18,6 @@ public:
 
 protected:
 	wxSpinCtrl* count_field;
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

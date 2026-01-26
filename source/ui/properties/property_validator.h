@@ -13,12 +13,16 @@ class Tile;
 class Item;
 class Door;
 class Teleport;
+class Podium;
+struct Outfit;
 
 class PropertyValidator {
 public:
 	static bool validateItemProperties(wxWindow* parent, int uid, int aid, int tier);
 	static bool validateDoorProperties(wxWindow* parent, const Map* map, const Tile* tile, const Door* door, uint8_t door_id);
 	static bool validateTeleportProperties(wxWindow* parent, const Map* map, const Position& dest);
+	static bool validatePodiumProperties(wxWindow* parent, int tier, const Outfit& outfit, int lookMount);
+	static bool validateTextProperties(wxWindow* parent, const Item* item, const std::string& text);
 };
 
 #endif

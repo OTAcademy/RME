@@ -8,15 +8,20 @@
 #include "map/map.h"
 #include "app/application.h"
 
+/*
 BEGIN_EVENT_TABLE(SpawnPropertiesWindow, wxDialog)
 EVT_BUTTON(wxID_OK, SpawnPropertiesWindow::OnClickOK)
 EVT_BUTTON(wxID_CANCEL, SpawnPropertiesWindow::OnClickCancel)
 END_EVENT_TABLE()
+*/
 
 SpawnPropertiesWindow::SpawnPropertiesWindow(wxWindow* win_parent, const Map* map, const Tile* tile_parent, Spawn* spawn, wxPoint pos) :
 	ObjectPropertiesWindowBase(win_parent, "Spawn Properties", map, tile_parent, spawn, pos),
 	count_field(nullptr) {
 	ASSERT(edit_spawn);
+
+	Bind(wxEVT_BUTTON, &SpawnPropertiesWindow::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &SpawnPropertiesWindow::OnClickCancel, this, wxID_CANCEL);
 
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
 	wxSizer* boxsizer = newd wxStaticBoxSizer(wxVERTICAL, this, "Spawn Properties");
