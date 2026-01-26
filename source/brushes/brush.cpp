@@ -43,6 +43,8 @@
 
 #include "ui/gui.h"
 
+#include <ranges>
+
 Brushes g_brushes;
 
 Brushes::Brushes() {
@@ -551,7 +553,7 @@ void DoorBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 		// We need to consider decorations!
 		while (true) {
 			// Vector has been modified, before we can use the iterator again we need to find the wall item again
-			item_iter = std::find(tile->items.begin(), tile->items.end(), item);
+			item_iter = std::ranges::find(tile->items, item);
 			if (item_iter == tile->items.end()) {
 				return;
 			}
