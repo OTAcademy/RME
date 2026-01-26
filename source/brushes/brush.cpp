@@ -639,9 +639,7 @@ bool OptionalBorderBrush::canDraw(BaseMap* map, const Position& position) const 
 	}
 
 	static const int offsets[8][2] = {
-		{-1, -1}, {0, -1}, {1, -1},
-		{-1, 0},           {1, 0},
-		{-1, 1},  {0, 1},  {1, 1}
+		{ -1, -1 }, { 0, -1 }, { 1, -1 }, { -1, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 }
 	};
 
 	for (const auto& offset : offsets) {
