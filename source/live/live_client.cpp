@@ -323,8 +323,8 @@ void LiveClient::sendReady() {
 
 void LiveClient::queryNode(int32_t ndx, int32_t ndy, bool underground) {
 	uint32_t nd = 0;
-	nd |= ((ndx >> 2) << 18);
-	nd |= ((ndy >> 2) << 4);
+	nd |= (static_cast<uint32_t>(ndx >> 2) << 18);
+	nd |= (static_cast<uint32_t>(ndy >> 2) << 4);
 	nd |= (underground ? 1 : 0);
 	queryNodeList.insert(nd);
 }
