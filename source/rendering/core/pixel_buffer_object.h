@@ -3,7 +3,10 @@
 
 #include "app/main.h"
 #include "rendering/core/sync_handle.h"
+#include "rendering/core/gl_resources.h"
 #include <vector>
+#include <memory>
+#include <array>
 
 /**
  * Manages Pixel Buffer Objects (PBOs) for asynchronous texture uploads.
@@ -71,7 +74,7 @@ public:
 	}
 
 private:
-	GLuint buffers_[BUFFER_COUNT] = { 0, 0 };
+	std::unique_ptr<GLBuffer> buffers_[BUFFER_COUNT];
 	SyncHandle fences_[BUFFER_COUNT];
 
 	size_t size_ = 0;

@@ -26,9 +26,6 @@
 #include "editor/action_queue.h"
 #include "ui/gui.h"
 
-#include <ranges>
-#include <algorithm>
-
 Selection::Selection(Editor& editor) :
 	busy(false),
 	deferred(false),
@@ -43,23 +40,35 @@ Selection::~Selection() {
 
 Position Selection::minPosition() const {
 	Position minPos(0x10000, 0x10000, 0x10);
-	std::ranges::for_each(tiles, [&](Tile* tile) {
-		Position pos = tile->getPosition();
-		minPos.x = std::min(minPos.x, pos.x);
-		minPos.y = std::min(minPos.y, pos.y);
-		minPos.z = std::min(minPos.z, pos.z);
-	});
+	for (TileSet::const_iterator tile = tiles.begin(); tile != tiles.end(); ++tile) {
+		Position pos((*tile)->getPosition());
+		if (minPos.x > pos.x) {
+			minPos.x = pos.x;
+		}
+		if (minPos.y > pos.y) {
+			minPos.y = pos.y;
+		}
+		if (minPos.z > pos.z) {
+			minPos.z = pos.z;
+		}
+	}
 	return minPos;
 }
 
 Position Selection::maxPosition() const {
 	Position maxPos(0, 0, 0);
-	std::ranges::for_each(tiles, [&](Tile* tile) {
-		Position pos = tile->getPosition();
-		maxPos.x = std::max(maxPos.x, pos.x);
-		maxPos.y = std::max(maxPos.y, pos.y);
-		maxPos.z = std::max(maxPos.z, pos.z);
-	});
+	for (TileSet::const_iterator tile = tiles.begin(); tile != tiles.end(); ++tile) {
+		Position pos((*tile)->getPosition());
+		if (maxPos.x < pos.x) {
+			maxPos.x = pos.x;
+		}
+		if (maxPos.y < pos.y) {
+			maxPos.y = pos.y;
+		}
+		if (maxPos.z < pos.z) {
+			maxPos.z = pos.z;
+		}
+	}
 	return maxPos;
 }
 
@@ -240,15 +249,15 @@ void Selection::flush() {
 
 void Selection::clear() {
 	if (session) {
-		std::ranges::for_each(tiles, [&](Tile* tile) {
-			Tile* new_tile = tile->deepCopy(editor.map);
+		for (TileSet::iterator it = tiles.begin(); it != tiles.end(); it++) {
+			Tile* new_tile = (*it)->deepCopy(editor.map);
 			new_tile->deselect();
 			subsession->addChange(std::make_unique<Change>(new_tile));
-		});
+		}
 	} else {
-		std::ranges::for_each(tiles, [](Tile* tile) {
-			tile->deselect();
-		});
+		for (TileSet::iterator it = tiles.begin(); it != tiles.end(); it++) {
+			(*it)->deselect();
+		}
 		tiles.clear();
 	}
 }

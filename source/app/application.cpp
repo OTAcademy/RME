@@ -347,6 +347,7 @@ void Application::Unload() {
 	g_gui.CloseAllEditors();
 	g_version.UnloadVersion();
 	g_hotkeys.SaveHotkeys();
+	g_gui.SavePerspective();
 	g_gui.root->SaveRecentFiles();
 	ClientVersion::saveVersions();
 	ClientVersion::unloadVersions();
@@ -658,13 +659,12 @@ void MainFrame::OnExit(wxCloseEvent& event) {
 			}
 		}
 	}
-	g_palettes.DestroyPalettes();
-	g_minimap.Destroy();
-	g_search.HideSearchWindow();
-	g_layout.SavePerspective();
-
 	g_gui.aui_manager->UnInit();
 	((Application&)wxGetApp()).Unload();
+#ifdef __RELEASE__
+	// Hack, "crash" gracefully in release builds, let OS handle cleanup of windows
+	exit(0);
+#endif
 	Destroy();
 }
 

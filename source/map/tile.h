@@ -266,9 +266,9 @@ bool tilePositionLessThan(const Tile* a, const Tile* b);
 // This sorts them by draw order
 bool tilePositionVisualLessThan(const Tile* a, const Tile* b);
 
-using TileVector = std::vector<Tile*>;
-using TileSet = std::vector<Tile*>;
-using TileList = std::list<Tile*>;
+typedef std::vector<Tile*> TileVector;
+typedef std::vector<Tile*> TileSet;
+typedef std::list<Tile*> TileList;
 
 inline bool Tile::hasWall() const {
 	return getWall() != nullptr;

@@ -63,7 +63,7 @@ class MainMenuBar;
 class MainFrame : public wxFrame {
 public:
 	MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
-	~MainFrame() override;
+	~MainFrame();
 
 	void UpdateMenubar();
 	bool DoQueryClose();

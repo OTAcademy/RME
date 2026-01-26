@@ -13,8 +13,7 @@ PixelBufferObject::PixelBufferObject(PixelBufferObject&& other) noexcept
 	current_index_(other.current_index_),
 	size_(other.size_), initialized_(other.initialized_) {
 	for (int i = 0; i < BUFFER_COUNT; ++i) {
-		buffers_[i] = other.buffers_[i];
-		other.buffers_[i] = 0;
+		buffers_[i] = std::move(other.buffers_[i]);
 		fences_[i] = std::move(other.fences_[i]);
 	}
 	other.initialized_ = false;
@@ -29,8 +28,7 @@ PixelBufferObject& PixelBufferObject::operator=(PixelBufferObject&& other) noexc
 		initialized_ = other.initialized_;
 
 		for (int i = 0; i < BUFFER_COUNT; ++i) {
-			buffers_[i] = other.buffers_[i];
-			other.buffers_[i] = 0;
+			buffers_[i] = std::move(other.buffers_[i]);
 			fences_[i] = std::move(other.fences_[i]);
 		}
 
@@ -47,15 +45,11 @@ bool PixelBufferObject::initialize(size_t size) {
 
 	size_ = size;
 
-	glGenBuffers(BUFFER_COUNT, buffers_);
-
 	for (int i = 0; i < BUFFER_COUNT; ++i) {
-		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffers_[i]);
-		// Allocate generic storage - we map it later
-		glBufferData(GL_PIXEL_UNPACK_BUFFER, size, nullptr, GL_STREAM_DRAW);
+		buffers_[i] = std::make_unique<GLBuffer>();
+		glNamedBufferData(buffers_[i]->GetID(), size, nullptr, GL_STREAM_DRAW);
 	}
 
-	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 	current_index_ = 0;
 	initialized_ = true;
 	return true;
@@ -66,9 +60,8 @@ void PixelBufferObject::cleanup() {
 		return;
 	}
 
-	glDeleteBuffers(BUFFER_COUNT, buffers_);
 	for (int i = 0; i < BUFFER_COUNT; ++i) {
-		buffers_[i] = 0;
+		buffers_[i].reset();
 		fences_[i].reset();
 	}
 	initialized_ = false;
@@ -89,20 +82,17 @@ void* PixelBufferObject::mapWrite() {
 		fences_[current_index_].reset();
 	}
 
-	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffers_[current_index_]);
-
 	// Map buffer (invalidate old data to avoid stalls)
-	return glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, size_, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+	return glMapNamedBufferRange(buffers_[current_index_]->GetID(), 0, size_, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 }
 
 void PixelBufferObject::unmap() {
-	glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+	glUnmapNamedBuffer(buffers_[current_index_]->GetID());
 }
 
 void PixelBufferObject::bind() {
 	if (initialized_) {
-		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffers_[current_index_]);
+		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffers_[current_index_]->GetID());
 	}
 }
 

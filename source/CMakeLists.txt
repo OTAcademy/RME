@@ -38,7 +38,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/map_version_changer.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/editor_persistence.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/tileset_exporter.h
-
+    ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/minimap_exporter.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_tabs.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection_thread.h
@@ -170,17 +170,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/controls/sortable_list_box.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/goto_position_dialog.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/object_properties_base.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_validator.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_applier.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/attribute_service.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/teleport_service.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/creature_properties_window.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/spawn_properties_window.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/container_properties_window.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/podium_properties_window.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/writable_properties_window.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/splash_properties_window.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/depot_properties_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/container_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dat_debug_view.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dcbutton.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialog_helper.h
@@ -191,7 +181,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/map_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/towns_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/import_map_window.h
-
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_minimap_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_tilesets_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui_ids.h
@@ -230,10 +220,10 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_registry.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_factory.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_layout.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/old_properties_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/old_properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/pngfiles.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/positionctrl.h
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/properties_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_items_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/result_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/tileset_window.h
@@ -284,7 +274,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/editor/operations/map_version_changer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/editor_persistence.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/tileset_exporter.cpp
-
+    ${CMAKE_CURRENT_LIST_DIR}/editor/persistence/minimap_exporter.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/editor_tabs.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/selection_thread.cpp
@@ -404,17 +394,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/controls/sortable_list_box.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/goto_position_dialog.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/object_properties_base.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_validator.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_applier.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/attribute_service.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/teleport_service.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/creature_properties_window.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/spawn_properties_window.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/container_properties_window.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/podium_properties_window.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/writable_properties_window.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/splash_properties_window.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/depot_properties_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/container_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dat_debug_view.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dcbutton.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialog_helper.cpp
@@ -425,7 +405,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/map_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/towns_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/import_map_window.cpp
-
+    ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_minimap_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_tilesets_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_menubar.cpp
@@ -463,10 +443,10 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_registry.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_factory.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/toolbar/toolbar_layout.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/old_properties_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/old_properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/pngfiles.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/positionctrl.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ui/properties/properties_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_items_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/result_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/tileset_window.cpp

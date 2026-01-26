@@ -87,4 +87,48 @@ private:
 	GLuint id = 0;
 };
 
+// RAII wrapper for OpenGL Textures
+class GLTextureResource {
+public:
+	explicit GLTextureResource(GLenum target = GL_TEXTURE_2D) :
+		target(target) {
+		glCreateTextures(target, 1, &id);
+	}
+
+	~GLTextureResource() {
+		if (id) {
+			glDeleteTextures(1, &id);
+		}
+	}
+
+	// Disable copy
+	GLTextureResource(const GLTextureResource&) = delete;
+	GLTextureResource& operator=(const GLTextureResource&) = delete;
+
+	// Enable move
+	GLTextureResource(GLTextureResource&& other) noexcept :
+		id(std::exchange(other.id, 0)), target(other.target) { }
+
+	GLTextureResource& operator=(GLTextureResource&& other) noexcept {
+		if (id) {
+			glDeleteTextures(1, &id);
+		}
+		id = std::exchange(other.id, 0);
+		target = other.target;
+		return *this;
+	}
+
+	// Explicit conversion
+	explicit operator GLuint() const {
+		return id;
+	}
+	GLuint GetID() const {
+		return id;
+	}
+
+private:
+	GLuint id = 0;
+	GLenum target;
+};
+
 #endif
