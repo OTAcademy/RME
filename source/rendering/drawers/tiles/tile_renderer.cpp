@@ -113,7 +113,7 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 	Waypoint* waypoint = editor->map.waypoints.getWaypoint(location);
 
 	// Waypoint tooltip (one per waypoint)
-	if (options.show_tooltips && location->getWaypointCount() > 0 && waypoint && map_z == view.floor && map_x == view.mouse_map_x && map_y == view.mouse_map_y) {
+	if (options.show_tooltips && location->getWaypointCount() > 0 && waypoint && map_z == view.floor) {
 		tooltip_drawer->addWaypointTooltip(location->getPosition(), waypoint->name);
 	}
 
@@ -148,7 +148,7 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 	}
 
 	// Ground tooltip (one per item)
-	if (options.show_tooltips && map_z == view.floor && tile->ground && map_x == view.mouse_map_x && map_y == view.mouse_map_y) {
+	if (options.show_tooltips && map_z == view.floor && tile->ground) {
 		TooltipData groundData = CreateItemTooltipData(tile->ground, location->getPosition(), tile->isHouseTile());
 		if (groundData.hasVisibleFields()) {
 			tooltip_drawer->addItemTooltip(groundData);
@@ -162,7 +162,7 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 			// items on tile
 			for (ItemVector::iterator it = tile->items.begin(); it != tile->items.end(); it++) {
 				// item tooltip (one per item)
-				if (options.show_tooltips && map_z == view.floor && map_x == view.mouse_map_x && map_y == view.mouse_map_y) {
+				if (options.show_tooltips && map_z == view.floor) {
 					TooltipData itemData = CreateItemTooltipData(*it, location->getPosition(), tile->isHouseTile());
 					if (itemData.hasVisibleFields()) {
 						tooltip_drawer->addItemTooltip(itemData);

@@ -180,6 +180,7 @@ bool Map::convert(const ConversionMap& rm, bool showdialog) {
 
 		// id_list try MTM conversion
 		id_list.clear();
+		id_list.reserve(tile->items.size() + 1);
 
 		if (tile->ground) {
 			id_list.push_back(tile->ground->getID());
