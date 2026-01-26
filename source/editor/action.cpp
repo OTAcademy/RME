@@ -24,6 +24,8 @@
 #include "editor/editor.h"
 #include "ui/gui.h"
 
+#include <ranges>
+
 Change::Change() :
 	type(CHANGE_NONE), data(nullptr) {
 	////
@@ -78,7 +80,7 @@ void Change::clear() {
 		default:
 #ifdef __DEBUG_MODE__
 			if (data) {
-				printf("UNHANDLED CHANGE TYPE! Leak!");
+				std::cerr << "UNHANDLED CHANGE TYPE! Leak!" << std::endl;
 			}
 #endif
 			break;
@@ -486,7 +488,7 @@ void BatchAction::commit() {
 }
 
 void BatchAction::undo() {
-	for (auto& action : boost::adaptors::reverse(batch)) {
+	for (auto& action : std::ranges::reverse_view(batch)) {
 		action->undo(nullptr);
 	}
 }

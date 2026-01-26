@@ -31,6 +31,10 @@
 #include "game/town.h"
 #include "map/map.h"
 
+#include <ranges>
+#include <algorithm>
+#include <iterator>
+
 Tile::Tile(int x, int y, int z) :
 	location(nullptr),
 	ground(nullptr),
@@ -80,13 +84,9 @@ Tile* Tile::deepCopy(BaseMap& map) {
 		copy->ground = ground->deepCopy();
 	}
 
-	ItemVector::iterator it;
-
-	it = items.begin();
-	while (it != items.end()) {
-		copy->items.push_back((*it)->deepCopy());
-		++it;
-	}
+	std::ranges::for_each(items, [&](Item* i) {
+		copy->items.push_back(i->deepCopy());
+	});
 
 	return copy;
 }
@@ -97,13 +97,9 @@ uint32_t Tile::memsize() const {
 		mem += ground->memsize();
 	}
 
-	ItemVector::const_iterator it;
-
-	it = items.begin();
-	while (it != items.end()) {
-		mem += (*it)->memsize();
-		++it;
-	}
+	std::ranges::for_each(items, [&](const Item* i) {
+		mem += i->memsize();
+	});
 
 	mem += sizeof(Item*) * items.capacity();
 
@@ -168,13 +164,9 @@ void Tile::merge(Tile* other) {
 		other->creature = nullptr;
 	}
 
-	ItemVector::iterator it;
-
-	it = other->items.begin();
-	while (it != other->items.end()) {
-		addItem(*it);
-		++it;
-	}
+	std::ranges::for_each(other->items, [&](Item* i) {
+		addItem(i);
+	});
 	other->items.clear();
 }
 
@@ -187,14 +179,9 @@ bool Tile::hasProperty(enum ITEMPROPERTY prop) const {
 		return true;
 	}
 
-	ItemVector::const_iterator iit;
-	for (iit = items.begin(); iit != items.end(); ++iit) {
-		if ((*iit)->hasProperty(prop)) {
-			return true;
-		}
-	}
-
-	return false;
+	return std::ranges::any_of(items, [prop](const Item* i) {
+		return i->hasProperty(prop);
+	});
 }
 
 int Tile::getIndexOf(Item* item) const {
@@ -211,9 +198,8 @@ int Tile::getIndexOf(Item* item) const {
 	}
 
 	if (!items.empty()) {
-		auto it = std::find(items.begin(), items.end(), item);
-		if (it != items.end()) {
-			index += (it - items.begin());
+		if (auto it = std::ranges::find(items, item); it != items.end()) {
+			index += std::distance(items.begin(), it);
 			return index;
 		}
 	}
@@ -305,13 +291,9 @@ void Tile::select() {
 		creature->select();
 	}
 
-	ItemVector::iterator it;
-
-	it = items.begin();
-	while (it != items.end()) {
-		(*it)->select();
-		++it;
-	}
+	std::ranges::for_each(items, [](Item* i) {
+		i->select();
+	});
 
 	statflags |= TILESTATE_SELECTED;
 }
@@ -327,23 +309,23 @@ void Tile::deselect() {
 		creature->deselect();
 	}
 
-	ItemVector::iterator it;
-
-	it = items.begin();
-	while (it != items.end()) {
-		(*it)->deselect();
-		++it;
-	}
+	std::ranges::for_each(items, [](Item* i) {
+		i->deselect();
+	});
 
 	statflags &= ~TILESTATE_SELECTED;
 }
 
 Item* Tile::getTopSelectedItem() {
-	for (ItemVector::reverse_iterator iter = items.rbegin(); iter != items.rend(); ++iter) {
-		if ((*iter)->isSelected() && !(*iter)->isMetaItem()) {
-			return *iter;
-		}
+	auto view = std::ranges::reverse_view(items);
+	auto it = std::ranges::find_if(view, [](Item* i) {
+		return i->isSelected() && !i->isMetaItem();
+	});
+
+	if (it != view.end()) {
+		return *it;
 	}
+
 	if (ground && ground->isSelected() && !ground->isMetaItem()) {
 		return ground;
 	}
@@ -402,11 +384,13 @@ uint8_t Tile::getMiniMapColor() const {
 		return minimapColor;
 	}
 
-	for (ItemVector::const_reverse_iterator item_iter = items.rbegin(); item_iter != items.rend(); ++item_iter) {
-		if ((*item_iter)->getMiniMapColor()) {
-			return (*item_iter)->getMiniMapColor();
-			break;
-		}
+	auto view = std::ranges::reverse_view(items);
+	auto it = std::ranges::find_if(view, [](const Item* i) {
+		return i->getMiniMapColor() != 0;
+	});
+
+	if (it != view.end()) {
+		return (*it)->getMiniMapColor();
 	}
 
 	// check ground too
@@ -471,9 +455,7 @@ void Tile::update() {
 		}
 	}
 
-	ItemVector::const_iterator iter = items.begin();
-	while (iter != items.end()) {
-		Item* i = *iter;
+	for (Item* i : items) {
 		if (i->isSelected()) {
 			statflags |= TILESTATE_SELECTED;
 		}
@@ -497,7 +479,6 @@ void Tile::update() {
 		if (it.isCarpet) {
 			statflags |= TILESTATE_HAS_CARPET;
 		}
-		++iter;
 	}
 
 	if ((statflags & TILESTATE_BLOCKING) == 0) {
@@ -544,42 +525,24 @@ void Tile::wallize(BaseMap* parent) {
 }
 
 Item* Tile::getWall() const {
-	ItemVector::const_iterator it;
-
-	it = items.begin();
-	while (it != items.end()) {
-		if ((*it)->isWall()) {
-			return *it;
-		}
-		++it;
-	}
-	return nullptr;
+	auto it = std::ranges::find_if(items, [](const Item* i) {
+		return i->isWall();
+	});
+	return (it != items.end()) ? *it : nullptr;
 }
 
 Item* Tile::getCarpet() const {
-	ItemVector::const_iterator it;
-
-	it = items.begin();
-	while (it != items.end()) {
-		if ((*it)->isCarpet()) {
-			return *it;
-		}
-		++it;
-	}
-	return nullptr;
+	auto it = std::ranges::find_if(items, [](const Item* i) {
+		return i->isCarpet();
+	});
+	return (it != items.end()) ? *it : nullptr;
 }
 
 Item* Tile::getTable() const {
-	ItemVector::const_iterator it;
-
-	it = items.begin();
-	while (it != items.end()) {
-		if ((*it)->isTable()) {
-			return *it;
-		}
-		++it;
-	}
-	return nullptr;
+	auto it = std::ranges::find_if(items, [](const Item* i) {
+		return i->isTable();
+	});
+	return (it != items.end()) ? *it : nullptr;
 }
 
 void Tile::addWallItem(Item* item) {
@@ -642,18 +605,16 @@ void Tile::selectGround() {
 		ground->select();
 		selected_ = true;
 	}
-	ItemVector::iterator it;
 
-	it = items.begin();
-	while (it != items.end()) {
-		if ((*it)->isBorder()) {
-			(*it)->select();
+	for (Item* i : items) {
+		if (i->isBorder()) {
+			i->select();
 			selected_ = true;
 		} else {
 			break;
 		}
-		++it;
 	}
+
 	if (selected_) {
 		statflags |= TILESTATE_SELECTED;
 	}
@@ -663,14 +624,13 @@ void Tile::deselectGround() {
 	if (ground) {
 		ground->deselect();
 	}
-	ItemVector::iterator it = items.begin();
-	while (it != items.end()) {
-		if ((*it)->isBorder()) {
-			(*it)->deselect();
+
+	for (Item* i : items) {
+		if (i->isBorder()) {
+			i->deselect();
 		} else {
 			break;
 		}
-		++it;
 	}
 }
 
