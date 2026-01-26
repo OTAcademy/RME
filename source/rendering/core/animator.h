@@ -77,7 +77,7 @@ private:
 	int start_frame;
 	int loop_count;
 	bool async;
-	std::vector<FrameDuration*> durations;
+	std::vector<FrameDuration> durations;
 	int current_frame;
 	int current_loop;
 	int current_duration;

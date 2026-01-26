@@ -34,18 +34,13 @@ Animator::Animator(int frame_count, int start_frame, int loop_count, bool async)
 	ASSERT(start_frame >= -1 && start_frame < frame_count);
 
 	for (int i = 0; i < frame_count; i++) {
-		durations.push_back(newd FrameDuration(ITEM_FRAME_DURATION, ITEM_FRAME_DURATION));
+		durations.emplace_back(ITEM_FRAME_DURATION, ITEM_FRAME_DURATION);
 	}
 
 	reset();
 }
 
-Animator::~Animator() {
-	for (int i = 0; i < frame_count; i++) {
-		delete durations[i];
-	}
-	durations.clear();
-}
+Animator::~Animator() = default;
 
 int Animator::getStartFrame() const {
 	if (start_frame > -1) {
@@ -56,7 +51,7 @@ int Animator::getStartFrame() const {
 
 FrameDuration* Animator::getFrameDuration(int frame) {
 	ASSERT(frame >= 0 && frame < frame_count);
-	return durations[frame];
+	return &durations[frame];
 }
 
 int Animator::getFrame() {
@@ -121,7 +116,7 @@ void Animator::setFrame(int frame) {
 void Animator::reset() {
 	total_duration = 0;
 	for (int i = 0; i < frame_count; i++) {
-		total_duration += durations[i]->max;
+		total_duration += durations[i].max;
 	}
 
 	is_complete = false;
@@ -133,7 +128,7 @@ void Animator::reset() {
 
 int Animator::getDuration(int frame) const {
 	ASSERT(frame >= 0 && frame < frame_count);
-	return durations[frame]->getDuration();
+	return durations[frame].getDuration();
 }
 
 int Animator::getPingPongFrame() {

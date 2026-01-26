@@ -32,14 +32,14 @@ void PopupActionHandler::RotateItem(Editor& editor) {
 
 	std::unique_ptr<Action> action = editor.actionQueue->createAction(ACTION_ROTATE_ITEM);
 
-	Tile* new_tile = tile->deepCopy(editor.map);
+	std::unique_ptr<Tile> new_tile(tile->deepCopy(editor.map));
 
 	ItemVector selected_items = new_tile->getSelectedItems();
 	ASSERT(selected_items.size() > 0);
 
 	selected_items.front()->doRotate();
 
-	action->addChange(std::make_unique<Change>(new_tile));
+	action->addChange(std::make_unique<Change>(new_tile.release()));
 
 	editor.actionQueue->addAction(std::move(action));
 	g_gui.RefreshView();
@@ -61,14 +61,14 @@ void PopupActionHandler::SwitchDoor(Editor& editor) {
 
 	std::unique_ptr<Action> action = editor.actionQueue->createAction(ACTION_SWITCHDOOR);
 
-	Tile* new_tile = tile->deepCopy(editor.map);
+	std::unique_ptr<Tile> new_tile(tile->deepCopy(editor.map));
 
 	ItemVector selected_items = new_tile->getSelectedItems();
 	ASSERT(selected_items.size() > 0);
 
 	DoorBrush::switchDoor(selected_items.front());
 
-	action->addChange(std::make_unique<Change>(new_tile));
+	action->addChange(std::make_unique<Change>(new_tile.release()));
 
 	editor.actionQueue->addAction(std::move(action));
 	g_gui.RefreshView();
@@ -84,18 +84,15 @@ void PopupActionHandler::BrowseTile(Editor& editor, int cursor_x, int cursor_y) 
 		return;
 	}
 	ASSERT(tile->isSelected());
-	Tile* new_tile = tile->deepCopy(editor.map);
+	std::unique_ptr<Tile> new_tile(tile->deepCopy(editor.map));
 
-	wxDialog* w = new BrowseTileWindow(g_gui.root, new_tile, wxPoint(cursor_x, cursor_y));
+	wxDialog* w = new BrowseTileWindow(g_gui.root, new_tile.get(), wxPoint(cursor_x, cursor_y));
 
 	int ret = w->ShowModal();
 	if (ret != 0) {
 		std::unique_ptr<Action> action = editor.actionQueue->createAction(ACTION_DELETE_TILES);
-		action->addChange(std::make_unique<Change>(new_tile));
+		action->addChange(std::make_unique<Change>(new_tile.release()));
 		editor.addAction(std::move(action));
-	} else {
-		// Cancel
-		delete new_tile;
 	}
 
 	w->Destroy();
@@ -122,7 +119,7 @@ void PopupActionHandler::SelectMoveTo(Editor& editor) {
 		return;
 	}
 	ASSERT(tile->isSelected());
-	Tile* new_tile = tile->deepCopy(editor.map);
+	std::unique_ptr<Tile> new_tile(tile->deepCopy(editor.map));
 
 	wxDialog* w = nullptr;
 
@@ -138,7 +135,7 @@ void PopupActionHandler::SelectMoveTo(Editor& editor) {
 	}
 
 	if (item) {
-		w = newd TilesetWindow(g_gui.root, &editor.map, new_tile, item);
+		w = newd TilesetWindow(g_gui.root, &editor.map, new_tile.get(), item);
 	} else {
 		return;
 	}
@@ -146,13 +143,10 @@ void PopupActionHandler::SelectMoveTo(Editor& editor) {
 	int ret = w->ShowModal();
 	if (ret != 0) {
 		std::unique_ptr<Action> action = editor.actionQueue->createAction(ACTION_CHANGE_PROPERTIES);
-		action->addChange(std::make_unique<Change>(new_tile));
+		action->addChange(std::make_unique<Change>(new_tile.release()));
 		editor.addAction(std::move(action));
 
 		g_gui.RebuildPalettes();
-	} else {
-		// Cancel!
-		delete new_tile;
 	}
 	w->Destroy();
 }
