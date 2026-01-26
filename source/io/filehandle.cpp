@@ -421,6 +421,7 @@ void BinaryNode::load() {
 	uint8_t*& cache = file->cache;
 	size_t& cache_length = file->cache_length;
 	size_t& local_read_index = file->local_read_index;
+
 	while (true) {
 		if (local_read_index >= cache_length) {
 			if (!file->renewCache()) {
@@ -430,7 +431,33 @@ void BinaryNode::load() {
 			}
 		}
 
-		uint8_t op = cache[local_read_index];
+		uint8_t* start = cache + local_read_index;
+		uint8_t* end = cache + cache_length;
+		uint8_t* p = start;
+
+		// Scan for special characters using a tight loop
+		// This avoids checking conditions and switch cases for every byte
+		for (; p < end; ++p) {
+			uint8_t c = *p;
+			if (c == NODE_START || c == NODE_END || c == ESCAPE_CHAR) {
+				break;
+			}
+		}
+
+		// Append the chunk we scanned
+		size_t count = p - start;
+		if (count > 0) {
+			data.append(reinterpret_cast<char*>(start), count);
+			local_read_index += count;
+		}
+
+		if (p == end) {
+			// Need to renew cache to continue searching
+			continue;
+		}
+
+		// Handle special char
+		uint8_t op = *p;
 		++local_read_index;
 
 		switch (op) {
@@ -455,13 +482,10 @@ void BinaryNode::load() {
 
 				op = cache[local_read_index];
 				++local_read_index;
+				data.append(1, static_cast<char>(op));
 				break;
 			}
-
-			default:
-				break;
 		}
-		data.append(1, op);
 	}
 }
 

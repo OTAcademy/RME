@@ -23,6 +23,10 @@
 #include <wx/mstream.h>
 #include <wx/datstrm.h>
 
+#include <format>
+#include <fstream>
+#include <vector>
+
 #include "app/settings.h"
 #include "ui/gui.h"
 #include "ui/dialog_util.h" // Loadbar
@@ -718,14 +722,52 @@ bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
 	}
 #endif
 
-	DiskNodeFileReadHandle f(nstr(filename.GetFullPath()), StringVector(1, "OTBM"));
-	if (!f.isOk()) {
-		error(("Couldn't open file for reading\nThe error reported was: " + wxstr(f.getErrorMessage())).wc_str());
+	std::ifstream file(nstr(filename.GetFullPath()), std::ios::binary | std::ios::ate);
+	if (!file.is_open()) {
+		std::string err = std::format("Couldn't open file for reading: {}", filename.GetFullPath().ToStdString());
+		error("%s", err.c_str());
 		return false;
 	}
 
-	if (!loadMap(map, f)) {
+	std::streamsize size = file.tellg();
+	if (size < 4) {
+		error("File is too short to be an OTBM file.");
 		return false;
+	}
+
+	// Memory optimization/Safety:
+	// For files larger than 512MB, stream from disk to avoid OOM on systems with limited RAM.
+	// Otherwise, read the entire file into memory for faster parsing.
+	if (size > 512 * 1024 * 1024) {
+		file.close();
+		DiskNodeFileReadHandle f(nstr(filename.GetFullPath()), StringVector(1, "OTBM"));
+		if (!f.isOk()) {
+			error("%s", wxstr(f.getErrorMessage()));
+			return false;
+		}
+		if (!loadMap(map, f)) {
+			return false;
+		}
+	} else {
+		file.seekg(0, std::ios::beg);
+
+		std::vector<uint8_t> buffer(size);
+		if (!file.read(reinterpret_cast<char*>(buffer.data()), size)) {
+			error("Failed to read file.");
+			return false;
+		}
+
+		// Verify magic bytes
+		if (memcmp(buffer.data(), "OTBM", 4) != 0 && memcmp(buffer.data(), "\0\0\0\0", 4) != 0) {
+			error("File magic number not recognized");
+			return false;
+		}
+
+		// Create memory handle (skips first 4 bytes)
+		MemoryNodeFileReadHandle f(buffer.data() + 4, size - 4);
+		if (!loadMap(map, f)) {
+			return false;
+		}
 	}
 
 	// Read auxilliary files
