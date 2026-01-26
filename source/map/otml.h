@@ -34,21 +34,12 @@ class OTMLDocument;
 class OTMLParser;
 class OTMLEmitter;
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-typedef std::shared_ptr<OTMLNode> OTMLNodePtr;
-typedef std::enable_shared_from_this<OTMLNode> OTMLNodeEnableSharedFromThis;
-typedef std::shared_ptr<OTMLDocument> OTMLDocumentPtr;
-typedef std::weak_ptr<OTMLNode> OTMLNodeWeakPtr;
-#else
-	#include <boost/shared_ptr.hpp>
-	#include <boost/enable_shared_from_this.hpp>
-typedef boost::shared_ptr<OTMLNode> OTMLNodePtr;
-typedef boost::enable_shared_from_this<OTMLNode> OTMLNodeEnableSharedFromThis;
-typedef boost::shared_ptr<OTMLDocument> OTMLDocumentPtr;
-typedef boost::weak_ptr<OTMLNode> OTMLNodeWeakPtr;
-#endif
+using OTMLNodePtr = std::shared_ptr<OTMLNode>;
+using OTMLNodeEnableSharedFromThis = std::enable_shared_from_this<OTMLNode>;
+using OTMLDocumentPtr = std::shared_ptr<OTMLDocument>;
+using OTMLNodeWeakPtr = std::weak_ptr<OTMLNode>;
 
-typedef std::vector<OTMLNodePtr> OTMLNodeList;
+using OTMLNodeList = std::vector<OTMLNodePtr>;
 
 namespace otml_util {
 	template <typename T, typename R>
@@ -811,7 +802,7 @@ inline void OTMLParser::parseNode(const std::string& data) {
 		node->setNull(true);
 	} else {
 		if (boost::starts_with(value, "[") && boost::ends_with(value, "]")) {
-			typedef boost::tokenizer<boost::escaped_list_separator<char>> Tokenizer;
+			using Tokenizer = boost::tokenizer<boost::escaped_list_separator<char>>;
 			std::string tmp = value.substr(1, value.length() - 2);
 			Tokenizer tok(tmp);
 			for (Tokenizer::iterator it = tok.begin(), end = tok.end(); it != end; ++it) {

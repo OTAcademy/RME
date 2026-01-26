@@ -14,7 +14,8 @@ MultiDrawIndirectRenderer::~MultiDrawIndirectRenderer() {
 MultiDrawIndirectRenderer::MultiDrawIndirectRenderer(MultiDrawIndirectRenderer&& other) noexcept
 	:
 	commands_(std::move(other.commands_)),
-	command_buffer_(std::move(other.command_buffer_)), available_(other.available_), initialized_(other.initialized_) {
+	command_buffer_(other.command_buffer_), available_(other.available_), initialized_(other.initialized_) {
+	other.command_buffer_ = 0;
 	other.available_ = false;
 	other.initialized_ = false;
 }
@@ -23,9 +24,10 @@ MultiDrawIndirectRenderer& MultiDrawIndirectRenderer::operator=(MultiDrawIndirec
 	if (this != &other) {
 		cleanup();
 		commands_ = std::move(other.commands_);
-		command_buffer_ = std::move(other.command_buffer_);
+		command_buffer_ = other.command_buffer_;
 		available_ = other.available_;
 		initialized_ = other.initialized_;
+		other.command_buffer_ = 0;
 		other.available_ = false;
 		other.initialized_ = false;
 	}
@@ -46,17 +48,27 @@ bool MultiDrawIndirectRenderer::initialize() {
 	}
 
 	// Create buffer for indirect commands
-	command_buffer_ = std::make_unique<GLBuffer>();
+	glGenBuffers(1, &command_buffer_);
+	if (command_buffer_ == 0) {
+		spdlog::error("MultiDrawIndirectRenderer: Failed to create command buffer");
+		available_ = false;
+		return false;
+	}
 
 	// Pre-allocate buffer storage
-	glNamedBufferData(command_buffer_->GetID(), MAX_COMMANDS * sizeof(DrawElementsIndirectCommand), nullptr, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, command_buffer_);
+	glBufferData(GL_DRAW_INDIRECT_BUFFER, MAX_COMMANDS * sizeof(DrawElementsIndirectCommand), nullptr, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 
 	initialized_ = true;
 	return true;
 }
 
 void MultiDrawIndirectRenderer::cleanup() {
-	command_buffer_.reset();
+	if (command_buffer_ != 0) {
+		glDeleteBuffers(1, &command_buffer_);
+		command_buffer_ = 0;
+	}
 	commands_.clear();
 	initialized_ = false;
 }
@@ -90,7 +102,9 @@ void MultiDrawIndirectRenderer::upload() {
 		return;
 	}
 
-	glNamedBufferSubData(command_buffer_->GetID(), 0, commands_.size() * sizeof(DrawElementsIndirectCommand), commands_.data());
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, command_buffer_);
+	glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, commands_.size() * sizeof(DrawElementsIndirectCommand), commands_.data());
+	// Keep buffer bound for execute()
 }
 
 void MultiDrawIndirectRenderer::execute() {
@@ -98,9 +112,8 @@ void MultiDrawIndirectRenderer::execute() {
 		return;
 	}
 
-	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, command_buffer_->GetID());
+	// Buffer should still be bound from upload()
 	glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT,
 								nullptr, // Offset 0 in bound buffer
 								static_cast<GLsizei>(commands_.size()), sizeof(DrawElementsIndirectCommand));
-	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 }

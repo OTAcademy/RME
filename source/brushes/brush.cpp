@@ -43,6 +43,8 @@
 
 #include "ui/gui.h"
 
+#include <ranges>
+
 Brushes g_brushes;
 
 Brushes::Brushes() {
@@ -551,22 +553,18 @@ void DoorBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 		// We need to consider decorations!
 		while (true) {
 			// Vector has been modified, before we can use the iterator again we need to find the wall item again
-			item_iter = tile->items.begin();
-			while (true) {
-				if (item_iter == tile->items.end()) {
-					return;
-				}
-				if (*item_iter == item) {
-					++item_iter;
-					if (item_iter == tile->items.end()) {
-						return;
-					}
-					break;
-				}
-				++item_iter;
+			item_iter = std::ranges::find(tile->items, item);
+			if (item_iter == tile->items.end()) {
+				return;
 			}
-			// Now it points to the correct item!
 
+			// Advance to next item
+			++item_iter;
+			if (item_iter == tile->items.end()) {
+				return;
+			}
+
+			// Now it points to the correct item!
 			item = *item_iter;
 			if (item->isWall()) {
 				WallBrush* brush = item->getWallBrush();
@@ -642,71 +640,17 @@ bool OptionalBorderBrush::canDraw(BaseMap* map, const Position& position) const 
 		}
 	}
 
-	uint32_t x = position.x;
-	uint32_t y = position.y;
-	uint32_t z = position.z;
+	static const int offsets[8][2] = {
+		{ -1, -1 }, { 0, -1 }, { 1, -1 }, { -1, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 }
+	};
 
-	tile = map->getTile(x - 1, y - 1, z);
-	if (tile) {
-		if (GroundBrush* bb = tile->getGroundBrush()) {
-			if (bb->hasOptionalBorder()) {
-				return true;
-			}
-		}
-	}
-	tile = map->getTile(x, y - 1, z);
-	if (tile) {
-		if (GroundBrush* bb = tile->getGroundBrush()) {
-			if (bb->hasOptionalBorder()) {
-				return true;
-			}
-		}
-	}
-	tile = map->getTile(x + 1, y - 1, z);
-	if (tile) {
-		if (GroundBrush* bb = tile->getGroundBrush()) {
-			if (bb->hasOptionalBorder()) {
-				return true;
-			}
-		}
-	}
-	tile = map->getTile(x - 1, y, z);
-	if (tile) {
-		if (GroundBrush* bb = tile->getGroundBrush()) {
-			if (bb->hasOptionalBorder()) {
-				return true;
-			}
-		}
-	}
-	tile = map->getTile(x + 1, y, z);
-	if (tile) {
-		if (GroundBrush* bb = tile->getGroundBrush()) {
-			if (bb->hasOptionalBorder()) {
-				return true;
-			}
-		}
-	}
-	tile = map->getTile(x - 1, y + 1, z);
-	if (tile) {
-		if (GroundBrush* bb = tile->getGroundBrush()) {
-			if (bb->hasOptionalBorder()) {
-				return true;
-			}
-		}
-	}
-	tile = map->getTile(x, y + 1, z);
-	if (tile) {
-		if (GroundBrush* bb = tile->getGroundBrush()) {
-			if (bb->hasOptionalBorder()) {
-				return true;
-			}
-		}
-	}
-	tile = map->getTile(x + 1, y + 1, z);
-	if (tile) {
-		if (GroundBrush* bb = tile->getGroundBrush()) {
-			if (bb->hasOptionalBorder()) {
-				return true;
+	for (const auto& offset : offsets) {
+		tile = map->getTile(position.x + offset[0], position.y + offset[1], position.z);
+		if (tile) {
+			if (GroundBrush* bb = tile->getGroundBrush()) {
+				if (bb->hasOptionalBorder()) {
+					return true;
+				}
 			}
 		}
 	}

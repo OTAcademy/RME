@@ -45,22 +45,43 @@ SpriteBatch::SpriteBatch() {
 }
 
 SpriteBatch::~SpriteBatch() {
-	// RAII cleanup
+	if (vao_) {
+		glDeleteVertexArrays(1, &vao_);
+	}
+	if (quad_vbo_) {
+		glDeleteBuffers(1, &quad_vbo_);
+	}
+	if (quad_ebo_) {
+		glDeleteBuffers(1, &quad_ebo_);
+	}
 }
 
 SpriteBatch::SpriteBatch(SpriteBatch&& other) noexcept
 	:
 	shader_(std::move(other.shader_)),
-	vao_(std::move(other.vao_)), quad_vbo_(std::move(other.quad_vbo_)), quad_ebo_(std::move(other.quad_ebo_)), ring_buffer_(std::move(other.ring_buffer_)), mdi_renderer_(std::move(other.mdi_renderer_)), pending_sprites_(std::move(other.pending_sprites_)), projection_(other.projection_), global_tint_(other.global_tint_), in_batch_(other.in_batch_), use_mdi_(other.use_mdi_), draw_call_count_(other.draw_call_count_), sprite_count_(other.sprite_count_) {
+	vao_(other.vao_), quad_vbo_(other.quad_vbo_), quad_ebo_(other.quad_ebo_), ring_buffer_(std::move(other.ring_buffer_)), mdi_renderer_(std::move(other.mdi_renderer_)), pending_sprites_(std::move(other.pending_sprites_)), projection_(other.projection_), global_tint_(other.global_tint_), in_batch_(other.in_batch_), use_mdi_(other.use_mdi_), draw_call_count_(other.draw_call_count_), sprite_count_(other.sprite_count_) {
+	other.vao_ = 0;
+	other.quad_vbo_ = 0;
+	other.quad_ebo_ = 0;
 	other.in_batch_ = false;
 }
 
 SpriteBatch& SpriteBatch::operator=(SpriteBatch&& other) noexcept {
 	if (this != &other) {
+		if (vao_) {
+			glDeleteVertexArrays(1, &vao_);
+		}
+		if (quad_vbo_) {
+			glDeleteBuffers(1, &quad_vbo_);
+		}
+		if (quad_ebo_) {
+			glDeleteBuffers(1, &quad_ebo_);
+		}
+
 		shader_ = std::move(other.shader_);
-		vao_ = std::move(other.vao_);
-		quad_vbo_ = std::move(other.quad_vbo_);
-		quad_ebo_ = std::move(other.quad_ebo_);
+		vao_ = other.vao_;
+		quad_vbo_ = other.quad_vbo_;
+		quad_ebo_ = other.quad_ebo_;
 		ring_buffer_ = std::move(other.ring_buffer_);
 		mdi_renderer_ = std::move(other.mdi_renderer_);
 		pending_sprites_ = std::move(other.pending_sprites_);
@@ -71,6 +92,9 @@ SpriteBatch& SpriteBatch::operator=(SpriteBatch&& other) noexcept {
 		draw_call_count_ = other.draw_call_count_;
 		sprite_count_ = other.sprite_count_;
 
+		other.vao_ = 0;
+		other.quad_vbo_ = 0;
+		other.quad_ebo_ = 0;
 		other.in_batch_ = false;
 	}
 	return *this;
@@ -90,10 +114,10 @@ bool SpriteBatch::initialize() {
 		return false;
 	}
 
-	// Create VAO and static buffers (RAII)
-	vao_ = std::make_unique<GLVertexArray>();
-	quad_vbo_ = std::make_unique<GLBuffer>();
-	quad_ebo_ = std::make_unique<GLBuffer>();
+	// Create VAO and static buffers
+	glCreateVertexArrays(1, &vao_);
+	glCreateBuffers(1, &quad_vbo_);
+	glCreateBuffers(1, &quad_ebo_);
 
 	// Unit quad geometry
 	float quad_vertices[] = {
@@ -105,47 +129,47 @@ bool SpriteBatch::initialize() {
 	unsigned int indices[] = { 0, 1, 2, 2, 3, 0 };
 
 	// Upload static geometry
-	glNamedBufferStorage(quad_vbo_->GetID(), sizeof(quad_vertices), quad_vertices, 0);
-	glNamedBufferStorage(quad_ebo_->GetID(), sizeof(indices), indices, 0);
+	glNamedBufferStorage(quad_vbo_, sizeof(quad_vertices), quad_vertices, 0);
+	glNamedBufferStorage(quad_ebo_, sizeof(indices), indices, 0);
 
 	// Bind Quad VBO/EBO to VAO (DSA)
-	glVertexArrayVertexBuffer(vao_->GetID(), 0, quad_vbo_->GetID(), 0, 4 * sizeof(float));
-	glVertexArrayElementBuffer(vao_->GetID(), quad_ebo_->GetID());
+	glVertexArrayVertexBuffer(vao_, 0, quad_vbo_, 0, 4 * sizeof(float));
+	glVertexArrayElementBuffer(vao_, quad_ebo_);
 
 	// Loc 0: position (vec2)
-	glEnableVertexArrayAttrib(vao_->GetID(), 0);
-	glVertexArrayAttribFormat(vao_->GetID(), 0, 2, GL_FLOAT, GL_FALSE, 0);
-	glVertexArrayAttribBinding(vao_->GetID(), 0, 0);
+	glEnableVertexArrayAttrib(vao_, 0);
+	glVertexArrayAttribFormat(vao_, 0, 2, GL_FLOAT, GL_FALSE, 0);
+	glVertexArrayAttribBinding(vao_, 0, 0);
 
 	// Loc 1: texcoord (vec2)
-	glEnableVertexArrayAttrib(vao_->GetID(), 1);
-	glVertexArrayAttribFormat(vao_->GetID(), 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float));
-	glVertexArrayAttribBinding(vao_->GetID(), 1, 0);
+	glEnableVertexArrayAttrib(vao_, 1);
+	glVertexArrayAttribFormat(vao_, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float));
+	glVertexArrayAttribBinding(vao_, 1, 0);
 
 	// Bind RingBuffer for instance data
 	// Bind RingBuffer for instance data to binding point 1 (DSA)
-	glVertexArrayVertexBuffer(vao_->GetID(), 1, ring_buffer_.getBufferId(), 0, sizeof(SpriteInstance));
-	glVertexArrayBindingDivisor(vao_->GetID(), 1, 1);
+	glVertexArrayVertexBuffer(vao_, 1, ring_buffer_.getBufferId(), 0, sizeof(SpriteInstance));
+	glVertexArrayBindingDivisor(vao_, 1, 1);
 
 	// Loc 2: rect (vec4) - instance
-	glEnableVertexArrayAttrib(vao_->GetID(), 2);
-	glVertexArrayAttribFormat(vao_->GetID(), 2, 4, GL_FLOAT, GL_FALSE, offsetof(SpriteInstance, x));
-	glVertexArrayAttribBinding(vao_->GetID(), 2, 1);
+	glEnableVertexArrayAttrib(vao_, 2);
+	glVertexArrayAttribFormat(vao_, 2, 4, GL_FLOAT, GL_FALSE, offsetof(SpriteInstance, x));
+	glVertexArrayAttribBinding(vao_, 2, 1);
 
 	// Loc 3: uv (vec4) - instance
-	glEnableVertexArrayAttrib(vao_->GetID(), 3);
-	glVertexArrayAttribFormat(vao_->GetID(), 3, 4, GL_FLOAT, GL_FALSE, offsetof(SpriteInstance, u_min));
-	glVertexArrayAttribBinding(vao_->GetID(), 3, 1);
+	glEnableVertexArrayAttrib(vao_, 3);
+	glVertexArrayAttribFormat(vao_, 3, 4, GL_FLOAT, GL_FALSE, offsetof(SpriteInstance, u_min));
+	glVertexArrayAttribBinding(vao_, 3, 1);
 
 	// Loc 4: tint (vec4) - instance
-	glEnableVertexArrayAttrib(vao_->GetID(), 4);
-	glVertexArrayAttribFormat(vao_->GetID(), 4, 4, GL_FLOAT, GL_FALSE, offsetof(SpriteInstance, r));
-	glVertexArrayAttribBinding(vao_->GetID(), 4, 1);
+	glEnableVertexArrayAttrib(vao_, 4);
+	glVertexArrayAttribFormat(vao_, 4, 4, GL_FLOAT, GL_FALSE, offsetof(SpriteInstance, r));
+	glVertexArrayAttribBinding(vao_, 4, 1);
 
 	// Loc 5: layer (float) - instance
-	glEnableVertexArrayAttrib(vao_->GetID(), 5);
-	glVertexArrayAttribFormat(vao_->GetID(), 5, 1, GL_FLOAT, GL_FALSE, offsetof(SpriteInstance, atlas_layer));
-	glVertexArrayAttribBinding(vao_->GetID(), 5, 1);
+	glEnableVertexArrayAttrib(vao_, 5);
+	glVertexArrayAttribFormat(vao_, 5, 1, GL_FLOAT, GL_FALSE, offsetof(SpriteInstance, atlas_layer));
+	glVertexArrayAttribBinding(vao_, 5, 1);
 
 	// Initialize MDI
 	if (mdi_renderer_.initialize()) {
@@ -155,7 +179,7 @@ bool SpriteBatch::initialize() {
 		spdlog::warn("SpriteBatch: MDI renderer failed to initialize, using fallback path");
 	}
 
-	spdlog::info("SpriteBatch initialized successfully (VAO: {})", vao_->GetID());
+	spdlog::info("SpriteBatch initialized successfully (VAO: {})", vao_);
 	return true;
 }
 
@@ -252,9 +276,9 @@ void SpriteBatch::flush(const AtlasManager& atlas_manager) {
 
 	atlas_manager.bind(0);
 
-	if (last_bound_vao_ != vao_->GetID()) {
-		glBindVertexArray(vao_->GetID());
-		last_bound_vao_ = vao_->GetID();
+	if (last_bound_vao_ != vao_) {
+		glBindVertexArray(vao_);
+		last_bound_vao_ = vao_;
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, ring_buffer_.getBufferId());
@@ -348,7 +372,7 @@ void SpriteBatch::flush(const AtlasManager& atlas_manager) {
 
 			// Fallback: update VAO binding offset (DSA)
 			// Binding point 1 is used for instance data (Attributes 2, 3, 4, 5)
-			glVertexArrayVertexBuffer(vao_->GetID(), 1, ring_buffer_.getBufferId(), offset, sizeof(SpriteInstance));
+			glVertexArrayVertexBuffer(vao_, 1, ring_buffer_.getBufferId(), offset, sizeof(SpriteInstance));
 
 			glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, (GLsizei)batch_size);
 

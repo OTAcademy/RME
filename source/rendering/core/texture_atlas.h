@@ -3,10 +3,8 @@
 
 #include "app/main.h"
 #include "rendering/core/pixel_buffer_object.h"
-#include "rendering/core/gl_resources.h"
 #include <optional>
 #include <cstdint>
-#include <memory>
 
 /**
  * AtlasRegion represents where a sprite is located in the texture atlas.
@@ -83,14 +81,14 @@ public:
 	 * Get OpenGL texture ID.
 	 */
 	GLuint id() const {
-		return texture_ ? texture_->GetID() : 0;
+		return texture_id_;
 	}
 
 	/**
 	 * Check if atlas is valid.
 	 */
 	bool isValid() const {
-		return texture_ != nullptr;
+		return texture_id_ != 0;
 	}
 
 	/**
@@ -104,7 +102,7 @@ private:
 	// PBO for async uploads
 	std::unique_ptr<PixelBufferObject> pbo_;
 
-	std::unique_ptr<GLTextureResource> texture_;
+	GLuint texture_id_ = 0;
 	int layer_count_ = 0;
 	int allocated_layers_ = 0;
 	int total_sprite_count_ = 0;
