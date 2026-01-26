@@ -107,7 +107,7 @@ public:
 
 	// Enable move
 	GLTextureResource(GLTextureResource&& other) noexcept :
-		id(std::exchange(other.id, 0)), target(other.target) {}
+		id(std::exchange(other.id, 0)), target(other.target) { }
 
 	GLTextureResource& operator=(GLTextureResource&& other) noexcept {
 		if (id) {
