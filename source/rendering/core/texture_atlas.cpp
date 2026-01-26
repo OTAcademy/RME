@@ -61,6 +61,10 @@ bool TextureAtlas::initialize(int initial_layers) {
 	}
 
 	texture_ = std::make_unique<GLTextureResource>(GL_TEXTURE_2D_ARRAY);
+	if (texture_->GetID() == 0) {
+		spdlog::error("TextureAtlas: Failed to generate texture");
+		return false;
+	}
 
 	// Set texture parameters (DSA)
 	glTextureParameteri(texture_->GetID(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -104,6 +108,10 @@ bool TextureAtlas::addLayer() {
 
 		// Create new larger texture array
 		auto new_texture = std::make_unique<GLTextureResource>(GL_TEXTURE_2D_ARRAY);
+		if (new_texture->GetID() == 0) {
+			spdlog::error("TextureAtlas: Failed to generate new texture id during expansion");
+			return false;
+		}
 
 		glTextureParameteri(new_texture->GetID(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTextureParameteri(new_texture->GetID(), GL_TEXTURE_MAG_FILTER, GL_NEAREST);

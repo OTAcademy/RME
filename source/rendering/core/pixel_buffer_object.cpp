@@ -42,6 +42,10 @@ bool PixelBufferObject::initialize(size_t size) {
 
 	for (int i = 0; i < BUFFER_COUNT; ++i) {
 		buffers_[i] = std::make_unique<GLBuffer>();
+		if (buffers_[i]->GetID() == 0) {
+			spdlog::error("PixelBufferObject: Failed to create buffer {}", i);
+			return false;
+		}
 		glNamedBufferData(buffers_[i]->GetID(), size, nullptr, GL_STREAM_DRAW);
 	}
 

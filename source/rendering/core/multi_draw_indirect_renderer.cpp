@@ -47,6 +47,11 @@ bool MultiDrawIndirectRenderer::initialize() {
 
 	// Create buffer for indirect commands
 	command_buffer_ = std::make_unique<GLBuffer>();
+	if (command_buffer_->GetID() == 0) {
+		spdlog::error("MultiDrawIndirectRenderer: Failed to create command buffer");
+		available_ = false;
+		return false;
+	}
 
 	// Pre-allocate buffer storage
 	glNamedBufferData(command_buffer_->GetID(), MAX_COMMANDS * sizeof(DrawElementsIndirectCommand), nullptr, GL_DYNAMIC_DRAW);
