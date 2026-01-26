@@ -25,11 +25,11 @@
 #include "rendering/core/drawing_options.h"
 
 struct GPULight {
-	float x, y;        // 8 bytes (offset 0)
-	float intensity;   // 4 bytes (offset 8)
-	float padding;     // 4 bytes (offset 12) -> Total 16 bytes alignment
-	float r, g, b;     // 12 bytes (offset 16)
-	float a;           // 4 bytes (offset 28) -> Total 32 bytes
+	float x, y; // 8 bytes (offset 0)
+	float intensity; // 4 bytes (offset 8)
+	float padding; // 4 bytes (offset 12) -> Total 16 bytes alignment
+	float r, g, b; // 12 bytes (offset 16)
+	float a; // 4 bytes (offset 28) -> Total 32 bytes
 };
 
 LightDrawer::LightDrawer() {
