@@ -10,12 +10,10 @@ PixelBufferObject::~PixelBufferObject() {
 
 PixelBufferObject::PixelBufferObject(PixelBufferObject&& other) noexcept
 	:
+	buffers_(std::move(other.buffers_)),
+	fences_(std::move(other.fences_)),
 	current_index_(other.current_index_),
 	size_(other.size_), initialized_(other.initialized_) {
-	for (int i = 0; i < BUFFER_COUNT; ++i) {
-		buffers_[i] = std::move(other.buffers_[i]);
-		fences_[i] = std::move(other.fences_[i]);
-	}
 	other.initialized_ = false;
 	other.size_ = 0;
 }
@@ -23,14 +21,11 @@ PixelBufferObject::PixelBufferObject(PixelBufferObject&& other) noexcept
 PixelBufferObject& PixelBufferObject::operator=(PixelBufferObject&& other) noexcept {
 	if (this != &other) {
 		cleanup();
+		buffers_ = std::move(other.buffers_);
+		fences_ = std::move(other.fences_);
 		current_index_ = other.current_index_;
 		size_ = other.size_;
 		initialized_ = other.initialized_;
-
-		for (int i = 0; i < BUFFER_COUNT; ++i) {
-			buffers_[i] = std::move(other.buffers_[i]);
-			fences_[i] = std::move(other.fences_[i]);
-		}
 
 		other.initialized_ = false;
 		other.size_ = 0;
@@ -60,9 +55,11 @@ void PixelBufferObject::cleanup() {
 		return;
 	}
 
-	for (int i = 0; i < BUFFER_COUNT; ++i) {
-		buffers_[i].reset();
-		fences_[i].reset();
+	for (auto& buffer : buffers_) {
+		buffer.reset();
+	}
+	for (auto& fence : fences_) {
+		fence.reset();
 	}
 	initialized_ = false;
 }

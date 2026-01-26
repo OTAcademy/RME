@@ -12,6 +12,7 @@ TextureAtlas::~TextureAtlas() {
 
 TextureAtlas::TextureAtlas(TextureAtlas&& other) noexcept
 	:
+	pbo_(std::move(other.pbo_)),
 	texture_(std::move(other.texture_)),
 	layer_count_(other.layer_count_),
 	allocated_layers_(other.allocated_layers_),
@@ -29,6 +30,7 @@ TextureAtlas::TextureAtlas(TextureAtlas&& other) noexcept
 TextureAtlas& TextureAtlas::operator=(TextureAtlas&& other) noexcept {
 	if (this != &other) {
 		release();
+		pbo_ = std::move(other.pbo_);
 		texture_ = std::move(other.texture_);
 		layer_count_ = other.layer_count_;
 		allocated_layers_ = other.allocated_layers_;
