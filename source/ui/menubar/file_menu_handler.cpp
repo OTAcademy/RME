@@ -3,7 +3,7 @@
 #include "app/main.h"
 #include "ui/gui.h"
 #include "ui/map/export_tilesets_window.h"
-#include "ui/map/export_minimap_window.h"
+
 #include "ui/map/import_map_window.h"
 #include "ui/dialog_util.h"
 #include "ui/about_window.h"
@@ -75,14 +75,6 @@ void FileMenuHandler::OnImportMonsterData(wxCommandEvent& WXUNUSED(event)) {
 
 void FileMenuHandler::OnImportMinimap(wxCommandEvent& WXUNUSED(event)) {
 	ASSERT(g_gui.IsEditorOpen());
-}
-
-void FileMenuHandler::OnExportMinimap(wxCommandEvent& WXUNUSED(event)) {
-	if (g_gui.GetCurrentEditor()) {
-		ExportMiniMapWindow dlg(frame, *g_gui.GetCurrentEditor());
-		dlg.ShowModal();
-		dlg.Destroy();
-	}
 }
 
 void FileMenuHandler::OnExportTilesets(wxCommandEvent& WXUNUSED(event)) {
