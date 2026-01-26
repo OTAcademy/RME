@@ -197,7 +197,7 @@ bool Map::convert(const ConversionMap& rm, bool showdialog) {
 
 		if (cfmtm != rm.mtm.end()) {
 			const std::vector<uint16_t>& v = cfmtm->first;
-			const auto& ids_to_remove = mtm_lookups[&v];
+			const auto& ids_to_remove = mtm_lookups.at(&v);
 
 			if (tile->ground && ids_to_remove.contains(tile->ground->getID())) {
 				delete tile->ground;
