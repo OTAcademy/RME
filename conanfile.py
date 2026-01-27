@@ -15,7 +15,7 @@ class RMERecipe(ConanFile):
 
         self.requires("asio/1.32.0")
         self.requires("nlohmann_json/3.11.3")
-        self.requires("fmt/11.1.4")
+        # Note: fmt is a transitive dependency via spdlog
         self.requires("libarchive/3.7.7")
         self.requires("boost/1.87.0")
         self.requires("zlib/1.3.1")
