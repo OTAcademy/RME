@@ -67,8 +67,14 @@ bool DoodadBrushLoader::load(pugi::xml_node node, DoodadBrushItems& items, Dooda
 	if (!thicknessString.empty()) {
 		size_t slash = thicknessString.find('/');
 		if (slash != std::string::npos) {
-			settings.thickness = boost::lexical_cast<int32_t>(thicknessString.substr(0, slash));
-			settings.thickness_ceiling = std::max<int32_t>(settings.thickness, boost::lexical_cast<int32_t>(thicknessString.substr(slash + 1)));
+			try {
+				settings.thickness = boost::lexical_cast<int32_t>(thicknessString.substr(0, slash));
+				settings.thickness_ceiling = std::max<int32_t>(settings.thickness, boost::lexical_cast<int32_t>(thicknessString.substr(slash + 1)));
+			} catch (const boost::bad_lexical_cast&) {
+				warnings.push_back("Invalid thickness format: " + wxstr(thicknessString));
+				settings.thickness = 0;
+				settings.thickness_ceiling = 0;
+			}
 		}
 	}
 
@@ -168,6 +174,8 @@ bool DoodadBrushLoader::loadAlternative(pugi::xml_node node, DoodadBrushItems& i
 						if (it.id != 0 && brushPtr) {
 							it.doodad_brush = brushPtr;
 						}
+					} else {
+						warnings.push_back("Can't create item from doodad composite tile node.");
 					}
 				}
 

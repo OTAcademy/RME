@@ -67,10 +67,17 @@ bool TableBrushLoader::load(pugi::xml_node node, TableBrush& brush, TableBrushIt
 			it.isTable = true;
 			it.brush = &brush;
 
-			int32_t chance = subChildNode.attribute("chance").as_int();
+			int32_t chance = 1;
+			if (pugi::xml_attribute attribute = subChildNode.attribute("chance")) {
+				chance = attribute.as_int();
+			} else {
+				warnings.push_back("Missing chance for table item " + std::to_string(id));
+				chance = 1;
+			}
+
 			if (chance <= 0) {
 				warnings.push_back("Invalid chance for item node: " + std::to_string(chance));
-				continue;
+				chance = 1;
 			}
 			items.addItem(alignment, id, chance);
 		}

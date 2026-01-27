@@ -96,6 +96,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 				}
 
 				AutoBorder* autoBorder = newd AutoBorder(0); // Empty id basically
+				autoBorder->ground = true;
 				autoBorder->load(childNode, warnings, &brush, ground_equivalent);
 				brush.optional_border = autoBorder;
 			} else {
@@ -136,6 +137,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 				}
 
 				autoBorder = newd AutoBorder(0); // Empty id basically
+				autoBorder->ground = true;
 				autoBorder->load(childNode, warnings, &brush, ground_equivalent);
 			} else {
 				int32_t id = attribute.as_int();
@@ -153,6 +155,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 
 			GroundBrush::BorderBlock* borderBlock = newd GroundBrush::BorderBlock;
 			borderBlock->super = false;
+			borderBlock->outer = true;
 			borderBlock->autoborder = autoBorder;
 
 			if ((attribute = childNode.attribute("to"))) {

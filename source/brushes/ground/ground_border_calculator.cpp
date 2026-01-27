@@ -180,6 +180,46 @@ void GroundBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 					}
 				}
 				continue;
+			} else {
+				// Border against nothing (or undefined tile)
+				uint32_t tiledata = 0;
+				for (int32_t j = i; j < 8; ++j) {
+					auto& [other_visited, other_brush] = neighbours[j];
+					if (!other_visited && !other_brush) {
+						other_visited = true;
+						tiledata |= 1 << j;
+					}
+				}
+
+				if (tiledata != 0) {
+					const GroundBrush::BorderBlock* borderBlock = GroundBrush::getBrushTo(borderBrush, nullptr);
+					if (borderBlock) {
+						if (borderBlock->autoborder) {
+							bool found = false;
+							for (GroundBrush::BorderCluster& borderCluster : borderList) {
+								if (borderCluster.border == borderBlock->autoborder) {
+									borderCluster.alignment |= tiledata;
+									borderCluster.z = -1000;
+									found = true;
+									break;
+								}
+							}
+
+							if (!found) {
+								GroundBrush::BorderCluster borderCluster;
+								borderCluster.alignment = tiledata;
+								borderCluster.z = -1000;
+								borderCluster.border = borderBlock->autoborder;
+								borderList.push_back(borderCluster);
+							}
+						}
+
+						if (!borderBlock->specific_cases.empty()) {
+							specificList.push_back(borderBlock);
+						}
+					}
+				}
+				continue;
 			}
 		} else if (other && other->hasOuterZilchBorder()) {
 			uint32_t tiledata = 0;

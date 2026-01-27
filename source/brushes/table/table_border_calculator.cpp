@@ -80,7 +80,7 @@ void TableBorderCalculator::doTables(BaseMap* map, Tile* tile) {
 		const TableNode& tn = table_brush->items.getItems(static_cast<int32_t>(bt));
 
 		if (tn.total_chance == 0) {
-			return;
+			continue;
 		}
 
 		int32_t chance = random(1, tn.total_chance);

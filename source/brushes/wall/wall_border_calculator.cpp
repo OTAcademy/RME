@@ -71,7 +71,13 @@ void WallBorderCalculator::doWalls(BaseMap* map, Tile* tile) {
 		const int32_t dy[] = { -1, 0, 0, 1 };
 
 		for (int i = 0; i < 4; ++i) {
-			neighbours[i] = hasMatchingWallBrushAtTile(map, wall_brush, x + dx[i], y + dy[i], z);
+			int32_t tx = x + dx[i];
+			int32_t ty = y + dy[i];
+			if (tx < 0 || ty < 0) {
+				neighbours[i] = false;
+				continue;
+			}
+			neighbours[i] = hasMatchingWallBrushAtTile(map, wall_brush, static_cast<uint32_t>(tx), static_cast<uint32_t>(ty), static_cast<uint32_t>(z));
 		}
 
 		uint32_t tiledata = 0;
