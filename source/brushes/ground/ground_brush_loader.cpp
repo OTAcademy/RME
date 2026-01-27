@@ -103,7 +103,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 					continue;
 				}
 
-				brush.optional_border = it->second;
+				brush.optional_border = it->second.get();
 			}
 		} else if (childName == "border") {
 			AutoBorder* autoBorder;
@@ -138,7 +138,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 						warnings.push_back("\nCould not find border id " + std::to_string(id));
 						continue;
 					}
-					autoBorder = it->second;
+					autoBorder = it->second.get();
 				}
 			}
 
@@ -153,7 +153,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 				} else if (value == "none") {
 					borderBlock->to = 0;
 				} else {
-					Brush* tobrush = g_brushes.getBrush(std::string(value));
+					Brush* tobrush = g_brushes.getBrush(value);
 					if (!tobrush) {
 						warnings.push_back("To brush " + wxstr(value) + " doesn't exist.");
 						continue;
@@ -221,7 +221,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 									continue;
 								}
 
-								AutoBorder* autoBorder = it->second;
+								AutoBorder* autoBorder = it->second.get();
 								ASSERT(autoBorder != nullptr);
 
 								uint32_t match_itemid = autoBorder->tiles[edge_id];
@@ -286,7 +286,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 									continue;
 								}
 
-								AutoBorder* autoBorder = itt->second;
+								AutoBorder* autoBorder = itt->second.get();
 								ASSERT(autoBorder != nullptr);
 
 								ItemType& it = g_items[with_id];
@@ -348,7 +348,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 				if (name == "all") {
 					brush.friends.push_back(0xFFFFFFFF);
 				} else {
-					Brush* otherBrush = g_brushes.getBrush(std::string(name));
+					Brush* otherBrush = g_brushes.getBrush(name);
 					if (otherBrush) {
 						brush.friends.push_back(otherBrush->getID());
 					} else {
@@ -363,7 +363,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 				if (name == "all") {
 					brush.friends.push_back(0xFFFFFFFF);
 				} else {
-					Brush* otherBrush = g_brushes.getBrush(std::string(name));
+					Brush* otherBrush = g_brushes.getBrush(name);
 					if (otherBrush) {
 						brush.friends.push_back(otherBrush->getID());
 					} else {

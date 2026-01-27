@@ -22,6 +22,10 @@
 #include "map/position.h"
 
 #include "brushes/brush_enums.h"
+#include <map>
+#include <string>
+#include <memory>
+#include <string_view>
 
 // Thanks to a million forward declarations, we don't have to include any files!
 // TODO move to a declarations file.
@@ -55,7 +59,7 @@ class EraserBrush;
 //=============================================================================
 // Brushes, holds all brushes
 
-using BrushMap = std::multimap<std::string, Brush*>;
+using BrushMap = std::multimap<std::string, std::unique_ptr<Brush>, std::less<>>;
 
 class Brushes {
 public:
@@ -65,7 +69,7 @@ public:
 	void init();
 	void clear();
 
-	Brush* getBrush(const std::string& name) const;
+	Brush* getBrush(std::string_view name) const;
 
 	void addBrush(Brush* brush);
 
@@ -77,7 +81,7 @@ public:
 	}
 
 protected:
-	using BorderMap = std::map<uint32_t, AutoBorder*>;
+	using BorderMap = std::map<uint32_t, std::unique_ptr<AutoBorder>>;
 	BrushMap brushes;
 	BorderMap borders;
 
@@ -307,92 +311,6 @@ protected:
 	std::string name;
 	uint16_t look_id;
 	bool hate_friends;
-};
-
-//=============================================================================
-// FlagBrush, draw PZ etc.
-
-class FlagBrush : public Brush {
-public:
-	FlagBrush(uint32_t _flag);
-	~FlagBrush() override;
-
-	bool isFlag() const override {
-		return true;
-	}
-	FlagBrush* asFlag() override {
-		return static_cast<FlagBrush*>(this);
-	}
-
-	bool canDraw(BaseMap* map, const Position& position) const override;
-	void draw(BaseMap* map, Tile* tile, void* parameter) override;
-	void undraw(BaseMap* map, Tile* tile) override;
-
-	bool canDrag() const override {
-		return true;
-	}
-	int getLookID() const override;
-	std::string getName() const override;
-
-protected:
-	uint32_t flag;
-};
-
-//=============================================================================
-// Doorbrush, add doors, windows etc.
-
-class DoorBrush : public Brush {
-public:
-	DoorBrush(DoorType _doortype);
-	~DoorBrush() override;
-
-	bool isDoor() const override {
-		return true;
-	}
-	DoorBrush* asDoor() override {
-		return static_cast<DoorBrush*>(this);
-	}
-
-	static void switchDoor(Item* door);
-
-	bool canDraw(BaseMap* map, const Position& position) const override;
-	void draw(BaseMap* map, Tile* tile, void* parameter) override;
-	void undraw(BaseMap* map, Tile* tile) override;
-
-	int getLookID() const override;
-	std::string getName() const override;
-	bool oneSizeFitsAll() const override {
-		return true;
-	}
-
-protected:
-	DoorType doortype;
-};
-
-//=============================================================================
-// OptionalBorderBrush, add gravel 'round mountains.
-
-class OptionalBorderBrush : public Brush {
-public:
-	OptionalBorderBrush();
-	~OptionalBorderBrush() override;
-
-	bool isOptionalBorder() const override {
-		return true;
-	}
-	OptionalBorderBrush* asOptionalBorder() override {
-		return static_cast<OptionalBorderBrush*>(this);
-	}
-
-	bool canDraw(BaseMap* map, const Position& position) const override;
-	void draw(BaseMap* map, Tile* tile, void* parameter) override;
-	void undraw(BaseMap* map, Tile* tile) override;
-
-	bool canDrag() const override {
-		return true;
-	}
-	int getLookID() const override;
-	std::string getName() const override;
 };
 
 //=============================================================================

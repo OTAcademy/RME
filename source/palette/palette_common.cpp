@@ -19,6 +19,9 @@
 
 #include "palette/palette_common.h"
 #include "brushes/brush.h"
+#include "brushes/flag/flag_brush.h"
+#include "brushes/door/door_brush.h"
+#include "brushes/border/optional_border_brush.h"
 #include "brushes/managers/brush_manager.h"
 #include "game/sprites.h"
 #include "ui/gui.h"

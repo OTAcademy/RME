@@ -8,6 +8,9 @@
 #include "ui/gui_ids.h"
 #include "editor/editor.h"
 #include "brushes/managers/brush_manager.h"
+#include "brushes/flag/flag_brush.h"
+#include "brushes/door/door_brush.h"
+#include "brushes/border/optional_border_brush.h"
 #include "ui/pngfiles.h"
 #include "ui/artprovider.h"
 #include <wx/artprov.h>
