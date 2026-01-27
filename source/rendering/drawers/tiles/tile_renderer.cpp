@@ -41,8 +41,8 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 
 	const uint16_t unique = item->getUniqueID();
 	const uint16_t action = item->getActionID();
-	const std::string& text = item->getText();
-	const std::string& description = item->getDescription();
+	std::string_view text = item->getText();
+	std::string_view description = item->getDescription();
 	uint8_t doorId = 0;
 	Position destination;
 
@@ -69,12 +69,12 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 	}
 
 	// Get item name from database
-	std::string itemName = g_items[id].name;
+	std::string_view itemName = g_items[id].name;
 	if (itemName.empty()) {
 		itemName = "Item";
 	}
 
-	TooltipData data(pos, id, itemName);
+	TooltipData data(pos, id, std::string(itemName));
 	data.actionId = action;
 	data.uniqueId = unique;
 	data.doorId = doorId;

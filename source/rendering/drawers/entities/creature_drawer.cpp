@@ -4,11 +4,7 @@
 
 #include "app/main.h"
 
-#ifdef __APPLE__
-	#include <GLUT/glut.h>
-#else
-	#include <GL/glut.h>
-#endif
+// glut include removed
 
 #include "rendering/drawers/entities/creature_drawer.h"
 #include "rendering/drawers/entities/sprite_drawer.h"

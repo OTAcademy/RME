@@ -79,14 +79,14 @@ namespace EditorOperations {
 				}
 			}
 
-			label << wxstr(item->getName());
+			label << wxstr(std::string(item->getName()));
 
 			if (dynamic_cast<Container*>(item)) {
 				label << " (Container) ";
 			}
 
 			if (item->getText().length() > 0) {
-				label << " (Text: " << wxstr(item->getText()) << ") ";
+				label << " (Text: " << wxstr(std::string(item->getText())) << ") ";
 			}
 
 			return label;

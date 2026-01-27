@@ -145,7 +145,7 @@ void ClipboardHandler::copyName(const Selection& selection) {
 		const Item* item = selected_items.front();
 
 		wxTextDataObject* obj = new wxTextDataObject();
-		obj->SetText(wxstr(item->getName()));
+		obj->SetText(wxstr(std::string(item->getName())));
 		wxTheClipboard->SetData(obj);
 
 		wxTheClipboard->Close();

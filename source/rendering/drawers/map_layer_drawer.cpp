@@ -16,6 +16,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "app/main.h"
+#include "app/definitions.h"
 #include "rendering/drawers/map_layer_drawer.h"
 #include "rendering/drawers/tiles/tile_renderer.h"
 #include "rendering/drawers/overlays/grid_drawer.h"

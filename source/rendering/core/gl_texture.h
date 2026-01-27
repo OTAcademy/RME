@@ -1,11 +1,7 @@
 #ifndef RME_RENDERING_CORE_GL_TEXTURE_H_
 #define RME_RENDERING_CORE_GL_TEXTURE_H_
 
-#ifdef __APPLE__
-	#include <GLUT/glut.h>
-#else
-	#include <GL/glut.h>
-#endif
+#include <glad/glad.h>
 
 class GLTexture {
 public:

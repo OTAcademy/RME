@@ -145,12 +145,12 @@ bool Brushes::unserializeBrush(pugi::xml_node node, wxArrayString& warnings) {
 	brush->load(node, subWarnings);
 
 	if (!subWarnings.empty()) {
-		warnings.push_back(wxString("Errors while loading brush \"") << wxstr(brush->getName()) << "\"");
+		warnings.push_back(wxString("Errors while loading brush \"") << wxstr(std::string(brush->getName())) << "\"");
 		warnings.insert(warnings.end(), subWarnings.begin(), subWarnings.end());
 	}
 
 	if (brush->getName() == "all" || brush->getName() == "none") {
-		warnings.push_back(wxString("Using reserved brushname '") << wxstr(brush->getName()) << "'.");
+		warnings.push_back(wxString("Using reserved brushname '") << wxstr(std::string(brush->getName())) << "'.");
 		delete brush;
 		return false;
 	}
@@ -158,7 +158,7 @@ bool Brushes::unserializeBrush(pugi::xml_node node, wxArrayString& warnings) {
 	Brush* otherBrush = getBrush(brush->getName());
 	if (otherBrush) {
 		if (otherBrush != brush) {
-			warnings.push_back(wxString("Duplicate brush name ") << wxstr(brush->getName()) << ". Undefined behaviour may ensue.");
+			warnings.push_back(wxString("Duplicate brush name ") << wxstr(std::string(brush->getName())) << ". Undefined behaviour may ensue.");
 		} else {
 			// Don't insert
 			return true;

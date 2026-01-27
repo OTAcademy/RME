@@ -38,7 +38,7 @@ find_package(Boost 1.34.0 COMPONENTS thread system REQUIRED)
 
 find_package(wxWidgets COMPONENTS html aui gl adv core net base REQUIRED)
 
-find_package(GLUT REQUIRED)
+
 find_package(ZLIB REQUIRED)
 
 
@@ -79,7 +79,7 @@ target_include_directories(rme PRIVATE
 	${Boost_INCLUDE_DIRS}
 	${LibArchive_INCLUDE_DIRS}
 	${OPENGL_INCLUDE_DIR}
-	${GLUT_INCLUDE_DIRS}
+
 	${ZLIB_INCLUDE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/source
 )
@@ -97,11 +97,7 @@ else()
 	target_link_libraries(rme PRIVATE ${LibArchive_LIBRARIES})
 endif()
 
-if(TARGET GLUT::GLUT)
-	target_link_libraries(rme PRIVATE GLUT::GLUT)
-else()
-	target_link_libraries(rme PRIVATE ${GLUT_LIBRARIES})
-endif()
+
 
 if(TARGET ZLIB::ZLIB)
 	target_link_libraries(rme PRIVATE ZLIB::ZLIB)
