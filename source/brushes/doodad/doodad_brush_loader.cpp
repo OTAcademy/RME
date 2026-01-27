@@ -126,9 +126,9 @@ bool DoodadBrushLoader::loadAlternative(pugi::xml_node node, DoodadBrushItems& i
 			}
 
 			int chance = attribute.as_int();
-			if (chance <= 0) {
-				warnings.push_back("Invalid chance for doodad item " + std::to_string(item->getID()));
-				chance = 1;
+			if (chance < 0) {
+				warnings.push_back("Chance for doodad item " + std::to_string(item->getID()) + " is negative, defaulting to 0.");
+				chance = 0;
 			}
 			items.addSingleToBlock(alternativeBlock, std::unique_ptr<Item>(item), chance);
 
@@ -139,9 +139,9 @@ bool DoodadBrushLoader::loadAlternative(pugi::xml_node node, DoodadBrushItems& i
 			}
 
 			int compositeChance = attribute.as_int();
-			if (compositeChance <= 0) {
-				warnings.push_back("Invalid chance for doodad composite item.");
-				compositeChance = 1;
+			if (compositeChance < 0) {
+				warnings.push_back("Chance for doodad composite item is negative, defaulting to 0.");
+				compositeChance = 0;
 			}
 			CompositeTileList compositeList;
 

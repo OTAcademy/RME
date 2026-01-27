@@ -103,8 +103,9 @@ const DoodadBrushItems::AlternativeBlock* DoodadBrushItems::getAlternative(int v
 	if (alternatives.empty()) {
 		return nullptr;
 	}
-	variation = std::abs(variation) % alternatives.size();
-	return alternatives[variation].get();
+	const size_t n = alternatives.size();
+	const size_t index = static_cast<size_t>(variation) % n;
+	return alternatives[index].get();
 }
 
 const CompositeTileList& DoodadBrushItems::getComposite(int variation) const {

@@ -43,10 +43,14 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 		std::string_view childName = childNode.name();
 		if (std::ranges::equal(childName, std::string_view("item"), iequal)) {
 			uint16_t itemId = childNode.attribute("id").as_ushort();
-			int32_t chance = childNode.attribute("chance").as_int();
-			if (chance <= 0) {
-				warnings.push_back("\nInvalid chance for ground item " + std::to_string(itemId));
-				continue;
+			int32_t chance = 1;
+			if (auto attribute = childNode.attribute("chance")) {
+				chance = attribute.as_int();
+			}
+
+			if (chance < 0) {
+				warnings.push_back("\nChance for ground item " + std::to_string(itemId) + " is negative, defaulting to 0.");
+				chance = 0;
 			}
 
 			ItemType& it = g_items[itemId];
@@ -157,7 +161,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 				}
 			}
 
-			GroundBrush::BorderBlock* borderBlock = newd GroundBrush::BorderBlock;
+			auto borderBlock = std::make_unique<GroundBrush::BorderBlock>();
 			borderBlock->super = false;
 			borderBlock->outer = true;
 			borderBlock->autoborder = autoBorder;
@@ -172,6 +176,9 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 					Brush* tobrush = g_brushes.getBrush(value);
 					if (!tobrush) {
 						warnings.push_back("To brush " + wxstr(value) + " doesn't exist.");
+						if (autoBorder && autoBorder->ground) {
+							delete autoBorder;
+						}
 						continue;
 					}
 					borderBlock->to = tobrush->getID();
@@ -357,7 +364,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 					borderBlock->specific_cases.push_back(specificCaseBlock);
 				}
 			}
-			brush.borders.push_back(borderBlock);
+			brush.borders.push_back(borderBlock.release());
 		} else if (std::ranges::equal(childName, std::string_view("friend"), iequal)) {
 			const std::string_view name = childNode.attribute("name").as_string();
 			if (!name.empty()) {

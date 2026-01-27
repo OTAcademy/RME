@@ -66,7 +66,14 @@ Brushes::~Brushes() {
 }
 
 void Brushes::clear() {
+	for (auto& entry : brushes) {
+		entry.second.reset();
+	}
 	brushes.clear();
+
+	for (auto& entry : borders) {
+		entry.second.reset();
+	}
 	borders.clear();
 }
 

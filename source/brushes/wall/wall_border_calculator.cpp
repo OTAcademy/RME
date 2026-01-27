@@ -22,7 +22,7 @@ bool WallBorderCalculator::hasMatchingWallBrushAtTile(BaseMap* map, WallBrush* w
 			WallBrush* wb = item->getWallBrush();
 			if (wb == wall_brush) {
 				return !g_items[item->getID()].wall_hate_me;
-			} else if (wall_brush->friendOf(wb) || wb->friendOf(wall_brush)) {
+			} else if (wb && (wall_brush->friendOf(wb) || wb->friendOf(wall_brush))) {
 				return !g_items[item->getID()].wall_hate_me;
 			}
 		}
@@ -71,13 +71,13 @@ void WallBorderCalculator::doWalls(BaseMap* map, Tile* tile) {
 		const int32_t dy[] = { -1, 0, 0, 1 };
 
 		for (int i = 0; i < 4; ++i) {
-			int32_t tx = x + dx[i];
-			int32_t ty = y + dy[i];
-			if (tx < 0 || ty < 0) { // Basic bounds check for negative wrapping
+			const int32_t tx = x + dx[i];
+			const int32_t ty = y + dy[i];
+			if (Position(tx, ty, z).isValid()) {
+				neighbours[i] = hasMatchingWallBrushAtTile(map, wall_brush, tx, ty, z);
+			} else {
 				neighbours[i] = false;
-				continue;
 			}
-			neighbours[i] = hasMatchingWallBrushAtTile(map, wall_brush, tx, ty, static_cast<int32_t>(z));
 		}
 
 		uint32_t tiledata = 0;

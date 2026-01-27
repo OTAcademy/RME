@@ -124,10 +124,14 @@ bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_no
 					it.brush = brush;
 					it.border_alignment = alignment;
 
-					int chance = subChildNode.attribute("chance").as_int();
-					if (chance <= 0) {
-						warnings.push_back("Invalid chance for wall item " + std::to_string(id));
-						continue;
+					int chance = 1;
+					if (auto attribute = subChildNode.attribute("chance")) {
+						chance = attribute.as_int();
+					}
+
+					if (chance < 0) {
+						warnings.push_back("Chance for wall item " + std::to_string(id) + " is negative, defaulting to 0.");
+						chance = 0;
 					}
 					items.addWallItem(alignment, id, chance);
 
