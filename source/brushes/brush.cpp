@@ -368,8 +368,8 @@ void DoorBrush::switchDoor(Item* item) {
 	uint16_t oppositeVariant = 0; // give locked/unlocked variant if preferred is unavailable
 	bool prefLocked = g_gui.HasDoorLocked();
 
-	for (std::vector<WallBrush::DoorType>::iterator iter = wb->door_items[wall_alignment].begin(); iter != wb->door_items[wall_alignment].end(); ++iter) {
-		WallBrush::DoorType& dt = *iter;
+	const auto& doorItems = wb->items.getDoorItems(wall_alignment);
+	for (const auto& dt : doorItems) {
 		if (dt.type == doortype) {
 			ASSERT(dt.id);
 			ItemType& it = g_items[dt.id];
@@ -421,10 +421,8 @@ bool DoorBrush::canDraw(BaseMap* map, const Position& position) const {
 
 	WallBrush* test_brush = wb;
 	do {
-		for (std::vector<WallBrush::DoorType>::iterator iter = test_brush->door_items[wall_alignment].begin();
-			 iter != test_brush->door_items[wall_alignment].end();
-			 ++iter) {
-			WallBrush::DoorType& dt = *iter;
+		const auto& doorItems = test_brush->items.getDoorItems(wall_alignment);
+		for (const auto& dt : doorItems) {
 			if (dt.type == doortype) {
 				ASSERT(dt.id);
 				ItemType& it = g_items[dt.id];
@@ -500,10 +498,8 @@ void DoorBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 
 		WallBrush* test_brush = wb;
 		do {
-			for (std::vector<WallBrush::DoorType>::iterator iter = test_brush->door_items[wall_alignment].begin();
-				 iter != test_brush->door_items[wall_alignment].end();
-				 ++iter) {
-				WallBrush::DoorType& dt = *iter;
+			const auto& doorItems = test_brush->items.getDoorItems(wall_alignment);
+			for (const auto& dt : doorItems) {
 				if (dt.type == doortype) {
 					ASSERT(dt.id);
 					ItemType& it = g_items[dt.id];
@@ -571,8 +567,8 @@ void DoorBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 				WallBrush* brush = item->getWallBrush();
 				if (brush && brush->isWallDecoration()) {
 					// We got a decoration!
-					for (std::vector<WallBrush::DoorType>::iterator it = brush->door_items[wall_alignment].begin(); it != brush->door_items[wall_alignment].end(); ++it) {
-						WallBrush::DoorType& dt = (*it);
+					const auto& doorItems = brush->items.getDoorItems(wall_alignment);
+					for (const auto& dt : doorItems) {
 						if (dt.type == doortype) {
 							ASSERT(dt.id);
 							ItemType& it = g_items[dt.id];

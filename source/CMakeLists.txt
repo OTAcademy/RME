@@ -35,7 +35,10 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush_items.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush_loader.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_border_calculator.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush_items.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush_loader.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/waypoint/waypoint_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/action_queue.h
@@ -295,7 +298,10 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush_items.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush_loader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush_arrays.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_border_calculator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush_items.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush_loader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush_arrays.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/waypoint/waypoint_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.cpp
