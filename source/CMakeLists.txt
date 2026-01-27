@@ -272,6 +272,35 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/util/mt_rand.h
 )
 
+include(FetchContent)
+FetchContent_Declare(
+    wxmaterialdesignartprovider
+    GIT_REPOSITORY https://github.com/perazz/wxMaterialDesignArtProvider.git
+    GIT_TAG        main
+)
+FetchContent_GetProperties(wxmaterialdesignartprovider)
+if(NOT wxmaterialdesignartprovider_POPULATED)
+    FetchContent_Populate(wxmaterialdesignartprovider)
+endif()
+
+include_directories(${wxmaterialdesignartprovider_SOURCE_DIR})
+
+set(rme_H
+    ${rme_H}
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxAwesomeBrandsArt.hpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxAwesomeRegularArt.hpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxAwesomeSolidArt.hpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxFluentuiFilledArt.hpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxFluentuiRegularArt.hpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxMaterialDesignArtProvider.hpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxMaterialFilledArt.hpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxMaterialOutlinedArt.hpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxMaterialRoundArt.hpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxMaterialSharpArt.hpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxMaterialTwoToneArt.hpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxSimpleIconsArt.hpp
+)
+
 set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/app/application.cpp
     ${CMAKE_CURRENT_LIST_DIR}/app/client_version.cpp
@@ -529,4 +558,16 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/util/common.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/file_system.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/mt_rand.cpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxAwesomeBrandsArt.cpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxAwesomeRegularArt.cpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxAwesomeSolidArt.cpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxFluentuiFilledArt.cpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxFluentuiRegularArt.cpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxMaterialDesignArtProvider.cpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxMaterialFilledArt.cpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxMaterialOutlinedArt.cpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxMaterialRoundArt.cpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxMaterialSharpArt.cpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxMaterialTwoToneArt.cpp
+    ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxSimpleIconsArt.cpp
 )

@@ -1,6 +1,8 @@
 #include <iostream>
 #include "ingame_preview/ingame_preview_manager.h"
 #include "ingame_preview/ingame_preview_window.h"
+#include "MaterialDesign/wxMaterialDesignArtProvider.hpp"
+
 #include "ui/gui.h"
 #include "editor/editor.h"
 #include <wx/aui/aui.h>
@@ -19,7 +21,17 @@ namespace IngamePreview {
 	}
 
 	void IngamePreviewManager::Create() {
+		static bool artProviderRegistered = false;
+		if (!artProviderRegistered) {
+			wxArtProvider::Push(new wxMaterialDesignArtProvider);
+			artProviderRegistered = true;
+		}
+
 		if (!g_gui.IsAnyEditorOpen()) {
+			return;
+		}
+
+		if (!g_gui.aui_manager) {
 			return;
 		}
 
@@ -35,6 +47,10 @@ namespace IngamePreview {
 	}
 
 	void IngamePreviewManager::Hide() {
+		if (!g_gui.aui_manager) {
+			return;
+		}
+
 		if (window) {
 			g_gui.aui_manager->GetPane(window.get()).Show(false);
 			g_gui.aui_manager->Update();

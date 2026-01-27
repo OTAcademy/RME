@@ -34,8 +34,8 @@ namespace IngamePreview {
 		wxTimer update_timer;
 
 		// UI Controls (Owned by wxWindow parent, managed by wxWidgets)
-		wxBitmapToggleButton* follow_btn;
-		wxBitmapToggleButton* lighting_btn;
+		wxToggleButton* follow_btn;
+		wxToggleButton* lighting_btn;
 		wxSlider* ambient_slider;
 		wxSlider* intensity_slider;
 
