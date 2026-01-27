@@ -22,6 +22,7 @@
 #include "brushes/creature/creature_brush.h"
 #include "brushes/doodad/doodad_brush.h"
 #include "brushes/ground/ground_brush.h"
+#include "brushes/ground/auto_border.h"
 #include "brushes/house/house_brush.h"
 #include "brushes/house/house_exit_brush.h"
 #include "brushes/raw/raw_brush.h"

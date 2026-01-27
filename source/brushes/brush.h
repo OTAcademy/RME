@@ -83,6 +83,7 @@ protected:
 
 	friend class AutoBorder;
 	friend class GroundBrush;
+	friend class GroundBrushLoader;
 };
 
 extern Brushes g_brushes;
@@ -424,25 +425,5 @@ public:
 };
 
 //=============================================================================
-// Autoborder, used by GroundBrush, should be transparent to users
-
-class AutoBorder {
-public:
-	AutoBorder(int _id) :
-		id(_id), group(0), ground(false) {
-		for (int i = 0; i < 13; i++) {
-			tiles[i] = 0;
-		}
-	}
-	~AutoBorder() { }
-
-	static int edgeNameToID(const std::string& edgename);
-	bool load(pugi::xml_node node, wxArrayString& warnings, GroundBrush* owner = nullptr, uint16_t ground_equivalent = 0);
-
-	uint32_t tiles[13];
-	uint32_t id;
-	uint16_t group;
-	bool ground;
-};
 
 #endif

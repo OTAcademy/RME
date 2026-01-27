@@ -23,6 +23,9 @@
 //=============================================================================
 
 class GroundBrush : public TerrainBrush {
+	friend class GroundBrushLoader;
+	friend class GroundBorderCalculator;
+
 protected:
 	struct BorderBlock;
 

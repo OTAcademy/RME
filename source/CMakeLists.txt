@@ -17,7 +17,10 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/creature/creature_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/auto_border.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_border_calculator.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_brush_loader.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/house/house_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/house/house_exit_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/raw/raw_brush.h
@@ -264,8 +267,11 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/brushes/creature/creature_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/eraser/eraser_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/auto_border.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_border_calculator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_brush_arrays.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_brush_loader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/house/house_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/house/house_exit_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/raw/raw_brush.cpp
