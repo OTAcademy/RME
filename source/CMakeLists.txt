@@ -20,6 +20,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_border_calculator.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/creature/creature_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush_items.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush_loader.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush_types.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/auto_border.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_border_calculator.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_brush.h
@@ -272,6 +275,8 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_border_calculator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/creature/creature_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush_items.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush_loader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/eraser/eraser_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/auto_border.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_border_calculator.cpp

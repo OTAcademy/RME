@@ -107,14 +107,14 @@ void DoodadPreviewManager::FillBuffer() {
 					// Transfer items to the stack
 					for (const auto& composite : composites) {
 						Position pos = center_pos + composite.first + Position(xpos, ypos, 0);
-						const ItemVector& items = composite.second;
+						const auto& items = composite.second;
 						Tile* tile = doodad_buffer_map->getTile(pos);
 
 						if (!tile) {
 							tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
 						}
 
-						for (auto item : items) {
+						for (const auto& item : items) {
 							tile->addItem(item->deepCopy());
 						}
 						doodad_buffer_map->setTile(tile->getPosition(), tile);
@@ -154,10 +154,10 @@ void DoodadPreviewManager::FillBuffer() {
 			// Transfer items to the buffer
 			for (const auto& composite : composites) {
 				Position pos = center_pos + composite.first;
-				const ItemVector& items = composite.second;
+				const auto& items = composite.second;
 				Tile* tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
 
-				for (auto item : items) {
+				for (const auto& item : items) {
 					tile->addItem(item->deepCopy());
 				}
 				doodad_buffer_map->setTile(tile->getPosition(), tile);
