@@ -67,6 +67,11 @@ else
     find "$BUILD_DIR" -name "CMakePresets.json" 2>/dev/null || echo "  Not found"
 fi
 
+# Step 5: Clean working tree (required for remote verification)
+echo ""
+echo "[5/4] Cleaning working tree..."
+git reset --hard
+
 echo ""
 echo "========================================"
 echo " SETUP COMPLETE!"
