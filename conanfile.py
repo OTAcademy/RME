@@ -33,7 +33,7 @@ class RMERecipe(ConanFile):
         deps = CMakeDeps(self)
         deps.generate()
         
-        tc = CMakeToolchain(self)
+        tc = CMakeToolchain(self, generator="Ninja")
         tc.cache_variables["CMAKE_CXX_STANDARD"] = "20"
         tc.cache_variables["CMAKE_CXX_STANDARD_REQUIRED"] = "ON"
         # Ensure Unicode mode on Windows

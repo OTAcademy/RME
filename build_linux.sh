@@ -30,15 +30,15 @@ echo "[2/4] Installing dependencies..." >> "$LOG_FILE"
 
 conan install "$SCRIPT_DIR" -of "$BUILD_DIR" --build=missing -s build_type=Release -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True >> "$LOG_FILE" 2>&1
 
-echo "[3/4] Configuring CMake..."
-echo "[3/4] Configuring CMake..." >> "$LOG_FILE"
+echo "[3/4] Configuring CMake with Ninja..."
+echo "[3/4] Configuring CMake with Ninja..." >> "$LOG_FILE"
 
-cmake --preset conan-default >> "$LOG_FILE" 2>&1
+cmake --preset conan-release >> "$LOG_FILE" 2>&1
 
-echo "[4/4] Building Release..."
-echo "[4/4] Building Release..." >> "$LOG_FILE"
+echo "[4/4] Building Release with Ninja..."
+echo "[4/4] Building Release with Ninja..." >> "$LOG_FILE"
 
-cmake --build "$BUILD_DIR/build" --config Release --parallel "$(nproc)" >> "$LOG_FILE" 2>&1
+cmake --build --preset conan-release --parallel "$(nproc)" >> "$LOG_FILE" 2>&1
 
 {
     echo "========================================"
