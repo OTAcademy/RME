@@ -15,6 +15,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_enums.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_utility.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush_items.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush_loader.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_border_calculator.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/creature/creature_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/auto_border.h
@@ -264,6 +267,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_utility.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush_arrays.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush_items.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush_loader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_border_calculator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/creature/creature_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/eraser/eraser_brush.cpp

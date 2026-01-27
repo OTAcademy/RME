@@ -19,12 +19,17 @@
 #define RME_CARPET_BRUSH_H
 
 #include "brushes/brush.h"
+#include "brushes/carpet/carpet_brush_items.h"
 
 //=============================================================================
 // Carpetbrush, for tables, and some things that behave like tables
 // and with tables I really mean counters.
 
 class CarpetBrush : public Brush {
+	friend class CarpetBrushLoader;
+
+	friend class CarpetBorderCalculator;
+
 public:
 	static void init();
 
@@ -67,20 +72,7 @@ public:
 protected:
 	uint16_t getRandomCarpet(BorderType alignment);
 
-	struct CarpetType {
-		int32_t chance;
-		uint16_t id;
-	};
-
-	struct CarpetNode {
-		std::vector<CarpetType> items;
-		int32_t total_chance;
-
-		CarpetNode() :
-			items(), total_chance(0) { }
-	};
-
-	CarpetNode carpet_items[14];
+	CarpetBrushItems m_items;
 	std::string name;
 	uint16_t look_id;
 
