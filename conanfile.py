@@ -11,19 +11,25 @@ class RMERecipe(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     
     def requirements(self):
-        self.requires("wxwidgets/3.2.6")
-
-        self.requires("asio/1.32.0")
-        self.requires("nlohmann_json/3.11.3")
-        # Note: fmt is a transitive dependency via spdlog
-        self.requires("libarchive/3.7.7")
-        self.requires("boost/1.87.0")
-        self.requires("zlib/1.3.1")
-        self.requires("opengl/system")
-        self.requires("glad/0.1.36")
-        self.requires("glm/1.0.1")
-        self.requires("spdlog/1.15.0")
-        # Note: nanovg is not on ConanCenter - included as source in source/thirdparty/
+        # On Linux, most dependencies come from apt - only need glad from Conan
+        # On other platforms, use full Conan dependency tree
+        if self.settings.os == "Linux":
+            # Only dependencies NOT available via apt
+            self.requires("glad/0.1.36")
+            self.requires("opengl/system")
+            # Note: nanovg is in ext/nanovg
+        else:
+            # Full dependency tree for Windows/macOS
+            self.requires("wxwidgets/3.2.6")
+            self.requires("asio/1.32.0")
+            self.requires("nlohmann_json/3.11.3")
+            self.requires("libarchive/3.7.7")
+            self.requires("boost/1.87.0")
+            self.requires("zlib/1.3.1")
+            self.requires("opengl/system")
+            self.requires("glad/0.1.36")
+            self.requires("glm/1.0.1")
+            self.requires("spdlog/1.15.0")
 
     
     def layout(self):
@@ -42,12 +48,13 @@ class RMERecipe(ConanFile):
         tc.generate()
     
     def configure(self):
-        # Boost components needed
-        self.options["boost/*"].without_python = True
-        self.options["boost/*"].without_test = True
-        
-        # wxWidgets components needed
-        self.options["wxwidgets/*"].opengl = True
-        self.options["wxwidgets/*"].aui = True
-        self.options["wxwidgets/*"].html = True
-        self.options["wxwidgets/*"].unicode = True
+        if self.settings.os != "Linux":
+            # Boost components needed
+            self.options["boost/*"].without_python = True
+            self.options["boost/*"].without_test = True
+            
+            # wxWidgets components needed
+            self.options["wxwidgets/*"].opengl = True
+            self.options["wxwidgets/*"].aui = True
+            self.options["wxwidgets/*"].html = True
+            self.options["wxwidgets/*"].unicode = True

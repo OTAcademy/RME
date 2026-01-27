@@ -37,11 +37,11 @@ Log: `build.log`
 
 ## Linux (Ubuntu) Setup
 
-### 1. Install Build Tools
+### 1. Install Build Tools & wxWidgets
 ```bash
 sudo apt update
-sudo apt install -y build-essential cmake git python3 python3-pip
-sudo apt install -y libgtk-3-dev libgl1-mesa-dev libglu1-mesa-dev
+sudo apt install -y build-essential cmake git python3 python3-pip ninja-build
+sudo apt install -y libgtk-3-dev libgl1-mesa-dev libglu1-mesa-dev libwxgtk3.2-dev
 ```
 
 ### 2. Install Conan

@@ -1,7 +1,7 @@
 #!/bin/bash
 # ========================================
-# RME Conan Dependency Setup Script
-# Run ONCE to cache all dependencies
+# RME Linux Dependency Setup Script
+# Installs system packages first, then Conan for remaining deps
 # ========================================
 
 set -e
@@ -10,36 +10,56 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUILD_DIR="$SCRIPT_DIR/build_conan"
 
 echo "========================================"
-echo " RME Conan Dependency Setup"
+echo " RME Linux Dependency Setup"
 echo " Started: $(date)"
 echo "========================================"
 
-# Step 1: Detect/create Conan profile
-echo "[1/3] Setting up Conan profile..."
+# Step 1: Install system dependencies via apt (fast, pre-compiled)
+echo "[1/4] Installing system dependencies via apt..."
+sudo apt update
+sudo apt install -y \
+    build-essential \
+    cmake \
+    ninja-build \
+    git \
+    python3 \
+    python3-pip \
+    libwxgtk3.2-dev \
+    libgtk-3-dev \
+    libgl1-mesa-dev \
+    libglu1-mesa-dev \
+    libboost-all-dev \
+    libarchive-dev \
+    zlib1g-dev \
+    libglm-dev \
+    libspdlog-dev \
+    libfmt-dev \
+    nlohmann-json3-dev \
+    libasio-dev
+
+echo "  ✅ System packages installed"
+
+# Step 2: Setup Conan profile
+echo ""
+echo "[2/4] Setting up Conan profile..."
 if ! conan profile show &> /dev/null; then
     echo "  Creating default Conan profile..."
     conan profile detect
 fi
 
-# Show detected profile
-echo "  Detected profile:"
-conan profile show | head -20
-
-# Step 2: Install all dependencies (download binaries or build from source)
+# Step 3: Install remaining dependencies via Conan (only what's not in apt)
 echo ""
-echo "[2/3] Installing dependencies (this may take a while on first run)..."
+echo "[3/4] Installing remaining dependencies via Conan..."
 echo "  Build directory: $BUILD_DIR"
 
 conan install "$SCRIPT_DIR" \
     -of "$BUILD_DIR" \
     --build=missing \
-    -s build_type=Release \
-    -c tools.system.package_manager:mode=install \
-    -c tools.system.package_manager:sudo=True
+    -s build_type=Release
 
-# Step 3: Verify CMake presets were generated
+# Step 4: Verify CMake presets were generated
 echo ""
-echo "[3/3] Verifying CMake presets..."
+echo "[4/4] Verifying CMake presets..."
 if [ -f "$BUILD_DIR/CMakePresets.json" ]; then
     echo "  ✅ CMakePresets.json generated"
 else
@@ -47,17 +67,12 @@ else
     exit 1
 fi
 
-if [ -f "$BUILD_DIR/build/Release/generators/conan_toolchain.cmake" ]; then
-    echo "  ✅ Conan toolchain generated"
-else
-    echo "  ⚠️  Toolchain path may differ, check $BUILD_DIR"
-fi
-
 echo ""
 echo "========================================"
 echo " SETUP COMPLETE!"
-echo " Dependencies cached in: ~/.conan2/p/"
-echo " Build files in: $BUILD_DIR"
+echo " System packages: apt"
+echo " Remaining deps: ~/.conan2/p/"
+echo " Build files: $BUILD_DIR"
 echo ""
 echo " Next step - run the build:"
 echo "   ./build_linux.sh"
