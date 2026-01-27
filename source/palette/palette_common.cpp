@@ -890,10 +890,12 @@ BrushThicknessPanel::BrushThicknessPanel(wxWindow* parent) :
 	wxSizer* thickness_sub_sizer = newd wxBoxSizer(wxHORIZONTAL);
 	thickness_sub_sizer->Add(20, 10);
 	use_button = newd wxCheckBox(this, PALETTE_DOODAD_USE_THICKNESS, "Use custom thickness");
+	use_button->SetToolTip("Enable custom thickness for this brush");
 	thickness_sub_sizer->Add(use_button);
 	thickness_sizer->Add(thickness_sub_sizer, 1, wxEXPAND);
 
 	slider = newd wxSlider(this, PALETTE_DOODAD_SLIDER, 5, 1, 10, wxDefaultPosition);
+	slider->SetToolTip("Adjust brush thickness");
 	thickness_sizer->Add(slider, 1, wxEXPAND);
 
 	SetSizerAndFit(thickness_sizer);

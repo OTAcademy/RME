@@ -36,6 +36,7 @@ MapWindow::MapWindow(wxWindow* parent, Editor& editor) :
 	hScroll = newd MapScrollBar(this, MAP_WINDOW_HSCROLL, wxHORIZONTAL, canvas);
 
 	gem = newd DCButton(this, MAP_WINDOW_GEM, wxDefaultPosition, DC_BTN_NORMAL, RENDER_SIZE_16x16, EDITOR_SPRITE_SELECTION_GEM);
+	gem->SetToolTip("Switch between Drawing and Selection mode (Space)");
 
 	wxFlexGridSizer* topsizer = newd wxFlexGridSizer(2, 0, 0);
 

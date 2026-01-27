@@ -51,9 +51,11 @@ BrushPalettePanel::BrushPalettePanel(wxWindow* parent, const TilesetContainer& t
 	if (g_settings.getBoolean(Config::SHOW_TILESET_EDITOR)) {
 		wxSizer* tmpsizer = newd wxBoxSizer(wxHORIZONTAL);
 		wxButton* buttonAddTileset = newd wxButton(this, wxID_NEW, "Add new Tileset");
+		buttonAddTileset->SetToolTip("Create a new custom tileset");
 		tmpsizer->Add(buttonAddTileset, wxSizerFlags(0).Center());
 
 		wxButton* buttonAddItemToTileset = newd wxButton(this, wxID_ADD, "Add new Item");
+		buttonAddItemToTileset->SetToolTip("Add a new item to the current tileset");
 		tmpsizer->Add(buttonAddItemToTileset, wxSizerFlags(0).Center());
 
 		topsizer->Add(tmpsizer, 0, wxCENTER, 10);

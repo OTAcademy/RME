@@ -203,16 +203,19 @@ ReplaceItemsDialog::ReplaceItemsDialog(wxWindow* parent, bool selectionOnly) :
 	wxBoxSizer* buttons_sizer = new wxBoxSizer(wxHORIZONTAL);
 
 	add_button = new wxButton(this, wxID_ANY, wxT("Add"));
+	add_button->SetToolTip("Add replacement rule to list");
 	add_button->Enable(false);
 	buttons_sizer->Add(add_button, 0, wxALL, 5);
 
 	remove_button = new wxButton(this, wxID_ANY, wxT("Remove"));
+	remove_button->SetToolTip("Remove selected rule");
 	remove_button->Enable(false);
 	buttons_sizer->Add(remove_button, 0, wxALL, 5);
 
 	buttons_sizer->Add(0, 0, 1, wxEXPAND, 5);
 
 	execute_button = new wxButton(this, wxID_ANY, wxT("Execute"));
+	execute_button->SetToolTip("Execute all replacement rules");
 	execute_button->Enable(false);
 	buttons_sizer->Add(execute_button, 0, wxALL, 5);
 
@@ -250,8 +253,25 @@ void ReplaceItemsDialog::UpdateWidgets() {
 	const uint16_t replaceId = replace_button->GetItemId();
 	const uint16_t withId = with_button->GetItemId();
 	add_button->Enable(list->CanAdd(replaceId, withId));
+	if (add_button->IsEnabled()) {
+		add_button->SetToolTip("Add replacement rule to list");
+	} else {
+		add_button->SetToolTip("Select replacement and target items to add.");
+	}
+
 	remove_button->Enable(list->GetCount() != 0 && list->GetSelection() != wxNOT_FOUND);
+	if (remove_button->IsEnabled()) {
+		remove_button->SetToolTip("Remove selected rule");
+	} else {
+		remove_button->SetToolTip("Select a rule to remove.");
+	}
+
 	execute_button->Enable(list->GetCount() != 0);
+	if (execute_button->IsEnabled()) {
+		execute_button->SetToolTip("Execute all replacement rules");
+	} else {
+		execute_button->SetToolTip("Add rules to list first.");
+	}
 }
 
 void ReplaceItemsDialog::OnListSelected(wxCommandEvent& WXUNUSED(event)) {
