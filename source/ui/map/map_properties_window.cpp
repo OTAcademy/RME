@@ -108,7 +108,7 @@ MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor&
 	UpdateProtocolList();
 
 	ClientVersion* current_version = ClientVersion::get(map.getVersion().client);
-	protocol_choice->SetStringSelection(wxstr(std::string(current_version->getName())));
+	protocol_choice->SetStringSelection(wxstr(current_version->getName()));
 }
 
 void MapPropertiesWindow::UpdateProtocolList() {

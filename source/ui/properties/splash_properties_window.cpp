@@ -37,7 +37,7 @@ SplashPropertiesWindow::SplashPropertiesWindow(wxWindow* parent, const Map* map,
 	subsizer->AddGrowableCol(1);
 
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "ID " + i2ws(item->getID())));
-	subsizer->Add(newd wxStaticText(this, wxID_ANY, "\"" + wxstr(std::string(item->getName())) + "\""));
+	subsizer->Add(newd wxStaticText(this, wxID_ANY, "\"" + wxstr(item->getName()) + "\""));
 
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Type"));
 

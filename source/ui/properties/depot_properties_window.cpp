@@ -37,7 +37,7 @@ DepotPropertiesWindow::DepotPropertiesWindow(wxWindow* parent, const Map* map, c
 
 	subsizer->AddGrowableCol(1);
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "ID " + i2ws(item->getID())));
-	subsizer->Add(newd wxStaticText(this, wxID_ANY, "\"" + wxstr(std::string(item->getName())) + "\""));
+	subsizer->Add(newd wxStaticText(this, wxID_ANY, "\"" + wxstr(item->getName()) + "\""));
 
 	const Towns& towns = map->towns;
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Depot ID"));
@@ -51,7 +51,7 @@ DepotPropertiesWindow::DepotPropertiesWindow(wxWindow* parent, const Map* map, c
 			if (town_iter->second->getID() == depot->getDepotID()) {
 				found = true;
 			}
-			depot_id_field->Append(wxstr(std::string(town_iter->second->getName())), (void*)(intptr_t)(town_iter->second->getID()));
+			depot_id_field->Append(wxstr(town_iter->second->getName()), (void*)(intptr_t)(town_iter->second->getID()));
 			if (!found) {
 				++to_select_index;
 			}

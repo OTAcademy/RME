@@ -101,7 +101,7 @@ wxWindow* PropertiesWindow::createGeneralPanel(wxWindow* parent) {
 
 void PropertiesWindow::createGeneralFields(wxFlexGridSizer* gridsizer, wxWindow* panel) {
 	gridsizer->Add(newd wxStaticText(panel, wxID_ANY, "ID " + i2ws(edit_item->getID())));
-	gridsizer->Add(newd wxStaticText(panel, wxID_ANY, "\"" + wxstr(std::string(edit_item->getName())) + "\""));
+	gridsizer->Add(newd wxStaticText(panel, wxID_ANY, "\"" + wxstr(edit_item->getName()) + "\""));
 
 	gridsizer->Add(newd wxStaticText(panel, wxID_ANY, (edit_item->isCharged() ? "Charges" : "Count")));
 	int max_count = 100;

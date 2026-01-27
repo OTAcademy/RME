@@ -852,7 +852,7 @@ BrushButton::BrushButton(wxWindow* parent, Brush* _brush, RenderSize sz, uint32_
 	ASSERT(sz != RENDER_SIZE_64x64);
 	ASSERT(brush);
 	SetSprite(brush->getLookID());
-	SetToolTip(wxstr(std::string(brush->getName())));
+	SetToolTip(wxstr(brush->getName()));
 }
 
 BrushButton::~BrushButton() {

@@ -544,7 +544,7 @@ wxNotebookPage* PreferencesWindow::CreateClientPage() {
 			continue;
 		}
 
-		default_version_choice->Append(wxstr(std::string(version->getName())));
+		default_version_choice->Append(wxstr(version->getName()));
 
 		wxStaticText* tmp_text = newd wxStaticText(client_list_window, wxID_ANY, wxString(version->getName()));
 		client_list_sizer->Add(tmp_text, wxSizerFlags(0).Expand());
@@ -554,7 +554,7 @@ wxNotebookPage* PreferencesWindow::CreateClientPage() {
 		client_list_sizer->Add(dir_picker, wxSizerFlags(0).Border(wxRIGHT, 10).Expand());
 
 		wxString tooltip;
-		tooltip << "The editor will look for " << wxstr(std::string(version->getName())) << " DAT & SPR here.";
+		tooltip << "The editor will look for " << wxstr(version->getName()) << " DAT & SPR here.";
 		tmp_text->SetToolTip(tooltip);
 		dir_picker->SetToolTip(tooltip);
 

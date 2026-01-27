@@ -204,13 +204,13 @@ void HousePalettePanel::SelectTown(size_t index) {
 		for (HouseMap::iterator house_iter = map->houses.begin(); house_iter != map->houses.end(); ++house_iter) {
 			if (what_town) {
 				if (house_iter->second->townid == what_town->getID()) {
-					house_list->Append(wxstr(std::string(house_iter->second->getDescription())), house_iter->second);
+					house_list->Append(wxstr(house_iter->second->getDescription()), house_iter->second);
 				}
 			} else {
 				// "No Town" selected!
 				if (map->towns.getTown(house_iter->second->townid) == nullptr) {
 					// The town doesn't exist
-					house_list->Append(wxstr(std::string(house_iter->second->getDescription())), house_iter->second);
+					house_list->Append(wxstr(house_iter->second->getDescription()), house_iter->second);
 				}
 			}
 		}
@@ -285,7 +285,7 @@ void HousePalettePanel::OnUpdate() {
 	if (map->towns.count() != 0) {
 		// Create choice control
 		for (TownMap::iterator town_iter = map->towns.begin(); town_iter != map->towns.end(); ++town_iter) {
-			town_choice->Append(wxstr(std::string(town_iter->second->getName())), town_iter->second);
+			town_choice->Append(wxstr(town_iter->second->getName()), town_iter->second);
 		}
 		town_choice->Append("No Town", (void*)(nullptr));
 		if (old_town_selection <= 0) {
@@ -356,8 +356,8 @@ void HousePalettePanel::OnClickAddHouse(wxCommandEvent& event) {
 	new_house->townid = town->getID();
 
 	map->houses.addHouse(new_house);
-	house_list->Append(wxstr(std::string(new_house->getDescription())), new_house);
-	SelectHouse(house_list->FindString(wxstr(std::string(new_house->getDescription()))));
+	house_list->Append(wxstr(new_house->getDescription()), new_house);
+	SelectHouse(house_list->FindString(wxstr(new_house->getDescription())));
 	g_gui.SelectBrush();
 	refresh_timer.Start(300, true);
 }
@@ -376,7 +376,7 @@ void HousePalettePanel::OnClickEditHouse(wxCommandEvent& event) {
 		int ret = d->ShowModal();
 		if (ret == 1) {
 			// Something changed, change name of house
-			house_list->SetString(selection, wxstr(std::string(house->getDescription())));
+			house_list->SetString(selection, wxstr(house->getDescription()));
 			house_list->Sort();
 
 			// refresh house list for town
@@ -481,7 +481,7 @@ EditHouseDialog::EditHouseDialog(wxWindow* parent, Map* map, House* house) :
 			if (town_iter->second->getID() == houseTownId) {
 				found = true;
 			}
-			town_id_field->Append(wxstr(std::string(town_iter->second->getName())), newd int(town_iter->second->getID()));
+			town_id_field->Append(wxstr(town_iter->second->getName()), newd int(town_iter->second->getID()));
 			if (!found) {
 				++to_select_index;
 			}
