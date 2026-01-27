@@ -117,6 +117,9 @@ public:
 	PrimitiveRenderer* getPrimitiveRenderer() {
 		return primitive_renderer.get();
 	}
+	TileRenderer* getTileRenderer() {
+		return tile_renderer.get();
+	}
 
 private:
 	void DrawMapLayer(int map_z, bool live_client);

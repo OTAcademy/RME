@@ -122,6 +122,7 @@ namespace MenuBar {
 		ALWAYS_SHOW_ZONES,
 		EXT_HOUSE_SHADER,
 		WIN_MINIMAP,
+		WIN_INGAME_PREVIEW,
 		NEW_PALETTE,
 		TAKE_SCREENSHOT,
 		LIVE_START,
@@ -274,6 +275,7 @@ public:
 	void OnChangeFloor(wxCommandEvent& event);
 
 	void OnMinimapWindow(wxCommandEvent& event);
+	void OnIngamePreviewWindow(wxCommandEvent& event);
 	void OnNewPalette(wxCommandEvent& event);
 
 	void OnStartLive(wxCommandEvent& event);

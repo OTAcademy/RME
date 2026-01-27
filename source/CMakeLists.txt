@@ -76,6 +76,13 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/game/sprites.h
     ${CMAKE_CURRENT_LIST_DIR}/game/town.h
     ${CMAKE_CURRENT_LIST_DIR}/game/waypoints.h
+
+    ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/floor_visibility_calculator.h
+    ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/ingame_preview_renderer.h
+    ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/ingame_preview_canvas.h
+    ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/ingame_preview_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/ingame_preview_manager.h
+
     ${CMAKE_CURRENT_LIST_DIR}/io/filehandle.h
     ${CMAKE_CURRENT_LIST_DIR}/io/iomap.h
     ${CMAKE_CURRENT_LIST_DIR}/io/iomap_otbm.h
@@ -339,6 +346,13 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/game/spawn.cpp
     ${CMAKE_CURRENT_LIST_DIR}/game/town.cpp
     ${CMAKE_CURRENT_LIST_DIR}/game/waypoints.cpp
+
+    ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/floor_visibility_calculator.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/ingame_preview_renderer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/ingame_preview_canvas.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/ingame_preview_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/ingame_preview_manager.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/io/filehandle.cpp
     ${CMAKE_CURRENT_LIST_DIR}/io/iomap.cpp
     ${CMAKE_CURRENT_LIST_DIR}/io/iomap_otbm.cpp

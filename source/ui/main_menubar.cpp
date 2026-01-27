@@ -46,6 +46,7 @@
 #include "ui/menubar/navigation_menu_handler.h"
 #include "ui/menubar/palette_menu_handler.h"
 #include "ui/menubar/menubar_action_manager.h"
+#include "ingame_preview/ingame_preview_manager.h"
 
 #include <wx/chartype.h>
 
@@ -506,6 +507,10 @@ void MainMenuBar::OnChangeFloor(wxCommandEvent& event) {
 
 void MainMenuBar::OnMinimapWindow(wxCommandEvent& event) {
 	g_gui.CreateMinimap();
+}
+
+void MainMenuBar::OnIngamePreviewWindow(wxCommandEvent& event) {
+	g_preview.Create();
 }
 
 void MainMenuBar::OnNewPalette(wxCommandEvent& event) {
