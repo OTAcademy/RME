@@ -24,6 +24,7 @@
 #include <sstream>
 #include <algorithm>
 #include <unordered_set>
+#include <spdlog/spdlog.h>
 
 Map::Map() :
 	BaseMap(),
@@ -33,6 +34,7 @@ Map::Map() :
 	has_changed(false),
 	unnamed(false),
 	waypoints(*this) {
+	spdlog::info("Map created [Map={}]", (void*)this);
 	// Earliest version possible
 	// Caller is responsible for converting us to proper version
 	mapVersion.otbm = MAP_OTBM_1;
@@ -40,6 +42,7 @@ Map::Map() :
 }
 
 void Map::initializeEmpty() {
+	spdlog::info("Map::initializeEmpty [Map={}]", (void*)this);
 	height = 2048;
 	width = 2048;
 
@@ -57,6 +60,7 @@ void Map::initializeEmpty() {
 }
 
 Map::~Map() {
+	spdlog::info("Map destroying [Map={}]", (void*)this);
 	////
 }
 

@@ -65,6 +65,7 @@
 
 MapDrawer::MapDrawer(MapCanvas* canvas) :
 	canvas(canvas), editor(canvas->editor) {
+	spdlog::info("MapDrawer created [Drawer={}] for [Editor={}]", (void*)this, (void*)&editor);
 	light_drawer = std::make_shared<LightDrawer>();
 	tooltip_drawer = std::make_unique<TooltipDrawer>();
 
@@ -92,6 +93,7 @@ MapDrawer::MapDrawer(MapCanvas* canvas) :
 }
 
 MapDrawer::~MapDrawer() {
+	spdlog::info("MapDrawer destroying [Drawer={}]", (void*)this);
 	Release();
 }
 
@@ -135,6 +137,7 @@ void MapDrawer::Release() {
 }
 
 void MapDrawer::Draw() {
+	// spdlog::trace("MapDrawer::Draw [Drawer={}]", (void*)this);
 	light_buffer.Clear();
 
 	// Begin Batches

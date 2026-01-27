@@ -3,6 +3,7 @@
 
 #include <glad/glad.h>
 #include <utility> // for std::exchange
+#include <spdlog/spdlog.h>
 #include "rendering/core/gl_texture.h"
 
 // RAII wrapper for OpenGL Buffers (VBO, EBO, UBO, SSBO)
@@ -10,10 +11,12 @@ class GLBuffer {
 public:
 	GLBuffer() {
 		glCreateBuffers(1, &id);
+		// spdlog::trace("GLBuffer created [ID={}]", id);
 	}
 
 	~GLBuffer() {
 		if (id) {
+			// spdlog::trace("GLBuffer deleted [ID={}]", id);
 			glDeleteBuffers(1, &id);
 		}
 	}
@@ -53,10 +56,12 @@ class GLVertexArray {
 public:
 	GLVertexArray() {
 		glCreateVertexArrays(1, &id);
+		// spdlog::trace("GLVertexArray created [ID={}]", id);
 	}
 
 	~GLVertexArray() {
 		if (id) {
+			// spdlog::trace("GLVertexArray deleted [ID={}]", id);
 			glDeleteVertexArrays(1, &id);
 		}
 	}
@@ -96,10 +101,12 @@ class GLTextureResource {
 public:
 	explicit GLTextureResource(GLenum target) {
 		glCreateTextures(target, 1, &id);
+		spdlog::info("GLTextureResource created [ID={}]", id);
 	}
 
 	~GLTextureResource() {
 		if (id) {
+			spdlog::info("GLTextureResource deleted [ID={}]", id);
 			glDeleteTextures(1, &id);
 		}
 	}
