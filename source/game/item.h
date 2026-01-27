@@ -386,11 +386,11 @@ public:
 
 	// Text
 	void setText(const std::string& str);
-	std::string getText() const;
+	const std::string& getText() const;
 
 	// Description
 	void setDescription(const std::string& str);
-	std::string getDescription() const;
+	const std::string& getDescription() const;
 
 	void animate();
 	int getFrame() const {
@@ -446,20 +446,22 @@ inline uint16_t Item::getTier() const {
 	return 0;
 }
 
-inline std::string Item::getText() const {
+inline const std::string& Item::getText() const {
+	static const std::string empty;
 	const std::string* a = getStringAttribute("text");
 	if (a) {
 		return *a;
 	}
-	return "";
+	return empty;
 }
 
-inline std::string Item::getDescription() const {
+inline const std::string& Item::getDescription() const {
+	static const std::string empty;
 	const std::string* a = getStringAttribute("desc");
 	if (a) {
 		return *a;
 	}
-	return "";
+	return empty;
 }
 
 #endif

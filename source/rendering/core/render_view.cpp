@@ -47,15 +47,15 @@ int RenderView::getFloorAdjustment() const {
 	}
 }
 
-bool RenderView::IsTileVisible(int map_x, int map_y, int map_z) const {
+bool RenderView::IsTileVisible(int map_x, int map_y, int map_z, int& out_x, int& out_y) const {
 	int offset = (map_z <= GROUND_LAYER)
 		? (GROUND_LAYER - map_z) * TileSize
 		: TileSize * (floor - map_z);
-	int screen_x = (map_x * TileSize) - view_scroll_x - offset;
-	int screen_y = (map_y * TileSize) - view_scroll_y - offset;
+	out_x = (map_x * TileSize) - view_scroll_x - offset;
+	out_y = (map_y * TileSize) - view_scroll_y - offset;
 	int margin = TileSize * 3; // Account for large sprites
 
-	if (screen_x < -margin || screen_x > screensize_x * zoom + margin || screen_y < -margin || screen_y > screensize_y * zoom + margin) {
+	if (out_x < -margin || out_x > screensize_x * zoom + margin || out_y < -margin || out_y > screensize_y * zoom + margin) {
 		return false;
 	}
 	return true;

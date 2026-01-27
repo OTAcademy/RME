@@ -56,9 +56,11 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 	}
 
 	// Check if it's a teleport
-	Teleport* tp = dynamic_cast<Teleport*>(item);
-	if (tp && tp->hasDestination()) {
-		destination = tp->getDestination();
+	if (item->isTeleport()) {
+		Teleport* tp = static_cast<Teleport*>(item);
+		if (tp->hasDestination()) {
+			destination = tp->getDestination();
+		}
 	}
 
 	// Only create tooltip if there's something to show
@@ -103,12 +105,10 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 	int map_z = location->getZ();
 
 	// Early viewport culling - skip tiles that are completely off-screen
-	if (!view.IsTileVisible(map_x, map_y, map_z)) {
+	int draw_x, draw_y;
+	if (!view.IsTileVisible(map_x, map_y, map_z, draw_x, draw_y)) {
 		return;
 	}
-
-	int draw_x, draw_y;
-	view.getScreenPosition(map_x, map_y, map_z, draw_x, draw_y);
 
 	Waypoint* waypoint = editor->map.waypoints.getWaypoint(location);
 
