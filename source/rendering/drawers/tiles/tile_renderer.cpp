@@ -57,10 +57,10 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 
 	// Check if it's a teleport
 	if (item->isTeleport()) {
-        Teleport* tp = static_cast<Teleport*>(item);
-        if (tp->hasDestination()) {
-            destination = tp->getDestination();
-        }
+		Teleport* tp = static_cast<Teleport*>(item);
+		if (tp->hasDestination()) {
+			destination = tp->getDestination();
+		}
 	}
 
 	// Only create tooltip if there's something to show
