@@ -20,7 +20,10 @@ class RMERecipe(ConanFile):
         self.requires("boost/1.87.0")
         self.requires("zlib/1.3.1")
         self.requires("opengl/system")
-        self.requires("glew/2.2.0")
+        self.requires("glad/0.1.36")
+        self.requires("glm/1.0.1")
+        self.requires("nanovg/cci.20230623")
+        self.requires("spdlog/1.15.0")
 
     
     def layout(self):

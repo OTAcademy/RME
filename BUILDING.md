@@ -41,7 +41,7 @@ Log: `build.log`
 ```bash
 sudo apt update
 sudo apt install -y build-essential cmake git python3 python3-pip
-sudo apt install -y libgtk-3-dev libgl1-mesa-dev libglu1-mesa-dev freeglut3-dev
+sudo apt install -y libgtk-3-dev libgl1-mesa-dev libglu1-mesa-dev
 ```
 
 ### 2. Install Conan
