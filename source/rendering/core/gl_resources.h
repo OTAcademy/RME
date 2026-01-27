@@ -27,10 +27,12 @@ public:
 		id(std::exchange(other.id, 0)) { }
 
 	GLBuffer& operator=(GLBuffer&& other) noexcept {
-		if (id) {
-			glDeleteBuffers(1, &id);
+		if (this != &other) {
+			if (id) {
+				glDeleteBuffers(1, &id);
+			}
+			id = std::exchange(other.id, 0);
 		}
-		id = std::exchange(other.id, 0);
 		return *this;
 	}
 
@@ -68,10 +70,55 @@ public:
 		id(std::exchange(other.id, 0)) { }
 
 	GLVertexArray& operator=(GLVertexArray&& other) noexcept {
-		if (id) {
-			glDeleteVertexArrays(1, &id);
+		if (this != &other) {
+			if (id) {
+				glDeleteVertexArrays(1, &id);
+			}
+			id = std::exchange(other.id, 0);
 		}
-		id = std::exchange(other.id, 0);
+		return *this;
+	}
+
+	// Explicit conversion
+	explicit operator GLuint() const {
+		return id;
+	}
+	GLuint GetID() const {
+		return id;
+	}
+
+private:
+	GLuint id = 0;
+};
+
+// RAII wrapper for OpenGL Textures
+class GLTextureResource {
+public:
+	explicit GLTextureResource(GLenum target) {
+		glCreateTextures(target, 1, &id);
+	}
+
+	~GLTextureResource() {
+		if (id) {
+			glDeleteTextures(1, &id);
+		}
+	}
+
+	// Disable copy
+	GLTextureResource(const GLTextureResource&) = delete;
+	GLTextureResource& operator=(const GLTextureResource&) = delete;
+
+	// Enable move
+	GLTextureResource(GLTextureResource&& other) noexcept :
+		id(std::exchange(other.id, 0)) { }
+
+	GLTextureResource& operator=(GLTextureResource&& other) noexcept {
+		if (this != &other) {
+			if (id) {
+				glDeleteTextures(1, &id);
+			}
+			id = std::exchange(other.id, 0);
+		}
 		return *this;
 	}
 
