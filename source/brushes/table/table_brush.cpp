@@ -48,20 +48,13 @@ bool TableBrush::canDraw(BaseMap* map, const Position& position) const {
 }
 
 void TableBrush::undraw(BaseMap* map, Tile* t) {
-	ItemVector::iterator it = t->items.begin();
-	while (it != t->items.end()) {
-		if ((*it)->isTable()) {
-			TableBrush* tb = (*it)->getTableBrush();
-			if (tb == this) {
-				delete *it;
-				it = t->items.erase(it);
-			} else {
-				++it;
-			}
-		} else {
-			++it;
+	std::erase_if(t->items, [this](Item* item) {
+		if (item->isTable() && item->getTableBrush() == this) {
+			delete item;
+			return true;
 		}
-	}
+		return false;
+	});
 }
 
 void TableBrush::draw(BaseMap* map, Tile* tile, void* parameter) {

@@ -8,6 +8,7 @@
 #include "map/basemap.h"
 #include "game/items.h"
 #include "app/main.h"
+#include <array>
 
 // TableBorderCalculator is a friend of TableBrush so it can access protected members.
 
@@ -46,50 +47,31 @@ void TableBorderCalculator::doTables(BaseMap* map, Tile* tile) {
 			continue;
 		}
 
-		bool neighbours[8];
-		if (x == 0) {
-			if (y == 0) {
-				neighbours[0] = false;
-				neighbours[1] = false;
-				neighbours[2] = false;
-				neighbours[3] = false;
-				neighbours[4] = hasMatchingTableBrushAtTile(map, table_brush, x + 1, y, z);
-				neighbours[5] = false;
-				neighbours[6] = hasMatchingTableBrushAtTile(map, table_brush, x, y + 1, z);
-				neighbours[7] = hasMatchingTableBrushAtTile(map, table_brush, x + 1, y + 1, z);
-			} else {
-				neighbours[0] = false;
-				neighbours[1] = hasMatchingTableBrushAtTile(map, table_brush, x, y - 1, z);
-				neighbours[2] = hasMatchingTableBrushAtTile(map, table_brush, x + 1, y - 1, z);
-				neighbours[3] = false;
-				neighbours[4] = hasMatchingTableBrushAtTile(map, table_brush, x + 1, y, z);
-				neighbours[5] = false;
-				neighbours[6] = hasMatchingTableBrushAtTile(map, table_brush, x, y + 1, z);
-				neighbours[7] = hasMatchingTableBrushAtTile(map, table_brush, x + 1, y + 1, z);
-			}
-		} else if (y == 0) {
-			neighbours[0] = false;
-			neighbours[1] = false;
-			neighbours[2] = false;
-			neighbours[3] = hasMatchingTableBrushAtTile(map, table_brush, x - 1, y, z);
-			neighbours[4] = hasMatchingTableBrushAtTile(map, table_brush, x + 1, y, z);
-			neighbours[5] = hasMatchingTableBrushAtTile(map, table_brush, x - 1, y + 1, z);
-			neighbours[6] = hasMatchingTableBrushAtTile(map, table_brush, x, y + 1, z);
-			neighbours[7] = hasMatchingTableBrushAtTile(map, table_brush, x + 1, y + 1, z);
-		} else {
-			neighbours[0] = hasMatchingTableBrushAtTile(map, table_brush, x - 1, y - 1, z);
-			neighbours[1] = hasMatchingTableBrushAtTile(map, table_brush, x, y - 1, z);
-			neighbours[2] = hasMatchingTableBrushAtTile(map, table_brush, x + 1, y - 1, z);
-			neighbours[3] = hasMatchingTableBrushAtTile(map, table_brush, x - 1, y, z);
-			neighbours[4] = hasMatchingTableBrushAtTile(map, table_brush, x + 1, y, z);
-			neighbours[5] = hasMatchingTableBrushAtTile(map, table_brush, x - 1, y + 1, z);
-			neighbours[6] = hasMatchingTableBrushAtTile(map, table_brush, x, y + 1, z);
-			neighbours[7] = hasMatchingTableBrushAtTile(map, table_brush, x + 1, y + 1, z);
-		}
+		// Neighbors order:
+		// 0: top-left (-1, -1)
+		// 1: top (0, -1)
+		// 2: top-right (1, -1)
+		// 3: left (-1, 0)
+		// 4: right (1, 0)
+		// 5: bottom-left (-1, 1)
+		// 6: bottom (0, 1)
+		// 7: bottom-right (1, 1)
+
+		static constexpr std::array<std::pair<int32_t, int32_t>, 8> offsets = { { { -1, -1 }, { 0, -1 }, { 1, -1 }, { -1, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } } };
 
 		uint32_t tiledata = 0;
-		for (int32_t i = 0; i < 8; ++i) {
-			if (neighbours[i]) {
+		for (size_t i = 0; i < offsets.size(); ++i) {
+			const auto& [dx, dy] = offsets[i];
+			// Check if neighbor is valid (within bounds/logic of hasMatchingTableBrushAtTile)
+
+			int32_t nx = x + dx;
+			int32_t ny = y + dy;
+
+			if (nx < 0 || ny < 0) { // Basic sanity check matching original logic implicitly
+				continue;
+			}
+
+			if (hasMatchingTableBrushAtTile(map, table_brush, nx, ny, z)) {
 				tiledata |= 1 << i;
 			}
 		}

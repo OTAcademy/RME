@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <cstdint>
+#include <array>
 #include "brushes/brush_enums.h"
 
 // Structs moved from table_brush.h and modernized
@@ -32,7 +33,7 @@ public:
 	bool hasItems(int alignment) const;
 
 private:
-	TableNode table_items[7]; // Using 7 for fixed alignments (0-6)
+	std::array<TableNode, 7> table_items; // Using 7 for fixed alignments (0-6)
 };
 
 #endif
