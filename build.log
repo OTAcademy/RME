@@ -1,670 +1,1511 @@
-======================================== 
- RME Windows Build Script 
- Started: pon. 26.01.2026 13:44:42,06 
-======================================== 
-[1/3] Configuring CMake... 
--- Running vcpkg install
-Detecting compiler hash for triplet x64-windows...
-Compiler found: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe
-The following packages are already installed:
-    asio:x64-windows@1.32.0
-  * boost-algorithm:x64-windows@1.89.0
-  * boost-align:x64-windows@1.89.0
-  * boost-array:x64-windows@1.89.0
-    boost-asio[core,deadline-timer,spawn]:x64-windows@1.89.0
-  * boost-assert:x64-windows@1.89.0
-  * boost-atomic:x64-windows@1.89.0
-  * boost-bind:x64-windows@1.89.0
-  * boost-chrono:x64-windows@1.89.0
-  * boost-cmake:x64-windows@1.89.0
-  * boost-concept-check:x64-windows@1.89.0
-  * boost-config:x64-windows@1.89.0
-  * boost-container:x64-windows@1.89.0
-  * boost-container-hash:x64-windows@1.89.0
-  * boost-context:x64-windows@1.89.0
-  * boost-conversion:x64-windows@1.89.0
-  * boost-core:x64-windows@1.89.0
-  * boost-date-time:x64-windows@1.89.0
-  * boost-describe:x64-windows@1.89.0
-  * boost-detail:x64-windows@1.89.0
-  * boost-exception:x64-windows@1.89.0
-  * boost-function:x64-windows@1.89.0
-  * boost-function-types:x64-windows@1.89.0
-  * boost-functional:x64-windows@1.89.0
-  * boost-fusion:x64-windows@1.89.0
-  * boost-headers:x64-windows@1.89.0
-  * boost-integer:x64-windows@1.89.0
-  * boost-intrusive:x64-windows@1.89.0
-  * boost-io:x64-windows@1.89.0
-  * boost-iterator:x64-windows@1.89.0
-  * boost-lexical-cast:x64-windows@1.89.0
-  * boost-move:x64-windows@1.89.0
-  * boost-mp11:x64-windows@1.89.0
-  * boost-mpl:x64-windows@1.89.0
-  * boost-numeric-conversion:x64-windows@1.89.0
-  * boost-optional:x64-windows@1.89.0
-  * boost-pool:x64-windows@1.89.0
-  * boost-predef:x64-windows@1.89.0
-  * boost-preprocessor:x64-windows@1.89.0
-  * boost-range:x64-windows@1.89.0
-  * boost-ratio:x64-windows@1.89.0
-  * boost-regex:x64-windows@1.89.0
-  * boost-smart-ptr:x64-windows@1.89.0
-  * boost-static-assert:x64-windows@1.89.0
-  * boost-system:x64-windows@1.89.0
-    boost-thread:x64-windows@1.89.0
-  * boost-throw-exception:x64-windows@1.89.0
-  * boost-tokenizer:x64-windows@1.89.0
-  * boost-tuple:x64-windows@1.89.0
-  * boost-type-traits:x64-windows@1.89.0
-  * boost-typeof:x64-windows@1.89.0
-  * boost-uninstall:x64-windows@1.89.0
-  * boost-unordered:x64-windows@1.89.0
-  * boost-utility:x64-windows@1.89.0
-  * boost-variant2:x64-windows@1.89.0
-  * boost-winapi:x64-windows@1.89.0
-  * bzip2[core,tool]:x64-windows@1.0.8#6
-  * egl-registry:x64-windows@2025-05-27
-  * expat:x64-windows@2.7.3
-    fmt:x64-windows@12.1.0
-    freeglut:x64-windows@3.6.0#2
-    glad[core,loader]:x64-windows@0.1.36
-    glm:x64-windows@1.0.2
-    libarchive[bzip2,core,crypto,lz4,lzma,xar,zstd]:x64-windows@3.8.4
-  * libjpeg-turbo:x64-windows@3.1.3
-  * liblzma:x64-windows@5.8.1
-  * libpng:x64-windows@1.6.53
-  * libwebp[core,libwebpmux,nearlossless,simd,unicode]:x64-windows@1.6.0#2
-  * lz4:x64-windows@1.10.0
-  * nanosvg:x64-windows@2023-12-29
-    nanovg:x64-windows@2019-08-30#6
-    nlohmann-json:x64-windows@3.12.0#1
-  * opengl:x64-windows@2022-12-04#3
-  * opengl-registry:x64-windows@2025-10-23
-  * openssl:x64-windows@3.6.0#3
-  * pcre2[core,jit,platform-default-features]:x64-windows@10.47
-    spdlog[core,fmt]:x64-windows@1.16.0#1
-  * stb:x64-windows@2024-07-29#1
-  * tiff[core,jpeg,lzma,zip]:x64-windows@4.7.1
-  * vcpkg-boost:x64-windows@2025-03-29
-  * vcpkg-cmake:x64-windows@2024-04-23
-  * vcpkg-cmake-config:x64-windows@2024-05-23
-  * vcpkg-cmake-get-vars:x64-windows@2025-05-29
-    wxwidgets[core,debug-support,sound]:x64-windows@3.3.1
-  * zlib:x64-windows@1.3.1
-  * zstd:x64-windows@1.5.7
-asio provides CMake targets:
+========================================
+ RME Linux Build Script
+ Started: Tue Jan 27 00:24:43 UTC 2026
+========================================
+[1/4] Checking Conan profile...
+detect_api: Found cc=gcc-13.3.0
+detect_api: gcc>=5, using the major as version
+detect_api: gcc C++ standard library: libstdc++11
 
-  # this is heuristically generated, and may not be correct
-  find_package(asio CONFIG REQUIRED)
-  target_link_libraries(main PRIVATE asio::asio)
+Detected profile:
+WARN: This profile is a guess of your environment, please check it.
+WARN: The output of this command is not guaranteed to be stable and can change in future Conan versions.
+WARN: Use your own profile files for stability.
+Saving detected profile to /home/jules/.conan2/profiles/default
+[settings]
+arch=x86_64
+build_type=Release
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=13
+os=Linux
 
-asio provides pkg-config modules:
+[2/4] Installing dependencies...
 
-  # A cross-platform C++ library for network and low-level I/O programming that provides developers with a consistent asynchronous model using a modern C++ approach.
-  asio
+======== Input profiles ========
+Profile host:
+[settings]
+arch=x86_64
+build_type=Release
+compiler=gcc
+compiler.cppstd=20
+compiler.libcxx=libstdc++11
+compiler.version=13
+os=Linux
+[conf]
+tools.system.package_manager:mode=install
+tools.system.package_manager:sudo=True
 
-boost-asio provides CMake targets:
+Profile build:
+[settings]
+arch=x86_64
+build_type=Release
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=13
+os=Linux
 
-  # this is heuristically generated, and may not be correct
-  find_package(boost_asio CONFIG REQUIRED)
-  target_link_libraries(main PRIVATE Boost::asio)
 
-  find_package(boost_asio_core CONFIG REQUIRED)
-  target_link_libraries(main PRIVATE Boost::asio_core)
+======== Computing dependency graph ========
+wxwidgets/3.2.6: Not found in local cache, looking in remotes...
+wxwidgets/3.2.6: Checking remote: conancenter
+Connecting to remote 'conancenter' anonymously
+wxwidgets/3.2.6: Downloaded recipe revision 6178722bff1f17e32a34fcb73443737f
+xorg/system: Not found in local cache, looking in remotes...
+xorg/system: Checking remote: conancenter
+xorg/system: Downloaded recipe revision 98f82cb669e4ebc6b4d9d8a4f3f1faf4
+gtk/system: Not found in local cache, looking in remotes...
+gtk/system: Checking remote: conancenter
+gtk/system: Downloaded recipe revision 3671596ecc796ec65f881b2cad66ce26
+opengl/system: Not found in local cache, looking in remotes...
+opengl/system: Checking remote: conancenter
+opengl/system: Downloaded recipe revision cfcf523b9d2bad75cbf377f56562634c
+xkbcommon/1.6.0: Not found in local cache, looking in remotes...
+xkbcommon/1.6.0: Checking remote: conancenter
+xkbcommon/1.6.0: Downloaded recipe revision 8d5721a837dfcffcbbbbd41461f58bc4
+xkeyboard-config/system: Not found in local cache, looking in remotes...
+xkeyboard-config/system: Checking remote: conancenter
+xkeyboard-config/system: Downloaded recipe revision 74aea985b91f987b93b220b44963d7ed
+libxml2/2.15.0: Not found in local cache, looking in remotes...
+libxml2/2.15.0: Checking remote: conancenter
+libxml2/2.15.0: Downloaded recipe revision 8d852c332225c0aa07a723fba8bcd0f5
+libiconv/1.17: Not found in local cache, looking in remotes...
+libiconv/1.17: Checking remote: conancenter
+libiconv/1.17: Downloaded recipe revision 1e65319e945f2d31941a9d28cc13c058
+zlib/1.3.1: Not found in local cache, looking in remotes...
+zlib/1.3.1: Checking remote: conancenter
+zlib/1.3.1: Downloaded recipe revision cac0f6daea041b0ccf42934163defb20
+cmake/4.2.2: Not found in local cache, looking in remotes...
+cmake/4.2.2: Checking remote: conancenter
+cmake/4.2.2: Downloaded recipe revision a96eff524832e2fd200ef166c8470f65
+wayland/1.23.92: Not found in local cache, looking in remotes...
+wayland/1.23.92: Checking remote: conancenter
+wayland/1.23.92: Downloaded recipe revision 9631a88356be38b8ae879d7b12a12cf1
+libffi/3.4.8: Not found in local cache, looking in remotes...
+libffi/3.4.8: Checking remote: conancenter
+libffi/3.4.8: Downloaded recipe revision a045c00fb26779635e3bed40e80c5254
+expat/2.7.3: Not found in local cache, looking in remotes...
+expat/2.7.3: Checking remote: conancenter
+expat/2.7.3: Downloaded recipe revision f529802a90f0758a01f498a18f8c657b
+meson/1.10.0: Not found in local cache, looking in remotes...
+meson/1.10.0: Checking remote: conancenter
+meson/1.10.0: Downloaded recipe revision 60786758ea978964c24525de19603cf4
+ninja/1.13.2: Not found in local cache, looking in remotes...
+ninja/1.13.2: Checking remote: conancenter
+ninja/1.13.2: Downloaded recipe revision c8c5dc2a52ed6e4e42a66d75b4717ceb
+pkgconf/2.5.1: Not found in local cache, looking in remotes...
+pkgconf/2.5.1: Checking remote: conancenter
+pkgconf/2.5.1: Downloaded recipe revision 93c2051284cba1279494a43a4fcfeae2
+bison/3.8.2: Not found in local cache, looking in remotes...
+bison/3.8.2: Checking remote: conancenter
+bison/3.8.2: Downloaded recipe revision c3490cbe0078b6fd3eb4cf5ed64144dc
+m4/1.4.19: Not found in local cache, looking in remotes...
+m4/1.4.19: Checking remote: conancenter
+m4/1.4.19: Downloaded recipe revision b38ced39a01e31fef5435bc634461fd2
+flex/2.6.4: Not found in local cache, looking in remotes...
+flex/2.6.4: Checking remote: conancenter
+flex/2.6.4: Downloaded recipe revision efa781fc5088b47c895bd4eef6911f2e
+gnu-config/cci.20210814: Not found in local cache, looking in remotes...
+gnu-config/cci.20210814: Checking remote: conancenter
+gnu-config/cci.20210814: Downloaded recipe revision 466e9d4d7779e1c142443f7ea44b4284
+wayland-protocols/1.45: Not found in local cache, looking in remotes...
+wayland-protocols/1.45: Checking remote: conancenter
+wayland-protocols/1.45: Downloaded recipe revision 79bbdf84ebb0fcc3353686529e0a2322
+libcurl/8.17.0: Not found in local cache, looking in remotes...
+libcurl/8.17.0: Checking remote: conancenter
+libcurl/8.17.0: Downloaded recipe revision 5f7b5b769dc3468ce693048cd8d7dd64
+openssl/3.6.0: Not found in local cache, looking in remotes...
+openssl/3.6.0: Checking remote: conancenter
+openssl/3.6.0: Downloaded recipe revision 89e8af1d4a21afcac0557079d23d8890
+libtool/2.4.7: Not found in local cache, looking in remotes...
+libtool/2.4.7: Checking remote: conancenter
+libtool/2.4.7: Downloaded recipe revision 14e7739cc128bc1623d2ed318008e47e
+automake/1.16.5: Not found in local cache, looking in remotes...
+automake/1.16.5: Checking remote: conancenter
+automake/1.16.5: Downloaded recipe revision b91b7c384c3deaa9d535be02da14d04f
+autoconf/2.71: Not found in local cache, looking in remotes...
+autoconf/2.71: Checking remote: conancenter
+autoconf/2.71: Downloaded recipe revision 51077f068e61700d65bb05541ea1e4b0
+libjpeg/9f: Not found in local cache, looking in remotes...
+libjpeg/9f: Checking remote: conancenter
+libjpeg/9f: Downloaded recipe revision 8edfe2699565c80c825d0256002504ff
+libpng/1.6.54: Not found in local cache, looking in remotes...
+libpng/1.6.54: Checking remote: conancenter
+libpng/1.6.54: Downloaded recipe revision b3ee4845d09981511d04205c52d78de1
+libtiff/4.6.0: Not found in local cache, looking in remotes...
+libtiff/4.6.0: Checking remote: conancenter
+libtiff/4.6.0: Downloaded recipe revision b3fb32a80480ba4d4d9a71dd310ead02
+xz_utils/5.8.1: Not found in local cache, looking in remotes...
+xz_utils/5.8.1: Checking remote: conancenter
+xz_utils/5.8.1: Downloaded recipe revision 0c67d0683aca2f1ca69a17730a65a1e7
+pcre2/10.42: Not found in local cache, looking in remotes...
+pcre2/10.42: Checking remote: conancenter
+pcre2/10.42: Downloaded recipe revision 9a35f5089feb875ec61a38eca364ce77
+bzip2/1.0.8: Not found in local cache, looking in remotes...
+bzip2/1.0.8: Checking remote: conancenter
+bzip2/1.0.8: Downloaded recipe revision c470882369c2d95c5c77e970c0c7e321
+nanosvg/cci.20231025: Not found in local cache, looking in remotes...
+nanosvg/cci.20231025: Checking remote: conancenter
+nanosvg/cci.20231025: Downloaded recipe revision 37554b5fb7b1882fd830bd1744c2b47b
+cmake/3.31.10: Not found in local cache, looking in remotes...
+cmake/3.31.10: Checking remote: conancenter
+cmake/3.31.10: Downloaded recipe revision 313d16a1aa16bbdb2ca0792467214b76
+freeglut/3.4.0: Not found in local cache, looking in remotes...
+freeglut/3.4.0: Checking remote: conancenter
+freeglut/3.4.0: Downloaded recipe revision 5674e666d6bb21d45e778c6b710a213d
+mesa-glu/9.0.3: Not found in local cache, looking in remotes...
+mesa-glu/9.0.3: Checking remote: conancenter
+mesa-glu/9.0.3: Downloaded recipe revision 94609f918d5ca4e5fea0f7a985b29f68
+libglvnd/1.7.0: Not found in local cache, looking in remotes...
+libglvnd/1.7.0: Checking remote: conancenter
+libglvnd/1.7.0: Downloaded recipe revision cd2e728b07cc6cf5e2e0d88ca6d689f8
+xorg-proto/2022.2: Not found in local cache, looking in remotes...
+xorg-proto/2022.2: Checking remote: conancenter
+xorg-proto/2022.2: Downloaded recipe revision 0088fff0ee788a2fa8f22a9704ea941a
+xorg-macros/1.19.3: Not found in local cache, looking in remotes...
+xorg-macros/1.19.3: Checking remote: conancenter
+xorg-macros/1.19.3: Downloaded recipe revision c3465b331ce1d044ee771dc5e4529b79
+pkgconf/2.0.3: Not found in local cache, looking in remotes...
+pkgconf/2.0.3: Checking remote: conancenter
+pkgconf/2.0.3: Downloaded recipe revision c7ba7fd1d7d22534ee070ae60ed79604
+meson/1.4.0: Not found in local cache, looking in remotes...
+meson/1.4.0: Checking remote: conancenter
+meson/1.4.0: Downloaded recipe revision 2262941cc8fbb0099dd0c196ca2a6c01
+pkgconf/2.1.0: Not found in local cache, looking in remotes...
+pkgconf/2.1.0: Checking remote: conancenter
+pkgconf/2.1.0: Downloaded recipe revision 21f96520faf7660b99f872e956d2ac13
+meson/1.2.3: Not found in local cache, looking in remotes...
+meson/1.2.3: Checking remote: conancenter
+meson/1.2.3: Downloaded recipe revision 1d15f8d0bb576a64de8f927dbabec9dd
+asio/1.32.0: Not found in local cache, looking in remotes...
+asio/1.32.0: Checking remote: conancenter
+asio/1.32.0: Downloaded recipe revision 5162a75b289fd36a1910431607fb6a31
+nlohmann_json/3.11.3: Not found in local cache, looking in remotes...
+nlohmann_json/3.11.3: Checking remote: conancenter
+nlohmann_json/3.11.3: Downloaded recipe revision 45828be26eb619a2e04ca517bb7b828d
+fmt/11.1.4: Not found in local cache, looking in remotes...
+fmt/11.1.4: Checking remote: conancenter
+fmt/11.1.4: Downloaded recipe revision 1fb24f082fabe20d28606d615ba93dfb
+libarchive/3.7.7: Not found in local cache, looking in remotes...
+libarchive/3.7.7: Checking remote: conancenter
+libarchive/3.7.7: Downloaded recipe revision dfcc7a12a0cc536f8939e60c14a97198
+boost/1.87.0: Not found in local cache, looking in remotes...
+boost/1.87.0: Checking remote: conancenter
+boost/1.87.0: Downloaded recipe revision a53b8618d1280af4c3cc43523f23656e
+libbacktrace/cci.20210118: Not found in local cache, looking in remotes...
+libbacktrace/cci.20210118: Checking remote: conancenter
+libbacktrace/cci.20210118: Downloaded recipe revision a7691bfccd8caaf66309df196790a5a1
+b2/5.4.2: Not found in local cache, looking in remotes...
+b2/5.4.2: Checking remote: conancenter
+b2/5.4.2: Downloaded recipe revision ffd6084a119587e70f11cd45d1a386e2
+glew/2.2.0: Not found in local cache, looking in remotes...
+glew/2.2.0: Checking remote: conancenter
+glew/2.2.0: Downloaded recipe revision 3a3eacd9dc24111c323773993c365b49
+Graph root
+    conanfile.py (rme/4.1.2): /app/conanfile.py
+Requirements
+    asio/1.32.0#5162a75b289fd36a1910431607fb6a31 - Downloaded (conancenter)
+    boost/1.87.0#a53b8618d1280af4c3cc43523f23656e - Downloaded (conancenter)
+    bzip2/1.0.8#c470882369c2d95c5c77e970c0c7e321 - Downloaded (conancenter)
+    expat/2.7.3#f529802a90f0758a01f498a18f8c657b - Downloaded (conancenter)
+    fmt/11.1.4#1fb24f082fabe20d28606d615ba93dfb - Downloaded (conancenter)
+    freeglut/3.4.0#5674e666d6bb21d45e778c6b710a213d - Downloaded (conancenter)
+    glew/2.2.0#3a3eacd9dc24111c323773993c365b49 - Downloaded (conancenter)
+    gtk/system#3671596ecc796ec65f881b2cad66ce26 - Downloaded (conancenter)
+    libarchive/3.7.7#dfcc7a12a0cc536f8939e60c14a97198 - Downloaded (conancenter)
+    libbacktrace/cci.20210118#a7691bfccd8caaf66309df196790a5a1 - Downloaded (conancenter)
+    libcurl/8.17.0#5f7b5b769dc3468ce693048cd8d7dd64 - Downloaded (conancenter)
+    libffi/3.4.8#a045c00fb26779635e3bed40e80c5254 - Downloaded (conancenter)
+    libglvnd/1.7.0#cd2e728b07cc6cf5e2e0d88ca6d689f8 - Downloaded (conancenter)
+    libiconv/1.17#1e65319e945f2d31941a9d28cc13c058 - Downloaded (conancenter)
+    libjpeg/9f#8edfe2699565c80c825d0256002504ff - Downloaded (conancenter)
+    libpng/1.6.54#b3ee4845d09981511d04205c52d78de1 - Downloaded (conancenter)
+    libtiff/4.6.0#b3fb32a80480ba4d4d9a71dd310ead02 - Downloaded (conancenter)
+    libxml2/2.15.0#8d852c332225c0aa07a723fba8bcd0f5 - Downloaded (conancenter)
+    mesa-glu/9.0.3#94609f918d5ca4e5fea0f7a985b29f68 - Downloaded (conancenter)
+    nanosvg/cci.20231025#37554b5fb7b1882fd830bd1744c2b47b - Downloaded (conancenter)
+    nlohmann_json/3.11.3#45828be26eb619a2e04ca517bb7b828d - Downloaded (conancenter)
+    opengl/system#cfcf523b9d2bad75cbf377f56562634c - Downloaded (conancenter)
+    openssl/3.6.0#89e8af1d4a21afcac0557079d23d8890 - Downloaded (conancenter)
+    pcre2/10.42#9a35f5089feb875ec61a38eca364ce77 - Downloaded (conancenter)
+    wayland/1.23.92#9631a88356be38b8ae879d7b12a12cf1 - Downloaded (conancenter)
+    wxwidgets/3.2.6#6178722bff1f17e32a34fcb73443737f - Downloaded (conancenter)
+    xkbcommon/1.6.0#8d5721a837dfcffcbbbbd41461f58bc4 - Downloaded (conancenter)
+    xkeyboard-config/system#74aea985b91f987b93b220b44963d7ed - Downloaded (conancenter)
+    xorg/system#98f82cb669e4ebc6b4d9d8a4f3f1faf4 - Downloaded (conancenter)
+    xorg-macros/1.19.3#c3465b331ce1d044ee771dc5e4529b79 - Downloaded (conancenter)
+    xorg-proto/2022.2#0088fff0ee788a2fa8f22a9704ea941a - Downloaded (conancenter)
+    xz_utils/5.8.1#0c67d0683aca2f1ca69a17730a65a1e7 - Downloaded (conancenter)
+    zlib/1.3.1#cac0f6daea041b0ccf42934163defb20 - Downloaded (conancenter)
+Build requirements
+    autoconf/2.71#51077f068e61700d65bb05541ea1e4b0 - Downloaded (conancenter)
+    automake/1.16.5#b91b7c384c3deaa9d535be02da14d04f - Downloaded (conancenter)
+    b2/5.4.2#ffd6084a119587e70f11cd45d1a386e2 - Downloaded (conancenter)
+    bison/3.8.2#c3490cbe0078b6fd3eb4cf5ed64144dc - Downloaded (conancenter)
+    cmake/3.31.10#313d16a1aa16bbdb2ca0792467214b76 - Downloaded (conancenter)
+    cmake/4.2.2#a96eff524832e2fd200ef166c8470f65 - Downloaded (conancenter)
+    expat/2.7.3#f529802a90f0758a01f498a18f8c657b - Downloaded (conancenter)
+    flex/2.6.4#efa781fc5088b47c895bd4eef6911f2e - Downloaded (conancenter)
+    gnu-config/cci.20210814#466e9d4d7779e1c142443f7ea44b4284 - Downloaded (conancenter)
+    libffi/3.4.8#a045c00fb26779635e3bed40e80c5254 - Downloaded (conancenter)
+    libiconv/1.17#1e65319e945f2d31941a9d28cc13c058 - Downloaded (conancenter)
+    libtool/2.4.7#14e7739cc128bc1623d2ed318008e47e - Downloaded (conancenter)
+    libxml2/2.15.0#8d852c332225c0aa07a723fba8bcd0f5 - Downloaded (conancenter)
+    m4/1.4.19#b38ced39a01e31fef5435bc634461fd2 - Downloaded (conancenter)
+    meson/1.2.3#1d15f8d0bb576a64de8f927dbabec9dd - Downloaded (conancenter)
+    meson/1.4.0#2262941cc8fbb0099dd0c196ca2a6c01 - Downloaded (conancenter)
+    meson/1.10.0#60786758ea978964c24525de19603cf4 - Downloaded (conancenter)
+    ninja/1.13.2#c8c5dc2a52ed6e4e42a66d75b4717ceb - Downloaded (conancenter)
+    pkgconf/2.0.3#c7ba7fd1d7d22534ee070ae60ed79604 - Downloaded (conancenter)
+    pkgconf/2.1.0#21f96520faf7660b99f872e956d2ac13 - Downloaded (conancenter)
+    pkgconf/2.5.1#93c2051284cba1279494a43a4fcfeae2 - Downloaded (conancenter)
+    wayland/1.23.92#9631a88356be38b8ae879d7b12a12cf1 - Downloaded (conancenter)
+    wayland-protocols/1.45#79bbdf84ebb0fcc3353686529e0a2322 - Downloaded (conancenter)
+    xorg-macros/1.19.3#c3465b331ce1d044ee771dc5e4529b79 - Downloaded (conancenter)
+    zlib/1.3.1#cac0f6daea041b0ccf42934163defb20 - Downloaded (conancenter)
+Resolved version ranges
+    b2/[>=5.2 <6]: b2/5.4.2
+    bison/[>=3.8.2 <4]: bison/3.8.2
+    cmake/[>=3.17 <4]: cmake/3.31.10
+    cmake/[>=3.18]: cmake/4.2.2
+    expat/[>=2.6.2 <3]: expat/2.7.3
+    libcurl/[>=7.78.0 <9]: libcurl/8.17.0
+    libffi/[>=3.4.4 <4]: libffi/3.4.8
+    libjpeg/[>=9e]: libjpeg/9f
+    libpng/[>=1.6 <2]: libpng/1.6.54
+    libxml2/[>=2.12.5 <3]: libxml2/2.15.0
+    meson/[>=1.2.2 <2]: meson/1.10.0
+    meson/[>=1.3.1 <2]: meson/1.10.0
+    meson/[>=1.3.2 <2]: meson/1.10.0
+    meson/[>=1.4.0 <2]: meson/1.10.0
+    ninja/[>=1.10.2 <2]: ninja/1.13.2
+    openssl/[>=1.1 <4]: openssl/3.6.0
+    pkgconf/[>=2.1 <3]: pkgconf/2.5.1
+    pkgconf/[>=2.2 <3]: pkgconf/2.5.1
+    wayland-protocols/[^1.33]: wayland-protocols/1.45
+    xz_utils/[>=5.4.5 <6]: xz_utils/5.8.1
+    zlib/[>=1.3.1 <2]: zlib/1.3.1
+Overrides
+    wayland/[^1.22]: ['wayland/1.23.92']
+    wayland/1.22.0: ['wayland/1.23.92']
 
-  find_package(boost_asio_deadline_timer CONFIG REQUIRED)
-  target_link_libraries(main PRIVATE Boost::asio_deadline_timer)
+======== Computing necessary packages ========
+fmt/11.1.4: Main binary package 'a2f52d8a843d621154aa73b66f1bc47a52420135' missing
+fmt/11.1.4: Checking 9 compatible configurations
+fmt/11.1.4: Compatible configurations not found in cache, checking servers
+fmt/11.1.4: 'd8b0d3139ce65d9b6a873a316b9d2d555e2ac39a': compiler.cppstd=11
+fmt/11.1.4: '6f18e2bebffa33fd6eac7e511499866a37ae2f78': compiler.cppstd=gnu11
+fmt/11.1.4: '0282bef02e905cb66be66299f726f29871121d22': compiler.cppstd=14
+fmt/11.1.4: '0cdc29e755176d4c08bccf56ff06153546bfbf3c': compiler.cppstd=gnu14
+fmt/11.1.4: 'e597682917043fdffb4f65806d1bb916c68f9068': compiler.cppstd=17
+fmt/11.1.4: 'e02956bd268869d4519cb2b90dc7b4e51911a5d0': compiler.cppstd=gnu17
+fmt/11.1.4: '7557661a0040022cf99d337b6068f9f21a911565': compiler.cppstd=gnu20
+fmt/11.1.4: '3d574d7abbaf221fa46ec54f1f55e883a36b72aa': compiler.cppstd=23
+fmt/11.1.4: '99bd7966566e1ee12898f4a231ba3c1a05e503e6': compiler.cppstd=gnu23
+fmt/11.1.4: No compatible configuration found
+boost/1.87.0: Main binary package '255043ded3c30c494d3fc2683f763918e539736b' missing
+boost/1.87.0: Checking 3 compatible configurations
+boost/1.87.0: Compatible configurations not found in cache, checking servers
+boost/1.87.0: '78ab8a65914630ad1a508300f16923bbadab1906': compiler.cppstd=gnu20
+boost/1.87.0: 'cea328f4bcec96bb90078b22f7c317a7ed9a7fe0': compiler.cppstd=23
+boost/1.87.0: '0024ecbde2338bb20d3c060e2e6b8991b9cfd4bc': compiler.cppstd=gnu23
+boost/1.87.0: No compatible configuration found
+libtiff/4.6.0: Main binary package 'f04cfa2ed4556ddb3c7cffb84b13897aa44f659b' missing
+libtiff/4.6.0: Checking 11 compatible configurations
+libtiff/4.6.0: Compatible configurations not found in cache, checking servers
+libtiff/4.6.0: '38142e1d96f2dca6602375ddb574849b3de94da5': compiler.cppstd=98
+libtiff/4.6.0: 'f838290c137847e36e6a291f047c61de500d0766': compiler.cppstd=gnu98
+libtiff/4.6.0: 'f17db1469110339b579a54c3924e06dbe5e5a7c9': compiler.cppstd=11
+libtiff/4.6.0: 'f8a0b11ad2d5d3c5031c350172746161509f07d0': compiler.cppstd=gnu11
+libtiff/4.6.0: 'ae250ef31dc31d5f6dc453b91cad65100ef5a71c': compiler.cppstd=14
+libtiff/4.6.0: '4130935fcd8edce6a3c5865a3bfe62811ec9e6ea': compiler.cppstd=gnu14
+libtiff/4.6.0: '2ab82b68744f7b3944ccb4bd5fcc6b95d25045b7': compiler.cppstd=17
+libtiff/4.6.0: '60ccd69b0d15cd061aa50ad3c964965d6f5eea3d': compiler.cppstd=gnu17
+libtiff/4.6.0: Found compatible package '60ccd69b0d15cd061aa50ad3c964965d6f5eea3d': compiler.cppstd=gnu17
+wxwidgets/3.2.6: Main binary package 'b5d52542137d17a5acbe49c32146914a4c290eca' missing
+wxwidgets/3.2.6: Checking 11 compatible configurations
+wxwidgets/3.2.6: Compatible configurations not found in cache, checking servers
+wxwidgets/3.2.6: '3be06d33ceafdf3ab55572e304de898aa90e070c': compiler.cppstd=98
+wxwidgets/3.2.6: '2303dc5a449ea4e1ca4b805d97378f6fcf8fa8f3': compiler.cppstd=gnu98
+wxwidgets/3.2.6: '1b891ec892bc58efcf93762fb7cb2e8793a5ae4b': compiler.cppstd=11
+wxwidgets/3.2.6: 'ed9291249f81675b4dda55e1c1eb2e200581322f': compiler.cppstd=gnu11
+wxwidgets/3.2.6: '0784e823dca8c7ffebf73fc153dc1c89d72fe2c1': compiler.cppstd=14
+wxwidgets/3.2.6: '7ce971717643522955ca61a7ec6eaa61e213be46': compiler.cppstd=gnu14
+wxwidgets/3.2.6: '2d92f1ed9cc6e7fb83aac852537307d7a167442a': compiler.cppstd=17
+wxwidgets/3.2.6: 'f96e9683d2c04156bccde038c42f30262ec89c72': compiler.cppstd=gnu17
+wxwidgets/3.2.6: '488f736f3debf5b607d97fa5c3cf5b14139aa707': compiler.cppstd=gnu20
+wxwidgets/3.2.6: '902c676a3d207ac0c12a89b2a1d01910a4b9e4a8': compiler.cppstd=23
+wxwidgets/3.2.6: '0f67baf57528059e2f1daac9920c89c50573f90f': compiler.cppstd=gnu23
+wxwidgets/3.2.6: No compatible configuration found
+mesa-glu/9.0.3: Main binary package '3509a7f1531f83b18dde2f93d63832ed1565d56c' missing
+mesa-glu/9.0.3: Checking 11 compatible configurations
+mesa-glu/9.0.3: Compatible configurations not found in cache, checking servers
+mesa-glu/9.0.3: '0bf93f6fc0c614264c5f1f60200c6eaa296d5833': compiler.cppstd=98
+mesa-glu/9.0.3: 'f9bab851808a68e620d541b775eb9c9f680880df': compiler.cppstd=gnu98
+mesa-glu/9.0.3: '4e6158108df9608d9abc925f80084f7d73639b72': compiler.cppstd=11
+mesa-glu/9.0.3: '328fb50806c3fd2b9f31d704fc95532d1bd616e9': compiler.cppstd=gnu11
+mesa-glu/9.0.3: '8f6ec1bbd6eaaa358cc8a636528a7dff17ac8f58': compiler.cppstd=14
+mesa-glu/9.0.3: '4eeed901131d0e19990ab1a6ad30e25574a752f5': compiler.cppstd=gnu14
+mesa-glu/9.0.3: 'f4b3d2dbba4946eb297b0a9fe4e6e8cb36906329': compiler.cppstd=17
+mesa-glu/9.0.3: 'ecef7fa578c3e7b717d72bc6350f663f09553c79': compiler.cppstd=gnu17
+mesa-glu/9.0.3: Found compatible package 'ecef7fa578c3e7b717d72bc6350f663f09553c79': compiler.cppstd=gnu17
 
-  find_package(boost_asio_spawn CONFIG REQUIRED)
-  target_link_libraries(main PRIVATE Boost::asio_spawn)
+A new experimental approach for binary compatibility detection is available.
+    Enable it by setting the core.graph:compatibility_mode=optimized conf
+    and get improved performance when querying multiple compatible binaries in remotes.
 
-boost-thread provides CMake targets:
+Requirements
+    asio/1.32.0#5162a75b289fd36a1910431607fb6a31:da39a3ee5e6b4b0d3255bfef95601890afd80709#95bb2f8db03eb9630d72001c21dc4429 - Download (conancenter)
+    boost/1.87.0#a53b8618d1280af4c3cc43523f23656e:255043ded3c30c494d3fc2683f763918e539736b - Build
+    bzip2/1.0.8#c470882369c2d95c5c77e970c0c7e321:432d7695adc526147073285e155d2ca0340bc76d#133f71a59b79de7c74a2c3af9cb9bc7b - Download (conancenter)
+    expat/2.7.3#f529802a90f0758a01f498a18f8c657b:aded8fb718ce53657d2b174704f00cbccc67d052#217d655b764b98ce6b77c12b176d30ef - Download (conancenter)
+    fmt/11.1.4#1fb24f082fabe20d28606d615ba93dfb:a2f52d8a843d621154aa73b66f1bc47a52420135 - Build
+    freeglut/3.4.0#5674e666d6bb21d45e778c6b710a213d:d54396938f529a1d2ea5498b802d7b650bd0402c - Build
+    glew/2.2.0#3a3eacd9dc24111c323773993c365b49:754d75b465bdaf7e8bd6dabcd889d757ecf76763#7f6ecb9111d24727fe537476e685765f - Download (conancenter)
+    gtk/system#3671596ecc796ec65f881b2cad66ce26:b393f04ef5ca6a89590f29f8ca7eda026c148049#3d742b429533a316c8e6f3ea841ac0ae - Download (conancenter)
+    libarchive/3.7.7#dfcc7a12a0cc536f8939e60c14a97198:e1f56bf980495e3567359faf010e1fb363a36f3a - Build
+    libbacktrace/cci.20210118#a7691bfccd8caaf66309df196790a5a1:c81087b06d1a5beef0ad711fc32d45f7a425a8f3#3bb49ca4eb3a1ffca9b5c9509c79d237 - Download (conancenter)
+    libcurl/8.17.0#5f7b5b769dc3468ce693048cd8d7dd64:3432dfe5e87a50d6f06a6e45477f9ea620e33ae4#4b23c74f76759102a8e03beeca2bf99d - Download (conancenter)
+    libffi/3.4.8#a045c00fb26779635e3bed40e80c5254:c81087b06d1a5beef0ad711fc32d45f7a425a8f3#86df95c85a5078938244c88d1f668688 - Download (conancenter)
+    libglvnd/1.7.0#cd2e728b07cc6cf5e2e0d88ca6d689f8:a46f47a3a5f44dce3f329de9f2bf8da630f0f192#5596af703258c1407b74d2c71935d97e - Download (conancenter)
+    libiconv/1.17#1e65319e945f2d31941a9d28cc13c058:c81087b06d1a5beef0ad711fc32d45f7a425a8f3#c3a716a7745856cfd7e46f29aef86523 - Download (conancenter)
+    libjpeg/9f#8edfe2699565c80c825d0256002504ff:c81087b06d1a5beef0ad711fc32d45f7a425a8f3#3b10f386e1ba551493909bc152baef86 - Download (conancenter)
+    libpng/1.6.54#b3ee4845d09981511d04205c52d78de1:89f26a89b6e56e1284482eb7ac65948ce05dff35#4ab4df25106c834c067b7b8122587ecd - Download (conancenter)
+    libtiff/4.6.0#b3fb32a80480ba4d4d9a71dd310ead02:60ccd69b0d15cd061aa50ad3c964965d6f5eea3d#9f6743a76bf55cb614763797f1bfb714 - Download (conancenter)
+    libxml2/2.15.0#8d852c332225c0aa07a723fba8bcd0f5:7ebbc05509ce7603da650f94620f34d7b9ec0c22#b4973867e394fd7337dbe1cb7b95ba15 - Download (conancenter)
+    mesa-glu/9.0.3#94609f918d5ca4e5fea0f7a985b29f68:ecef7fa578c3e7b717d72bc6350f663f09553c79#dabe8b8e4afe5c34867d44149b2b4c7f - Download (conancenter)
+    nanosvg/cci.20231025#37554b5fb7b1882fd830bd1744c2b47b:da39a3ee5e6b4b0d3255bfef95601890afd80709#aefbfb0e85c743bd301c3e48af9f8e4a - Download (conancenter)
+    nlohmann_json/3.11.3#45828be26eb619a2e04ca517bb7b828d:da39a3ee5e6b4b0d3255bfef95601890afd80709#552828a2560333bcbeff9d087ce0af0f - Download (conancenter)
+    opengl/system#cfcf523b9d2bad75cbf377f56562634c:da39a3ee5e6b4b0d3255bfef95601890afd80709#0ba8627bd47edc3a501e8f0eb9a79e5e - Download (conancenter)
+    openssl/3.6.0#89e8af1d4a21afcac0557079d23d8890:e1e5437fbafc0588bdcff97c905793e695877ac3#d888036ef9e3372f50a847be8cefce08 - Download (conancenter)
+    pcre2/10.42#9a35f5089feb875ec61a38eca364ce77:9fc9b4a835fcb590d13e2cacc5738bd786bc49a6#e3d9e7e63ac74dda3a1177c873361e92 - Download (conancenter)
+    wayland/1.23.92#9631a88356be38b8ae879d7b12a12cf1:30d9e39e3284fa9d163ae54b52369734ea1e08ff#1afedef769574e5da68d1f8ad44de307 - Download (conancenter)
+    wxwidgets/3.2.6#6178722bff1f17e32a34fcb73443737f:b5d52542137d17a5acbe49c32146914a4c290eca - Build
+    xkbcommon/1.6.0#8d5721a837dfcffcbbbbd41461f58bc4:31480bf1e9f21f1ace1b6dbd8141d81ae44e0f8d#783e8e20bb72b8e5973867de4c8db1c3 - Download (conancenter)
+    xkeyboard-config/system#74aea985b91f987b93b220b44963d7ed:da39a3ee5e6b4b0d3255bfef95601890afd80709#0ba8627bd47edc3a501e8f0eb9a79e5e - Download (conancenter)
+    xorg-macros/1.19.3#c3465b331ce1d044ee771dc5e4529b79:da39a3ee5e6b4b0d3255bfef95601890afd80709#f6477c9b9eaafe88df13906bad42fbb4 - Download (conancenter)
+    xorg-proto/2022.2#0088fff0ee788a2fa8f22a9704ea941a:da39a3ee5e6b4b0d3255bfef95601890afd80709#ecec1471507ce446507460dafdec9c8b - Download (conancenter)
+    xorg/system#98f82cb669e4ebc6b4d9d8a4f3f1faf4:da39a3ee5e6b4b0d3255bfef95601890afd80709#0ba8627bd47edc3a501e8f0eb9a79e5e - Download (conancenter)
+    xz_utils/5.8.1#0c67d0683aca2f1ca69a17730a65a1e7:c81087b06d1a5beef0ad711fc32d45f7a425a8f3#b07c16c5f8a452d1b50f20de33894c30 - Download (conancenter)
+    zlib/1.3.1#cac0f6daea041b0ccf42934163defb20:c81087b06d1a5beef0ad711fc32d45f7a425a8f3#d3a7706ae25c74b78bafbb0b63cb5dcf - Download (conancenter)
+Build requirements
+    b2/5.4.2#ffd6084a119587e70f11cd45d1a386e2:63fead0844576fc02943e16909f08fcdddd6f44b#de3e94a44d659159ab39f33c906790e9 - Download (conancenter)
+    cmake/3.31.10#313d16a1aa16bbdb2ca0792467214b76:63fead0844576fc02943e16909f08fcdddd6f44b#8b53d1fe96d4b000f07eeaf7513ffdb4 - Download (conancenter)
+    ninja/1.13.2#c8c5dc2a52ed6e4e42a66d75b4717ceb:3593751651824fb813502c69c971267624ced41a#004588f111d3688b7e86b7401f49ea16 - Download (conancenter)
+Skipped binaries
+    autoconf/2.71, automake/1.16.5, bison/3.8.2, cmake/4.2.2, expat/2.7.3, flex/2.6.4, gnu-config/cci.20210814, libffi/3.4.8, libiconv/1.17, libtool/2.4.7, libxml2/2.15.0, m4/1.4.19, meson/1.10.0, meson/1.2.3, meson/1.4.0, pkgconf/2.0.3, pkgconf/2.1.0, pkgconf/2.5.1, wayland-protocols/1.45, wayland/1.23.92, xorg-macros/1.19.3, zlib/1.3.1
+gtk/system: RUN: sudo apt-get update
+Hit:1 http://us-central1.gce.archive.ubuntu.com/ubuntu noble InRelease
+Get:2 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:3 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:4 https://download.docker.com/linux/ubuntu noble InRelease [48.5 kB]
+Get:5 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Hit:6 https://ppa.launchpadcontent.net/git-core/ppa/ubuntu noble InRelease
+Get:7 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [2149 kB]
+Get:8 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [3182 kB]
+Get:9 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1966 kB]
+Get:10 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [37.6 kB]
+Get:11 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [33.8 kB]
+Get:12 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1776 kB]
+Get:13 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1193 kB]
+Get:14 https://download.docker.com/linux/ubuntu noble/stable amd64 Packages [51.6 kB]
+Get:15 https://dl.google.com/linux/chrome/deb stable InRelease [1825 B]
+Get:16 https://dl.google.com/linux/chrome/deb stable/main amd64 Packages [1210 B]
+Fetched 10.8 MB in 2s (6061 kB/s)
+Reading package lists...
 
-  # this is heuristically generated, and may not be correct
-  find_package(boost_thread CONFIG REQUIRED)
-  target_link_libraries(main PRIVATE Boost::thread)
+gtk/system: RUN: sudo apt-get install -y --no-install-recommends libgtk2.0-dev
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  gir1.2-atk-1.0 gir1.2-freedesktop gir1.2-freedesktop-dev
+  gir1.2-gdkpixbuf-2.0 gir1.2-glib-2.0 gir1.2-glib-2.0-dev gir1.2-gtk-2.0
+  gir1.2-harfbuzz-0.0 gir1.2-pango-1.0 icu-devtools libatk1.0-dev libblkid-dev
+  libcairo2-dev libdatrie-dev libdeflate-dev libfribidi-dev
+  libgdk-pixbuf-2.0-dev libgdk-pixbuf2.0-bin libgirepository-2.0-0
+  libglib2.0-0t64 libglib2.0-bin libglib2.0-data libglib2.0-dev
+  libglib2.0-dev-bin libgraphite2-dev libgtk2.0-0t64 libgtk2.0-common
+  libharfbuzz-cairo0 libharfbuzz-dev libharfbuzz-gobject0 libharfbuzz-subset0
+  libice-dev libicu-dev libjbig-dev libjpeg-dev libjpeg-turbo8-dev
+  libjpeg8-dev liblerc-dev libmount-dev libpango1.0-dev libpangoxft-1.0-0
+  libpcre2-16-0 libpcre2-32-0 libpcre2-dev libpcre2-posix3 libpixman-1-dev
+  libselinux1-dev libsepol-dev libsharpyuv-dev libsm-dev libthai-dev
+  libtiff-dev libtiffxx6 libwebp-dev libwebpdecoder3 libxcb-render0-dev
+  libxcb-shm0-dev libxcomposite-dev libxcursor-dev libxdamage-dev
+  libxfixes-dev libxi-dev libxinerama-dev libxml2 libxml2-utils libxrandr-dev
+  libzstd-dev pango1.0-tools
+Suggested packages:
+  libcairo2-doc libdatrie-doc low-memory-monitor libglib2.0-doc
+  libgraphite2-utils gvfs libgtk2.0-doc libice-doc icu-doc libpango1.0-doc
+  libsm-doc libthai-doc graphicsmagick
+Recommended packages:
+  xdg-user-dirs libgail-common librsvg2-common libgtk2.0-bin debhelper
+The following NEW packages will be installed:
+  gir1.2-atk-1.0 gir1.2-freedesktop gir1.2-freedesktop-dev
+  gir1.2-gdkpixbuf-2.0 gir1.2-glib-2.0-dev gir1.2-gtk-2.0 gir1.2-harfbuzz-0.0
+  gir1.2-pango-1.0 icu-devtools libatk1.0-dev libblkid-dev libcairo2-dev
+  libdatrie-dev libdeflate-dev libfribidi-dev libgdk-pixbuf-2.0-dev
+  libgdk-pixbuf2.0-bin libgirepository-2.0-0 libglib2.0-dev libglib2.0-dev-bin
+  libgraphite2-dev libgtk2.0-0t64 libgtk2.0-common libgtk2.0-dev
+  libharfbuzz-cairo0 libharfbuzz-dev libharfbuzz-gobject0 libharfbuzz-subset0
+  libice-dev libicu-dev libjbig-dev libjpeg-dev libjpeg-turbo8-dev
+  libjpeg8-dev liblerc-dev libmount-dev libpango1.0-dev libpangoxft-1.0-0
+  libpcre2-16-0 libpcre2-32-0 libpcre2-dev libpcre2-posix3 libpixman-1-dev
+  libselinux1-dev libsepol-dev libsharpyuv-dev libsm-dev libthai-dev
+  libtiff-dev libtiffxx6 libwebp-dev libwebpdecoder3 libxcb-render0-dev
+  libxcb-shm0-dev libxcomposite-dev libxcursor-dev libxdamage-dev
+  libxfixes-dev libxi-dev libxinerama-dev libxml2-utils libxrandr-dev
+  libzstd-dev pango1.0-tools
+The following packages will be upgraded:
+  gir1.2-glib-2.0 libglib2.0-0t64 libglib2.0-bin libglib2.0-data libxml2
+5 upgraded, 64 newly installed, 0 to remove and 7 not upgraded.
+Need to get 26.6 MB of archives.
+After this operation, 117 MB of additional disk space will be used.
+Get:1 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libglib2.0-data all 2.80.0-6ubuntu3.7 [49.4 kB]
+Get:2 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libglib2.0-bin amd64 2.80.0-6ubuntu3.7 [97.9 kB]
+Get:3 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 gir1.2-glib-2.0 amd64 2.80.0-6ubuntu3.7 [183 kB]
+Get:4 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libglib2.0-0t64 amd64 2.80.0-6ubuntu3.7 [1545 kB]
+Get:5 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libxml2 amd64 2.9.14+dfsg-1.3ubuntu3.7 [764 kB]
+Get:6 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 gir1.2-atk-1.0 amd64 2.52.0-1build1 [23.1 kB]
+Get:7 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 gir1.2-freedesktop amd64 1.80.1-1 [49.7 kB]
+Get:8 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 gir1.2-glib-2.0-dev amd64 2.80.0-6ubuntu3.7 [848 kB]
+Get:9 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 gir1.2-freedesktop-dev amd64 1.80.1-1 [28.8 kB]
+Get:10 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 gir1.2-gdkpixbuf-2.0 amd64 2.42.10+dfsg-3ubuntu3.2 [9488 B]
+Get:11 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgtk2.0-common all 2.24.33-4ubuntu1.1 [127 kB]
+Get:12 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libharfbuzz-gobject0 amd64 8.3.0-2build2 [34.3 kB]
+Get:13 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 gir1.2-harfbuzz-0.0 amd64 8.3.0-2build2 [44.5 kB]
+Get:14 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libpangoxft-1.0-0 amd64 1.52.1+ds-1build1 [20.3 kB]
+Get:15 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 gir1.2-pango-1.0 amd64 1.52.1+ds-1build1 [34.8 kB]
+Get:16 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgtk2.0-0t64 amd64 2.24.33-4ubuntu1.1 [2006 kB]
+Get:17 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/universe amd64 gir1.2-gtk-2.0 amd64 2.24.33-4ubuntu1.1 [209 kB]
+Get:18 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 icu-devtools amd64 74.2-1ubuntu3.1 [212 kB]
+Get:19 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libglib2.0-dev-bin amd64 2.80.0-6ubuntu3.7 [138 kB]
+Get:20 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libblkid-dev amd64 2.39.3-9ubuntu6.4 [204 kB]
+Get:21 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libsepol-dev amd64 3.5-2build1 [384 kB]
+Get:22 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libpcre2-16-0 amd64 10.42-4ubuntu2.1 [210 kB]
+Get:23 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libpcre2-32-0 amd64 10.42-4ubuntu2.1 [197 kB]
+Get:24 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libpcre2-posix3 amd64 10.42-4ubuntu2.1 [6748 B]
+Get:25 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libpcre2-dev amd64 10.42-4ubuntu2.1 [736 kB]
+Get:26 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libselinux1-dev amd64 3.5-2ubuntu2.1 [164 kB]
+Get:27 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libmount-dev amd64 2.39.3-9ubuntu6.4 [14.9 kB]
+Get:28 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgirepository-2.0-0 amd64 2.80.0-6ubuntu3.7 [73.5 kB]
+Get:29 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libglib2.0-dev amd64 2.80.0-6ubuntu3.7 [1860 kB]
+Get:30 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libatk1.0-dev amd64 2.52.0-1build1 [100 kB]
+Get:31 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libpixman-1-dev amd64 0.42.2-1build1 [296 kB]
+Get:32 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libice-dev amd64 2:1.0.10-1build3 [51.0 kB]
+Get:33 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libsm-dev amd64 2:1.2.3-1build3 [17.8 kB]
+Get:34 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-render0-dev amd64 1.15-1ubuntu2 [19.6 kB]
+Get:35 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-shm0-dev amd64 1.15-1ubuntu2 [8246 B]
+Get:36 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libcairo2-dev amd64 1.18.0-3build1 [41.1 kB]
+Get:37 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libdatrie-dev amd64 0.2.13-3build1 [19.4 kB]
+Get:38 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libdeflate-dev amd64 1.19-1build1.1 [50.9 kB]
+Get:39 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libfribidi-dev amd64 1.0.13-3build1 [64.8 kB]
+Get:40 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgdk-pixbuf2.0-bin amd64 2.42.10+dfsg-3ubuntu3.2 [13.9 kB]
+Get:41 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libjpeg-turbo8-dev amd64 2.1.5-2ubuntu2 [295 kB]
+Get:42 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libjpeg8-dev amd64 8c-2ubuntu11 [1484 B]
+Get:43 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libjpeg-dev amd64 8c-2ubuntu11 [1482 B]
+Get:44 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libjbig-dev amd64 2.1-6.1ubuntu2 [27.9 kB]
+Get:45 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libzstd-dev amd64 1.5.5+dfsg2-2build1.1 [364 kB]
+Get:46 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libwebpdecoder3 amd64 1.3.2-0.4build3 [114 kB]
+Get:47 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libsharpyuv-dev amd64 1.3.2-0.4build3 [16.0 kB]
+Get:48 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libwebp-dev amd64 1.3.2-0.4build3 [367 kB]
+Get:49 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libtiffxx6 amd64 4.5.1+git230720-4ubuntu2.4 [5648 B]
+Get:50 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 liblerc-dev amd64 4.0.0+ds-4ubuntu2 [182 kB]
+Get:51 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libtiff-dev amd64 4.5.1+git230720-4ubuntu2.4 [338 kB]
+Get:52 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgdk-pixbuf-2.0-dev amd64 2.42.10+dfsg-3ubuntu3.2 [48.0 kB]
+Get:53 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libgraphite2-dev amd64 1.3.14-2build1 [14.7 kB]
+Get:54 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libharfbuzz-subset0 amd64 8.3.0-2build2 [448 kB]
+Get:55 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libharfbuzz-cairo0 amd64 8.3.0-2build2 [26.2 kB]
+Get:56 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libicu-dev amd64 74.2-1ubuntu3.1 [11.9 MB]
+Get:57 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libharfbuzz-dev amd64 8.3.0-2build2 [142 kB]
+Get:58 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libthai-dev amd64 0.1.29-2build1 [26.6 kB]
+Get:59 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 pango1.0-tools amd64 1.52.1+ds-1build1 [36.7 kB]
+Get:60 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libpango1.0-dev amd64 1.52.1+ds-1build1 [147 kB]
+Get:61 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxinerama-dev amd64 2:1.1.4-3build1 [7988 B]
+Get:62 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxfixes-dev amd64 1:6.0.0-2build1 [12.1 kB]
+Get:63 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxi-dev amd64 2:1.8.1-1build1 [194 kB]
+Get:64 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxrandr-dev amd64 2:1.5.2-2build1 [26.4 kB]
+Get:65 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcursor-dev amd64 1:1.2.1-1build1 [31.8 kB]
+Get:66 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcomposite-dev amd64 1:0.4.5-1build3 [9374 B]
+Get:67 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxdamage-dev amd64 1:1.1.6-1build1 [5270 B]
+Get:68 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libxml2-utils amd64 2.9.14+dfsg-1.3ubuntu3.7 [39.4 kB]
+Get:69 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libgtk2.0-dev amd64 2.24.33-4ubuntu1.1 [779 kB]
+debconf: unable to initialize frontend: Dialog
+debconf: (No usable dialog-like program is installed, so the dialog based frontend cannot be used. at /usr/share/perl5/Debconf/FrontEnd/Dialog.pm line 79, <STDIN> line 69.)
+debconf: falling back to frontend: Readline
+Fetched 26.6 MB in 8s (3336 kB/s)
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 105170 files and directories currently installed.)
+Preparing to unpack .../00-libglib2.0-data_2.80.0-6ubuntu3.7_all.deb ...
+Unpacking libglib2.0-data (2.80.0-6ubuntu3.7) over (2.80.0-6ubuntu3.6) ...
+Preparing to unpack .../01-libglib2.0-bin_2.80.0-6ubuntu3.7_amd64.deb ...
+Unpacking libglib2.0-bin (2.80.0-6ubuntu3.7) over (2.80.0-6ubuntu3.6) ...
+Preparing to unpack .../02-gir1.2-glib-2.0_2.80.0-6ubuntu3.7_amd64.deb ...
+Unpacking gir1.2-glib-2.0:amd64 (2.80.0-6ubuntu3.7) over (2.80.0-6ubuntu3.6) ...
+Preparing to unpack .../03-libglib2.0-0t64_2.80.0-6ubuntu3.7_amd64.deb ...
+Unpacking libglib2.0-0t64:amd64 (2.80.0-6ubuntu3.7) over (2.80.0-6ubuntu3.6) ...
+Preparing to unpack .../04-libxml2_2.9.14+dfsg-1.3ubuntu3.7_amd64.deb ...
+Unpacking libxml2:amd64 (2.9.14+dfsg-1.3ubuntu3.7) over (2.9.14+dfsg-1.3ubuntu3.6) ...
+Selecting previously unselected package gir1.2-atk-1.0:amd64.
+Preparing to unpack .../05-gir1.2-atk-1.0_2.52.0-1build1_amd64.deb ...
+Unpacking gir1.2-atk-1.0:amd64 (2.52.0-1build1) ...
+Selecting previously unselected package gir1.2-freedesktop:amd64.
+Preparing to unpack .../06-gir1.2-freedesktop_1.80.1-1_amd64.deb ...
+Unpacking gir1.2-freedesktop:amd64 (1.80.1-1) ...
+Selecting previously unselected package gir1.2-glib-2.0-dev:amd64.
+Preparing to unpack .../07-gir1.2-glib-2.0-dev_2.80.0-6ubuntu3.7_amd64.deb ...
+Unpacking gir1.2-glib-2.0-dev:amd64 (2.80.0-6ubuntu3.7) ...
+Selecting previously unselected package gir1.2-freedesktop-dev:amd64.
+Preparing to unpack .../08-gir1.2-freedesktop-dev_1.80.1-1_amd64.deb ...
+Unpacking gir1.2-freedesktop-dev:amd64 (1.80.1-1) ...
+Selecting previously unselected package gir1.2-gdkpixbuf-2.0:amd64.
+Preparing to unpack .../09-gir1.2-gdkpixbuf-2.0_2.42.10+dfsg-3ubuntu3.2_amd64.deb ...
+Unpacking gir1.2-gdkpixbuf-2.0:amd64 (2.42.10+dfsg-3ubuntu3.2) ...
+Selecting previously unselected package libgtk2.0-common.
+Preparing to unpack .../10-libgtk2.0-common_2.24.33-4ubuntu1.1_all.deb ...
+Unpacking libgtk2.0-common (2.24.33-4ubuntu1.1) ...
+Selecting previously unselected package libharfbuzz-gobject0:amd64.
+Preparing to unpack .../11-libharfbuzz-gobject0_8.3.0-2build2_amd64.deb ...
+Unpacking libharfbuzz-gobject0:amd64 (8.3.0-2build2) ...
+Selecting previously unselected package gir1.2-harfbuzz-0.0:amd64.
+Preparing to unpack .../12-gir1.2-harfbuzz-0.0_8.3.0-2build2_amd64.deb ...
+Unpacking gir1.2-harfbuzz-0.0:amd64 (8.3.0-2build2) ...
+Selecting previously unselected package libpangoxft-1.0-0:amd64.
+Preparing to unpack .../13-libpangoxft-1.0-0_1.52.1+ds-1build1_amd64.deb ...
+Unpacking libpangoxft-1.0-0:amd64 (1.52.1+ds-1build1) ...
+Selecting previously unselected package gir1.2-pango-1.0:amd64.
+Preparing to unpack .../14-gir1.2-pango-1.0_1.52.1+ds-1build1_amd64.deb ...
+Unpacking gir1.2-pango-1.0:amd64 (1.52.1+ds-1build1) ...
+Selecting previously unselected package libgtk2.0-0t64:amd64.
+Preparing to unpack .../15-libgtk2.0-0t64_2.24.33-4ubuntu1.1_amd64.deb ...
+Unpacking libgtk2.0-0t64:amd64 (2.24.33-4ubuntu1.1) ...
+Selecting previously unselected package gir1.2-gtk-2.0:amd64.
+Preparing to unpack .../16-gir1.2-gtk-2.0_2.24.33-4ubuntu1.1_amd64.deb ...
+Unpacking gir1.2-gtk-2.0:amd64 (2.24.33-4ubuntu1.1) ...
+Selecting previously unselected package icu-devtools.
+Preparing to unpack .../17-icu-devtools_74.2-1ubuntu3.1_amd64.deb ...
+Unpacking icu-devtools (74.2-1ubuntu3.1) ...
+Selecting previously unselected package libglib2.0-dev-bin.
+Preparing to unpack .../18-libglib2.0-dev-bin_2.80.0-6ubuntu3.7_amd64.deb ...
+Unpacking libglib2.0-dev-bin (2.80.0-6ubuntu3.7) ...
+Selecting previously unselected package libblkid-dev:amd64.
+Preparing to unpack .../19-libblkid-dev_2.39.3-9ubuntu6.4_amd64.deb ...
+Unpacking libblkid-dev:amd64 (2.39.3-9ubuntu6.4) ...
+Selecting previously unselected package libsepol-dev:amd64.
+Preparing to unpack .../20-libsepol-dev_3.5-2build1_amd64.deb ...
+Unpacking libsepol-dev:amd64 (3.5-2build1) ...
+Selecting previously unselected package libpcre2-16-0:amd64.
+Preparing to unpack .../21-libpcre2-16-0_10.42-4ubuntu2.1_amd64.deb ...
+Unpacking libpcre2-16-0:amd64 (10.42-4ubuntu2.1) ...
+Selecting previously unselected package libpcre2-32-0:amd64.
+Preparing to unpack .../22-libpcre2-32-0_10.42-4ubuntu2.1_amd64.deb ...
+Unpacking libpcre2-32-0:amd64 (10.42-4ubuntu2.1) ...
+Selecting previously unselected package libpcre2-posix3:amd64.
+Preparing to unpack .../23-libpcre2-posix3_10.42-4ubuntu2.1_amd64.deb ...
+Unpacking libpcre2-posix3:amd64 (10.42-4ubuntu2.1) ...
+Selecting previously unselected package libpcre2-dev:amd64.
+Preparing to unpack .../24-libpcre2-dev_10.42-4ubuntu2.1_amd64.deb ...
+Unpacking libpcre2-dev:amd64 (10.42-4ubuntu2.1) ...
+Selecting previously unselected package libselinux1-dev:amd64.
+Preparing to unpack .../25-libselinux1-dev_3.5-2ubuntu2.1_amd64.deb ...
+Unpacking libselinux1-dev:amd64 (3.5-2ubuntu2.1) ...
+Selecting previously unselected package libmount-dev:amd64.
+Preparing to unpack .../26-libmount-dev_2.39.3-9ubuntu6.4_amd64.deb ...
+Unpacking libmount-dev:amd64 (2.39.3-9ubuntu6.4) ...
+Selecting previously unselected package libgirepository-2.0-0:amd64.
+Preparing to unpack .../27-libgirepository-2.0-0_2.80.0-6ubuntu3.7_amd64.deb ...
+Unpacking libgirepository-2.0-0:amd64 (2.80.0-6ubuntu3.7) ...
+Selecting previously unselected package libglib2.0-dev:amd64.
+Preparing to unpack .../28-libglib2.0-dev_2.80.0-6ubuntu3.7_amd64.deb ...
+Unpacking libglib2.0-dev:amd64 (2.80.0-6ubuntu3.7) ...
+Selecting previously unselected package libatk1.0-dev:amd64.
+Preparing to unpack .../29-libatk1.0-dev_2.52.0-1build1_amd64.deb ...
+Unpacking libatk1.0-dev:amd64 (2.52.0-1build1) ...
+Selecting previously unselected package libpixman-1-dev:amd64.
+Preparing to unpack .../30-libpixman-1-dev_0.42.2-1build1_amd64.deb ...
+Unpacking libpixman-1-dev:amd64 (0.42.2-1build1) ...
+Selecting previously unselected package libice-dev:amd64.
+Preparing to unpack .../31-libice-dev_2%3a1.0.10-1build3_amd64.deb ...
+Unpacking libice-dev:amd64 (2:1.0.10-1build3) ...
+Selecting previously unselected package libsm-dev:amd64.
+Preparing to unpack .../32-libsm-dev_2%3a1.2.3-1build3_amd64.deb ...
+Unpacking libsm-dev:amd64 (2:1.2.3-1build3) ...
+Selecting previously unselected package libxcb-render0-dev:amd64.
+Preparing to unpack .../33-libxcb-render0-dev_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-render0-dev:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-shm0-dev:amd64.
+Preparing to unpack .../34-libxcb-shm0-dev_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-shm0-dev:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libcairo2-dev:amd64.
+Preparing to unpack .../35-libcairo2-dev_1.18.0-3build1_amd64.deb ...
+Unpacking libcairo2-dev:amd64 (1.18.0-3build1) ...
+Selecting previously unselected package libdatrie-dev:amd64.
+Preparing to unpack .../36-libdatrie-dev_0.2.13-3build1_amd64.deb ...
+Unpacking libdatrie-dev:amd64 (0.2.13-3build1) ...
+Selecting previously unselected package libdeflate-dev:amd64.
+Preparing to unpack .../37-libdeflate-dev_1.19-1build1.1_amd64.deb ...
+Unpacking libdeflate-dev:amd64 (1.19-1build1.1) ...
+Selecting previously unselected package libfribidi-dev:amd64.
+Preparing to unpack .../38-libfribidi-dev_1.0.13-3build1_amd64.deb ...
+Unpacking libfribidi-dev:amd64 (1.0.13-3build1) ...
+Selecting previously unselected package libgdk-pixbuf2.0-bin.
+Preparing to unpack .../39-libgdk-pixbuf2.0-bin_2.42.10+dfsg-3ubuntu3.2_amd64.deb ...
+Unpacking libgdk-pixbuf2.0-bin (2.42.10+dfsg-3ubuntu3.2) ...
+Selecting previously unselected package libjpeg-turbo8-dev:amd64.
+Preparing to unpack .../40-libjpeg-turbo8-dev_2.1.5-2ubuntu2_amd64.deb ...
+Unpacking libjpeg-turbo8-dev:amd64 (2.1.5-2ubuntu2) ...
+Selecting previously unselected package libjpeg8-dev:amd64.
+Preparing to unpack .../41-libjpeg8-dev_8c-2ubuntu11_amd64.deb ...
+Unpacking libjpeg8-dev:amd64 (8c-2ubuntu11) ...
+Selecting previously unselected package libjpeg-dev:amd64.
+Preparing to unpack .../42-libjpeg-dev_8c-2ubuntu11_amd64.deb ...
+Unpacking libjpeg-dev:amd64 (8c-2ubuntu11) ...
+Selecting previously unselected package libjbig-dev:amd64.
+Preparing to unpack .../43-libjbig-dev_2.1-6.1ubuntu2_amd64.deb ...
+Unpacking libjbig-dev:amd64 (2.1-6.1ubuntu2) ...
+Selecting previously unselected package libzstd-dev:amd64.
+Preparing to unpack .../44-libzstd-dev_1.5.5+dfsg2-2build1.1_amd64.deb ...
+Unpacking libzstd-dev:amd64 (1.5.5+dfsg2-2build1.1) ...
+Selecting previously unselected package libwebpdecoder3:amd64.
+Preparing to unpack .../45-libwebpdecoder3_1.3.2-0.4build3_amd64.deb ...
+Unpacking libwebpdecoder3:amd64 (1.3.2-0.4build3) ...
+Selecting previously unselected package libsharpyuv-dev:amd64.
+Preparing to unpack .../46-libsharpyuv-dev_1.3.2-0.4build3_amd64.deb ...
+Unpacking libsharpyuv-dev:amd64 (1.3.2-0.4build3) ...
+Selecting previously unselected package libwebp-dev:amd64.
+Preparing to unpack .../47-libwebp-dev_1.3.2-0.4build3_amd64.deb ...
+Unpacking libwebp-dev:amd64 (1.3.2-0.4build3) ...
+Selecting previously unselected package libtiffxx6:amd64.
+Preparing to unpack .../48-libtiffxx6_4.5.1+git230720-4ubuntu2.4_amd64.deb ...
+Unpacking libtiffxx6:amd64 (4.5.1+git230720-4ubuntu2.4) ...
+Selecting previously unselected package liblerc-dev:amd64.
+Preparing to unpack .../49-liblerc-dev_4.0.0+ds-4ubuntu2_amd64.deb ...
+Unpacking liblerc-dev:amd64 (4.0.0+ds-4ubuntu2) ...
+Selecting previously unselected package libtiff-dev:amd64.
+Preparing to unpack .../50-libtiff-dev_4.5.1+git230720-4ubuntu2.4_amd64.deb ...
+Unpacking libtiff-dev:amd64 (4.5.1+git230720-4ubuntu2.4) ...
+Selecting previously unselected package libgdk-pixbuf-2.0-dev:amd64.
+Preparing to unpack .../51-libgdk-pixbuf-2.0-dev_2.42.10+dfsg-3ubuntu3.2_amd64.deb ...
+Unpacking libgdk-pixbuf-2.0-dev:amd64 (2.42.10+dfsg-3ubuntu3.2) ...
+Selecting previously unselected package libgraphite2-dev:amd64.
+Preparing to unpack .../52-libgraphite2-dev_1.3.14-2build1_amd64.deb ...
+Unpacking libgraphite2-dev:amd64 (1.3.14-2build1) ...
+Selecting previously unselected package libharfbuzz-subset0:amd64.
+Preparing to unpack .../53-libharfbuzz-subset0_8.3.0-2build2_amd64.deb ...
+Unpacking libharfbuzz-subset0:amd64 (8.3.0-2build2) ...
+Selecting previously unselected package libharfbuzz-cairo0:amd64.
+Preparing to unpack .../54-libharfbuzz-cairo0_8.3.0-2build2_amd64.deb ...
+Unpacking libharfbuzz-cairo0:amd64 (8.3.0-2build2) ...
+Selecting previously unselected package libicu-dev:amd64.
+Preparing to unpack .../55-libicu-dev_74.2-1ubuntu3.1_amd64.deb ...
+Unpacking libicu-dev:amd64 (74.2-1ubuntu3.1) ...
+Selecting previously unselected package libharfbuzz-dev:amd64.
+Preparing to unpack .../56-libharfbuzz-dev_8.3.0-2build2_amd64.deb ...
+Unpacking libharfbuzz-dev:amd64 (8.3.0-2build2) ...
+Selecting previously unselected package libthai-dev:amd64.
+Preparing to unpack .../57-libthai-dev_0.1.29-2build1_amd64.deb ...
+Unpacking libthai-dev:amd64 (0.1.29-2build1) ...
+Selecting previously unselected package pango1.0-tools.
+Preparing to unpack .../58-pango1.0-tools_1.52.1+ds-1build1_amd64.deb ...
+Unpacking pango1.0-tools (1.52.1+ds-1build1) ...
+Selecting previously unselected package libpango1.0-dev:amd64.
+Preparing to unpack .../59-libpango1.0-dev_1.52.1+ds-1build1_amd64.deb ...
+Unpacking libpango1.0-dev:amd64 (1.52.1+ds-1build1) ...
+Selecting previously unselected package libxinerama-dev:amd64.
+Preparing to unpack .../60-libxinerama-dev_2%3a1.1.4-3build1_amd64.deb ...
+Unpacking libxinerama-dev:amd64 (2:1.1.4-3build1) ...
+Selecting previously unselected package libxfixes-dev:amd64.
+Preparing to unpack .../61-libxfixes-dev_1%3a6.0.0-2build1_amd64.deb ...
+Unpacking libxfixes-dev:amd64 (1:6.0.0-2build1) ...
+Selecting previously unselected package libxi-dev:amd64.
+Preparing to unpack .../62-libxi-dev_2%3a1.8.1-1build1_amd64.deb ...
+Unpacking libxi-dev:amd64 (2:1.8.1-1build1) ...
+Selecting previously unselected package libxrandr-dev:amd64.
+Preparing to unpack .../63-libxrandr-dev_2%3a1.5.2-2build1_amd64.deb ...
+Unpacking libxrandr-dev:amd64 (2:1.5.2-2build1) ...
+Selecting previously unselected package libxcursor-dev:amd64.
+Preparing to unpack .../64-libxcursor-dev_1%3a1.2.1-1build1_amd64.deb ...
+Unpacking libxcursor-dev:amd64 (1:1.2.1-1build1) ...
+Selecting previously unselected package libxcomposite-dev:amd64.
+Preparing to unpack .../65-libxcomposite-dev_1%3a0.4.5-1build3_amd64.deb ...
+Unpacking libxcomposite-dev:amd64 (1:0.4.5-1build3) ...
+Selecting previously unselected package libxdamage-dev:amd64.
+Preparing to unpack .../66-libxdamage-dev_1%3a1.1.6-1build1_amd64.deb ...
+Unpacking libxdamage-dev:amd64 (1:1.1.6-1build1) ...
+Selecting previously unselected package libxml2-utils.
+Preparing to unpack .../67-libxml2-utils_2.9.14+dfsg-1.3ubuntu3.7_amd64.deb ...
+Unpacking libxml2-utils (2.9.14+dfsg-1.3ubuntu3.7) ...
+Selecting previously unselected package libgtk2.0-dev:amd64.
+Preparing to unpack .../68-libgtk2.0-dev_2.24.33-4ubuntu1.1_amd64.deb ...
+Unpacking libgtk2.0-dev:amd64 (2.24.33-4ubuntu1.1) ...
+Setting up libblkid-dev:amd64 (2.39.3-9ubuntu6.4) ...
+Setting up libjpeg-turbo8-dev:amd64 (2.1.5-2ubuntu2) ...
+Setting up libpixman-1-dev:amd64 (0.42.2-1build1) ...
+Setting up libzstd-dev:amd64 (1.5.5+dfsg2-2build1.1) ...
+Setting up libice-dev:amd64 (2:1.0.10-1build3) ...
+Setting up libsm-dev:amd64 (2:1.2.3-1build3) ...
+Setting up libfribidi-dev:amd64 (1.0.13-3build1) ...
+Setting up libjbig-dev:amd64 (2.1-6.1ubuntu2) ...
+Setting up libwebpdecoder3:amd64 (1.3.2-0.4build3) ...
+Setting up libpcre2-16-0:amd64 (10.42-4ubuntu2.1) ...
+Setting up libxfixes-dev:amd64 (1:6.0.0-2build1) ...
+Setting up libxcb-shm0-dev:amd64 (1.15-1ubuntu2) ...
+Setting up libgraphite2-dev:amd64 (1.3.14-2build1) ...
+Setting up libxrandr-dev:amd64 (2:1.5.2-2build1) ...
+Setting up libpcre2-32-0:amd64 (10.42-4ubuntu2.1) ...
+Setting up libglib2.0-0t64:amd64 (2.80.0-6ubuntu3.7) ...
+Setting up libglib2.0-data (2.80.0-6ubuntu3.7) ...
+Setting up libharfbuzz-cairo0:amd64 (8.3.0-2build2) ...
+Setting up icu-devtools (74.2-1ubuntu3.1) ...
+Setting up libxinerama-dev:amd64 (2:1.1.4-3build1) ...
+Setting up libsepol-dev:amd64 (3.5-2build1) ...
+Setting up libxcb-render0-dev:amd64 (1.15-1ubuntu2) ...
+Setting up gir1.2-glib-2.0:amd64 (2.80.0-6ubuntu3.7) ...
+Setting up liblerc-dev:amd64 (4.0.0+ds-4ubuntu2) ...
+Setting up libpcre2-posix3:amd64 (10.42-4ubuntu2.1) ...
+Setting up libdatrie-dev:amd64 (0.2.13-3build1) ...
+Setting up gir1.2-glib-2.0-dev:amd64 (2.80.0-6ubuntu3.7) ...
+Setting up libgdk-pixbuf2.0-bin (2.42.10+dfsg-3ubuntu3.2) ...
+Setting up libharfbuzz-subset0:amd64 (8.3.0-2build2) ...
+Setting up libgtk2.0-common (2.24.33-4ubuntu1.1) ...
+Setting up libjpeg8-dev:amd64 (8c-2ubuntu11) ...
+Setting up libxi-dev:amd64 (2:1.8.1-1build1) ...
+Setting up libsharpyuv-dev:amd64 (1.3.2-0.4build3) ...
+Setting up libtiffxx6:amd64 (4.5.1+git230720-4ubuntu2.4) ...
+Setting up libdeflate-dev:amd64 (1.19-1build1.1) ...
+Setting up libicu-dev:amd64 (74.2-1ubuntu3.1) ...
+Setting up libxml2:amd64 (2.9.14+dfsg-1.3ubuntu3.7) ...
+Setting up libxdamage-dev:amd64 (1:1.1.6-1build1) ...
+Setting up libglib2.0-dev-bin (2.80.0-6ubuntu3.7) ...
+Setting up gir1.2-freedesktop:amd64 (1.80.1-1) ...
+Setting up libpangoxft-1.0-0:amd64 (1.52.1+ds-1build1) ...
+Setting up libpcre2-dev:amd64 (10.42-4ubuntu2.1) ...
+Setting up gir1.2-gdkpixbuf-2.0:amd64 (2.42.10+dfsg-3ubuntu3.2) ...
+Setting up libgirepository-2.0-0:amd64 (2.80.0-6ubuntu3.7) ...
+Setting up gir1.2-atk-1.0:amd64 (2.52.0-1build1) ...
+Setting up libselinux1-dev:amd64 (3.5-2ubuntu2.1) ...
+Setting up libxcomposite-dev:amd64 (1:0.4.5-1build3) ...
+Setting up libxcursor-dev:amd64 (1:1.2.1-1build1) ...
+Setting up pango1.0-tools (1.52.1+ds-1build1) ...
+Setting up libjpeg-dev:amd64 (8c-2ubuntu11) ...
+Setting up libglib2.0-bin (2.80.0-6ubuntu3.7) ...
+Setting up libharfbuzz-gobject0:amd64 (8.3.0-2build2) ...
+Setting up gir1.2-harfbuzz-0.0:amd64 (8.3.0-2build2) ...
+Setting up gir1.2-pango-1.0:amd64 (1.52.1+ds-1build1) ...
+Setting up libwebp-dev:amd64 (1.3.2-0.4build3) ...
+Setting up libtiff-dev:amd64 (4.5.1+git230720-4ubuntu2.4) ...
+Setting up gir1.2-freedesktop-dev:amd64 (1.80.1-1) ...
+Setting up libgtk2.0-0t64:amd64 (2.24.33-4ubuntu1.1) ...
+Setting up libthai-dev:amd64 (0.1.29-2build1) ...
+Setting up libxml2-utils (2.9.14+dfsg-1.3ubuntu3.7) ...
+Setting up libmount-dev:amd64 (2.39.3-9ubuntu6.4) ...
+Setting up libglib2.0-dev:amd64 (2.80.0-6ubuntu3.7) ...
+Setting up gir1.2-gtk-2.0:amd64 (2.24.33-4ubuntu1.1) ...
+Setting up libcairo2-dev:amd64 (1.18.0-3build1) ...
+Setting up libatk1.0-dev:amd64 (2.52.0-1build1) ...
+Setting up libgdk-pixbuf-2.0-dev:amd64 (2.42.10+dfsg-3ubuntu3.2) ...
+Setting up libharfbuzz-dev:amd64 (8.3.0-2build2) ...
+Setting up libpango1.0-dev:amd64 (1.52.1+ds-1build1) ...
+Setting up libgtk2.0-dev:amd64 (2.24.33-4ubuntu1.1) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.6) ...
 
-The package fmt provides CMake targets:
+opengl/system: RUN: sudo apt-get update
+Hit:1 http://us-central1.gce.archive.ubuntu.com/ubuntu noble InRelease
+Hit:2 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates InRelease
+Hit:3 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-backports InRelease
+Hit:4 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-security InRelease
+Hit:5 https://download.docker.com/linux/ubuntu noble InRelease
+Hit:6 https://ppa.launchpadcontent.net/git-core/ppa/ubuntu noble InRelease
+Hit:7 https://dl.google.com/linux/chrome/deb stable InRelease
+Reading package lists...
 
-    find_package(fmt CONFIG REQUIRED)
-    target_link_libraries(main PRIVATE fmt::fmt)
+opengl/system: RUN: sudo apt-get install -y --no-install-recommends libgl-dev
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  libglx-dev
+The following NEW packages will be installed:
+  libgl-dev libglx-dev
+0 upgraded, 2 newly installed, 0 to remove and 7 not upgraded.
+Need to get 117 kB of archives.
+After this operation, 1486 kB of additional disk space will be used.
+Get:1 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libglx-dev amd64 1.7.0-1build1 [14.2 kB]
+Get:2 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libgl-dev amd64 1.7.0-1build1 [102 kB]
+debconf: unable to initialize frontend: Dialog
+debconf: (No usable dialog-like program is installed, so the dialog based frontend cannot be used. at /usr/share/perl5/Debconf/FrontEnd/Dialog.pm line 79, <STDIN> line 2.)
+debconf: falling back to frontend: Readline
+Fetched 117 kB in 0s (2507 kB/s)
+Selecting previously unselected package libglx-dev:amd64.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 107484 files and directories currently installed.)
+Preparing to unpack .../libglx-dev_1.7.0-1build1_amd64.deb ...
+Unpacking libglx-dev:amd64 (1.7.0-1build1) ...
+Selecting previously unselected package libgl-dev:amd64.
+Preparing to unpack .../libgl-dev_1.7.0-1build1_amd64.deb ...
+Unpacking libgl-dev:amd64 (1.7.0-1build1) ...
+Setting up libglx-dev:amd64 (1.7.0-1build1) ...
+Setting up libgl-dev:amd64 (1.7.0-1build1) ...
 
-    # Or use the header-only version
-    find_package(fmt CONFIG REQUIRED)
-    target_link_libraries(main PRIVATE fmt::fmt-header-only)
+xkeyboard-config/system: System requirements:  already installed
+xorg/system: RUN: sudo apt-get update
+Hit:1 https://download.docker.com/linux/ubuntu noble InRelease
+Hit:2 http://us-central1.gce.archive.ubuntu.com/ubuntu noble InRelease
+Hit:3 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates InRelease
+Hit:4 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-backports InRelease
+Hit:5 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-security InRelease
+Hit:6 https://ppa.launchpadcontent.net/git-core/ppa/ubuntu noble InRelease
+Hit:7 https://dl.google.com/linux/chrome/deb stable InRelease
+Reading package lists...
 
-freeglut provides CMake targets:
+xorg/system: RUN: sudo apt-get install -y --no-install-recommends libx11-xcb-dev libfontenc-dev libxaw7-dev libxkbfile-dev libxmu-dev libxmuu-dev libxpm-dev libxres-dev libxt-dev libxtst-dev libxv-dev libxxf86vm-dev libxcb-glx0-dev libxcb-render-util0-dev libxcb-xkb-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-xinerama0-dev libxcb-dri3-dev libxcb-cursor-dev libxcb-dri2-0-dev libxcb-dri3-dev libxcb-present-dev libxcb-composite0-dev libxcb-ewmh-dev libxcb-res0-dev
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  libxcb-composite0 libxcb-cursor0 libxcb-dri2-0 libxcb-ewmh2 libxcb-icccm4
+  libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-res0 libxcb-shape0
+  libxcb-util1 libxcb-xinerama0 libxmu-headers libxres1 libxv1
+Suggested packages:
+  libxaw-doc libxt-doc
+The following NEW packages will be installed:
+  libfontenc-dev libx11-xcb-dev libxaw7-dev libxcb-composite0
+  libxcb-composite0-dev libxcb-cursor-dev libxcb-cursor0 libxcb-dri2-0
+  libxcb-dri2-0-dev libxcb-dri3-dev libxcb-ewmh-dev libxcb-ewmh2
+  libxcb-glx0-dev libxcb-icccm4 libxcb-icccm4-dev libxcb-image0
+  libxcb-image0-dev libxcb-keysyms1 libxcb-keysyms1-dev libxcb-present-dev
+  libxcb-randr0-dev libxcb-render-util0 libxcb-render-util0-dev libxcb-res0
+  libxcb-res0-dev libxcb-shape0 libxcb-shape0-dev libxcb-sync-dev libxcb-util1
+  libxcb-xfixes0-dev libxcb-xinerama0 libxcb-xinerama0-dev libxcb-xkb-dev
+  libxkbfile-dev libxmu-dev libxmu-headers libxmuu-dev libxpm-dev libxres-dev
+  libxres1 libxt-dev libxtst-dev libxv-dev libxv1 libxxf86vm-dev
+0 upgraded, 45 newly installed, 0 to remove and 7 not upgraded.
+Need to get 1486 kB of archives.
+After this operation, 7008 kB of additional disk space will be used.
+Get:1 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libfontenc-dev amd64 1:1.1.8-1build1 [15.6 kB]
+Get:2 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libx11-xcb-dev amd64 2:1.8.7-1build1 [9950 B]
+Get:3 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxt-dev amd64 1:1.2.1-1.2build1 [394 kB]
+Get:4 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxmu-headers all 2:1.1.3-3build2 [53.0 kB]
+Get:5 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxmu-dev amd64 2:1.1.3-3build2 [55.4 kB]
+Get:6 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxpm-dev amd64 1:3.5.17-1build2 [109 kB]
+Get:7 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxaw7-dev amd64 2:1.0.14-1build2 [253 kB]
+Get:8 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-composite0 amd64 1.15-1ubuntu2 [5304 B]
+Get:9 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-shape0 amd64 1.15-1ubuntu2 [6100 B]
+Get:10 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-shape0-dev amd64 1.15-1ubuntu2 [7310 B]
+Get:11 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-xfixes0-dev amd64 1.15-1ubuntu2 [12.6 kB]
+Get:12 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-composite0-dev amd64 1.15-1ubuntu2 [6526 B]
+Get:13 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-dri2-0 amd64 1.15-1ubuntu2 [7222 B]
+Get:14 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-dri2-0-dev amd64 1.15-1ubuntu2 [8688 B]
+Get:15 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-dri3-dev amd64 1.15-1ubuntu2 [8048 B]
+Get:16 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-glx0-dev amd64 1.15-1ubuntu2 [29.3 kB]
+Get:17 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-randr0-dev amd64 1.15-1ubuntu2 [21.7 kB]
+Get:18 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-sync-dev amd64 1.15-1ubuntu2 [11.1 kB]
+Get:19 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-present-dev amd64 1.15-1ubuntu2 [7164 B]
+Get:20 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-res0 amd64 1.15-1ubuntu2 [6682 B]
+Get:21 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-res0-dev amd64 1.15-1ubuntu2 [7528 B]
+Get:22 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-xinerama0 amd64 1.15-1ubuntu2 [5410 B]
+Get:23 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-xinerama0-dev amd64 1.15-1ubuntu2 [6034 B]
+Get:24 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-xkb-dev amd64 1.15-1ubuntu2 [42.5 kB]
+Get:25 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxkbfile-dev amd64 1:1.1.0-1build4 [84.4 kB]
+Get:26 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxmuu-dev amd64 2:1.1.3-3build2 [7882 B]
+Get:27 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxres1 amd64 2:1.2.1-1build1 [6778 B]
+Get:28 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxres-dev amd64 2:1.2.1-1build1 [8492 B]
+Get:29 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxtst-dev amd64 2:1.2.3-1.1build1 [15.9 kB]
+Get:30 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxv1 amd64 2:1.0.11-1.1build1 [10.7 kB]
+Get:31 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxv-dev amd64 2:1.0.11-1.1build1 [33.3 kB]
+Get:32 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxxf86vm-dev amd64 1:1.1.4-1build4 [13.8 kB]
+Get:33 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-util1 amd64 0.4.0-1build3 [10.7 kB]
+Get:34 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-image0 amd64 0.4.0-2build1 [10.8 kB]
+Get:35 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-render-util0 amd64 0.3.9-1build4 [9608 B]
+Get:36 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/universe amd64 libxcb-cursor0 amd64 0.1.4-1build1 [10.7 kB]
+Get:37 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-render-util0-dev amd64 0.3.9-1build4 [67.4 kB]
+Get:38 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-image0-dev amd64 0.4.0-2build1 [16.3 kB]
+Get:39 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/universe amd64 libxcb-cursor-dev amd64 0.1.4-1build1 [12.7 kB]
+Get:40 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-ewmh2 amd64 0.4.1-1.1build3 [18.1 kB]
+Get:41 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-ewmh-dev amd64 0.4.1-1.1build3 [22.7 kB]
+Get:42 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-icccm4 amd64 0.4.1-1.1build3 [10.8 kB]
+Get:43 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-icccm4-dev amd64 0.4.1-1.1build3 [11.3 kB]
+Get:44 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-keysyms1 amd64 0.4.0-1build4 [7956 B]
+Get:45 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-keysyms1-dev amd64 0.4.0-1build4 [7030 B]
+debconf: unable to initialize frontend: Dialog
+debconf: (No usable dialog-like program is installed, so the dialog based frontend cannot be used. at /usr/share/perl5/Debconf/FrontEnd/Dialog.pm line 79, <STDIN> line 45.)
+debconf: falling back to frontend: Readline
+Fetched 1486 kB in 1s (1225 kB/s)
+Selecting previously unselected package libfontenc-dev:amd64.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 107505 files and directories currently installed.)
+Preparing to unpack .../00-libfontenc-dev_1%3a1.1.8-1build1_amd64.deb ...
+Unpacking libfontenc-dev:amd64 (1:1.1.8-1build1) ...
+Selecting previously unselected package libx11-xcb-dev:amd64.
+Preparing to unpack .../01-libx11-xcb-dev_2%3a1.8.7-1build1_amd64.deb ...
+Unpacking libx11-xcb-dev:amd64 (2:1.8.7-1build1) ...
+Selecting previously unselected package libxt-dev:amd64.
+Preparing to unpack .../02-libxt-dev_1%3a1.2.1-1.2build1_amd64.deb ...
+Unpacking libxt-dev:amd64 (1:1.2.1-1.2build1) ...
+Selecting previously unselected package libxmu-headers.
+Preparing to unpack .../03-libxmu-headers_2%3a1.1.3-3build2_all.deb ...
+Unpacking libxmu-headers (2:1.1.3-3build2) ...
+Selecting previously unselected package libxmu-dev:amd64.
+Preparing to unpack .../04-libxmu-dev_2%3a1.1.3-3build2_amd64.deb ...
+Unpacking libxmu-dev:amd64 (2:1.1.3-3build2) ...
+Selecting previously unselected package libxpm-dev:amd64.
+Preparing to unpack .../05-libxpm-dev_1%3a3.5.17-1build2_amd64.deb ...
+Unpacking libxpm-dev:amd64 (1:3.5.17-1build2) ...
+Selecting previously unselected package libxaw7-dev:amd64.
+Preparing to unpack .../06-libxaw7-dev_2%3a1.0.14-1build2_amd64.deb ...
+Unpacking libxaw7-dev:amd64 (2:1.0.14-1build2) ...
+Selecting previously unselected package libxcb-composite0:amd64.
+Preparing to unpack .../07-libxcb-composite0_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-composite0:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-shape0:amd64.
+Preparing to unpack .../08-libxcb-shape0_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-shape0:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-shape0-dev:amd64.
+Preparing to unpack .../09-libxcb-shape0-dev_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-shape0-dev:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-xfixes0-dev:amd64.
+Preparing to unpack .../10-libxcb-xfixes0-dev_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-xfixes0-dev:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-composite0-dev:amd64.
+Preparing to unpack .../11-libxcb-composite0-dev_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-composite0-dev:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-dri2-0:amd64.
+Preparing to unpack .../12-libxcb-dri2-0_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-dri2-0:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-dri2-0-dev:amd64.
+Preparing to unpack .../13-libxcb-dri2-0-dev_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-dri2-0-dev:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-dri3-dev:amd64.
+Preparing to unpack .../14-libxcb-dri3-dev_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-dri3-dev:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-glx0-dev:amd64.
+Preparing to unpack .../15-libxcb-glx0-dev_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-glx0-dev:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-randr0-dev:amd64.
+Preparing to unpack .../16-libxcb-randr0-dev_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-randr0-dev:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-sync-dev:amd64.
+Preparing to unpack .../17-libxcb-sync-dev_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-sync-dev:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-present-dev:amd64.
+Preparing to unpack .../18-libxcb-present-dev_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-present-dev:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-res0:amd64.
+Preparing to unpack .../19-libxcb-res0_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-res0:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-res0-dev:amd64.
+Preparing to unpack .../20-libxcb-res0-dev_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-res0-dev:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-xinerama0:amd64.
+Preparing to unpack .../21-libxcb-xinerama0_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-xinerama0:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-xinerama0-dev:amd64.
+Preparing to unpack .../22-libxcb-xinerama0-dev_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-xinerama0-dev:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-xkb-dev:amd64.
+Preparing to unpack .../23-libxcb-xkb-dev_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-xkb-dev:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxkbfile-dev:amd64.
+Preparing to unpack .../24-libxkbfile-dev_1%3a1.1.0-1build4_amd64.deb ...
+Unpacking libxkbfile-dev:amd64 (1:1.1.0-1build4) ...
+Selecting previously unselected package libxmuu-dev:amd64.
+Preparing to unpack .../25-libxmuu-dev_2%3a1.1.3-3build2_amd64.deb ...
+Unpacking libxmuu-dev:amd64 (2:1.1.3-3build2) ...
+Selecting previously unselected package libxres1:amd64.
+Preparing to unpack .../26-libxres1_2%3a1.2.1-1build1_amd64.deb ...
+Unpacking libxres1:amd64 (2:1.2.1-1build1) ...
+Selecting previously unselected package libxres-dev:amd64.
+Preparing to unpack .../27-libxres-dev_2%3a1.2.1-1build1_amd64.deb ...
+Unpacking libxres-dev:amd64 (2:1.2.1-1build1) ...
+Selecting previously unselected package libxtst-dev:amd64.
+Preparing to unpack .../28-libxtst-dev_2%3a1.2.3-1.1build1_amd64.deb ...
+Unpacking libxtst-dev:amd64 (2:1.2.3-1.1build1) ...
+Selecting previously unselected package libxv1:amd64.
+Preparing to unpack .../29-libxv1_2%3a1.0.11-1.1build1_amd64.deb ...
+Unpacking libxv1:amd64 (2:1.0.11-1.1build1) ...
+Selecting previously unselected package libxv-dev:amd64.
+Preparing to unpack .../30-libxv-dev_2%3a1.0.11-1.1build1_amd64.deb ...
+Unpacking libxv-dev:amd64 (2:1.0.11-1.1build1) ...
+Selecting previously unselected package libxxf86vm-dev:amd64.
+Preparing to unpack .../31-libxxf86vm-dev_1%3a1.1.4-1build4_amd64.deb ...
+Unpacking libxxf86vm-dev:amd64 (1:1.1.4-1build4) ...
+Selecting previously unselected package libxcb-util1:amd64.
+Preparing to unpack .../32-libxcb-util1_0.4.0-1build3_amd64.deb ...
+Unpacking libxcb-util1:amd64 (0.4.0-1build3) ...
+Selecting previously unselected package libxcb-image0:amd64.
+Preparing to unpack .../33-libxcb-image0_0.4.0-2build1_amd64.deb ...
+Unpacking libxcb-image0:amd64 (0.4.0-2build1) ...
+Selecting previously unselected package libxcb-render-util0:amd64.
+Preparing to unpack .../34-libxcb-render-util0_0.3.9-1build4_amd64.deb ...
+Unpacking libxcb-render-util0:amd64 (0.3.9-1build4) ...
+Selecting previously unselected package libxcb-cursor0:amd64.
+Preparing to unpack .../35-libxcb-cursor0_0.1.4-1build1_amd64.deb ...
+Unpacking libxcb-cursor0:amd64 (0.1.4-1build1) ...
+Selecting previously unselected package libxcb-render-util0-dev:amd64.
+Preparing to unpack .../36-libxcb-render-util0-dev_0.3.9-1build4_amd64.deb ...
+Unpacking libxcb-render-util0-dev:amd64 (0.3.9-1build4) ...
+Selecting previously unselected package libxcb-image0-dev:amd64.
+Preparing to unpack .../37-libxcb-image0-dev_0.4.0-2build1_amd64.deb ...
+Unpacking libxcb-image0-dev:amd64 (0.4.0-2build1) ...
+Selecting previously unselected package libxcb-cursor-dev:amd64.
+Preparing to unpack .../38-libxcb-cursor-dev_0.1.4-1build1_amd64.deb ...
+Unpacking libxcb-cursor-dev:amd64 (0.1.4-1build1) ...
+Selecting previously unselected package libxcb-ewmh2:amd64.
+Preparing to unpack .../39-libxcb-ewmh2_0.4.1-1.1build3_amd64.deb ...
+Unpacking libxcb-ewmh2:amd64 (0.4.1-1.1build3) ...
+Selecting previously unselected package libxcb-ewmh-dev:amd64.
+Preparing to unpack .../40-libxcb-ewmh-dev_0.4.1-1.1build3_amd64.deb ...
+Unpacking libxcb-ewmh-dev:amd64 (0.4.1-1.1build3) ...
+Selecting previously unselected package libxcb-icccm4:amd64.
+Preparing to unpack .../41-libxcb-icccm4_0.4.1-1.1build3_amd64.deb ...
+Unpacking libxcb-icccm4:amd64 (0.4.1-1.1build3) ...
+Selecting previously unselected package libxcb-icccm4-dev:amd64.
+Preparing to unpack .../42-libxcb-icccm4-dev_0.4.1-1.1build3_amd64.deb ...
+Unpacking libxcb-icccm4-dev:amd64 (0.4.1-1.1build3) ...
+Selecting previously unselected package libxcb-keysyms1:amd64.
+Preparing to unpack .../43-libxcb-keysyms1_0.4.0-1build4_amd64.deb ...
+Unpacking libxcb-keysyms1:amd64 (0.4.0-1build4) ...
+Selecting previously unselected package libxcb-keysyms1-dev:amd64.
+Preparing to unpack .../44-libxcb-keysyms1-dev_0.4.0-1build4_amd64.deb ...
+Unpacking libxcb-keysyms1-dev:amd64 (0.4.0-1build4) ...
+Setting up libx11-xcb-dev:amd64 (2:1.8.7-1build1) ...
+Setting up libxcb-res0:amd64 (1.15-1ubuntu2) ...
+Setting up libxmu-headers (2:1.1.3-3build2) ...
+Setting up libxxf86vm-dev:amd64 (1:1.1.4-1build4) ...
+Setting up libxcb-xkb-dev:amd64 (1.15-1ubuntu2) ...
+Setting up libxcb-keysyms1:amd64 (0.4.0-1build4) ...
+Setting up libxcb-shape0:amd64 (1.15-1ubuntu2) ...
+Setting up libfontenc-dev:amd64 (1:1.1.8-1build1) ...
+Setting up libxcb-dri3-dev:amd64 (1.15-1ubuntu2) ...
+Setting up libxcb-res0-dev:amd64 (1.15-1ubuntu2) ...
+Setting up libxcb-render-util0:amd64 (0.3.9-1build4) ...
+Setting up libxcb-icccm4:amd64 (0.4.1-1.1build3) ...
+Setting up libxcb-util1:amd64 (0.4.0-1build3) ...
+Setting up libxcb-image0:amd64 (0.4.0-2build1) ...
+Setting up libxcb-keysyms1-dev:amd64 (0.4.0-1build4) ...
+Setting up libxcb-xinerama0:amd64 (1.15-1ubuntu2) ...
+Setting up libxcb-randr0-dev:amd64 (1.15-1ubuntu2) ...
+Setting up libxt-dev:amd64 (1:1.2.1-1.2build1) ...
+Setting up libxcb-cursor0:amd64 (0.1.4-1build1) ...
+Setting up libxpm-dev:amd64 (1:3.5.17-1build2) ...
+Setting up libxv1:amd64 (2:1.0.11-1.1build1) ...
+Setting up libxcb-glx0-dev:amd64 (1.15-1ubuntu2) ...
+Setting up libxcb-icccm4-dev:amd64 (0.4.1-1.1build3) ...
+Setting up libxcb-shape0-dev:amd64 (1.15-1ubuntu2) ...
+Setting up libxcb-dri2-0:amd64 (1.15-1ubuntu2) ...
+Setting up libxcb-composite0:amd64 (1.15-1ubuntu2) ...
+Setting up libxcb-render-util0-dev:amd64 (0.3.9-1build4) ...
+Setting up libxcb-sync-dev:amd64 (1.15-1ubuntu2) ...
+Setting up libxcb-xfixes0-dev:amd64 (1.15-1ubuntu2) ...
+Setting up libxcb-ewmh2:amd64 (0.4.1-1.1build3) ...
+Setting up libxmuu-dev:amd64 (2:1.1.3-3build2) ...
+Setting up libxres1:amd64 (2:1.2.1-1build1) ...
+Setting up libxcb-image0-dev:amd64 (0.4.0-2build1) ...
+Setting up libxtst-dev:amd64 (2:1.2.3-1.1build1) ...
+Setting up libxkbfile-dev:amd64 (1:1.1.0-1build4) ...
+Setting up libxcb-ewmh-dev:amd64 (0.4.1-1.1build3) ...
+Setting up libxcb-composite0-dev:amd64 (1.15-1ubuntu2) ...
+Setting up libxcb-xinerama0-dev:amd64 (1.15-1ubuntu2) ...
+Setting up libxmu-dev:amd64 (2:1.1.3-3build2) ...
+Setting up libxv-dev:amd64 (2:1.0.11-1.1build1) ...
+Setting up libxcb-dri2-0-dev:amd64 (1.15-1ubuntu2) ...
+Setting up libxcb-present-dev:amd64 (1.15-1ubuntu2) ...
+Setting up libxcb-cursor-dev:amd64 (0.1.4-1build1) ...
+Setting up libxaw7-dev:amd64 (2:1.0.14-1build2) ...
+Setting up libxres-dev:amd64 (2:1.2.1-1build1) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.6) ...
 
-    find_package(FreeGLUT CONFIG REQUIRED)
-    target_link_libraries(main PRIVATE $<IF:$<TARGET_EXISTS:FreeGLUT::freeglut>,FreeGLUT::freeglut,FreeGLUT::freeglut_static>)
+xorg/system: RUN: sudo apt-get update
+Hit:1 http://us-central1.gce.archive.ubuntu.com/ubuntu noble InRelease
+Hit:2 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates InRelease
+Hit:3 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-backports InRelease
+Hit:4 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-security InRelease
+Hit:5 https://download.docker.com/linux/ubuntu noble InRelease
+Hit:6 https://ppa.launchpadcontent.net/git-core/ppa/ubuntu noble InRelease
+Hit:7 https://dl.google.com/linux/chrome/deb stable InRelease
+Reading package lists...
 
-freeglut is compatible with built-in CMake targets:
+xorg/system: RUN: sudo apt-get install -y --no-install-recommends libxcb-util-dev
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following NEW packages will be installed:
+  libxcb-util-dev
+0 upgraded, 1 newly installed, 0 to remove and 7 not upgraded.
+Need to get 10.8 kB of archives.
+After this operation, 55.3 kB of additional disk space will be used.
+Get:1 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-util-dev amd64 0.4.0-1build3 [10.8 kB]
+debconf: unable to initialize frontend: Dialog
+debconf: (No usable dialog-like program is installed, so the dialog based frontend cannot be used. at /usr/share/perl5/Debconf/FrontEnd/Dialog.pm line 79, <STDIN> line 1.)
+debconf: falling back to frontend: Readline
+Fetched 10.8 kB in 0s (179 kB/s)
+Selecting previously unselected package libxcb-util-dev:amd64.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 108325 files and directories currently installed.)
+Preparing to unpack .../libxcb-util-dev_0.4.0-1build3_amd64.deb ...
+Unpacking libxcb-util-dev:amd64 (0.4.0-1build3) ...
+Setting up libxcb-util-dev:amd64 (0.4.0-1build3) ...
 
-    find_package(GLUT REQUIRED)
-    target_link_libraries(main PRIVATE GLUT::GLUT)
+wxwidgets/3.2.6: RUN: sudo apt-get install -y --no-install-recommends libsecret-1-dev
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  gir1.2-secret-1 libgcrypt20-dev libgpg-error-dev
+Suggested packages:
+  libgcrypt20-doc
+The following NEW packages will be installed:
+  gir1.2-secret-1 libgcrypt20-dev libgpg-error-dev libsecret-1-dev
+0 upgraded, 4 newly installed, 0 to remove and 7 not upgraded.
+Need to get 860 kB of archives.
+After this operation, 6819 kB of additional disk space will be used.
+Get:1 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 gir1.2-secret-1 amd64 0.21.4-1build3 [9424 B]
+Get:2 http://us-central1.gce.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgpg-error-dev amd64 1.47-3build2.1 [128 kB]
+Get:3 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/main amd64 libgcrypt20-dev amd64 1.10.3-2build1 [592 kB]
+Get:4 http://us-central1.gce.archive.ubuntu.com/ubuntu noble/universe amd64 libsecret-1-dev amd64 0.21.4-1build3 [129 kB]
+debconf: unable to initialize frontend: Dialog
+debconf: (No usable dialog-like program is installed, so the dialog based frontend cannot be used. at /usr/share/perl5/Debconf/FrontEnd/Dialog.pm line 79, <STDIN> line 4.)
+debconf: falling back to frontend: Readline
+Fetched 860 kB in 0s (6841 kB/s)
+Selecting previously unselected package gir1.2-secret-1:amd64.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 108338 files and directories currently installed.)
+Preparing to unpack .../gir1.2-secret-1_0.21.4-1build3_amd64.deb ...
+Unpacking gir1.2-secret-1:amd64 (0.21.4-1build3) ...
+Selecting previously unselected package libgpg-error-dev.
+Preparing to unpack .../libgpg-error-dev_1.47-3build2.1_amd64.deb ...
+Unpacking libgpg-error-dev (1.47-3build2.1) ...
+Selecting previously unselected package libgcrypt20-dev.
+Preparing to unpack .../libgcrypt20-dev_1.10.3-2build1_amd64.deb ...
+Unpacking libgcrypt20-dev (1.10.3-2build1) ...
+Selecting previously unselected package libsecret-1-dev:amd64.
+Preparing to unpack .../libsecret-1-dev_0.21.4-1build3_amd64.deb ...
+Unpacking libsecret-1-dev:amd64 (0.21.4-1build3) ...
+Setting up gir1.2-secret-1:amd64 (0.21.4-1build3) ...
+Setting up libgpg-error-dev (1.47-3build2.1) ...
+Setting up libgcrypt20-dev (1.10.3-2build1) ...
+Setting up libsecret-1-dev:amd64 (0.21.4-1build3) ...
 
-glad provides CMake targets:
 
-  # this is heuristically generated, and may not be correct
-  find_package(glad CONFIG REQUIRED)
-  target_link_libraries(main PRIVATE glad::glad)
+======== Installing packages ========
 
-The package glm provides CMake targets:
+-------- Downloading 31 packages --------
+Downloading binary packages in 4 parallel threads
+bzip2/1.0.8: Retrieving package 432d7695adc526147073285e155d2ca0340bc76d from remote 'conancenter'
+expat/2.7.3: Retrieving package aded8fb718ce53657d2b174704f00cbccc67d052 from remote 'conancenter'
+libbacktrace/cci.20210118: Retrieving package c81087b06d1a5beef0ad711fc32d45f7a425a8f3 from remote 'conancenter'
+asio/1.32.0: Retrieving package da39a3ee5e6b4b0d3255bfef95601890afd80709 from remote 'conancenter'
+libbacktrace/cci.20210118: Package installed c81087b06d1a5beef0ad711fc32d45f7a425a8f3
+libbacktrace/cci.20210118: Downloaded package revision 3bb49ca4eb3a1ffca9b5c9509c79d237
+libffi/3.4.8: Retrieving package c81087b06d1a5beef0ad711fc32d45f7a425a8f3 from remote 'conancenter'
+bzip2/1.0.8: Package installed 432d7695adc526147073285e155d2ca0340bc76d
+bzip2/1.0.8: Downloaded package revision 133f71a59b79de7c74a2c3af9cb9bc7b
+cmake/3.31.10: Retrieving package 63fead0844576fc02943e16909f08fcdddd6f44b from remote 'conancenter'
+expat/2.7.3: Package installed aded8fb718ce53657d2b174704f00cbccc67d052
+expat/2.7.3: Downloaded package revision 217d655b764b98ce6b77c12b176d30ef
+gtk/system: Retrieving package b393f04ef5ca6a89590f29f8ca7eda026c148049 from remote 'conancenter'
+gtk/system: Package installed b393f04ef5ca6a89590f29f8ca7eda026c148049
+gtk/system: Downloaded package revision 3d742b429533a316c8e6f3ea841ac0ae
+libiconv/1.17: Retrieving package c81087b06d1a5beef0ad711fc32d45f7a425a8f3 from remote 'conancenter'
+libffi/3.4.8: Package installed c81087b06d1a5beef0ad711fc32d45f7a425a8f3
+libffi/3.4.8: Downloaded package revision 86df95c85a5078938244c88d1f668688
+nanosvg/cci.20231025: Retrieving package da39a3ee5e6b4b0d3255bfef95601890afd80709 from remote 'conancenter'
+nanosvg/cci.20231025: Package installed da39a3ee5e6b4b0d3255bfef95601890afd80709
+nanosvg/cci.20231025: Downloaded package revision aefbfb0e85c743bd301c3e48af9f8e4a
+ninja/1.13.2: Retrieving package 3593751651824fb813502c69c971267624ced41a from remote 'conancenter'
+cmake/3.31.10: Downloading 45.1MB conan_package.tgz
+ninja/1.13.2: Package installed 3593751651824fb813502c69c971267624ced41a
+ninja/1.13.2: Downloaded package revision 004588f111d3688b7e86b7401f49ea16
+nlohmann_json/3.11.3: Retrieving package da39a3ee5e6b4b0d3255bfef95601890afd80709 from remote 'conancenter'
+libiconv/1.17: Package installed c81087b06d1a5beef0ad711fc32d45f7a425a8f3
+libiconv/1.17: Downloaded package revision c3a716a7745856cfd7e46f29aef86523
+libjpeg/9f: Retrieving package c81087b06d1a5beef0ad711fc32d45f7a425a8f3 from remote 'conancenter'
+nlohmann_json/3.11.3: Package installed da39a3ee5e6b4b0d3255bfef95601890afd80709
+nlohmann_json/3.11.3: Downloaded package revision 552828a2560333bcbeff9d087ce0af0f
+opengl/system: Retrieving package da39a3ee5e6b4b0d3255bfef95601890afd80709 from remote 'conancenter'
+opengl/system: Package installed da39a3ee5e6b4b0d3255bfef95601890afd80709
+opengl/system: Downloaded package revision 0ba8627bd47edc3a501e8f0eb9a79e5e
+xkeyboard-config/system: Retrieving package da39a3ee5e6b4b0d3255bfef95601890afd80709 from remote 'conancenter'
+xkeyboard-config/system: Package installed da39a3ee5e6b4b0d3255bfef95601890afd80709
+xkeyboard-config/system: Downloaded package revision 0ba8627bd47edc3a501e8f0eb9a79e5e
+xorg/system: Retrieving package da39a3ee5e6b4b0d3255bfef95601890afd80709 from remote 'conancenter'
+libjpeg/9f: Package installed c81087b06d1a5beef0ad711fc32d45f7a425a8f3
+libjpeg/9f: Downloaded package revision 3b10f386e1ba551493909bc152baef86
+xz_utils/5.8.1: Retrieving package c81087b06d1a5beef0ad711fc32d45f7a425a8f3 from remote 'conancenter'
+xorg/system: Package installed da39a3ee5e6b4b0d3255bfef95601890afd80709
+xorg/system: Downloaded package revision 0ba8627bd47edc3a501e8f0eb9a79e5e
+xorg-macros/1.19.3: Retrieving package da39a3ee5e6b4b0d3255bfef95601890afd80709 from remote 'conancenter'
+xorg-macros/1.19.3: Package installed da39a3ee5e6b4b0d3255bfef95601890afd80709
+xorg-macros/1.19.3: Downloaded package revision f6477c9b9eaafe88df13906bad42fbb4
+libpng/1.6.54: Retrieving package 89f26a89b6e56e1284482eb7ac65948ce05dff35 from remote 'conancenter'
+xz_utils/5.8.1: Package installed c81087b06d1a5beef0ad711fc32d45f7a425a8f3
+xz_utils/5.8.1: Downloaded package revision b07c16c5f8a452d1b50f20de33894c30
+zlib/1.3.1: Retrieving package c81087b06d1a5beef0ad711fc32d45f7a425a8f3 from remote 'conancenter'
+libpng/1.6.54: Package installed 89f26a89b6e56e1284482eb7ac65948ce05dff35
+libpng/1.6.54: Downloaded package revision 4ab4df25106c834c067b7b8122587ecd
+libtiff/4.6.0: Retrieving package 60ccd69b0d15cd061aa50ad3c964965d6f5eea3d from remote 'conancenter'
+zlib/1.3.1: Package installed c81087b06d1a5beef0ad711fc32d45f7a425a8f3
+zlib/1.3.1: Downloaded package revision d3a7706ae25c74b78bafbb0b63cb5dcf
+openssl/3.6.0: Retrieving package e1e5437fbafc0588bdcff97c905793e695877ac3 from remote 'conancenter'
+libtiff/4.6.0: Package installed 60ccd69b0d15cd061aa50ad3c964965d6f5eea3d
+libtiff/4.6.0: Downloaded package revision 9f6743a76bf55cb614763797f1bfb714
+libxml2/2.15.0: Retrieving package 7ebbc05509ce7603da650f94620f34d7b9ec0c22 from remote 'conancenter'
+openssl/3.6.0: Downloading 10.7MB conan_package.tgz
+asio/1.32.0: Package installed da39a3ee5e6b4b0d3255bfef95601890afd80709
+asio/1.32.0: Downloaded package revision 95bb2f8db03eb9630d72001c21dc4429
+b2/5.4.2: Retrieving package 63fead0844576fc02943e16909f08fcdddd6f44b from remote 'conancenter'
+cmake/3.31.10: Decompressing 45.1MB conan_package.tgz
+openssl/3.6.0: Decompressing 10.7MB conan_package.tgz
+libxml2/2.15.0: Package installed 7ebbc05509ce7603da650f94620f34d7b9ec0c22
+libxml2/2.15.0: Downloaded package revision b4973867e394fd7337dbe1cb7b95ba15
+xorg-proto/2022.2: Retrieving package da39a3ee5e6b4b0d3255bfef95601890afd80709 from remote 'conancenter'
+b2/5.4.2: Package installed 63fead0844576fc02943e16909f08fcdddd6f44b
+b2/5.4.2: Downloaded package revision de3e94a44d659159ab39f33c906790e9
+libcurl/8.17.0: Retrieving package 3432dfe5e87a50d6f06a6e45477f9ea620e33ae4 from remote 'conancenter'
+xorg-proto/2022.2: Package installed da39a3ee5e6b4b0d3255bfef95601890afd80709
+xorg-proto/2022.2: Downloaded package revision ecec1471507ce446507460dafdec9c8b
+wayland/1.23.92: Retrieving package 30d9e39e3284fa9d163ae54b52369734ea1e08ff from remote 'conancenter'
+libcurl/8.17.0: Package installed 3432dfe5e87a50d6f06a6e45477f9ea620e33ae4
+libcurl/8.17.0: Downloaded package revision 4b23c74f76759102a8e03beeca2bf99d
+libglvnd/1.7.0: Retrieving package a46f47a3a5f44dce3f329de9f2bf8da630f0f192 from remote 'conancenter'
+wayland/1.23.92: Package installed 30d9e39e3284fa9d163ae54b52369734ea1e08ff
+wayland/1.23.92: Downloaded package revision 1afedef769574e5da68d1f8ad44de307
+xkbcommon/1.6.0: Retrieving package 31480bf1e9f21f1ace1b6dbd8141d81ae44e0f8d from remote 'conancenter'
+libglvnd/1.7.0: Package installed a46f47a3a5f44dce3f329de9f2bf8da630f0f192
+libglvnd/1.7.0: Downloaded package revision 5596af703258c1407b74d2c71935d97e
+glew/2.2.0: Retrieving package 754d75b465bdaf7e8bd6dabcd889d757ecf76763 from remote 'conancenter'
+glew/2.2.0: Package installed 754d75b465bdaf7e8bd6dabcd889d757ecf76763
+glew/2.2.0: Downloaded package revision 7f6ecb9111d24727fe537476e685765f
+xkbcommon/1.6.0: Package installed 31480bf1e9f21f1ace1b6dbd8141d81ae44e0f8d
+xkbcommon/1.6.0: Downloaded package revision 783e8e20bb72b8e5973867de4c8db1c3
+mesa-glu/9.0.3: Retrieving package ecef7fa578c3e7b717d72bc6350f663f09553c79 from remote 'conancenter'
+mesa-glu/9.0.3: Package installed ecef7fa578c3e7b717d72bc6350f663f09553c79
+mesa-glu/9.0.3: Downloaded package revision dabe8b8e4afe5c34867d44149b2b4c7f
+openssl/3.6.0: Package installed e1e5437fbafc0588bdcff97c905793e695877ac3
+openssl/3.6.0: Downloaded package revision d888036ef9e3372f50a847be8cefce08
+pcre2/10.42: Retrieving package 9fc9b4a835fcb590d13e2cacc5738bd786bc49a6 from remote 'conancenter'
+pcre2/10.42: Package installed 9fc9b4a835fcb590d13e2cacc5738bd786bc49a6
+pcre2/10.42: Downloaded package revision e3d9e7e63ac74dda3a1177c873361e92
+cmake/3.31.10: Package installed 63fead0844576fc02943e16909f08fcdddd6f44b
+cmake/3.31.10: Downloaded package revision 8b53d1fe96d4b000f07eeaf7513ffdb4
+fmt/11.1.4: Sources downloaded from 'conancenter'
+fmt/11.1.4: Calling source() in /home/jules/.conan2/p/fmtfd9aa1f3f2e43/s/src
+fmt/11.1.4: Uncompressing fmt-11.1.4.zip to .
+fmt/11.1.4: Unzipping 5.7MB, this can take a while
 
-    find_package(glm CONFIG REQUIRED)
-    target_link_libraries(main PRIVATE glm::glm)
 
-    # Or use the header-only version
-    find_package(glm CONFIG REQUIRED)
-    target_link_libraries(main PRIVATE glm::glm-header-only)
+-------- Installing package fmt/11.1.4 (6 of 36) --------
+fmt/11.1.4: Building from source
+fmt/11.1.4: Package fmt/11.1.4:a2f52d8a843d621154aa73b66f1bc47a52420135
+fmt/11.1.4: settings: os=Linux arch=x86_64 compiler=gcc compiler.cppstd=20 compiler.libcxx=libstdc++11 compiler.version=13 build_type=Release
+fmt/11.1.4: options: fPIC=True header_only=False shared=False with_os_api=True with_unicode=True
+fmt/11.1.4: Copying sources to build folder
+fmt/11.1.4: Building your package in /home/jules/.conan2/p/b/fmtff60eb21016d4/b
+fmt/11.1.4: Calling generate()
+fmt/11.1.4: Generators folder: /home/jules/.conan2/p/b/fmtff60eb21016d4/b/build/Release/generators
+fmt/11.1.4: CMakeToolchain generated: conan_toolchain.cmake
+fmt/11.1.4: CMakeToolchain generated: /home/jules/.conan2/p/b/fmtff60eb21016d4/b/build/Release/generators/CMakePresets.json
+fmt/11.1.4: CMakeToolchain generated: /home/jules/.conan2/p/b/fmtff60eb21016d4/b/src/CMakeUserPresets.json
+fmt/11.1.4: Generating aggregated env files
+fmt/11.1.4: Generated aggregated env files: ['conanbuild.sh', 'conanrun.sh']
+fmt/11.1.4: Calling build()
+fmt/11.1.4: apply_conandata_patches(): No patches defined in conandata
+fmt/11.1.4: Running CMake.configure()
+fmt/11.1.4: RUN: cmake -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE="generators/conan_toolchain.cmake" -DCMAKE_INSTALL_PREFIX="/home/jules/.conan2/p/b/fmtff60eb21016d4/p" -DFMT_DOC="OFF" -DFMT_TEST="OFF" -DFMT_INSTALL="ON" -DFMT_LIB_DIR="lib" -DFMT_OS="ON" -DFMT_UNICODE="ON" -DCMAKE_POLICY_DEFAULT_CMP0091="NEW" -DCMAKE_BUILD_TYPE="Release" "/home/jules/.conan2/p/b/fmtff60eb21016d4/b/src"
+-- CMake version: 3.28.3
+-- Using Conan toolchain: /home/jules/.conan2/p/b/fmtff60eb21016d4/b/build/Release/generators/conan_toolchain.cmake
+-- Conan toolchain: Setting CMAKE_POSITION_INDEPENDENT_CODE=ON (options.fPIC)
+-- Conan toolchain: Defining architecture flag: -m64
+-- Conan toolchain: C++ Standard 20 with extensions OFF
+-- Conan toolchain: Setting BUILD_SHARED_LIBS = OFF
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- {fmt} version: 11.1.4
+-- Build type: Release
+-- Configuring done (1.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/jules/.conan2/p/b/fmtff60eb21016d4/b/build/Release
 
-libarchive is compatible with the CMake Find Module:
+fmt/11.1.4: Running CMake.build()
+fmt/11.1.4: RUN: cmake --build "/home/jules/.conan2/p/b/fmtff60eb21016d4/b/build/Release" -- -j4
+[ 66%] Building CXX object CMakeFiles/fmt.dir/src/format.cc.o
+[ 66%] Building CXX object CMakeFiles/fmt.dir/src/os.cc.o
+[100%] Linking CXX static library libfmt.a
+[100%] Built target fmt
 
-  find_package(LibArchive REQUIRED)
-  target_link_libraries(main PRIVATE LibArchive::LibArchive) # since CMake 3.17
+fmt/11.1.4: Package 'a2f52d8a843d621154aa73b66f1bc47a52420135' built
+fmt/11.1.4: Build folder /home/jules/.conan2/p/b/fmtff60eb21016d4/b/build/Release
+fmt/11.1.4: Generating the package
+fmt/11.1.4: Packaging in folder /home/jules/.conan2/p/b/fmtff60eb21016d4/p
+fmt/11.1.4: Calling package()
+fmt/11.1.4: Running CMake.install()
+fmt/11.1.4: RUN: cmake --install "/home/jules/.conan2/p/b/fmtff60eb21016d4/b/build/Release" --prefix "/home/jules/.conan2/p/b/fmtff60eb21016d4/p"
+-- Install configuration: "Release"
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/lib/libfmt.a
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/include/fmt/args.h
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/include/fmt/base.h
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/include/fmt/chrono.h
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/include/fmt/color.h
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/include/fmt/compile.h
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/include/fmt/core.h
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/include/fmt/format.h
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/include/fmt/format-inl.h
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/include/fmt/os.h
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/include/fmt/ostream.h
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/include/fmt/printf.h
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/include/fmt/ranges.h
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/include/fmt/std.h
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/include/fmt/xchar.h
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/lib/cmake/fmt/fmt-config.cmake
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/lib/cmake/fmt/fmt-config-version.cmake
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/lib/cmake/fmt/fmt-targets.cmake
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/lib/cmake/fmt/fmt-targets-release.cmake
+-- Installing: /home/jules/.conan2/p/b/fmtff60eb21016d4/p/lib/pkgconfig/fmt.pc
 
-libarchive provides pkg-config modules:
+fmt/11.1.4: package(): Packaged 14 '.h' files
+fmt/11.1.4: package(): Packaged 1 file: LICENSE
+fmt/11.1.4: package(): Packaged 1 '.a' file: libfmt.a
+fmt/11.1.4: Created package revision 696f67af2694d6aa847fdcb9dfd2b6ce
+fmt/11.1.4: Package 'a2f52d8a843d621154aa73b66f1bc47a52420135' created
+fmt/11.1.4: Full package reference: fmt/11.1.4#1fb24f082fabe20d28606d615ba93dfb:a2f52d8a843d621154aa73b66f1bc47a52420135#696f67af2694d6aa847fdcb9dfd2b6ce
+fmt/11.1.4: Package folder /home/jules/.conan2/p/b/fmtff60eb21016d4/p
+xorg-macros/1.19.3: Appending AUTOMAKE_CONAN_INCLUDES environment variable: /home/jules/.conan2/p/xorg-a7814e7f591fa/p/bin/share/aclocal
+xorg-macros/1.19.3: WARN: deprecated: The use of 'unix_path_legacy_compat' is deprecated in Conan 2.0 and does not perform path conversions. This is retained for compatibility with Conan 1.x and will be removed in a future version.
+boost/1.87.0: Sources downloaded from 'conancenter'
+boost/1.87.0: Calling source() in /home/jules/.conan2/p/boost8ba82f374e8fa/s/src
+boost/1.87.0: Downloading 131.5MB boost_1_87_0.tar.bz2
+boost/1.87.0: Uncompressing boost_1_87_0.tar.bz2 to /home/jules/.conan2/p/boost8ba82f374e8fa/s/src
+boost/1.87.0: Apply patch (conan): Optional flag to specify iconv from either libc of libiconv
+boost/1.87.0: Apply patch (official): Fix b2 numa=on property for Boost.Fiber
 
-  # library that can create and read several streaming archive formats
-  libarchive
+-------- Installing package boost/1.87.0 (21 of 36) --------
+boost/1.87.0: Building from source
+boost/1.87.0: Package boost/1.87.0:255043ded3c30c494d3fc2683f763918e539736b
+boost/1.87.0: settings: os=Linux arch=x86_64 compiler=gcc compiler.cppstd=20 compiler.libcxx=libstdc++11 compiler.version=13 build_type=Release
+boost/1.87.0: options: addr2line_location=/usr/bin/addr2line asio_no_deprecated=False buildid=None bzip2=True diagnostic_definitions=False error_code_header_only=False extra_b2_flags=None fPIC=True filesystem_no_deprecated=False filesystem_use_std_fs=False header_only=False i18n_backend_iconv=libc i18n_backend_icu=False layout=system lzma=False magic_autolink=False multithreading=True namespace=boost namespace_alias=False numa=True segmented_stacks=False shared=False system_no_deprecated=False system_use_utf8=False visibility=hidden with_stacktrace_backtrace=True without_atomic=False without_charconv=False without_chrono=False without_cobalt=False without_container=False without_context=False without_contract=False without_coroutine=False without_date_time=False without_exception=False without_fiber=False without_filesystem=False without_graph=False without_graph_parallel=True without_iostreams=False without_json=False without_locale=False without_log=False without_math=False without_mpi=True without_nowide=False without_process=False without_program_options=False without_python=True without_random=False without_regex=False without_serialization=False without_stacktrace=False without_system=False without_test=True without_thread=False without_timer=False without_type_erasure=False without_url=False without_wave=False zlib=True zstd=False
+boost/1.87.0: requires: zlib/1.3.Z bzip2/1.0.Z libbacktrace/cci
+boost/1.87.0: Building your package in /home/jules/.conan2/p/b/boostcadf81b545eab/b
+boost/1.87.0: Calling generate()
+boost/1.87.0: Generators folder: /home/jules/.conan2/p/b/boostcadf81b545eab/b/build-release/conan
+boost/1.87.0: Generating aggregated env files
+boost/1.87.0: Generated aggregated env files: ['conanbuild.sh', 'conanrun.sh']
+boost/1.87.0: Calling build()
+boost/1.87.0: WARN: replace_in_file didn't find pattern '/* thread_local */' in '/home/jules/.conan2/p/boost8ba82f374e8fa/s/src/boost/stacktrace/detail/libbacktrace_impls.hpp' file.
+boost/1.87.0: WARN: replace_in_file didn't find pattern '/* static __thread */' in '/home/jules/.conan2/p/boost8ba82f374e8fa/s/src/boost/stacktrace/detail/libbacktrace_impls.hpp' file.
+boost/1.87.0: WARN: replace_in_file didn't find pattern 'local generic-os = [ set.difference $(all-os) : aix darwin vxworks solaris osf hpux ] ;' in '/home/jules/.conan2/p/boost8ba82f374e8fa/s/src/tools/build/src/tools/gcc.jam' file.
+boost/1.87.0: WARN: replace_in_file didn't find pattern 'local no-threading = android beos haiku sgi darwin vxworks ;' in '/home/jules/.conan2/p/boost8ba82f374e8fa/s/src/tools/build/src/tools/gcc.jam' file.
+boost/1.87.0: WARN: Patching user-config.jam
+boost/1.87.0: WARN:
+using zlib : 1.3.1 : <include>"/home/jules/.conan2/p/zlib76e00a316e585/p/include" <search>"/home/jules/.conan2/p/zlib76e00a316e585/p/lib" <name>z ;
+using bzip2 : 1.0.8 : <include>"/home/jules/.conan2/p/bzip29db013e43a5ba/p/include" <search>"/home/jules/.conan2/p/bzip29db013e43a5ba/p/lib" <name>bz2 ;
+using "gcc" :  :  "/usr/bin/g++-13" :
+<compileflags>"-I/home/jules/.conan2/p/libba8423dde0707eb/p/include " <linkflags>"-L/home/jules/.conan2/p/libba8423dde0707eb/p/lib"  ;
+boost/1.87.0: WARN: b2 -q numa=on target-os=linux architecture=x86 address-model=64 binary-format=elf abi=sysv --layout=system --user-config=/home/jules/.conan2/p/boost8ba82f374e8fa/s/src/tools/build/user-config.jam -sNO_ZLIB=0 -sNO_BZIP2=0 -sNO_LZMA=1 -sNO_ZSTD=1 boost.locale.icu=off --disable-icu boost.locale.iconv=on boost.locale.iconv.lib=libc threading=multi visibility=hidden link=static variant=release --with-atomic --with-charconv --with-chrono --with-cobalt --with-container --with-context --with-contract --with-coroutine --with-date_time --with-exception --with-fiber --with-filesystem --with-graph --with-iostreams --with-json --with-locale --with-log --with-math --with-nowide --with-process --with-program_options --with-random --with-regex --with-serialization --with-stacktrace --with-system --with-thread --with-timer --with-type_erasure --with-url --with-wave toolset=gcc cxxstd=2a define=_GLIBCXX_USE_CXX11_ABI=1 pch=on -sLIBBACKTRACE_PATH=/home/jules/.conan2/p/libba8423dde0707eb/p linkflags="" cxxflags="-fPIC -DBOOST_STACKTRACE_ADDR2LINE_LOCATION=/usr/bin/addr2line" install --prefix=/home/jules/.conan2/p/b/boostcadf81b545eab/p -j4 --abbreviate-paths -d0 --debug-configuration --build-dir="/home/jules/.conan2/p/b/boostcadf81b545eab/b/build-release"
+boost/1.87.0: RUN: b2 -q numa=on target-os=linux architecture=x86 address-model=64 binary-format=elf abi=sysv --layout=system --user-config=/home/jules/.conan2/p/boost8ba82f374e8fa/s/src/tools/build/user-config.jam -sNO_ZLIB=0 -sNO_BZIP2=0 -sNO_LZMA=1 -sNO_ZSTD=1 boost.locale.icu=off --disable-icu boost.locale.iconv=on boost.locale.iconv.lib=libc threading=multi visibility=hidden link=static variant=release --with-atomic --with-charconv --with-chrono --with-cobalt --with-container --with-context --with-contract --with-coroutine --with-date_time --with-exception --with-fiber --with-filesystem --with-graph --with-iostreams --with-json --with-locale --with-log --with-math --with-nowide --with-process --with-program_options --with-random --with-regex --with-serialization --with-stacktrace --with-system --with-thread --with-timer --with-type_erasure --with-url --with-wave toolset=gcc cxxstd=2a define=_GLIBCXX_USE_CXX11_ABI=1 pch=on -sLIBBACKTRACE_PATH=/home/jules/.conan2/p/libba8423dde0707eb/p linkflags="" cxxflags="-fPIC -DBOOST_STACKTRACE_ADDR2LINE_LOCATION=/usr/bin/addr2line" install --prefix=/home/jules/.conan2/p/b/boostcadf81b545eab/p -j4 --abbreviate-paths -d0 --debug-configuration --build-dir="/home/jules/.conan2/p/b/boostcadf81b545eab/b/build-release"
+notice: found boost-build.jam at /home/jules/.conan2/p/boost8ba82f374e8fa/s/src/boost-build.jam
+notice: loading B2 from /home/jules/.conan2/p/b2502651a9be599/p/bin/.b2/build-system.jam
+notice: Searching '/etc' '/home/jules' '/home/jules/.conan2/p/b2502651a9be599/p/bin/.b2/util' '/home/jules/.conan2/p/b2502651a9be599/p/bin/.b2/tools' '/home/jules/.conan2/p/b2502651a9be599/p/bin/.b2/options' '/home/jules/.conan2/p/b2502651a9be599/p/bin/.b2/contrib' '/home/jules/.conan2/p/b2502651a9be599/p/bin/.b2/build' '/home/jules/.conan2/p/b2502651a9be599/p/bin/.b2' for site-config configuration file 'site-config.jam'.
+notice: Configuration file 'site-config.jam' not found in '/etc' '/home/jules' '/home/jules/.conan2/p/b2502651a9be599/p/bin/.b2/util' '/home/jules/.conan2/p/b2502651a9be599/p/bin/.b2/tools' '/home/jules/.conan2/p/b2502651a9be599/p/bin/.b2/options' '/home/jules/.conan2/p/b2502651a9be599/p/bin/.b2/contrib' '/home/jules/.conan2/p/b2502651a9be599/p/bin/.b2/build' '/home/jules/.conan2/p/b2502651a9be599/p/bin/.b2'.
+notice: Loading explicitly specified user configuration file:
+    /home/jules/.conan2/p/boost8ba82f374e8fa/s/src/tools/build/user-config.jam
+notice: Searching '/home/jules/.conan2/p/boost8ba82f374e8fa/s/src/tools/build' for user-config configuration file 'user-config.jam'.
+notice: Loading user-config configuration file 'user-config.jam' from '/home/jules/.conan2/p/boost8ba82f374e8fa/s/src/tools/build'.
+notice: [zlib] Using pre-installed library
+notice: [zlib] Condition
+notice: [bzip2] Using pre-installed library
+notice: [bzip2] Condition
+notice: will use '/usr/bin/g++-13' for gcc, condition <toolset>gcc-13
+notice: using gcc libraries :: <toolset>gcc-13 :: /usr/bin /usr/lib /usr/lib32 /usr/lib64
+notice: using gcc archiver :: <toolset>gcc-13 :: /usr/bin/ar
+warning: toolset gcc initialization: can not find tool windres
+warning: initialized from /home/jules/.conan2/p/boost8ba82f374e8fa/s/src/tools/build/user-config.jam:5
+notice: using rc compiler :: <toolset>gcc-13 :: /usr/bin/as
+Performing configuration checks
 
-nanovg provides CMake targets:
-
-  # this is heuristically generated, and may not be correct
-  find_package(nanovg CONFIG REQUIRED)
-  target_link_libraries(main PRIVATE nanovg::nanovg)
-
-The package nlohmann-json provides CMake targets:
-
-    find_package(nlohmann_json CONFIG REQUIRED)
-    target_link_libraries(main PRIVATE nlohmann_json::nlohmann_json)
-
-The package nlohmann-json can be configured to not provide implicit conversions via a custom triplet file:
-
-    set(nlohmann-json_IMPLICIT_CONVERSIONS OFF)
-
-For more information, see the docs here:
-    
-    https://json.nlohmann.me/api/macros/json_use_implicit_conversions/
-
-The package spdlog provides CMake targets:
-
-    find_package(spdlog CONFIG REQUIRED)
-    target_link_libraries(main PRIVATE spdlog::spdlog)
-
-    # Or use the header-only version
-    find_package(spdlog CONFIG REQUIRED)
-    target_link_libraries(main PRIVATE spdlog::spdlog_header_only)
-
-The package wxwidgets provides CMake targets:
-
-    find_package(wxWidgets CONFIG REQUIRED)
-    target_link_libraries(main PRIVATE wx::core wx::base)
-
-All requested installations completed successfully in: 1.41 ms
--- Running vcpkg install - done
--- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
-CMake Warning (dev) at build/vcpkg_installed/x64-windows/share/boost/vcpkg-cmake-wrapper.cmake:3 (_find_package):
-  Policy CMP0167 is not set: The FindBoost module is removed.  Run "cmake
-  --help-policy CMP0167" for policy details.  Use the cmake_policy command to
-  set the policy and suppress this warning.
-
-Call Stack (most recent call first):
-  C:/vcpkg/scripts/buildsystems/vcpkg.cmake:862 (include)
-  CMakeLists.txt:37 (find_package)
-This warning is for project developers.  Use -Wno-dev to suppress it.
-
--- Configuring done (2.4s)
--- Generating done (0.1s)
--- Build files have been written to: C:/Users/karol/Documents/GitHub/RME_v2/build
-[2/3] Building Release... 
-Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
-
-  Trwa skanowanie źródeł pod kątem zależności modułów...
-  brush_utility.cpp
-  preferences.cpp
-  ground_brush.cpp
-  brush.cpp
-  extension.cpp
-  doodad_brush.cpp
-  carpet_brush.cpp
-  version_manager.cpp
-  application.cpp
-  client_version.cpp
-  creature_brush.cpp
-  eraser_brush.cpp
-  hotkey_manager.cpp
-  updater.cpp
-  settings.cpp
-  brush_tables.cpp
-  waypoint_brush.cpp
-  spawn_brush.cpp
-  copybuffer.cpp
-  editor.cpp
-  wall_brush.cpp
-  house_exit_brush.cpp
-  action_queue.cpp
-  dirty_list.cpp
-  raw_brush.cpp
-  action.cpp
-  editor_factory.cpp
-  selection_operations.cpp
-  table_brush.cpp
-  house_brush.cpp
-  draw_operations.cpp
-  copy_operations.cpp
-  editor_persistence.cpp
-  creature.cpp
-  selection.cpp
-  complexitem.cpp
-  selection_thread.cpp
-  animation_timer.cpp
-  tileset_exporter.cpp
-  map_version_changer.cpp
-  editor_tabs.cpp
-  house.cpp
-  item.cpp
-  item_attributes.cpp
-  creatures.cpp
-  spawn.cpp
-  items.cpp
-  materials.cpp
-  town.cpp
-  filehandle.cpp
-  waypoints.cpp
-  live_tab.cpp
-  live_client.cpp
-  iomap_otbm.cpp
-  iomap.cpp
-  live_server.cpp
-  live_socket.cpp
-  live_peer.cpp
-  live_manager.cpp
-  live_action.cpp
-  basemap.cpp
-  map_region.cpp
-  map_processor.cpp
-  map.cpp
-  map_statistics.cpp
-  map_search.cpp
-  tile.cpp
-  tileset.cpp
-  palette_common.cpp
-  palette_creature.cpp
-  rme_net.cpp
-  process_com.cpp
-  mkpch.cpp
-  palette_house.cpp
-  palette_brushlist.cpp
-  atlas_manager.cpp
-  net_connection.cpp
-  animator.cpp
-  palette_window.cpp
-  palette_waypoints.cpp
-  drawing_options.cpp
-  editor_sprite.cpp
-  gl_texture.cpp
-  graphics.cpp
-  ring_buffer.cpp
-  pixel_buffer_object.cpp
-  primitive_renderer.cpp
-  outfit_colorizer.cpp
-  render_view.cpp
-  render_timer.cpp
-  multi_draw_indirect_renderer.cpp
-  gl_texture_id_generator.cpp
-  shader_program.cpp
-  text_renderer.cpp
-  sprite_batch.cpp
-  texture_array.cpp
-  texture_atlas.cpp
-  texture_garbage_collector.cpp
-  brush_cursor_drawer.cpp
-  grid_drawer.cpp
-  drag_shadow_drawer.cpp
-  map_layer_drawer.cpp
-  sprite_drawer.cpp
-  live_cursor_drawer.cpp
-  item_drawer.cpp
-  minimap_renderer.cpp
-  brush_overlay_drawer.cpp
-  creature_drawer.cpp
-  minimap_drawer.cpp
-  marker_drawer.cpp
-  preview_drawer.cpp
-  selection_drawer.cpp
-  floor_drawer.cpp
-  shade_drawer.cpp
-  tile_color_calculator.cpp
-  tile_renderer.cpp
-  editor_sprite_loader.cpp
-  game_sprite_loader.cpp
-  screenshot_saver.cpp
-  screen_capture.cpp
-  brush_selector.cpp
-  clipboard_handler.cpp
-  drawing_controller.cpp
-  map_display.cpp
-  map_menu_handler.cpp
-  keyboard_handler.cpp
-  map_status_updater.cpp
-  map_drawer.cpp
-  navigation_controller.cpp
-  minimap_window.cpp
-  popup_action_handler.cpp
-  screenshot_controller.cpp
-  selection_controller.cpp
-  zoom_controller.cpp
-  light_calculator.cpp
-  frame_pacer.cpp
-  tooltip_drawer.cpp
-  light_drawer.cpp
-  about_window.cpp
-  artprovider.cpp
-  sprite_icon_generator.cpp
-  tile_describer.cpp
-  add_tileset_window.cpp
-  add_item_window.cpp
-  browse_tile_window.cpp
-  sortable_list_box.cpp
-  goto_position_dialog.cpp
-  object_properties_base.cpp
-  property_applier.cpp
-  attribute_service.cpp
-  property_validator.cpp
-  creature_properties_window.cpp
-  teleport_service.cpp
-  depot_properties_window.cpp
-  podium_properties_window.cpp
-  writable_properties_window.cpp
-  container_properties_window.cpp
-  spawn_properties_window.cpp
-  dat_debug_view.cpp
-  splash_properties_window.cpp
-  dcbutton.cpp
-  dialog_helper.cpp
-  dialog_util.cpp
-  extension_window.cpp
-  find_dialog.cpp
-  import_map_window.cpp
-  find_item_window.cpp
-  map_properties_window.cpp
-  towns_window.cpp
-  view_settings_handler.cpp
-  export_tilesets_window.cpp
-  gui.cpp
-  search_handler.cpp
-  main_menubar.cpp
-  map_actions_handler.cpp
-  menubar_action_manager.cpp
-  file_menu_handler.cpp
-  navigation_menu_handler.cpp
-  palette_menu_handler.cpp
-  main_toolbar.cpp
-  loading_manager.cpp
-  layout_manager.cpp
-  brush_manager.cpp
-  palette_manager.cpp
-  doodad_preview_manager.cpp
-  recent_files_manager.cpp
-  status_manager.cpp
-  welcome_manager.cpp
-  gl_context_manager.cpp
-  minimap_manager.cpp
-  search_manager.cpp
-  editor_manager.cpp
-  map_popup_menu.cpp
-  map_tab.cpp
-  map_window.cpp
-  brush_toolbar.cpp
-  numbertextctrl.cpp
-  position_toolbar.cpp
-  toolbar_factory.cpp
-  size_toolbar.cpp
-  toolbar_layout.cpp
-  toolbar_registry.cpp
-  standard_toolbar.cpp
-  toolbar_persistence.cpp
-  old_properties_window.cpp
-  light_toolbar.cpp
-  positionctrl.cpp
-  pngfiles.cpp
-  properties_window.cpp
-  replace_items_window.cpp
-  result_window.cpp
-  welcome_dialog.cpp
-  tileset_window.cpp
-  map_statistics_dialog.cpp
-  live_dialogs.cpp
-  common.cpp
-  menubar_loader.cpp
-  mt_rand.cpp
-  file_system.cpp
-  Trwa kompilowanie…
-  hotkey_manager.cpp
-  client_version.cpp
-  preferences.cpp
-  ground_brush.cpp
-  brush_tables.cpp
-  brush_utility.cpp
-  application.cpp
-  eraser_brush.cpp
-  brush.cpp
-  extension.cpp
-  settings.cpp
-  updater.cpp
-  doodad_brush.cpp
-  version_manager.cpp
-  carpet_brush.cpp
-  creature_brush.cpp
-  house_brush.cpp
-  raw_brush.cpp
-  house_exit_brush.cpp
-  action.cpp
-  table_brush.cpp
-  action_queue.cpp
-  waypoint_brush.cpp
-  editor_factory.cpp
-  wall_brush.cpp
-  copy_operations.cpp
-  selection_operations.cpp
-  editor.cpp
-  spawn_brush.cpp
-  dirty_list.cpp
-  copybuffer.cpp
-  draw_operations.cpp
-  map_version_changer.cpp
-  tileset_exporter.cpp
-  selection_thread.cpp
-  editor_persistence.cpp
-  editor_tabs.cpp
-  selection.cpp
-  animation_timer.cpp
-  complexitem.cpp
-  house.cpp
-  creatures.cpp
-  spawn.cpp
-  items.cpp
-  item.cpp
-  materials.cpp
-  creature.cpp
-  item_attributes.cpp
-  town.cpp
-  waypoints.cpp
-  iomap.cpp
-  filehandle.cpp
-  iomap_otbm.cpp
-  live_socket.cpp
-  live_manager.cpp
-  live_tab.cpp
-  live_action.cpp
-  live_client.cpp
-  live_peer.cpp
-  live_server.cpp
-  basemap.cpp
-  map_region.cpp
-  map_processor.cpp
-  map.cpp
-  map_search.cpp
-  map_statistics.cpp
-  tile.cpp
-  tileset.cpp
-  mkpch.cpp
-  net_connection.cpp
-  process_com.cpp
-  rme_net.cpp
-  palette_brushlist.cpp
-  palette_creature.cpp
-  palette_common.cpp
-  palette_house.cpp
-  animator.cpp
-  palette_waypoints.cpp
-  atlas_manager.cpp
-  palette_window.cpp
-  drawing_options.cpp
-  editor_sprite.cpp
-  gl_texture.cpp
-  gl_texture_id_generator.cpp
-  multi_draw_indirect_renderer.cpp
-  graphics.cpp
-  pixel_buffer_object.cpp
-  outfit_colorizer.cpp
-  render_view.cpp
-  primitive_renderer.cpp
-  render_timer.cpp
-  ring_buffer.cpp
-  shader_program.cpp
-  text_renderer.cpp
-  sprite_batch.cpp
-  texture_array.cpp
-  texture_atlas.cpp
-  texture_garbage_collector.cpp
-  brush_cursor_drawer.cpp
-  drag_shadow_drawer.cpp
-  live_cursor_drawer.cpp
-  creature_drawer.cpp
-  item_drawer.cpp
-  sprite_drawer.cpp
-  minimap_drawer.cpp
-  map_layer_drawer.cpp
-  minimap_renderer.cpp
-  marker_drawer.cpp
-  grid_drawer.cpp
-  brush_overlay_drawer.cpp
-  preview_drawer.cpp
-  selection_drawer.cpp
-  floor_drawer.cpp
-  shade_drawer.cpp
-  tile_color_calculator.cpp
-  tile_renderer.cpp
-  editor_sprite_loader.cpp
-  screen_capture.cpp
-  game_sprite_loader.cpp
-  screenshot_saver.cpp
-  map_drawer.cpp
-  brush_selector.cpp
-  clipboard_handler.cpp
-  drawing_controller.cpp
-  keyboard_handler.cpp
-  map_status_updater.cpp
-  map_menu_handler.cpp
-  map_display.cpp
-  minimap_window.cpp
-  navigation_controller.cpp
-  popup_action_handler.cpp
-  screenshot_controller.cpp
-  selection_controller.cpp
-  tooltip_drawer.cpp
-  zoom_controller.cpp
-  frame_pacer.cpp
-  light_calculator.cpp
-  light_drawer.cpp
-  sprite_icon_generator.cpp
-  tile_describer.cpp
-  about_window.cpp
-  artprovider.cpp
-  add_tileset_window.cpp
-  add_item_window.cpp
-  browse_tile_window.cpp
-  sortable_list_box.cpp
-  goto_position_dialog.cpp
-  object_properties_base.cpp
-  property_validator.cpp
-  attribute_service.cpp
-  property_applier.cpp
-  creature_properties_window.cpp
-  teleport_service.cpp
-  container_properties_window.cpp
-  podium_properties_window.cpp
-  spawn_properties_window.cpp
-  writable_properties_window.cpp
-  splash_properties_window.cpp
-  depot_properties_window.cpp
-  dat_debug_view.cpp
-  dcbutton.cpp
-  dialog_helper.cpp
-  dialog_util.cpp
-  extension_window.cpp
-  find_item_window.cpp
-  find_dialog.cpp
-  map_properties_window.cpp
-  towns_window.cpp
-  import_map_window.cpp
-  export_tilesets_window.cpp
-  gui.cpp
-  main_menubar.cpp
-  menubar_action_manager.cpp
-  search_handler.cpp
-  view_settings_handler.cpp
-  map_actions_handler.cpp
-  file_menu_handler.cpp
-  palette_menu_handler.cpp
-  navigation_menu_handler.cpp
-  main_toolbar.cpp
-C:\Users\karol\Documents\GitHub\RME_v2\source\ui\dialogs\find_dialog.cpp(78,42): warning C4018: "<": niezgodność typu ze znakiem/bez znaku [C:\Users\karol\Documents\GitHub\RME_v2\build\rme.vcxproj]
-  loading_manager.cpp
-  layout_manager.cpp
-  minimap_manager.cpp
-  doodad_preview_manager.cpp
-  status_manager.cpp
-  brush_manager.cpp
-  palette_manager.cpp
-  recent_files_manager.cpp
-  editor_manager.cpp
-  welcome_manager.cpp
-  search_manager.cpp
-  gl_context_manager.cpp
-  map_popup_menu.cpp
-  map_tab.cpp
-  map_window.cpp
-  numbertextctrl.cpp
-  brush_toolbar.cpp
-  position_toolbar.cpp
-  size_toolbar.cpp
-  standard_toolbar.cpp
-  light_toolbar.cpp
-  toolbar_factory.cpp
-  toolbar_persistence.cpp
-  toolbar_registry.cpp
-  toolbar_layout.cpp
-  pngfiles.cpp
-  old_properties_window.cpp
-  positionctrl.cpp
-  properties_window.cpp
-  replace_items_window.cpp
-  result_window.cpp
-  tileset_window.cpp
-  welcome_dialog.cpp
-  map_statistics_dialog.cpp
-  live_dialogs.cpp
-  menubar_loader.cpp
-  common.cpp
-  mt_rand.cpp
-  file_system.cpp
-  rme.vcxproj -> C:\Users\karol\Documents\GitHub\RME_v2\build\Release\rme.exe
-======================================== 
- BUILD SUCCESSFUL 
- Output: C:\Users\karol\Documents\GitHub\RME_v2\build\Release\rme.exe 
- Finished: pon. 26.01.2026 13:47:08,46 
-======================================== 
+    - default address-model    : 64-bit [1]
+    - default architecture     : x86 [1]
+    - compiler supports SSE2   : yes [2]
+    - compiler supports SSE4.1 : yes [2]
+    - cxx11_static_assert      : yes [2]
+    - cxx11_variadic_templates : yes [2]
+    - cxx11_decltype           : yes [2]
+    - GCC libquadmath and __float128 support : no [2]
+    - cxx11_hdr_ratio          : yes [2]
+    - cxx11_template_aliases   : yes [2]
+    - cxx11_char16_t           : yes [2]
+    - cxx11_char32_t           : yes [2]
+    - cxx20_hdr_concepts       : yes [2]
+    - cpp_lib_memory_resource  : yes [2]
+    - BOOST_ARCH_WORD_BITS == 0.0.16 : no [2]
+    - BOOST_ARCH_WORD_BITS == 0.0.32 : no [2]
+    - BOOST_ARCH_WORD_BITS == 0.0.64 : yes [2]
+    - BOOST_ARCH_X86           : yes [2]
+    - BOOST_ARCH_IA64          : no [2]
+    - BOOST_ARCH_SPARC         : no [2]
+    - BOOST_ARCH_PPC           : no [2]
+    - BOOST_ARCH_LOONGARCH     : no [2]
+    - BOOST_ARCH_MIPS          : no [2]
+    - BOOST_ARCH_PARISC        : no [2]
+    - BOOST_ARCH_ARM           : no [2]
+    - BOOST_ARCH_RISCV         : no [2]
+    - BOOST_ARCH_SYS390        : no [2]
+warning: non-free usage requirements <boost.cobalt.pmr>std ignored
+warning: in main-target boost_cobalt at /home/jules/.conan2/p/boost8ba82f374e8fa/s/src/libs/cobalt/build/Jamfile:66
+    - cxx11_auto_declarations  : yes [2]
+    - cxx11_constexpr          : yes [2]
+    - cxx11_defaulted_functions : yes [2]
+    - cxx11_final              : yes [2]
+    - cxx11_hdr_mutex          : yes [2]
+    - cxx11_hdr_tuple          : yes [2]
+    - cxx11_lambdas            : yes [2]
+    - cxx11_noexcept           : yes [2]
+    - cxx11_nullptr            : yes [2]
+    - cxx11_rvalue_references  : yes [2]
+    - cxx11_thread_local       : yes [2]
+    - has std::atomic_ref      : yes [2]
+    - has statx                : yes [2]
+    - cxx11_scoped_enums       : yes [2]
+    - cxx11_defaulted_moves    : yes [2]
+    - cxx11_deleted_functions  : yes [2]
+    - cxx11_function_template_default_args : yes [2]
+    - cxx11_override           : yes [2]
+    - has init_priority attribute : yes [2]
+    - has stat::st_blksize     : yes [2]
+    - has stat::st_mtim        : yes [2]
+    - has stat::st_mtimensec   : no [2]
+    - has stat::st_mtimespec   : no [2]
+    - has stat::st_birthtim    : no [2]
+    - has stat::st_birthtimensec : no [2]
+    - has stat::st_birthtimespec : no [2]
+    - has fdopendir(O_NOFOLLOW) : yes [2]
+    - has dirent::d_type       : yes [2]
+    - has POSIX *at APIs       : yes [2]
+    - has fallocate            : yes [2]
+notice: [zlib] zlib is already configured
+notice: [bzip2] bzip is already configured
+notice: iostreams: not using lzma compression
+notice: iostreams: not using zstd compression
+    - zlib                     : yes [2]
+    - bzip2                    : yes [2]
+    - sfinae_expr              : yes [2]
+    - cxx11_unified_initialization_syntax : yes [2]
+    - cxx11_hdr_initializer_list : yes [2]
+    - cxx11_hdr_chrono         : yes [2]
+    - cxx11_numeric_limits     : yes [2]
+    - cxx11_hdr_array          : yes [2]
+    - cxx11_hdr_atomic         : yes [2]
+    - cxx11_hdr_type_traits    : yes [2]
+    - cxx11_allocator          : yes [2]
+    - cxx11_explicit_conversion_operators : yes [2]
+    - has_icu builds           : no [2]
+    - cxx11_basic_alignas      : yes [2]
+    - iconv (libc)             : yes [2]
+    - cxx11_hdr_functional     : yes [2]
+    - cxx11_range_based_for    : yes [2]
+    - cxx11_smart_ptr          : yes [2]
+    - native atomic int32 supported : yes [2]
+    - native syslog supported  : yes [2]
+    - pthread supports robust mutexes : yes [2]
+    - Boost.Regex is header-only : yes [2]
