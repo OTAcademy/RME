@@ -19,6 +19,7 @@
 #define RME_MAP_REGION_H
 
 #include "map/position.h"
+#include <utility>
 
 class Tile;
 class Floor;
@@ -133,6 +134,38 @@ public:
 	TileLocation* getTile(int x, int y, int z);
 	Tile* setTile(int x, int y, int z, Tile* tile);
 	void clearTile(int x, int y, int z);
+
+	template <typename Func>
+	void visitLeaves(int x, int y, int size, int min_x, int min_y, int max_x, int max_y, Func&& func) {
+		if (x >= max_x || y >= max_y || x + size <= min_x || y + size <= min_y) {
+			return;
+		}
+
+		if (isLeaf) {
+			func(this, x, y);
+			return;
+		}
+
+		int child_size = size / 4;
+		for (int iy = 0; iy < 4; ++iy) {
+			int cy = y + iy * child_size;
+			if (cy >= max_y || cy + child_size <= min_y) {
+				continue;
+			}
+
+			for (int ix = 0; ix < 4; ++ix) {
+				int cx = x + ix * child_size;
+				if (cx >= max_x || cx + child_size <= min_x) {
+					continue;
+				}
+
+				int index = (iy << 2) | ix;
+				if (child[index]) {
+					child[index]->visitLeaves(cx, cy, child_size, min_x, min_y, max_x, max_y, std::forward<Func>(func));
+				}
+			}
+		}
+	}
 
 	Floor* createFloor(int x, int y, int z);
 	Floor* getFloor(uint32_t z) {

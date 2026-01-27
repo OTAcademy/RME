@@ -25,6 +25,7 @@
 #include "io/iomap.h"
 #include "game/item.h"
 #include "brushes/managers/brush_manager.h"
+#include <unordered_map>
 
 #include "brushes/ground_brush.h"
 #include "brushes/carpet_brush.h"
@@ -471,68 +472,33 @@ std::string Item::LiquidID2Name(uint16_t id) {
 
 uint16_t Item::LiquidName2ID(std::string liquid) {
 	to_lower_str(liquid);
-	if (liquid == "none") {
-		return LIQUID_NONE;
-	}
-	if (liquid == "water") {
-		return LIQUID_WATER;
-	}
-	if (liquid == "blood") {
-		return LIQUID_BLOOD;
-	}
-	if (liquid == "beer") {
-		return LIQUID_BEER;
-	}
-	if (liquid == "slime") {
-		return LIQUID_SLIME;
-	}
-	if (liquid == "lemonade") {
-		return LIQUID_LEMONADE;
-	}
-	if (liquid == "milk") {
-		return LIQUID_MILK;
-	}
-	if (liquid == "manafluid") {
-		return LIQUID_MANAFLUID;
-	}
-	if (liquid == "lifefluid") {
-		return LIQUID_LIFEFLUID;
-	}
-	if (liquid == "oil") {
-		return LIQUID_OIL;
-	}
-	if (liquid == "urine") {
-		return LIQUID_URINE;
-	}
-	if (liquid == "coconut milk") {
-		return LIQUID_COCONUT_MILK;
-	}
-	if (liquid == "wine") {
-		return LIQUID_WINE;
-	}
-	if (liquid == "mud") {
-		return LIQUID_MUD;
-	}
-	if (liquid == "fruit juice") {
-		return LIQUID_FRUIT_JUICE;
-	}
-	if (liquid == "lava") {
-		return LIQUID_LAVA;
-	}
-	if (liquid == "rum") {
-		return LIQUID_RUM;
-	}
-	if (liquid == "swamp") {
-		return LIQUID_SWAMP;
-	}
-	if (liquid == "ink") {
-		return LIQUID_INK;
-	}
-	if (liquid == "tea") {
-		return LIQUID_TEA;
-	}
-	if (liquid == "mead") {
-		return LIQUID_MEAD;
+	static const std::unordered_map<std::string, uint16_t> liquid_map = {
+		{"none", LIQUID_NONE},
+		{"water", LIQUID_WATER},
+		{"blood", LIQUID_BLOOD},
+		{"beer", LIQUID_BEER},
+		{"slime", LIQUID_SLIME},
+		{"lemonade", LIQUID_LEMONADE},
+		{"milk", LIQUID_MILK},
+		{"manafluid", LIQUID_MANAFLUID},
+		{"lifefluid", LIQUID_LIFEFLUID},
+		{"oil", LIQUID_OIL},
+		{"urine", LIQUID_URINE},
+		{"coconut milk", LIQUID_COCONUT_MILK},
+		{"wine", LIQUID_WINE},
+		{"mud", LIQUID_MUD},
+		{"fruit juice", LIQUID_FRUIT_JUICE},
+		{"lava", LIQUID_LAVA},
+		{"rum", LIQUID_RUM},
+		{"swamp", LIQUID_SWAMP},
+		{"ink", LIQUID_INK},
+		{"tea", LIQUID_TEA},
+		{"mead", LIQUID_MEAD}
+	};
+
+	auto it = liquid_map.find(liquid);
+	if (it != liquid_map.end()) {
+		return it->second;
 	}
 	return LIQUID_NONE;
 }
