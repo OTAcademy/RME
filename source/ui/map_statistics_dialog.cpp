@@ -90,6 +90,7 @@ void MapStatisticsDialog::Show(wxWindow* parent) {
 	wxSizer* choicesizer = newd wxBoxSizer(wxHORIZONTAL);
 	wxButton* export_button = newd wxButton(dg, wxID_OK, "Export as XML");
 	choicesizer->Add(export_button, wxSizerFlags(1).Center());
+	export_button->SetToolTip("Not implemented yet");
 	export_button->Enable(false);
 	choicesizer->Add(newd wxButton(dg, wxID_CANCEL, "OK"), wxSizerFlags(1).Center());
 	topsizer->Add(choicesizer, wxSizerFlags(1).Center());

@@ -55,6 +55,7 @@ FindItemDialog::FindItemDialog(wxWindow* parent, const wxString& title, bool onl
 
 	wxStaticBoxSizer* server_id_box_sizer = newd wxStaticBoxSizer(newd wxStaticBox(this, wxID_ANY, "Server ID"), wxVERTICAL);
 	server_id_spin = newd wxSpinCtrl(server_id_box_sizer->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 100, g_items.getMaxID(), 100);
+	server_id_spin->SetToolTip("Search by server ID");
 	server_id_box_sizer->Add(server_id_spin, 0, wxALL | wxEXPAND, 5);
 
 	invalid_item = newd wxCheckBox(server_id_box_sizer->GetStaticBox(), wxID_ANY, "Force select", wxDefaultPosition, wxDefaultSize, 0);
@@ -65,12 +66,14 @@ FindItemDialog::FindItemDialog(wxWindow* parent, const wxString& title, bool onl
 
 	wxStaticBoxSizer* client_id_box_sizer = newd wxStaticBoxSizer(newd wxStaticBox(this, wxID_ANY, "Client ID"), wxVERTICAL);
 	client_id_spin = newd wxSpinCtrl(client_id_box_sizer->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 100, g_gui.gfx.getItemSpriteMaxID(), 100);
+	client_id_spin->SetToolTip("Search by client ID");
 	client_id_spin->Enable(false);
 	client_id_box_sizer->Add(client_id_spin, 0, wxALL | wxEXPAND, 5);
 	options_box_sizer->Add(client_id_box_sizer, 1, wxALL | wxEXPAND, 5);
 
 	wxStaticBoxSizer* name_box_sizer = newd wxStaticBoxSizer(newd wxStaticBox(this, wxID_ANY, "Name"), wxVERTICAL);
 	name_text_input = newd wxTextCtrl(name_box_sizer->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	name_text_input->SetToolTip("Search by item name");
 	name_text_input->Enable(false);
 	name_box_sizer->Add(name_text_input, 0, wxALL | wxEXPAND, 5);
 	options_box_sizer->Add(name_box_sizer, 1, wxALL | wxEXPAND, 5);
@@ -80,6 +83,7 @@ FindItemDialog::FindItemDialog(wxWindow* parent, const wxString& title, bool onl
 
 	buttons_box_sizer = newd wxStdDialogButtonSizer();
 	ok_button = newd wxButton(this, wxID_OK);
+	ok_button->SetToolTip("Select an item to confirm");
 	buttons_box_sizer->AddButton(ok_button);
 	cancel_button = newd wxButton(this, wxID_CANCEL);
 	buttons_box_sizer->AddButton(cancel_button);
@@ -259,6 +263,7 @@ void FindItemDialog::EnableProperties(bool enable) {
 void FindItemDialog::RefreshContentsInternal() {
 	items_list->Clear();
 	ok_button->Enable(false);
+	ok_button->SetToolTip("Select an item to continue");
 
 	SearchMode selection = (SearchMode)options_radio_box->GetSelection();
 	bool found_search_results = false;
@@ -383,6 +388,7 @@ void FindItemDialog::RefreshContentsInternal() {
 	if (found_search_results) {
 		items_list->SetSelection(0);
 		ok_button->Enable(true);
+		ok_button->SetToolTip("Confirm selection");
 	} else {
 		items_list->SetNoMatches();
 	}
