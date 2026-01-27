@@ -12,6 +12,11 @@
 
 extern Brushes g_brushes;
 
+// Helper for C++20 case-insensitive comparison (zero allocation)
+static const auto iequal = [](char a, char b) {
+	return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
+};
+
 bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayString& warnings) {
 	pugi::xml_attribute attribute;
 	if ((attribute = node.attribute("lookid"))) {
@@ -35,10 +40,14 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 	}
 
 	for (pugi::xml_node childNode : node.children()) {
-		const std::string childName = as_lower_str(childNode.name());
-		if (childName == "item") {
+		std::string_view childName = childNode.name();
+		if (std::ranges::equal(childName, std::string_view("item"), iequal)) {
 			uint16_t itemId = childNode.attribute("id").as_ushort();
 			int32_t chance = childNode.attribute("chance").as_int();
+			if (chance <= 0) {
+				warnings.push_back("\nInvalid chance for ground item " + std::to_string(itemId));
+				continue;
+			}
 
 			ItemType& it = g_items[itemId];
 			if (it.id == 0) {
@@ -63,7 +72,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 			ci.id = itemId;
 			ci.chance = brush.total_chance;
 			brush.border_items.push_back(ci);
-		} else if (childName == "optional") {
+		} else if (std::ranges::equal(childName, std::string_view("optional"), iequal)) {
 			// Mountain border!
 			if (brush.optional_border) {
 				warnings.push_back("\nDuplicate optional borders!");
@@ -105,7 +114,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 
 				brush.optional_border = it->second.get();
 			}
-		} else if (childName == "border") {
+		} else if (std::ranges::equal(childName, std::string_view("border"), iequal)) {
 			AutoBorder* autoBorder;
 			if (!(attribute = childNode.attribute("id"))) {
 				if (!(attribute = childNode.attribute("ground_equivalent"))) {
@@ -193,18 +202,18 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 				}
 			}
 
-			for (pugi::xml_node subChildNode = childNode.first_child(); subChildNode; subChildNode = subChildNode.next_sibling()) {
-				if (as_lower_str(subChildNode.name()) != "specific") {
+			for (pugi::xml_node subChildNode : childNode.children()) {
+				if (!std::ranges::equal(std::string_view(subChildNode.name()), std::string_view("specific"), iequal)) {
 					continue;
 				}
 
 				GroundBrush::SpecificCaseBlock* specificCaseBlock = nullptr;
-				for (pugi::xml_node superChildNode = subChildNode.first_child(); superChildNode; superChildNode = superChildNode.next_sibling()) {
-					const std::string superChildName = as_lower_str(superChildNode.name());
-					if (superChildName == "conditions") {
-						for (pugi::xml_node conditionChild = superChildNode.first_child(); conditionChild; conditionChild = conditionChild.next_sibling()) {
-							const std::string conditionName = as_lower_str(conditionChild.name());
-							if (conditionName == "match_border") {
+				for (pugi::xml_node superChildNode : subChildNode.children()) {
+					std::string_view superChildName = superChildNode.name();
+					if (std::ranges::equal(superChildName, std::string_view("conditions"), iequal)) {
+						for (pugi::xml_node conditionChild : superChildNode.children()) {
+							std::string_view conditionName = conditionChild.name();
+							if (std::ranges::equal(conditionName, std::string_view("match_border"), iequal)) {
 								if (!(attribute = conditionChild.attribute("id"))) {
 									continue;
 								}
@@ -229,7 +238,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 									specificCaseBlock = newd GroundBrush::SpecificCaseBlock();
 								}
 								specificCaseBlock->items_to_match.push_back(match_itemid);
-							} else if (conditionName == "match_group") {
+							} else if (std::ranges::equal(conditionName, std::string_view("match_group"), iequal)) {
 								if (!(attribute = conditionChild.attribute("group"))) {
 									continue;
 								}
@@ -247,7 +256,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 								specificCaseBlock->match_group = group;
 								specificCaseBlock->group_match_alignment = ::BorderType(edge_id);
 								specificCaseBlock->items_to_match.push_back(group);
-							} else if (conditionName == "match_item") {
+							} else if (std::ranges::equal(conditionName, std::string_view("match_item"), iequal)) {
 								if (!(attribute = conditionChild.attribute("id"))) {
 									continue;
 								}
@@ -261,10 +270,10 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 								specificCaseBlock->items_to_match.push_back(match_itemid);
 							}
 						}
-					} else if (superChildName == "actions") {
-						for (pugi::xml_node actionChild = superChildNode.first_child(); actionChild; actionChild = actionChild.next_sibling()) {
-							const std::string actionName = as_lower_str(actionChild.name());
-							if (actionName == "replace_border") {
+					} else if (std::ranges::equal(superChildName, std::string_view("actions"), iequal)) {
+						for (pugi::xml_node actionChild : superChildNode.children()) {
+							std::string_view actionName = actionChild.name();
+							if (std::ranges::equal(actionName, std::string_view("replace_border"), iequal)) {
 								if (!(attribute = actionChild.attribute("id"))) {
 									continue;
 								}
@@ -301,7 +310,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 
 								specificCaseBlock->to_replace_id = autoBorder->tiles[edge_id];
 								specificCaseBlock->with_id = with_id;
-							} else if (actionName == "replace_item") {
+							} else if (std::ranges::equal(actionName, std::string_view("replace_item"), iequal)) {
 								if (!(attribute = actionChild.attribute("id"))) {
 									continue;
 								}
@@ -324,7 +333,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 
 								specificCaseBlock->to_replace_id = to_replace_id;
 								specificCaseBlock->with_id = with_id;
-							} else if (actionName == "delete_borders") {
+							} else if (std::ranges::equal(actionName, std::string_view("delete_borders"), iequal)) {
 								if (!specificCaseBlock) {
 									specificCaseBlock = newd GroundBrush::SpecificCaseBlock();
 								}
@@ -342,7 +351,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 				}
 			}
 			brush.borders.push_back(borderBlock);
-		} else if (childName == "friend") {
+		} else if (std::ranges::equal(childName, std::string_view("friend"), iequal)) {
 			const std::string_view name = childNode.attribute("name").as_string();
 			if (!name.empty()) {
 				if (name == "all") {
@@ -357,7 +366,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 				}
 			}
 			brush.hate_friends = false;
-		} else if (childName == "enemy") {
+		} else if (std::ranges::equal(childName, std::string_view("enemy"), iequal)) {
 			const std::string_view name = childNode.attribute("name").as_string();
 			if (!name.empty()) {
 				if (name == "all") {
@@ -372,7 +381,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 				}
 			}
 			brush.hate_friends = true;
-		} else if (childName == "clear_borders") {
+		} else if (std::ranges::equal(childName, std::string_view("clear_borders"), iequal)) {
 			for (GroundBrush::BorderBlock* bb : brush.borders) {
 				if (bb->autoborder) {
 					for (GroundBrush::SpecificCaseBlock* specificCaseBlock : bb->specific_cases) {
@@ -385,7 +394,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 				delete bb;
 			}
 			brush.borders.clear();
-		} else if (childName == "clear_friends") {
+		} else if (std::ranges::equal(childName, std::string_view("clear_friends"), iequal)) {
 			brush.friends.clear();
 			brush.hate_friends = false;
 		}

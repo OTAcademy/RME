@@ -28,11 +28,8 @@ bool CarpetBrushLoader::load(CarpetBrush& brush, pugi::xml_node node, wxArrayStr
 		brush.look_id = clientID;
 	}
 
-	for (pugi::xml_node childNode = node.first_child(); childNode; childNode = childNode.next_sibling()) {
-		std::string_view nodeName = childNode.name();
-
-		// Optimize with C++20: Zero allocation comparison
-		if (!std::ranges::equal(nodeName, std::string_view("carpet"), iequal)) {
+	for (pugi::xml_node childNode : node.children()) {
+		if (!std::ranges::equal(std::string_view(childNode.name()), std::string_view("carpet"), iequal)) {
 			continue;
 		}
 
@@ -54,9 +51,8 @@ bool CarpetBrushLoader::load(CarpetBrush& brush, pugi::xml_node node, wxArrayStr
 		}
 
 		bool use_local_id = true;
-		for (pugi::xml_node subChildNode = childNode.first_child(); subChildNode; subChildNode = subChildNode.next_sibling()) {
-			std::string_view subNodeName = subChildNode.name();
-			if (!std::ranges::equal(subNodeName, std::string_view("item"), iequal)) {
+		for (pugi::xml_node subChildNode : childNode.children()) {
+			if (!std::ranges::equal(std::string_view(subChildNode.name()), std::string_view("item"), iequal)) {
 				continue;
 			}
 
@@ -67,6 +63,10 @@ bool CarpetBrushLoader::load(CarpetBrush& brush, pugi::xml_node node, wxArrayStr
 			}
 
 			int32_t id = attribute.as_int();
+			if (id <= 0) {
+				warnings.push_back("Invalid id for item node: " + std::to_string(id));
+				continue;
+			}
 			if (!(attribute = subChildNode.attribute("chance"))) {
 				warnings.push_back("Could not read chance tag of item node\n");
 				continue;

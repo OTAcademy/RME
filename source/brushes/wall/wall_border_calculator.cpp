@@ -35,9 +35,9 @@ void WallBorderCalculator::doWalls(BaseMap* map, Tile* tile) {
 	ASSERT(tile);
 
 	// For quicker reference
-	const unsigned int x = tile->getPosition().x;
-	const unsigned int y = tile->getPosition().y;
-	const unsigned int z = tile->getPosition().z;
+	const int32_t x = tile->getPosition().x;
+	const int32_t y = tile->getPosition().y;
+	const int32_t z = tile->getPosition().z;
 
 	// Advance the vector to the beginning of the walls
 	ItemVector::iterator it = tile->items.begin();

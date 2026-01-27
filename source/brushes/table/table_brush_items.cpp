@@ -6,7 +6,7 @@
 #include "app/main.h"
 
 void TableBrushItems::addItem(int alignment, uint16_t id, int chance) {
-	if (alignment < 0 || alignment >= table_items.size()) {
+	if (alignment < 0 || alignment >= static_cast<int>(table_items.size())) {
 		return;
 	}
 
@@ -20,14 +20,14 @@ void TableBrushItems::addItem(int alignment, uint16_t id, int chance) {
 
 const TableNode& TableBrushItems::getItems(int alignment) const {
 	static TableNode emptyNode;
-	if (alignment < 0 || alignment >= table_items.size()) {
+	if (alignment < 0 || alignment >= static_cast<int>(table_items.size())) {
 		return emptyNode;
 	}
 	return table_items[alignment];
 }
 
 bool TableBrushItems::hasItems(int alignment) const {
-	if (alignment < 0 || alignment >= table_items.size()) {
+	if (alignment < 0 || alignment >= static_cast<int>(table_items.size())) {
 		return false;
 	}
 	return !table_items[alignment].items.empty();

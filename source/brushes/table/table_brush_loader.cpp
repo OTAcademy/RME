@@ -8,6 +8,13 @@
 #include "game/items.h"
 #include <utility>
 #include <string_view>
+#include <algorithm>
+#include <cctype>
+
+// Helper for C++20 case-insensitive comparison (zero allocation)
+static const auto iequal = [](char a, char b) {
+	return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
+};
 
 bool TableBrushLoader::load(pugi::xml_node node, TableBrush& brush, TableBrushItems& items, wxArrayString& warnings) {
 	uint16_t look_id = 0;
@@ -21,8 +28,8 @@ bool TableBrushLoader::load(pugi::xml_node node, TableBrush& brush, TableBrushIt
 
 	// We need to set items.
 
-	for (pugi::xml_node childNode = node.first_child(); childNode; childNode = childNode.next_sibling()) {
-		if (as_lower_str(childNode.name()) != "table") {
+	for (pugi::xml_node childNode : node.children()) {
+		if (!std::ranges::equal(std::string_view(childNode.name()), std::string_view("table"), iequal)) {
 			continue;
 		}
 
@@ -37,8 +44,8 @@ bool TableBrushLoader::load(pugi::xml_node node, TableBrush& brush, TableBrushIt
 			continue;
 		}
 
-		for (pugi::xml_node subChildNode = childNode.first_child(); subChildNode; subChildNode = subChildNode.next_sibling()) {
-			if (as_lower_str(subChildNode.name()) != "item") {
+		for (pugi::xml_node subChildNode : childNode.children()) {
+			if (!std::ranges::equal(std::string_view(subChildNode.name()), std::string_view("item"), iequal)) {
 				continue;
 			}
 
@@ -60,7 +67,12 @@ bool TableBrushLoader::load(pugi::xml_node node, TableBrush& brush, TableBrushIt
 			it.isTable = true;
 			it.brush = &brush;
 
-			items.addItem(alignment, id, subChildNode.attribute("chance").as_int());
+			int32_t chance = subChildNode.attribute("chance").as_int();
+			if (chance <= 0) {
+				warnings.push_back("Invalid chance for item node: " + std::to_string(chance));
+				continue;
+			}
+			items.addItem(alignment, id, chance);
 		}
 	}
 

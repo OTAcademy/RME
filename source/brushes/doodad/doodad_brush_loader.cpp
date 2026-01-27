@@ -15,11 +15,15 @@
 #include <boost/lexical_cast.hpp>
 
 // Helper
-static std::string as_lower_str(const char* cstr) {
-	std::string str(cstr);
-	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-	return str;
-}
+#include <ranges>
+#include <algorithm>
+#include <cctype>
+#include <string_view>
+
+// Helper for C++20 case-insensitive comparison (zero allocation)
+static const auto iequal = [](char a, char b) {
+	return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
+};
 
 bool DoodadBrushLoader::load(pugi::xml_node node, DoodadBrushItems& items, DoodadBrushSettings& settings, wxArrayString& warnings, DoodadBrush* brushPtr) {
 	pugi::xml_attribute attribute;
@@ -69,7 +73,7 @@ bool DoodadBrushLoader::load(pugi::xml_node node, DoodadBrushItems& items, Dooda
 	}
 
 	for (pugi::xml_node childNode = node.first_child(); childNode; childNode = childNode.next_sibling()) {
-		if (as_lower_str(childNode.name()) != "alternate") {
+		if (!std::ranges::equal(std::string_view(childNode.name()), std::string_view("alternate"), iequal)) {
 			continue;
 		}
 		if (!loadAlternative(childNode, items, warnings, nullptr, brushPtr)) {
@@ -92,8 +96,8 @@ bool DoodadBrushLoader::loadAlternative(pugi::xml_node node, DoodadBrushItems& i
 
 	pugi::xml_attribute attribute;
 	for (pugi::xml_node childNode = node.first_child(); childNode; childNode = childNode.next_sibling()) {
-		const std::string& childName = as_lower_str(childNode.name());
-		if (childName == "item") {
+		std::string_view childName = childNode.name();
+		if (std::ranges::equal(childName, std::string_view("item"), iequal)) {
 			if (!(attribute = childNode.attribute("chance"))) {
 				warnings.push_back("Can't read chance tag of doodad item node.");
 				continue;
@@ -112,7 +116,7 @@ bool DoodadBrushLoader::loadAlternative(pugi::xml_node node, DoodadBrushItems& i
 
 			items.addSingleToBlock(alternativeBlock, std::unique_ptr<Item>(item), attribute.as_int());
 
-		} else if (childName == "composite") {
+		} else if (std::ranges::equal(childName, std::string_view("composite"), iequal)) {
 			if (!(attribute = childNode.attribute("chance"))) {
 				warnings.push_back("Can't read chance tag of doodad item node.");
 				continue;
@@ -122,7 +126,7 @@ bool DoodadBrushLoader::loadAlternative(pugi::xml_node node, DoodadBrushItems& i
 			CompositeTileList compositeList;
 
 			for (pugi::xml_node compositeNode = childNode.first_child(); compositeNode; compositeNode = compositeNode.next_sibling()) {
-				if (as_lower_str(compositeNode.name()) != "tile") {
+				if (!std::ranges::equal(std::string_view(compositeNode.name()), std::string_view("tile"), iequal)) {
 					continue;
 				}
 
@@ -152,7 +156,7 @@ bool DoodadBrushLoader::loadAlternative(pugi::xml_node node, DoodadBrushItems& i
 
 				DoodadItemVector tiles_items;
 				for (pugi::xml_node itemNode = compositeNode.first_child(); itemNode; itemNode = itemNode.next_sibling()) {
-					if (as_lower_str(itemNode.name()) != "item") {
+					if (!std::ranges::equal(std::string_view(itemNode.name()), std::string_view("item"), iequal)) {
 						continue;
 					}
 

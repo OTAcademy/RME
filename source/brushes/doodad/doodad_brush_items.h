@@ -66,7 +66,6 @@ public:
 	}
 
 	// Randomization
-	static int randomRange(int min, int max);
 
 	Item* getRandomSingleItem(int variation) const;
 

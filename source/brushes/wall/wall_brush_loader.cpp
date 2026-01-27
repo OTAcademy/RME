@@ -64,6 +64,11 @@ namespace {
 		items.addDoorItem(alignment, id, WALL_HATCH_WINDOW, locked);
 	}
 
+	// Helper for C++20 case-insensitive comparison (zero allocation)
+	const auto iequal = [](char a, char b) {
+		return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
+	};
+
 } // namespace
 
 bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_node node, wxArrayString& warnings) {
@@ -76,10 +81,10 @@ bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_no
 		brush->look_id = g_items[attribute.as_ushort()].clientID;
 	}
 
-	for (pugi::xml_node childNode = node.first_child(); childNode; childNode = childNode.next_sibling()) {
-		const std::string childName = as_lower_str(childNode.name());
+	for (pugi::xml_node childNode : node.children()) {
+		std::string_view childName = childNode.name();
 
-		if (childName == "wall") {
+		if (std::ranges::equal(childName, std::string_view("wall"), iequal)) {
 			const std::string typeString = childNode.attribute("type").as_string();
 			if (typeString.empty()) {
 				warnings.push_back("Could not read type tag of wall node\n");
@@ -96,10 +101,10 @@ bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_no
 				continue;
 			}
 
-			for (pugi::xml_node subChildNode = childNode.first_child(); subChildNode; subChildNode = subChildNode.next_sibling()) {
-				const std::string subChildName = as_lower_str(subChildNode.name());
+			for (pugi::xml_node subChildNode : childNode.children()) {
+				std::string_view subChildName = subChildNode.name();
 
-				if (subChildName == "item") {
+				if (std::ranges::equal(subChildName, std::string_view("item"), iequal)) {
 					uint16_t id = subChildNode.attribute("id").as_ushort();
 					if (id == 0) {
 						warnings.push_back("Could not read id tag of item node\n");
@@ -120,9 +125,13 @@ bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_no
 					it.border_alignment = alignment;
 
 					int chance = subChildNode.attribute("chance").as_int();
+					if (chance <= 0) {
+						warnings.push_back("Invalid chance for wall item " + std::to_string(id));
+						continue;
+					}
 					items.addWallItem(alignment, id, chance);
 
-				} else if (subChildName == "door") {
+				} else if (std::ranges::equal(subChildName, std::string_view("door"), iequal)) {
 					uint16_t id = subChildNode.attribute("id").as_ushort();
 					if (id == 0) {
 						warnings.push_back("Could not read id tag of door node\n");
@@ -196,7 +205,7 @@ bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_no
 					}
 				}
 			}
-		} else if (childName == "friend") {
+		} else if (std::ranges::equal(childName, std::string_view("friend"), iequal)) {
 			const std::string name = childNode.attribute("name").as_string();
 			if (name.empty()) {
 				continue;

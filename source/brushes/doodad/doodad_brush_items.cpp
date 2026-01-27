@@ -138,6 +138,7 @@ const CompositeTileList& DoodadBrushItems::getComposite(int variation) const {
 		if (roll <= cb.chance) {
 			return cb.items;
 		}
+		roll -= cb.chance;
 	}
 	return empty;
 }
