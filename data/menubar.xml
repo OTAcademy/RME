@@ -202,6 +202,7 @@
 	</menu>
 	<menu name="Window">
 		<item name="Minimap" hotkey="M" action="WIN_MINIMAP" help="Displays the minimap window."/>
+		<item name="In-game Preview" action="WIN_INGAME_PREVIEW" help="Displays the in-game preview window."/>
 		<item name="New Palette" action="NEW_PALETTE" help="Creates a new palette."/>
 		<menu name="Palette">
 			<item name="Terrain" hotkey="T" action="SELECT_TERRAIN" help="Select the Terrain palette."/>

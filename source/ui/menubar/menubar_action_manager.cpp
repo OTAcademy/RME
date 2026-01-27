@@ -127,6 +127,7 @@ void MenuBarActionManager::RegisterActions(MainMenuBar* mb, std::map<std::string
 	MAKE_ACTION(EXPERIMENTAL_FOG, wxITEM_CHECK, OnChangeViewSettings); // experimental
 
 	MAKE_ACTION(WIN_MINIMAP, wxITEM_NORMAL, OnMinimapWindow);
+	MAKE_ACTION(WIN_INGAME_PREVIEW, wxITEM_NORMAL, OnIngamePreviewWindow);
 	MAKE_ACTION(NEW_PALETTE, wxITEM_NORMAL, OnNewPalette);
 	MAKE_ACTION(TAKE_SCREENSHOT, wxITEM_NORMAL, OnTakeScreenshot);
 
@@ -261,6 +262,7 @@ void MenuBarActionManager::UpdateState(MainMenuBar* mb) {
 	}
 
 	mb->EnableItem(WIN_MINIMAP, loaded);
+	mb->EnableItem(WIN_INGAME_PREVIEW, loaded);
 	mb->EnableItem(NEW_PALETTE, loaded);
 	mb->EnableItem(SELECT_TERRAIN, loaded);
 	mb->EnableItem(SELECT_DOODAD, loaded);
