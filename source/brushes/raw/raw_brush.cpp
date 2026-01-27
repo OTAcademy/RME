@@ -17,7 +17,7 @@
 
 #include "app/main.h"
 
-#include "brushes/raw_brush.h"
+#include "brushes/raw/raw_brush.h"
 #include "app/settings.h"
 #include "game/items.h"
 #include "map/basemap.h"

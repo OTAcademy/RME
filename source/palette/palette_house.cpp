@@ -31,9 +31,9 @@
 #include "app/application.h"
 #include "rendering/ui/map_display.h"
 
-#include "brushes/house_brush.h"
-#include "brushes/house_exit_brush.h"
-#include "brushes/spawn_brush.h"
+#include "brushes/house/house_brush.h"
+#include "brushes/house/house_exit_brush.h"
+#include "brushes/spawn/spawn_brush.h"
 
 // ============================================================================
 // House palette

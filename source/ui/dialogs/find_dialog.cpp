@@ -3,7 +3,7 @@
 #include "brushes/brush.h"
 #include "game/items.h"
 #include "ui/gui.h"
-#include "brushes/raw_brush.h"
+#include "brushes/raw/raw_brush.h"
 
 // ============================================================================
 // Numkey forwarding text control

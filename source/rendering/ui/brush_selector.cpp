@@ -23,14 +23,14 @@
 #include "map/tile.h"
 #include "game/item.h"
 #include "brushes/brush.h"
-#include "brushes/ground_brush.h"
-#include "brushes/wall_brush.h"
-#include "brushes/carpet_brush.h"
-#include "brushes/table_brush.h"
-#include "brushes/raw_brush.h"
-#include "brushes/house_brush.h"
-#include "brushes/spawn_brush.h"
-#include "brushes/creature_brush.h"
+#include "brushes/ground/ground_brush.h"
+#include "brushes/wall/wall_brush.h"
+#include "brushes/carpet/carpet_brush.h"
+#include "brushes/table/table_brush.h"
+#include "brushes/raw/raw_brush.h"
+#include "brushes/house/house_brush.h"
+#include "brushes/spawn/spawn_brush.h"
+#include "brushes/creature/creature_brush.h"
 
 void BrushSelector::SelectRAWBrush(Selection& selection) {
 	if (selection.size() != 1) {

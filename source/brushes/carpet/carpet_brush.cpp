@@ -17,7 +17,7 @@
 
 #include "app/main.h"
 
-#include "brushes/carpet_brush.h"
+#include "brushes/carpet/carpet_brush.h"
 
 #include "map/basemap.h"
 #include "game/items.h"

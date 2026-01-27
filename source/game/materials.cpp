@@ -26,8 +26,8 @@
 #include "ui/gui.h"
 #include "game/materials.h"
 #include "brushes/brush.h"
-#include "brushes/creature_brush.h"
-#include "brushes/raw_brush.h"
+#include "brushes/creature/creature_brush.h"
+#include "brushes/raw/raw_brush.h"
 
 Materials g_materials;
 

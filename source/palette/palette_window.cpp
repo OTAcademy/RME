@@ -28,7 +28,7 @@
 #include "palette/palette_creature.h"
 #include "palette/palette_waypoints.h"
 
-#include "brushes/house_brush.h"
+#include "brushes/house/house_brush.h"
 #include "map/map.h"
 
 // ============================================================================

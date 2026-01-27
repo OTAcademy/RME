@@ -21,7 +21,7 @@
 #include "game/materials.h"
 #include "brushes/brush.h"
 #include "game/creatures.h"
-#include "brushes/creature_brush.h"
+#include "brushes/creature/creature_brush.h"
 
 CreatureDatabase g_creatures;
 

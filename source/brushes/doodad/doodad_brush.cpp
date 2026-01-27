@@ -17,7 +17,7 @@
 
 #include "app/main.h"
 
-#include "brushes/doodad_brush.h"
+#include "brushes/doodad/doodad_brush.h"
 #include "map/basemap.h"
 
 #include <boost/lexical_cast.hpp>

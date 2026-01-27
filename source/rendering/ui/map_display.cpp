@@ -63,17 +63,17 @@
 #include "rendering/ui/drawing_controller.h"
 #include "rendering/ui/map_menu_handler.h"
 
-#include "brushes/doodad_brush.h"
-#include "brushes/house_exit_brush.h"
-#include "brushes/house_brush.h"
-#include "brushes/wall_brush.h"
-#include "brushes/spawn_brush.h"
-#include "brushes/creature_brush.h"
-#include "brushes/ground_brush.h"
-#include "brushes/waypoint_brush.h"
-#include "brushes/raw_brush.h"
-#include "brushes/carpet_brush.h"
-#include "brushes/table_brush.h"
+#include "brushes/doodad/doodad_brush.h"
+#include "brushes/house/house_exit_brush.h"
+#include "brushes/house/house_brush.h"
+#include "brushes/wall/wall_brush.h"
+#include "brushes/spawn/spawn_brush.h"
+#include "brushes/creature/creature_brush.h"
+#include "brushes/ground/ground_brush.h"
+#include "brushes/waypoint/waypoint_brush.h"
+#include "brushes/raw/raw_brush.h"
+#include "brushes/carpet/carpet_brush.h"
+#include "brushes/table/table_brush.h"
 
 BEGIN_EVENT_TABLE(MapCanvas, wxGLCanvas)
 EVT_KEY_DOWN(MapCanvas::OnKeyDown)

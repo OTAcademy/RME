@@ -8,7 +8,7 @@
 #include "ui/gui.h"
 #include "editor/editor.h"
 #include "brushes/brush.h"
-#include "brushes/ground_brush.h"
+#include "brushes/ground/ground_brush.h"
 #include "map/map.h"
 #include "map/tile.h"
 

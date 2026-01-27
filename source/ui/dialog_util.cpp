@@ -5,12 +5,7 @@
 #include "app/main.h"
 #include "ui/dialog_util.h"
 #include <wx/app.h>
-#include "ui/gui.h" // For g_gui.root if needed, but try to avoid if possible.
-// Wait, one overload of PopupDialog uses g_gui.root.
-// I should include gui.h eventually or make sure g_gui is available.
-// But circular dependency? DialogUtil shouldn't depend on GUI if possible.
-// But PopupDialog overload uses g_gui.root.
-// Maybe I should pass root window explicitly or use wxGetApp().GetTopWindow()?
+#include "ui/gui.h" 
 
 #include "app/application.h"
 

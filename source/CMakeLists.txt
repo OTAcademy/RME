@@ -14,17 +14,17 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_enums.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_utility.h
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet_brush.h
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/creature_brush.h
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad_brush.h
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground_brush.h
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/house_brush.h
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/house_exit_brush.h
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/raw_brush.h
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/spawn_brush.h
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/table_brush.h
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall_brush.h
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/waypoint_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/creature/creature_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/house/house_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/house/house_exit_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/raw/raw_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/spawn/spawn_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/waypoint/waypoint_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/action_queue.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/copybuffer.h
@@ -260,18 +260,18 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_tables.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_utility.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet_brush.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/creature_brush.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad_brush.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/eraser_brush.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground_brush.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/house_brush.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/house_exit_brush.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/raw_brush.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/spawn_brush.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/table_brush.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall_brush.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/waypoint_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/creature/creature_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/eraser/eraser_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/house/house_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/house/house_exit_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/raw/raw_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/spawn/spawn_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/waypoint/waypoint_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/action_queue.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/copybuffer.cpp

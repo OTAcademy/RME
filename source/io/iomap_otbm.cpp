@@ -38,7 +38,7 @@
 #include "game/item.h"
 #include "game/complexitem.h"
 #include "game/town.h"
-#include "brushes/wall_brush.h"
+#include "brushes/wall/wall_brush.h"
 
 #include "io/iomap_otbm.h"
 

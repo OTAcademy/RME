@@ -17,7 +17,7 @@
 
 #include "app/main.h"
 
-#include "brushes/wall_brush.h"
+#include "brushes/wall/wall_brush.h"
 
 #include "ui/gui.h"
 #include "game/items.h"

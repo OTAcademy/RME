@@ -18,7 +18,7 @@
 #include "app/main.h"
 
 #include <algorithm>
-#include "brushes/ground_brush.h"
+#include "brushes/ground/ground_brush.h"
 #include "game/items.h"
 #include "map/basemap.h"
 

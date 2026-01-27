@@ -23,8 +23,8 @@
 #include "io/iomap_otbm.h"
 // #include "io/iomap_otmm.h"
 #include "game/item_attributes.h"
-#include "brushes/doodad_brush.h"
-#include "brushes/raw_brush.h"
+#include "brushes/doodad/doodad_brush.h"
+#include "brushes/raw/raw_brush.h"
 
 class Creature;
 class Border;

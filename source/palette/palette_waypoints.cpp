@@ -24,7 +24,7 @@
 #include "brushes/managers/brush_manager.h"
 #include "editor/hotkey_manager.h"
 #include "palette/palette_waypoints.h"
-#include "brushes/waypoint_brush.h"
+#include "brushes/waypoint/waypoint_brush.h"
 #include "map/map.h"
 
 BEGIN_EVENT_TABLE(WaypointPalettePanel, PalettePanel)

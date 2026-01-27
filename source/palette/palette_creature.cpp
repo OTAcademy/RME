@@ -23,8 +23,8 @@
 #include "ui/gui.h"
 #include "brushes/managers/brush_manager.h"
 #include "palette/palette_creature.h"
-#include "brushes/creature_brush.h"
-#include "brushes/spawn_brush.h"
+#include "brushes/creature/creature_brush.h"
+#include "brushes/spawn/spawn_brush.h"
 #include "game/materials.h"
 #include "ui/controls/sortable_list_box.h"
 

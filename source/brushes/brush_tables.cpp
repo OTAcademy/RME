@@ -17,10 +17,10 @@
 
 #include "app/main.h"
 
-#include "brushes/ground_brush.h"
-#include "brushes/wall_brush.h"
-#include "brushes/carpet_brush.h"
-#include "brushes/table_brush.h"
+#include "brushes/ground/ground_brush.h"
+#include "brushes/wall/wall_brush.h"
+#include "brushes/carpet/carpet_brush.h"
+#include "brushes/table/table_brush.h"
 
 //=============================================================================
 // Border lookup tables

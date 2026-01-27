@@ -19,7 +19,7 @@
 
 #include "map/map.h"
 #include "ui/gui.h"
-#include "brushes/raw_brush.h"
+#include "brushes/raw/raw_brush.h"
 #include "map/tile.h"
 #include "rendering/core/graphics.h"
 #include "ui/gui.h"

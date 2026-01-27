@@ -17,7 +17,7 @@
 
 #include "app/main.h"
 
-#include "brushes/spawn_brush.h"
+#include "brushes/spawn/spawn_brush.h"
 #include "map/basemap.h"
 #include "game/spawn.h"
 

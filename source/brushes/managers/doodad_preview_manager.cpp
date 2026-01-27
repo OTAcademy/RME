@@ -6,7 +6,7 @@
 #include "brushes/managers/doodad_preview_manager.h"
 #include "ui/gui.h"
 #include "map/map.h"
-#include "brushes/doodad_brush.h"
+#include "brushes/doodad/doodad_brush.h"
 #include "brushes/brush.h"
 #include "brushes/managers/brush_manager.h"
 #include "game/sprites.h"

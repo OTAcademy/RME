@@ -7,7 +7,7 @@
 #include "map/tile.h"
 #include "game/item.h"
 #include "game/items.h"
-#include "brushes/waypoint_brush.h"
+#include "brushes/waypoint/waypoint_brush.h"
 #include "game/complexitem.h"
 
 #include "rendering/core/drawing_options.h"

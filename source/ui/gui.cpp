@@ -37,8 +37,8 @@
 #include "map/map.h"
 #include "game/sprites.h"
 #include "game/materials.h"
-#include "brushes/doodad_brush.h"
-#include "brushes/spawn_brush.h"
+#include "brushes/doodad/doodad_brush.h"
+#include "brushes/spawn/spawn_brush.h"
 
 #include "ui/controls/item_buttons.h"
 #include "ui/result_window.h"

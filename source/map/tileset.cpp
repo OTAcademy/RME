@@ -19,9 +19,9 @@
 
 #include "map/tileset.h"
 #include "game/creatures.h"
-#include "brushes/creature_brush.h"
+#include "brushes/creature/creature_brush.h"
 #include "game/items.h"
-#include "brushes/raw_brush.h"
+#include "brushes/raw/raw_brush.h"
 
 Tileset::Tileset(Brushes& brushes, const std::string& name) :
 	name(name),

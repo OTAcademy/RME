@@ -3,7 +3,7 @@
 #include "game/materials.h"
 #include "game/items.h"
 #include "brushes/brush.h"
-#include "brushes/raw_brush.h"
+#include "brushes/raw/raw_brush.h"
 #include "ui/gui.h"
 #include "ui/dialog_util.h"
 #include "ui/controls/sortable_list_box.h"

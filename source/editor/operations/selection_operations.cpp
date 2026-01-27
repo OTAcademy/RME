@@ -10,11 +10,11 @@
 #include "editor/action_queue.h"
 #include "editor/selection.h"
 #include "map/map.h"
-#include "brushes/ground_brush.h"
+#include "brushes/ground/ground_brush.h"
 #include "app/settings.h"
 #include "ui/gui.h"
 
-#include "brushes/doodad_brush.h"
+#include "brushes/doodad/doodad_brush.h"
 
 void SelectionOperations::doSurroundingBorders(DoodadBrush* doodad_brush, PositionList& tilestoborder, Tile* buffer_tile, Tile* new_tile) {
 	if (doodad_brush->doNewBorders() && g_settings.getInteger(Config::USE_AUTOMAGIC)) {

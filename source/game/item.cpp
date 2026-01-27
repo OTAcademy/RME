@@ -27,10 +27,10 @@
 #include "brushes/managers/brush_manager.h"
 #include <unordered_map>
 
-#include "brushes/ground_brush.h"
-#include "brushes/carpet_brush.h"
-#include "brushes/table_brush.h"
-#include "brushes/wall_brush.h"
+#include "brushes/ground/ground_brush.h"
+#include "brushes/carpet/carpet_brush.h"
+#include "brushes/table/table_brush.h"
+#include "brushes/wall/wall_brush.h"
 
 Item* Item::Create(uint16_t _type, uint16_t _subtype /*= 0xFFFF*/) {
 	if (_type == 0) {

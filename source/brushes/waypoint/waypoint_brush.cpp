@@ -17,7 +17,7 @@
 
 #include "app/main.h"
 
-#include "brushes/waypoint_brush.h"
+#include "brushes/waypoint/waypoint_brush.h"
 #include "game/waypoints.h"
 #include "map/basemap.h"
 
