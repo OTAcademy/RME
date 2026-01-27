@@ -20,25 +20,6 @@ DoodadBrushItems::AlternativeBlock::~AlternativeBlock() {
 	// std::unique_ptr handles cleanup automatically
 }
 
-bool DoodadBrushItems::AlternativeBlock::ownsItem(uint16_t id) const {
-	for (const auto& single : single_items) {
-		if (single.item && single.item->getID() == id) {
-			return true;
-		}
-	}
-
-	for (const auto& composite : composite_items) {
-		for (const auto& pair : composite.items) {
-			for (const auto& item : pair.second) {
-				if (item && item->getID() == id) {
-					return true;
-				}
-			}
-		}
-	}
-	return false;
-}
-
 DoodadBrushItems::DoodadBrushItems() {
 }
 

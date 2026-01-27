@@ -33,7 +33,12 @@ bool DoodadBrushLoader::load(pugi::xml_node node, DoodadBrushItems& items, Dooda
 	}
 
 	if ((attribute = node.attribute("server_lookid"))) {
-		settings.look_id = g_items[attribute.as_ushort()].clientID;
+		uint16_t id = g_items[attribute.as_ushort()].clientID;
+		if (id != 0) {
+			settings.look_id = id;
+		} else {
+			warnings.push_back("Invalid server_lookid " + std::to_string(attribute.as_ushort()));
+		}
 	}
 
 	if ((attribute = node.attribute("on_blocking"))) {
@@ -120,7 +125,12 @@ bool DoodadBrushLoader::loadAlternative(pugi::xml_node node, DoodadBrushItems& i
 				it.doodad_brush = brushPtr;
 			}
 
-			items.addSingleToBlock(alternativeBlock, std::unique_ptr<Item>(item), attribute.as_int());
+			int chance = attribute.as_int();
+			if (chance <= 0) {
+				warnings.push_back("Invalid chance for doodad item " + std::to_string(item->getID()));
+				chance = 1;
+			}
+			items.addSingleToBlock(alternativeBlock, std::unique_ptr<Item>(item), chance);
 
 		} else if (std::ranges::equal(childName, std::string_view("composite"), iequal)) {
 			if (!(attribute = childNode.attribute("chance"))) {
@@ -129,6 +139,10 @@ bool DoodadBrushLoader::loadAlternative(pugi::xml_node node, DoodadBrushItems& i
 			}
 
 			int compositeChance = attribute.as_int();
+			if (compositeChance <= 0) {
+				warnings.push_back("Invalid chance for doodad composite item.");
+				compositeChance = 1;
+			}
 			CompositeTileList compositeList;
 
 			for (pugi::xml_node compositeNode = childNode.first_child(); compositeNode; compositeNode = compositeNode.next_sibling()) {

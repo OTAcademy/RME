@@ -29,8 +29,6 @@ public:
 		AlternativeBlock();
 		~AlternativeBlock();
 
-		bool ownsItem(uint16_t id) const;
-
 		std::vector<SingleBlock> single_items;
 		std::vector<CompositeBlock> composite_items;
 

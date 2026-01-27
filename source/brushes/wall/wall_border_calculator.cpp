@@ -11,7 +11,7 @@
 
 #include <vector>
 
-bool WallBorderCalculator::hasMatchingWallBrushAtTile(BaseMap* map, WallBrush* wall_brush, uint32_t x, uint32_t y, uint32_t z) {
+bool WallBorderCalculator::hasMatchingWallBrushAtTile(BaseMap* map, WallBrush* wall_brush, int32_t x, int32_t y, int32_t z) {
 	Tile* t = map->getTile(x, y, z);
 	if (!t) {
 		return false;
@@ -73,11 +73,11 @@ void WallBorderCalculator::doWalls(BaseMap* map, Tile* tile) {
 		for (int i = 0; i < 4; ++i) {
 			int32_t tx = x + dx[i];
 			int32_t ty = y + dy[i];
-			if (tx < 0 || ty < 0) {
+			if (tx < 0 || ty < 0) { // Basic bounds check for negative wrapping
 				neighbours[i] = false;
 				continue;
 			}
-			neighbours[i] = hasMatchingWallBrushAtTile(map, wall_brush, static_cast<uint32_t>(tx), static_cast<uint32_t>(ty), static_cast<uint32_t>(z));
+			neighbours[i] = hasMatchingWallBrushAtTile(map, wall_brush, tx, ty, static_cast<int32_t>(z));
 		}
 
 		uint32_t tiledata = 0;
@@ -180,6 +180,7 @@ void WallBorderCalculator::doWalls(BaseMap* map, Tile* tile) {
 						}
 						++it;
 					} else {
+						// Deliberately skip this non-decoration item and continuing loop with next item
 						++it;
 						break;
 					}

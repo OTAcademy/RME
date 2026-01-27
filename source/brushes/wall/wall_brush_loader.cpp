@@ -108,7 +108,7 @@ bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_no
 					uint16_t id = subChildNode.attribute("id").as_ushort();
 					if (id == 0) {
 						warnings.push_back("Could not read id tag of item node\n");
-						break;
+						continue;
 					}
 
 					ItemType& it = g_items[id];
@@ -135,7 +135,7 @@ bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_no
 					uint16_t id = subChildNode.attribute("id").as_ushort();
 					if (id == 0) {
 						warnings.push_back("Could not read id tag of door node\n");
-						break;
+						continue;
 					}
 
 					const std::string type = subChildNode.attribute("type").as_string();
@@ -150,7 +150,7 @@ bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_no
 					} else {
 						if (type != "window" && type != "any window" && type != "hatch window") {
 							warnings.push_back("Could not read open tag of door node\n");
-							break;
+							continue;
 						}
 					}
 

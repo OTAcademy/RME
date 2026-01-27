@@ -16,7 +16,7 @@ public:
 	static void doWalls(BaseMap* map, Tile* tile);
 
 private:
-	static bool hasMatchingWallBrushAtTile(BaseMap* map, WallBrush* wall_brush, uint32_t x, uint32_t y, uint32_t z);
+	static bool hasMatchingWallBrushAtTile(BaseMap* map, WallBrush* wall_brush, int32_t x, int32_t y, int32_t z);
 };
 
 #endif

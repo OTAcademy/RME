@@ -141,9 +141,6 @@ bool DoorBrush::canDraw(BaseMap* map, const Position& position) const {
 					discarded_id = dt.id;
 					close_match = true;
 				}
-				if (!close_match && discarded_id == 0) {
-					discarded_id = dt.id;
-				}
 			}
 		}
 		test_brush = test_brush->redirect_to;
@@ -205,9 +202,6 @@ void DoorBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 					} else if (!close_match) {
 						discarded_id = dt.id;
 						close_match = true;
-					}
-					if (!close_match && discarded_id == 0) {
-						discarded_id = dt.id;
 					}
 				}
 			}

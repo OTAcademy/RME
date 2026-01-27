@@ -124,21 +124,25 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 
 				uint16_t ground_equivalent = attribute.as_ushort();
 				ItemType& it = g_items[ground_equivalent];
+				bool valid = true;
 				if (it.id == 0) {
 					warnings.push_back("Invalid id of ground dependency equivalent item.\n");
-				}
-
-				if (!it.isGroundTile()) {
+					valid = false;
+				} else if (!it.isGroundTile()) { // Changed to else if to avoid duplicate warnings
 					warnings.push_back("Ground dependency equivalent is not a ground item.\n");
-				}
-
-				if (it.brush && it.brush != &brush) {
+					valid = false;
+				} else if (it.brush && it.brush != &brush) {
 					warnings.push_back("Ground dependency equivalent does not use the same brush as ground border.\n");
+					valid = false;
 				}
 
-				autoBorder = newd AutoBorder(0); // Empty id basically
-				autoBorder->ground = true;
-				autoBorder->load(childNode, warnings, &brush, ground_equivalent);
+				if (valid) {
+					autoBorder = newd AutoBorder(0); // Empty id basically
+					autoBorder->ground = true;
+					autoBorder->load(childNode, warnings, &brush, ground_equivalent);
+				} else {
+					continue;
+				}
 			} else {
 				int32_t id = attribute.as_int();
 				if (id == 0) {
