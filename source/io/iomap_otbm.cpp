@@ -41,6 +41,7 @@
 #include "brushes/wall_brush.h"
 
 #include "io/iomap_otbm.h"
+#include <spdlog/spdlog.h>
 
 using attribute_t = uint8_t;
 using flags_t = uint32_t;
@@ -601,6 +602,7 @@ bool IOMapOTBM::getVersionInfo(NodeFileReadHandle* f, MapVersion& out_ver) {
 }
 
 bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
+	spdlog::info("IOMapOTBM::loadMap - Start loading from file: {}", nstr(filename.GetFullPath()));
 #ifdef OTGZ_SUPPORT
 	if (filename.GetExt() == "otgz") {
 		// Open the archive
@@ -784,6 +786,7 @@ bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
 		// warning("Failed to load waypoints.");
 		map.waypointfile = nstr(filename.GetName()) + "-waypoint.xml";
 	}
+	spdlog::info("IOMapOTBM::loadMap - Finished loading from file: {}", nstr(filename.GetFullPath()));
 	return true;
 }
 

@@ -25,6 +25,8 @@
 #include "editor/editor_tabs.h"
 #include "rendering/ui/map_display.h"
 
+#include <spdlog/spdlog.h>
+
 MapTab::MapTab(MapTabbook* aui, Editor* editor) :
 	EditorTab(),
 	MapWindow(aui, *editor),
@@ -32,6 +34,8 @@ MapTab::MapTab(MapTabbook* aui, Editor* editor) :
 	iref = newd InternalReference;
 	iref->editor = editor;
 	iref->owner_count = 1;
+
+	spdlog::info("MapTab created (New Editor) [Tab={}]", (void*)this);
 
 	aui->AddTab(this, true);
 	FitToMap();
@@ -43,6 +47,7 @@ MapTab::MapTab(const MapTab* other) :
 	aui(other->aui),
 	iref(other->iref) {
 	iref->owner_count++;
+	spdlog::info("MapTab created (Shared Editor) [Tab={}]", (void*)this);
 	aui->AddTab(this, true);
 	FitToMap();
 	int x, y;
@@ -51,8 +56,10 @@ MapTab::MapTab(const MapTab* other) :
 }
 
 MapTab::~MapTab() {
+	spdlog::info("MapTab destroying [Tab={}] (Owner count: {})", (void*)this, iref->owner_count);
 	iref->owner_count--;
 	if (iref->owner_count <= 0) {
+		spdlog::info("MapTab destroying editor [Editor={}]", (void*)iref->editor);
 		delete iref->editor;
 		delete iref;
 	}

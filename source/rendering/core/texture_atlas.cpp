@@ -211,6 +211,9 @@ void TextureAtlas::unbind(uint32_t slot) const {
 }
 
 void TextureAtlas::release() {
+	if (texture_id_) {
+		spdlog::info("TextureAtlas releasing resources [ID={}]", texture_id_->GetID());
+	}
 	texture_id_.reset();
 	layer_count_ = 0;
 	allocated_layers_ = 0;

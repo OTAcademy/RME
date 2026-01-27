@@ -42,12 +42,15 @@
 
 #include "editor/operations/draw_operations.h"
 
+#include <spdlog/spdlog.h>
+
 Editor::Editor(CopyBuffer& copybuffer, const MapVersion& version) :
 	live_manager(*this),
 	actionQueue(newd ActionQueue(*this)),
 	selection(*this),
 	copybuffer(copybuffer),
 	replace_brush(nullptr) {
+	spdlog::info("Editor created (Empty) [Editor={}]", (void*)this);
 	map.convert(version);
 	map.initializeEmpty();
 }
@@ -58,6 +61,7 @@ Editor::Editor(CopyBuffer& copybuffer, const MapVersion& version, const FileName
 	selection(*this),
 	copybuffer(copybuffer),
 	replace_brush(nullptr) {
+	spdlog::info("Editor created (From File) [Editor={}]", (void*)this);
 	// EditorPersistence handles version checking internally or assumes compatibility
 	// Usage of "version" parameter here might be redundant for loading but good for consistency/future use
 	EditorPersistence::loadMap(*this, fn);
@@ -69,10 +73,12 @@ Editor::Editor(CopyBuffer& copybuffer, const MapVersion& version, LiveClient* cl
 	selection(*this),
 	copybuffer(copybuffer),
 	replace_brush(nullptr) {
+	spdlog::info("Editor created (Live Client) [Editor={}]", (void*)this);
 	map.convert(version);
 }
 
 Editor::~Editor() {
+	spdlog::info("Editor destroying [Editor={}]", (void*)this);
 	if (live_manager.IsLive()) {
 		live_manager.CloseServer();
 	}
@@ -80,6 +86,7 @@ Editor::~Editor() {
 	UnnamedRenderingLock();
 	selection.clear();
 	delete actionQueue;
+	spdlog::info("Editor destroyed [Editor={}]", (void*)this);
 }
 
 void Editor::notifyStateChange() {
