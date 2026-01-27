@@ -15,9 +15,9 @@ wxString TileDescriber::GetDescription(Tile* tile, bool showSpawns, bool showCre
 			ss << "Spawn radius: " << tile->spawn->getSize();
 		} else if (tile->creature && showCreatures) {
 			ss << (tile->creature->isNpc() ? "NPC" : "Monster");
-			ss << " \"" << wxstr(tile->creature->getName()) << "\" spawntime: " << tile->creature->getSpawnTime();
+			ss << " \"" << wxstr(std::string(tile->creature->getName())) << "\" spawntime: " << tile->creature->getSpawnTime();
 		} else if (Item* item = tile->getTopItem()) {
-			ss << "Item \"" << wxstr(item->getName()) << "\"";
+			ss << "Item \"" << wxstr(std::string(item->getName())) << "\"";
 			ss << " id:" << item->getID();
 			ss << " cid:" << item->getClientID();
 			if (item->getUniqueID()) {

@@ -81,7 +81,7 @@ OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, c
 
 void OldPropertiesWindow::createHeaderFields(wxFlexGridSizer* subsizer) {
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "ID " + i2ws(edit_item->getID())));
-	subsizer->Add(newd wxStaticText(this, wxID_ANY, "\"" + wxstr(edit_item->getName()) + "\""));
+	subsizer->Add(newd wxStaticText(this, wxID_ANY, "\"" + wxstr(std::string(edit_item->getName())) + "\""));
 }
 
 void OldPropertiesWindow::createGenericFields(wxFlexGridSizer* subsizer) {

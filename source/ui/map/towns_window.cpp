@@ -94,7 +94,7 @@ void EditTownsDialog::BuildListBox(bool doselect) {
 
 	for (std::vector<Town*>::iterator town_iter = town_list.begin(); town_iter != town_list.end(); ++town_iter) {
 		Town* town = *town_iter;
-		town_name_list.Add(wxstr(town->getName()));
+		town_name_list.Add(wxstr(std::string(town->getName())));
 		if (max_town_id < town->getID()) {
 			max_town_id = town->getID();
 		}
@@ -146,7 +146,7 @@ void EditTownsDialog::UpdateSelection(int new_selection) {
 				old_town->setTemplePosition(templePos);
 
 				wxString new_name = name_field->GetValue();
-				wxString old_name = wxstr(old_town->getName());
+				wxString old_name = wxstr(std::string(old_town->getName()));
 
 				old_town->setName(nstr(new_name));
 				if (new_name != old_name) {
@@ -170,7 +170,7 @@ void EditTownsDialog::UpdateSelection(int new_selection) {
 		Town* town = town_list[new_selection];
 		ASSERT(town);
 
-		town_name << wxstr(town->getName());
+		town_name << wxstr(std::string(town->getName()));
 		name_field->SetValue(town_name);
 		town_id << long(town->getID());
 		id_field->SetValue(town_id);
@@ -275,7 +275,7 @@ void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 				old_town->setTemplePosition(templePos);
 
 				wxString new_name = name_field->GetValue();
-				wxString old_name = wxstr(old_town->getName());
+				wxString old_name = wxstr(std::string(old_town->getName()));
 
 				old_town->setName(nstr(new_name));
 				if (new_name != old_name) {
@@ -296,7 +296,7 @@ void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 			}
 			if (!town->getTemplePosition().isValid() || town->getTemplePosition().x > editor.map.getWidth() || town->getTemplePosition().y > editor.map.getHeight()) {
 				wxString msg;
-				msg << "The town " << wxstr(town->getName()) << " has an invalid temple position.";
+				msg << "The town " << wxstr(std::string(town->getName())) << " has an invalid temple position.";
 				DialogUtil::PopupDialog(this, "Error", msg, wxOK);
 				return;
 			}

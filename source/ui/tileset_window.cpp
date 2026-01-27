@@ -61,7 +61,7 @@ TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* t
 	subsizer->AddGrowableCol(1);
 
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "ID " + i2ws(item->getID())));
-	subsizer->Add(newd wxStaticText(this, wxID_ANY, "\"" + wxstr(item->getName()) + "\""));
+	subsizer->Add(newd wxStaticText(this, wxID_ANY, "\"" + wxstr(std::string(item->getName())) + "\""));
 
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Palette"));
 	palette_field = newd wxChoice(this, wxID_ANY);
@@ -116,7 +116,7 @@ void TilesetWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		std::string tilesetName = *static_cast<std::string*>(tileset_field->GetClientData(tileset_field->GetSelection()));
 
 		g_materials.addToTileset(tilesetName, edit_item->getID(), categoryType);
-		DialogUtil::PopupDialog("Added to Tileset", "'" + edit_item->getName() + "' has been added to tileset '" + tilesetName + "' of palette '" + palette_field->GetStringSelection() + "'", wxOK);
+		DialogUtil::PopupDialog("Added to Tileset", "'" + std::string(edit_item->getName()) + "' has been added to tileset '" + tilesetName + "' of palette '" + palette_field->GetStringSelection() + "'", wxOK);
 	}
 	EndModal(1);
 }

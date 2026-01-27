@@ -72,7 +72,7 @@ void MapStatisticsDialog::Show(wxWindow* parent) {
 	}
 
 	if (stats.largest_town) {
-		os << "\t\tLargest Town: \"" << stats.largest_town->getName() << "\" (" << stats.largest_town_size << " sqm)\n";
+		os << "\t\tLargest Town: \"" << std::string(stats.largest_town->getName()) << "\" (" << stats.largest_town_size << " sqm)\n";
 	}
 	if (stats.largest_house) {
 		os << "\t\tLargest House: \"" << stats.largest_house->name << "\" (" << stats.largest_house_size << " sqm)\n";

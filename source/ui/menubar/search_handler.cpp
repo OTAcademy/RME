@@ -44,7 +44,7 @@ void SearchHandler::OnSearchForItem(wxCommandEvent& WXUNUSED(event)) {
 		for (std::vector<std::pair<Tile*, Item*>>::const_iterator iter = result.begin(); iter != result.end(); ++iter) {
 			Tile* tile = iter->first;
 			Item* item = iter->second;
-			window->AddPosition(wxstr(item->getName()), tile->getPosition());
+			window->AddPosition(wxstr(std::string(item->getName())), tile->getPosition());
 		}
 
 		g_settings.setInteger(Config::FIND_ITEM_MODE, (int)dialog.getSearchMode());
@@ -131,7 +131,7 @@ void SearchHandler::OnSearchForItemOnSelection(wxCommandEvent& WXUNUSED(event)) 
 		for (std::vector<std::pair<Tile*, Item*>>::const_iterator iter = result.begin(); iter != result.end(); ++iter) {
 			Tile* tile = iter->first;
 			Item* item = iter->second;
-			window->AddPosition(wxstr(item->getName()), tile->getPosition());
+			window->AddPosition(wxstr(std::string(item->getName())), tile->getPosition());
 		}
 
 		g_settings.setInteger(Config::FIND_ITEM_MODE, (int)dialog.getSearchMode());

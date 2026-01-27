@@ -77,7 +77,7 @@ void BrowseTileListBox::OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const
 	}
 
 	wxString label;
-	label << item->getID() << " - " << item->getName();
+	label << item->getID() << " - " << wxstr(std::string(item->getName()));
 	dc.DrawText(label, rect.GetX() + 40, rect.GetY() + 6);
 }
 
