@@ -5,13 +5,15 @@
 #include "app/main.h"
 
 #include "brushes/managers/brush_manager.h"
-#include "ui/gui.h"
-#include "palette/palette_window.h"
 #include "brushes/brush.h"
-#include "brushes/spawn/spawn_brush.h"
 #include "brushes/managers/doodad_preview_manager.h"
+#include "brushes/spawn/spawn_brush.h"
 #include "palette/managers/palette_manager.h"
+#include "palette/palette_window.h"
+#include "ui/gui.h"
 #include "ui/main_toolbar.h"
+#include <algorithm>
+#include <array>
 
 BrushManager g_brush_manager;
 
@@ -179,7 +181,7 @@ void BrushManager::SetBrushThickness(bool on, int x, int y) {
 	use_custom_thickness = on;
 
 	if (x != -1 || y != -1) {
-		custom_thickness_mod = float(std::max(x, 1)) / float(std::max(y, 1));
+		custom_thickness_mod = static_cast<float>(std::max(x, 1)) / static_cast<float>(std::max(y, 1));
 	}
 
 	if (current_brush && current_brush->isDoodad()) {
@@ -190,7 +192,7 @@ void BrushManager::SetBrushThickness(bool on, int x, int y) {
 }
 
 void BrushManager::SetBrushThickness(int low, int ceil) {
-	custom_thickness_mod = float(std::max(low, 1)) / float(std::max(ceil, 1));
+	custom_thickness_mod = static_cast<float>(std::max(low, 1)) / static_cast<float>(std::max(ceil, 1));
 
 	if (use_custom_thickness && current_brush && current_brush->isDoodad()) {
 		g_doodad_preview.FillBuffer();
@@ -200,70 +202,28 @@ void BrushManager::SetBrushThickness(int low, int ceil) {
 }
 
 void BrushManager::DecreaseBrushSize(bool wrap) {
-	switch (brush_size) {
-		case 0:
-			if (wrap) {
-				SetBrushSize(11);
-			}
-			break;
-		case 1:
-			SetBrushSize(0);
-			break;
-		case 2:
-		case 3:
-			SetBrushSize(1);
-			break;
-		case 4:
-		case 5:
-			SetBrushSize(2);
-			break;
-		case 6:
-		case 7:
-			SetBrushSize(4);
-			break;
-		case 8:
-		case 9:
-		case 10:
-			SetBrushSize(6);
-			break;
-		case 11:
-		default:
-			SetBrushSize(8);
-			break;
+	static constexpr std::array<int, 12> next_sizes = { 11, 0, 1, 1, 2, 2, 4, 4, 6, 6, 6, 8 };
+	if (brush_size >= 0 && size_t(brush_size) < next_sizes.size()) {
+		if (brush_size == 0 && !wrap) {
+			return;
+		}
+		SetBrushSize(next_sizes[brush_size]);
+	} else {
+		SetBrushSize(8);
 	}
 }
 
 void BrushManager::IncreaseBrushSize(bool wrap) {
-	switch (brush_size) {
-		case 0:
-			SetBrushSize(1);
-			break;
-		case 1:
-			SetBrushSize(2);
-			break;
-		case 2:
-		case 3:
-			SetBrushSize(4);
-			break;
-		case 4:
-		case 5:
-			SetBrushSize(6);
-			break;
-		case 6:
-		case 7:
-			SetBrushSize(8);
-			break;
-		case 8:
-		case 9:
-		case 10:
-			SetBrushSize(11);
-			break;
-		case 11:
-		default:
-			if (wrap) {
-				SetBrushSize(0);
-			}
-			break;
+	static constexpr std::array<int, 12> next_sizes = { 1, 2, 4, 4, 6, 6, 8, 8, 11, 11, 11, 0 };
+	if (brush_size >= 0 && size_t(brush_size) < next_sizes.size()) {
+		if (brush_size == 11 && !wrap) {
+			return;
+		}
+		SetBrushSize(next_sizes[brush_size]);
+	} else {
+		if (wrap) {
+			SetBrushSize(0);
+		}
 	}
 }
 

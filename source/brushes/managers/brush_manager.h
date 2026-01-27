@@ -37,17 +37,17 @@ public:
 	void FillDoodadPreviewBuffer();
 
 	// Get different brush parameters
-	Brush* GetCurrentBrush() const {
+	[[nodiscard]] Brush* GetCurrentBrush() const {
 		return current_brush;
 	}
-	BrushShape GetBrushShape() const;
-	int GetBrushSize() const {
+	[[nodiscard]] BrushShape GetBrushShape() const;
+	[[nodiscard]] int GetBrushSize() const {
 		return brush_size;
 	}
-	int GetBrushVariation() const {
+	[[nodiscard]] int GetBrushVariation() const {
 		return brush_variation;
 	}
-	int GetSpawnTime() const {
+	[[nodiscard]] int GetSpawnTime() const {
 		return creature_spawntime;
 	}
 
@@ -59,14 +59,14 @@ public:
 	void SetLightIntensity(float v) {
 		light_intensity = v;
 	}
-	float GetLightIntensity() const {
+	[[nodiscard]] float GetLightIntensity() const {
 		return light_intensity;
 	}
 
 	void SetAmbientLightLevel(float v) {
 		ambient_light_level = v;
 	}
-	float GetAmbientLightLevel() const {
+	[[nodiscard]] float GetAmbientLightLevel() const {
 		return ambient_light_level;
 	}
 
@@ -83,14 +83,14 @@ public:
 
 	// Door brush options
 	void SetDoorLocked(bool on);
-	bool HasDoorLocked() const {
+	[[nodiscard]] bool HasDoorLocked() const {
 		return draw_locked_doors;
 	}
 
-	float GetCustomThicknessMod() const {
+	[[nodiscard]] float GetCustomThicknessMod() const {
 		return custom_thickness_mod;
 	}
-	bool UseCustomThickness() const {
+	[[nodiscard]] bool UseCustomThickness() const {
 		return use_custom_thickness;
 	}
 

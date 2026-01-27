@@ -18,6 +18,7 @@
 #include "brushes/table/table_brush.h"
 #include "brushes/creature/creature_brush.h"
 #include "brushes/spawn/spawn_brush.h"
+#include "brushes/door/door_brush.h"
 #include "map/map.h"
 #include "map/map.h"
 #include "map/tile.h"

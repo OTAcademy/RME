@@ -14,16 +14,34 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_enums.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_utility.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/door/door_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/flag/flag_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/border/optional_border_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush_items.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush_loader.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_border_calculator.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/creature/creature_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush_items.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush_loader.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush_types.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/auto_border.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_border_calculator.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_brush_loader.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/house/house_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/house/house_exit_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/raw/raw_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/spawn/spawn_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_border_calculator.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush_items.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush_loader.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_border_calculator.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush_items.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush_loader.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/waypoint/waypoint_brush.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.h
     ${CMAKE_CURRENT_LIST_DIR}/editor/action_queue.h
@@ -258,19 +276,39 @@ set(rme_SRC
 
     ${CMAKE_CURRENT_LIST_DIR}/editor/hotkey_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_tables.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/brush_utility.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/door/door_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/flag/flag_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/border/optional_border_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush_arrays.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush_items.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_brush_loader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/carpet/carpet_border_calculator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/creature/creature_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush_items.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/doodad/doodad_brush_loader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/eraser/eraser_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/auto_border.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_border_calculator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_brush_arrays.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/ground/ground_brush_loader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/house/house_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/house/house_exit_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/raw/raw_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/spawn/spawn_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_border_calculator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush_items.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush_loader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/table/table_brush_arrays.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_border_calculator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush_items.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush_loader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/wall/wall_brush_arrays.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/waypoint/waypoint_brush.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/action.cpp
     ${CMAKE_CURRENT_LIST_DIR}/editor/action_queue.cpp

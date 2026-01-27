@@ -21,6 +21,7 @@
 #include "app/settings.h"
 #include "game/items.h"
 #include "map/basemap.h"
+#include <format>
 
 //=============================================================================
 // RAW brush
@@ -56,12 +57,12 @@ std::string RAWBrush::getName() const {
 	}
 
 	if (itemtype->hookSouth) {
-		return i2s(itemtype->id) + " - " + itemtype->name + " (Hook South)";
+		return std::format("{} - {} (Hook South)", itemtype->id, itemtype->name);
 	} else if (itemtype->hookEast) {
-		return i2s(itemtype->id) + " - " + itemtype->name + " (Hook East)";
+		return std::format("{} - {} (Hook East)", itemtype->id, itemtype->name);
 	}
 
-	return i2s(itemtype->id) + " - " + itemtype->name + itemtype->editorsuffix;
+	return std::format("{} - {}{}", itemtype->id, itemtype->name, itemtype->editorsuffix);
 }
 
 void RAWBrush::undraw(BaseMap* map, Tile* tile) {

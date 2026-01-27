@@ -19,6 +19,7 @@
 #define RME_TABLE_BRUSH_H
 
 #include "brushes/brush.h"
+#include "brushes/table/table_brush_items.h"
 
 //=============================================================================
 // Tablebrush, for tables, and some things that behave like tables
@@ -57,30 +58,25 @@ public:
 		name = newName;
 	}
 
+	void setLookID(int id) {
+		look_id = id;
+	}
+
 	bool needBorders() const override {
 		return true;
 	}
 
 protected:
-	struct TableType {
-		TableType() :
-			chance(0), item_id(0) { }
-		int chance;
-		uint16_t item_id;
-	};
-
-	struct TableNode {
-		TableNode() :
-			total_chance(0) { }
-		int total_chance;
-		std::vector<TableType> items;
-	};
+	TableBrushItems items;
 
 	std::string name;
 	uint16_t look_id;
-	TableNode table_items[7];
 
 	static uint32_t table_types[256];
+
+	// Friend classes access protected members directly.
+	friend class TableBrushLoader;
+	friend class TableBorderCalculator;
 };
 
 #endif

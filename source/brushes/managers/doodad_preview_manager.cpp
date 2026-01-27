@@ -4,12 +4,14 @@
 
 #include "app/main.h"
 #include "brushes/managers/doodad_preview_manager.h"
-#include "ui/gui.h"
-#include "map/map.h"
-#include "brushes/doodad/doodad_brush.h"
 #include "brushes/brush.h"
+#include "brushes/doodad/doodad_brush.h"
 #include "brushes/managers/brush_manager.h"
 #include "game/sprites.h"
+#include "map/map.h"
+#include "ui/gui.h"
+#include <cmath>
+#include <numbers>
 
 DoodadPreviewManager g_doodad_preview;
 
@@ -42,10 +44,10 @@ void DoodadPreviewManager::FillBuffer() {
 			// There is a huge deviation here with the other formula.
 			area = 5;
 		} else {
-			area = int(0.5 + g_brush_manager.GetBrushSize() * g_brush_manager.GetBrushSize() * PI);
+			area = static_cast<int>(0.5 + g_brush_manager.GetBrushSize() * g_brush_manager.GetBrushSize() * std::numbers::pi);
 		}
 	}
-	const int object_range = (g_brush_manager.UseCustomThickness() ? int(area * g_brush_manager.GetCustomThicknessMod()) : brush->getThickness() * area / std::max(1, brush->getThicknessCeiling()));
+	const int object_range = (g_brush_manager.UseCustomThickness() ? static_cast<int>(area * g_brush_manager.GetCustomThicknessMod()) : brush->getThickness() * area / std::max(1, brush->getThicknessCeiling()));
 	const int final_object_count = std::max(1, object_range + random(object_range));
 
 	Position center_pos(0x8000, 0x8000, 0x8);
@@ -65,7 +67,7 @@ void DoodadPreviewManager::FillBuffer() {
 					while (pos_retries < 5 && !found_pos) {
 						xpos = random(-g_brush_manager.GetBrushSize(), g_brush_manager.GetBrushSize());
 						ypos = random(-g_brush_manager.GetBrushSize(), g_brush_manager.GetBrushSize());
-						float distance = sqrt(float(xpos * xpos) + float(ypos * ypos));
+						float distance = std::hypot(static_cast<float>(xpos), static_cast<float>(ypos));
 						if (distance < g_brush_manager.GetBrushSize() + 0.005) {
 							found_pos = true;
 						} else {
@@ -107,14 +109,14 @@ void DoodadPreviewManager::FillBuffer() {
 					// Transfer items to the stack
 					for (const auto& composite : composites) {
 						Position pos = center_pos + composite.first + Position(xpos, ypos, 0);
-						const ItemVector& items = composite.second;
+						const auto& items = composite.second;
 						Tile* tile = doodad_buffer_map->getTile(pos);
 
 						if (!tile) {
 							tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
 						}
 
-						for (auto item : items) {
+						for (const auto& item : items) {
 							tile->addItem(item->deepCopy());
 						}
 						doodad_buffer_map->setTile(tile->getPosition(), tile);
@@ -154,10 +156,10 @@ void DoodadPreviewManager::FillBuffer() {
 			// Transfer items to the buffer
 			for (const auto& composite : composites) {
 				Position pos = center_pos + composite.first;
-				const ItemVector& items = composite.second;
+				const auto& items = composite.second;
 				Tile* tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
 
-				for (auto item : items) {
+				for (const auto& item : items) {
 					tile->addItem(item->deepCopy());
 				}
 				doodad_buffer_map->setTile(tile->getPosition(), tile);

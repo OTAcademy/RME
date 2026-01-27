@@ -31,6 +31,7 @@
 #include "brushes/house/house_brush.h"
 #include "brushes/spawn/spawn_brush.h"
 #include "brushes/creature/creature_brush.h"
+#include "brushes/door/door_brush.h"
 
 void BrushSelector::SelectRAWBrush(Selection& selection) {
 	if (selection.size() != 1) {

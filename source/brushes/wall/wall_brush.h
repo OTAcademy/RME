@@ -1,24 +1,12 @@
 //////////////////////////////////////////////////////////////////////
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
-// Remere's Map Editor is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Remere's Map Editor is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
-//////////////////////////////////////////////////////////////////////
 
 #ifndef RME_WALL_BRUSH_H
 #define RME_WALL_BRUSH_H
 
 #include "brushes/brush.h"
+#include "brushes/wall/wall_brush_items.h"
 
 //=============================================================================
 // Wallbrush, for drawing walls
@@ -65,28 +53,14 @@ public:
 	static uint32_t full_border_types[16];
 	static uint32_t half_border_types[16];
 
-protected:
-	struct WallType {
-		int chance;
-		uint16_t id;
-	};
-	struct WallNode {
-		WallNode() :
-			total_chance(0) { }
-		int total_chance;
-		std::vector<WallType> items;
-	};
-	struct DoorType {
-		::DoorType type;
-		uint16_t id;
-		bool locked;
-	};
-	WallNode wall_items[17];
-	std::vector<DoorType> door_items[17];
+	WallBrushItems items;
 
+protected:
 	WallBrush* redirect_to;
 
 	friend class DoorBrush;
+	friend class WallBrushLoader;
+	friend class WallBorderCalculator;
 };
 
 //=============================================================================
