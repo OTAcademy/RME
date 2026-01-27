@@ -19,6 +19,7 @@
 #define RME_ITEM_H_
 
 #include "game/items.h"
+#include <string_view>
 #include "io/iomap_otbm.h"
 // #include "io/iomap_otmm.h"
 #include "game/item_attributes.h"
@@ -334,7 +335,7 @@ public:
 	BorderType getBorderAlignment() const;
 
 	// Get the name!
-	const std::string getName() const {
+	std::string_view getName() const {
 		return g_items[id].name;
 	}
 	const std::string getFullName() const {
@@ -386,11 +387,11 @@ public:
 
 	// Text
 	void setText(const std::string& str);
-	std::string getText() const;
+	std::string_view getText() const;
 
 	// Description
 	void setDescription(const std::string& str);
-	std::string getDescription() const;
+	std::string_view getDescription() const;
 
 	void animate();
 	int getFrame() const {
@@ -446,20 +447,20 @@ inline uint16_t Item::getTier() const {
 	return 0;
 }
 
-inline std::string Item::getText() const {
+inline std::string_view Item::getText() const {
 	const std::string* a = getStringAttribute("text");
 	if (a) {
 		return *a;
 	}
-	return "";
+	return {};
 }
 
-inline std::string Item::getDescription() const {
+inline std::string_view Item::getDescription() const {
 	const std::string* a = getStringAttribute("desc");
 	if (a) {
 		return *a;
 	}
-	return "";
+	return {};
 }
 
 #endif

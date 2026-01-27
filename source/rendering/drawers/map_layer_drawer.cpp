@@ -16,6 +16,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "app/main.h"
+#include "app/definitions.h"
 #include "rendering/drawers/map_layer_drawer.h"
 #include "rendering/drawers/tiles/tile_renderer.h"
 #include "rendering/drawers/overlays/grid_drawer.h"
@@ -43,8 +44,15 @@ void MapLayerDrawer::Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 	int nd_end_x = (view.end_x & ~3) + 4;
 	int nd_end_y = (view.end_y & ~3) + 4;
 
+	int offset = (map_z <= GROUND_LAYER)
+		? (GROUND_LAYER - map_z) * TileSize
+		: TileSize * (view.floor - map_z);
+
 	for (int nd_map_x = nd_start_x; nd_map_x <= nd_end_x; nd_map_x += 4) {
+		int chunk_base_x = (nd_map_x * TileSize) - view.view_scroll_x - offset;
 		for (int nd_map_y = nd_start_y; nd_map_y <= nd_end_y; nd_map_y += 4) {
+			int chunk_base_y = (nd_map_y * TileSize) - view.view_scroll_y - offset;
+
 			QTreeNode* nd = editor->map.getLeaf(nd_map_x, nd_map_y);
 			if (!nd) {
 				if (live_client) {
@@ -57,9 +65,11 @@ void MapLayerDrawer::Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 
 			if (!live_client || nd->isVisible(map_z > GROUND_LAYER)) {
 				for (int map_x = 0; map_x < 4; ++map_x) {
+					int draw_x = chunk_base_x + map_x * TileSize;
 					for (int map_y = 0; map_y < 4; ++map_y) {
+						int draw_y = chunk_base_y + map_y * TileSize;
 						TileLocation* location = nd->getTile(map_x, map_y, map_z);
-						tile_renderer->DrawTile(sprite_batch, primitive_renderer, location, view, options, options.current_house_id, tooltip);
+						tile_renderer->DrawTile(sprite_batch, primitive_renderer, location, draw_x, draw_y, view, options, options.current_house_id, tooltip);
 						// draw light, but only if not zoomed too far
 						if (location && options.isDrawLight() && view.zoom <= 10.0) {
 							tile_renderer->AddLight(location, view, options, light_buffer);
