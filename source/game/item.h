@@ -260,6 +260,9 @@ public:
 	bool isMagicField() const {
 		return g_items[id].isMagicField();
 	}
+	bool isTeleport() const {
+		return g_items[id].isTeleport();
+	}
 	bool isNotMoveable() const {
 		return !g_items[id].moveable;
 	}

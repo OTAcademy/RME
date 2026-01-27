@@ -56,9 +56,11 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 	}
 
 	// Check if it's a teleport
-	Teleport* tp = dynamic_cast<Teleport*>(item);
-	if (tp && tp->hasDestination()) {
-		destination = tp->getDestination();
+	if (item->isTeleport()) {
+		Teleport* tp = static_cast<Teleport*>(item);
+		if (tp->hasDestination()) {
+			destination = tp->getDestination();
+		}
 	}
 
 	// Only create tooltip if there's something to show
@@ -84,7 +86,7 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 	return data;
 }
 
-void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, TileLocation* location, int draw_x, int draw_y, const RenderView& view, const DrawingOptions& options, uint32_t current_house_id, std::ostringstream& tooltip_stream) {
+void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, TileLocation* location, const RenderView& view, const DrawingOptions& options, uint32_t current_house_id, std::ostringstream& tooltip_stream) {
 	if (!location) {
 		return;
 	}
@@ -103,8 +105,8 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 	int map_z = location->getZ();
 
 	// Early viewport culling - skip tiles that are completely off-screen
-	int margin = TileSize * 3;
-	if (draw_x < -margin || draw_x > view.screensize_x * view.zoom + margin || draw_y < -margin || draw_y > view.screensize_y * view.zoom + margin) {
+	int draw_x, draw_y;
+	if (!view.IsTileVisible(map_x, map_y, map_z, draw_x, draw_y)) {
 		return;
 	}
 
