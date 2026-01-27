@@ -60,8 +60,8 @@ Required libraries:
 * Boost >= 1.55.0
 
 ### VCPKG libraries:
-* 32-bit : `vcpkg install wxwidgets freeglut asio nlohmann-json fmt libarchive boost-spirit`
-* 64-bit : `vcpkg install --triplet x64-windows wxwidgets freeglut asio nlohmann-json fmt libarchive boost-spirit`
+* 32-bit : `vcpkg install wxwidgets glad glm asio nlohmann-json fmt libarchive boost-thread nanovg spdlog`
+* 64-bit : `vcpkg install --triplet x64-windows wxwidgets glad glm asio nlohmann-json fmt libarchive boost-thread nanovg spdlog`
 
 [Compile on Windows](https://github.com/hjnilsson/rme/wiki/Compiling-on-Windows)
 

@@ -219,13 +219,13 @@ void Item::serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHan
 			stream.addU16(uniqueId);
 		}
 
-		const std::string& text = getText();
+		std::string text(getText());
 		if (!text.empty()) {
 			stream.addU8(OTBM_ATTR_TEXT);
 			stream.addString(text);
 		}
 
-		const std::string& description = getDescription();
+		std::string description(getDescription());
 		if (!description.empty()) {
 			stream.addU8(OTBM_ATTR_DESC);
 			stream.addString(description);

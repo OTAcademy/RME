@@ -16,6 +16,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "app/main.h"
+#include "app/definitions.h"
 #include "rendering/drawers/map_layer_drawer.h"
 #include "rendering/drawers/tiles/tile_renderer.h"
 #include "rendering/drawers/overlays/grid_drawer.h"
@@ -43,39 +44,50 @@ void MapLayerDrawer::Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 	int nd_end_x = (view.end_x & ~3) + 4;
 	int nd_end_y = (view.end_y & ~3) + 4;
 
-	for (int nd_map_x = nd_start_x; nd_map_x <= nd_end_x; nd_map_x += 4) {
-		for (int nd_map_y = nd_start_y; nd_map_y <= nd_end_y; nd_map_y += 4) {
-			QTreeNode* nd = editor->map.getLeaf(nd_map_x, nd_map_y);
-			if (!nd) {
-				if (live_client) {
+	if (live_client) {
+		for (int nd_map_x = nd_start_x; nd_map_x <= nd_end_x; nd_map_x += 4) {
+			for (int nd_map_y = nd_start_y; nd_map_y <= nd_end_y; nd_map_y += 4) {
+				QTreeNode* nd = editor->map.getLeaf(nd_map_x, nd_map_y);
+				if (!nd) {
 					nd = editor->map.createLeaf(nd_map_x, nd_map_y);
 					nd->setVisible(false, false);
-				} else {
-					continue;
 				}
-			}
 
-			if (!live_client || nd->isVisible(map_z > GROUND_LAYER)) {
-				for (int map_x = 0; map_x < 4; ++map_x) {
-					for (int map_y = 0; map_y < 4; ++map_y) {
-						TileLocation* location = nd->getTile(map_x, map_y, map_z);
-						tile_renderer->DrawTile(sprite_batch, primitive_renderer, location, view, options, options.current_house_id, tooltip);
-						// draw light, but only if not zoomed too far
-						if (location && options.isDrawLight() && view.zoom <= 10.0) {
-							tile_renderer->AddLight(location, view, options, light_buffer);
+				if (nd->isVisible(map_z > GROUND_LAYER)) {
+					for (int map_x = 0; map_x < 4; ++map_x) {
+						for (int map_y = 0; map_y < 4; ++map_y) {
+							TileLocation* location = nd->getTile(map_x, map_y, map_z);
+							tile_renderer->DrawTile(sprite_batch, primitive_renderer, location, view, options, options.current_house_id, tooltip);
+							// draw light, but only if not zoomed too far
+							if (location && options.isDrawLight() && view.zoom <= 10.0) {
+								tile_renderer->AddLight(location, view, options, light_buffer);
+							}
 						}
 					}
-				}
-			} else {
-				if (!nd->isRequested(map_z > GROUND_LAYER)) {
-					// Request the node
-					if (editor->live_manager.GetClient()) {
-						editor->live_manager.GetClient()->queryNode(nd_map_x, nd_map_y, map_z > GROUND_LAYER);
+				} else {
+					if (!nd->isRequested(map_z > GROUND_LAYER)) {
+						// Request the node
+						if (editor->live_manager.GetClient()) {
+							editor->live_manager.GetClient()->queryNode(nd_map_x, nd_map_y, map_z > GROUND_LAYER);
+						}
+						nd->setRequested(map_z > GROUND_LAYER, true);
 					}
-					nd->setRequested(map_z > GROUND_LAYER, true);
+					grid_drawer->DrawNodeLoadingPlaceholder(sprite_batch, nd_map_x, nd_map_y, view);
 				}
-				grid_drawer->DrawNodeLoadingPlaceholder(sprite_batch, nd_map_x, nd_map_y, view);
 			}
 		}
+	} else {
+		editor->map.visitLeaves(nd_start_x, nd_start_y, nd_end_x, nd_end_y, [&](QTreeNode* nd, int, int) {
+			for (int map_x = 0; map_x < 4; ++map_x) {
+				for (int map_y = 0; map_y < 4; ++map_y) {
+					TileLocation* location = nd->getTile(map_x, map_y, map_z);
+					tile_renderer->DrawTile(sprite_batch, primitive_renderer, location, view, options, options.current_house_id, tooltip);
+					// draw light, but only if not zoomed too far
+					if (location && options.isDrawLight() && view.zoom <= 10.0) {
+						tile_renderer->AddLight(location, view, options, light_buffer);
+					}
+				}
+			}
+		});
 	}
 }

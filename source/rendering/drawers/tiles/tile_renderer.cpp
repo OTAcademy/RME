@@ -41,8 +41,8 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 
 	const uint16_t unique = item->getUniqueID();
 	const uint16_t action = item->getActionID();
-	const std::string& text = item->getText();
-	const std::string& description = item->getDescription();
+	std::string_view text = item->getText();
+	std::string_view description = item->getDescription();
 	uint8_t doorId = 0;
 	Position destination;
 
@@ -56,9 +56,11 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 	}
 
 	// Check if it's a teleport
-	Teleport* tp = dynamic_cast<Teleport*>(item);
-	if (tp && tp->hasDestination()) {
-		destination = tp->getDestination();
+	if (item->isTeleport()) {
+		Teleport* tp = static_cast<Teleport*>(item);
+		if (tp->hasDestination()) {
+			destination = tp->getDestination();
+		}
 	}
 
 	// Only create tooltip if there's something to show
@@ -67,12 +69,12 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 	}
 
 	// Get item name from database
-	std::string itemName = g_items[id].name;
+	std::string_view itemName = g_items[id].name;
 	if (itemName.empty()) {
 		itemName = "Item";
 	}
 
-	TooltipData data(pos, id, itemName);
+	TooltipData data(pos, id, std::string(itemName));
 	data.actionId = action;
 	data.uniqueId = unique;
 	data.doorId = doorId;
@@ -103,12 +105,10 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 	int map_z = location->getZ();
 
 	// Early viewport culling - skip tiles that are completely off-screen
-	if (!view.IsTileVisible(map_x, map_y, map_z)) {
+	int draw_x, draw_y;
+	if (!view.IsTileVisible(map_x, map_y, map_z, draw_x, draw_y)) {
 		return;
 	}
-
-	int draw_x, draw_y;
-	view.getScreenPosition(map_x, map_y, map_z, draw_x, draw_y);
 
 	Waypoint* waypoint = editor->map.waypoints.getWaypoint(location);
 

@@ -45,10 +45,6 @@
 #include <wx/snglinst.h>
 #include <spdlog/spdlog.h>
 
-#if defined(__LINUX__) || defined(__WINDOWS__)
-	#include <GL/glut.h>
-#endif
-
 #include "../brushes/icon/editor_icon.xpm"
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
@@ -138,7 +134,7 @@ bool Application::OnInit() {
 #if defined(__LINUX__) || defined(__WINDOWS__)
 	int argc = 1;
 	char* argv[1] = { wxString(this->argv[0]).char_str() };
-	glutInit(&argc, argv);
+	// glutInit(&argc, argv);
 #endif
 
 	// Load some internal stuff

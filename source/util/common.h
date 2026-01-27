@@ -25,6 +25,7 @@
 #include <cmath>
 #include <iomanip>
 #include <string>
+#include <string_view>
 
 #include "util/mt_rand.h"
 
@@ -46,6 +47,18 @@ wxString f2ws(double i);
 int ws2i(wxString s);
 double ws2f(wxString s);
 double frand();
+
+inline wxString wxstr(std::string_view sv) {
+	return wxString::FromUTF8(sv.data(), sv.length());
+}
+
+inline wxString wxstr(const std::string& str) {
+	return wxString::FromUTF8(str.c_str(), str.length());
+}
+
+inline wxString wxstr(const char* str) {
+	return wxString::FromUTF8(str);
+}
 
 // replaces all instances of sought in str with replacement
 void replaceString(std::string& str, const std::string sought, const std::string replacement);

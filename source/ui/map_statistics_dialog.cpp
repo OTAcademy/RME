@@ -72,7 +72,7 @@ void MapStatisticsDialog::Show(wxWindow* parent) {
 	}
 
 	if (stats.largest_town) {
-		os << "\t\tLargest Town: \"" << stats.largest_town->getName() << "\" (" << stats.largest_town_size << " sqm)\n";
+		os << "\t\tLargest Town: \"" << std::string(stats.largest_town->getName()) << "\" (" << stats.largest_town_size << " sqm)\n";
 	}
 	if (stats.largest_house) {
 		os << "\t\tLargest House: \"" << stats.largest_house->name << "\" (" << stats.largest_house_size << " sqm)\n";
@@ -90,6 +90,7 @@ void MapStatisticsDialog::Show(wxWindow* parent) {
 	wxSizer* choicesizer = newd wxBoxSizer(wxHORIZONTAL);
 	wxButton* export_button = newd wxButton(dg, wxID_OK, "Export as XML");
 	choicesizer->Add(export_button, wxSizerFlags(1).Center());
+	export_button->SetToolTip("Not implemented yet");
 	export_button->Enable(false);
 	choicesizer->Add(newd wxButton(dg, wxID_CANCEL, "OK"), wxSizerFlags(1).Center());
 	topsizer->Add(choicesizer, wxSizerFlags(1).Center());

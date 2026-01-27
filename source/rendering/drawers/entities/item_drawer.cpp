@@ -102,12 +102,12 @@ void ItemDrawer::BlitItem(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 	// int screeny = draw_y - spr->getDrawOffset().second;
 	// The original code modified draw_x/draw_y AFTER calculating screenx/screeny using the original draw_x/draw_y
 	// screenx use input draw_x
-	int screenx = draw_x - spr->getDrawOffset().first;
-	int screeny = draw_y - spr->getDrawOffset().second;
+	int screenx = draw_x - spr->drawoffset_x;
+	int screeny = draw_y - spr->drawoffset_y;
 
 	// Set the newd drawing height accordingly
-	draw_x -= spr->getDrawHeight();
-	draw_y -= spr->getDrawHeight();
+	draw_x -= spr->draw_height;
+	draw_y -= spr->draw_height;
 
 	int subtype = -1;
 
@@ -149,12 +149,14 @@ void ItemDrawer::BlitItem(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 		alpha /= 2;
 	}
 
-	Podium* podium = dynamic_cast<Podium*>(item);
-	if (it.isPodium() && !podium->hasShowPlatform() && !options.ingame) {
-		if (options.show_tech_items) {
-			alpha /= 2;
-		} else {
-			alpha = 0;
+	if (it.isPodium()) {
+		Podium* podium = static_cast<Podium*>(item);
+		if (!podium->hasShowPlatform() && !options.ingame) {
+			if (options.show_tech_items) {
+				alpha /= 2;
+			} else {
+				alpha = 0;
+			}
 		}
 	}
 
@@ -175,7 +177,7 @@ void ItemDrawer::BlitItem(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 	}
 
 	if (it.isPodium()) {
-
+		Podium* podium = static_cast<Podium*>(item);
 		Outfit outfit = podium->getOutfit();
 		if (!podium->hasShowOutfit()) {
 			if (podium->hasShowMount()) {

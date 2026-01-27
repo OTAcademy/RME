@@ -30,7 +30,7 @@
 #define __LIVE_NET_VERSION__ 5
 
 #define MAKE_VERSION_ID(major, minor, subversion) \
-	((major)*10000000 + (minor)*100000 + (subversion)*1000)
+	((major) * 10000000 + (minor) * 100000 + (subversion) * 1000)
 
 #define __RME_VERSION_ID__ MAKE_VERSION_ID( \
 	__RME_VERSION_MAJOR__,                  \
@@ -150,7 +150,6 @@ constexpr int PixelFormatRGBA = 4;
 
 // wxString conversions
 #define nstr(str) std::string((const char*)(str.mb_str(wxConvUTF8)))
-#define wxstr(str) wxString((str).c_str(), wxConvUTF8)
 
 // increment & decrement definitions
 #define IMPLEMENT_INCREMENT_OP(Type)                     \

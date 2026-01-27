@@ -38,7 +38,7 @@ find_package(Boost 1.34.0 COMPONENTS thread system REQUIRED)
 
 find_package(wxWidgets COMPONENTS html aui gl adv core net base REQUIRED)
 
-find_package(GLUT REQUIRED)
+
 find_package(ZLIB REQUIRED)
 
 
@@ -49,8 +49,20 @@ endif()
 
 find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
-find_package(nanovg CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+
+# nanovg: try vcpkg/Conan first, fallback to ext/nanovg
+find_package(nanovg CONFIG QUIET)
+if(NOT nanovg_FOUND)
+	message(STATUS "nanovg not found via package manager, using ext/nanovg...")
+	
+	# Build nanovg from ext/nanovg source
+	add_library(nanovg_lib STATIC
+		${CMAKE_CURRENT_SOURCE_DIR}/ext/nanovg/src/nanovg.c
+	)
+	target_include_directories(nanovg_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/ext/nanovg/src)
+	add_library(nanovg::nanovg ALIAS nanovg_lib)
+endif()
 
 include(source/CMakeLists.txt)
 # WIN32 is required for wxWidgets app entry point (WinMain)
@@ -79,7 +91,7 @@ target_include_directories(rme PRIVATE
 	${Boost_INCLUDE_DIRS}
 	${LibArchive_INCLUDE_DIRS}
 	${OPENGL_INCLUDE_DIR}
-	${GLUT_INCLUDE_DIRS}
+
 	${ZLIB_INCLUDE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/source
 )
@@ -97,11 +109,7 @@ else()
 	target_link_libraries(rme PRIVATE ${LibArchive_LIBRARIES})
 endif()
 
-if(TARGET GLUT::GLUT)
-	target_link_libraries(rme PRIVATE GLUT::GLUT)
-else()
-	target_link_libraries(rme PRIVATE ${GLUT_LIBRARIES})
-endif()
+
 
 if(TARGET ZLIB::ZLIB)
 	target_link_libraries(rme PRIVATE ZLIB::ZLIB)

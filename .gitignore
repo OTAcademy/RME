@@ -67,3 +67,8 @@ cmake-build-debug/
 
 /.agent/rules
 build.log
+/ext/nanovg/example
+
+# Conan
+build_conan/
+CMakeUserPresets.json

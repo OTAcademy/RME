@@ -4,11 +4,7 @@
 
 #include "app/main.h"
 
-#ifdef __APPLE__
-	#include <GLUT/glut.h>
-#else
-	#include <GL/glut.h>
-#endif
+// glut include removed
 
 #include "rendering/drawers/overlays/brush_overlay_drawer.h"
 #include "rendering/map_drawer.h"
