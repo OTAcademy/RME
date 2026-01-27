@@ -9,6 +9,7 @@
 #include "map/tile.h"
 #include "game/item.h"
 #include "game/items.h"
+#include <array>
 #include <algorithm>
 
 void GroundBorderCalculator::calculate(BaseMap* map, Tile* tile) {
@@ -35,45 +36,26 @@ void GroundBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 	uint32_t z = position.z;
 
 	// Pair of visited / what border type
-	std::pair<bool, GroundBrush*> neighbours[8];
-	if (x == 0) {
-		if (y == 0) {
-			neighbours[0] = { false, nullptr };
-			neighbours[1] = { false, nullptr };
-			neighbours[2] = { false, nullptr };
-			neighbours[3] = { false, nullptr };
-			neighbours[4] = { false, extractGroundBrushFromTile(map, x + 1, y, z) };
-			neighbours[5] = { false, nullptr };
-			neighbours[6] = { false, extractGroundBrushFromTile(map, x, y + 1, z) };
-			neighbours[7] = { false, extractGroundBrushFromTile(map, x + 1, y + 1, z) };
-		} else {
-			neighbours[0] = { false, nullptr };
-			neighbours[1] = { false, extractGroundBrushFromTile(map, x, y - 1, z) };
-			neighbours[2] = { false, extractGroundBrushFromTile(map, x + 1, y - 1, z) };
-			neighbours[3] = { false, nullptr };
-			neighbours[4] = { false, extractGroundBrushFromTile(map, x + 1, y, z) };
-			neighbours[5] = { false, nullptr };
-			neighbours[6] = { false, extractGroundBrushFromTile(map, x, y + 1, z) };
-			neighbours[7] = { false, extractGroundBrushFromTile(map, x + 1, y + 1, z) };
+	std::pair<bool, GroundBrush*> neighbours[8] = {
+		{ false, nullptr }, { false, nullptr }, { false, nullptr }, { false, nullptr }, { false, nullptr }, { false, nullptr }, { false, nullptr }, { false, nullptr }
+	};
+
+	static constexpr std::array<std::pair<int32_t, int32_t>, 8> offsets = { { { -1, -1 }, { 0, -1 }, { 1, -1 }, { -1, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } } };
+
+	for (size_t i = 0; i < offsets.size(); ++i) {
+		const auto& [dx, dy] = offsets[i];
+
+		// Unsigned bounds check
+		if ((x == 0 && dx < 0) || (y == 0 && dy < 0)) {
+			continue;
 		}
-	} else if (y == 0) {
-		neighbours[0] = { false, nullptr };
-		neighbours[1] = { false, nullptr };
-		neighbours[2] = { false, nullptr };
-		neighbours[3] = { false, extractGroundBrushFromTile(map, x - 1, y, z) };
-		neighbours[4] = { false, extractGroundBrushFromTile(map, x + 1, y, z) };
-		neighbours[5] = { false, extractGroundBrushFromTile(map, x - 1, y + 1, z) };
-		neighbours[6] = { false, extractGroundBrushFromTile(map, x, y + 1, z) };
-		neighbours[7] = { false, extractGroundBrushFromTile(map, x + 1, y + 1, z) };
-	} else {
-		neighbours[0] = { false, extractGroundBrushFromTile(map, x - 1, y - 1, z) };
-		neighbours[1] = { false, extractGroundBrushFromTile(map, x, y - 1, z) };
-		neighbours[2] = { false, extractGroundBrushFromTile(map, x + 1, y - 1, z) };
-		neighbours[3] = { false, extractGroundBrushFromTile(map, x - 1, y, z) };
-		neighbours[4] = { false, extractGroundBrushFromTile(map, x + 1, y, z) };
-		neighbours[5] = { false, extractGroundBrushFromTile(map, x - 1, y + 1, z) };
-		neighbours[6] = { false, extractGroundBrushFromTile(map, x, y + 1, z) };
-		neighbours[7] = { false, extractGroundBrushFromTile(map, x + 1, y + 1, z) };
+
+		// Since we verified x/y are not 0 if dx/dy are negative, this arithmetic is safe (in 2s complement or just logic)
+		// But strictly speaking, x + -1 is unsigned addition.
+		// extractGroundBrushFromTile takes uint32_t.
+		// So x + dx where dx is -1 (which is 0xFFFFFFFF) results in x - 1.
+
+		neighbours[i] = { false, extractGroundBrushFromTile(map, x + dx, y + dy, z) };
 	}
 
 	static std::vector<const GroundBrush::BorderBlock*> specificList;

@@ -50,33 +50,14 @@ void CarpetBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 		// Original logic was unrolled. We can keep it unrolled or use loops if cleaner.
 		// Original Logic is fine, just modernized slightly using std::array
 
-		if (x == 0) {
-			if (y == 0) {
-				neighbours[4] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x + 1, y, z);
-				neighbours[6] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x, y + 1, z);
-				neighbours[7] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x + 1, y + 1, z);
-			} else {
-				neighbours[1] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x, y - 1, z);
-				neighbours[2] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x + 1, y - 1, z);
-				neighbours[4] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x + 1, y, z);
-				neighbours[6] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x, y + 1, z);
-				neighbours[7] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x + 1, y + 1, z);
+		static constexpr std::array<std::pair<int32_t, int32_t>, 8> offsets = { { { -1, -1 }, { 0, -1 }, { 1, -1 }, { -1, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } } };
+
+		for (size_t i = 0; i < offsets.size(); ++i) {
+			const auto& [dx, dy] = offsets[i];
+			if ((x == 0 && dx < 0) || (y == 0 && dy < 0)) {
+				continue;
 			}
-		} else if (y == 0) {
-			neighbours[3] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x - 1, y, z);
-			neighbours[4] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x + 1, y, z);
-			neighbours[5] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x - 1, y + 1, z);
-			neighbours[6] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x, y + 1, z);
-			neighbours[7] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x + 1, y + 1, z);
-		} else {
-			neighbours[0] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x - 1, y - 1, z);
-			neighbours[1] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x, y - 1, z);
-			neighbours[2] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x + 1, y - 1, z);
-			neighbours[3] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x - 1, y, z);
-			neighbours[4] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x + 1, y, z);
-			neighbours[5] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x - 1, y + 1, z);
-			neighbours[6] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x, y + 1, z);
-			neighbours[7] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x + 1, y + 1, z);
+			neighbours[i] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x + dx, y + dy, z);
 		}
 
 		uint32_t tileData = 0;
