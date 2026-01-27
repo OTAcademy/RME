@@ -49,8 +49,20 @@ endif()
 
 find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
-find_package(nanovg CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+
+# nanovg: try vcpkg/Conan first, fallback to ext/nanovg
+find_package(nanovg CONFIG QUIET)
+if(NOT nanovg_FOUND)
+	message(STATUS "nanovg not found via package manager, using ext/nanovg...")
+	
+	# Build nanovg from ext/nanovg source
+	add_library(nanovg_lib STATIC
+		${CMAKE_CURRENT_SOURCE_DIR}/ext/nanovg/src/nanovg.c
+	)
+	target_include_directories(nanovg_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/ext/nanovg/src)
+	add_library(nanovg::nanovg ALIAS nanovg_lib)
+endif()
 
 include(source/CMakeLists.txt)
 # WIN32 is required for wxWidgets app entry point (WinMain)

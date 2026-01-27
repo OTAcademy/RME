@@ -22,8 +22,8 @@ class RMERecipe(ConanFile):
         self.requires("opengl/system")
         self.requires("glad/0.1.36")
         self.requires("glm/1.0.1")
-        self.requires("nanovg/cci.20230623")
         self.requires("spdlog/1.15.0")
+        # Note: nanovg is not on ConanCenter - included as source in source/thirdparty/
 
     
     def layout(self):
