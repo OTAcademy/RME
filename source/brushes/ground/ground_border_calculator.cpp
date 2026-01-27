@@ -81,12 +81,11 @@ void GroundBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 
 	std::vector<GroundBrush::BorderCluster> borderList;
 	for (int32_t i = 0; i < 8; ++i) {
-		auto& neighbourPair = neighbours[i];
-		if (neighbourPair.first) {
+		auto& [visited, other] = neighbours[i];
+		if (visited) {
 			continue;
 		}
 
-		GroundBrush* other = neighbourPair.second;
 		if (borderBrush) {
 			if (other) {
 				if (other->getID() == borderBrush->getID()) {
@@ -104,9 +103,9 @@ void GroundBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 
 					uint32_t tiledata = 0;
 					for (int32_t j = i; j < 8; ++j) {
-						auto& otherPair = neighbours[j];
-						if (!otherPair.first && otherPair.second && otherPair.second->getID() == other->getID()) {
-							otherPair.first = true;
+						auto& [other_visited, other_brush] = neighbours[j];
+						if (!other_visited && other_brush && other_brush->getID() == other->getID()) {
+							other_visited = true;
 							tiledata |= 1 << j;
 						}
 					}
@@ -160,13 +159,12 @@ void GroundBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 						}
 					}
 				}
-			} else if (borderBrush->hasInnerZilchBorder()) {
 				// Border against nothing (or undefined tile)
 				uint32_t tiledata = 0;
 				for (int32_t j = i; j < 8; ++j) {
-					auto& otherPair = neighbours[j];
-					if (!otherPair.first && !otherPair.second) {
-						otherPair.first = true;
+					auto& [other_visited, other_brush] = neighbours[j];
+					if (!other_visited && !other_brush) {
+						other_visited = true;
 						tiledata |= 1 << j;
 					}
 				}
@@ -204,9 +202,9 @@ void GroundBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 		} else if (other && other->hasOuterZilchBorder()) {
 			uint32_t tiledata = 0;
 			for (int32_t j = i; j < 8; ++j) {
-				auto& otherPair = neighbours[j];
-				if (!otherPair.first && otherPair.second && otherPair.second->getID() == other->getID()) {
-					otherPair.first = true;
+				auto& [other_visited, other_brush] = neighbours[j];
+				if (!other_visited && other_brush && other_brush->getID() == other->getID()) {
+					other_visited = true;
 					tiledata |= 1 << j;
 				}
 			}
@@ -255,27 +253,26 @@ void GroundBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 			}
 		}
 		// Check tile as done
-		neighbourPair.first = true;
+		visited = true;
 	}
 
-	ItemVector& items = tile->items;
 	// Clean current borders
-	for (auto it = items.begin(); it != items.end();) {
-		Item* item = *it;
+	std::erase_if(tile->items, [](Item* item) {
 		if (item->isBorder()) {
 			delete item;
-			it = items.erase(it);
-		} else {
-			++it;
+			return true;
 		}
-	}
+		return false;
+	});
 
 	// Sort borders based on z-order
-	std::sort(borderList.begin(), borderList.end());
+	std::ranges::sort(borderList, [](const GroundBrush::BorderCluster& a, const GroundBrush::BorderCluster& b) {
+		return a.z < b.z;
+	});
 
-	std::sort(specificList.begin(), specificList.end());
-	auto last = std::unique(specificList.begin(), specificList.end());
-	specificList.erase(last, specificList.end());
+	std::ranges::sort(specificList);
+	auto [first, last] = std::ranges::unique(specificList);
+	specificList.erase(first, last);
 
 	tile->cleanBorders();
 

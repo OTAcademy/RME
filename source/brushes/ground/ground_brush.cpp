@@ -87,9 +87,9 @@ void GroundBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 	}
 	int chance = random(1, total_chance);
 	uint16_t id = 0;
-	for (std::vector<ItemChanceBlock>::const_iterator it = border_items.begin(); it != border_items.end(); ++it) {
-		if (chance < it->chance) {
-			id = it->id;
+	for (const auto& item_block : border_items) {
+		if (chance < item_block.chance) {
+			id = item_block.id;
 			break;
 		}
 	}
@@ -105,8 +105,7 @@ const GroundBrush::BorderBlock* GroundBrush::getBrushTo(GroundBrush* first, Grou
 		if (second) {
 			if (first->getZ() < second->getZ() && second->hasOuterBorder()) {
 				if (first->hasInnerBorder()) {
-					for (std::vector<BorderBlock*>::iterator it = first->borders.begin(); it != first->borders.end(); ++it) {
-						BorderBlock* bb = *it;
+					for (BorderBlock* bb : first->borders) {
 						if (bb->outer) {
 							continue;
 						} else if (bb->to == second->getID() || bb->to == 0xFFFFFFFF) {
@@ -114,8 +113,7 @@ const GroundBrush::BorderBlock* GroundBrush::getBrushTo(GroundBrush* first, Grou
 						}
 					}
 				}
-				for (std::vector<BorderBlock*>::iterator it = second->borders.begin(); it != second->borders.end(); ++it) {
-					BorderBlock* bb = *it;
+				for (BorderBlock* bb : second->borders) {
 					if (!bb->outer) {
 						continue;
 					} else if (bb->to == first->getID()) {
@@ -125,8 +123,7 @@ const GroundBrush::BorderBlock* GroundBrush::getBrushTo(GroundBrush* first, Grou
 					}
 				}
 			} else if (first->hasInnerBorder()) {
-				for (std::vector<BorderBlock*>::iterator it = first->borders.begin(); it != first->borders.end(); ++it) {
-					BorderBlock* bb = *it;
+				for (BorderBlock* bb : first->borders) {
 					if (bb->outer) {
 						continue;
 					} else if (bb->to == second->getID()) {
@@ -137,8 +134,7 @@ const GroundBrush::BorderBlock* GroundBrush::getBrushTo(GroundBrush* first, Grou
 				}
 			}
 		} else if (first->hasInnerZilchBorder()) {
-			for (std::vector<BorderBlock*>::iterator it = first->borders.begin(); it != first->borders.end(); ++it) {
-				BorderBlock* bb = *it;
+			for (BorderBlock* bb : first->borders) {
 				if (bb->outer) {
 					continue;
 				} else if (bb->to == 0) {
@@ -147,8 +143,7 @@ const GroundBrush::BorderBlock* GroundBrush::getBrushTo(GroundBrush* first, Grou
 			}
 		}
 	} else if (second && second->hasOuterZilchBorder()) {
-		for (std::vector<BorderBlock*>::iterator it = second->borders.begin(); it != second->borders.end(); ++it) {
-			BorderBlock* bb = *it;
+		for (BorderBlock* bb : second->borders) {
 			if (!bb->outer) {
 				continue;
 			} else if (bb->to == 0) {

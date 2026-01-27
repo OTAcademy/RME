@@ -34,7 +34,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 		brush.randomize = attribute.as_bool();
 	}
 
-	for (pugi::xml_node childNode = node.first_child(); childNode; childNode = childNode.next_sibling()) {
+	for (pugi::xml_node childNode : node.children()) {
 		const std::string childName = as_lower_str(childNode.name());
 		if (childName == "item") {
 			uint16_t itemId = childNode.attribute("id").as_ushort();
@@ -147,13 +147,13 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 			borderBlock->autoborder = autoBorder;
 
 			if ((attribute = childNode.attribute("to"))) {
-				const std::string value = attribute.as_string();
+				const std::string_view value = attribute.as_string();
 				if (value == "all") {
 					borderBlock->to = 0xFFFFFFFF;
 				} else if (value == "none") {
 					borderBlock->to = 0;
 				} else {
-					Brush* tobrush = g_brushes.getBrush(value);
+					Brush* tobrush = g_brushes.getBrush(std::string(value));
 					if (!tobrush) {
 						warnings.push_back("To brush " + wxstr(value) + " doesn't exist.");
 						continue;
@@ -169,7 +169,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 			}
 
 			if ((attribute = childNode.attribute("align"))) {
-				const std::string value = attribute.as_string();
+				const std::string_view value = attribute.as_string();
 				if (value == "outer") {
 					borderBlock->outer = true;
 				} else if (value == "inner") {
@@ -343,12 +343,12 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 			}
 			brush.borders.push_back(borderBlock);
 		} else if (childName == "friend") {
-			const std::string name = childNode.attribute("name").as_string();
+			const std::string_view name = childNode.attribute("name").as_string();
 			if (!name.empty()) {
 				if (name == "all") {
 					brush.friends.push_back(0xFFFFFFFF);
 				} else {
-					Brush* otherBrush = g_brushes.getBrush(name);
+					Brush* otherBrush = g_brushes.getBrush(std::string(name));
 					if (otherBrush) {
 						brush.friends.push_back(otherBrush->getID());
 					} else {
@@ -358,12 +358,12 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 			}
 			brush.hate_friends = false;
 		} else if (childName == "enemy") {
-			const std::string name = childNode.attribute("name").as_string();
+			const std::string_view name = childNode.attribute("name").as_string();
 			if (!name.empty()) {
 				if (name == "all") {
 					brush.friends.push_back(0xFFFFFFFF);
 				} else {
-					Brush* otherBrush = g_brushes.getBrush(name);
+					Brush* otherBrush = g_brushes.getBrush(std::string(name));
 					if (otherBrush) {
 						brush.friends.push_back(otherBrush->getID());
 					} else {
@@ -373,13 +373,10 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 			}
 			brush.hate_friends = true;
 		} else if (childName == "clear_borders") {
-			for (std::vector<GroundBrush::BorderBlock*>::iterator it = brush.borders.begin();
-				 it != brush.borders.end();
-				 ++it) {
-				GroundBrush::BorderBlock* bb = *it;
+			for (GroundBrush::BorderBlock* bb : brush.borders) {
 				if (bb->autoborder) {
-					for (std::vector<GroundBrush::SpecificCaseBlock*>::iterator specific_iter = bb->specific_cases.begin(); specific_iter != bb->specific_cases.end(); ++specific_iter) {
-						delete *specific_iter;
+					for (GroundBrush::SpecificCaseBlock* specificCaseBlock : bb->specific_cases) {
+						delete specificCaseBlock;
 					}
 					if (bb->autoborder->ground) {
 						delete bb->autoborder;

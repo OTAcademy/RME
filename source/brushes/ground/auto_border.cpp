@@ -8,6 +8,7 @@
 #include "game/items.h"
 #include "ext/pugixml.hpp"
 #include <wx/string.h>
+#include <utility>
 
 AutoBorder::AutoBorder(int _id) :
 	id(_id), group(0), ground(false) {
@@ -15,30 +16,25 @@ AutoBorder::AutoBorder(int _id) :
 }
 
 int AutoBorder::edgeNameToID(std::string_view edgename) {
-	if (edgename == "n") {
-		return NORTH_HORIZONTAL;
-	} else if (edgename == "w") {
-		return WEST_HORIZONTAL;
-	} else if (edgename == "s") {
-		return SOUTH_HORIZONTAL;
-	} else if (edgename == "e") {
-		return EAST_HORIZONTAL;
-	} else if (edgename == "cnw") {
-		return NORTHWEST_CORNER;
-	} else if (edgename == "cne") {
-		return NORTHEAST_CORNER;
-	} else if (edgename == "csw") {
-		return SOUTHWEST_CORNER;
-	} else if (edgename == "cse") {
-		return SOUTHEAST_CORNER;
-	} else if (edgename == "dnw") {
-		return NORTHWEST_DIAGONAL;
-	} else if (edgename == "dne") {
-		return NORTHEAST_DIAGONAL;
-	} else if (edgename == "dsw") {
-		return SOUTHWEST_DIAGONAL;
-	} else if (edgename == "dse") {
-		return SOUTHEAST_DIAGONAL;
+	static constexpr std::pair<std::string_view, int> edges[] = {
+		{ "n", NORTH_HORIZONTAL },
+		{ "w", WEST_HORIZONTAL },
+		{ "s", SOUTH_HORIZONTAL },
+		{ "e", EAST_HORIZONTAL },
+		{ "cnw", NORTHWEST_CORNER },
+		{ "cne", NORTHEAST_CORNER },
+		{ "csw", SOUTHWEST_CORNER },
+		{ "cse", SOUTHEAST_CORNER },
+		{ "dnw", NORTHWEST_DIAGONAL },
+		{ "dne", NORTHEAST_DIAGONAL },
+		{ "dsw", SOUTHWEST_DIAGONAL },
+		{ "dse", SOUTHEAST_DIAGONAL }
+	};
+
+	for (const auto& [name, id] : edges) {
+		if (name == edgename) {
+			return id;
+		}
 	}
 	return BORDER_NONE;
 }
