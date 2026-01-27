@@ -1,10 +1,6 @@
 #include "app/main.h"
 
-#ifdef __APPLE__
-	#include <GLUT/glut.h>
-#else
-	#include <GL/glut.h>
-#endif
+// glut include removed
 
 #include "rendering/drawers/cursors/brush_cursor_drawer.h"
 #include "brushes/brush.h"

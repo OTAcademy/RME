@@ -15,11 +15,7 @@
 // On Windows it's usually in <GL/gl.h> or <GL/glut.h>.
 // Let's use the same includes as graphics.cpp if possible or minimal set.
 
-#ifdef __APPLE__
-	#include <GLUT/glut.h>
-#else
-	#include <GL/glut.h>
-#endif
+#include <glad/glad.h>
 
 class GLTextureIDGenerator {
 public:

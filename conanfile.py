@@ -12,7 +12,7 @@ class RMERecipe(ConanFile):
     
     def requirements(self):
         self.requires("wxwidgets/3.2.6")
-        self.requires("freeglut/3.4.0")
+
         self.requires("asio/1.32.0")
         self.requires("nlohmann_json/3.11.3")
         self.requires("fmt/11.1.4")
@@ -21,8 +21,7 @@ class RMERecipe(ConanFile):
         self.requires("zlib/1.3.1")
         self.requires("opengl/system")
         self.requires("glew/2.2.0")
-        # Override wayland to resolve conflict with freeglut
-        self.requires("wayland/1.23.92", override=True)
+
     
     def layout(self):
         cmake_layout(self)

@@ -1,11 +1,7 @@
 #include "rendering/io/screen_capture.h"
 #include "app/main.h"
 
-#ifdef __APPLE__
-	#include <GLUT/glut.h>
-#else
-	#include <GL/glut.h>
-#endif
+// glut include removed
 
 void ScreenCapture::Capture(int width, int height, uint8_t* buffer) {
 	glFinish(); // Wait for the operation to finish
