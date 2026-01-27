@@ -20,23 +20,22 @@ namespace IngamePreview {
 		ID_UPDATE_TIMER
 	};
 
-	BEGIN_EVENT_TABLE(IngamePreviewWindow, wxPanel)
-	EVT_TIMER(ID_UPDATE_TIMER, IngamePreviewWindow::OnUpdateTimer)
-	EVT_TOGGLEBUTTON(ID_FOLLOW_SELECTION, IngamePreviewWindow::OnToggleFollow)
-	EVT_TOGGLEBUTTON(ID_ENABLE_LIGHTING, IngamePreviewWindow::OnToggleLighting)
-	EVT_SLIDER(ID_AMBIENT_SLIDER, IngamePreviewWindow::OnAmbientSlider)
-	EVT_SLIDER(ID_INTENSITY_SLIDER, IngamePreviewWindow::OnIntensitySlider)
-	EVT_BUTTON(ID_VIEWPORT_W_UP, IngamePreviewWindow::OnViewportWidthUp)
-	EVT_BUTTON(ID_VIEWPORT_W_DOWN, IngamePreviewWindow::OnViewportWidthDown)
-	EVT_BUTTON(ID_VIEWPORT_H_UP, IngamePreviewWindow::OnViewportHeightUp)
-	EVT_BUTTON(ID_VIEWPORT_H_DOWN, IngamePreviewWindow::OnViewportHeightDown)
-	END_EVENT_TABLE()
-
-	IngamePreviewWindow::IngamePreviewWindow(wxWindow* parent, Editor& editor) :
+	IngamePreviewWindow::IngamePreviewWindow(wxWindow* parent) :
 		wxPanel(parent, wxID_ANY),
-		editor(editor),
 		update_timer(this, ID_UPDATE_TIMER),
 		follow_selection(true) {
+
+		// Bind Events
+		Bind(wxEVT_TIMER, &IngamePreviewWindow::OnUpdateTimer, this, ID_UPDATE_TIMER);
+		Bind(wxEVT_TOGGLEBUTTON, &IngamePreviewWindow::OnToggleFollow, this, ID_FOLLOW_SELECTION);
+		Bind(wxEVT_TOGGLEBUTTON, &IngamePreviewWindow::OnToggleLighting, this, ID_ENABLE_LIGHTING);
+		Bind(wxEVT_SLIDER, &IngamePreviewWindow::OnAmbientSlider, this, ID_AMBIENT_SLIDER);
+		Bind(wxEVT_SLIDER, &IngamePreviewWindow::OnIntensitySlider, this, ID_INTENSITY_SLIDER);
+		Bind(wxEVT_BUTTON, &IngamePreviewWindow::OnViewportWidthUp, this, ID_VIEWPORT_W_UP);
+		Bind(wxEVT_BUTTON, &IngamePreviewWindow::OnViewportWidthDown, this, ID_VIEWPORT_W_DOWN);
+		Bind(wxEVT_BUTTON, &IngamePreviewWindow::OnViewportHeightUp, this, ID_VIEWPORT_H_UP);
+		Bind(wxEVT_BUTTON, &IngamePreviewWindow::OnViewportHeightDown, this, ID_VIEWPORT_H_DOWN);
+
 		wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
 
 		// Single Toolbar
@@ -95,8 +94,8 @@ namespace IngamePreview {
 		main_sizer->Add(toolbar_sizer, 0, wxEXPAND | wxALL, 2);
 
 		// Canvas
-		canvas = new IngamePreviewCanvas(this);
-		main_sizer->Add(canvas, 1, wxEXPAND);
+		canvas = std::make_unique<IngamePreviewCanvas>(this);
+		main_sizer->Add(canvas.get(), 1, wxEXPAND);
 
 		SetSizer(main_sizer);
 

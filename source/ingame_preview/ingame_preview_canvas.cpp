@@ -7,13 +7,6 @@
 
 namespace IngamePreview {
 
-	BEGIN_EVENT_TABLE(IngamePreviewCanvas, wxGLCanvas)
-	EVT_PAINT(IngamePreviewCanvas::OnPaint)
-	EVT_SIZE(IngamePreviewCanvas::OnSize)
-	EVT_MOTION(IngamePreviewCanvas::OnMouseMove)
-	EVT_ERASE_BACKGROUND(IngamePreviewCanvas::OnEraseBackground)
-	END_EVENT_TABLE()
-
 	// Re-use core profile attributes from MapCanvas logic
 	static wxGLAttributes& GetPreviewGLAttributes() {
 		static wxGLAttributes vAttrs = []() {
@@ -26,6 +19,7 @@ namespace IngamePreview {
 
 	IngamePreviewCanvas::IngamePreviewCanvas(wxWindow* parent) :
 		wxGLCanvas(parent, GetPreviewGLAttributes(), wxID_ANY, wxDefaultPosition, wxDefaultSize, wxWANTS_CHARS),
+		last_tile_renderer(nullptr),
 		camera_pos(0, 0, GROUND_LAYER),
 		zoom(1.0f),
 		lighting_enabled(true),
@@ -33,12 +27,19 @@ namespace IngamePreview {
 		light_intensity(1.0f),
 		viewport_width_tiles(15),
 		viewport_height_tiles(11) {
+
+		// Bind Events
+		Bind(wxEVT_PAINT, &IngamePreviewCanvas::OnPaint, this);
+		Bind(wxEVT_SIZE, &IngamePreviewCanvas::OnSize, this);
+		Bind(wxEVT_MOTION, &IngamePreviewCanvas::OnMouseMove, this);
+		Bind(wxEVT_ERASE_BACKGROUND, &IngamePreviewCanvas::OnEraseBackground, this);
 	}
 
 	IngamePreviewCanvas::~IngamePreviewCanvas() = default;
 
 	void IngamePreviewCanvas::OnPaint(wxPaintEvent& event) {
-		// Render(); // Remove auto-render on paint, triggered by timer now
+		// Validating the paint event prevents infinite paint loops on some platforms
+		wxPaintDC dc(this);
 	}
 
 	void IngamePreviewCanvas::OnSize(wxSizeEvent& event) {
@@ -104,13 +105,33 @@ namespace IngamePreview {
 
 		SetCurrent(*g_gui.GetGLContext(this));
 
-		if (!renderer) {
-			MapTab* tab = g_gui.GetCurrentMapTab();
-			if (tab && tab->GetCanvas() && tab->GetCanvas()->drawer) {
-				renderer = std::make_unique<IngamePreviewRenderer>(tab->GetCanvas()->drawer->getTileRenderer());
+		MapTab* tab = g_gui.GetCurrentMapTab();
+		const void* current_tile_renderer = nullptr;
+
+		if (tab && tab->GetCanvas() && tab->GetCanvas()->drawer) {
+			current_tile_renderer = tab->GetCanvas()->drawer->getTileRenderer();
+		}
+
+		// Check if renderer is stale or missing
+		if (!renderer || last_tile_renderer != current_tile_renderer) {
+			if (current_tile_renderer) {
+				// We need to cast back to TileRenderer* to create the preview renderer
+				// Implementation note: The header uses void* to avoid includes, but here we see map_drawer.h
+				// so we know what getTileRenderer returns.
+				renderer = std::make_unique<IngamePreviewRenderer>(
+					const_cast<TileRenderer*>(static_cast<const TileRenderer*>(current_tile_renderer))
+				);
+				last_tile_renderer = current_tile_renderer;
 			} else {
+				// No valid tile renderer available
+				renderer.reset();
+				last_tile_renderer = nullptr;
 				return;
 			}
+		}
+
+		if (!renderer) {
+			return;
 		}
 
 		wxSize size = GetClientSize();

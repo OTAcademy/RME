@@ -12,7 +12,7 @@ namespace IngamePreview {
 
 	class IngamePreviewWindow : public wxPanel {
 	public:
-		IngamePreviewWindow(wxWindow* parent, Editor& editor);
+		IngamePreviewWindow(wxWindow* parent);
 		~IngamePreviewWindow();
 
 		void OnUpdateTimer(wxTimerEvent& event);
@@ -28,11 +28,12 @@ namespace IngamePreview {
 		void UpdateState();
 
 	private:
-		Editor& editor;
-		IngamePreviewCanvas* canvas;
+		// Editor reference removed to prevent dangling pointer.
+		// Active editor is retrieved dynamically in UpdateState.
+		std::unique_ptr<IngamePreviewCanvas> canvas;
 		wxTimer update_timer;
 
-		// UI Controls
+		// UI Controls (Owned by wxWindow parent, managed by wxWidgets)
 		wxBitmapToggleButton* follow_btn;
 		wxBitmapToggleButton* lighting_btn;
 		wxSlider* ambient_slider;
@@ -46,8 +47,6 @@ namespace IngamePreview {
 		wxButton* viewport_h_down;
 
 		bool follow_selection;
-
-		DECLARE_EVENT_TABLE()
 	};
 
 } // namespace IngamePreview

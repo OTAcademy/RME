@@ -81,3 +81,4 @@ carpet_rules_analysis.txt
 carpet_legacy_table.txt
 analyze_legacy.py
 /ImguiMapEditor
+/source/ext/wxMaterialDesignArtProvider-main
