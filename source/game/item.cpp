@@ -473,27 +473,27 @@ std::string Item::LiquidID2Name(uint16_t id) {
 uint16_t Item::LiquidName2ID(std::string liquid) {
 	to_lower_str(liquid);
 	static const std::unordered_map<std::string, uint16_t> liquid_map = {
-		{"none", LIQUID_NONE},
-		{"water", LIQUID_WATER},
-		{"blood", LIQUID_BLOOD},
-		{"beer", LIQUID_BEER},
-		{"slime", LIQUID_SLIME},
-		{"lemonade", LIQUID_LEMONADE},
-		{"milk", LIQUID_MILK},
-		{"manafluid", LIQUID_MANAFLUID},
-		{"lifefluid", LIQUID_LIFEFLUID},
-		{"oil", LIQUID_OIL},
-		{"urine", LIQUID_URINE},
-		{"coconut milk", LIQUID_COCONUT_MILK},
-		{"wine", LIQUID_WINE},
-		{"mud", LIQUID_MUD},
-		{"fruit juice", LIQUID_FRUIT_JUICE},
-		{"lava", LIQUID_LAVA},
-		{"rum", LIQUID_RUM},
-		{"swamp", LIQUID_SWAMP},
-		{"ink", LIQUID_INK},
-		{"tea", LIQUID_TEA},
-		{"mead", LIQUID_MEAD}
+		{ "none", LIQUID_NONE },
+		{ "water", LIQUID_WATER },
+		{ "blood", LIQUID_BLOOD },
+		{ "beer", LIQUID_BEER },
+		{ "slime", LIQUID_SLIME },
+		{ "lemonade", LIQUID_LEMONADE },
+		{ "milk", LIQUID_MILK },
+		{ "manafluid", LIQUID_MANAFLUID },
+		{ "lifefluid", LIQUID_LIFEFLUID },
+		{ "oil", LIQUID_OIL },
+		{ "urine", LIQUID_URINE },
+		{ "coconut milk", LIQUID_COCONUT_MILK },
+		{ "wine", LIQUID_WINE },
+		{ "mud", LIQUID_MUD },
+		{ "fruit juice", LIQUID_FRUIT_JUICE },
+		{ "lava", LIQUID_LAVA },
+		{ "rum", LIQUID_RUM },
+		{ "swamp", LIQUID_SWAMP },
+		{ "ink", LIQUID_INK },
+		{ "tea", LIQUID_TEA },
+		{ "mead", LIQUID_MEAD }
 	};
 
 	auto it = liquid_map.find(liquid);
