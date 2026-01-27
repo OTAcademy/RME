@@ -55,9 +55,11 @@ bool EditorManager::IsEditorOpen() const {
 }
 
 void EditorManager::CloseCurrentEditor() {
+	spdlog::info("EditorManager::CloseCurrentEditor - Closing current tab");
 	g_palettes.RefreshPalettes();
 	g_gui.tabbook->DeleteTab(g_gui.tabbook->GetSelection());
 	g_gui.root->UpdateMenubar();
+	spdlog::info("EditorManager::CloseCurrentEditor - Closed current tab");
 }
 
 Editor* EditorManager::GetCurrentEditor() {
@@ -103,12 +105,14 @@ bool EditorManager::CloseLiveEditors(LiveSocket* sock) {
 }
 
 bool EditorManager::CloseAllEditors() {
+	spdlog::info("EditorManager::CloseAllEditors - Closing all tabs");
 	for (int i = 0; i < g_gui.tabbook->GetTabCount(); ++i) {
 		auto* mapTab = dynamic_cast<MapTab*>(g_gui.tabbook->GetTab(i));
 		if (mapTab) {
 			if (mapTab->IsUniqueReference() && mapTab->GetMap() && mapTab->GetMap()->hasChanged()) {
 				g_gui.tabbook->SetFocusedTab(i);
 				if (!g_gui.root->DoQuerySave(false)) {
+					spdlog::info("EditorManager::CloseAllEditors - Cancelled by user");
 					return false;
 				} else {
 					g_palettes.RefreshPalettes();
@@ -122,6 +126,7 @@ bool EditorManager::CloseAllEditors() {
 	if (g_gui.root) {
 		g_gui.root->UpdateMenubar();
 	}
+	spdlog::info("EditorManager::CloseAllEditors - All tabs closed");
 	return true;
 }
 
@@ -193,6 +198,7 @@ void EditorManager::SaveCurrentMap(FileName fileName, bool showdialog) {
 }
 
 bool EditorManager::NewMap() {
+	spdlog::info("EditorManager::NewMap - Creating new map");
 	g_gui.FinishWelcomeDialog();
 
 	std::unique_ptr<Editor> editor;
@@ -259,6 +265,7 @@ void EditorManager::SaveMapAs() {
 }
 
 bool EditorManager::LoadMap(const FileName& fileName) {
+	spdlog::info("EditorManager::LoadMap - Loading map: {}", nstr(fileName.GetFullPath()));
 	g_gui.FinishWelcomeDialog();
 
 	if (GetCurrentEditor() && !GetCurrentMap().hasChanged() && !GetCurrentMap().hasFile()) {

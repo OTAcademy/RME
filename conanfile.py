@@ -48,6 +48,9 @@ class RMERecipe(ConanFile):
         tc.generate()
     
     def configure(self):
+        self.options["glad/*"].gl_profile = "core"
+        self.options["glad/*"].gl_version = "4.6"
+
         if self.settings.os != "Linux":
             # Boost components needed
             self.options["boost/*"].without_python = True

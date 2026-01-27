@@ -116,6 +116,7 @@ bool Application::OnInit() {
 
 	// Configure spdlog for debug output
 	spdlog::set_level(spdlog::level::info);
+	spdlog::flush_on(spdlog::level::info);
 	spdlog::info("RME starting up - logging enabled");
 
 	std::cout << "This is free software: you are free to change and redistribute it." << std::endl;
