@@ -3,76 +3,66 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "app/main.h"
-
 #include "brushes/wall/wall_brush.h"
+#include <array>
 
-//=============================================================================
-// Border lookup tables
+namespace {
+	// Bitmapping: N=1, W=2, E=4, S=8 (consistent with WALLTILE_ enums)
+	enum {
+		N = WALLTILE_NORTH,
+		W = WALLTILE_WEST,
+		E = WALLTILE_EAST,
+		S = WALLTILE_SOUTH
+	};
+
+	constexpr auto full_border_table = []() constexpr {
+		std::array<uint32_t, 16> table {};
+		table[0] = WALL_POLE;
+		table[N] = WALL_SOUTH_END;
+		table[W] = WALL_EAST_END;
+		table[N | W] = WALL_NORTHWEST_DIAGONAL;
+		table[E] = WALL_WEST_END;
+		table[N | E] = WALL_NORTHEAST_DIAGONAL;
+		table[W | E] = WALL_HORIZONTAL;
+		table[N | W | E] = WALL_SOUTH_T;
+		table[S] = WALL_NORTH_END;
+		table[N | S] = WALL_VERTICAL;
+		table[W | S] = WALL_SOUTHWEST_DIAGONAL;
+		table[N | W | S] = WALL_EAST_T;
+		table[E | S] = WALL_SOUTHEAST_DIAGONAL;
+		table[N | E | S] = WALL_WEST_T;
+		table[W | E | S] = WALL_NORTH_T;
+		table[N | W | E | S] = WALL_INTERSECTION;
+		return table;
+	}();
+
+	constexpr auto half_border_table = []() constexpr {
+		std::array<uint32_t, 16> table {};
+		for (int i = 0; i < 16; ++i) {
+			// Half-border ONLY respects N and W bits.
+			// This matches the original i % 4 behavior exactly.
+			int bits = i & (N | W);
+			if (bits == (N | W)) {
+				table[i] = WALL_NORTHWEST_DIAGONAL;
+			} else if (bits == N) {
+				table[i] = WALL_VERTICAL;
+			} else if (bits == W) {
+				table[i] = WALL_HORIZONTAL;
+			} else {
+				table[i] = WALL_POLE;
+			}
+		}
+		return table;
+	}();
+
+	static_assert(full_border_table[N | S | E | W] == WALL_INTERSECTION);
+	static_assert(half_border_table[0] == WALL_POLE);
+	static_assert(half_border_table[N] == WALL_VERTICAL);
+}
 
 void WallBrush::init() {
-	WallBrush::full_border_types[0] // 0
-		= WALL_POLE;
-	WallBrush::full_border_types[WALLTILE_NORTH] // 1
-		= WALL_SOUTH_END;
-	WallBrush::full_border_types[WALLTILE_WEST] // 10
-		= WALL_EAST_END;
-	WallBrush::full_border_types[WALLTILE_WEST | WALLTILE_NORTH] // 11
-		= WALL_NORTHWEST_DIAGONAL;
-	WallBrush::full_border_types[WALLTILE_EAST] // 100
-		= WALL_WEST_END;
-	WallBrush::full_border_types[WALLTILE_EAST | WALLTILE_NORTH] // 101
-		= WALL_NORTHEAST_DIAGONAL;
-	WallBrush::full_border_types[WALLTILE_EAST | WALLTILE_WEST] // 110
-		= WALL_HORIZONTAL;
-	WallBrush::full_border_types[WALLTILE_EAST | WALLTILE_WEST | WALLTILE_NORTH] // 111
-		= WALL_SOUTH_T;
-	WallBrush::full_border_types[WALLTILE_SOUTH] // 1000
-		= WALL_NORTH_END;
-	WallBrush::full_border_types[WALLTILE_SOUTH | WALLTILE_NORTH] // 1001
-		= WALL_VERTICAL;
-	WallBrush::full_border_types[WALLTILE_SOUTH | WALLTILE_WEST] // 1010
-		= WALL_SOUTHWEST_DIAGONAL;
-	WallBrush::full_border_types[WALLTILE_SOUTH | WALLTILE_WEST | WALLTILE_NORTH] // 1011
-		= WALL_EAST_T;
-	WallBrush::full_border_types[WALLTILE_SOUTH | WALLTILE_EAST] // 1100
-		= WALL_SOUTHEAST_DIAGONAL;
-	WallBrush::full_border_types[WALLTILE_SOUTH | WALLTILE_EAST | WALLTILE_NORTH] // 1101
-		= WALL_WEST_T;
-	WallBrush::full_border_types[WALLTILE_SOUTH | WALLTILE_EAST | WALLTILE_WEST] // 1110
-		= WALL_NORTH_T;
-	WallBrush::full_border_types[WALLTILE_SOUTH | WALLTILE_EAST | WALLTILE_WEST | WALLTILE_NORTH] // 1111
-		= WALL_INTERSECTION;
-
-	WallBrush::half_border_types[0] // 0
-		= WALL_POLE;
-	WallBrush::half_border_types[WALLTILE_NORTH] // 1
-		= WALL_VERTICAL;
-	WallBrush::half_border_types[WALLTILE_WEST] // 10
-		= WALL_HORIZONTAL;
-	WallBrush::half_border_types[WALLTILE_WEST | WALLTILE_NORTH] // 11
-		= WALL_NORTHWEST_DIAGONAL;
-	WallBrush::half_border_types[WALLTILE_EAST] // 100
-		= WALL_POLE;
-	WallBrush::half_border_types[WALLTILE_EAST | WALLTILE_NORTH] // 101
-		= WALL_VERTICAL;
-	WallBrush::half_border_types[WALLTILE_EAST | WALLTILE_WEST] // 110
-		= WALL_HORIZONTAL;
-	WallBrush::half_border_types[WALLTILE_EAST | WALLTILE_WEST | WALLTILE_NORTH] // 111
-		= WALL_NORTHWEST_DIAGONAL;
-	WallBrush::half_border_types[WALLTILE_SOUTH] // 1000
-		= WALL_POLE;
-	WallBrush::half_border_types[WALLTILE_SOUTH | WALLTILE_NORTH] // 1001
-		= WALL_VERTICAL;
-	WallBrush::half_border_types[WALLTILE_SOUTH | WALLTILE_WEST] // 1010
-		= WALL_HORIZONTAL;
-	WallBrush::half_border_types[WALLTILE_SOUTH | WALLTILE_WEST | WALLTILE_NORTH] // 1011
-		= WALL_NORTHWEST_DIAGONAL;
-	WallBrush::half_border_types[WALLTILE_SOUTH | WALLTILE_EAST] // 1100
-		= WALL_POLE;
-	WallBrush::half_border_types[WALLTILE_SOUTH | WALLTILE_EAST | WALLTILE_NORTH] // 1101
-		= WALL_VERTICAL;
-	WallBrush::half_border_types[WALLTILE_SOUTH | WALLTILE_EAST | WALLTILE_WEST] // 1110
-		= WALL_HORIZONTAL;
-	WallBrush::half_border_types[WALLTILE_SOUTH | WALLTILE_EAST | WALLTILE_WEST | WALLTILE_NORTH] // 1111
-		= WALL_NORTHWEST_DIAGONAL;
+	for (int i = 0; i < 16; ++i) {
+		WallBrush::full_border_types[i] = full_border_table[i];
+		WallBrush::half_border_types[i] = half_border_table[i];
+	}
 }
