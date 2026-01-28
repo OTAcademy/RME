@@ -444,6 +444,27 @@ All widget methods return the `Dialog` object itself, allowing for method chaini
 | `separator()` | - | Draws a horizontal line separator. |
 | `tab(options)` | `{id="tab_id", text="Tab Name", button=false, index=1, onclick=func, oncontextmenu=func}` | Starts a new tab page or a tab-like button (`button=true`). |
 | `endtabs()` | - | Ends the tab definition. |
+| `panel(options)` | `{bgcolor=Color.white, padding=5, margin=5, expand=true, height=30}` | Starts a styled container panel. Supports background color, padding, margin, and standard layout options. |
+| `endpanel()` | - | Ends the current panel. |
+
+#### **Common Widget Options**
+Most widgets support these additional layout and styling properties:
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `expand` | boolean | If `true`, the widget expands to fill available space in the layout direction. |
+| `align` | string | Horizontal alignment: `"left"`, `"center"`, `"right"`. |
+| `valign` | string | Vertical alignment: `"top"`, `"center"`, `"bottom"`. |
+| `width`, `height` | number | Explicit width/height in pixels. |
+| `min_width`, `min_height` | number | Minimum dimensions. |
+| `max_width`, `max_height` | number | Maximum dimensions. |
+| `margin` | number | Outer margin (all sides). |
+| `padding` | number | Inner padding (for containers like `panel` or `box`). |
+| `bgcolor` | string/Color | Background color (e.g., `Color.red` or `"#FF0000"`). |
+| `fgcolor` | string/Color | Foreground (text) color. |
+| `font_size` | number | Font size in points. |
+| `font_weight` | string | Font weight: `"normal"`, `"bold"`. |
+
 
 #### **Input Widgets**
 | Widget | Options | Description |
