@@ -6,6 +6,7 @@
 #include "rendering/core/gl_resources.h"
 #include <optional>
 #include <cstdint>
+#include <vector>
 
 /**
  * AtlasRegion represents where a sprite is located in the texture atlas.
@@ -62,6 +63,12 @@ public:
 	std::optional<AtlasRegion> addSprite(const uint8_t* rgba_data);
 
 	/**
+	 * Free a sprite slot for reuse.
+	 * @param region The region to free.
+	 */
+	void freeSlot(const AtlasRegion& region);
+
+	/**
 	 * Bind the texture array to a texture slot.
 	 */
 	void bind(uint32_t slot = 0) const;
@@ -110,6 +117,8 @@ private:
 	int current_layer_ = 0;
 	int next_x_ = 0; // Next slot X in grid
 	int next_y_ = 0; // Next slot Y in grid
+
+	std::vector<AtlasRegion> free_slots_;
 };
 
 #endif

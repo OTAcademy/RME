@@ -109,6 +109,10 @@ protected:
 
 		virtual uint8_t* getRGBData() = 0;
 		virtual uint8_t* getRGBAData() = 0;
+
+	protected:
+		// Helper to handle atlas interactions
+		const AtlasRegion* EnsureAtlasSprite(uint32_t sprite_id);
 	};
 
 	class NormalImage : public Image {
@@ -124,7 +128,7 @@ protected:
 		uint16_t size;
 		std::unique_ptr<uint8_t[]> dump;
 
-		virtual void clean(int time);
+		virtual void clean(int time) override;
 
 		virtual uint8_t* getRGBData() override;
 		virtual uint8_t* getRGBAData() override;
@@ -137,6 +141,8 @@ protected:
 	public:
 		TemplateImage(GameSprite* parent, int v, const Outfit& outfit);
 		virtual ~TemplateImage();
+
+		virtual void clean(int time) override;
 
 		virtual uint8_t* getRGBData() override;
 		virtual uint8_t* getRGBAData() override;
