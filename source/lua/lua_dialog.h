@@ -93,7 +93,7 @@ public:
 	LuaDialog* grid(sol::table options);
 	LuaDialog* file(sol::table options);
 	LuaDialog* image(sol::table options);
-	LuaDialog* separator();
+	LuaDialog* separator(sol::optional<sol::table> options);
 	LuaDialog* newrow();
 	LuaDialog* tab(sol::table options);
 
@@ -106,6 +106,9 @@ public:
 	// Layout containers
 	LuaDialog* box(sol::table options); // Generic box sizer
 	LuaDialog* endbox();
+
+	LuaDialog* panel(sol::table options);
+	LuaDialog* endpanel();
 
 	// Dialog control
 	LuaDialog* show(sol::optional<sol::table> options);
@@ -135,6 +138,8 @@ private:
 	sol::function oncloseCallback;
 
 	std::stack<wxSizer*> sizerStack;
+	std::stack<wxWindow*> panelStack;
+	std::stack<wxBoxSizer*> rowSizerStack;
 	std::vector<wxSizer*> tabSizers;
 	// Parent window for widget creation (usually dialog, but can be other panels)
 	// Actually, keeping text/buttons parenting to dialog is easier for events.
@@ -166,6 +171,8 @@ private:
 	void updateValue(const std::string& id);
 	void collectAllValues();
 	void applyCommonOptions(wxWindow* widget, sol::table options);
+	int getSizerFlags(sol::table options, int defaultFlags = 0);
+	int getSizerBorder(sol::table options);
 	void suspendHotkeys();
 	void resumeHotkeys();
 	sol::table makeTabInfoTable(int index);

@@ -38,8 +38,126 @@
 #ifdef __WXMSW__
 	#include <commctrl.h>
 #endif
+#include <wx/graphics.h>
+#include <wx/dcbuffer.h>
 
 using namespace std::string_literals;
+
+class CustomButton : public wxControl {
+public:
+	CustomButton(wxWindow* parent, wxWindowID id, const wxString& label,
+		const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0)
+		: wxControl(parent, id, pos, size, style | wxBORDER_NONE), m_label(label)
+	{
+		SetBackgroundStyle(wxBG_STYLE_PAINT);
+	}
+
+	void SetHoverColors(const wxColour& bg, const wxColour& fg) {
+		m_hoverBg = bg;
+		m_hoverFg = fg;
+		m_hasHover = true;
+	}
+
+	void SetRounded(bool rounded) {
+		m_rounded = rounded;
+		Refresh();
+	}
+
+	wxSize DoGetBestSize() const override {
+		wxClientDC dc(const_cast<CustomButton*>(this));
+		dc.SetFont(GetFont());
+		wxSize labelSize = dc.GetTextExtent(m_label);
+		return wxSize(labelSize.x + 30, labelSize.y + 16);
+	}
+
+	void SetParentBgColor(const wxColour& c) {
+		m_parentBg = c;
+		Refresh();
+	}
+
+private:
+	wxString m_label;
+	wxColour m_hoverBg, m_hoverFg;
+	wxColour m_parentBg;
+	bool m_rounded = false;
+	bool m_hasHover = false;
+	bool m_hovered = false;
+	bool m_pressed = false;
+
+	void OnPaint(wxPaintEvent& evt) {
+		wxAutoBufferedPaintDC dc(this);
+
+		// Use provided parent bg or actual parent bg
+		wxColour clearColor = m_parentBg.IsOk() ? m_parentBg : GetParent()->GetBackgroundColour();
+		dc.SetBackground(wxBrush(clearColor));
+		dc.Clear();
+
+		wxGraphicsContext* gc = wxGraphicsContext::Create(dc);
+		if (gc) {
+			wxColour bg = GetBackgroundColour();
+			wxColour fg = GetForegroundColour();
+
+			if (!IsEnabled()) {
+				bg = wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE);
+				fg = wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT);
+			} else {
+				if (m_hasHover && m_hovered) {
+					if (m_hoverBg.IsOk()) bg = m_hoverBg;
+					if (m_hoverFg.IsOk()) fg = m_hoverFg;
+				}
+
+				if (m_pressed) {
+					bg = bg.ChangeLightness(85);
+				}
+			}
+
+			gc->SetBrush(wxBrush(bg));
+			gc->SetPen(wxPen(bg)); // No border stroke
+
+			wxDouble w = GetSize().GetWidth();
+			wxDouble h = GetSize().GetHeight();
+
+			wxGraphicsPath path = gc->CreatePath();
+			if (m_rounded) {
+				path.AddRoundedRectangle(0, 0, w, h, 8.0);
+			} else {
+				path.AddRectangle(0, 0, w, h);
+			}
+			gc->FillPath(path);
+
+			gc->SetFont(GetFont(), fg);
+
+			wxDouble tw, th;
+			gc->GetTextExtent(m_label, &tw, &th, nullptr, nullptr);
+			gc->DrawText(m_label, (w - tw) / 2.0, (h - th) / 2.0);
+
+			delete gc;
+		}
+	}
+
+	void OnEnter(wxMouseEvent& e) { m_hovered = true; Refresh(); e.Skip(); }
+	void OnLeave(wxMouseEvent& e) { m_hovered = false; m_pressed = false; Refresh(); e.Skip(); }
+	void OnDown(wxMouseEvent& e) { m_pressed = true; Refresh(); e.Skip(); }
+	void OnUp(wxMouseEvent& e) {
+		if (m_pressed) {
+			m_pressed = false;
+			Refresh();
+			wxCommandEvent clickEvent(wxEVT_BUTTON, GetId());
+			clickEvent.SetEventObject(this);
+			ProcessWindowEvent(clickEvent);
+		}
+	}
+
+	DECLARE_EVENT_TABLE()
+};
+
+BEGIN_EVENT_TABLE(CustomButton, wxControl)
+	EVT_PAINT(CustomButton::OnPaint)
+	EVT_ENTER_WINDOW(CustomButton::OnEnter)
+	EVT_LEAVE_WINDOW(CustomButton::OnLeave)
+	EVT_LEFT_DOWN(CustomButton::OnDown)
+	EVT_LEFT_UP(CustomButton::OnUp)
+END_EVENT_TABLE()
 
 // Specialized Canvas for Lua Dialogs
 // Specialized Canvas for Lua Dialogs
@@ -338,6 +456,9 @@ void LuaDialog::finishCurrentRow() {
 }
 
 wxWindow* LuaDialog::getParentForWidget() {
+	if (!panelStack.empty()) {
+		return panelStack.top();
+	}
 	if (currentTabPanel) {
 		return currentTabPanel;
 	}
@@ -360,14 +481,12 @@ wxSizer* LuaDialog::getSizerForWidget() {
 
 LuaDialog* LuaDialog::wrap(sol::table options) {
 	finishCurrentRow();
+	rowSizerStack.push(currentRowSizer);
+	currentRowSizer = nullptr;
 
-	// 'wrap' is just a horizontal box sizer that wraps?
-	// Wx doesn't have a simple WrapSizer like that, it has wxWrapSizer.
-	// But usually "visual grouping side-by-side" is just a Horizontal Box.
-
-	wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
-	getSizerForWidget()->Add(sizer, 1, wxEXPAND | wxALL, 0); // Add to current
-	sizerStack.push(sizer); // Push to stack
+	wxBoxSizer* sizer = new wxBoxSizer(options.get_or(std::string("orient"), "horizontal"s) == "horizontal" ? wxHORIZONTAL : wxVERTICAL);
+	getSizerForWidget()->Add(sizer, 1, wxEXPAND | wxALL, 0);
+	sizerStack.push(sizer);
 
 	return this;
 }
@@ -377,6 +496,10 @@ LuaDialog* LuaDialog::endwrap() {
 	if (!sizerStack.empty() && sizerStack.top() != mainSizer && (!currentTabSizer || sizerStack.top() != currentTabSizer)) {
 		sizerStack.pop();
 	}
+	if (!rowSizerStack.empty()) {
+		currentRowSizer = rowSizerStack.top();
+		rowSizerStack.pop();
+	}
 	return this;
 }
 
@@ -385,38 +508,94 @@ LuaDialog* LuaDialog::box(sol::table options) {
 
 	std::string orient = options.get_or(std::string("orient"), "vertical"s);
 	std::string label = options.get_or(std::string("label"), ""s);
+	bool expand = options.get_or("expand", label.empty()); // Defaults to true only if no label (backwards compat)
+	if (options["expand"].valid()) expand = options.get<bool>("expand");
 
 	wxSizer* sizer;
 	if (!label.empty()) {
 		// Static box sizer
-		wxStaticBoxSizer* staticBox = new wxStaticBoxSizer(wxVERTICAL, getParentForWidget(), wxString(label));
-		if (orient == "horizontal") {
-			// wxStaticBoxSizer constructor takes orient, but we passed vertical
-			// Actually can check if we can change it or construct differently
-			// Reconstruct correct orient
-			delete staticBox;
-			staticBox = new wxStaticBoxSizer(wxHORIZONTAL, getParentForWidget(), wxString(label));
-		}
+		wxStaticBoxSizer* staticBox = new wxStaticBoxSizer(orient == "horizontal" ? wxHORIZONTAL : wxVERTICAL, getParentForWidget(), wxString(label));
 		sizer = staticBox;
+
+		if (options["bgcolor"].valid() || options["fgcolor"].valid()) {
+			applyCommonOptions(staticBox->GetStaticBox(), options);
+		}
 	} else {
-		// Normal box sizer
-		if (orient == "horizontal") {
-			sizer = new wxBoxSizer(wxHORIZONTAL);
-		} else {
-			sizer = new wxBoxSizer(wxVERTICAL);
+		sizer = new wxBoxSizer(orient == "horizontal" ? wxHORIZONTAL : wxVERTICAL);
+	}
+
+	getSizerForWidget()->Add(sizer, expand ? 1 : 0, getSizerFlags(options, wxEXPAND | wxALL), getSizerBorder(options));
+
+	int width = options.get_or("width", -1);
+	int height = options.get_or("height", -1);
+	if (width != -1 || height != -1) {
+		wxSize sz(width, height);
+		sizer->SetMinSize(sz);
+
+		// If it's a static box sizer, we can set the max size on the actual window
+		if (!expand && !label.empty()) {
+			wxStaticBoxSizer* sbSizer = static_cast<wxStaticBoxSizer*>(sizer);
+			sbSizer->GetStaticBox()->SetMaxSize(sz);
 		}
 	}
 
-	getSizerForWidget()->Add(sizer, 1, wxEXPAND | wxALL, 5);
+	rowSizerStack.push(currentRowSizer);
+	currentRowSizer = nullptr;
 	sizerStack.push(sizer);
-
 	return this;
 }
 
 LuaDialog* LuaDialog::endbox() {
 	finishCurrentRow();
-	if (!sizerStack.empty() && sizerStack.top() != mainSizer && (!currentTabSizer || sizerStack.top() != currentTabSizer)) {
+	if (!sizerStack.empty()) {
 		sizerStack.pop();
+	}
+	if (!rowSizerStack.empty()) {
+		currentRowSizer = rowSizerStack.top();
+		rowSizerStack.pop();
+	}
+	return this;
+}
+
+LuaDialog* LuaDialog::panel(sol::table options) {
+	finishCurrentRow();
+
+	std::string id = options.get_or(std::string("id"), "panel_"s + std::to_string(widgets.size()));
+	bool expand = options.get_or("expand", false);
+
+	wxPanel* panel = new wxPanel(getParentForWidget(), wxID_ANY);
+	applyCommonOptions(panel, options);
+
+	wxBoxSizer* panelSizer = new wxBoxSizer(options.get_or<std::string>("orient", "vertical") == "horizontal" ? wxHORIZONTAL : wxVERTICAL);
+	panel->SetSizer(panelSizer);
+
+	getSizerForWidget()->Add(panel, expand ? 1 : 0, getSizerFlags(options, wxEXPAND | wxALL), getSizerBorder(options));
+
+	rowSizerStack.push(currentRowSizer);
+	currentRowSizer = nullptr;
+	panelStack.push(panel);
+	sizerStack.push(panelSizer);
+
+	LuaDialogWidget widget;
+	widget.id = id;
+	widget.type = "panel";
+	widget.widget = panel;
+	widgets.push_back(widget);
+
+	return this;
+}
+
+LuaDialog* LuaDialog::endpanel() {
+	finishCurrentRow();
+	if (!panelStack.empty()) {
+		panelStack.pop();
+	}
+	if (!sizerStack.empty()) {
+		sizerStack.pop();
+	}
+	if (!rowSizerStack.empty()) {
+		currentRowSizer = rowSizerStack.top();
+		rowSizerStack.pop();
 	}
 	return this;
 }
@@ -428,7 +607,7 @@ LuaDialog* LuaDialog::label(sol::table options) {
 	std::string id = options.get_or(std::string("id"), ""s);
 
 	wxStaticText* label = new wxStaticText(getParentForWidget(), wxID_ANY, wxString(text));
-	currentRowSizer->Add(label, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+	currentRowSizer->Add(label, 0, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 
 	if (!id.empty()) {
 		LuaDialogWidget widget;
@@ -469,7 +648,7 @@ LuaDialog* LuaDialog::mapCanvas(sol::table options) {
 	// Default to center of map start
 	canvas->SetPosition(1000, 1000, 7);
 
-	currentRowSizer->Add(canvas, 1, wxEXPAND | wxALL, 0);
+	currentRowSizer->Add(canvas, 1, getSizerFlags(options, wxEXPAND | wxALL), getSizerBorder(options));
 
 	if (!id.empty()) {
 		LuaDialogWidget widget;
@@ -497,7 +676,7 @@ LuaDialog* LuaDialog::input(sol::table options) {
 	}
 
 	wxTextCtrl* input = new wxTextCtrl(getParentForWidget(), wxID_ANY, wxString(text), wxDefaultPosition, wxSize(150, -1));
-	currentRowSizer->Add(input, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+	currentRowSizer->Add(input, 1, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 
 	input->Bind(wxEVT_SET_FOCUS, [this](wxFocusEvent& event) {
 		suspendHotkeys();
@@ -550,7 +729,7 @@ LuaDialog* LuaDialog::number(sol::table options) {
 
 	wxSpinCtrlDouble* spin = new wxSpinCtrlDouble(getParentForWidget(), wxID_ANY, "", wxDefaultPosition, wxSize(100, -1), wxSP_ARROW_KEYS, minVal, maxVal, value, decimals == 0 ? 1 : std::pow(0.1, decimals));
 	spin->SetDigits(decimals);
-	currentRowSizer->Add(spin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+	currentRowSizer->Add(spin, 0, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 
 	LuaDialogWidget widget;
 	widget.id = id;
@@ -586,7 +765,7 @@ LuaDialog* LuaDialog::slider(sol::table options) {
 	}
 
 	wxSlider* slider = new wxSlider(getParentForWidget(), wxID_ANY, value, minVal, maxVal, wxDefaultPosition, wxSize(150, -1));
-	currentRowSizer->Add(slider, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+	currentRowSizer->Add(slider, 1, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 
 	LuaDialogWidget widget;
 	widget.id = id;
@@ -616,7 +795,7 @@ LuaDialog* LuaDialog::check(sol::table options) {
 
 	wxCheckBox* checkbox = new wxCheckBox(getParentForWidget(), wxID_ANY, wxString(text));
 	checkbox->SetValue(selected);
-	currentRowSizer->Add(checkbox, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+	currentRowSizer->Add(checkbox, 0, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 
 	LuaDialogWidget widget;
 	widget.id = id;
@@ -649,7 +828,7 @@ LuaDialog* LuaDialog::radio(sol::table options) {
 
 	wxRadioButton* radio = new wxRadioButton(getParentForWidget(), wxID_ANY, wxString(text));
 	radio->SetValue(selected);
-	currentRowSizer->Add(radio, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+	currentRowSizer->Add(radio, 0, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 
 	LuaDialogWidget widget;
 	widget.id = id;
@@ -704,7 +883,7 @@ LuaDialog* LuaDialog::combobox(sol::table options) {
 		selected = choices[0].ToStdString();
 	}
 
-	currentRowSizer->Add(choice, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+	currentRowSizer->Add(choice, 0, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 
 	LuaDialogWidget widget;
 	widget.id = id;
@@ -730,19 +909,60 @@ LuaDialog* LuaDialog::button(sol::table options) {
 
 	std::string id = options.get_or(std::string("id"), "button_"s + std::to_string(widgets.size()));
 	std::string text = options.get_or(std::string("text"), "Button"s);
-	bool focus = options.get_or(std::string("focus"), false);
+	bool rounded = options.get_or("rounded", false);
+	bool hasHover = options["hover"].valid();
+	bool hasCustomColor = options["bgcolor"].valid() || options["fgcolor"].valid();
 
-	wxButton* btn = new wxButton(getParentForWidget(), wxID_ANY, wxString(text));
-	currentRowSizer->Add(btn, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+	bool useCustom = rounded || hasHover || hasCustomColor;
 
-	if (focus) {
-		btn->SetDefault();
+	wxWindow* finalWidget = nullptr;
+
+	if (useCustom) {
+		CustomButton* btn = new CustomButton(getParentForWidget(), wxID_ANY, wxString(text));
+		if (rounded) btn->SetRounded(true);
+
+		// Anti-aliasing corner fix: check if we are inside a StaticBoxSizer with custom color
+		wxStaticBoxSizer* sbs = wxDynamicCast(currentRowSizer, wxStaticBoxSizer);
+		if (sbs) {
+			wxStaticBox* box = sbs->GetStaticBox();
+			if (box && box->GetBackgroundColour().IsOk()) {
+				btn->SetParentBgColor(box->GetBackgroundColour());
+			}
+		}
+
+		if (hasHover) {
+			sol::table hoverOpts = options["hover"];
+			auto parseColor = [](sol::object colorObj) -> wxColour {
+				if (colorObj.is<sol::table>()) {
+					sol::table c = colorObj.as<sol::table>();
+					return wxColour(c.get_or("r", 1), c.get_or("g", 2), c.get_or("b", 3));
+				} else if (colorObj.is<std::string>()) {
+					std::string s = colorObj.as<std::string>();
+					return (s.size() > 0 && s[0] == '#') ? wxColour(s) : wxColour(s);
+				}
+				return wxColour();
+			};
+
+			wxColour hBg, hFg;
+			if (hoverOpts["bgcolor"].valid()) hBg = parseColor(hoverOpts["bgcolor"]);
+			if (hoverOpts["fgcolor"].valid()) hFg = parseColor(hoverOpts["fgcolor"]);
+			btn->SetHoverColors(hBg, hFg);
+		}
+		finalWidget = btn;
+	} else {
+		wxButton* btn = new wxButton(getParentForWidget(), wxID_ANY, wxString(text));
+		if (options.get_or("focus", false)) {
+			btn->SetDefault();
+		}
+		finalWidget = btn;
 	}
+
+	currentRowSizer->Add(finalWidget, 0, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 
 	LuaDialogWidget widget;
 	widget.id = id;
 	widget.type = "button";
-	widget.widget = btn;
+	widget.widget = finalWidget;
 	if (options["onclick"].valid()) {
 		widget.onclick = options["onclick"];
 	}
@@ -750,11 +970,11 @@ LuaDialog* LuaDialog::button(sol::table options) {
 
 	values[id] = sol::make_object(lua, false);
 
-	btn->Bind(wxEVT_BUTTON, [this, id](wxCommandEvent&) {
+	finalWidget->Bind(wxEVT_BUTTON, [this, id](wxCommandEvent&) {
 		onButtonClick(id);
 	});
 
-	applyCommonOptions(btn, options);
+	applyCommonOptions(finalWidget, options);
 	return this;
 }
 
@@ -779,7 +999,7 @@ LuaDialog* LuaDialog::color(sol::table options) {
 	}
 
 	wxColourPickerCtrl* picker = new wxColourPickerCtrl(getParentForWidget(), wxID_ANY, defaultColor);
-	currentRowSizer->Add(picker, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+	currentRowSizer->Add(picker, 0, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 
 	LuaDialogWidget widget;
 	widget.id = id;
@@ -1064,7 +1284,7 @@ LuaDialog* LuaDialog::list(sol::table options) {
 	}
 	listbox->SetShowText(showText);
 	listbox->SetSmooth(smooth);
-	getSizerForWidget()->Add(listbox, 1, wxEXPAND | wxALL, 5);
+	getSizerForWidget()->Add(listbox, 1, getSizerFlags(options, wxEXPAND | wxALL), getSizerBorder(options));
 
 	// Populate items
 	if (options["items"].valid()) {
@@ -1243,7 +1463,7 @@ LuaDialog* LuaDialog::file(sol::table options) {
 
 	if (!labelText.empty()) {
 		wxStaticText* label = new wxStaticText(getParentForWidget(), wxID_ANY, wxString(labelText));
-		currentRowSizer->Add(label, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+		currentRowSizer->Add(label, 0, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 	}
 
 	wxFilePickerCtrl* picker;
@@ -1252,7 +1472,7 @@ LuaDialog* LuaDialog::file(sol::table options) {
 	} else {
 		picker = new wxFilePickerCtrl(getParentForWidget(), wxID_ANY, wxString(filename), "Select a file", wxString(filetypes), wxDefaultPosition, wxSize(200, -1), wxFLP_OPEN | wxFLP_FILE_MUST_EXIST | wxFLP_USE_TEXTCTRL);
 	}
-	currentRowSizer->Add(picker, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+	currentRowSizer->Add(picker, 1, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 
 	LuaDialogWidget widget;
 	widget.id = id;
@@ -1284,7 +1504,7 @@ LuaDialog* LuaDialog::image(sol::table options) {
 
 	if (!labelText.empty()) {
 		wxStaticText* label = new wxStaticText(getParentForWidget(), wxID_ANY, wxString(labelText));
-		currentRowSizer->Add(label, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+		currentRowSizer->Add(label, 0, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 	}
 
 	wxBitmap bmp;
@@ -1340,7 +1560,7 @@ LuaDialog* LuaDialog::image(sol::table options) {
 	}
 
 	wxStaticBitmap* staticBmp = new wxStaticBitmap(getParentForWidget(), wxID_ANY, bmp);
-	currentRowSizer->Add(staticBmp, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+	currentRowSizer->Add(staticBmp, 0, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 
 	LuaDialogWidget widget;
 	widget.id = id;
@@ -1364,12 +1584,12 @@ LuaDialog* LuaDialog::item(sol::table options) {
 
 	if (!labelText.empty()) {
 		wxStaticText* label = new wxStaticText(getParentForWidget(), wxID_ANY, wxString(labelText));
-		currentRowSizer->Add(label, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+		currentRowSizer->Add(label, 0, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 	}
 
 	int clientId = (itemId > 100 && itemId <= g_items.getMaxID()) ? g_items[itemId].clientID : 0;
 	ItemButton* btn = new ItemButton(getParentForWidget(), RENDER_SIZE_32x32, clientId);
-	currentRowSizer->Add(btn, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
+	currentRowSizer->Add(btn, 0, getSizerFlags(options, wxALIGN_CENTER_VERTICAL | wxRIGHT), getSizerBorder(options));
 
 	LuaDialogWidget widget;
 	widget.id = id;
@@ -1416,15 +1636,14 @@ LuaDialog* LuaDialog::item(sol::table options) {
 	return this;
 }
 
-LuaDialog* LuaDialog::separator() {
+LuaDialog* LuaDialog::separator(sol::optional<sol::table> options) {
 	finishCurrentRow();
 
 	wxStaticLine* line = new wxStaticLine(getParentForWidget(), wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
-	getSizerForWidget()->Add(line, 0, wxEXPAND | wxALL, 5);
+	sol::table opts = options.value_or(lua.create_table());
+	getSizerForWidget()->Add(line, 0, getSizerFlags(opts, wxEXPAND | wxALL), getSizerBorder(opts));
 
-	// Separator doesn't support many options but we can try
-	// applyCommonOptions(line, options); // options not passed to separator() usually
-	// But signature is LuaDialog* separator(); so no options table.
+	applyCommonOptions(line, opts);
 
 	return this;
 }
@@ -1560,6 +1779,8 @@ LuaDialog* LuaDialog::tab(sol::table options) {
 		tabInfos.push_back(tabInfo);
 	}
 
+	rowSizerStack.push(currentRowSizer);
+	currentRowSizer = nullptr;
 	sizerStack.push(currentTabSizer);
 	tabSizers.push_back(currentTabSizer);
 
@@ -1573,6 +1794,10 @@ LuaDialog* LuaDialog::endtabs() {
 		wxSizer* topSizer = tabSizers.back();
 		if (!sizerStack.empty() && sizerStack.top() == topSizer) {
 			sizerStack.pop();
+		}
+		if (!rowSizerStack.empty()) {
+			currentRowSizer = rowSizerStack.top();
+			rowSizerStack.pop();
 		}
 		tabSizers.pop_back();
 	}
@@ -2290,7 +2515,7 @@ LuaDialog* LuaDialog::grid(sol::table options) {
 		}
 	}
 
-	currentRowSizer->Add(grid, 1, wxEXPAND | wxALL, 0);
+	currentRowSizer->Add(grid, 1, getSizerFlags(options, wxEXPAND | wxALL), getSizerBorder(options));
 
 	LuaDialogWidget widget;
 	widget.id = id;
@@ -2574,6 +2799,30 @@ void LuaDialog::collectAllValues() {
 	}
 }
 
+int LuaDialog::getSizerFlags(sol::table options, int defaultFlags) {
+	int flags = defaultFlags;
+	if (options["align"].valid()) {
+		std::string align = options.get<std::string>("align");
+		if (align == "center") flags = (flags & ~wxALIGN_RIGHT & ~wxALIGN_LEFT) | wxALIGN_CENTER_HORIZONTAL;
+		else if (align == "right") flags = (flags & ~wxALIGN_LEFT & ~wxALIGN_CENTER_HORIZONTAL) | wxALIGN_RIGHT;
+		else if (align == "left") flags = (flags & ~wxALIGN_RIGHT & ~wxALIGN_CENTER_HORIZONTAL) | wxALIGN_LEFT;
+	}
+	if (options["valign"].valid()) {
+		std::string valign = options.get<std::string>("valign");
+		if (valign == "center") flags = (flags & ~wxALIGN_TOP & ~wxALIGN_BOTTOM) | wxALIGN_CENTER_VERTICAL;
+		else if (valign == "top") flags = (flags & ~wxALIGN_BOTTOM & ~wxALIGN_CENTER_VERTICAL) | wxALIGN_TOP;
+		else if (valign == "bottom") flags = (flags & ~wxALIGN_TOP & ~wxALIGN_CENTER_VERTICAL) | wxALIGN_BOTTOM;
+	}
+	if (options.get_or("expand", false)) {
+		flags |= wxEXPAND;
+	}
+	return flags;
+}
+
+int LuaDialog::getSizerBorder(sol::table options) {
+	return options.get_or("padding", 5) + options.get_or("margin", 0);
+}
+
 void LuaDialog::applyCommonOptions(wxWindow* widget, sol::table options) {
 	if (options["tooltip"].valid()) {
 		widget->SetToolTip(wxString(options.get<std::string>("tooltip")));
@@ -2583,6 +2832,77 @@ void LuaDialog::applyCommonOptions(wxWindow* widget, sol::table options) {
 	}
 	if (options["visible"].valid()) {
 		widget->Show(options.get<bool>("visible"));
+	}
+
+	auto parseColor = [](sol::object colorObj) -> wxColour {
+		if (colorObj.is<sol::table>()) {
+			sol::table c = colorObj.as<sol::table>();
+			int r = c.get_or("r", c.get_or(1, 255));
+			int g = c.get_or("g", c.get_or(2, 255));
+			int b = c.get_or("b", c.get_or(3, 255));
+			return wxColour(r, g, b);
+		} else if (colorObj.is<std::string>()) {
+			std::string colorStr = colorObj.as<std::string>();
+			if (!colorStr.empty() && colorStr[0] == '#') {
+				unsigned long hexValue = 0;
+				if (colorStr.length() == 7) {
+					hexValue = std::stoul(colorStr.substr(1), nullptr, 16);
+				} else if (colorStr.length() == 4) {
+					char r = colorStr[1], g = colorStr[2], b = colorStr[3];
+					std::string expanded = {r, r, g, g, b, b};
+					hexValue = std::stoul(expanded, nullptr, 16);
+				}
+				return wxColour((hexValue >> 16) & 0xFF, (hexValue >> 8) & 0xFF, hexValue & 0xFF);
+			}
+			return wxColour(wxString(colorStr));
+		}
+		return wxColour();
+	};
+
+	if (options["bgcolor"].valid()) {
+		wxColour colour = parseColor(options["bgcolor"]);
+		if (colour.IsOk()) {
+			widget->SetBackgroundColour(colour);
+		}
+	}
+
+	if (options["fgcolor"].valid()) {
+		wxColour colour = parseColor(options["fgcolor"]);
+		if (colour.IsOk()) {
+			widget->SetForegroundColour(colour);
+		}
+	}
+
+	if (options["font_size"].valid() || options["font_weight"].valid() || options["font_style"].valid()) {
+		wxFont font = widget->GetFont();
+		if (options["font_size"].valid()) {
+			font.SetPointSize(options.get<int>("font_size"));
+		}
+		if (options["font_weight"].valid()) {
+			std::string weight = options.get<std::string>("font_weight");
+			if (weight == "bold") font.SetWeight(wxFONTWEIGHT_BOLD);
+			else if (weight == "light") font.SetWeight(wxFONTWEIGHT_LIGHT);
+			else font.SetWeight(wxFONTWEIGHT_NORMAL);
+		}
+		if (options["font_style"].valid()) {
+			std::string style = options.get<std::string>("font_style");
+			if (style == "italic") font.SetStyle(wxFONTSTYLE_ITALIC);
+			else font.SetStyle(wxFONTSTYLE_NORMAL);
+		}
+		widget->SetFont(font);
+	}
+
+	// NEW SIZE PROPERTIES
+	if (options["width"].valid() || options["height"].valid()) {
+		int w = options.get_or("width", -1);
+		int h = options.get_or("height", -1);
+		wxSize size(w, h);
+
+		widget->SetMinSize(size);
+		// If expand is false, we also limit the maximum size to be strict
+		if (!options.get_or("expand", true)) {
+			widget->SetMaxSize(size);
+		}
 	}
 }
 
@@ -2688,7 +3008,7 @@ namespace LuaAPI {
 									sol::call_constructor, sol::factories([](sol::table options, sol::this_state ts) { return new LuaDialog(options, ts); }, [](const std::string& title, sol::this_state ts) { return new LuaDialog(title, ts); }),
 
 									// Widget methods (return self for chaining)
-									"label", &LuaDialog::label, "input", &LuaDialog::input, "number", &LuaDialog::number, "slider", &LuaDialog::slider, "check", &LuaDialog::check, "radio", &LuaDialog::radio, "combobox", &LuaDialog::combobox, "button", &LuaDialog::button, "color", &LuaDialog::color, "item", &LuaDialog::item, "file", &LuaDialog::file, "image", &LuaDialog::image, "separator", &LuaDialog::separator, "newrow", &LuaDialog::newrow, "tab", &LuaDialog::tab, "endtabs", &LuaDialog::endtabs, "wrap", &LuaDialog::wrap, "endwrap", &LuaDialog::endwrap, "box", &LuaDialog::box, "endbox", &LuaDialog::endbox, "mapCanvas", &LuaDialog::mapCanvas, "list", &LuaDialog::list, "grid", &LuaDialog::grid,
+									"label", &LuaDialog::label, "input", &LuaDialog::input, "number", &LuaDialog::number, "slider", &LuaDialog::slider, "check", &LuaDialog::check, "radio", &LuaDialog::radio, "combobox", &LuaDialog::combobox, "button", &LuaDialog::button, "color", &LuaDialog::color, "item", &LuaDialog::item, "file", &LuaDialog::file, "image", &LuaDialog::image, "separator", &LuaDialog::separator, "newrow", &LuaDialog::newrow, "tab", &LuaDialog::tab, "endtabs", &LuaDialog::endtabs, "wrap", &LuaDialog::wrap, "endwrap", &LuaDialog::endwrap, "box", &LuaDialog::box, "endbox", &LuaDialog::endbox, "panel", &LuaDialog::panel, "endpanel", &LuaDialog::endpanel, "mapCanvas", &LuaDialog::mapCanvas, "list", &LuaDialog::list, "grid", &LuaDialog::grid,
 
 									// Dialog control
 									"show", &LuaDialog::show, "close", &LuaDialog::close, "modify", &LuaDialog::modify, "repaint", &LuaDialog::repaint, "clear", &LuaDialog::clear, "layout", &LuaDialog::layout,
