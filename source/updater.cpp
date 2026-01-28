@@ -19,69 +19,46 @@
 
 #ifdef _USE_UPDATER_
 
-	#include <wx/url.h>
+#include <wx/sstream.h>
+#include <wx/protocol/http.h>
+#include <cpr/cpr.h>
 
-	#include "json.h"
-
-	#include "updater.h"
+#include "json.h"
+#include "updater.h"
 
 const wxEventType EVT_UPDATE_CHECK_FINISHED = wxNewEventType();
 
 UpdateChecker::UpdateChecker() {
-	////
 }
 
 UpdateChecker::~UpdateChecker() {
-	////
 }
 
 void UpdateChecker::connect(wxEvtHandler* receiver) {
-	wxString address = "http://www.remeresmapeditor.com/update.php";
-	address << "?os="
-			<<
-	#ifdef __WINDOWS__
-		"windows";
-	#elif __LINUX__
-		"linux";
-	#else
-		"unknown";
-	#endif
-	address << "&verid=" << __RME_VERSION_ID__;
-	#ifdef __EXPERIMENTAL__
-	address << "&beta";
-	#endif
-	wxURL* url = newd wxURL(address);
-	UpdateConnectionThread* connection = newd UpdateConnectionThread(receiver, url);
+	UpdateConnectionThread* connection = newd UpdateConnectionThread(receiver);
 	connection->Execute();
 }
 
-UpdateConnectionThread::UpdateConnectionThread(wxEvtHandler* receiver, wxURL* url) :
-	receiver(receiver),
-	url(url) {
-	////
+UpdateConnectionThread::UpdateConnectionThread(wxEvtHandler* receiver) :
+	receiver(receiver) {
 }
 
 UpdateConnectionThread::~UpdateConnectionThread() {
-	////
 }
 
 wxThread::ExitCode UpdateConnectionThread::Entry() {
-	wxInputStream* input = url->GetInputStream();
-	if (!input) {
-		delete input;
-		delete url;
+	cpr::Response response = cpr::Get(
+		cpr::Url{ __UPDATE_URL__ },
+		cpr::Header{ {"User-Agent", "OTAcademy-RME-Updater"} },
+		cpr::Timeout{ 10000 }
+	);
+
+	if (response.status_code != 200 || response.text.empty()) {
 		return 0;
 	}
 
-	std::string data;
-	while (!input->Eof()) {
-		data += input->GetC();
-	}
-
-	delete input;
-	delete url;
 	wxCommandEvent event(EVT_UPDATE_CHECK_FINISHED);
-	event.SetClientData(newd std::string(data));
+	event.SetClientData(newd std::string(response.text));
 	if (receiver) {
 		receiver->AddPendingEvent(event);
 	}

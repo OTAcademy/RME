@@ -31,17 +31,16 @@ extern const wxEventType EVT_UPDATE_CHECK_FINISHED;
 				(wxObject*)nullptr                                                                      \
 			),
 
-class wxURL;
+
 
 class UpdateConnectionThread : public DetachedThread {
 public:
-	UpdateConnectionThread(wxEvtHandler* receiver, wxURL* url);
+	UpdateConnectionThread(wxEvtHandler* receiver);
 	virtual ~UpdateConnectionThread();
 
 protected:
 	virtual ExitCode Entry();
 	wxEvtHandler* receiver;
-	wxURL* url;
 };
 
 class UpdateChecker {

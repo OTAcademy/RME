@@ -217,8 +217,8 @@ bool Application::OnInit() {
 		}
 	}
 	if (g_settings.getInteger(Config::USE_UPDATER) == 1) {
-		// UpdateChecker updater;
-		// updater.connect(g_gui.root);
+		UpdateChecker updater;
+		updater.connect(g_gui.root);
 	}
 #endif
 
@@ -424,28 +424,48 @@ void MainFrame::OnIdle(wxIdleEvent& event) {
 void MainFrame::OnUpdateReceived(wxCommandEvent& event) {
 	std::string data = *(std::string*)event.GetClientData();
 	delete (std::string*)event.GetClientData();
-	size_t first_colon = data.find(':');
-	size_t second_colon = data.find(':', first_colon + 1);
 
-	if (first_colon == std::string::npos || second_colon == std::string::npos) {
-		return;
-	}
-
-	std::string update = data.substr(0, first_colon);
-	std::string verstr = data.substr(first_colon + 1, second_colon - first_colon - 1);
-	std::string url = (second_colon == data.size() ? "" : data.substr(second_colon + 1));
-
-	if (update == "yes") {
-		int ret = g_gui.PopupDialog(
-			"Update Notice",
-			wxString("There is a newd update available (") << wxstr(verstr) << "). Do you want to go to the website and download it?",
-			wxYES | wxNO,
-			"I don't want any update notices",
-			Config::AUTOCHECK_FOR_UPDATES
-		);
-		if (ret == wxID_YES) {
-			::wxLaunchDefaultBrowser(wxstr(url), wxBROWSER_NEW_WINDOW);
+	try {
+		json::mValue val;
+		if (!json::read(data, val)) {
+			return;
 		}
+
+		json::mObject& obj = val.get_obj();
+		if (obj.count("tag_name") == 0) {
+			return;
+		}
+
+		std::string tag = obj["tag_name"].get_str();
+		if (!tag.empty() && (tag[0] == 'v' || tag[0] == 'V')) {
+			tag = tag.substr(1);
+		}
+
+		// Parse version
+		int major = 0, minor = 0, patch = 0;
+		sscanf(tag.c_str(), "%d.%d.%d", &major, &minor, &patch);
+
+		int remoteVersion = MAKE_VERSION_ID(major, minor, patch);
+		int localVersion = __RME_VERSION_ID__;
+
+		if (remoteVersion > localVersion) {
+			std::string url = obj["html_url"].get_str();
+			std::string name = obj["name"].get_str();
+
+			int ret = g_gui.PopupDialog(
+				"Update Notice",
+				wxString("There is a new update available (") << wxstr(name) << "). Do you want to go to the download page?",
+				wxYES | wxNO,
+				"I don't want any update notices",
+				Config::AUTOCHECK_FOR_UPDATES
+			);
+
+			if (ret == wxID_YES) {
+				::wxLaunchDefaultBrowser(wxstr(url), wxBROWSER_NEW_WINDOW);
+			}
+		}
+	} catch (...) {
+		// Error parsing JSON, silently ignore
 	}
 }
 #endif
