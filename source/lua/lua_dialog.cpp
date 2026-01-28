@@ -1908,6 +1908,30 @@ LuaDialog* LuaDialog::modify(sol::table options) {
 					if (props["text"].valid()) {
 						ctrl->SetLabel(wxString(props.get_or(std::string("text"), ""s)));
 					}
+				} else if (widget.type == "combobox") {
+					wxChoice* ctrl = static_cast<wxChoice*>(widget.widget);
+					if (props["options"].valid()) {
+						ctrl->Freeze();
+						ctrl->Clear();
+						sol::table opts = props["options"];
+						for (size_t i = 1; i <= opts.size(); ++i) {
+							if (opts[i].valid()) {
+								ctrl->Append(wxString(opts[i].get<std::string>()));
+							}
+						}
+						ctrl->Thaw();
+					}
+					if (props["option"].valid()) {
+						std::string selected = props.get_or(std::string("option"), ""s);
+						int idx = ctrl->FindString(wxString(selected));
+						if (idx != wxNOT_FOUND) {
+							ctrl->SetSelection(idx);
+							values[id] = sol::make_object(lua, selected);
+						}
+					} else if (ctrl->GetCount() > 0 && ctrl->GetSelection() == wxNOT_FOUND) {
+						ctrl->SetSelection(0);
+						values[id] = sol::make_object(lua, ctrl->GetString(0).ToStdString());
+					}
 				} else if (widget.type == "list") {
 					LuaDialogListBox* ctrl = static_cast<LuaDialogListBox*>(widget.widget);
 					if (props["icon_width"].valid() || props["icon_height"].valid() || props["icon_size"].valid()) {
