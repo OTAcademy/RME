@@ -238,15 +238,14 @@ bool Container::unserializeItemNode_OTMM(const IOMap& maphandle, BinaryNode* nod
 				}
 				// load container items
 				if (type == OTMM_ITEM) {
-					Item* item = Item::Create_OTMM(maphandle, child);
+					std::unique_ptr<Item> item(Item::Create_OTMM(maphandle, child));
 					if (!item) {
 						return false;
 					}
 					if (!item->unserializeItemNode_OTMM(maphandle, child)) {
-						delete item;
 						return false;
 					}
-					contents.push_back(item);
+					contents.push_back(item.release());
 				} else {
 					// corrupted file data!
 					return false;
@@ -649,11 +648,11 @@ bool IOMapOTMM::loadMap(Map& map, NodeFileReadHandle& f, const FileName& identif
 								warning("Duplicate town id %d, discarding duplicate", town_id);
 								continue;
 							} else {
-								town = newd Town(town_id);
-								if (!map.towns.addTown(town)) {
-									delete town;
+								auto newTown = std::make_unique<Town>(town_id);
+								if (!map.towns.addTown(newTown.get())) {
 									continue;
 								}
+								newTown.release();
 							}
 							std::string town_name;
 							if (!townNode->getString(town_name)) {
