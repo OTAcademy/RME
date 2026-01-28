@@ -566,6 +566,11 @@ void LuaScriptManager::scanDirectory(const std::string& directory) {
 	// Then, scan for standalone .lua files
 	cont = dir.GetFirst(&name, "*.lua", wxDIR_FILES);
 	while (cont) {
+		if (name == "linter.lua") {
+			cont = dir.GetNext(&name);
+			continue;
+		}
+
 		std::string filepath = directory + sep + name.ToStdString();
 
 		auto script = std::make_unique<LuaScript>(filepath);
