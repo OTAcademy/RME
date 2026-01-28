@@ -39,6 +39,7 @@
 )
 
 #define __SITE_URL__ "https://github.com/OTAcademy/RME"
+#define __UPDATE_URL__ "https://api.github.com/repos/OTAcademy/RME/releases/latest"
 
 // #define __PRERELEASE__ 1
 
@@ -56,6 +57,11 @@
 	#define __W_RME_VERSION__ (wxString() << __RME_VERSION_MAJOR__ << "." << __RME_VERSION_MINOR__ << "." << __RME_SUBVERSION__)
 #endif
 // OS
+#if defined(_WIN32) || defined(WIN32) || defined(__WXMSW__)
+	#ifndef __WINDOWS__
+		#define __WINDOWS__ 1
+	#endif
+#endif
 
 #define OTGZ_SUPPORT 1
 #define ASSETS_NAME "Tibia"
