@@ -93,14 +93,13 @@ double ws2f(const wxString s) {
 	return 0.0;
 }
 
-void replaceString(std::string& str, const std::string sought, const std::string replacement) {
+void replaceString(std::string& str, std::string_view sought, std::string_view replacement) {
 	size_t pos = 0;
-	size_t start = 0;
 	size_t soughtLen = sought.length();
 	size_t replaceLen = replacement.length();
-	while ((pos = str.find(sought, start)) != std::string::npos) {
-		str = str.substr(0, pos) + replacement + str.substr(pos + soughtLen);
-		start = pos + replaceLen;
+	while ((pos = str.find(sought, pos)) != std::string::npos) {
+		str.replace(pos, soughtLen, replacement);
+		pos += replaceLen;
 	}
 }
 
