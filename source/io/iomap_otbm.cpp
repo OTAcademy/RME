@@ -1032,7 +1032,8 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 					continue;
 				} else {
 					auto newTown = std::make_unique<Town>(town_id);
-					if (!map.towns.addTown(newTown.get())) {
+					town = newTown.get();
+					if (!map.towns.addTown(town)) {
 						continue;
 					}
 					newTown.release();
