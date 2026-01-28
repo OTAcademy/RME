@@ -15,7 +15,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include <spdlog/spdlog.h>
 #include "rendering/ui/tooltip_drawer.h"
 #include "rendering/core/graphics.h"
 #include "rendering/core/text_renderer.h"
@@ -98,7 +97,6 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 	// Resolve Item ID
 	ItemType& it = g_items[itemId];
 	if (!it.sprite) {
-		spdlog::warn("TooltipDrawer::getSpriteImage: Item {} has no sprite", itemId);
 		return 0;
 	}
 
@@ -143,7 +141,7 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 					}
 					delete[] rgb;
 				} else {
-					spdlog::error("TooltipDrawer::getSpriteImage: getRGBData failed for item {}", itemId);
+					// getRGBData failed, should ideally not happen if sprite exists logic is correct
 				}
 			}
 
@@ -151,16 +149,16 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 			if (!rgba) {
 				rgba = img->getRGBAData();
 				if (!rgba) {
-					spdlog::error("TooltipDrawer::getSpriteImage: getRGBAData failed for item {}", itemId);
+					// getRGBAData failed
 				}
 			}
 
 			if (rgba) {
 				int image = nvgCreateImageRGBA(vg, 32, 32, 0, rgba);
 				if (image == 0) {
-					spdlog::error("TooltipDrawer::getSpriteImage: nvgCreateImageRGBA failed for item {}", itemId);
+					// nvgCreateImageRGBA failed
 				} else {
-					spdlog::info("TooltipDrawer::getSpriteImage: Successfully loaded sprite for item {}", itemId);
+					// Success
 				}
 				spriteCache[itemId] = image;
 				delete[] rgba;
@@ -168,7 +166,7 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 			}
 		}
 	} else {
-		spdlog::warn("TooltipDrawer::getSpriteImage: GameSprite missing or empty list for item {}", itemId);
+		// GameSprite missing or empty list
 	}
 
 	return 0;
