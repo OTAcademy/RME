@@ -56,8 +56,9 @@ void ShaderProgram::Unuse() const {
 }
 
 GLint ShaderProgram::GetUniformLocation(const std::string& name) const {
-	if (uniform_cache.find(name) != uniform_cache.end()) {
-		return uniform_cache[name];
+	auto it = uniform_cache.find(name);
+	if (it != uniform_cache.end()) {
+		return it->second;
 	}
 
 	GLint location = glGetUniformLocation(program_id, name.c_str());
