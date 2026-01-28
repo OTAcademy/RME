@@ -60,7 +60,7 @@ TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* t
 
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Palette"));
 	palette_field = newd wxChoice(this, wxID_ANY);
-	palette_field->SetToolTip("Select the palette category");
+	palette_field->SetToolTip("Select the source palette category");
 
 	palette_field->Append("Terrain", newd int(TILESET_TERRAIN));
 	palette_field->Append("Collections", newd int(TILESET_COLLECTION));
@@ -74,7 +74,7 @@ TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* t
 
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Tileset"));
 	tileset_field = newd wxChoice(this, wxID_ANY);
-	tileset_field->SetToolTip("Select the target tileset");
+	tileset_field->SetToolTip("Select the destination tileset");
 
 	for (TilesetContainer::iterator iter = g_materials.tilesets.begin(); iter != g_materials.tilesets.end(); ++iter) {
 		tileset_field->Append(wxstr(iter->second->name), newd std::string(iter->second->name));
@@ -87,8 +87,14 @@ TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* t
 	topsizer->Add(boxsizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 20));
 
 	wxSizer* subsizer_ = newd wxBoxSizer(wxHORIZONTAL);
-	subsizer_->Add(newd wxButton(this, wxID_OK, "OK"), wxSizerFlags(1).Center().Border(wxTOP | wxBOTTOM, 10));
-	subsizer_->Add(newd wxButton(this, wxID_CANCEL, "Cancel"), wxSizerFlags(1).Center().Border(wxTOP | wxBOTTOM, 10));
+	wxButton* ok_button = newd wxButton(this, wxID_OK, "OK");
+	ok_button->SetToolTip("Save changes and close");
+	subsizer_->Add(ok_button, wxSizerFlags(1).Center().Border(wxTOP | wxBOTTOM, 10));
+
+	wxButton* cancel_button = newd wxButton(this, wxID_CANCEL, "Cancel");
+	cancel_button->SetToolTip("Discard changes and close");
+	subsizer_->Add(cancel_button, wxSizerFlags(1).Center().Border(wxTOP | wxBOTTOM, 10));
+
 	topsizer->Add(subsizer_, wxSizerFlags(0).Center().Border(wxLEFT | wxRIGHT, 20));
 
 	SetSizerAndFit(topsizer);
