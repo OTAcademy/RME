@@ -25,9 +25,17 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <map>
 
 class Item;
 class Waypoint;
+struct NVGcontext;
+
+struct ContainerItem {
+	uint16_t id;
+	uint8_t count;
+	uint8_t subtype;
+};
 
 // Tooltip category determines header color and icon
 enum class TooltipCategory {
@@ -58,6 +66,7 @@ namespace TooltipColors {
 	constexpr uint8_t BODY_BG_R = 30, BODY_BG_G = 30, BODY_BG_B = 35; // Near Black
 	constexpr uint8_t BODY_TEXT_R = 220, BODY_TEXT_G = 220, BODY_TEXT_B = 220; // Light Gray
 	constexpr uint8_t HEADER_TEXT_R = 255, HEADER_TEXT_G = 255, HEADER_TEXT_B = 255; // White
+	constexpr uint8_t COUNT_TEXT_R = 200, COUNT_TEXT_G = 200, COUNT_TEXT_B = 200; // Light Gray for counts
 }
 
 // Structured tooltip data for card-based rendering
@@ -79,6 +88,10 @@ struct TooltipData {
 
 	// Waypoint-specific
 	std::string waypointName;
+
+	// Container contents
+	std::vector<ContainerItem> containerItems;
+	uint8_t containerCapacity = 0;
 
 	TooltipData() = default;
 
@@ -107,7 +120,7 @@ struct TooltipData {
 
 	// Check if this tooltip has any visible fields
 	bool hasVisibleFields() const {
-		return !waypointName.empty() || actionId > 0 || uniqueId > 0 || doorId > 0 || !text.empty() || !description.empty() || destination.x > 0;
+		return !waypointName.empty() || actionId > 0 || uniqueId > 0 || doorId > 0 || !text.empty() || !description.empty() || destination.x > 0 || !containerItems.empty();
 	}
 };
 
@@ -130,6 +143,11 @@ public:
 
 protected:
 	std::vector<TooltipData> tooltips;
+	std::map<uint32_t, int> spriteCache; // sprite_id -> nvg image handle
+	NVGcontext* lastContext = nullptr;
+
+	// Helper to get or load sprite image
+	int getSpriteImage(NVGcontext* vg, uint16_t itemId);
 
 	// Helper to get header color based on category
 	void getHeaderColor(TooltipCategory cat, uint8_t& r, uint8_t& g, uint8_t& b) const;
