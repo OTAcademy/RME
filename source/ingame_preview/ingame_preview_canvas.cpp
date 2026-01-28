@@ -144,12 +144,12 @@ namespace IngamePreview {
 			return;
 		}
 
-		float scale_x = static_cast<float>(size.x) / content_w;
-		float scale_y = static_cast<float>(size.y) / content_h;
+		float scale_x = (float)size.x / content_w;
+		float scale_y = (float)size.y / content_h;
 		float scale = std::min(scale_x, scale_y);
 
-		int view_w = static_cast<int>(content_w * scale);
-		int view_h = static_cast<int>(content_h * scale);
+		int view_w = (int)(content_w * scale);
+		int view_h = (int)(content_h * scale);
 		int view_x = (size.x - view_w) / 2;
 		int view_y = (size.y - view_h) / 2;
 
