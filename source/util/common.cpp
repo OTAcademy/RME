@@ -20,7 +20,7 @@
 #include "util/common.h"
 #include "math.h"
 
-#include <sstream>
+#include <cstdio>
 #include <random>
 #include <regex>
 #include <algorithm>
@@ -48,17 +48,13 @@ int32_t uniform_random(int32_t maxNumber) {
 
 //
 std::string i2s(const int _i) {
-	static std::stringstream ss;
-	ss.str("");
-	ss << _i;
-	return ss.str();
+	return std::to_string(_i);
 }
 
 std::string f2s(const double _d) {
-	static std::stringstream ss;
-	ss.str("");
-	ss << _d;
-	return ss.str();
+	char buffer[64];
+	std::snprintf(buffer, sizeof(buffer), "%.6g", _d);
+	return std::string(buffer);
 }
 
 int s2i(const std::string s) {
