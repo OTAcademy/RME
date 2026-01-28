@@ -63,8 +63,16 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 		}
 	}
 
+	// Check if container has content
+	bool hasContent = false;
+	if (g_items[id].isContainer()) {
+		if (Container* container = dynamic_cast<Container*>(item)) {
+			hasContent = container->getItemCount() > 0;
+		}
+	}
+
 	// Only create tooltip if there's something to show
-	if (unique == 0 && action == 0 && doorId == 0 && text.empty() && description.empty() && destination.x == 0) {
+	if (unique == 0 && action == 0 && doorId == 0 && text.empty() && description.empty() && destination.x == 0 && !hasContent) {
 		return TooltipData();
 	}
 
@@ -81,6 +89,39 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 	data.text = text;
 	data.description = description;
 	data.destination = destination;
+
+	// Populate container items
+	if (g_items[id].isContainer()) {
+		if (Container* container = dynamic_cast<Container*>(item)) {
+			// Set capacity for rendering empty slots
+			data.containerCapacity = static_cast<uint8_t>(container->getVolume());
+
+			// Using getVector() might be risky if internal logic changes,
+			// but getItem(i) is safer if available, or just iterating vector.
+			// Container::getVector() returns ItemVector& (std::vector<Item*>)
+			const ItemVector& items = container->getVector();
+			for (Item* subItem : items) {
+				if (subItem) {
+					ContainerItem ci;
+					ci.id = subItem->getID();
+					ci.subtype = subItem->getSubtype();
+					ci.count = subItem->getCount();
+					// Sanity check for count
+					if (ci.count == 0) {
+						ci.count = 1;
+					}
+
+					data.containerItems.push_back(ci);
+
+					// Limit preview items to avoid massive tooltips
+					if (data.containerItems.size() >= 32) {
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	data.updateCategory();
 
 	return data;

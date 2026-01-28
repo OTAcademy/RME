@@ -191,6 +191,7 @@ public:
 	friend class GameSpriteLoader;
 	friend class SpriteIconGenerator;
 	friend class TextureGarbageCollector;
+	friend class TooltipDrawer;
 };
 
 class GraphicManager {

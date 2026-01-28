@@ -21,12 +21,23 @@
 #include <nanovg.h>
 #include "rendering/core/coordinate_mapper.h"
 #include <wx/wx.h>
+#include "game/items.h"
+#include "game/sprites.h"
+#include "ui/gui.h"
 
 TooltipDrawer::TooltipDrawer() {
 }
 
 TooltipDrawer::~TooltipDrawer() {
 	clear();
+	if (lastContext) {
+		for (auto& pair : spriteCache) {
+			if (pair.second > 0) {
+				nvgDeleteImage(lastContext, pair.second);
+			}
+		}
+		spriteCache.clear();
+	}
 }
 
 void TooltipDrawer::clear() {
@@ -78,6 +89,108 @@ void TooltipDrawer::getHeaderColor(TooltipCategory cat, uint8_t& r, uint8_t& g, 
 			b = ITEM_HEADER_B;
 			break;
 	}
+}
+
+int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
+	if (itemId == 0) {
+		return 0;
+	}
+
+	// Detect context change and clear cache
+	if (vg != lastContext) {
+		// If we had a previous context, we'd ideally delete images from it,
+		// but if the context pointer changed, the old one might be invalid.
+		// However, adhering to the request to clear cache with nvgDeleteImage:
+		if (lastContext) {
+			for (auto& pair : spriteCache) {
+				if (pair.second > 0) {
+					nvgDeleteImage(lastContext, pair.second);
+				}
+			}
+		}
+		spriteCache.clear();
+		lastContext = vg;
+	}
+
+	// Resolve Item ID
+	ItemType& it = g_items[itemId];
+	if (!it.sprite) {
+		return 0;
+	}
+
+	// We use the item ID as the cache key since it's unique and stable
+	auto itCache = spriteCache.find(itemId);
+	if (itCache != spriteCache.end()) {
+		return itCache->second;
+	}
+
+	// Use the sprite directly from ItemType
+	GameSprite* gameSprite = it.sprite;
+
+	if (gameSprite && !gameSprite->spriteList.empty()) {
+		// Use the first frame/part of the sprite
+		GameSprite::NormalImage* img = gameSprite->spriteList[0];
+		if (img) {
+			std::unique_ptr<uint8_t[]> rgba;
+
+			// For legacy sprites (no transparency), use getRGBData + Magenta Masking
+			// This matches how WxWidgets/SpriteIconGenerator renders icons
+			if (!g_gui.gfx.hasTransparency()) {
+				uint8_t* rgb = img->getRGBData();
+				if (rgb) {
+					rgba = std::make_unique<uint8_t[]>(32 * 32 * 4);
+					for (int i = 0; i < 32 * 32; ++i) {
+						uint8_t r = rgb[i * 3 + 0];
+						uint8_t g = rgb[i * 3 + 1];
+						uint8_t b = rgb[i * 3 + 2];
+
+						// Magic Pink (Magenta) is transparent for legacy sprites
+						if (r == 0xFF && g == 0x00 && b == 0xFF) {
+							rgba[i * 4 + 0] = 0;
+							rgba[i * 4 + 1] = 0;
+							rgba[i * 4 + 2] = 0;
+							rgba[i * 4 + 3] = 0;
+						} else {
+							rgba[i * 4 + 0] = r;
+							rgba[i * 4 + 1] = g;
+							rgba[i * 4 + 2] = b;
+							rgba[i * 4 + 3] = 255;
+						}
+					}
+					delete[] rgb;
+				} else {
+					// getRGBData failed, should ideally not happen if sprite exists logic is correct
+				}
+			}
+
+			// Fallback/Standard path for alpha sprites or if RGB failed
+			if (!rgba) {
+				rgba.reset(img->getRGBAData());
+				if (!rgba) {
+					// getRGBAData failed
+				}
+			}
+
+			if (rgba) {
+				int image = nvgCreateImageRGBA(vg, 32, 32, 0, rgba.get());
+				if (image == 0) {
+					// nvgCreateImageRGBA failed
+				} else {
+					// Success
+					// Check if we are overwriting an existing valid image (shouldn't happen given find() above, but safest)
+					if (spriteCache.count(itemId) && spriteCache[itemId] > 0) {
+						nvgDeleteImage(vg, spriteCache[itemId]);
+					}
+					spriteCache[itemId] = image;
+					return image;
+				}
+			}
+		}
+	} else {
+		// GameSprite missing or empty list
+	}
+
+	return 0;
 }
 
 void TooltipDrawer::draw(const RenderView& view) {
@@ -147,8 +260,8 @@ void TooltipDrawer::draw(const RenderView& view) {
 			}
 		}
 
-		// Skip if no fields
-		if (fields.empty()) {
+		// Skip if no fields and no container items
+		if (fields.empty() && tooltip.containerItems.empty()) {
 			continue;
 		}
 
@@ -215,9 +328,64 @@ void TooltipDrawer::draw(const RenderView& view) {
 			}
 		}
 
+		// Calculate container grid dimensions
+		int containerCols = 0;
+		int containerRows = 0;
+		float gridSlotSize = 34.0f; // 32px + padding
+		float containerHeight = 0.0f;
+
+		int numItems = (int)tooltip.containerItems.size();
+		int capacity = (int)tooltip.containerCapacity;
+		int emptySlots = std::max(0, capacity - numItems);
+		int totalSlots = numItems;
+
+		if (emptySlots > 0) {
+			totalSlots++; // Add one slot for the summary
+		}
+
+		// Apply a hard cap for visual safety (though items are capped at 32 in TileRenderer)
+		if (totalSlots > 33) {
+			totalSlots = 33;
+		}
+
+		if (capacity > 0 || numItems > 0) {
+			// Heuristic: try to keep it somewhat square but matching width
+			containerCols = std::min(4, totalSlots);
+			// Force roughly square-ish if many items, but max 4-5 cols
+			if (totalSlots > 4) {
+				containerCols = 5;
+			}
+			if (totalSlots > 10) {
+				containerCols = 6;
+			}
+			if (totalSlots > 15) {
+				containerCols = 8;
+			}
+
+			// Ensure at least 1 col if there are slots
+			if (containerCols == 0 && totalSlots > 0) {
+				containerCols = 1;
+			}
+
+			if (containerCols > 0) {
+				containerRows = (totalSlots + containerCols - 1) / containerCols;
+				containerHeight = containerRows * gridSlotSize + 4.0f; // + top margin
+			}
+		}
+
 		// Calculate box dimensions
 		float boxWidth = std::min(maxWidth + padding * 2, std::max(minWidth, actualMaxWidth));
+		// Expand max width if grid needs it (override clamp)
+		bool hasContainer = totalSlots > 0;
+		if (hasContainer) {
+			float gridWidth = containerCols * gridSlotSize;
+			boxWidth = std::max(boxWidth, gridWidth + padding * 2);
+		}
+
 		float boxHeight = totalLines * lineHeight + padding * 2;
+		if (hasContainer) {
+			boxHeight += containerHeight + 4.0f; // Add grid area
+		}
 
 		// Position tooltip above tile
 		float tooltipX = screen_x - (boxWidth / 2.0f);
@@ -274,6 +442,79 @@ void TooltipDrawer::draw(const RenderView& view) {
 				nvgText(vg, contentX + valueStartX, cursorY, line.c_str(), nullptr);
 
 				cursorY += lineHeight;
+			}
+		}
+
+		// Draw container items
+		if (totalSlots > 0) {
+			cursorY += 8.0f; // Spacer
+
+			float startX = contentX;
+			float startY = cursorY;
+
+			for (int idx = 0; idx < totalSlots; ++idx) {
+				int col = idx % containerCols;
+				int row = idx / containerCols;
+
+				float itemX = startX + col * gridSlotSize;
+				float itemY = startY + row * gridSlotSize;
+
+				// Draw slot background (always)
+				nvgBeginPath(vg);
+				nvgRect(vg, itemX, itemY, 32, 32);
+				nvgFillColor(vg, nvgRGBA(60, 60, 60, 100)); // Dark slot placeholder
+				nvgStrokeColor(vg, nvgRGBA(100, 100, 100, 100)); // Light border
+				nvgStrokeWidth(vg, 1.0f);
+				nvgFill(vg);
+				nvgStroke(vg);
+
+				// Check if this is the summary info slot (last slot if we have empty spaces)
+				bool isSummarySlot = (emptySlots > 0 && idx == totalSlots - 1);
+
+				if (isSummarySlot) {
+					// Draw empty slots count: "+N"
+					std::string summary = "+" + std::to_string(emptySlots);
+
+					nvgFontSize(vg, 12.0f);
+					nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+
+					// Text shadow
+					nvgFillColor(vg, nvgRGBA(0, 0, 0, 255));
+					nvgText(vg, itemX + 17, itemY + 17, summary.c_str(), nullptr); // +1 offset
+
+					// Text
+					nvgFillColor(vg, nvgRGBA(COUNT_TEXT_R, COUNT_TEXT_G, COUNT_TEXT_B, 255));
+					nvgText(vg, itemX + 16, itemY + 16, summary.c_str(), nullptr);
+
+				} else if (idx < numItems) {
+					// Draw Actual Item
+					const auto& item = tooltip.containerItems[idx];
+
+					// Draw item sprite
+					int img = getSpriteImage(vg, item.id);
+					if (img > 0) {
+						nvgBeginPath(vg);
+						nvgRect(vg, itemX, itemY, 32, 32);
+						nvgFillPaint(vg, nvgImagePattern(vg, itemX, itemY, 32, 32, 0, img, 1.0f));
+						nvgFill(vg);
+					}
+					// Else: already drew placeholder background
+
+					// Draw Count
+					if (item.count > 1) {
+						std::string countStr = std::to_string(item.count);
+						nvgFontSize(vg, 10.0f);
+						nvgTextAlign(vg, NVG_ALIGN_RIGHT | NVG_ALIGN_BOTTOM);
+
+						// Text shadow
+						nvgFillColor(vg, nvgRGBA(0, 0, 0, 255));
+						nvgText(vg, itemX + 33, itemY + 33, countStr.c_str(), nullptr);
+
+						// Text
+						nvgFillColor(vg, nvgRGBA(COUNT_TEXT_R, COUNT_TEXT_G, COUNT_TEXT_B, 255));
+						nvgText(vg, itemX + 32, itemY + 32, countStr.c_str(), nullptr);
+					}
+				}
 			}
 		}
 	}

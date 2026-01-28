@@ -9,24 +9,26 @@
 #include "ui/dialog_util.h"
 #include "ui/properties/property_validator.h"
 #include "app/application.h"
-
-/*
-BEGIN_EVENT_TABLE(ContainerPropertiesWindow, wxDialog)
-EVT_BUTTON(wxID_OK, ContainerPropertiesWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, ContainerPropertiesWindow::OnClickCancel)
-END_EVENT_TABLE()
-*/
+#include "ui/find_item_window.h"
+#include "ui/gui_ids.h"
+#include "ui/properties/properties_window.h"
+#include "ui/properties/old_properties_window.h"
 
 ContainerPropertiesWindow::ContainerPropertiesWindow(wxWindow* win_parent, const Map* map, const Tile* tile_parent, Item* item, wxPoint pos) :
 	ObjectPropertiesWindowBase(win_parent, "Container Properties", map, tile_parent, item, pos),
 	action_id_field(nullptr),
-	unique_id_field(nullptr) {
+	unique_id_field(nullptr),
+	last_clicked_button(nullptr) {
 	ASSERT(edit_item);
 	Container* container = dynamic_cast<Container*>(edit_item);
 	ASSERT(container);
 
 	Bind(wxEVT_BUTTON, &ContainerPropertiesWindow::OnClickOK, this, wxID_OK);
 	Bind(wxEVT_BUTTON, &ContainerPropertiesWindow::OnClickCancel, this, wxID_CANCEL);
+
+	Bind(wxEVT_MENU, &ContainerPropertiesWindow::OnAddItem, this, CONTAINER_POPUP_MENU_ADD);
+	Bind(wxEVT_MENU, &ContainerPropertiesWindow::OnEditItem, this, CONTAINER_POPUP_MENU_EDIT);
+	Bind(wxEVT_MENU, &ContainerPropertiesWindow::OnRemoveItem, this, CONTAINER_POPUP_MENU_REMOVE);
 
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
 	wxSizer* boxsizer = newd wxStaticBoxSizer(wxVERTICAL, this, "Container Properties");
@@ -66,6 +68,8 @@ ContainerPropertiesWindow::ContainerPropertiesWindow(wxWindow* win_parent, const
 
 		Item* sub_item = container->getItem(index);
 		ContainerItemButton* containerItemButton = newd ContainerItemButton(this, use_large_sprites, index, map, sub_item);
+		containerItemButton->Bind(wxEVT_BUTTON, &ContainerPropertiesWindow::OnContainerItemClick, this);
+		containerItemButton->Bind(wxEVT_RIGHT_UP, &ContainerPropertiesWindow::OnContainerItemRightClick, this);
 
 		container_items.push_back(containerItemButton);
 		horizontal_sizer->Add(containerItemButton);
@@ -121,5 +125,126 @@ void ContainerPropertiesWindow::Update() {
 			container_items[i]->setItem(container->getItem(i));
 		}
 	}
+	Layout();
 	wxDialog::Update();
+}
+
+void ContainerPropertiesWindow::OnContainerItemClick(wxCommandEvent& event) {
+	ContainerItemButton* button = dynamic_cast<ContainerItemButton*>(event.GetEventObject());
+	if (!button) {
+		return;
+	}
+
+	last_clicked_button = button;
+
+	if (button->getItem()) {
+		OnEditItem(event);
+	} else {
+		OnAddItem(event);
+	}
+}
+
+void ContainerPropertiesWindow::OnContainerItemRightClick(wxMouseEvent& event) {
+	ContainerItemButton* button = dynamic_cast<ContainerItemButton*>(event.GetEventObject());
+	if (!button) {
+		return;
+	}
+
+	last_clicked_button = button;
+
+	wxMenu menu;
+	if (button->getItem()) {
+		menu.Append(CONTAINER_POPUP_MENU_EDIT, "&Edit Item");
+		menu.Append(CONTAINER_POPUP_MENU_ADD, "&Add Item");
+		menu.Append(CONTAINER_POPUP_MENU_REMOVE, "&Remove Item");
+	} else {
+		menu.Append(CONTAINER_POPUP_MENU_ADD, "&Add Item");
+	}
+
+	Container* container = dynamic_cast<Container*>(edit_item);
+	if (container && container->getVolume() <= (int)container->getVector().size()) {
+		if (wxMenuItem* addItem = menu.FindItem(CONTAINER_POPUP_MENU_ADD)) {
+			addItem->Enable(false);
+		}
+	}
+
+	PopupMenu(&menu);
+}
+
+void ContainerPropertiesWindow::OnAddItem(wxCommandEvent& WXUNUSED(event)) {
+	if (!last_clicked_button) {
+		return;
+	}
+
+	Container* container = dynamic_cast<Container*>(edit_item);
+	if (!container) {
+		return;
+	}
+
+	FindItemDialog dialog(this, "Select Item");
+	if (dialog.ShowModal() == wxID_OK) {
+		uint16_t item_id = dialog.getResultID();
+		if (item_id != 0) {
+			ItemVector& contents = container->getVector();
+			uint32_t index = last_clicked_button->getIndex();
+
+			std::unique_ptr<Item> new_item(Item::Create(item_id)); // Wrap locally
+			if (new_item) {
+				if (index < contents.size()) {
+					contents.insert(contents.begin() + index, new_item.release()); // Release ownership to vector
+				} else {
+					contents.push_back(new_item.release()); // Release ownership to vector
+				}
+			}
+			Update();
+		}
+	}
+}
+
+void ContainerPropertiesWindow::OnEditItem(wxCommandEvent& WXUNUSED(event)) {
+	if (!last_clicked_button || !last_clicked_button->getItem()) {
+		return;
+	}
+
+	Item* sub_item = last_clicked_button->getItem();
+	wxPoint newDialogAt = GetPosition() + wxPoint(20, 20);
+
+	wxDialog* d;
+	if (edit_map->getVersion().otbm >= MAP_OTBM_4) {
+		d = newd PropertiesWindow(this, edit_map, nullptr, sub_item, newDialogAt);
+	} else {
+		d = newd OldPropertiesWindow(this, edit_map, nullptr, sub_item, newDialogAt);
+	}
+
+	d->ShowModal();
+	d->Destroy();
+	Update();
+}
+
+void ContainerPropertiesWindow::OnRemoveItem(wxCommandEvent& WXUNUSED(event)) {
+	if (!last_clicked_button || !last_clicked_button->getItem()) {
+		return;
+	}
+
+	int32_t ret = DialogUtil::PopupDialog(this, "Remove Item", "Are you sure you want to remove this item from the container?", wxYES | wxNO);
+
+	if (ret != wxID_YES) {
+		return;
+	}
+
+	Container* container = dynamic_cast<Container*>(edit_item);
+	if (!container) {
+		return;
+	}
+
+	ItemVector& contents = container->getVector();
+	Item* to_remove = last_clicked_button->getItem();
+
+	auto it = std::find(contents.begin(), contents.end(), to_remove);
+	if (it != contents.end()) {
+		std::unique_ptr<Item> item_ptr(*it); // Transfer ownership to unique_ptr for safe deletion
+		contents.erase(it);
+	}
+
+	Update();
 }
