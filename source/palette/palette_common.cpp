@@ -238,10 +238,10 @@ void BrushSizePanel::LoadAllContents() {
 	}
 
 	sub_sizer->Add(brushshapeSquareButton = newd DCButton(this, PALETTE_BRUSHSHAPE_SQUARE, wxDefaultPosition, DC_BTN_TOGGLE, render_size, EDITOR_SPRITE_BRUSH_SD_9x9));
-	brushshapeSquareButton->SetToolTip("Square brush");
+	brushshapeSquareButton->SetToolTip("Square brush shape (Draw rectangular areas)");
 
 	sub_sizer->Add(brushshapeCircleButton = newd DCButton(this, PALETTE_BRUSHSHAPE_CIRCLE, wxDefaultPosition, DC_BTN_TOGGLE, render_size, EDITOR_SPRITE_BRUSH_CD_9x9));
-	brushshapeCircleButton->SetToolTip("Circle brush");
+	brushshapeCircleButton->SetToolTip("Circle brush shape (Draw circular areas)");
 	brushshapeSquareButton->SetValue(true);
 
 	if (large_icons) {
@@ -477,23 +477,23 @@ void BrushToolPanel::LoadAllContents() {
 
 		ASSERT(g_brush_manager.eraser);
 		sub_sizer->Add(eraserButton = newd BrushButton(this, g_brush_manager.eraser, RENDER_SIZE_32x32, PALETTE_TERRAIN_ERASER));
-		eraserButton->SetToolTip("Eraser");
+		eraserButton->SetToolTip("Eraser Tool (Remove items and tiles)");
 
 		ASSERT(g_brush_manager.pz_brush);
 		sub_sizer->Add(pzBrushButton = newd BrushButton(this, g_brush_manager.pz_brush, RENDER_SIZE_32x32, PALETTE_TERRAIN_PZ_TOOL));
-		pzBrushButton->SetToolTip("PZ Tool");
+		pzBrushButton->SetToolTip("Protected Zone (No combat allowed)");
 
 		ASSERT(g_brush_manager.rook_brush);
 		sub_sizer->Add(nopvpBrushButton = newd BrushButton(this, g_brush_manager.rook_brush, RENDER_SIZE_32x32, PALETTE_TERRAIN_NOPVP_TOOL));
-		nopvpBrushButton->SetToolTip("NO PVP Tool");
+		nopvpBrushButton->SetToolTip("No PvP Zone (No player combat)");
 
 		ASSERT(g_brush_manager.nolog_brush);
 		sub_sizer->Add(nologBrushButton = newd BrushButton(this, g_brush_manager.nolog_brush, RENDER_SIZE_32x32, PALETTE_TERRAIN_NOLOGOUT_TOOL));
-		nologBrushButton->SetToolTip("No Logout Tool");
+		nologBrushButton->SetToolTip("No Logout Zone (Players cannot logout)");
 
 		ASSERT(g_brush_manager.pvp_brush);
 		sub_sizer->Add(pvpzoneBrushButton = newd BrushButton(this, g_brush_manager.pvp_brush, RENDER_SIZE_32x32, PALETTE_TERRAIN_PVPZONE_TOOL));
-		pvpzoneBrushButton->SetToolTip("PVP Zone Tool");
+		pvpzoneBrushButton->SetToolTip("PvP Zone (Combat allowed)");
 
 		// New row
 		size_sizer->Add(sub_sizer);
@@ -544,7 +544,7 @@ void BrushToolPanel::LoadAllContents() {
 
 		ASSERT(g_brush_manager.eraser);
 		sub_sizer->Add(eraserButton = newd BrushButton(this, g_brush_manager.eraser, RENDER_SIZE_16x16, PALETTE_TERRAIN_ERASER));
-		eraserButton->SetToolTip("Eraser");
+		eraserButton->SetToolTip("Eraser Tool (Remove items and tiles)");
 
 		// sub_sizer->AddSpacer(20);
 		ASSERT(g_brush_manager.normal_door_alt_brush);
@@ -585,19 +585,19 @@ void BrushToolPanel::LoadAllContents() {
 
 		ASSERT(g_brush_manager.pz_brush);
 		sub_sizer->Add(pzBrushButton = newd BrushButton(this, g_brush_manager.pz_brush, RENDER_SIZE_16x16, PALETTE_TERRAIN_PZ_TOOL));
-		pzBrushButton->SetToolTip("PZ Tool");
+		pzBrushButton->SetToolTip("Protected Zone (No combat allowed)");
 
 		ASSERT(g_brush_manager.rook_brush);
 		sub_sizer->Add(nopvpBrushButton = newd BrushButton(this, g_brush_manager.rook_brush, RENDER_SIZE_16x16, PALETTE_TERRAIN_NOPVP_TOOL));
-		nopvpBrushButton->SetToolTip("NO PVP Tool");
+		nopvpBrushButton->SetToolTip("No PvP Zone (No player combat)");
 
 		ASSERT(g_brush_manager.nolog_brush);
 		sub_sizer->Add(nologBrushButton = newd BrushButton(this, g_brush_manager.nolog_brush, RENDER_SIZE_16x16, PALETTE_TERRAIN_NOLOGOUT_TOOL));
-		nologBrushButton->SetToolTip("No Logout Tool");
+		nologBrushButton->SetToolTip("No Logout Zone (Players cannot logout)");
 
 		ASSERT(g_brush_manager.pvp_brush);
 		sub_sizer->Add(pvpzoneBrushButton = newd BrushButton(this, g_brush_manager.pvp_brush, RENDER_SIZE_16x16, PALETTE_TERRAIN_PVPZONE_TOOL));
-		pvpzoneBrushButton->SetToolTip("PVP Zone Tool");
+		pvpzoneBrushButton->SetToolTip("PvP Zone (Combat allowed)");
 	}
 
 	sub_sizer->AddSpacer(large_icons ? 42 : 24);
@@ -893,12 +893,12 @@ BrushThicknessPanel::BrushThicknessPanel(wxWindow* parent) :
 	wxSizer* thickness_sub_sizer = newd wxBoxSizer(wxHORIZONTAL);
 	thickness_sub_sizer->Add(20, 10);
 	use_button = newd wxCheckBox(this, PALETTE_DOODAD_USE_THICKNESS, "Use custom thickness");
-	use_button->SetToolTip("Enable custom thickness for this brush");
+	use_button->SetToolTip("Enable custom thickness override");
 	thickness_sub_sizer->Add(use_button);
 	thickness_sizer->Add(thickness_sub_sizer, 1, wxEXPAND);
 
 	slider = newd wxSlider(this, PALETTE_DOODAD_SLIDER, 5, 1, 10, wxDefaultPosition);
-	slider->SetToolTip("Adjust brush thickness");
+	slider->SetToolTip("Adjust brush thickness (For Doodad brushes)");
 	thickness_sizer->Add(slider, 1, wxEXPAND);
 
 	SetSizerAndFit(thickness_sizer);

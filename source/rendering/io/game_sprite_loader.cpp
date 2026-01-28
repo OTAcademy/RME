@@ -145,13 +145,13 @@ bool GameSpriteLoader::LoadSpriteMetadata(GraphicManager* manager, const wxFileN
 						file.getU32(min);
 						file.getU32(max);
 						FrameDuration* frame_duration = sType->animator->getFrameDuration(i);
-						frame_duration->setValues(int(min), int(max));
+						frame_duration->setValues(static_cast<int>(min), static_cast<int>(max));
 					}
 					sType->animator->reset();
 				}
 			}
 
-			sType->numsprites = (int)sType->width * (int)sType->height * (int)sType->layers * (int)sType->pattern_x * (int)sType->pattern_y * sType->pattern_z * (int)sType->frames;
+			sType->numsprites = static_cast<int>(sType->width) * static_cast<int>(sType->height) * static_cast<int>(sType->layers) * static_cast<int>(sType->pattern_x) * static_cast<int>(sType->pattern_y) * sType->pattern_z * static_cast<int>(sType->frames);
 
 			// Read the sprite ids
 			for (uint32_t i = 0; i < sType->numsprites; ++i) {

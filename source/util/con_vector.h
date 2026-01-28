@@ -71,6 +71,19 @@ public:
 		return at(index);
 	}
 
+	T* begin() {
+		return start;
+	}
+	T* end() {
+		return start + sz;
+	}
+	const T* begin() const {
+		return start;
+	}
+	const T* end() const {
+		return start + sz;
+	}
+
 private:
 	T* start;
 	size_t sz;

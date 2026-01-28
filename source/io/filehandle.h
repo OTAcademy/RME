@@ -100,7 +100,7 @@ public:
 	bool getString(std::string& str);
 	bool getLongString(std::string& str);
 
-	virtual void close();
+	virtual void close() override;
 	bool seek(size_t offset);
 	bool seekRelative(size_t offset);
 	FORCEINLINE void skip(size_t offset) {
@@ -225,13 +225,13 @@ public:
 	DiskNodeFileReadHandle(const std::string& name, const std::vector<std::string>& acceptable_identifiers);
 	virtual ~DiskNodeFileReadHandle();
 
-	virtual void close();
-	virtual BinaryNode* getRootNode();
+	virtual void close() override;
+	virtual BinaryNode* getRootNode() override;
 
-	virtual size_t size() {
+	virtual size_t size() override {
 		return file_size;
 	}
-	virtual size_t tell() {
+	virtual size_t tell() override {
 		if (file) {
 			return ftell(file);
 		}
@@ -239,7 +239,7 @@ public:
 	}
 
 protected:
-	virtual bool renewCache();
+	virtual bool renewCache() override;
 
 	size_t file_size;
 };
@@ -252,21 +252,21 @@ public:
 
 	void assign(const uint8_t* data, size_t size);
 
-	virtual void close();
-	virtual BinaryNode* getRootNode();
+	virtual void close() override;
+	virtual BinaryNode* getRootNode() override;
 
-	virtual size_t size() {
+	virtual size_t size() override {
 		return cache_size;
 	}
-	virtual size_t tell() {
+	virtual size_t tell() override {
 		return local_read_index;
 	}
-	virtual bool isOk() {
+	virtual bool isOk() override {
 		return true;
 	}
 
 protected:
-	virtual bool renewCache();
+	virtual bool renewCache() override;
 
 	uint8_t* index;
 };
@@ -365,10 +365,10 @@ public:
 	DiskNodeFileWriteHandle(const std::string& name, const std::string& identifier);
 	virtual ~DiskNodeFileWriteHandle();
 
-	virtual void close();
+	virtual void close() override;
 
 protected:
-	virtual void renewCache();
+	virtual void renewCache() override;
 };
 
 class MemoryNodeFileWriteHandle : public NodeFileWriteHandle {
@@ -377,13 +377,13 @@ public:
 	virtual ~MemoryNodeFileWriteHandle();
 
 	void reset();
-	virtual void close();
+	virtual void close() override;
 
 	uint8_t* getMemory();
 	size_t getSize();
 
 protected:
-	virtual void renewCache();
+	virtual void renewCache() override;
 };
 
 #endif
