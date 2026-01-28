@@ -51,6 +51,9 @@ class ItemButton;
 
 class LiveSocket;
 
+class SidebarWindow;
+class ToolOptionsWindow;
+
 extern const wxEventType EVT_UPDATE_MENUS;
 
 #define EVT_ON_UPDATE_MENUS(id, fn)                                                             \
@@ -335,6 +338,8 @@ public:
 	GraphicManager gfx;
 
 	BaseMap* secondary_map; // A buffer map
+
+	ToolOptionsWindow* tool_options;
 
 	EditorMode mode;
 

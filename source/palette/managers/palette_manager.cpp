@@ -107,7 +107,8 @@ PaletteWindow* PaletteManager::CreatePalette() {
 	}
 
 	auto* palette = newd PaletteWindow(g_gui.root, g_materials.tilesets);
-	g_gui.aui_manager->AddPane(palette, wxAuiPaneInfo().Caption("Palette").TopDockable(false).BottomDockable(false));
+	wxString name = wxString::Format("Palette_%d", (int)palettes.size());
+	g_gui.aui_manager->AddPane(palette, wxAuiPaneInfo().Name(name).Caption("Palette").TopDockable(true).BottomDockable(true));
 	g_gui.aui_manager->Update();
 
 	palettes.push_front(palette);

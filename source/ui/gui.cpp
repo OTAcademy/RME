@@ -47,6 +47,7 @@
 #include "rendering/ui/map_display.h"
 #include "app/application.h"
 #include "ui/welcome_dialog.h"
+#include "ui/tool_options_window.h"
 
 #include "live/live_client.h"
 #include "live/live_tab.h"
@@ -66,6 +67,7 @@ GUI::GUI() :
 	aui_manager(nullptr),
 	root(nullptr),
 	secondary_map(nullptr),
+	tool_options(nullptr),
 	mode(SELECTION_MODE),
 	pasting(false),
 	disabled_counter(0),
@@ -322,6 +324,9 @@ void GUI::SetBrushSize(int nz) {
 }
 void GUI::SetBrushSizeInternal(int nz) {
 	g_brush_manager.SetBrushSizeInternal(nz);
+	if (tool_options) {
+		tool_options->UpdateBrushSize(GetBrushShape(), nz);
+	}
 }
 void GUI::SetBrushShape(BrushShape bs) {
 	g_brush_manager.SetBrushShape(bs);
@@ -422,6 +427,9 @@ PaletteWindow* GUI::NewPalette() {
 }
 void GUI::ActivatePalette(PaletteWindow* p) {
 	g_palettes.ActivatePalette(p);
+	if (p && tool_options) {
+		tool_options->SetPaletteType(p->GetSelectedPage());
+	}
 }
 void GUI::RebuildPalettes() {
 	g_palettes.RebuildPalettes();

@@ -15,8 +15,10 @@
 #include "ui/main_toolbar.h"
 #include <wx/display.h>
 #include "ui/managers/minimap_manager.h"
-#include "brushes/managers/doodad_preview_manager.h"
+#include "ingame_preview/ingame_preview_manager.h"
+#include "ingame_preview/ingame_preview_window.h"
 #include "ui/managers/status_manager.h"
+#include "ui/tool_options_window.h"
 
 LayoutManager g_layout;
 
@@ -116,6 +118,42 @@ void LayoutManager::LoadPerspective() {
 		g_gui.root->UpdateMenubar();
 	}
 
+	// Initialize ToolOptionsWindow
+	if (!g_gui.tool_options) {
+		g_gui.tool_options = newd ToolOptionsWindow(g_gui.root);
+
+		wxAuiPaneInfo info;
+		wxString layout = wxstr(g_settings.getString(Config::TOOL_OPTIONS_LAYOUT));
+		if (!layout.empty()) {
+			g_gui.aui_manager->LoadPaneInfo(layout, info);
+		} else {
+			info.Name("ToolOptions").Caption("Tool Options").Right().Layer(0).Position(0).CloseButton(true).MaximizeButton(true).BestSize(230, 300);
+		}
+		if (info.name.empty()) {
+			info.Name("ToolOptions");
+		}
+
+		g_gui.aui_manager->AddPane(g_gui.tool_options, info);
+	} else {
+		wxAuiPaneInfo& info = g_gui.aui_manager->GetPane(g_gui.tool_options);
+		wxString layout = wxstr(g_settings.getString(Config::TOOL_OPTIONS_LAYOUT));
+		if (!layout.empty()) {
+			g_gui.aui_manager->LoadPaneInfo(layout, info);
+		}
+	}
+
+	if (g_settings.getInteger(Config::INGAME_PREVIEW_VISIBLE)) {
+		g_preview.Create();
+		if (g_preview.GetWindow()) {
+			wxAuiPaneInfo& info = g_gui.aui_manager->GetPane(g_preview.GetWindow());
+			wxString layout = wxstr(g_settings.getString(Config::INGAME_PREVIEW_LAYOUT));
+			if (!layout.empty()) {
+				g_gui.aui_manager->LoadPaneInfo(layout, info);
+			}
+		}
+	}
+
+	g_gui.aui_manager->Update();
 	g_gui.root->GetAuiToolBar()->LoadPerspective();
 }
 
@@ -137,6 +175,17 @@ void LayoutManager::SavePerspective() {
 	if (g_minimap.GetWindow()) {
 		wxString s = g_gui.aui_manager->SavePaneInfo(g_gui.aui_manager->GetPane(g_minimap.GetWindow()));
 		g_settings.setString(Config::MINIMAP_LAYOUT, nstr(s));
+	}
+
+	if (g_gui.tool_options) {
+		wxString s = g_gui.aui_manager->SavePaneInfo(g_gui.aui_manager->GetPane(g_gui.tool_options));
+		g_settings.setString(Config::TOOL_OPTIONS_LAYOUT, nstr(s));
+	}
+
+	g_settings.setInteger(Config::INGAME_PREVIEW_VISIBLE, g_preview.IsVisible() ? 1 : 0);
+	if (g_preview.GetWindow()) {
+		wxString s = g_gui.aui_manager->SavePaneInfo(g_gui.aui_manager->GetPane(g_preview.GetWindow()));
+		g_settings.setString(Config::INGAME_PREVIEW_LAYOUT, nstr(s));
 	}
 
 	g_gui.root->GetAuiToolBar()->SavePerspective();

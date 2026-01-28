@@ -655,10 +655,11 @@ void MainFrame::OnExit(wxCloseEvent& event) {
 			}
 		}
 	}
+	g_layout.SavePerspective();
+
 	g_palettes.DestroyPalettes();
 	g_minimap.Destroy();
 	g_search.HideSearchWindow();
-	g_layout.SavePerspective();
 
 	g_gui.aui_manager->UnInit();
 	((Application&)wxGetApp()).Unload();

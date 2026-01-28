@@ -116,6 +116,13 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/palette/palette_house.h
     ${CMAKE_CURRENT_LIST_DIR}/palette/palette_waypoints.h
     ${CMAKE_CURRENT_LIST_DIR}/palette/palette_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/palette/controls/brush_button.h
+    ${CMAKE_CURRENT_LIST_DIR}/palette/controls/virtual_brush_grid.h
+    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_size_panel.h
+    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_tool_panel.h
+    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_thickness_panel.h
+    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_palette_panel.h
+    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_panel.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/atlas_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/coordinate_mapper.h
@@ -264,6 +271,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/map_statistics_dialog.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/live_dialogs.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/menubar_loader.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/tool_options_window.h
     ${CMAKE_CURRENT_LIST_DIR}/util/common.h
     ${CMAKE_CURRENT_LIST_DIR}/util/con_vector.h
     ${CMAKE_CURRENT_LIST_DIR}/util/json.h
@@ -409,6 +417,13 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/palette/palette_house.cpp
     ${CMAKE_CURRENT_LIST_DIR}/palette/palette_waypoints.cpp
     ${CMAKE_CURRENT_LIST_DIR}/palette/palette_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/palette/controls/brush_button.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/palette/controls/virtual_brush_grid.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_size_panel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_tool_panel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_thickness_panel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_palette_panel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_panel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/atlas_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/coordinate_mapper.cpp
@@ -552,6 +567,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/live_dialogs.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/menubar_loader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/common.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/tool_options_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/file_system.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/mt_rand.cpp
     ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxAwesomeBrandsArt.cpp
