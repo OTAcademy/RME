@@ -196,6 +196,7 @@ ReplaceItemsDialog::ReplaceItemsDialog(wxWindow* parent, bool selectionOnly) :
 
 	progress = new wxGauge(this, wxID_ANY, 100);
 	progress->SetValue(0);
+	progress->SetToolTip("Replacement operation progress");
 	items_sizer->Add(progress, 0, wxALL, 5);
 
 	sizer->Add(items_sizer, 1, wxALL | wxEXPAND, 5);
@@ -203,7 +204,7 @@ ReplaceItemsDialog::ReplaceItemsDialog(wxWindow* parent, bool selectionOnly) :
 	wxBoxSizer* buttons_sizer = new wxBoxSizer(wxHORIZONTAL);
 
 	add_button = new wxButton(this, wxID_ANY, wxT("Add"));
-	add_button->SetToolTip("Add replacement rule to list");
+	add_button->SetToolTip("Add this rule to the list");
 	add_button->Enable(false);
 	buttons_sizer->Add(add_button, 0, wxALL, 5);
 
@@ -215,7 +216,7 @@ ReplaceItemsDialog::ReplaceItemsDialog(wxWindow* parent, bool selectionOnly) :
 	buttons_sizer->Add(0, 0, 1, wxEXPAND, 5);
 
 	execute_button = new wxButton(this, wxID_ANY, wxT("Execute"));
-	execute_button->SetToolTip("Execute all replacement rules");
+	execute_button->SetToolTip("Run the replacement on the map");
 	execute_button->Enable(false);
 	buttons_sizer->Add(execute_button, 0, wxALL, 5);
 
@@ -254,7 +255,7 @@ void ReplaceItemsDialog::UpdateWidgets() {
 	const uint16_t withId = with_button->GetItemId();
 	add_button->Enable(list->CanAdd(replaceId, withId));
 	if (add_button->IsEnabled()) {
-		add_button->SetToolTip("Add replacement rule to list");
+		add_button->SetToolTip("Add this rule to the list");
 	} else {
 		add_button->SetToolTip("Select replacement and target items to add.");
 	}
@@ -268,7 +269,7 @@ void ReplaceItemsDialog::UpdateWidgets() {
 
 	execute_button->Enable(list->GetCount() != 0);
 	if (execute_button->IsEnabled()) {
-		execute_button->SetToolTip("Execute all replacement rules");
+		execute_button->SetToolTip("Run the replacement on the map");
 	} else {
 		execute_button->SetToolTip("Add rules to list first.");
 	}

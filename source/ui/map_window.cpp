@@ -33,7 +33,9 @@ MapWindow::MapWindow(wxWindow* parent, Editor& editor) :
 	canvas = newd MapCanvas(this, editor, GL_settings);
 
 	vScroll = newd MapScrollBar(this, MAP_WINDOW_VSCROLL, wxVERTICAL, canvas);
+	vScroll->SetToolTip("Scroll map vertically");
 	hScroll = newd MapScrollBar(this, MAP_WINDOW_HSCROLL, wxHORIZONTAL, canvas);
+	hScroll->SetToolTip("Scroll map horizontally");
 
 	gem = newd DCButton(this, MAP_WINDOW_GEM, wxDefaultPosition, DC_BTN_NORMAL, RENDER_SIZE_16x16, EDITOR_SPRITE_SELECTION_GEM);
 	gem->SetToolTip("Switch between Drawing and Selection mode (Space)");
