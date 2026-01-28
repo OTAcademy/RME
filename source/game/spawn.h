@@ -53,12 +53,7 @@ public:
 	}
 
 	void setSize(int newsize) {
-		// Clamp size to prevent DOS/UB with large values
-		if (newsize < 1) {
-			newsize = 1;
-		} else if (newsize > 100) {
-			newsize = 100;
-		}
+		ASSERT(size < 100);
 		size = newsize;
 	}
 	int getSize() const {

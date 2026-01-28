@@ -384,16 +384,17 @@ bool Container::unserializeItemNode_OTBM(const IOMap& maphandle, BinaryNode* nod
 				return false;
 			}
 
-			std::unique_ptr<Item> item(Item::Create_OTBM(maphandle, child));
+			Item* item = Item::Create_OTBM(maphandle, child);
 			if (!item) {
 				return false;
 			}
 
 			if (!item->unserializeItemNode_OTBM(maphandle, child)) {
+				delete item;
 				return false;
 			}
 
-			contents.push_back(item.release());
+			contents.push_back(item);
 		} while (child->advance());
 	}
 	return true;
@@ -831,7 +832,7 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 
 	map.height = u16;
 
-	if (!root->getU32(u32) || u32 > static_cast<unsigned long>(g_items.MajorVersion)) { // OTB major version
+	if (!root->getU32(u32) || u32 > (unsigned long)g_items.MajorVersion) { // OTB major version
 		if (DialogUtil::PopupDialog("Map error", "The loaded map appears to be a items.otb format that deviates from the "
 												 "items.otb loaded by the editor. Do you still want to attempt to load the map?",
 									wxYES | wxNO)
@@ -843,7 +844,7 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 		}
 	}
 
-	if (!root->getU32(u32) || u32 > static_cast<unsigned long>(g_items.MinorVersion)) { // OTB minor version
+	if (!root->getU32(u32) || u32 > (unsigned long)g_items.MinorVersion) { // OTB minor version
 		warning("This editor needs an updated items.otb version");
 	}
 	version.client = (ClientVersionID)u32;
@@ -1031,12 +1032,11 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 					warning("Duplicate town id %d, discarding duplicate", town_id);
 					continue;
 				} else {
-					auto newTown = std::make_unique<Town>(town_id);
-					town = newTown.get();
+					town = newd Town(town_id);
 					if (!map.towns.addTown(town)) {
+						delete town;
 						continue;
 					}
-					newTown.release();
 				}
 				std::string town_name;
 				if (!townNode->getString(town_name)) {
@@ -1147,9 +1147,6 @@ bool IOMapOTBM::loadSpawns(Map& map, pugi::xml_document& doc) {
 			warning("Couldn't read radius of spawn.. discarding spawn...");
 			continue;
 		}
-		if (radius > g_settings.getInteger(Config::MAX_SPAWN_RADIUS)) {
-			radius = g_settings.getInteger(Config::MAX_SPAWN_RADIUS);
-		}
 
 		Tile* tile = map.getTile(spawnPosition);
 		if (tile && tile->spawn) {
@@ -1248,12 +1245,6 @@ bool IOMapOTBM::loadSpawns(Map& map, pugi::xml_document& doc) {
 				creatureTile->spawn = spawn;
 				map.addSpawn(creatureTile);
 			}
-		}
-
-		if (spawn->getSize() != radius) {
-			map.removeSpawn(tile);
-			spawn->setSize(radius);
-			map.addSpawn(tile);
 		}
 	}
 	return true;
