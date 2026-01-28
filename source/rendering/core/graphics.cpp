@@ -46,8 +46,10 @@
 
 #include "rendering/core/outfit_colors.h"
 #include "rendering/core/outfit_colorizer.h"
-#include "rendering/core/gl_texture_id_generator.h"
 #include <spdlog/spdlog.h>
+#include <atomic>
+
+static std::atomic<uint32_t> template_id_generator(0x1000000);
 
 GraphicManager::GraphicManager() :
 	client_version(nullptr),
@@ -241,23 +243,6 @@ int GameSprite::getIndex(int width, int height, int layer, int pattern_x, int pa
 	return ((((((frame % this->frames) * this->pattern_z + pattern_z) * this->pattern_y + pattern_y) * this->pattern_x + pattern_x) * this->layers + layer) * this->height + height) * this->width + width;
 }
 
-GLuint GameSprite::getHardwareID(int _x, int _y, int _layer, int _count, int _pattern_x, int _pattern_y, int _pattern_z, int _frame) {
-	uint32_t v;
-	if (_count >= 0 && height <= 1 && width <= 1) {
-		v = _count;
-	} else {
-		v = ((((((_frame)*pattern_y + _pattern_y) * pattern_x + _pattern_x) * layers + _layer) * height + _y) * width + _x);
-	}
-	if (v >= numsprites) {
-		if (numsprites == 1) {
-			v = 0;
-		} else {
-			v %= numsprites;
-		}
-	}
-	return spriteList[v]->getHardwareID();
-}
-
 const AtlasRegion* GameSprite::getAtlasRegion(int _x, int _y, int _layer, int _count, int _pattern_x, int _pattern_y, int _pattern_z, int _frame) {
 	uint32_t v;
 	if (_count >= 0 && height <= 1 && width <= 1) {
@@ -289,22 +274,6 @@ GameSprite::TemplateImage* GameSprite::getTemplateImage(int sprite_index, const 
 	TemplateImage* ptr = img.get();
 	instanced_templates.push_back(std::move(img));
 	return ptr;
-}
-
-GLuint GameSprite::getHardwareID(int _x, int _y, int _dir, int _addon, int _pattern_z, const Outfit& _outfit, int _frame) {
-	uint32_t v = getIndex(_x, _y, 0, _dir, _addon, _pattern_z, _frame);
-	if (v >= numsprites) {
-		if (numsprites == 1) {
-			v = 0;
-		} else {
-			v %= numsprites;
-		}
-	}
-	if (layers > 1) { // Template
-		TemplateImage* img = getTemplateImage(v, _outfit);
-		return img->getHardwareID();
-	}
-	return spriteList[v]->getHardwareID();
 }
 
 const AtlasRegion* GameSprite::getAtlasRegion(int _x, int _y, int _dir, int _addon, int _pattern_z, const Outfit& _outfit, int _frame) {
@@ -360,43 +329,8 @@ GameSprite::Image::Image() :
 }
 
 GameSprite::Image::~Image() {
-	unloadGLTexture(0);
-}
-
-void GameSprite::Image::createGLTexture(GLuint whatid) {
-	ASSERT(!isGLLoaded);
-
-	uint8_t* rgba = getRGBAData();
-	if (!rgba) {
-		// Fallback: Create a magenta texture to distinguish failure from garbage
-		// Use literal 32 to ensure compilation (OT sprites are always 32x32)
-		rgba = newd uint8_t[32 * 32 * 4];
-		for (int i = 0; i < 32 * 32; ++i) {
-			rgba[i * 4 + 0] = 0;
-			rgba[i * 4 + 1] = 0;
-			rgba[i * 4 + 2] = 0;
-			rgba[i * 4 + 3] = 0;
-		}
-	}
-
-	isGLLoaded = true;
-	g_gui.gfx.collector.NotifyTextureLoaded();
-
-	glBindTexture(GL_TEXTURE_2D, whatid);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // Nearest-neighbor
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // Nearest-neighbor
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 0x812F); // GL_CLAMP_TO_EDGE
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 0x812F); // GL_CLAMP_TO_EDGE
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SPRITE_PIXELS, SPRITE_PIXELS, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba);
-
-	delete[] rgba;
-#undef SPRITE_SIZE
-}
-
-void GameSprite::Image::unloadGLTexture(GLuint whatid) {
-	isGLLoaded = false;
-	g_gui.gfx.collector.NotifyTextureUnloaded();
-	glDeleteTextures(1, &whatid);
+	// Base destructor no longer needs to unload GL texture
+	// as separate textures are removed.
 }
 
 void GameSprite::Image::visit() {
@@ -404,14 +338,11 @@ void GameSprite::Image::visit() {
 }
 
 void GameSprite::Image::clean(int time) {
-	if (isGLLoaded && time - lastaccess > g_settings.getInteger(Config::TEXTURE_LONGEVITY)) {
-		unloadGLTexture(0);
-	}
+	// Legacy texture cleanup logic removed
 }
 
 GameSprite::NormalImage::NormalImage() :
 	id(0),
-	gl_tid(0),
 	atlas_region(nullptr),
 	size(0),
 	dump(nullptr) {
@@ -599,69 +530,46 @@ uint8_t* GameSprite::NormalImage::getRGBAData() {
 	return data;
 }
 
-GLuint GameSprite::NormalImage::getHardwareID() {
-	if (!isGLLoaded) {
-		if (gl_tid == 0) {
-			gl_tid = GLTextureIDGenerator::GetFreeTextureID();
-		}
-		createGLTexture(gl_tid);
-	}
-	visit();
-	return gl_tid;
-}
-
-void GameSprite::NormalImage::createGLTexture(GLuint ignored) {
-	// Atlas-only rendering - no legacy fallback
-	if (g_gui.gfx.ensureAtlasManager()) {
-		AtlasManager* atlas_mgr = g_gui.gfx.getAtlasManager();
-		if (!atlas_region) {
-			uint8_t* rgba = getRGBAData();
-			if (rgba) {
-				atlas_region = atlas_mgr->addSprite(id, rgba);
-				delete[] rgba;
-				if (atlas_region) {
-					isGLLoaded = true;
-					g_gui.gfx.collector.NotifyTextureLoaded();
-					return;
-				}
-				spdlog::warn("Atlas addSprite failed for id={}", id);
-			} else {
-				spdlog::warn("getRGBAData returned null for sprite id={}, dump={}, size={}", id, (dump ? "exists" : "null"), size);
-			}
-		} else {
-			// Already in atlas
-			isGLLoaded = true;
-			return;
-		}
-	} else {
-		spdlog::error("AtlasManager not available for sprite {}", id);
-	}
-}
-
-void GameSprite::NormalImage::unloadGLTexture(GLuint ignored) {
-	Image::unloadGLTexture(gl_tid);
-}
-
 const AtlasRegion* GameSprite::NormalImage::getAtlasRegion() {
 	if (!isGLLoaded) {
-		if (gl_tid == 0) {
-			gl_tid = GLTextureIDGenerator::GetFreeTextureID();
+		// Atlas-only rendering - no legacy fallback
+		if (g_gui.gfx.ensureAtlasManager()) {
+			AtlasManager* atlas_mgr = g_gui.gfx.getAtlasManager();
+			if (!atlas_region) {
+				uint8_t* rgba = getRGBAData();
+				if (rgba) {
+					atlas_region = atlas_mgr->addSprite(id, rgba);
+					delete[] rgba;
+					if (atlas_region) {
+						isGLLoaded = true;
+						g_gui.gfx.collector.NotifyTextureLoaded();
+					} else {
+						spdlog::warn("Atlas addSprite failed for id={}", id);
+					}
+				} else {
+					spdlog::warn("getRGBAData returned null for sprite id={}, dump={}, size={}", id, (dump ? "exists" : "null"), size);
+				}
+			} else {
+				// Already in atlas
+				isGLLoaded = true;
+			}
+		} else {
+			spdlog::error("AtlasManager not available for sprite {}", id);
 		}
-		createGLTexture(gl_tid);
 	}
 	visit();
 	return atlas_region;
 }
 
 GameSprite::TemplateImage::TemplateImage(GameSprite* parent, int v, const Outfit& outfit) :
-	gl_tid(0),
 	parent(parent),
 	sprite_index(v),
 	lookHead(outfit.lookHead),
 	lookBody(outfit.lookBody),
 	lookLegs(outfit.lookLegs),
 	lookFeet(outfit.lookFeet),
-	atlas_region(nullptr) {
+	atlas_region(nullptr),
+	texture_id(template_id_generator.fetch_add(1)) { // Generate unique ID for Atlas
 	////
 }
 
@@ -771,63 +679,37 @@ uint8_t* GameSprite::TemplateImage::getRGBAData() {
 	return rgbadata;
 }
 
-GLuint GameSprite::TemplateImage::getHardwareID() {
-	if (!isGLLoaded) {
-		if (gl_tid == 0) {
-			gl_tid = GLTextureIDGenerator::GetFreeTextureID();
-		}
-		createGLTexture(gl_tid);
-		if (!isGLLoaded) {
-			return 0;
-		}
-	}
-	visit();
-	return gl_tid;
-}
-
-void GameSprite::TemplateImage::createGLTexture(GLuint unused) {
-	// Atlas-only rendering - use generated gl_tid as unique ID
-	if (g_gui.gfx.ensureAtlasManager()) {
-		AtlasManager* atlas_mgr = g_gui.gfx.getAtlasManager();
-		if (!atlas_region) {
-			uint8_t* rgba = getRGBAData();
-			if (!rgba) {
-				spdlog::warn("getRGBAData returned null for template sprite_index={} - creating fallback", sprite_index);
-				rgba = newd uint8_t[32 * 32 * 4];
-				memset(rgba, 0, 32 * 32 * 4);
-			}
-
-			if (rgba) {
-				// Use the unique gl_tid as the sprite identifier in the atlas
-				atlas_region = atlas_mgr->addSprite(gl_tid, rgba);
-				delete[] rgba;
-				if (atlas_region) {
-					isGLLoaded = true;
-					return;
-				}
-				spdlog::warn("Atlas addSprite failed for template sprite_index={}", sprite_index);
-			}
-		} else {
-			// Already in atlas
-			isGLLoaded = true;
-			return;
-		}
-	} else {
-		spdlog::error("AtlasManager not available for template sprite_index={}", sprite_index);
-	}
-}
-
 const AtlasRegion* GameSprite::TemplateImage::getAtlasRegion() {
 	if (!isGLLoaded) {
-		if (gl_tid == 0) {
-			gl_tid = GLTextureIDGenerator::GetFreeTextureID();
+		// Atlas-only rendering - use generated texture_id as unique ID
+		if (g_gui.gfx.ensureAtlasManager()) {
+			AtlasManager* atlas_mgr = g_gui.gfx.getAtlasManager();
+			if (!atlas_region) {
+				uint8_t* rgba = getRGBAData();
+				if (!rgba) {
+					spdlog::warn("getRGBAData returned null for template sprite_index={} - creating fallback", sprite_index);
+					rgba = newd uint8_t[32 * 32 * 4];
+					memset(rgba, 0, 32 * 32 * 4);
+				}
+
+				if (rgba) {
+					// Use the unique texture_id as the sprite identifier in the atlas
+					atlas_region = atlas_mgr->addSprite(texture_id, rgba);
+					delete[] rgba;
+					if (atlas_region) {
+						isGLLoaded = true;
+					} else {
+						spdlog::warn("Atlas addSprite failed for template sprite_index={}", sprite_index);
+					}
+				}
+			} else {
+				// Already in atlas
+				isGLLoaded = true;
+			}
+		} else {
+			spdlog::error("AtlasManager not available for template sprite_index={}", sprite_index);
 		}
-		createGLTexture(gl_tid);
 	}
 	visit();
 	return atlas_region;
-}
-
-void GameSprite::TemplateImage::unloadGLTexture(GLuint unused) {
-	Image::unloadGLTexture(gl_tid);
 }

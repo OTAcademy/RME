@@ -99,6 +99,9 @@ void PrimitiveRenderer::flushTriangles() {
 		return;
 	}
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	shader_->Use();
 	shader_->SetMat4("uMVP", projection_);
 
@@ -108,6 +111,8 @@ void PrimitiveRenderer::flushTriangles() {
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)triangle_verts_.size());
 	glBindVertexArray(0);
 
+	glDisable(GL_BLEND);
+
 	triangle_verts_.clear();
 }
 
@@ -115,6 +120,9 @@ void PrimitiveRenderer::flushLines() {
 	if (line_verts_.empty()) {
 		return;
 	}
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	shader_->Use();
 	shader_->SetMat4("uMVP", projection_);
@@ -124,6 +132,8 @@ void PrimitiveRenderer::flushLines() {
 	glBindVertexArray(vao_->GetID());
 	glDrawArrays(GL_LINES, 0, (GLsizei)line_verts_.size());
 	glBindVertexArray(0);
+
+	glDisable(GL_BLEND);
 
 	line_verts_.clear();
 }

@@ -1,4 +1,4 @@
-﻿//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 // This file is part of Remere's Map Editor
 //////////////////////////////////////////////////////////////////////
 // Remere's Map Editor is free software: you can redistribute it and/or modify
@@ -132,7 +132,7 @@ void MapDrawer::Release() {
 	// tooltip_drawer->clear(); // Moved to ClearTooltips(), called explicitly after UI draw
 
 	if (light_drawer) {
-		light_drawer->unloadGLTexture();
+		// light_drawer->unloadGLTexture(); // Removed as legacy wrapper
 	}
 }
 

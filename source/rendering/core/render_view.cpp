@@ -99,7 +99,5 @@ void RenderView::Clear() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// glLoadIdentity(); // Legacy
-
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
+	// Blending and State management is now handled by individual renderers
 }

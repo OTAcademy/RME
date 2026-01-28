@@ -121,8 +121,6 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/coordinate_mapper.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/drawing_options.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/editor_sprite.h
-    ${CMAKE_CURRENT_LIST_DIR}/rendering/core/gl_texture.h
-    ${CMAKE_CURRENT_LIST_DIR}/rendering/core/gl_texture_id_generator.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/graphics.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/light_buffer.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/minimap_colors.h
@@ -416,8 +414,6 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/coordinate_mapper.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/drawing_options.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/editor_sprite.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/rendering/core/gl_texture.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/rendering/core/gl_texture_id_generator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/graphics.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/light_buffer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/multi_draw_indirect_renderer.cpp

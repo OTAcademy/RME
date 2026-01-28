@@ -30,7 +30,6 @@ LightDrawer::LightDrawer() {
 }
 
 LightDrawer::~LightDrawer() {
-	unloadGLTexture();
 	vao.reset();
 	vbo.reset();
 	light_ssbo.reset();
@@ -96,9 +95,19 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	}
 
 	if (!gpu_lights_.empty()) {
-		// Reallocate buffer if needed, or just map/update.
-		// Using glNamedBufferData with GL_DYNAMIC_DRAW is simple and handles resizing.
-		glNamedBufferData(light_ssbo->GetID(), gpu_lights_.size() * sizeof(GPULight), gpu_lights_.data(), GL_DYNAMIC_DRAW);
+		size_t needed_size = gpu_lights_.size() * sizeof(GPULight);
+
+		if (needed_size > light_ssbo_capacity_) {
+			// Grow buffer strategy: Max(needed, capacity * 1.5) to avoid frequent reallocations
+			light_ssbo_capacity_ = std::max(needed_size, static_cast<size_t>(light_ssbo_capacity_ * 1.5));
+			if (light_ssbo_capacity_ < 1024) light_ssbo_capacity_ = 1024; // Min size
+
+			glNamedBufferData(light_ssbo->GetID(), light_ssbo_capacity_, gpu_lights_.data(), GL_DYNAMIC_DRAW);
+		} else {
+			// Fast path: Update existing buffer
+			glNamedBufferSubData(light_ssbo->GetID(), 0, needed_size, gpu_lights_.data());
+		}
+
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, light_ssbo->GetID());
 	}
 
@@ -123,7 +132,9 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 	glBindVertexArray(0);
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore
+	// Restore state
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_BLEND);
 
 	if (fog) {
 		// Fog logic integrated or dedicated pass needed.
@@ -227,10 +238,4 @@ void LightDrawer::initRenderResources() {
 	glVertexArrayAttribBinding(vao->GetID(), 1, 0);
 
 	glBindVertexArray(0);
-}
-
-void LightDrawer::createGLTexture() {
-}
-
-void LightDrawer::unloadGLTexture() {
 }

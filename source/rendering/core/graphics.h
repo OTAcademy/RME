@@ -66,8 +66,6 @@ public:
 	~GameSprite();
 
 	int getIndex(int width, int height, int layer, int pattern_x, int pattern_y, int pattern_z, int frame) const;
-	GLuint getHardwareID(int _x, int _y, int _layer, int _subtype, int _pattern_x, int _pattern_y, int _pattern_z, int _frame);
-	GLuint getHardwareID(int _x, int _y, int _dir, int _addon, int _pattern_z, const Outfit& _outfit, int _frame); // CreatureDatabase
 
 	// Phase 2: Get atlas region for texture array rendering
 	const AtlasRegion* getAtlasRegion(int _x, int _y, int _layer, int _subtype, int _pattern_x, int _pattern_y, int _pattern_z, int _frame);
@@ -109,13 +107,8 @@ protected:
 		void visit();
 		virtual void clean(int time);
 
-		virtual GLuint getHardwareID() = 0;
 		virtual uint8_t* getRGBData() = 0;
 		virtual uint8_t* getRGBAData() = 0;
-
-	protected:
-		virtual void createGLTexture(GLuint whatid);
-		virtual void unloadGLTexture(GLuint whatid);
 	};
 
 	class NormalImage : public Image {
@@ -123,9 +116,8 @@ protected:
 		NormalImage();
 		virtual ~NormalImage();
 
-		// We use the sprite id as GL texture id
+		// We use the sprite id as key
 		uint32_t id;
-		GLuint gl_tid;
 		const AtlasRegion* atlas_region; // AtlasRegion in texture array (nullptr if not loaded)
 
 		// This contains the pixel data
@@ -134,16 +126,11 @@ protected:
 
 		virtual void clean(int time);
 
-		virtual GLuint getHardwareID() override;
 		virtual uint8_t* getRGBData() override;
 		virtual uint8_t* getRGBAData() override;
 
 		// Phase 2: Get atlas region (ensures loaded first)
 		const AtlasRegion* getAtlasRegion();
-
-	protected:
-		virtual void createGLTexture(GLuint ignored = 0) override;
-		virtual void unloadGLTexture(GLuint ignored = 0) override;
 	};
 
 	class TemplateImage : public Image {
@@ -151,24 +138,19 @@ protected:
 		TemplateImage(GameSprite* parent, int v, const Outfit& outfit);
 		virtual ~TemplateImage();
 
-		virtual GLuint getHardwareID() override;
 		virtual uint8_t* getRGBData() override;
 		virtual uint8_t* getRGBAData() override;
 
 		const AtlasRegion* getAtlasRegion();
 		const AtlasRegion* atlas_region;
 
-		GLuint gl_tid;
+		uint32_t texture_id; // Unique ID for AtlasManager key
 		GameSprite* parent;
 		int sprite_index;
 		uint8_t lookHead;
 		uint8_t lookBody;
 		uint8_t lookLegs;
 		uint8_t lookFeet;
-
-	protected:
-		virtual void createGLTexture(GLuint ignored = 0) override;
-		virtual void unloadGLTexture(GLuint ignored = 0) override;
 	};
 
 	uint32_t id;

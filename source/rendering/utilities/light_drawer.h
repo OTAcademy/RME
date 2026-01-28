@@ -26,7 +26,6 @@
 #include <glm/glm.hpp>
 #include "rendering/core/sprite_light.h"
 #include "rendering/core/light_buffer.h"
-#include "rendering/core/gl_texture.h"
 #include "rendering/core/shader_program.h"
 #include "rendering/core/gl_resources.h"
 
@@ -47,9 +46,6 @@ public:
 	~LightDrawer();
 	void draw(const RenderView& view, bool fog, const LightBuffer& light_buffer, const wxColor& global_color, float light_intensity = 1.0f, float ambient_light_level = 0.5f);
 
-	void createGLTexture();
-	void unloadGLTexture();
-
 private:
 	// wxColor global_color; // Removed state
 
@@ -60,6 +56,7 @@ private:
 	std::unique_ptr<GLVertexArray> vao;
 	std::unique_ptr<GLBuffer> vbo;
 	std::unique_ptr<GLBuffer> light_ssbo;
+	size_t light_ssbo_capacity_ = 0; // Track capacity in bytes
 
 	std::vector<GPULight> gpu_lights_;
 
