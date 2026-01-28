@@ -65,6 +65,8 @@ namespace IngamePreview {
 		view.floor = camera_pos.z;
 		view.screensize_x = viewport_width;
 		view.screensize_y = viewport_height;
+		view.viewport_x = viewport_x;
+		view.viewport_y = viewport_y;
 
 		// Proper coordinate alignment
 		// We want camera_pos to be at the center of the viewport

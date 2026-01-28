@@ -6,6 +6,8 @@
 #include "ui/toolbar/light_toolbar.h"
 #include "ui/gui.h"
 #include "ui/gui_ids.h"
+#include "app/settings.h"
+#include "MaterialDesign/wxMaterialDesignArtProvider.hpp"
 
 const wxString LightToolBar::PANE_NAME = "light_toolbar";
 
@@ -28,16 +30,25 @@ LightToolBar::LightToolBar(wxWindow* parent) {
 	toolbar->AddSeparator();
 	toolbar->AddControl(ambient_label);
 	toolbar->AddControl(ambient_slider);
+	toolbar->AddSeparator();
+
+	wxBitmap light_bitmap = wxMaterialDesignArtProvider::GetBitmap(wxART_WB_SUNNY, wxART_CLIENT_MATERIAL_FILLED, icon_size, wxColour(255, 235, 59));
+	toolbar->AddTool(ID_LIGHT_TOGGLE, "Toggle Lighting", light_bitmap, "Toggle Lighting", wxITEM_CHECK);
+	toolbar->ToggleTool(ID_LIGHT_TOGGLE, g_settings.getBoolean(Config::SHOW_LIGHTS));
 
 	toolbar->Realize();
 
 	light_slider->Bind(wxEVT_SLIDER, &LightToolBar::OnLightSlider, this);
 	ambient_slider->Bind(wxEVT_SLIDER, &LightToolBar::OnAmbientLightSlider, this);
+	toolbar->Bind(wxEVT_TOOL, &LightToolBar::OnToggleLight, this, ID_LIGHT_TOGGLE);
 }
 
 LightToolBar::~LightToolBar() {
 	light_slider->Unbind(wxEVT_SLIDER, &LightToolBar::OnLightSlider, this);
 	ambient_slider->Unbind(wxEVT_SLIDER, &LightToolBar::OnAmbientLightSlider, this);
+	if (toolbar) {
+		toolbar->Unbind(wxEVT_TOOL, &LightToolBar::OnToggleLight, this, ID_LIGHT_TOGGLE);
+	}
 }
 
 void LightToolBar::OnLightSlider(wxCommandEvent& event) {
@@ -47,5 +58,10 @@ void LightToolBar::OnLightSlider(wxCommandEvent& event) {
 
 void LightToolBar::OnAmbientLightSlider(wxCommandEvent& event) {
 	g_gui.SetAmbientLightLevel(event.GetInt() / 100.0f);
+	g_gui.RefreshView();
+}
+
+void LightToolBar::OnToggleLight(wxCommandEvent& event) {
+	g_settings.setInteger(Config::SHOW_LIGHTS, event.IsChecked());
 	g_gui.RefreshView();
 }

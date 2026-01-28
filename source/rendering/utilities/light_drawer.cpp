@@ -122,8 +122,8 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 		// Cull lights that are definitely out of FBO range
 		// Radius approx light.intensity * TileSize
 		int radius_px = light.intensity * TileSize + 16;
-		int lx_px = light.map_x * TileSize;
-		int ly_px = light.map_y * TileSize;
+		int lx_px = light.map_x * TileSize + TileSize / 2;
+		int ly_px = light.map_y * TileSize + TileSize / 2;
 
 		// Check overlap with FBO rect
 		if (lx_px + radius_px < fbo_origin_x || lx_px - radius_px > fbo_origin_x + pixel_width || ly_px + radius_px < fbo_origin_y || ly_px - radius_px > fbo_origin_y + pixel_height) {
@@ -162,18 +162,27 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	glViewport(0, 0, buffer_width, buffer_height); // Render to full buffer size, though we only care about top-left [pixel_width, pixel_height]
 
 	// Clear to Ambient Color
-	float r = (global_color.Red() / 255.0f) * ambient_light_level;
-	float g = (global_color.Green() / 255.0f) * ambient_light_level;
-	float b = (global_color.Blue() / 255.0f) * ambient_light_level;
-	glClearColor(r, g, b, 1.0f); // Alpha 1.0 ensures we see it? No, alpha doesn't matter much for MAX blending of color, but matters for final composition?
+	float ambient_r = (global_color.Red() / 255.0f) * ambient_light_level;
+	float ambient_g = (global_color.Green() / 255.0f) * ambient_light_level;
+	float ambient_b = (global_color.Blue() / 255.0f) * ambient_light_level;
+
+	// If global_color is (0,0,0) (not set), use a default dark ambient
+	if (global_color.Red() == 0 && global_color.Green() == 0 && global_color.Blue() == 0) {
+		ambient_r = 0.5f * ambient_light_level;
+		ambient_g = 0.5f * ambient_light_level;
+		ambient_b = 0.5f * ambient_light_level;
+	}
+
+	glClearColor(ambient_r, ambient_g, ambient_b, 1.0f);
 	// Actually, for "Max" blending, we want to start with Ambient.
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	if (!gpu_lights_.empty()) {
 		shader->Use();
 
-		// Setup Projection for FBO: Ortho 0..buffer_width, 0..buffer_height
-		glm::mat4 fbo_projection = glm::ortho(0.0f, (float)buffer_width, 0.0f, (float)buffer_height);
+		// Setup Projection for FBO: Ortho 0..buffer_width, buffer_height..0 (Y-down)
+		// This matches screen coordinate system and avoids flips
+		glm::mat4 fbo_projection = glm::ortho(0.0f, (float)buffer_width, (float)buffer_height, 0.0f);
 		shader->SetMat4("uProjection", fbo_projection);
 		shader->SetFloat("uTileSize", (float)TileSize);
 
@@ -196,7 +205,7 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	// 4. Composite FBO to Screen
 	// We need to draw the relevant part of the FBO texture onto the screen quad.
 	// MapDrawer sets up viewport for us? Yes.
-	glViewport(0, 0, view.screensize_x, view.screensize_y); // Restore viewport? MapDrawer usually handles this before Draw().
+	glViewport(view.viewport_x, view.viewport_y, view.screensize_x, view.screensize_y);
 	// Actually MapDrawer doesn't seem to set viewport every time, but `view.projectionMatrix` assumes 0..screensize.
 
 	// Use PrimitiveRenderer or just a simple quad?
@@ -239,9 +248,23 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	shader->SetMat4("uProjection", view.projectionMatrix * view.viewMatrix * model); // reusing uProjection as MVP
 
 	// Calculate UVs based on used part of FBO
+	// Since we use Y-down ortho, small Y is at Top of FBO.
+	// OpenGL textures have Y=0 at Bottom.
+	// So Map Top (Y=0) is at FBO Top (V=1 if using Y-down ortho with full height).
+	// But we only use [0..pixel_height] of [0..buffer_height].
+	// FBO Top is at Y=0. FBO Bottom is at Y=buffer_height.
+	// If we use Y-down ortho: Y=0 -> V=1, Y=buffer_height -> V=0.
+	// Map Top (Y=0) -> V=1. Map Bottom (Y=pixel_height) -> V = 1.0 - (pixel_height / buffer_height).
+
 	float uv_w = (float)pixel_width / (float)buffer_width;
 	float uv_h = (float)pixel_height / (float)buffer_height;
-	shader->SetVec2("uUVMax", glm::vec2(uv_w, uv_h));
+
+	// We pass UV range to shader. Shader should map aPos.y (0..1) to correct range.
+	// If screen aPos.y=0 is Top, it should get texture Map Top.
+	// With Y-down ortho into FBO, Map Top is at top of viewport, which is V=1 in GL.
+	// So aPos.y=0 -> V=1, aPos.y=1 -> V = 1.0 - uv_h.
+	shader->SetVec2("uUVMin", glm::vec2(0.0f, 1.0f));
+	shader->SetVec2("uUVMax", glm::vec2(uv_w, 1.0f - uv_h));
 
 	// Blending: Dst * Src
 	glEnable(GL_BLEND);
@@ -266,6 +289,7 @@ void LightDrawer::initRenderResources() {
 		uniform int uMode;
 		uniform mat4 uProjection;
 		uniform float uTileSize;
+		uniform vec2 uUVMin;
 		uniform vec2 uUVMax;
 
 		struct Light {
@@ -309,7 +333,7 @@ void LightDrawer::initRenderResources() {
 			} else {
 				// COMPOSITE
 				gl_Position = uProjection * vec4(aPos, 0.0, 1.0);
-				TexCoord = aPos * uUVMax; // Scale UV to used portion
+				TexCoord = mix(uUVMin, uUVMax, aPos); 
 			}
 		}
 	)";

@@ -9,6 +9,8 @@
 void RenderView::Setup(MapCanvas* canvas, const DrawingOptions& options) {
 	canvas->MouseToMap(&mouse_map_x, &mouse_map_y);
 	canvas->GetViewBox(&view_scroll_x, &view_scroll_y, &screensize_x, &screensize_y);
+	viewport_x = 0;
+	viewport_y = 0;
 
 	zoom = (float)canvas->GetZoom();
 	tile_size = std::max(1, (int)(TileSize / zoom)); // after zoom
@@ -72,7 +74,7 @@ void RenderView::getScreenPosition(int map_x, int map_y, int map_z, int& out_x, 
 #include <glm/gtc/matrix_transform.hpp>
 
 void RenderView::SetupGL() {
-	glViewport(0, 0, screensize_x, screensize_y);
+	glViewport(viewport_x, viewport_y, screensize_x, screensize_y);
 
 	// Calculate Projection
 	// glOrtho(0, vPort[2] * zoom, vPort[3] * zoom, 0, -1, 1);

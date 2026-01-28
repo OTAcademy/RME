@@ -15,6 +15,7 @@ struct RenderView {
 	int end_x, end_y, end_z, superend_z;
 	int view_scroll_x, view_scroll_y;
 	int screensize_x, screensize_y;
+	int viewport_x, viewport_y;
 
 	int mouse_map_x, mouse_map_y;
 

@@ -57,7 +57,7 @@ namespace IngamePreview {
 		toolbar_sizer->Add(lighting_btn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 1);
 
 		// Sliders
-		ambient_slider = new wxSlider(this, ID_AMBIENT_SLIDER, 255, 0, 255, wxDefaultPosition, wxSize(60, -1));
+		ambient_slider = new wxSlider(this, ID_AMBIENT_SLIDER, 128, 0, 255, wxDefaultPosition, wxSize(60, -1));
 		ambient_slider->SetToolTip("Ambient Light");
 		toolbar_sizer->Add(ambient_slider, 0, wxALL | wxALIGN_CENTER_VERTICAL, 1);
 
