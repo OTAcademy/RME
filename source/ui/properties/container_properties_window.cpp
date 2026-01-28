@@ -188,12 +188,12 @@ void ContainerPropertiesWindow::OnAddItem(wxCommandEvent& WXUNUSED(event)) {
 			ItemVector& contents = container->getVector();
 			uint32_t index = last_clicked_button->getIndex();
 
-			Item* new_item = Item::Create(item_id);
+			std::unique_ptr<Item> new_item(Item::Create(item_id)); // Wrap locally
 			if (new_item) {
 				if (index < contents.size()) {
-					contents.insert(contents.begin() + index, new_item);
+					contents.insert(contents.begin() + index, new_item.release()); // Release ownership to vector
 				} else {
-					contents.push_back(new_item);
+					contents.push_back(new_item.release()); // Release ownership to vector
 				}
 			}
 			Update();
@@ -242,7 +242,7 @@ void ContainerPropertiesWindow::OnRemoveItem(wxCommandEvent& WXUNUSED(event)) {
 
 	auto it = std::find(contents.begin(), contents.end(), to_remove);
 	if (it != contents.end()) {
-		delete *it;
+		std::unique_ptr<Item> item_ptr(*it); // Transfer ownership to unique_ptr for safe deletion
 		contents.erase(it);
 	}
 

@@ -67,9 +67,7 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 	bool hasContent = false;
 	if (g_items[id].isContainer()) {
 		if (Container* container = dynamic_cast<Container*>(item)) {
-			if (container->getItemCount() > 0) {
-				hasContent = true;
-			}
+			hasContent = container->getItemCount() > 0;
 		}
 	}
 
@@ -107,7 +105,7 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 					ContainerItem ci;
 					ci.id = subItem->getID();
 					ci.subtype = subItem->getSubtype();
-					ci.count = (subItem->isStackable()) ? subItem->getSubtype() : 1;
+					ci.count = subItem->getCount();
 					// Sanity check for count
 					if (ci.count == 0) {
 						ci.count = 1;

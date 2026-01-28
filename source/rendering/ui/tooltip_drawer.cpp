@@ -30,6 +30,14 @@ TooltipDrawer::TooltipDrawer() {
 
 TooltipDrawer::~TooltipDrawer() {
 	clear();
+	if (lastContext) {
+		for (auto& pair : spriteCache) {
+			if (pair.second > 0) {
+				nvgDeleteImage(lastContext, pair.second);
+			}
+		}
+		spriteCache.clear();
+	}
 }
 
 void TooltipDrawer::clear() {
@@ -90,6 +98,16 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 
 	// Detect context change and clear cache
 	if (vg != lastContext) {
+		// If we had a previous context, we'd ideally delete images from it,
+		// but if the context pointer changed, the old one might be invalid.
+		// However, adhering to the request to clear cache with nvgDeleteImage:
+		if (lastContext) {
+			for (auto& pair : spriteCache) {
+				if (pair.second > 0) {
+					nvgDeleteImage(lastContext, pair.second);
+				}
+			}
+		}
 		spriteCache.clear();
 		lastContext = vg;
 	}
@@ -113,14 +131,14 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 		// Use the first frame/part of the sprite
 		GameSprite::NormalImage* img = gameSprite->spriteList[0];
 		if (img) {
-			uint8_t* rgba = nullptr;
+			std::unique_ptr<uint8_t[]> rgba;
 
 			// For legacy sprites (no transparency), use getRGBData + Magenta Masking
 			// This matches how WxWidgets/SpriteIconGenerator renders icons
 			if (!g_gui.gfx.hasTransparency()) {
 				uint8_t* rgb = img->getRGBData();
 				if (rgb) {
-					rgba = new uint8_t[32 * 32 * 4];
+					rgba = std::make_unique<uint8_t[]>(32 * 32 * 4);
 					for (int i = 0; i < 32 * 32; ++i) {
 						uint8_t r = rgb[i * 3 + 0];
 						uint8_t g = rgb[i * 3 + 1];
@@ -147,22 +165,25 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 
 			// Fallback/Standard path for alpha sprites or if RGB failed
 			if (!rgba) {
-				rgba = img->getRGBAData();
+				rgba.reset(img->getRGBAData());
 				if (!rgba) {
 					// getRGBAData failed
 				}
 			}
 
 			if (rgba) {
-				int image = nvgCreateImageRGBA(vg, 32, 32, 0, rgba);
+				int image = nvgCreateImageRGBA(vg, 32, 32, 0, rgba.get());
 				if (image == 0) {
 					// nvgCreateImageRGBA failed
 				} else {
 					// Success
+					// Check if we are overwriting an existing valid image (shouldn't happen given find() above, but safest)
+					if (spriteCache.count(itemId) && spriteCache[itemId] > 0) {
+						nvgDeleteImage(vg, spriteCache[itemId]);
+					}
+					spriteCache[itemId] = image;
+					return image;
 				}
-				spriteCache[itemId] = image;
-				delete[] rgba;
-				return image;
 			}
 		}
 	} else {
@@ -312,12 +333,22 @@ void TooltipDrawer::draw(const RenderView& view) {
 		int containerRows = 0;
 		float gridSlotSize = 34.0f; // 32px + padding
 		float containerHeight = 0.0f;
-		int totalSlots = 0;
 
-		if (tooltip.containerCapacity > 0) {
-			// Apply a reasonable cap for visual tooltip (e.g. 32 items max)
-			totalSlots = std::min((int)tooltip.containerCapacity, 32);
+		int numItems = (int)tooltip.containerItems.size();
+		int capacity = (int)tooltip.containerCapacity;
+		int emptySlots = std::max(0, capacity - numItems);
+		int totalSlots = numItems;
 
+		if (emptySlots > 0) {
+			totalSlots++; // Add one slot for the summary
+		}
+
+		// Apply a hard cap for visual safety (though items are capped at 32 in TileRenderer)
+		if (totalSlots > 33) {
+			totalSlots = 33;
+		}
+
+		if (capacity > 0 || numItems > 0) {
 			// Heuristic: try to keep it somewhat square but matching width
 			containerCols = std::min(4, totalSlots);
 			// Force roughly square-ish if many items, but max 4-5 cols
@@ -331,14 +362,15 @@ void TooltipDrawer::draw(const RenderView& view) {
 				containerCols = 8;
 			}
 
-			// Ensure at least 1 col if capacity > 0 (though min function handles it)
-			if (containerCols == 0) {
+			// Ensure at least 1 col if there are slots
+			if (containerCols == 0 && totalSlots > 0) {
 				containerCols = 1;
 			}
 
-			// Simple wrapping
-			containerRows = (totalSlots + containerCols - 1) / containerCols;
-			containerHeight = containerRows * gridSlotSize + 4.0f; // + top margin
+			if (containerCols > 0) {
+				containerRows = (totalSlots + containerCols - 1) / containerCols;
+				containerHeight = containerRows * gridSlotSize + 4.0f; // + top margin
+			}
 		}
 
 		// Calculate box dimensions
@@ -436,12 +468,30 @@ void TooltipDrawer::draw(const RenderView& view) {
 				nvgFill(vg);
 				nvgStroke(vg);
 
-				// Draw item if available
-				if (idx < (int)tooltip.containerItems.size()) {
+				// Check if this is the summary info slot (last slot if we have empty spaces)
+				bool isSummarySlot = (emptySlots > 0 && idx == totalSlots - 1);
+
+				if (isSummarySlot) {
+					// Draw empty slots count: "+N"
+					std::string summary = "+" + std::to_string(emptySlots);
+
+					nvgFontSize(vg, 12.0f);
+					nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+
+					// Text shadow
+					nvgFillColor(vg, nvgRGBA(0, 0, 0, 255));
+					nvgText(vg, itemX + 17, itemY + 17, summary.c_str(), nullptr); // +1 offset
+
+					// Text
+					nvgFillColor(vg, nvgRGBA(COUNT_TEXT_R, COUNT_TEXT_G, COUNT_TEXT_B, 255));
+					nvgText(vg, itemX + 16, itemY + 16, summary.c_str(), nullptr);
+
+				} else if (idx < numItems) {
+					// Draw Actual Item
 					const auto& item = tooltip.containerItems[idx];
 
 					// Draw item sprite
-					int img = const_cast<TooltipDrawer*>(this)->getSpriteImage(vg, item.id);
+					int img = getSpriteImage(vg, item.id);
 					if (img > 0) {
 						nvgBeginPath(vg);
 						nvgRect(vg, itemX, itemY, 32, 32);
@@ -461,7 +511,7 @@ void TooltipDrawer::draw(const RenderView& view) {
 						nvgText(vg, itemX + 33, itemY + 33, countStr.c_str(), nullptr);
 
 						// Text
-						nvgFillColor(vg, nvgRGBA(200, 200, 200, 255));
+						nvgFillColor(vg, nvgRGBA(COUNT_TEXT_R, COUNT_TEXT_G, COUNT_TEXT_B, 255));
 						nvgText(vg, itemX + 32, itemY + 32, countStr.c_str(), nullptr);
 					}
 				}
