@@ -140,4 +140,49 @@ private:
 	GLuint id = 0;
 };
 
+// RAII wrapper for OpenGL Framebuffers (FBO)
+class GLFramebuffer {
+public:
+	GLFramebuffer() {
+		glCreateFramebuffers(1, &id);
+		spdlog::info("GLFramebuffer created [ID={}]", id);
+	}
+
+	~GLFramebuffer() {
+		if (id) {
+			spdlog::info("GLFramebuffer deleted [ID={}]", id);
+			glDeleteFramebuffers(1, &id);
+		}
+	}
+
+	// Disable copy
+	GLFramebuffer(const GLFramebuffer&) = delete;
+	GLFramebuffer& operator=(const GLFramebuffer&) = delete;
+
+	// Enable move
+	GLFramebuffer(GLFramebuffer&& other) noexcept :
+		id(std::exchange(other.id, 0)) { }
+
+	GLFramebuffer& operator=(GLFramebuffer&& other) noexcept {
+		if (this != &other) {
+			if (id) {
+				glDeleteFramebuffers(1, &id);
+			}
+			id = std::exchange(other.id, 0);
+		}
+		return *this;
+	}
+
+	// Explicit conversion
+	explicit operator GLuint() const {
+		return id;
+	}
+	GLuint GetID() const {
+		return id;
+	}
+
+private:
+	GLuint id = 0;
+};
+
 #endif

@@ -60,6 +60,14 @@ private:
 
 	std::vector<GPULight> gpu_lights_;
 
+	std::unique_ptr<GLFramebuffer> fbo;
+	std::unique_ptr<GLTextureResource> fbo_texture;
+	int buffer_width = 0;
+	int buffer_height = 0;
+
+	void InitFBO();
+	void ResizeFBO(int width, int height);
+
 	void initRenderResources();
 };
 
