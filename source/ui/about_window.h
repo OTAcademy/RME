@@ -20,8 +20,6 @@
 
 #include "app/main.h"
 
-class GamePanel;
-
 class AboutWindow : public wxDialog {
 public:
 	AboutWindow(wxWindow* parent);
@@ -30,12 +28,8 @@ public:
 	void OnClickOK(wxCommandEvent&);
 	void OnClickLicense(wxCommandEvent&);
 
-	void OnTetris(wxCommandEvent&);
-	void OnSnake(wxCommandEvent&);
-
 private:
 	wxSizer* topsizer;
-	GamePanel* game_panel;
 
 	DECLARE_EVENT_TABLE()
 };
