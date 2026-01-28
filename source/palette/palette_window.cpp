@@ -25,7 +25,6 @@
 
 #include "palette/palette_window.h"
 #include "palette/panels/brush_palette_panel.h"
-#include "palette/palette_house.h"
 #include "palette/palette_creature.h"
 #include "palette/palette_waypoints.h"
 
@@ -53,7 +52,6 @@ PaletteWindow::PaletteWindow(wxWindow* parent, const TilesetContainer& tilesets)
 	item_palette(nullptr),
 	collection_palette(nullptr),
 	creature_palette(nullptr),
-	house_palette(nullptr),
 	waypoint_palette(nullptr),
 	raw_palette(nullptr) {
 	SetMinSize(wxSize(225, 250));
@@ -72,9 +70,6 @@ PaletteWindow::PaletteWindow(wxWindow* parent, const TilesetContainer& tilesets)
 
 	item_palette = static_cast<BrushPalettePanel*>(CreateItemPalette(choicebook, tilesets));
 	choicebook->AddPage(item_palette, item_palette->GetName());
-
-	house_palette = static_cast<HousePalettePanel*>(CreateHousePalette(choicebook, tilesets));
-	choicebook->AddPage(house_palette, house_palette->GetName());
 
 	waypoint_palette = static_cast<WaypointPalettePanel*>(CreateWaypointPalette(choicebook, tilesets));
 	choicebook->AddPage(waypoint_palette, waypoint_palette->GetName());
@@ -125,11 +120,6 @@ PalettePanel* PaletteWindow::CreateItemPalette(wxWindow* parent, const TilesetCo
 	return panel;
 }
 
-PalettePanel* PaletteWindow::CreateHousePalette(wxWindow* parent, const TilesetContainer& tilesets) {
-	HousePalettePanel* panel = newd HousePalettePanel(parent);
-	return panel;
-}
-
 PalettePanel* PaletteWindow::CreateWaypointPalette(wxWindow* parent, const TilesetContainer& tilesets) {
 	WaypointPalettePanel* panel = newd WaypointPalettePanel(parent);
 	return panel;
@@ -153,8 +143,8 @@ void PaletteWindow::ReloadSettings(Map* map) {
 	if (doodad_palette) {
 		doodad_palette->SetListType(wxstr(g_settings.getString(Config::PALETTE_DOODAD_STYLE)));
 	}
-	if (house_palette) {
-		house_palette->SetMap(map);
+	if (waypoint_palette) {
+		waypoint_palette->SetMap(map);
 	}
 	if (waypoint_palette) {
 		waypoint_palette->SetMap(map);
@@ -193,9 +183,6 @@ void PaletteWindow::InvalidateContents() {
 	LoadCurrentContents();
 	if (creature_palette) {
 		creature_palette->OnUpdate();
-	}
-	if (house_palette) {
-		house_palette->OnUpdate();
 	}
 	if (waypoint_palette) {
 		waypoint_palette->OnUpdate();
@@ -250,12 +237,6 @@ PaletteType PaletteWindow::GetSelectedPage() const {
 bool PaletteWindow::OnSelectBrush(const Brush* whatbrush, PaletteType primary) {
 	if (!choicebook || !whatbrush) {
 		return false;
-	}
-
-	if (whatbrush->isHouse() && house_palette) {
-		house_palette->SelectBrush(whatbrush);
-		SelectPage(TILESET_HOUSE);
-		return true;
 	}
 
 	switch (primary) {
@@ -382,9 +363,6 @@ void PaletteWindow::OnUpdateBrushSize(BrushShape shape, int size) {
 void PaletteWindow::OnUpdate(Map* map) {
 	if (creature_palette) {
 		creature_palette->OnUpdate();
-	}
-	if (house_palette) {
-		house_palette->SetMap(map);
 	}
 	if (waypoint_palette) {
 		waypoint_palette->SetMap(map);

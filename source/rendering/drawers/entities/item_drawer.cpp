@@ -39,10 +39,14 @@ void ItemDrawer::BlitItem(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 	ItemType& it = g_items[item->getID()];
 
 	// Locked door indicator
+	// FIXME: This logic causes the map to turn black when zooming out with a house brush selected.
+	// Disabled until a proper fix is found.
+	/*
 	if (!options.ingame && options.highlight_locked_doors && it.isDoor() && it.isLocked) {
 		blue /= 2;
 		green /= 2;
 	}
+	*/
 
 	if (!options.ingame && !ephemeral && item->isSelected()) {
 		red /= 2;

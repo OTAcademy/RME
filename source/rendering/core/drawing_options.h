@@ -53,6 +53,7 @@ struct DrawingOptions {
 	wxColor global_light_color;
 	float light_intensity;
 	float ambient_light_level;
+	float highlight_pulse;
 };
 
 #endif

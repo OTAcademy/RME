@@ -41,6 +41,7 @@ void DrawingOptions::SetDefault() {
 	light_intensity = 1.0f;
 	ambient_light_level = 0.5f;
 	global_light_color = wxColor(128, 128, 128);
+	highlight_pulse = 0.0f;
 }
 
 void DrawingOptions::SetIngame() {

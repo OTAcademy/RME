@@ -20,7 +20,7 @@
 #include "editor/editor.h"
 #include "ui/gui.h"
 #include "game/sprites.h"
-#include <spdlog/spdlog.h>
+
 #include "rendering/map_drawer.h"
 #include "brushes/brush.h"
 #include "rendering/drawers/map_layer_drawer.h"
@@ -65,7 +65,7 @@
 
 MapDrawer::MapDrawer(MapCanvas* canvas) :
 	canvas(canvas), editor(canvas->editor) {
-	spdlog::info("MapDrawer created [Drawer={}] for [Editor={}]", (void*)this, (void*)&editor);
+
 	light_drawer = std::make_shared<LightDrawer>();
 	tooltip_drawer = std::make_unique<TooltipDrawer>();
 
@@ -93,7 +93,7 @@ MapDrawer::MapDrawer(MapCanvas* canvas) :
 }
 
 MapDrawer::~MapDrawer() {
-	spdlog::info("MapDrawer destroying [Drawer={}]", (void*)this);
+
 	Release();
 }
 
@@ -108,6 +108,15 @@ void MapDrawer::SetupVars() {
 		}
 	}
 
+	// Calculate pulse for house highlighting
+	// Period is 1 second (1000ms)
+	// Range is [0.0, 1.0]
+	// Using a sine wave for smooth transition
+	// (sin(t) + 1) / 2
+	double now = wxGetLocalTimeMillis().ToDouble();
+	const double speed = 0.005;
+	options.highlight_pulse = (float)((sin(now * speed) + 1.0) / 2.0);
+
 	view.Setup(canvas, options);
 }
 
@@ -121,7 +130,7 @@ void MapDrawer::SetupGL() {
 
 	// Ensure renderers are initialized
 	if (!renderers_initialized) {
-		spdlog::info("MapDrawer: Initializing renderers for canvas {:p}", (void*)canvas);
+
 		sprite_batch->initialize();
 		primitive_renderer->initialize();
 		renderers_initialized = true;
@@ -137,7 +146,7 @@ void MapDrawer::Release() {
 }
 
 void MapDrawer::Draw() {
-	// spdlog::trace("MapDrawer::Draw [Drawer={}]", (void*)this);
+
 	light_buffer.Clear();
 
 	// Begin Batches

@@ -28,6 +28,12 @@ public:
 	void drawTriangle(const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3, const glm::vec4& color);
 	void drawLine(const glm::vec2& p1, const glm::vec2& p2, const glm::vec4& color);
 
+	// Draws a filled rectangle (using 2 triangles)
+	void drawRect(const glm::vec4& rect, const glm::vec4& color);
+
+	// Draws a hollow box with specified thickness (using 4 filled rectangles)
+	void drawBox(const glm::vec4& rect, const glm::vec4& color, float thickness);
+
 	void flush();
 
 private:

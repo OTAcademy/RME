@@ -2,6 +2,7 @@
 #include "rendering/drawers/tiles/tile_renderer.h"
 #include "rendering/core/sprite_batch.h"
 #include "rendering/core/primitive_renderer.h"
+#include "ui/gui.h"
 
 #include "editor/editor.h"
 #include "map/tile.h"
@@ -21,6 +22,7 @@
 #include "rendering/drawers/entities/creature_drawer.h"
 #include "rendering/drawers/tiles/floor_drawer.h"
 #include "rendering/drawers/overlays/marker_drawer.h"
+#include "rendering/ui/tooltip_drawer.h"
 #include "rendering/ui/tooltip_drawer.h"
 #include "rendering/core/light_buffer.h"
 
@@ -198,6 +200,26 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 
 	// end filters for ground tile
 
+	// Draw helper border for selected house tiles
+	// Only draw on the current floor (grid)
+	if (options.show_houses && tile->isHouseTile() && (int)tile->getHouseID() == current_house_id && map_z == view.floor) {
+
+		uint8_t hr, hg, hb;
+		TileColorCalculator::GetHouseColor(tile->getHouseID(), hr, hg, hb);
+
+		float intensity = 0.5f + (0.5f * options.highlight_pulse);
+		glm::vec4 border_color((float)hr / 255.0f, (float)hg / 255.0f, (float)hb / 255.0f, intensity); // House color border with pulsing alpha
+
+		// Map coordinates to screen coordinates
+		// draw_x, draw_y are defined in the beginning of function and are top-left of the tile
+		float x = (float)draw_x;
+		float y = (float)draw_y;
+		float s = 32.0f; // Standard tile size
+
+		// Draw 1px solid border using geometry generation
+		primitive_renderer.drawBox(glm::vec4(x, y, s, s), border_color, 1.0f);
+	}
+
 	if (!only_colors) {
 		if (view.zoom < 10.0 || !options.hide_items_when_zoomed) {
 			// items on tile
@@ -222,11 +244,23 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 					uint8_t ir = 255, ig = 255, ib = 255;
 
 					if (options.extended_house_shader && options.show_houses && tile->isHouseTile()) {
-						if ((int)tile->getHouseID() == current_house_id) {
-							ir /= 2;
-						} else {
-							ir /= 2;
-							ig /= 2;
+						uint32_t house_id = tile->getHouseID();
+						uint8_t hr = 255, hg = 255, hb = 255;
+						TileColorCalculator::GetHouseColor(house_id, hr, hg, hb);
+
+						// Apply house color tint
+						ir = (uint8_t)((int)ir * hr / 255);
+						ig = (uint8_t)((int)ig * hg / 255);
+						ib = (uint8_t)((int)ib * hb / 255);
+
+						if ((int)house_id == current_house_id) {
+							// Pulse effect matching the tile pulse
+							if (options.highlight_pulse > 0.0f) {
+								float boost = options.highlight_pulse * 0.6f;
+								ir = (uint8_t)std::min(255, (int)(ir + (255 - ir) * boost));
+								ig = (uint8_t)std::min(255, (int)(ig + (255 - ig) * boost));
+								ib = (uint8_t)std::min(255, (int)(ib + (255 - ib) * boost));
+							}
 						}
 					}
 					item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, false, ir, ig, ib);

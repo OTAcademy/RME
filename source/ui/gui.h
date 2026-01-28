@@ -48,6 +48,7 @@ class OldPropertiesWindow;
 class TilesetWindow;
 class EditTownsDialog;
 class ItemButton;
+class HousePalette;
 
 class LiveSocket;
 
@@ -338,6 +339,8 @@ public:
 	GraphicManager gfx;
 
 	BaseMap* secondary_map; // A buffer map
+
+	HousePalette* house_palette;
 
 	ToolOptionsWindow* tool_options;
 

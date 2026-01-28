@@ -8,6 +8,7 @@
 #include "ui/gui.h"
 #include "app/application.h"
 #include "palette/palette_window.h"
+#include "palette/house/house_palette.h"
 #include "palette/managers/palette_manager.h"
 
 #include "rendering/ui/minimap_window.h"
@@ -153,6 +154,27 @@ void LayoutManager::LoadPerspective() {
 		}
 	}
 
+	if (!g_gui.house_palette) {
+		g_gui.house_palette = newd HousePalette(g_gui.root);
+		wxAuiPaneInfo info;
+		wxString layout = wxstr(g_settings.getString(Config::HOUSE_PALETTE_LAYOUT));
+		if (!layout.empty()) {
+			g_gui.aui_manager->LoadPaneInfo(layout, info);
+		} else {
+			info.Name("HousePalette").Caption("Houses").DefaultPane().Right().Layer(0).Position(1).CloseButton(true).MaximizeButton(true).BestSize(230, 400);
+		}
+		if (info.name.empty()) {
+			info.Name("HousePalette");
+		}
+		g_gui.aui_manager->AddPane(g_gui.house_palette, info);
+	} else {
+		wxAuiPaneInfo& info = g_gui.aui_manager->GetPane(g_gui.house_palette);
+		wxString layout = wxstr(g_settings.getString(Config::HOUSE_PALETTE_LAYOUT));
+		if (!layout.empty()) {
+			g_gui.aui_manager->LoadPaneInfo(layout, info);
+		}
+	}
+
 	g_gui.aui_manager->Update();
 	g_gui.root->GetAuiToolBar()->LoadPerspective();
 }
@@ -186,6 +208,11 @@ void LayoutManager::SavePerspective() {
 	if (g_preview.GetWindow()) {
 		wxString s = g_gui.aui_manager->SavePaneInfo(g_gui.aui_manager->GetPane(g_preview.GetWindow()));
 		g_settings.setString(Config::INGAME_PREVIEW_LAYOUT, nstr(s));
+	}
+
+	if (g_gui.house_palette) {
+		wxString s = g_gui.aui_manager->SavePaneInfo(g_gui.aui_manager->GetPane(g_gui.house_palette));
+		g_settings.setString(Config::HOUSE_PALETTE_LAYOUT, nstr(s));
 	}
 
 	g_gui.root->GetAuiToolBar()->SavePerspective();

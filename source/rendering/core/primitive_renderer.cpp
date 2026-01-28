@@ -87,6 +87,48 @@ void PrimitiveRenderer::drawLine(const glm::vec2& p1, const glm::vec2& p2, const
 	}
 	line_verts_.push_back({ p1, color });
 	line_verts_.push_back({ p2, color });
+	line_verts_.push_back({ p2, color });
+}
+
+void PrimitiveRenderer::drawRect(const glm::vec4& rect, const glm::vec4& color) {
+	// rect: x, y, w, h
+	float x = rect.x;
+	float y = rect.y;
+	float w = rect.z;
+	float h = rect.w;
+
+	glm::vec2 p1(x, y);
+	glm::vec2 p2(x + w, y);
+	glm::vec2 p3(x + w, y + h);
+	glm::vec2 p4(x, y + h);
+
+	// Triangle 1: p1, p2, p3
+	drawTriangle(p1, p2, p3, color);
+	// Triangle 2: p3, p4, p1
+	drawTriangle(p3, p4, p1, color);
+}
+
+void PrimitiveRenderer::drawBox(const glm::vec4& rect, const glm::vec4& color, float thickness) {
+	float x = rect.x;
+	float y = rect.y;
+	float w = rect.z;
+	float h = rect.w;
+	float t = thickness;
+
+	// Top
+	drawRect(glm::vec4(x, y, w, t), color);
+	// Bottom
+	drawRect(glm::vec4(x, y + h - t, w, t), color);
+	// Left (excluding corners to avoid overdraw if alpha < 1, though standard drawRect handles blending)
+	// Actually, if we use standard blending, drawing corners twice makes them darker.
+	// So we should strictly non-overlap.
+	// Top and Bottom are full width.
+	// Left and Right should be between Top and Bottom.
+
+	// Left
+	drawRect(glm::vec4(x, y + t, t, h - 2 * t), color);
+	// Right
+	drawRect(glm::vec4(x + w - t, y + t, t, h - 2 * t), color);
 }
 
 void PrimitiveRenderer::flush() {

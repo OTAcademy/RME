@@ -22,6 +22,7 @@
 #include <thread>
 #include <chrono>
 #include <wx/wfstream.h>
+#include <spdlog/spdlog.h>
 
 #include "ui/gui.h"
 #include "editor/editor.h"
@@ -267,7 +268,7 @@ if (floor <= GROUND_LAYER) {
 void MapCanvas::GetScreenCenter(int* map_x, int* map_y) {
 	int width, height;
 	GetMapWindow()->GetViewSize(&width, &height);
-	return ScreenToMap(width / 2, height / 2, map_x, map_y);
+	ScreenToMap(width / 2, height / 2, map_x, map_y);
 }
 
 Position MapCanvas::GetCursorPosition() const {

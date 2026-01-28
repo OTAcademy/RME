@@ -44,6 +44,7 @@
 #include "ui/result_window.h"
 #include "rendering/ui/minimap_window.h"
 #include "palette/palette_window.h"
+#include "palette/house/house_palette.h"
 #include "rendering/ui/map_display.h"
 #include "app/application.h"
 #include "ui/welcome_dialog.h"
@@ -436,6 +437,9 @@ void GUI::RebuildPalettes() {
 }
 void GUI::RefreshPalettes(Map* m, bool usedfault) {
 	g_palettes.RefreshPalettes(m, usedfault);
+	if (house_palette) {
+		house_palette->SetMap(m ? m : (usedfault ? (IsEditorOpen() ? &GetCurrentMap() : nullptr) : nullptr));
+	}
 }
 void GUI::RefreshOtherPalettes(PaletteWindow* p) {
 	g_palettes.RefreshOtherPalettes(p);

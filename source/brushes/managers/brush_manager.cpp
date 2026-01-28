@@ -10,6 +10,9 @@
 #include "brushes/spawn/spawn_brush.h"
 #include "palette/managers/palette_manager.h"
 #include "palette/palette_window.h"
+#include "palette/house/house_palette.h"
+#include "map/map.h"
+#include "map/basemap.h"
 #include "ui/gui.h"
 #include "ui/main_toolbar.h"
 #include <algorithm>
@@ -53,6 +56,15 @@ BrushManager::~BrushManager() {
 }
 
 void BrushManager::SelectBrush() {
+	if (g_gui.house_palette) {
+		Brush* houseBrush = g_gui.house_palette->GetSelectedBrush();
+		if (houseBrush) {
+			SelectBrushInternal(houseBrush);
+			g_gui.RefreshView();
+			return;
+		}
+	}
+
 	if (g_palettes.palettes.empty()) {
 		return;
 	}
@@ -88,9 +100,14 @@ void BrushManager::SelectBrushInternal(Brush* brush) {
 	}
 
 	brush_variation = std::min(brush_variation, brush->getMaxVariation());
-	g_doodad_preview.FillBuffer();
+	// If we are switching away from a doodad brush, we need to clear the secondary map
+	// Or if the new brush isn't a doodad brush
 	if (brush->isDoodad()) {
+		g_doodad_preview.FillBuffer();
 		g_gui.secondary_map = g_doodad_preview.GetBufferMap();
+	} else {
+		g_gui.secondary_map = nullptr;
+		g_doodad_preview.Clear();
 	}
 
 	g_gui.SetDrawingMode();

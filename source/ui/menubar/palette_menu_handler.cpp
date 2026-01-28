@@ -1,6 +1,7 @@
 #include "ui/menubar/palette_menu_handler.h"
 #include "app/main.h"
 #include "ui/gui.h"
+#include "palette/house/house_palette.h"
 
 PaletteMenuHandler::PaletteMenuHandler(MainFrame* frame, MainMenuBar* menubar) :
 	frame(frame), menubar(menubar) {
@@ -30,7 +31,11 @@ void PaletteMenuHandler::OnSelectCollectionPalette(wxCommandEvent& WXUNUSED(even
 }
 
 void PaletteMenuHandler::OnSelectHousePalette(wxCommandEvent& WXUNUSED(event)) {
-	g_gui.SelectPalettePage(TILESET_HOUSE);
+	if (g_gui.house_palette) {
+		wxAuiPaneInfo& info = g_gui.aui_manager->GetPane(g_gui.house_palette);
+		info.Show(!info.IsShown());
+		g_gui.aui_manager->Update();
+	}
 }
 
 void PaletteMenuHandler::OnSelectCreaturePalette(wxCommandEvent& WXUNUSED(event)) {
