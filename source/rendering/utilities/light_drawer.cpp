@@ -100,7 +100,9 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 		if (needed_size > light_ssbo_capacity_) {
 			// Grow buffer strategy: Max(needed, capacity * 1.5) to avoid frequent reallocations
 			light_ssbo_capacity_ = std::max(needed_size, static_cast<size_t>(light_ssbo_capacity_ * 1.5));
-			if (light_ssbo_capacity_ < 1024) light_ssbo_capacity_ = 1024; // Min size
+			if (light_ssbo_capacity_ < 1024) {
+				light_ssbo_capacity_ = 1024; // Min size
+			}
 
 			// Reallocate storage (orphaning old buffer)
 			glNamedBufferData(light_ssbo->GetID(), light_ssbo_capacity_, nullptr, GL_DYNAMIC_DRAW);
