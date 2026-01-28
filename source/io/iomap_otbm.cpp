@@ -1147,6 +1147,9 @@ bool IOMapOTBM::loadSpawns(Map& map, pugi::xml_document& doc) {
 			warning("Couldn't read radius of spawn.. discarding spawn...");
 			continue;
 		}
+		if (radius > g_settings.getInteger(Config::MAX_SPAWN_RADIUS)) {
+			radius = g_settings.getInteger(Config::MAX_SPAWN_RADIUS);
+		}
 
 		Tile* tile = map.getTile(spawnPosition);
 		if (tile && tile->spawn) {
@@ -1245,6 +1248,12 @@ bool IOMapOTBM::loadSpawns(Map& map, pugi::xml_document& doc) {
 				creatureTile->spawn = spawn;
 				map.addSpawn(creatureTile);
 			}
+		}
+
+		if (spawn->getSize() != radius) {
+			map.removeSpawn(tile);
+			spawn->setSize(radius);
+			map.addSpawn(tile);
 		}
 	}
 	return true;
