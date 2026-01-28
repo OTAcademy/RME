@@ -45,10 +45,8 @@ using namespace std::string_literals;
 
 class CustomButton : public wxControl {
 public:
-	CustomButton(wxWindow* parent, wxWindowID id, const wxString& label,
-		const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0)
-		: wxControl(parent, id, pos, size, style | wxBORDER_NONE), m_label(label)
-	{
+	CustomButton(wxWindow* parent, wxWindowID id, const wxString& label, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0) :
+		wxControl(parent, id, pos, size, style | wxBORDER_NONE), m_label(label) {
 		SetBackgroundStyle(wxBG_STYLE_PAINT);
 	}
 
@@ -102,8 +100,12 @@ private:
 				fg = wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT);
 			} else {
 				if (m_hasHover && m_hovered) {
-					if (m_hoverBg.IsOk()) bg = m_hoverBg;
-					if (m_hoverFg.IsOk()) fg = m_hoverFg;
+					if (m_hoverBg.IsOk()) {
+						bg = m_hoverBg;
+					}
+					if (m_hoverFg.IsOk()) {
+						fg = m_hoverFg;
+					}
 				}
 
 				if (m_pressed) {
@@ -135,9 +137,22 @@ private:
 		}
 	}
 
-	void OnEnter(wxMouseEvent& e) { m_hovered = true; Refresh(); e.Skip(); }
-	void OnLeave(wxMouseEvent& e) { m_hovered = false; m_pressed = false; Refresh(); e.Skip(); }
-	void OnDown(wxMouseEvent& e) { m_pressed = true; Refresh(); e.Skip(); }
+	void OnEnter(wxMouseEvent& e) {
+		m_hovered = true;
+		Refresh();
+		e.Skip();
+	}
+	void OnLeave(wxMouseEvent& e) {
+		m_hovered = false;
+		m_pressed = false;
+		Refresh();
+		e.Skip();
+	}
+	void OnDown(wxMouseEvent& e) {
+		m_pressed = true;
+		Refresh();
+		e.Skip();
+	}
 	void OnUp(wxMouseEvent& e) {
 		if (m_pressed) {
 			m_pressed = false;
@@ -152,11 +167,11 @@ private:
 };
 
 BEGIN_EVENT_TABLE(CustomButton, wxControl)
-	EVT_PAINT(CustomButton::OnPaint)
-	EVT_ENTER_WINDOW(CustomButton::OnEnter)
-	EVT_LEAVE_WINDOW(CustomButton::OnLeave)
-	EVT_LEFT_DOWN(CustomButton::OnDown)
-	EVT_LEFT_UP(CustomButton::OnUp)
+EVT_PAINT(CustomButton::OnPaint)
+EVT_ENTER_WINDOW(CustomButton::OnEnter)
+EVT_LEAVE_WINDOW(CustomButton::OnLeave)
+EVT_LEFT_DOWN(CustomButton::OnDown)
+EVT_LEFT_UP(CustomButton::OnUp)
 END_EVENT_TABLE()
 
 // Specialized Canvas for Lua Dialogs
@@ -509,7 +524,9 @@ LuaDialog* LuaDialog::box(sol::table options) {
 	std::string orient = options.get_or(std::string("orient"), "vertical"s);
 	std::string label = options.get_or(std::string("label"), ""s);
 	bool expand = options.get_or("expand", label.empty()); // Defaults to true only if no label (backwards compat)
-	if (options["expand"].valid()) expand = options.get<bool>("expand");
+	if (options["expand"].valid()) {
+		expand = options.get<bool>("expand");
+	}
 
 	wxSizer* sizer;
 	if (!label.empty()) {
@@ -919,7 +936,9 @@ LuaDialog* LuaDialog::button(sol::table options) {
 
 	if (useCustom) {
 		CustomButton* btn = new CustomButton(getParentForWidget(), wxID_ANY, wxString(text));
-		if (rounded) btn->SetRounded(true);
+		if (rounded) {
+			btn->SetRounded(true);
+		}
 
 		// Anti-aliasing corner fix: check if we are inside a StaticBoxSizer with custom color
 		wxStaticBoxSizer* sbs = wxDynamicCast(currentRowSizer, wxStaticBoxSizer);
@@ -944,8 +963,12 @@ LuaDialog* LuaDialog::button(sol::table options) {
 			};
 
 			wxColour hBg, hFg;
-			if (hoverOpts["bgcolor"].valid()) hBg = parseColor(hoverOpts["bgcolor"]);
-			if (hoverOpts["fgcolor"].valid()) hFg = parseColor(hoverOpts["fgcolor"]);
+			if (hoverOpts["bgcolor"].valid()) {
+				hBg = parseColor(hoverOpts["bgcolor"]);
+			}
+			if (hoverOpts["fgcolor"].valid()) {
+				hFg = parseColor(hoverOpts["fgcolor"]);
+			}
 			btn->SetHoverColors(hBg, hFg);
 		}
 		finalWidget = btn;
@@ -2803,15 +2826,23 @@ int LuaDialog::getSizerFlags(sol::table options, int defaultFlags) {
 	int flags = defaultFlags;
 	if (options["align"].valid()) {
 		std::string align = options.get<std::string>("align");
-		if (align == "center") flags = (flags & ~wxALIGN_RIGHT & ~wxALIGN_LEFT) | wxALIGN_CENTER_HORIZONTAL;
-		else if (align == "right") flags = (flags & ~wxALIGN_LEFT & ~wxALIGN_CENTER_HORIZONTAL) | wxALIGN_RIGHT;
-		else if (align == "left") flags = (flags & ~wxALIGN_RIGHT & ~wxALIGN_CENTER_HORIZONTAL) | wxALIGN_LEFT;
+		if (align == "center") {
+			flags = (flags & ~wxALIGN_RIGHT & ~wxALIGN_LEFT) | wxALIGN_CENTER_HORIZONTAL;
+		} else if (align == "right") {
+			flags = (flags & ~wxALIGN_LEFT & ~wxALIGN_CENTER_HORIZONTAL) | wxALIGN_RIGHT;
+		} else if (align == "left") {
+			flags = (flags & ~wxALIGN_RIGHT & ~wxALIGN_CENTER_HORIZONTAL) | wxALIGN_LEFT;
+		}
 	}
 	if (options["valign"].valid()) {
 		std::string valign = options.get<std::string>("valign");
-		if (valign == "center") flags = (flags & ~wxALIGN_TOP & ~wxALIGN_BOTTOM) | wxALIGN_CENTER_VERTICAL;
-		else if (valign == "top") flags = (flags & ~wxALIGN_BOTTOM & ~wxALIGN_CENTER_VERTICAL) | wxALIGN_TOP;
-		else if (valign == "bottom") flags = (flags & ~wxALIGN_TOP & ~wxALIGN_CENTER_VERTICAL) | wxALIGN_BOTTOM;
+		if (valign == "center") {
+			flags = (flags & ~wxALIGN_TOP & ~wxALIGN_BOTTOM) | wxALIGN_CENTER_VERTICAL;
+		} else if (valign == "top") {
+			flags = (flags & ~wxALIGN_BOTTOM & ~wxALIGN_CENTER_VERTICAL) | wxALIGN_TOP;
+		} else if (valign == "bottom") {
+			flags = (flags & ~wxALIGN_TOP & ~wxALIGN_CENTER_VERTICAL) | wxALIGN_BOTTOM;
+		}
 	}
 	if (options.get_or("expand", false)) {
 		flags |= wxEXPAND;
@@ -2849,7 +2880,7 @@ void LuaDialog::applyCommonOptions(wxWindow* widget, sol::table options) {
 					hexValue = std::stoul(colorStr.substr(1), nullptr, 16);
 				} else if (colorStr.length() == 4) {
 					char r = colorStr[1], g = colorStr[2], b = colorStr[3];
-					std::string expanded = {r, r, g, g, b, b};
+					std::string expanded = { r, r, g, g, b, b };
 					hexValue = std::stoul(expanded, nullptr, 16);
 				}
 				return wxColour((hexValue >> 16) & 0xFF, (hexValue >> 8) & 0xFF, hexValue & 0xFF);
@@ -2880,14 +2911,21 @@ void LuaDialog::applyCommonOptions(wxWindow* widget, sol::table options) {
 		}
 		if (options["font_weight"].valid()) {
 			std::string weight = options.get<std::string>("font_weight");
-			if (weight == "bold") font.SetWeight(wxFONTWEIGHT_BOLD);
-			else if (weight == "light") font.SetWeight(wxFONTWEIGHT_LIGHT);
-			else font.SetWeight(wxFONTWEIGHT_NORMAL);
+			if (weight == "bold") {
+				font.SetWeight(wxFONTWEIGHT_BOLD);
+			} else if (weight == "light") {
+				font.SetWeight(wxFONTWEIGHT_LIGHT);
+			} else {
+				font.SetWeight(wxFONTWEIGHT_NORMAL);
+			}
 		}
 		if (options["font_style"].valid()) {
 			std::string style = options.get<std::string>("font_style");
-			if (style == "italic") font.SetStyle(wxFONTSTYLE_ITALIC);
-			else font.SetStyle(wxFONTSTYLE_NORMAL);
+			if (style == "italic") {
+				font.SetStyle(wxFONTSTYLE_ITALIC);
+			} else {
+				font.SetStyle(wxFONTSTYLE_NORMAL);
+			}
 		}
 		widget->SetFont(font);
 	}

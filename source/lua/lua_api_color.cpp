@@ -37,7 +37,7 @@ namespace LuaAPI {
 			unsigned long value = 0;
 			std::string h = hex[0] == '#' ? hex.substr(1) : hex;
 			if (h.length() == 3) {
-				h = {h[0], h[0], h[1], h[1], h[2], h[2]};
+				h = { h[0], h[0], h[1], h[1], h[2], h[2] };
 			}
 			try {
 				value = std::stoul(h, nullptr, 16);
