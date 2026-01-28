@@ -24,54 +24,132 @@ local createAndShowDialog
 
 createAndShowDialog = function(is_dockable)
 	local dlg = Dialog {
-		title = "RME Lua API Capabilities Demo",
-		width = 600,
-		height = 500,
+		title = "RME Modern UI Demo",
+		width = 650,
+		height = 400,
 		resizable = true,
 		dockable = is_dockable,
-		activeTab = "Basic Widgets", -- Set default tab
+		activeTab = "Modern Styles", -- Set default tab to the new one
 		onclose = function()
 			print("Demo dialog closed.")
 		end
 	}
 
 	-- ----------------------------------------------------------------------------
-	-- Tab 1: Basic Widgets
+	-- Modern Header Panel (Using new capabilities)
 	-- ----------------------------------------------------------------------------
-	dlg:tab { text = "Basic Widgets", oncontextmenu = function(d, info)
-		return {
-			{ text = "Tab Context Menu", onclick = function() app.alert("Clicked Tab Context") end }
-		}
-	end }
-	dlg:box { orient = "vertical", label = "Input Fields" }
-	dlg:label { text = "Standard inputs available in the API:" }
-	dlg:newrow()
+	dlg:panel({ bgcolor = Color.darkGray, padding = 10, expand = false, height = 30 })
+		dlg:label({
+			text = "RME SCRIPTING ENGINE",
+			fgcolor = Color.white,
+			font_size = 14,
+			font_weight = "bold",
+			align = "center"
+		})
+		dlg:label({
+			text = "Demonstrating Advanced Styling & Flex Layout",
+			fgcolor = Color.lighten(Color.gray, 30),
+			font_size = 9,
+			align = "center"
+		})
+	dlg:endpanel()
 
-	dlg:input { id = "t_input", label = "Text Entry:", text = "Edit me!" }
-	dlg:number { id = "t_number", label = "Number Spinner:", value = 100, min = 0, max = 500 }
-	dlg:slider { id = "t_slider", label = "Slider:", value = 50, min = 0, max = 100 }
-	dlg:color { id = "t_color", label = "Color Picker:", color = { red = 100, green = 200, blue = 255 } }
-	dlg:file { id = "t_file", label = "File Picker:", filename = "test.txt", save = false }
+	-- ----------------------------------------------------------------------------
+	-- Tab 1: Modern Styles (The new stuff!)
+	-- ----------------------------------------------------------------------------
+	dlg:tab { text = "Modern Styles" }
+
+	dlg:panel({ bgcolor = "#F8FAFC", padding = 15, margin = 5, expand = true })
+		dlg:label({ text = "Container Panels & Boxes", font_weight = "bold", font_size = 12 })
+
+		dlg:box({ label = "Fixed Size & Alignment", margin = 5, bgcolor = Color.white, expand = false, align = "center" })
+			dlg:label({ text = "This box has a custom background and is centered.", align = "center", margin = 10 })
+			dlg:button({ text = "I'm a styled button", bgcolor = Color.blue, fgcolor = "white", width = 180, align = "center", rounded = true, hover = { bgcolor = Color.darken(Color.blue, 10) } })
+		dlg:endbox()
+
+		dlg:newrow()
+
+		dlg:box({ label = "Color Palette Demo", orient = "horizontal", padding = 10, expand = true })
+			dlg:panel({ bgcolor = Color.red, width = 60, height = 40, margin = 2, expand = false })
+				dlg:label({ text = "Red", fgcolor = "white", align = "center", valign = "center" })
+			dlg:endpanel()
+			dlg:panel({ bgcolor = Color.green, width = 60, height = 40, margin = 2, expand = false })
+				dlg:label({ text = "Green", fgcolor = "white", align = "center", valign = "center" })
+			dlg:endpanel()
+			dlg:panel({ bgcolor = Color.blue, width = 60, height = 40, margin = 2, expand = false })
+				dlg:label({ text = "Blue", fgcolor = "white", align = "center", valign = "center" })
+			dlg:endpanel()
+			dlg:panel({ bgcolor = Color.orange, width = 60, height = 40, margin = 2, expand = false })
+				dlg:label({ text = "Orange", fgcolor = "white", align = "center", valign = "center" })
+			dlg:endpanel()
+		dlg:endbox()
+
+		dlg:separator()
+
+		dlg:label({ text = "Interactive Theme Switcher", font_weight = "bold" })
+		dlg:box({ orient = "horizontal", align = "center" })
+			dlg:button({
+				text = "Dark Mode",
+				bgcolor = "#1A202C",
+				fgcolor = "#EDF2F7",
+				hover = { bgcolor = Color.darken(Color.black, 10) },
+				onclick = function(d)
+					d:modify({
+						style_preview = { bgcolor = "#2D3748", fgcolor = "#F7FAFC" },
+						style_lbl = { text = "Viewing: Dark Theme", fgcolor = Color.green }
+					})
+				end
+			})
+			dlg:button({
+				text = "Light Mode",
+				bgcolor = "#EDF2F7",
+				fgcolor = "#1A202C",
+				onclick = function(d)
+					d:modify({
+						style_preview = { bgcolor = Color.white, fgcolor = Color.black },
+						style_lbl = { text = "Viewing: Light Theme", fgcolor = Color.blue }
+					})
+				end
+			})
+		dlg:endbox()
+
+		dlg:panel({ id = "style_preview", bgcolor = Color.white, margin = 10, padding = 15, expand = true })
+			dlg:label({ id = "style_lbl", text = "This panel can be dynamically updated using d:modify()", align = "center" })
+		dlg:endpanel()
+	dlg:endpanel()
+
+
+	-- ----------------------------------------------------------------------------
+	-- Tab 2: Basic Widgets (Updated with light styling)
+	-- ----------------------------------------------------------------------------
+	dlg:tab { text = "Basic Widgets" }
+	dlg:box { orient = "vertical", label = "Classic Control Set", padding = 10 }
+		dlg:label { text = "Standard inputs with optional alignment:", font_weight = "bold" }
+
+		dlg:input { id = "t_input", label = "Text Entry:", text = "Edit me!", expand = true }
+		dlg:number { id = "t_number", label = "Number Spinner:", value = 100, min = 0, max = 500, align = "left" }
+		dlg:slider { id = "t_slider", label = "Slider:", value = 50, min = 0, max = 100, expand = true }
+
+		dlg:box({ orient = "horizontal" })
+			dlg:color { id = "t_color", label = "Color Picker:", color = { red = 100, green = 200, blue = 255 } }
+			dlg:file { id = "t_file", label = "File Selection:", filename = "test.txt", save = false, expand = true }
+		dlg:endbox()
 	dlg:endbox()
 
-	dlg:separator()
-
-	dlg:box { orient = "horizontal", label = "Toggles & Choices" }
-	dlg:box { orient = "vertical" }
-	dlg:check { id = "t_check_1", text = "Checkbox Option A", selected = true }
-	dlg:check { id = "t_check_2", text = "Checkbox Option B", selected = false }
+	dlg:box { orient = "horizontal", label = "Toggles", expand = true }
+		dlg:panel({ padding = 5, expand = true })
+			dlg:check { id = "t_check_1", text = "Enable Feature A", selected = true }
+			dlg:check { id = "t_check_2", text = "Enable Feature B", selected = false }
+		dlg:endpanel()
+		dlg:panel({ bgcolor = "#f0f0f0", padding = 5, expand = true })
+			dlg:radio { id = "t_radio_1", text = "High Performance", selected = true }
+			dlg:radio { id = "t_radio_2", text = "Power Saving", selected = false }
+		dlg:endpanel()
 	dlg:endbox()
 
-	dlg:box { orient = "vertical" }
-	dlg:radio { id = "t_radio_1", text = "Radio Mode 1", selected = true }
-	dlg:radio { id = "t_radio_2", text = "Radio Mode 2", selected = false }
-	dlg:endbox()
+	dlg:combobox { id = "t_combo", label = "Select Category:", options = { "Red", "Green", "Blue", "Alpha" }, option = "Green", margin = 10 }
 
-	dlg:combobox { id = "t_combo", label = "Combobox:", options = { "Red", "Green", "Blue", "Alpha" }, option = "Green" }
-	dlg:endbox()
-
-	dlg:separator()
-	dlg:button { text = "Read Values", onclick = function(d)
+	dlg:button { text = "Debug Current State", bgcolor = Color.darkGray, fgcolor = "white", align = "right", margin = 10, onclick = function(d)
 		local data = d.data
 		local info = string.format(
 			"Input: %s\nNumber: %d\nSlider: %d\nColor: %s\nCheck A: %s\nRadio 1: %s",
@@ -79,248 +157,149 @@ createAndShowDialog = function(is_dockable)
 			tostring(data.t_check_1), tostring(data.t_radio_1)
 		)
 		app.alert(info)
-		d:modify { t_input = { label = "Updated Label:" } }
 	end }
 
 	-- ----------------------------------------------------------------------------
-	-- Tab 2: Visuals & Lists
+	-- Tab 3: Visuals & Lists
 	-- ----------------------------------------------------------------------------
 	dlg:tab { text = "Visuals & Lists" }
 
-	dlg:wrap({})
-	-- Image Widget demos
-	dlg:box { orient = "vertical", label = "Images" }
-	dlg:label { text = "Item Sprite (2160):" }
-	dlg:image { id = "img_item", itemid = 2160, width = 32, height = 32, smooth = false }
+	dlg:wrap({ padding = 5 })
+		dlg:box { orient = "vertical", label = "Engine Sprites", width = 150, expand = false }
+			dlg:label { text = "Item ID 2160:", align = "center" }
+			dlg:image { id = "img_item", itemid = 2160, width = 64, height = 64, align = "center", smooth = false }
+			dlg:label { text = "Raw Sprite 100:", align = "center" }
+			dlg:image { id = "img_sprite", spriteid = 100, width = 64, height = 64, align = "center" }
+		dlg:endbox()
 
-	dlg:label { text = "Raw Sprite (100):" }
-	dlg:image { id = "img_sprite", spriteid = 100, width = 32, height = 32 }
-	dlg:endbox()
-
-	-- Map Canvas
-	dlg:box { orient = "vertical", label = "Map Preview" }
-	dlg:mapCanvas { id = "preview_canvas", width = 150, height = 100 }
-	dlg:endbox()
+		dlg:box { orient = "vertical", label = "Map Viewport", expand = true }
+			dlg:mapCanvas { id = "preview_canvas", expand = true, height = 200 }
+			dlg:label { text = "Live preview of the map", align = "center", font_size = 8 }
+		dlg:endbox()
 	dlg:endwrap()
 
-	dlg:separator()
-
-	-- LIST WIDGET
-	dlg:box { orient = "horizontal", label = "List & Grid" }
-
-	local last_click_time = 0
-
-	dlg:list {
-		id = "demo_list",
-		width = 200,
-		height = 200,
-		show_text = true,
-		items = {
-			{ text = "Item 1 (Plain)",   tooltip = "Standard Item" },
-			{ text = "Item 2 (Icon)",    icon = 2160,                  tooltip = "Item with Icon" },
-			{ text = "Item 3 (Tooltip)", tooltip = "I have a tooltip!" },
-			{ text = "Double Click Me",  icon = 2152,                  tooltip = "Double click test" }
-		},
-		onleftclick = function(d, info)
-			-- Mimic favorites behavior: simple selection logic if needed
-			print("List Left Click index: " .. tostring(info and info.index))
-		end,
-		ondoubleclick = function(d)
-			-- WORKAROUND: Engine may trigger double click twice, using temporal debounce
-			local now = os.clock()
-			if now - last_click_time < 0.5 then
-				return
-			end
-			last_click_time = now
-
-			local sel = d.data.demo_list
-			app.alert("List Double Click! Selection: " .. tostring(sel))
-		end,
-		oncontextmenu = function(d, info)
-			-- Only show context menu if valid item clicked (favorites style)
-			if info and info.index and info.index > 0 then
-				return {
-					{
-						text = "List Action (Item " .. info.index .. ")",
-						onclick = function()
-							app.alert(
-								"Clicked List Item " .. info.index)
-						end
-					},
-					{ separator = true },
-					{ text = "Delete", onclick = function() app.alert("Delete Action") end }
+	dlg:box { orient = "horizontal", label = "Advanced View Widgets", expand = true }
+		dlg:panel({ expand = true })
+			dlg:label({ text = "Custom ListBox", font_weight = "bold" })
+			dlg:list {
+				id = "demo_list",
+				height = 180,
+				expand = true,
+				items = {
+					{ text = "Legendary Sword",   icon = 2160, tooltip = "Deals massive damage" },
+					{ text = "Health Potion",    icon = 2152, tooltip = "Restores 100 HP" },
+					{ text = "Mystery Key",      icon = 2148, tooltip = "What does it open?" }
 				}
-			else
-				-- Background context menu
-				return {
-					{ text = "List Background Action", onclick = function() app.alert("Clicked List Background") end }
-				}
-			end
-		end
-	}
-
-	-- GRID WIDGET
-	dlg:grid {
-		id = "demo_grid",
-		width = 200,
-		height = 200,
-		cell_size = 40,
-		item_size = 32,
-		show_text = true, -- Try forcing text if desired, though grid usually is icon-based
-		items = {
-			{ tooltip = "Coins",      image = Image.fromItemSprite(2148) },
-			{ tooltip = "Platinum",   image = Image.fromItemSprite(2152) },
-			{ tooltip = "Crystal",    image = Image.fromItemSprite(2160) },
-			{ tooltip = "Sprite 100", image = Image.fromSprite(100) },
-			{ tooltip = "Sprite 101", image = Image.fromSprite(101) }
-		},
-		onleftclick = function(d, info)
-			print("Grid Left Click index: " .. tostring(info and info.index))
-		end,
-		oncontextmenu = function(d, info)
-			-- Favorites style context menu
-			if info and info.index and info.index > 0 then
-				return {
-					{ text = "Grid Item Action", onclick = function() app.alert("Grid Item " .. info.index) end }
-				}
-			end
-			return {
-				{ text = "Grid Background Action", onclick = function() app.alert("Grid BG") end }
 			}
-		end
-	}
+		dlg:endpanel()
+
+		dlg:panel({ expand = true })
+			dlg:label({ text = "Item Grid", font_weight = "bold" })
+			dlg:grid {
+				id = "demo_grid",
+				height = 180,
+				cell_size = 48,
+				item_size = 32,
+				expand = true,
+				items = {
+					{ tooltip = "Gold",      image = Image.fromItemSprite(2148) },
+					{ tooltip = "Platinum",   image = Image.fromItemSprite(2152) },
+					{ tooltip = "Crystal",    image = Image.fromItemSprite(2160) },
+					{ tooltip = "Raw 100", image = Image.fromSprite(100) },
+					{ tooltip = "Raw 101", image = Image.fromSprite(101) }
+				}
+			}
+		dlg:endpanel()
 	dlg:endbox()
 
 	-- ----------------------------------------------------------------------------
-	-- Tab 3: Environment Engine
+	-- Tab 4: Environment
 	-- ----------------------------------------------------------------------------
 	dlg:tab { text = "Environment" }
 
-	local map_info_text = "No map loaded."
-	if app.map then
-		map_info_text = string.format("Map: %s\nSize: %dx%d\nTiles: %d",
-			app.map.name or "Untitled",
-			app.map.width, app.map.height,
-			app.map.tileCount or 0
-		)
-	end
-
-	dlg:label { id = "lbl_map_info", text = map_info_text }
-
-	dlg:separator()
-
-	dlg:button { text = "Inspect Selection", onclick = function()
-		local sel = app.selection
-		if not sel or sel.isEmpty then
-			app.alert("Selection is empty.\nSelect some tiles in the map editor first.")
-		else
-			local msg = string.format("Selected Tiles: %d\nBounds: (%d, %d, %d) to (%d, %d, %d)",
-				sel.size,
-				sel.minPosition.x, sel.minPosition.y, sel.minPosition.z,
-				sel.maxPosition.x, sel.maxPosition.y, sel.maxPosition.z
+	dlg:panel({ bgcolor = "#EDF2F7", padding = 15, margin = 10, expand = true })
+		local map_info_text = "No map loaded."
+		if app.map then
+			map_info_text = string.format("Current Map: %s\nDimensions: %dx%d\nTotal Tiles: %d",
+				app.map.name or "Untitled",
+				app.map.width, app.map.height,
+				app.map.tileCount or 0
 			)
-			app.alert(msg)
 		end
-	end }
+		dlg:label { id = "lbl_map_info", text = map_info_text, font_size = 10 }
+	dlg:endpanel()
 
-	dlg:button { text = "Transaction Demo (Add Sparkles)", onclick = function()
-		if not app.map then
-			app.alert("No map loaded!")
-			return
-		end
-
-		local sel = app.selection
-		if sel.isEmpty then
-			app.alert("Select area first to spawn sparkles (ID 2014)!")
-			return
-		end
-
-		app.transaction("Demo Sparkles", function()
-			for _, tile in ipairs(sel.tiles) do
-				-- Add magic effect / sparkles
-				tile:addItem(2785, 1)
+	dlg:box({ orient = "horizontal", align = "center" })
+		dlg:button { text = "Inspect Selection", width = 150, onclick = function()
+			local sel = app.selection
+			if not sel or sel.isEmpty then
+				app.alert("Selection is empty.")
+			else
+				app.alert(string.format("Selected Tiles: %d", sel.size))
 			end
-		end)
-		app.alert("Added blueberry bushes to " .. sel.size .. " tiles.")
-	end }
+		end }
 
-	dlg:separator()
-	dlg:label { text = "Map Overlays (Scripting API)" }
-	dlg:button { text = "Toggle 'Demo Overlay'", onclick = function()
-		local overlay_id = "demo_overlay"
-		app.mapView:addOverlay(overlay_id, {
-			ondraw = function(ctx)
-				ctx:rect { x = 10, y = 10, w = 200, h = 50, color = { r = 0, g = 0, b = 0, a = 100 }, screen = true, filled = true }
-				ctx:text { x = 20, y = 25, text = "Demo Overlay Active", color = { r = 255, g = 255, b = 255 }, screen = true }
+		dlg:button { text = "Add Blueberry Bushes", bgcolor = "#2B6CB0", fgcolor = "white", width = 150, hover = { bgcolor = "#2C5282" }, onclick = function()
+			if not app.map or app.selection.isEmpty then
+				app.alert("Select map area first!")
+				return
 			end
-		})
-		app.alert("Overlay added. Move map to see updates if it was drawing world coords.")
-	end }
+			app.transaction("Add Bushes", function()
+				for _, tile in ipairs(app.selection.tiles) do
+					tile:addItem(2785, 1)
+				end
+			end)
+		end }
+	dlg:endbox()
 
 	-- ----------------------------------------------------------------------------
-	-- Tab 4: System & Network
+	-- Tab 5: System
 	-- ----------------------------------------------------------------------------
 	dlg:tab { text = "System" }
 
-	dlg:label { text = "Editor Version: " .. app.version }
+	dlg:box({ orient = "vertical", padding = 10 })
+		dlg:label { text = "Application Version", font_weight = "bold" }
+		dlg:panel({ bgcolor = Color.lightGray, padding = 5 })
+			dlg:label { text = app.version, align = "center" }
+		dlg:endpanel()
 
-	dlg:separator()
+		dlg:separator()
 
-	-- DOCKABLE TOGGLE
-	local dock_btn_text = is_dockable and "Reopen as Floating Window" or "Reopen as Dockable Window"
-	dlg:button { text = dock_btn_text, onclick = function(d)
-		d:close()
-		createAndShowDialog(not is_dockable)
-	end }
+		local dock_btn_text = is_dockable and "Switch to Floating Window" or "Switch to Dockable Side-Panel"
+		dlg:button { text = dock_btn_text, expand = true, onclick = function(d)
+			d:close()
+			createAndShowDialog(not is_dockable)
+		end }
 
-	dlg:separator()
+		dlg:separator()
 
-	dlg:label { text = "HTTP Requests:" }
-	dlg:label { text = "Result will appear here...", id = "lbl_http_res" }
+		dlg:label { text = "Network Demo:", font_weight = "bold" }
+		dlg:panel({ id = "http_box", bgcolor = "#FFF", height = 60, padding = 10, expand = true })
+			dlg:label { text = "Result will appear here...", id = "lbl_http_res", align = "center", expand = true }
+		dlg:endpanel()
 
-	dlg:button { text = "Get Random Quote (HTTP JSON)", onclick = function(d)
-		if not http then
-			d:modify { lbl_http_res = { text = "Error: HTTP module not available." } }
-			return
-		end
-
-		d:modify { lbl_http_res = { text = "Fetching..." } }
-
-		local res = http.get("https://dummyjson.com/quotes/random")
-
-		if res.ok then
-			if json and json.decode then
-				local status, data = pcall(json.decode, res.body)
-				if status and data then
-					local quote = data.quote or "No quote found"
-					local author = data.author or "Unknown"
-					local fmt = string.format('"%s" - %s', quote, author)
-					d:modify { lbl_http_res = { text = fmt } }
-				else
-					d:modify { lbl_http_res = { text = "Invalid JSON: " .. string.sub(res.body, 1, 50) } }
-				end
+		dlg:button { text = "Fetch Random Quote", bgcolor = Color.blue, fgcolor = "white", hover = { bgcolor = Color.darken(Color.blue, 10) }, expand = true, onclick = function(d)
+			if not http then return end
+			d:modify { lbl_http_res = { text = "Fetching..." }, http_box = { bgcolor = "#E2E8F0" } }
+			local res = http.get("https://dummyjson.com/quotes/random")
+			if res.ok and json then
+				local data = json.decode(res.body)
+				d:modify {
+					lbl_http_res = { text = string.format('"%s"', data.quote or "?") },
+					http_box = { bgcolor = Color.white }
+				}
 			else
-				d:modify { lbl_http_res = { text = "Raw: " .. string.sub(res.body, 1, 50) .. "..." } }
+				d:modify { lbl_http_res = { text = "Request failed" } }
 			end
-		else
-			d:modify { lbl_http_res = { text = "HTTP Error: " .. (res.error or "Unknown") } }
-		end
-	end }
-
-	dlg:separator()
-
-	dlg:button { text = "Save Timestamp to Storage", onclick = function()
-		local store = app.storage("hello_world_demo")
-		local data = store:load() or {}
-		data.last_run = os.time()
-		store:save(data)
-		app.alert("Saved timestamp: " .. data.last_run)
-	end }
+		end }
+	dlg:endbox()
 
 	dlg:endtabs()
-	dlg:separator()
 
-	dlg:button { text = "Close Demo", onclick = function(d) d:close() end }
+	-- Footer
+	dlg:separator()
+	dlg:button { text = "CLOSE DEMO", align = "center", margin = 5, onclick = function(d) d:close() end }
+
 	dlg:show { wait = false }
 end
 

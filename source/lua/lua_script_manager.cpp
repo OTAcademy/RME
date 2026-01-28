@@ -18,6 +18,7 @@
 #include "main.h"
 #include "lua_script_manager.h"
 #include "lua_api.h"
+#include "lua_api_image.h"
 #include "../gui.h"
 #include "../tile.h"
 
@@ -362,6 +363,32 @@ void LuaScriptManager::collectMapOverlayCommands(const MapViewInfo& view, std::v
 		}
 	};
 
+	ctx["image"] = [&, getOptsTable](sol::variadic_args va) {
+		sol::table opts = getOptsTable(va);
+		if (!opts.valid()) {
+			return;
+		}
+
+		if (opts["image"].valid() && opts["image"].is<LuaAPI::LuaImage>()) {
+			LuaAPI::LuaImage img = opts["image"].get<LuaAPI::LuaImage>();
+			if (img.isSpriteSource()) {
+				MapOverlayCommand cmd;
+				cmd.type = MapOverlayCommand::Type::Sprite;
+				cmd.sprite_id = img.getSpriteId();
+				cmd.screen_space = opts.get_or(std::string("screen"), false);
+				cmd.x = opts.get_or(std::string("x"), 0);
+				cmd.y = opts.get_or(std::string("y"), 0);
+				cmd.z = opts.get_or(std::string("z"), view.floor);
+
+				// Opacity handling
+				double opacity = opts.get_or(std::string("opacity"), 1.0);
+				cmd.color = wxColor(255, 255, 255, static_cast<uint8_t>(opacity * 255));
+
+				out.push_back(cmd);
+			}
+		}
+	};
+
 	std::vector<MapOverlay> sorted = mapOverlays;
 	std::sort(sorted.begin(), sorted.end(), [](const MapOverlay& a, const MapOverlay& b) {
 		if (a.order == b.order) {
@@ -539,6 +566,11 @@ void LuaScriptManager::scanDirectory(const std::string& directory) {
 	// Then, scan for standalone .lua files
 	cont = dir.GetFirst(&name, "*.lua", wxDIR_FILES);
 	while (cont) {
+		if (name == "linter.lua") {
+			cont = dir.GetNext(&name);
+			continue;
+		}
+
 		std::string filepath = directory + sep + name.ToStdString();
 
 		auto script = std::make_unique<LuaScript>(filepath);

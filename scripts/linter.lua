@@ -134,6 +134,7 @@ function SelectionClass:finish() end
 ---@field name string
 ---@field width number
 ---@field height number
+---@field tileCount number
 local MapClass = {}
 ---@param x number
 ---@param y number
@@ -185,13 +186,15 @@ local Events = {}
 ---@field goToHistory fun(self: Editor, index: number)
 local EditorClass = {}
 
+---@alias WidgetOptions {id?: string, align?: "left"|"center"|"right", valign?: "top"|"center"|"bottom", expand?: boolean, width?: number, height?: number, min_width?: number, min_height?: number, max_width?: number, max_height?: number, margin?: number, padding?: number, bgcolor?: string|table, fgcolor?: string|table, font_size?: number, font_weight?: "normal"|"bold"}
+
 ---@class Dialog
----@field data table<string, any>
----@field values table<string, any>
----@field bounds table<string, any>
----@field dockable boolean
----@field activeTab string|nil
----@field onclose fun()
+---@field data? table<string, any>
+---@field values? table<string, any>
+---@field bounds? table<string, any>
+---@field dockable? boolean
+---@field activeTab? string|nil
+---@field onclose? fun()
 ---@overload fun(title_or_config: string|{title?: string, resizable?: boolean, dockable?: boolean, id?: string, x?: number, y?: number, width?: number, height?: number, onclose?: fun()}): Dialog
 local DialogClass = {}
 
@@ -257,6 +260,13 @@ function DialogClass:box(options) return {} --[[@as Dialog]] end
 
 ---@return Dialog
 function DialogClass:endbox() return {} --[[@as Dialog]] end
+
+---@param options? WidgetOptions|{label?: string}
+---@return Dialog
+function DialogClass:panel(options) return {} --[[@as Dialog]] end
+
+---@return Dialog
+function DialogClass:endpanel() return {} --[[@as Dialog]] end
 
 ---@return Dialog
 function DialogClass:wrap() return {} --[[@as Dialog]] end
@@ -389,7 +399,7 @@ function ImageClass.fromItemSprite(itemId) return {} --[[@as Image]] end
 ---@return Image
 function ImageClass.fromSprite(spriteId) return {} --[[@as Image]] end
 
---- Resizes the image to the specified dimensions
+
 ---@param width number
 ---@param height number
 ---@param smooth? boolean Use smooth scaling (default true). Set to false for pixel-perfect scaling.
@@ -402,8 +412,42 @@ function ImageClass:resize(width, height, smooth) return {} --[[@as Image]] end
 ---@return Image
 function ImageClass:scale(factor, smooth) return {} --[[@as Image]] end
 
----@type fun(path_or_options?: string|{path?: string, itemid?: number, spriteid?: number}): Image
-Image = ImageClass
+---@class ImageStatics
+---@field fromFile fun(path: string): Image
+---@field fromItemSprite fun(itemId: number): Image
+---@field fromSprite fun(spriteId: number): Image
+---@overload fun(path_or_options?: string|{path?: string, itemid?: number, spriteid?: number}): Image
+
+---@type ImageStatics
+---@diagnostic disable-next-line: missing-fields
+Image = {} --[[@as ImageStatics]]
+
+---@class Color
+---@field red number
+---@field green number
+---@field blue number
+---@field alpha number
+
+---@class ColorHelper
+---@field red string|table
+---@field green string|table
+---@field blue string|table
+---@field white string|table
+---@field black string|table
+---@field gray string|table
+---@field darkGray string|table
+---@field lightGray string|table
+---@field orange string|table
+---@field yellow string|table
+---@field cyan string|table
+---@field magenta string|table
+---@field transparent string|table
+---@field lighten fun(color: string|table|Color, amount: number): Color
+---@field darken fun(color: string|table|Color, amount: number): Color
+
+---@type ColorHelper
+---@diagnostic disable-next-line: missing-fields
+Color = {} --[[@as ColorHelper]]
 
 -- Global variables set by the engine
 ---@type string The directory containing the currently executing script. Use this to load resources relative to your script.

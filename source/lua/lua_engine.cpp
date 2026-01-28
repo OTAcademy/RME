@@ -107,9 +107,37 @@ void LuaEngine::setupSandbox() {
 		}
 	}
 
-	// Disable accessing arbitrary files
-	lua["dofile"] = sol::nil;
-	lua["loadfile"] = sol::nil;
+	// Custom safe dofile implementation
+	lua["dofile"] = [this](const std::string& filename, sol::this_state s) -> bool {
+		sol::state_view lua(s);
+
+		// Get SCRIPT_DIR
+		sol::object scriptDirObj = lua["SCRIPT_DIR"];
+		if (!scriptDirObj.is<std::string>()) {
+			throw sol::error("dofile: SCRIPT_DIR not set. Cannot resolve relative path.");
+		}
+		std::string scriptDir = scriptDirObj.as<std::string>();
+
+		// Reject absolute paths
+		if (filename.find(":") != std::string::npos || (filename.size() > 0 && (filename[0] == '/' || filename[0] == '\\'))) {
+			throw sol::error("dofile: Absolute paths are not allowed. Use paths relative to the script.");
+		}
+		// Reject directory traversal
+		if (filename.find("..") != std::string::npos) {
+			throw sol::error("dofile: Directory traversal ('..') is not allowed.");
+		}
+
+		// Remove ./ prefix if present
+		std::string cleanFilename = filename;
+		if (cleanFilename.substr(0, 2) == "./" || cleanFilename.substr(0, 2) == ".\\") {
+			cleanFilename = cleanFilename.substr(2);
+		}
+
+		std::string fullPath = scriptDir + "/" + cleanFilename;
+
+		// We use executeFile which handles loading and error reporting
+		return this->executeFile(fullPath);
+	};
 
 	// Secure 'load' to prevent bytecode execution (only allow mode "t")
 	// If the chunk starts with the bytecode signature (ESC Lua), load() normally detects it.

@@ -380,6 +380,21 @@ bool MapDrawer::drawOverlayCommands(const std::vector<MapOverlayCommand>& comman
 			if (cmd.dashed) {
 				glDisable(GL_LINE_STIPPLE);
 			}
+		} else if (cmd.type == MapOverlayCommand::Type::Sprite) {
+			if (cmd.sprite_id != 0) {
+				if (isScreenSpace) {
+					// Screen space sprite drawing - not implemented fully yet
+					// Need to setup matrix, etc.
+				} else {
+					int screen_x = 0;
+					int screen_y = 0;
+					if (mapToScreen(this, cmd.x, cmd.y, cmd.z, screen_x, screen_y)) {
+						glEnable(GL_TEXTURE_2D);
+						BlitSpriteType(screen_x, screen_y, cmd.sprite_id, cmd.color.Red(), cmd.color.Green(), cmd.color.Blue(), cmd.color.Alpha());
+						glDisable(GL_TEXTURE_2D);
+					}
+				}
+			}
 		} else if (cmd.type == MapOverlayCommand::Type::Text) {
 			if (!cmd.text.empty()) {
 				if (isScreenSpace) {

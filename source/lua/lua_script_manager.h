@@ -111,7 +111,9 @@ public:
 			return;
 		}
 
-		for (auto& listener : eventListeners) {
+		// Iterate over a copy to allow callbacks to modify the listener list safely
+		std::vector<EventListener> listenersCopy = eventListeners;
+		for (const auto& listener : listenersCopy) {
 			if (listener.eventName == eventName && listener.callback.valid()) {
 				try {
 					listener.callback(std::forward<Args>(args)...);
@@ -128,8 +130,10 @@ public:
 			return false;
 		}
 
+		// Iterate over a copy to allow callbacks to modify the listener list safely
+		std::vector<EventListener> listenersCopy = eventListeners;
 		bool consumed = false;
-		for (auto& listener : eventListeners) {
+		for (const auto& listener : listenersCopy) {
 			if (listener.eventName == eventName && listener.callback.valid()) {
 				try {
 					sol::object result = listener.callback(std::forward<Args>(args)...);
