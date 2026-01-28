@@ -19,12 +19,12 @@
 
 #ifdef _USE_UPDATER_
 
-#include <wx/sstream.h>
-#include <wx/protocol/http.h>
-#include <cpr/cpr.h>
+	#include <wx/sstream.h>
+	#include <wx/protocol/http.h>
+	#include <cpr/cpr.h>
 
-#include "json.h"
-#include "updater.h"
+	#include "json.h"
+	#include "updater.h"
 
 const wxEventType EVT_UPDATE_CHECK_FINISHED = wxNewEventType();
 
@@ -48,9 +48,9 @@ UpdateConnectionThread::~UpdateConnectionThread() {
 
 wxThread::ExitCode UpdateConnectionThread::Entry() {
 	cpr::Response response = cpr::Get(
-		cpr::Url{ __UPDATE_URL__ },
-		cpr::Header{ {"User-Agent", "OTAcademy-RME-Updater"} },
-		cpr::Timeout{ 10000 }
+		cpr::Url { __UPDATE_URL__ },
+		cpr::Header { { "User-Agent", "OTAcademy-RME-Updater" } },
+		cpr::Timeout { 10000 }
 	);
 
 	if (response.status_code != 200 || response.text.empty()) {

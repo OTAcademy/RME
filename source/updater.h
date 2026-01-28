@@ -31,8 +31,6 @@ extern const wxEventType EVT_UPDATE_CHECK_FINISHED;
 				(wxObject*)nullptr                                                                      \
 			),
 
-
-
 class UpdateConnectionThread : public DetachedThread {
 public:
 	UpdateConnectionThread(wxEvtHandler* receiver);
