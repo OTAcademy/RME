@@ -21,9 +21,6 @@
 #include "ui/dialog_util.h"
 
 #include "ui/about_window.h"
-#include "ui/games/game_panel.h"
-#include "ui/games/tetris_panel.h"
-#include "ui/games/snake_panel.h"
 #include <fstream>
 #include <typeinfo>
 #include <memory>
@@ -34,14 +31,11 @@
 BEGIN_EVENT_TABLE(AboutWindow, wxDialog)
 EVT_BUTTON(wxID_OK, AboutWindow::OnClickOK)
 EVT_BUTTON(ABOUT_VIEW_LICENSE, AboutWindow::OnClickLicense)
-EVT_MENU(ABOUT_RUN_TETRIS, AboutWindow::OnTetris)
-EVT_MENU(ABOUT_RUN_SNAKE, AboutWindow::OnSnake)
 EVT_MENU(wxID_CANCEL, AboutWindow::OnClickOK)
 END_EVENT_TABLE()
 
 AboutWindow::AboutWindow(wxWindow* parent) :
-	wxDialog(parent, wxID_ANY, "About", wxDefaultPosition, wxSize(300, 320), wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX),
-	game_panel(nullptr) {
+	wxDialog(parent, wxID_ANY, "About", wxDefaultPosition, wxSize(300, 320), wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX) {
 	wxString about;
 
 	about << "OTAcademy Map Editor\n";
@@ -81,11 +75,9 @@ AboutWindow::AboutWindow(wxWindow* parent) :
 	choicesizer->Add(newd wxButton(this, wxID_OK, "OK"), wxSizerFlags(1).Center());
 	topsizer->Add(choicesizer, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT | wxBOTTOM, 20);
 
-	wxAcceleratorEntry entries[3];
+	wxAcceleratorEntry entries[1];
 	entries[0].Set(wxACCEL_NORMAL, WXK_ESCAPE, wxID_CANCEL);
-	entries[1].Set(wxACCEL_NORMAL, 't', ABOUT_RUN_TETRIS);
-	entries[2].Set(wxACCEL_NORMAL, 's', ABOUT_RUN_SNAKE);
-	wxAcceleratorTable accel(3, entries);
+	wxAcceleratorTable accel(1, entries);
 	SetAcceleratorTable(accel);
 
 	SetSizerAndFit(topsizer);
@@ -117,28 +109,4 @@ void AboutWindow::OnClickLicense(wxCommandEvent& WXUNUSED(event)) {
 	}
 
 	DialogUtil::ShowTextBox(this, "License", wxstr(gpl_str.size() ? gpl_str : "The COPYING.txt file is not available."));
-}
-
-void AboutWindow::OnTetris(wxCommandEvent&) {
-	if (!game_panel) {
-		DestroyChildren();
-		game_panel = newd TetrisPanel(this);
-		topsizer->Add(game_panel, 1, wxALIGN_CENTER | wxALL, 7);
-		Fit();
-		game_panel->SetFocus();
-		SetWindowStyleFlag(wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX);
-		Refresh();
-	}
-}
-
-void AboutWindow::OnSnake(wxCommandEvent&) {
-	if (!game_panel) {
-		DestroyChildren();
-		game_panel = newd SnakePanel(this);
-		topsizer->Add(game_panel, 1, wxALIGN_CENTER | wxALL, 7);
-		Fit();
-		game_panel->SetFocus();
-		SetWindowStyleFlag(wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX);
-		Refresh();
-	}
 }
