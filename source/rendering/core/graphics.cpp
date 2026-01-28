@@ -353,11 +353,11 @@ const AtlasRegion* GameSprite::Image::EnsureAtlasSprite(uint32_t sprite_id) {
 		}
 
 		// 2. Load data
-		uint8_t* rgba = getRGBAData();
+		std::unique_ptr<uint8_t[]> rgba(getRGBAData());
 		if (!rgba) {
 			// Fallback: Create a magenta texture to distinguish failure from garbage
 			// Use literal 32 to ensure compilation (OT sprites are always 32x32)
-			rgba = newd uint8_t[32 * 32 * 4];
+			rgba = std::make_unique<uint8_t[]>(32 * 32 * 4);
 			for (int i = 0; i < 32 * 32; ++i) {
 				rgba[i * 4 + 0] = 255;
 				rgba[i * 4 + 1] = 0;
@@ -369,8 +369,7 @@ const AtlasRegion* GameSprite::Image::EnsureAtlasSprite(uint32_t sprite_id) {
 
 		// 3. Add to Atlas
 		if (rgba) {
-			region = atlas_mgr->addSprite(sprite_id, rgba);
-			delete[] rgba;
+			region = atlas_mgr->addSprite(sprite_id, rgba.get());
 
 			if (region) {
 				isGLLoaded = true;
