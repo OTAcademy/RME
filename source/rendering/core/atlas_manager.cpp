@@ -68,6 +68,25 @@ const AtlasRegion* AtlasManager::addSprite(uint32_t sprite_id, const uint8_t* rg
 	return ptr;
 }
 
+void AtlasManager::removeSprite(uint32_t sprite_id) {
+	if (sprite_id < DIRECT_LOOKUP_SIZE) {
+		if (direct_lookup_[sprite_id] != nullptr) {
+			const AtlasRegion* region = direct_lookup_[sprite_id];
+			atlas_.freeSlot(*region);
+			direct_lookup_[sprite_id] = nullptr;
+			sprite_regions_.erase(sprite_id);
+			// We can't easily remove from region_storage_ (deque), but it's okay, pointers remain valid.
+			// The slot in atlas is freed for reuse.
+		}
+	} else {
+		auto it = sprite_regions_.find(sprite_id);
+		if (it != sprite_regions_.end()) {
+			atlas_.freeSlot(*(it->second));
+			sprite_regions_.erase(it);
+		}
+	}
+}
+
 const AtlasRegion* AtlasManager::getWhitePixel() const {
 	if (sprite_regions_.count(WHITE_PIXEL_ID)) {
 		return sprite_regions_.at(WHITE_PIXEL_ID);

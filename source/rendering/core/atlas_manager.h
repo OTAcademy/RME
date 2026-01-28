@@ -37,6 +37,12 @@ public:
 	const AtlasRegion* addSprite(uint32_t sprite_id, const uint8_t* rgba_data);
 
 	/**
+	 * Remove a sprite from the atlas, freeing its slot for reuse.
+	 * @param sprite_id Sprite ID to remove
+	 */
+	void removeSprite(uint32_t sprite_id);
+
+	/**
 	 * Get the atlas region for a sprite. O(1) for common sprites.
 	 * @param sprite_id Sprite ID
 	 * @return Pointer to region, or nullptr if not found

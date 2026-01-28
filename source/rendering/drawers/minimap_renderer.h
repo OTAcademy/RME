@@ -84,13 +84,6 @@ private:
 	static constexpr int TILE_SIZE = 2048;
 	int rows_ = 0;
 	int cols_ = 0;
-
-	struct MinimapInstance {
-		float x, y, w, h;
-		float layer;
-	};
-	std::vector<MinimapInstance> instances_;
-	GLuint instance_vbo_ = 0;
 };
 
 #endif

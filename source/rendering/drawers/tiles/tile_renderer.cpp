@@ -181,7 +181,7 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 					uint8_t ir = 255, ig = 255, ib = 255;
 
 					if (options.extended_house_shader && options.show_houses && tile->isHouseTile()) {
-						if (tile->getHouseID() == current_house_id) {
+						if ((int)tile->getHouseID() == current_house_id) {
 							ir /= 2;
 						} else {
 							ir /= 2;

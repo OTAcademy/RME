@@ -64,10 +64,10 @@ public:
 		version = v;
 	}
 
-	virtual bool loadMap(Map& map, const FileName& identifier) override {
+	virtual bool loadMap(Map& map, const FileName& identifier) {
 		return false;
 	}
-	virtual bool saveMap(Map& map, const FileName& identifier) override {
+	virtual bool saveMap(Map& map, const FileName& identifier) {
 		return false;
 	}
 };

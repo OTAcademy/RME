@@ -17,7 +17,8 @@ TextureAtlas::TextureAtlas(TextureAtlas&& other) noexcept
 	allocated_layers_(other.allocated_layers_),
 	total_sprite_count_(other.total_sprite_count_),
 	current_layer_(other.current_layer_), next_x_(other.next_x_),
-	next_y_(other.next_y_) {
+	next_y_(other.next_y_),
+	free_slots_(std::move(other.free_slots_)) {
 	other.layer_count_ = 0;
 	other.allocated_layers_ = 0;
 	other.total_sprite_count_ = 0;
@@ -36,6 +37,7 @@ TextureAtlas& TextureAtlas::operator=(TextureAtlas&& other) noexcept {
 		current_layer_ = other.current_layer_;
 		next_x_ = other.next_x_;
 		next_y_ = other.next_y_;
+		free_slots_ = std::move(other.free_slots_);
 		other.layer_count_ = 0;
 		other.allocated_layers_ = 0;
 		other.total_sprite_count_ = 0;
@@ -145,16 +147,44 @@ std::optional<AtlasRegion> TextureAtlas::addSprite(const uint8_t* rgba_data) {
 		return std::nullopt;
 	}
 
-	// Check if current layer is full
-	if (next_y_ >= SPRITES_PER_ROW) {
-		if (!addLayer()) {
-			return std::nullopt;
-		}
-	}
+	int pixel_x, pixel_y, layer;
+	AtlasRegion region;
 
-	// Calculate pixel position in current layer
-	int pixel_x = next_x_ * SPRITE_SIZE;
-	int pixel_y = next_y_ * SPRITE_SIZE;
+	// Check free list first
+	if (!free_slots_.empty()) {
+		region = free_slots_.back();
+		free_slots_.pop_back();
+
+		// Recalculate pixel coords from UV
+		// u_min = pixel_x / SIZE + half_texel
+		// pixel_x = (u_min - half_texel) * SIZE
+		const float texel_size = 1.0f / static_cast<float>(ATLAS_SIZE);
+		const float half_texel = texel_size * 0.5f;
+
+		pixel_x = static_cast<int>((region.u_min - half_texel) * ATLAS_SIZE + 0.5f);
+		pixel_y = static_cast<int>((region.v_min - half_texel) * ATLAS_SIZE + 0.5f);
+		layer = region.atlas_index;
+	} else {
+		// Check if current layer is full
+		if (next_y_ >= SPRITES_PER_ROW) {
+			if (!addLayer()) {
+				return std::nullopt;
+			}
+		}
+
+		// Calculate pixel position in current layer
+		pixel_x = next_x_ * SPRITE_SIZE;
+		pixel_y = next_y_ * SPRITE_SIZE;
+		layer = current_layer_;
+
+		// Advance to next slot
+		next_x_++;
+		if (next_x_ >= SPRITES_PER_ROW) {
+			next_x_ = 0;
+			next_y_++;
+		}
+		total_sprite_count_++;
+	}
 
 	// Upload sprite data to texture array
 	bool uploaded = false;
@@ -167,7 +197,7 @@ std::optional<AtlasRegion> TextureAtlas::addSprite(const uint8_t* rgba_data) {
 			pbo_->bind(); // Binds GL_PIXEL_UNPACK_BUFFER
 
 			// Offset is 0 in PBO
-			glTextureSubImage3D(texture_id_->GetID(), 0, pixel_x, pixel_y, current_layer_, SPRITE_SIZE, SPRITE_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+			glTextureSubImage3D(texture_id_->GetID(), 0, pixel_x, pixel_y, layer, SPRITE_SIZE, SPRITE_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 			pbo_->unbind();
 			pbo_->advance();
@@ -177,29 +207,24 @@ std::optional<AtlasRegion> TextureAtlas::addSprite(const uint8_t* rgba_data) {
 
 	if (!uploaded) {
 		// Fallback synchronously
-		glTextureSubImage3D(texture_id_->GetID(), 0, pixel_x, pixel_y, current_layer_, SPRITE_SIZE, SPRITE_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, rgba_data);
+		glTextureSubImage3D(texture_id_->GetID(), 0, pixel_x, pixel_y, layer, SPRITE_SIZE, SPRITE_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, rgba_data);
 	}
 
 	// Calculate UV coordinates with half-texel inset to prevent bleeding
 	const float texel_size = 1.0f / static_cast<float>(ATLAS_SIZE);
 	const float half_texel = texel_size * 0.5f;
 
-	AtlasRegion region;
-	region.atlas_index = static_cast<uint32_t>(current_layer_);
+	region.atlas_index = static_cast<uint32_t>(layer);
 	region.u_min = static_cast<float>(pixel_x) / ATLAS_SIZE + half_texel;
 	region.v_min = static_cast<float>(pixel_y) / ATLAS_SIZE + half_texel;
 	region.u_max = static_cast<float>(pixel_x + SPRITE_SIZE) / ATLAS_SIZE - half_texel;
 	region.v_max = static_cast<float>(pixel_y + SPRITE_SIZE) / ATLAS_SIZE - half_texel;
 
-	// Advance to next slot
-	next_x_++;
-	if (next_x_ >= SPRITES_PER_ROW) {
-		next_x_ = 0;
-		next_y_++;
-	}
-	total_sprite_count_++;
-
 	return region;
+}
+
+void TextureAtlas::freeSlot(const AtlasRegion& region) {
+	free_slots_.push_back(region);
 }
 
 void TextureAtlas::bind(uint32_t slot) const {
@@ -221,4 +246,5 @@ void TextureAtlas::release() {
 	current_layer_ = 0;
 	next_x_ = 0;
 	next_y_ = 0;
+	free_slots_.clear();
 }

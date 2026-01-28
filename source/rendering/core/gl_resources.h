@@ -4,7 +4,6 @@
 #include <glad/glad.h>
 #include <utility> // for std::exchange
 #include <spdlog/spdlog.h>
-#include "rendering/core/gl_texture.h"
 
 // RAII wrapper for OpenGL Buffers (VBO, EBO, UBO, SSBO)
 class GLBuffer {

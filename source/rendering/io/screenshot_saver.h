@@ -5,11 +5,11 @@
 #ifndef RME_RENDERING_SCREENSHOT_SAVER_H_
 #define RME_RENDERING_SCREENSHOT_SAVER_H_
 
+#include <cstdint>
 #include <wx/string.h>
 #include <wx/filename.h>
 #include <wx/image.h>
 #include <wx/bitmap.h>
-#include <cstdint>
 
 class ScreenshotSaver {
 public:
