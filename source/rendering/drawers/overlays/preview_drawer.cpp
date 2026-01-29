@@ -105,5 +105,26 @@ void PreviewDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive
 				}
 			}
 		}
+		// Draw highlight on the specific tile under mouse
+		// This helps user see where they are pointing in the "chaos"
+		Position mousePos(view.mouse_map_x, view.mouse_map_y, view.floor);
+		if (mousePos.z == map_z) {
+			int highlight_x = ((mousePos.x * TileSize) - view.view_scroll_x) - (view.floor - map_z) * TileSize;
+			// Use correct offset logic
+			int offset;
+			if (map_z <= GROUND_LAYER) {
+				offset = (GROUND_LAYER - map_z) * TileSize;
+			} else {
+				offset = TileSize * (view.floor - map_z);
+			}
+			int draw_x = ((mousePos.x * TileSize) - view.view_scroll_x) - offset;
+			int draw_y = ((mousePos.y * TileSize) - view.view_scroll_y) - offset;
+
+			if (g_gui.gfx.ensureAtlasManager()) {
+				// Draw a semi-transparent white box over the tile
+				glm::vec4 highlightColor(1.0f, 1.0f, 1.0f, 0.25f); // 25% white
+				sprite_batch.drawRect((float)draw_x, (float)draw_y, (float)TileSize, (float)TileSize, highlightColor, *g_gui.gfx.getAtlasManager());
+			}
+		}
 	}
 }

@@ -179,16 +179,12 @@ void MapDrawer::Draw() {
 	// FloorDrawer is commented out in original?
 	// floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor);
 
-	bool autoborder_active = g_settings.getInteger(Config::USE_AUTOMAGIC) && g_gui.GetCurrentBrush() && g_gui.GetCurrentBrush()->needBorders();
-
 	if (options.boundbox_selection) {
 		selection_drawer->draw(*sprite_batch, view, canvas, options);
 	}
 	live_cursor_drawer->draw(*sprite_batch, view, editor, options);
 
-	if (!autoborder_active) {
-		brush_overlay_drawer->draw(*sprite_batch, *primitive_renderer, this, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor);
-	}
+	brush_overlay_drawer->draw(*sprite_batch, *primitive_renderer, this, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor);
 
 	if (options.show_grid) {
 		DrawGrid();

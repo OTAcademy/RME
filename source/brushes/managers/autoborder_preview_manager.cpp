@@ -116,12 +116,20 @@ void AutoborderPreviewManager::Update(Editor& editor, const Position& pos) {
 		}
 
 		// Draw the brush
-		// Note: draw might require 'alt' state. We assume standard draw for preview (no alt).
-		// If user holds alt, the preview might be wrong if we don't check it.
-		// For now assume normal draw.
-		bool alt = wxGetKeyState(WXK_ALT); // This is a bit hacky to check here, but effective.
+		// Handle ALT key for ground brushes (replace mode)
+		bool alt = wxGetKeyState(WXK_ALT);
 
-		brush->draw(preview_buffer_map.get(), tile, nullptr);
+		if (is_ground && alt) {
+			if (editor.replace_brush) {
+				std::pair<bool, GroundBrush*> param(false, editor.replace_brush);
+				brush->draw(preview_buffer_map.get(), tile, &param);
+			} else {
+				std::pair<bool, GroundBrush*> param(true, nullptr);
+				brush->draw(preview_buffer_map.get(), tile, &param);
+			}
+		} else {
+			brush->draw(preview_buffer_map.get(), tile, nullptr);
+		}
 	}
 
 	// Apply borderize
