@@ -336,7 +336,14 @@ wxMemoryDC* GameSprite::getDC(SpriteSize size) {
 wxMemoryDC* GameSprite::getDC(SpriteSize size, const Outfit& outfit) {
 	ASSERT(size == SPRITE_SIZE_16x16 || size == SPRITE_SIZE_32x32);
 
-	auto it = colored_dc.find(std::make_pair(size, outfit.getColorHash()));
+	RenderKey key;
+	key.size = size;
+	key.colorHash = outfit.getColorHash();
+	key.mountColorHash = outfit.getMountColorHash();
+	key.lookMount = outfit.lookMount;
+	key.lookAddon = outfit.lookAddon;
+
+	auto it = colored_dc.find(key);
 	if (it == colored_dc.end()) {
 		wxBitmap bmp = SpriteIconGenerator::Generate(this, size, outfit);
 		if (bmp.IsOk()) {
@@ -344,7 +351,7 @@ wxMemoryDC* GameSprite::getDC(SpriteSize size, const Outfit& outfit) {
 			cache->bm = std::make_unique<wxBitmap>(bmp);
 			cache->dc = std::make_unique<wxMemoryDC>(*cache->bm);
 
-			auto res = colored_dc.insert(std::make_pair(std::make_pair(size, outfit.getColorHash()), std::move(cache)));
+			auto res = colored_dc.insert(std::make_pair(key, std::move(cache)));
 			g_gui.gfx.addSpriteToCleanup(this);
 			return res.first->second->dc.get();
 		}

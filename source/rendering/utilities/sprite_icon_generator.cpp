@@ -30,6 +30,7 @@ wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size) {
 					wxImage img(SPRITE_PIXELS, SPRITE_PIXELS, data, true);
 					img.SetMaskColour(0xFF, 0x00, 0xFF);
 					image.Paste(img, (sprite->width - w - 1) * SPRITE_PIXELS, (sprite->height - h - 1) * SPRITE_PIXELS);
+					delete[] data;
 				}
 			}
 		}
@@ -99,7 +100,7 @@ wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size, cons
 						}
 
 						if (data) {
-							wxImage img(SPRITE_PIXELS, SPRITE_PIXELS, data, true);
+							wxImage img(SPRITE_PIXELS, SPRITE_PIXELS, data, false);
 							img.SetMaskColour(0xFF, 0x00, 0xFF);
 							// Mount offset?
 							int mount_x = (sprite->width - w - 1) * SPRITE_PIXELS - mountSpr->getDrawOffset().first;
@@ -108,7 +109,7 @@ wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size, cons
 							// This is tricky without a proper canvas.
 							// For icons, we usually just center or use the same grid.
 							// Let's rely on standard paste logic for now, offset might be an issue.
-							image.Paste(img, (mountSpr->width - w - 1) * SPRITE_PIXELS, (mountSpr->height - h - 1) * SPRITE_PIXELS);
+							image.Paste(img, mount_x, mount_y);
 						}
 					}
 				}
@@ -149,7 +150,7 @@ wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size, cons
 					}
 
 					if (data) {
-						wxImage img(SPRITE_PIXELS, SPRITE_PIXELS, data, true);
+						wxImage img(SPRITE_PIXELS, SPRITE_PIXELS, data, false);
 						img.SetMaskColour(0xFF, 0x00, 0xFF);
 						image.Paste(img, (sprite->width - w - 1) * SPRITE_PIXELS, (sprite->height - h - 1) * SPRITE_PIXELS);
 					}

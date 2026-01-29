@@ -283,9 +283,10 @@ void Materials::createOtherTileset() {
 		if (type->brush == nullptr) {
 			type->brush = newd CreatureBrush(type);
 			g_brushes.addBrush(type->brush);
-			type->brush->flagAsVisible();
-			type->in_other_tileset = true;
 		}
+
+		type->brush->flagAsVisible();
+		type->in_other_tileset = true;
 
 		if (type->isNpc) {
 			npc_tileset->getCategory(TILESET_CREATURE)->brushlist.push_back(type->brush);

@@ -40,6 +40,10 @@ struct Outfit {
 	uint32_t getColorHash() const {
 		return lookHead << 24 | lookBody << 16 | lookLegs << 8 | lookFeet;
 	}
+
+	uint32_t getMountColorHash() const {
+		return lookMountHead << 24 | lookMountBody << 16 | lookMountLegs << 8 | lookMountFeet;
+	}
 };
 
 #endif

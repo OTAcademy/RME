@@ -38,10 +38,6 @@ void CreatureNameDrawer::draw(const RenderView& view) {
 		return;
 	}
 
-	if (labels.empty()) {
-		return;
-	}
-
 	float zoom = view.zoom;
 	float tile_size_screen = 32.0f / zoom;
 	float fontSize = 11.0f; // Original size or slightly larger if preferred, reverting to 11.0f

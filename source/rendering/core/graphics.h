@@ -61,6 +61,7 @@ private:
 	Sprite& operator=(const Sprite&);
 };
 
+class GameSprite;
 class CreatureSprite : public Sprite {
 public:
 	CreatureSprite(GameSprite* parent, const Outfit& outfit);
@@ -206,7 +207,31 @@ public:
 		std::unique_ptr<wxMemoryDC> dc;
 		std::unique_ptr<wxBitmap> bm;
 	};
-	std::map<std::pair<SpriteSize, uint32_t>, std::unique_ptr<CachedDC>> colored_dc;
+
+	struct RenderKey {
+		SpriteSize size;
+		uint32_t colorHash;
+		uint32_t mountColorHash;
+		int lookMount;
+		int lookAddon;
+
+		bool operator<(const RenderKey& rk) const {
+			if (size != rk.size) {
+				return size < rk.size;
+			}
+			if (colorHash != rk.colorHash) {
+				return colorHash < rk.colorHash;
+			}
+			if (mountColorHash != rk.mountColorHash) {
+				return mountColorHash < rk.mountColorHash;
+			}
+			if (lookMount != rk.lookMount) {
+				return lookMount < rk.lookMount;
+			}
+			return lookAddon < rk.lookAddon;
+		}
+	};
+	std::map<RenderKey, std::unique_ptr<CachedDC>> colored_dc;
 
 	friend class GraphicManager;
 	friend class GameSpriteLoader;
