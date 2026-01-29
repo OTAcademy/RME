@@ -111,11 +111,20 @@ namespace IngamePreview {
 			view.end_x = (int)std::ceil((view.view_scroll_x + viewport_width * zoom + TileSize * 2) / (float)TileSize);
 			view.end_y = (int)std::ceil((view.view_scroll_y + viewport_height * zoom + TileSize * 2) / (float)TileSize);
 
+			// Pre-calculate view offsets
+			int offset = (z <= GROUND_LAYER)
+				? (GROUND_LAYER - z) * TileSize
+				: TileSize * (view.floor - z);
+			int base_draw_x = -view.view_scroll_x - offset;
+			int base_draw_y = -view.view_scroll_y - offset;
+
 			for (int x = view.start_x; x <= view.end_x; ++x) {
 				for (int y = view.start_y; y <= view.end_y; ++y) {
 					const Tile* tile = map.getTile(x, y, z);
 					if (tile) {
-						tile_renderer->DrawTile(*sprite_batch, *primitive_renderer, tile->location, view, options, 0, tooltip_stream);
+						int draw_x = (x * TileSize) + base_draw_x;
+						int draw_y = (y * TileSize) + base_draw_y;
+						tile_renderer->DrawTile(*sprite_batch, *primitive_renderer, tile->location, view, options, 0, tooltip_stream, draw_x, draw_y);
 						if (lighting_enabled) {
 							tile_renderer->AddLight(tile->location, view, options, *light_buffer);
 						}
