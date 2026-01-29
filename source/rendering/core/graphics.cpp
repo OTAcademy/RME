@@ -46,7 +46,6 @@
 
 #include "rendering/core/outfit_colors.h"
 #include "rendering/core/outfit_colorizer.h"
-#include <spdlog/spdlog.h>
 #include <atomic>
 #include <functional>
 
@@ -419,6 +418,13 @@ void GameSprite::NormalImage::clean(int time) {
 }
 
 uint8_t* GameSprite::NormalImage::getRGBData() {
+	if (id == 0) {
+		const int pixels_data_size = SPRITE_PIXELS * SPRITE_PIXELS * 3;
+		uint8_t* data = newd uint8_t[pixels_data_size];
+		memset(data, 0, pixels_data_size); // Black/Empty
+		return data;
+	}
+
 	if (!dump) {
 		if (g_settings.getInteger(Config::USE_MEMCACHED_SPRITES)) {
 			return nullptr;
@@ -684,10 +690,12 @@ uint8_t* GameSprite::TemplateImage::getRGBAData() {
 	uint8_t* template_rgbdata = parent->spriteList[sprite_index + parent->height * parent->width]->getRGBData();
 
 	if (!rgbadata) {
+		spdlog::warn("TemplateImage: Failed to load BASE sprite data for sprite_index={} (template_id={}). Parent width={}, height={}", sprite_index, texture_id, parent->width, parent->height);
 		delete[] template_rgbdata;
 		return nullptr;
 	}
 	if (!template_rgbdata) {
+		spdlog::warn("TemplateImage: Failed to load MASK sprite data for sprite_index={} (template_id={}) (mask_index={})", sprite_index, texture_id, sprite_index + parent->height * parent->width);
 		delete[] rgbadata;
 		return nullptr;
 	}

@@ -62,6 +62,7 @@
 #include "rendering/drawers/tiles/tile_color_calculator.h"
 #include "rendering/io/screen_capture.h"
 #include "rendering/drawers/tiles/tile_renderer.h"
+#include "rendering/drawers/entities/creature_name_drawer.h"
 
 MapDrawer::MapDrawer(MapCanvas* canvas) :
 	canvas(canvas), editor(canvas->editor) {
@@ -75,7 +76,9 @@ MapDrawer::MapDrawer(MapCanvas* canvas) :
 	item_drawer = std::make_unique<ItemDrawer>();
 	marker_drawer = std::make_unique<MarkerDrawer>();
 
-	tile_renderer = std::make_unique<TileRenderer>(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), floor_drawer.get(), marker_drawer.get(), tooltip_drawer.get(), &editor);
+	creature_name_drawer = std::make_unique<CreatureNameDrawer>();
+
+	tile_renderer = std::make_unique<TileRenderer>(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), creature_name_drawer.get(), floor_drawer.get(), marker_drawer.get(), tooltip_drawer.get(), &editor);
 
 	grid_drawer = std::make_unique<GridDrawer>();
 	map_layer_drawer = std::make_unique<MapLayerDrawer>(tile_renderer.get(), grid_drawer.get(), &editor); // Initialized map_layer_drawer
@@ -148,6 +151,7 @@ void MapDrawer::Release() {
 void MapDrawer::Draw() {
 
 	light_buffer.Clear();
+	creature_name_drawer->clear();
 
 	// Begin Batches
 	sprite_batch->begin(view.projectionMatrix);
@@ -187,6 +191,8 @@ void MapDrawer::Draw() {
 	if (options.show_ingame_box) {
 		DrawIngameBox();
 	}
+
+	// Draw creature names (Overlay) moved to DrawCreatureNames()
 
 	// End Batches and Flush
 	if (g_gui.gfx.ensureAtlasManager()) {
@@ -247,6 +253,10 @@ void MapDrawer::DrawGrid() {
 
 void MapDrawer::DrawTooltips() {
 	tooltip_drawer->draw(view);
+}
+
+void MapDrawer::DrawCreatureNames() {
+	creature_name_drawer->draw(view);
 }
 
 void MapDrawer::DrawMapLayer(int map_z, bool live_client) {
