@@ -129,7 +129,7 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 	return data;
 }
 
-void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, TileLocation* location, const RenderView& view, const DrawingOptions& options, uint32_t current_house_id, std::ostringstream& tooltip_stream, int in_draw_x, int in_draw_y) {
+void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, TileLocation* location, const RenderView& view, const DrawingOptions& options, uint32_t current_house_id, std::ostringstream& tooltip_stream, std::optional<int> in_draw_x = std::nullopt, std::optional<int> in_draw_y = std::nullopt) {
 	if (!location) {
 		return;
 	}
