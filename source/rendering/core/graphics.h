@@ -61,6 +61,18 @@ private:
 	Sprite& operator=(const Sprite&);
 };
 
+class CreatureSprite : public Sprite {
+public:
+	CreatureSprite(GameSprite* parent, const Outfit& outfit);
+	virtual ~CreatureSprite();
+
+	virtual void DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width = -1, int height = -1) override;
+	virtual void unloadDC() override;
+
+	GameSprite* parent;
+	Outfit outfit;
+};
+
 class GameSprite : public Sprite {
 public:
 	GameSprite();
@@ -73,6 +85,7 @@ public:
 	const AtlasRegion* getAtlasRegion(int _x, int _y, int _dir, int _addon, int _pattern_z, const Outfit& _outfit, int _frame);
 
 	virtual void DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width = -1, int height = -1) override;
+	virtual void DrawTo(wxDC* dc, SpriteSize sz, const Outfit& outfit, int start_x, int start_y, int width = -1, int height = -1);
 
 	virtual void unloadDC() override;
 
@@ -95,6 +108,7 @@ protected:
 	class TemplateImage;
 
 	wxMemoryDC* getDC(SpriteSize size);
+	wxMemoryDC* getDC(SpriteSize size, const Outfit& outfit);
 	TemplateImage* getTemplateImage(int sprite_index, const Outfit& outfit);
 
 	class Image {
@@ -162,6 +176,7 @@ protected:
 
 	uint32_t id;
 	std::unique_ptr<wxMemoryDC> dc[SPRITE_SIZE_COUNT];
+	std::unique_ptr<wxBitmap> bm[SPRITE_SIZE_COUNT];
 
 public:
 	// GameSprite info
@@ -187,6 +202,11 @@ public:
 
 	std::vector<NormalImage*> spriteList;
 	std::list<std::unique_ptr<TemplateImage>> instanced_templates; // Templates that use this sprite
+	struct CachedDC {
+		std::unique_ptr<wxMemoryDC> dc;
+		std::unique_ptr<wxBitmap> bm;
+	};
+	std::map<std::pair<SpriteSize, uint32_t>, std::unique_ptr<CachedDC>> colored_dc;
 
 	friend class GraphicManager;
 	friend class GameSpriteLoader;

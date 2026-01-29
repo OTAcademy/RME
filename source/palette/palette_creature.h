@@ -15,10 +15,12 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#ifndef RME_TILESET_CREATURE_H_
-#define RME_TILESET_CREATURE_H_
+#ifndef RME_PALETTE_CREATURE_H_
+#define RME_PALETTE_CREATURE_H_
 
+#include "brushes/brush_enums.h"
 #include "palette/palette_common.h"
+#include "palette/panels/brush_panel.h"
 #include "ui/controls/sortable_list_box.h"
 
 class CreaturePalettePanel : public PalettePanel {
@@ -43,6 +45,10 @@ public:
 	void OnSwitchIn();
 	// Called sometimes?
 	void OnUpdate();
+	void OnRefreshTilesets();
+
+	void SetListType(BrushListType ltype);
+	void SetListType(wxString ltype);
 
 protected:
 	void SelectTileset(size_t index);
@@ -54,8 +60,8 @@ public:
 	void OnChangeSpawnTime(wxSpinEvent& event);
 	void OnChangeSpawnSize(wxSpinEvent& event);
 
-	void OnTilesetChange(wxCommandEvent& event);
-	void OnListBoxChange(wxCommandEvent& event);
+	void OnSwitchingPage(wxChoicebookEvent& event);
+	void OnPageChanged(wxChoicebookEvent& event);
 	void OnClickCreatureBrushButton(wxCommandEvent& event);
 	void OnClickSpawnBrushButton(wxCommandEvent& event);
 
@@ -63,8 +69,7 @@ protected:
 	void SelectCreatureBrush();
 	void SelectSpawnBrush();
 
-	wxChoice* tileset_choice;
-	SortableListBox* creature_list;
+	wxChoicebook* choicebook;
 	wxToggleButton* creature_brush_button;
 	wxToggleButton* spawn_brush_button;
 	wxSpinCtrl* creature_spawntime_spin;

@@ -193,6 +193,28 @@ void GraphicManager::garbageCollection() {
 	collector.GarbageCollect(sprite_space, generic_image_space);
 }
 
+CreatureSprite::CreatureSprite(GameSprite* parent, const Outfit& outfit) :
+	parent(parent),
+	outfit(outfit) {
+	////
+}
+
+CreatureSprite::~CreatureSprite() {
+	////
+}
+
+void CreatureSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width, int height) {
+	if (parent) {
+		parent->DrawTo(dc, sz, outfit, start_x, start_y, width, height);
+	}
+}
+
+void CreatureSprite::unloadDC() {
+	if (parent) {
+		parent->unloadDC();
+	}
+}
+
 GameSprite::GameSprite() :
 	id(0),
 	height(0),
@@ -225,6 +247,9 @@ void GameSprite::clean(int time) {
 void GameSprite::unloadDC() {
 	dc[SPRITE_SIZE_16x16].reset();
 	dc[SPRITE_SIZE_32x32].reset();
+	bm[SPRITE_SIZE_16x16].reset();
+	bm[SPRITE_SIZE_32x32].reset();
+	colored_dc.clear();
 }
 
 int GameSprite::getDrawHeight() const {
@@ -298,10 +323,34 @@ wxMemoryDC* GameSprite::getDC(SpriteSize size) {
 	ASSERT(size == SPRITE_SIZE_16x16 || size == SPRITE_SIZE_32x32);
 
 	if (!dc[size]) {
-		dc[size] = std::unique_ptr<wxMemoryDC>(SpriteIconGenerator::Generate(this, size));
+		wxBitmap bmp = SpriteIconGenerator::Generate(this, size);
+		if (bmp.IsOk()) {
+			bm[size] = std::make_unique<wxBitmap>(bmp);
+			dc[size] = std::make_unique<wxMemoryDC>(*bm[size]);
+		}
 		g_gui.gfx.addSpriteToCleanup(this);
 	}
 	return dc[size].get();
+}
+
+wxMemoryDC* GameSprite::getDC(SpriteSize size, const Outfit& outfit) {
+	ASSERT(size == SPRITE_SIZE_16x16 || size == SPRITE_SIZE_32x32);
+
+	auto it = colored_dc.find(std::make_pair(size, outfit.getColorHash()));
+	if (it == colored_dc.end()) {
+		wxBitmap bmp = SpriteIconGenerator::Generate(this, size, outfit);
+		if (bmp.IsOk()) {
+			auto cache = std::make_unique<CachedDC>();
+			cache->bm = std::make_unique<wxBitmap>(bmp);
+			cache->dc = std::make_unique<wxMemoryDC>(*cache->bm);
+
+			auto res = colored_dc.insert(std::make_pair(std::make_pair(size, outfit.getColorHash()), std::move(cache)));
+			g_gui.gfx.addSpriteToCleanup(this);
+			return res.first->second->dc.get();
+		}
+		return nullptr;
+	}
+	return it->second->dc.get();
 }
 
 void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width, int height) {
@@ -312,6 +361,24 @@ void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int w
 		height = sz == SPRITE_SIZE_32x32 ? 32 : 16;
 	}
 	wxDC* sdc = getDC(sz);
+	if (sdc) {
+		dc->Blit(start_x, start_y, width, height, sdc, 0, 0, wxCOPY, true);
+	} else {
+		const wxBrush& b = dc->GetBrush();
+		dc->SetBrush(*wxRED_BRUSH);
+		dc->DrawRectangle(start_x, start_y, width, height);
+		dc->SetBrush(b);
+	}
+}
+
+void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, const Outfit& outfit, int start_x, int start_y, int width, int height) {
+	if (width == -1) {
+		width = sz == SPRITE_SIZE_32x32 ? 32 : 16;
+	}
+	if (height == -1) {
+		height = sz == SPRITE_SIZE_32x32 ? 32 : 16;
+	}
+	wxDC* sdc = getDC(sz, outfit);
 	if (sdc) {
 		dc->Blit(start_x, start_y, width, height, sdc, 0, 0, wxCOPY, true);
 	} else {

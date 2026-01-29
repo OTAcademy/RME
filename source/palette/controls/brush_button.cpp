@@ -16,7 +16,11 @@ BrushButton::BrushButton(wxWindow* parent, Brush* _brush, RenderSize sz, uint32_
 	brush(_brush) {
 	ASSERT(sz != RENDER_SIZE_64x64);
 	ASSERT(brush);
-	SetSprite(brush->getLookID());
+	if (Sprite* s = brush->getSprite()) {
+		SetSprite(s);
+	} else {
+		SetSprite(brush->getLookID());
+	}
 	SetToolTip(wxstr(brush->getName()));
 }
 

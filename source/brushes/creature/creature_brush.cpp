@@ -24,6 +24,7 @@
 #include "game/creature.h"
 #include "map/basemap.h"
 #include "game/spawn.h"
+#include "game/items.h"
 
 //=============================================================================
 // Creature brush
@@ -41,6 +42,27 @@ CreatureBrush::~CreatureBrush() {
 
 int CreatureBrush::getLookID() const {
 	return 0;
+}
+
+Sprite* CreatureBrush::getSprite() const {
+	if (creature_type) {
+		const Outfit& outfit = creature_type->outfit;
+		if (outfit.lookItem != 0) {
+			ItemType& it = g_items[outfit.lookItem];
+			return it.sprite;
+		}
+
+		if (outfit.lookType != 0) {
+			if (!creature_sprite_wrapper) {
+				GameSprite* gs = g_gui.gfx.getCreatureSprite(outfit.lookType);
+				if (gs) {
+					creature_sprite_wrapper = std::make_unique<CreatureSprite>(gs, outfit);
+				}
+			}
+			return creature_sprite_wrapper.get();
+		}
+	}
+	return nullptr;
 }
 
 std::string CreatureBrush::getName() const {
