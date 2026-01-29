@@ -67,7 +67,7 @@ public:
 	const bool* getBoolean() const;
 
 private:
-	char data[sizeof(std::string) > sizeof(double) ? sizeof(std::string) : sizeof(double)];
+	alignas(alignof(std::string) > alignof(double) ? alignof(std::string) : alignof(double)) char data[sizeof(std::string) > sizeof(double) ? sizeof(std::string) : sizeof(double)];
 };
 
 using ItemAttributeMap = std::map<std::string, ItemAttribute>;
