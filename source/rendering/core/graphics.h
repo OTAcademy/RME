@@ -214,6 +214,10 @@ public:
 		uint32_t mountColorHash;
 		int lookMount;
 		int lookAddon;
+		int lookMountHead;
+		int lookMountBody;
+		int lookMountLegs;
+		int lookMountFeet;
 
 		bool operator<(const RenderKey& rk) const {
 			if (size != rk.size) {
@@ -228,7 +232,19 @@ public:
 			if (lookMount != rk.lookMount) {
 				return lookMount < rk.lookMount;
 			}
-			return lookAddon < rk.lookAddon;
+			if (lookAddon != rk.lookAddon) {
+				return lookAddon < rk.lookAddon;
+			}
+			if (lookMountHead != rk.lookMountHead) {
+				return lookMountHead < rk.lookMountHead;
+			}
+			if (lookMountBody != rk.lookMountBody) {
+				return lookMountBody < rk.lookMountBody;
+			}
+			if (lookMountLegs != rk.lookMountLegs) {
+				return lookMountLegs < rk.lookMountLegs;
+			}
+			return lookMountFeet < rk.lookMountFeet;
 		}
 	};
 	std::map<RenderKey, std::unique_ptr<CachedDC>> colored_dc;

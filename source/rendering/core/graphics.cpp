@@ -211,7 +211,21 @@ void CreatureSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, i
 
 void CreatureSprite::unloadDC() {
 	if (parent) {
-		parent->unloadDC();
+		GameSprite::RenderKey key;
+		key.colorHash = outfit.getColorHash();
+		key.mountColorHash = outfit.getMountColorHash();
+		key.lookMount = outfit.lookMount;
+		key.lookAddon = outfit.lookAddon;
+		key.lookMountHead = outfit.lookMountHead;
+		key.lookMountBody = outfit.lookMountBody;
+		key.lookMountLegs = outfit.lookMountLegs;
+		key.lookMountFeet = outfit.lookMountFeet;
+
+		key.size = SPRITE_SIZE_16x16;
+		parent->colored_dc.erase(key);
+
+		key.size = SPRITE_SIZE_32x32;
+		parent->colored_dc.erase(key);
 	}
 }
 
@@ -342,6 +356,10 @@ wxMemoryDC* GameSprite::getDC(SpriteSize size, const Outfit& outfit) {
 	key.mountColorHash = outfit.getMountColorHash();
 	key.lookMount = outfit.lookMount;
 	key.lookAddon = outfit.lookAddon;
+	key.lookMountHead = outfit.lookMountHead;
+	key.lookMountBody = outfit.lookMountBody;
+	key.lookMountLegs = outfit.lookMountLegs;
+	key.lookMountFeet = outfit.lookMountFeet;
 
 	auto it = colored_dc.find(key);
 	if (it == colored_dc.end()) {
