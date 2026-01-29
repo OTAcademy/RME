@@ -54,7 +54,7 @@ void TextureGarbageCollector::AddSpriteToCleanup(GameSprite* spr) {
 	}
 }
 
-void TextureGarbageCollector::GarbageCollect(std::map<int, std::unique_ptr<Sprite>>& sprite_space, std::map<int, void*>& image_space) {
+void TextureGarbageCollector::GarbageCollect(std::unordered_map<int, std::unique_ptr<Sprite>>& sprite_space, std::unordered_map<int, void*>& image_space) {
 	if (g_settings.getInteger(Config::TEXTURE_MANAGEMENT)) {
 		time_t t = time(nullptr);
 		if (loaded_textures > g_settings.getInteger(Config::TEXTURE_CLEAN_THRESHOLD) && t - lastclean > g_settings.getInteger(Config::TEXTURE_CLEAN_PULSE)) {
@@ -83,7 +83,7 @@ void TextureGarbageCollector::GarbageCollect(std::map<int, std::unique_ptr<Sprit
 	}
 }
 
-void TextureGarbageCollector::CleanSoftwareSprites(std::map<int, std::unique_ptr<Sprite>>& sprite_space) {
+void TextureGarbageCollector::CleanSoftwareSprites(std::unordered_map<int, std::unique_ptr<Sprite>>& sprite_space) {
 	for (auto& pair : sprite_space) {
 		if (pair.first >= 0) { // Don't clean internal sprites
 			pair.second->unloadDC();

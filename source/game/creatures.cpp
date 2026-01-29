@@ -358,11 +358,12 @@ bool CreatureDatabase::importXMLFromOT(const FileName& filename, wxString& error
 					}
 					ASSERT(tileSet != nullptr);
 
-					Brush* brush = newd CreatureBrush(creatureType);
-					g_brushes.addBrush(brush);
+					creatureType->brush = newd CreatureBrush(creatureType);
+					g_brushes.addBrush(creatureType->brush);
+					creatureType->in_other_tileset = true;
 
 					TilesetCategory* tileSetCategory = tileSet->getCategory(TILESET_CREATURE);
-					tileSetCategory->brushlist.push_back(brush);
+					tileSetCategory->brushlist.push_back(creatureType->brush);
 				}
 			}
 		}
@@ -385,11 +386,12 @@ bool CreatureDatabase::importXMLFromOT(const FileName& filename, wxString& error
 				}
 				ASSERT(tileSet != nullptr);
 
-				Brush* brush = newd CreatureBrush(creatureType);
-				g_brushes.addBrush(brush);
+				creatureType->brush = newd CreatureBrush(creatureType);
+				g_brushes.addBrush(creatureType->brush);
+				creatureType->in_other_tileset = true;
 
 				TilesetCategory* tileSetCategory = tileSet->getCategory(TILESET_CREATURE);
-				tileSetCategory->brushlist.push_back(brush);
+				tileSetCategory->brushlist.push_back(creatureType->brush);
 			}
 		}
 	} else {

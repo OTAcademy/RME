@@ -148,10 +148,12 @@ BrowseTileWindow::BrowseTileWindow(wxWindow* parent, Tile* tile, wxPoint positio
 	wxSizer* infoSizer = newd wxBoxSizer(wxVERTICAL);
 	wxBoxSizer* buttons = newd wxBoxSizer(wxHORIZONTAL);
 	delete_button = newd wxButton(this, wxID_REMOVE, "Delete");
+	delete_button->SetToolTip("Delete selected item");
 	delete_button->Enable(false);
 	buttons->Add(delete_button);
 	buttons->AddSpacer(5);
 	select_raw_button = newd wxButton(this, wxID_FIND, "Select RAW");
+	select_raw_button->SetToolTip("Select this item in RAW palette");
 	select_raw_button->Enable(false);
 	buttons->Add(select_raw_button);
 	infoSizer->Add(buttons);

@@ -86,6 +86,7 @@ FindItemDialog::FindItemDialog(wxWindow* parent, const wxString& title, bool onl
 	ok_button->SetToolTip("Select an item to confirm");
 	buttons_box_sizer->AddButton(ok_button);
 	cancel_button = newd wxButton(this, wxID_CANCEL);
+	cancel_button->SetToolTip("Cancel selection");
 	buttons_box_sizer->AddButton(cancel_button);
 	buttons_box_sizer->Realize();
 	options_box_sizer->Add(buttons_box_sizer, 0, wxALIGN_CENTER | wxALL, 5);
@@ -120,50 +121,65 @@ FindItemDialog::FindItemDialog(wxWindow* parent, const wxString& title, bool onl
 	wxStaticBoxSizer* properties_box_sizer = newd wxStaticBoxSizer(newd wxStaticBox(this, wxID_ANY, "Properties"), wxVERTICAL);
 
 	unpassable = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Unpassable", wxDefaultPosition, wxDefaultSize, 0);
+	unpassable->SetToolTip("Item blocks movement");
 	properties_box_sizer->Add(unpassable, 0, wxALL, 5);
 
 	unmovable = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Unmovable", wxDefaultPosition, wxDefaultSize, 0);
+	unmovable->SetToolTip("Item cannot be moved");
 	properties_box_sizer->Add(unmovable, 0, wxALL, 5);
 
 	block_missiles = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Block Missiles", wxDefaultPosition, wxDefaultSize, 0);
+	block_missiles->SetToolTip("Item blocks projectiles");
 	properties_box_sizer->Add(block_missiles, 0, wxALL, 5);
 
 	block_pathfinder = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Block Pathfinder", wxDefaultPosition, wxDefaultSize, 0);
+	block_pathfinder->SetToolTip("Item blocks pathfinding");
 	properties_box_sizer->Add(block_pathfinder, 0, wxALL, 5);
 
 	readable = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Readable", wxDefaultPosition, wxDefaultSize, 0);
+	readable->SetToolTip("Item has text");
 	properties_box_sizer->Add(readable, 0, wxALL, 5);
 
 	writeable = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Writeable", wxDefaultPosition, wxDefaultSize, 0);
+	writeable->SetToolTip("Item can be written on");
 	properties_box_sizer->Add(writeable, 0, wxALL, 5);
 
 	pickupable = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Pickupable", wxDefaultPosition, wxDefaultSize, 0);
+	pickupable->SetToolTip("Item can be picked up");
 	pickupable->SetValue(only_pickupables);
 	pickupable->Enable(!only_pickupables);
 	properties_box_sizer->Add(pickupable, 0, wxALL, 5);
 
 	stackable = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Stackable", wxDefaultPosition, wxDefaultSize, 0);
+	stackable->SetToolTip("Item is stackable");
 	properties_box_sizer->Add(stackable, 0, wxALL, 5);
 
 	rotatable = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Rotatable", wxDefaultPosition, wxDefaultSize, 0);
+	rotatable->SetToolTip("Item can be rotated");
 	properties_box_sizer->Add(rotatable, 0, wxALL, 5);
 
 	hangable = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Hangable", wxDefaultPosition, wxDefaultSize, 0);
+	hangable->SetToolTip("Item can be hung on walls");
 	properties_box_sizer->Add(hangable, 0, wxALL, 5);
 
 	hook_east = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Hook East", wxDefaultPosition, wxDefaultSize, 0);
+	hook_east->SetToolTip("Item hooks to the east");
 	properties_box_sizer->Add(hook_east, 0, wxALL, 5);
 
 	hook_south = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Hook South", wxDefaultPosition, wxDefaultSize, 0);
+	hook_south->SetToolTip("Item hooks to the south");
 	properties_box_sizer->Add(hook_south, 0, wxALL, 5);
 
 	has_elevation = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Has Elevation", wxDefaultPosition, wxDefaultSize, 0);
+	has_elevation->SetToolTip("Item has height (elevation)");
 	properties_box_sizer->Add(has_elevation, 0, wxALL, 5);
 
 	ignore_look = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Ignore Look", wxDefaultPosition, wxDefaultSize, 0);
+	ignore_look->SetToolTip("Item is ignored when looking");
 	properties_box_sizer->Add(ignore_look, 0, wxALL, 5);
 
 	floor_change = newd wxCheckBox(properties_box_sizer->GetStaticBox(), wxID_ANY, "Floor Change", wxDefaultPosition, wxDefaultSize, 0);
+	floor_change->SetToolTip("Item causes floor change");
 	properties_box_sizer->Add(floor_change, 0, wxALL, 5);
 
 	box_sizer->Add(properties_box_sizer, 1, wxALL | wxEXPAND, 5);

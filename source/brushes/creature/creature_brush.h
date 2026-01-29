@@ -20,6 +20,8 @@
 
 #include "brushes/brush.h"
 
+class Sprite;
+
 //=============================================================================
 // CreatureBrush, place creatures
 
@@ -45,6 +47,7 @@ public:
 	}
 
 	int getLookID() const override; // We don't have a look type, this will always return 0
+	Sprite* getSprite() const override;
 	std::string getName() const override;
 	bool canDrag() const override {
 		return false;
@@ -58,6 +61,7 @@ public:
 
 protected:
 	CreatureType* creature_type;
+	mutable std::unique_ptr<Sprite> creature_sprite_wrapper;
 };
 
 #endif

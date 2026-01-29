@@ -109,26 +109,38 @@ bool GameSpriteLoader::LoadSpriteMetadata(GraphicManager* manager, const wxFileN
 				file.skip(1);
 			}
 
+			uint8_t width, height, layers, pattern_x, pattern_y, pattern_z, frames;
+
 			// Size and GameSprite data
-			file.getByte(sType->width);
-			file.getByte(sType->height);
+			file.getByte(width);
+			file.getByte(height);
 
 			// Skipping the exact size
-			if ((sType->width > 1) || (sType->height > 1)) {
+			if ((width > 1) || (height > 1)) {
 				file.skip(1);
 			}
 
-			file.getU8(sType->layers); // Number of blendframes (some sprites consist of several merged sprites)
-			file.getU8(sType->pattern_x);
-			file.getU8(sType->pattern_y);
+			file.getU8(layers); // Number of blendframes (some sprites consist of several merged sprites)
+			file.getU8(pattern_x);
+			file.getU8(pattern_y);
 			if (manager->dat_format <= DAT_FORMAT_74) {
-				sType->pattern_z = 1;
+				pattern_z = 1;
 			} else {
-				file.getU8(sType->pattern_z);
+				file.getU8(pattern_z);
 			}
-			file.getU8(sType->frames); // Length of animation
+			file.getU8(frames); // Length of animation
 
-			if (sType->frames > 1) {
+			if (k == 0) {
+				sType->width = width;
+				sType->height = height;
+				sType->layers = layers;
+				sType->pattern_x = pattern_x;
+				sType->pattern_y = pattern_y;
+				sType->pattern_z = pattern_z;
+				sType->frames = frames;
+			}
+
+			if (frames > 1) {
 				uint8_t async = 0;
 				int loop_count = 0;
 				int8_t start_frame = 0;
@@ -137,24 +149,35 @@ bool GameSpriteLoader::LoadSpriteMetadata(GraphicManager* manager, const wxFileN
 					file.get32(loop_count);
 					file.getSByte(start_frame);
 				}
-				sType->animator = std::make_unique<Animator>(sType->frames, start_frame, loop_count, async == 1);
+
+				if (k == 0) {
+					sType->animator = std::make_unique<Animator>(frames, start_frame, loop_count, async == 1);
+				}
+
 				if (manager->has_frame_durations) {
-					for (int i = 0; i < sType->frames; i++) {
+					for (int i = 0; i < frames; i++) {
 						uint32_t min;
 						uint32_t max;
 						file.getU32(min);
 						file.getU32(max);
-						FrameDuration* frame_duration = sType->animator->getFrameDuration(i);
-						frame_duration->setValues(int(min), int(max));
+						if (k == 0) {
+							FrameDuration* frame_duration = sType->animator->getFrameDuration(i);
+							frame_duration->setValues(int(min), int(max));
+						}
 					}
-					sType->animator->reset();
+					if (k == 0) {
+						sType->animator->reset();
+					}
 				}
 			}
 
-			sType->numsprites = (int)sType->width * (int)sType->height * (int)sType->layers * (int)sType->pattern_x * (int)sType->pattern_y * sType->pattern_z * (int)sType->frames;
+			uint32_t numsprites = (int)width * (int)height * (int)layers * (int)pattern_x * (int)pattern_y * pattern_z * (int)frames;
+			if (k == 0) {
+				sType->numsprites = numsprites;
+			}
 
 			// Read the sprite ids
-			for (uint32_t i = 0; i < sType->numsprites; ++i) {
+			for (uint32_t i = 0; i < numsprites; ++i) {
 				uint32_t sprite_id;
 				if (manager->is_extended) {
 					file.getU32(sprite_id);
@@ -164,13 +187,15 @@ bool GameSpriteLoader::LoadSpriteMetadata(GraphicManager* manager, const wxFileN
 					sprite_id = u16;
 				}
 
-				auto [it, inserted] = manager->image_space.try_emplace(sprite_id, nullptr);
-				if (inserted) {
-					auto img = std::make_unique<GameSprite::NormalImage>();
-					img->id = sprite_id;
-					it->second = std::move(img);
+				if (k == 0) {
+					auto [it, inserted] = manager->image_space.try_emplace(sprite_id, nullptr);
+					if (inserted) {
+						auto img = std::make_unique<GameSprite::NormalImage>();
+						img->id = sprite_id;
+						it->second = std::move(img);
+					}
+					sType->spriteList.push_back(static_cast<GameSprite::NormalImage*>(it->second.get()));
 				}
-				sType->spriteList.push_back(static_cast<GameSprite::NormalImage*>(it->second.get()));
 			}
 		}
 		++id;
@@ -466,6 +491,12 @@ bool GameSpriteLoader::LoadSpriteDump(GraphicManager* manager, std::unique_ptr<u
 
 	uint32_t to_seek = 0;
 	if (fh.getU32(to_seek)) {
+		if (to_seek == 0) {
+			// Offset 0 means empty/transparent sprite
+			size = 0;
+			target.reset(); // ensure null
+			return true;
+		}
 		fh.seek(to_seek + 3);
 		uint16_t sprite_size;
 		if (fh.getU16(sprite_size)) {

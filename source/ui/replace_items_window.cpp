@@ -220,6 +220,7 @@ ReplaceItemsDialog::ReplaceItemsDialog(wxWindow* parent, bool selectionOnly) :
 	buttons_sizer->Add(execute_button, 0, wxALL, 5);
 
 	close_button = new wxButton(this, wxID_ANY, wxT("Close"));
+	close_button->SetToolTip("Close this window");
 	buttons_sizer->Add(close_button, 0, wxALL, 5);
 
 	sizer->Add(buttons_sizer, 1, wxALL | wxLEFT | wxRIGHT | wxSHAPED, 5);

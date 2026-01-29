@@ -9,7 +9,8 @@
 
 class SpriteIconGenerator {
 public:
-	static wxMemoryDC* Generate(GameSprite* sprite, SpriteSize size);
+	static wxBitmap Generate(GameSprite* sprite, SpriteSize size);
+	static wxBitmap Generate(GameSprite* sprite, SpriteSize size, const Outfit& outfit);
 };
 
 #endif

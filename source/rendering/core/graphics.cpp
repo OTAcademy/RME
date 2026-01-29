@@ -46,7 +46,6 @@
 
 #include "rendering/core/outfit_colors.h"
 #include "rendering/core/outfit_colorizer.h"
-#include <spdlog/spdlog.h>
 #include <atomic>
 #include <functional>
 
@@ -187,11 +186,47 @@ void GraphicManager::addSpriteToCleanup(GameSprite* spr) {
 }
 
 void GraphicManager::garbageCollection() {
-	std::map<int, void*> generic_image_space;
+	std::unordered_map<int, void*> generic_image_space;
 	for (auto& pair : image_space) {
 		generic_image_space[pair.first] = (void*)pair.second.get();
 	}
 	collector.GarbageCollect(sprite_space, generic_image_space);
+}
+
+CreatureSprite::CreatureSprite(GameSprite* parent, const Outfit& outfit) :
+	parent(parent),
+	outfit(outfit) {
+	////
+}
+
+CreatureSprite::~CreatureSprite() {
+	////
+}
+
+void CreatureSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width, int height) {
+	if (parent) {
+		parent->DrawTo(dc, sz, outfit, start_x, start_y, width, height);
+	}
+}
+
+void CreatureSprite::unloadDC() {
+	if (parent) {
+		GameSprite::RenderKey key;
+		key.colorHash = outfit.getColorHash();
+		key.mountColorHash = outfit.getMountColorHash();
+		key.lookMount = outfit.lookMount;
+		key.lookAddon = outfit.lookAddon;
+		key.lookMountHead = outfit.lookMountHead;
+		key.lookMountBody = outfit.lookMountBody;
+		key.lookMountLegs = outfit.lookMountLegs;
+		key.lookMountFeet = outfit.lookMountFeet;
+
+		key.size = SPRITE_SIZE_16x16;
+		parent->colored_dc.erase(key);
+
+		key.size = SPRITE_SIZE_32x32;
+		parent->colored_dc.erase(key);
+	}
 }
 
 GameSprite::GameSprite() :
@@ -226,6 +261,9 @@ void GameSprite::clean(int time) {
 void GameSprite::unloadDC() {
 	dc[SPRITE_SIZE_16x16].reset();
 	dc[SPRITE_SIZE_32x32].reset();
+	bm[SPRITE_SIZE_16x16].reset();
+	bm[SPRITE_SIZE_32x32].reset();
+	colored_dc.clear();
 }
 
 int GameSprite::getDrawHeight() const {
@@ -299,10 +337,45 @@ wxMemoryDC* GameSprite::getDC(SpriteSize size) {
 	ASSERT(size == SPRITE_SIZE_16x16 || size == SPRITE_SIZE_32x32);
 
 	if (!dc[size]) {
-		dc[size] = std::unique_ptr<wxMemoryDC>(SpriteIconGenerator::Generate(this, size));
+		wxBitmap bmp = SpriteIconGenerator::Generate(this, size);
+		if (bmp.IsOk()) {
+			bm[size] = std::make_unique<wxBitmap>(bmp);
+			dc[size] = std::make_unique<wxMemoryDC>(*bm[size]);
+		}
 		g_gui.gfx.addSpriteToCleanup(this);
 	}
 	return dc[size].get();
+}
+
+wxMemoryDC* GameSprite::getDC(SpriteSize size, const Outfit& outfit) {
+	ASSERT(size == SPRITE_SIZE_16x16 || size == SPRITE_SIZE_32x32);
+
+	RenderKey key;
+	key.size = size;
+	key.colorHash = outfit.getColorHash();
+	key.mountColorHash = outfit.getMountColorHash();
+	key.lookMount = outfit.lookMount;
+	key.lookAddon = outfit.lookAddon;
+	key.lookMountHead = outfit.lookMountHead;
+	key.lookMountBody = outfit.lookMountBody;
+	key.lookMountLegs = outfit.lookMountLegs;
+	key.lookMountFeet = outfit.lookMountFeet;
+
+	auto it = colored_dc.find(key);
+	if (it == colored_dc.end()) {
+		wxBitmap bmp = SpriteIconGenerator::Generate(this, size, outfit);
+		if (bmp.IsOk()) {
+			auto cache = std::make_unique<CachedDC>();
+			cache->bm = std::make_unique<wxBitmap>(bmp);
+			cache->dc = std::make_unique<wxMemoryDC>(*cache->bm);
+
+			auto res = colored_dc.insert(std::make_pair(key, std::move(cache)));
+			g_gui.gfx.addSpriteToCleanup(this);
+			return res.first->second->dc.get();
+		}
+		return nullptr;
+	}
+	return it->second->dc.get();
 }
 
 void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width, int height) {
@@ -313,6 +386,24 @@ void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int w
 		height = sz == SPRITE_SIZE_32x32 ? 32 : 16;
 	}
 	wxDC* sdc = getDC(sz);
+	if (sdc) {
+		dc->Blit(start_x, start_y, width, height, sdc, 0, 0, wxCOPY, true);
+	} else {
+		const wxBrush& b = dc->GetBrush();
+		dc->SetBrush(*wxRED_BRUSH);
+		dc->DrawRectangle(start_x, start_y, width, height);
+		dc->SetBrush(b);
+	}
+}
+
+void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, const Outfit& outfit, int start_x, int start_y, int width, int height) {
+	if (width == -1) {
+		width = sz == SPRITE_SIZE_32x32 ? 32 : 16;
+	}
+	if (height == -1) {
+		height = sz == SPRITE_SIZE_32x32 ? 32 : 16;
+	}
+	wxDC* sdc = getDC(sz, outfit);
 	if (sdc) {
 		dc->Blit(start_x, start_y, width, height, sdc, 0, 0, wxCOPY, true);
 	} else {
@@ -419,6 +510,13 @@ void GameSprite::NormalImage::clean(int time) {
 }
 
 uint8_t* GameSprite::NormalImage::getRGBData() {
+	if (id == 0) {
+		const int pixels_data_size = SPRITE_PIXELS * SPRITE_PIXELS * 3;
+		uint8_t* data = newd uint8_t[pixels_data_size];
+		memset(data, 0, pixels_data_size); // Black/Empty
+		return data;
+	}
+
 	if (!dump) {
 		if (g_settings.getInteger(Config::USE_MEMCACHED_SPRITES)) {
 			return nullptr;
@@ -684,10 +782,12 @@ uint8_t* GameSprite::TemplateImage::getRGBAData() {
 	uint8_t* template_rgbdata = parent->spriteList[sprite_index + parent->height * parent->width]->getRGBData();
 
 	if (!rgbadata) {
+		spdlog::warn("TemplateImage: Failed to load BASE sprite data for sprite_index={} (template_id={}). Parent width={}, height={}", sprite_index, texture_id, parent->width, parent->height);
 		delete[] template_rgbdata;
 		return nullptr;
 	}
 	if (!template_rgbdata) {
+		spdlog::warn("TemplateImage: Failed to load MASK sprite data for sprite_index={} (template_id={}) (mask_index={})", sprite_index, texture_id, sprite_index + parent->height * parent->width);
 		delete[] rgbadata;
 		return nullptr;
 	}

@@ -1183,7 +1183,7 @@ bool IOMapOTBM::loadSpawns(Map& map, pugi::xml_document& doc) {
 				spawntime = g_settings.getInteger(Config::DEFAULT_SPAWNTIME);
 			}
 
-			Direction direction = NORTH;
+			Direction direction = SOUTH;
 			int dir = creatureNode.attribute("direction").as_int(-1);
 			if (dir >= DIRECTION_FIRST && dir <= DIRECTION_LAST) {
 				direction = (Direction)dir;
