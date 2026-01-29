@@ -83,6 +83,8 @@ namespace IngamePreview {
 		options.show_lights = lighting_enabled;
 		options.ambient_light_level = (float)ambient_light / 255.0f;
 		options.light_intensity = light_intensity;
+		// Explicitly set global light color to white (daylight) to avoid black multiplication
+		options.global_light_color = wxColor(255, 255, 255);
 
 		// Initialize GL state
 		glViewport(viewport_x, viewport_y, viewport_width, viewport_height);

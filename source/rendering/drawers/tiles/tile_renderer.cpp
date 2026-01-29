@@ -129,7 +129,7 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 	return data;
 }
 
-void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, TileLocation* location, const RenderView& view, const DrawingOptions& options, uint32_t current_house_id, std::ostringstream& tooltip_stream, std::optional<int> in_draw_x = std::nullopt, std::optional<int> in_draw_y = std::nullopt) {
+void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, TileLocation* location, const RenderView& view, const DrawingOptions& options, uint32_t current_house_id, std::ostringstream& tooltip_stream, int in_draw_x, int in_draw_y) {
 	if (!location) {
 		return;
 	}
@@ -149,8 +149,8 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 
 	int draw_x, draw_y;
 	if (in_draw_x != -1 && in_draw_y != -1) {
-		draw_x = *in_draw_x;
-		draw_y = *in_draw_y;
+		draw_x = in_draw_x;
+		draw_y = in_draw_y;
 	} else {
 		// Early viewport culling - skip tiles that are completely off-screen
 		if (!view.IsTileVisible(map_x, map_y, map_z, draw_x, draw_y)) {
