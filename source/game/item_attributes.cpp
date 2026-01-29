@@ -180,7 +180,8 @@ ItemAttribute::ItemAttribute(double f) :
 	*reinterpret_cast<double*>(data) = f;
 }
 
-ItemAttribute::ItemAttribute(bool b) {
+ItemAttribute::ItemAttribute(bool b) :
+	type(ItemAttribute::BOOLEAN) {
 	*reinterpret_cast<bool*>(data) = b;
 }
 

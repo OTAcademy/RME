@@ -72,8 +72,10 @@ void CreatureDrawer::BlitCreature(SpriteBatch& sprite_batch, SpriteDrawer* sprit
 		for (int pattern_y = 0; pattern_y < spr->pattern_y; pattern_y++) {
 
 			// continue if we dont have this addon
-			if (pattern_y > 0 && !(outfit.lookAddon & (1 << (pattern_y - 1)))) {
-				continue;
+			if (pattern_y > 0) {
+				if ((pattern_y - 1 >= 31) || !(outfit.lookAddon & (1 << (pattern_y - 1)))) {
+					continue;
+				}
 			}
 
 			for (int cx = 0; cx != spr->width; ++cx) {
