@@ -627,6 +627,10 @@ void MapDrawer::DrawMap() {
 							if (options.show_special_tiles && tile->getMapFlags() & TILESTATE_NOPVP) {
 								g /= 2;
 							}
+							if (options.show_special_tiles && tile->getMapFlags() & TILESTATE_REFRESH) {
+								g /= 2;
+								r /= 2;
+							}
 							BlitItem(draw_x, draw_y, tile, tile->ground, true, r, g, b, 160);
 						}
 
@@ -1776,6 +1780,11 @@ void MapDrawer::DrawTile(TileLocation* location) {
 
 		if (showspecial && tile->getMapFlags() & TILESTATE_NOPVP) {
 			g /= 2;
+		}
+
+		if (showspecial && tile->getMapFlags() & TILESTATE_REFRESH) {
+			g /= 2;
+			r /= 2;
 		}
 	}
 
