@@ -149,8 +149,8 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 
 	int draw_x, draw_y;
 	if (in_draw_x != -1 && in_draw_y != -1) {
-		draw_x = in_draw_x;
-		draw_y = in_draw_y;
+draw_x = *in_draw_x;
+draw_y = *in_draw_y;
 	} else {
 		// Early viewport culling - skip tiles that are completely off-screen
 		if (!view.IsTileVisible(map_x, map_y, map_z, draw_x, draw_y)) {
