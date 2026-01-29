@@ -105,9 +105,8 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	gpu_lights_.clear();
 	gpu_lights_.reserve(light_buffer.lights.size());
 
-	int floor_adjustment = view.getFloorAdjustment();
-	float map_draw_start_x = (float)(map_x * TileSize - view.view_scroll_x - floor_adjustment);
-	float map_draw_start_y = (float)(map_y * TileSize - view.view_scroll_y - floor_adjustment);
+	float map_draw_start_x = (float)(map_x * TileSize - view.view_scroll_x);
+	float map_draw_start_y = (float)(map_y * TileSize - view.view_scroll_y);
 
 	// Offset logic:
 	// The FBO represents the rectangle [map_x * 32, map_x * 32 + pixel_width] in map coordinates.
