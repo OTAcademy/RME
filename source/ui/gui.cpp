@@ -143,6 +143,9 @@ void GUI::SetDrawingMode() {
 
 	if (GetCurrentBrush() && GetCurrentBrush()->isDoodad()) {
 		secondary_map = g_doodad_preview.GetBufferMap();
+	} else if (GetCurrentBrush() && GetCurrentBrush()->needBorders() && g_settings.getInteger(Config::USE_AUTOMAGIC)) {
+		// We'll set the map, but it might be empty until first mouse move
+		secondary_map = g_autoborder_preview.GetBufferMap();
 	} else {
 		secondary_map = nullptr;
 	}
@@ -278,6 +281,24 @@ void GUI::FitViewToMap(MapTab* mt) {
 void GUI::FillDoodadPreviewBuffer() {
 	g_brush_manager.FillDoodadPreviewBuffer();
 }
+
+void GUI::UpdateAutoborderPreview(Position pos) {
+	Brush* brush = GetCurrentBrush();
+	if (brush && brush->isDoodad()) {
+		return;
+	}
+
+	if (IsDrawingMode() && brush && brush->needBorders() && g_settings.getInteger(Config::USE_AUTOMAGIC)) {
+		g_autoborder_preview.Update(*GetCurrentEditor(), pos);
+		secondary_map = g_autoborder_preview.GetBufferMap();
+	} else {
+		if (secondary_map == g_autoborder_preview.GetBufferMap()) {
+			g_autoborder_preview.Clear();
+			secondary_map = nullptr;
+		}
+	}
+}
+
 void GUI::SelectBrush() {
 	g_brush_manager.SelectBrush();
 }

@@ -231,6 +231,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/layout_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/minimap_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/doodad_preview_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/autoborder_preview_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/status_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/brush_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/palette/managers/palette_manager.h
@@ -537,6 +538,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/layout_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/minimap_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/doodad_preview_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/autoborder_preview_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/status_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/brush_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/palette/managers/palette_manager.cpp
