@@ -73,10 +73,12 @@ AddItemWindow::AddItemWindow(wxWindow* win_parent, TilesetCategoryType categoryT
 
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Item"), wxSizerFlags(1).CenterVertical());
 	item_button = newd DCButton(this, wxID_ANY, wxDefaultPosition, DC_BTN_TOGGLE, RENDER_SIZE_32x32, 0);
+	item_button->SetToolTip("Click to search for an item");
 	subsizer->Add(item_button);
 
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Item Id"));
 	item_id_field = newd wxSpinCtrl(this, wxID_ANY, i2ws(itemId), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 100, 100000);
+	item_id_field->SetToolTip("Enter item ID directly");
 	item_id_field->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &AddItemWindow::OnChangeItemId, this);
 	subsizer->Add(item_id_field, wxSizerFlags(1).Expand());
 

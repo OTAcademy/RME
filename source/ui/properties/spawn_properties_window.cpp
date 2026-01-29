@@ -31,6 +31,7 @@ SpawnPropertiesWindow::SpawnPropertiesWindow(wxWindow* win_parent, const Map* ma
 
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Spawn size"));
 	count_field = newd wxSpinCtrl(this, wxID_ANY, i2ws(edit_spawn->getSize()), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, g_settings.getInteger(Config::MAX_SPAWN_RADIUS), edit_spawn->getSize());
+	count_field->SetToolTip("Radius of the spawn area");
 	subsizer->Add(count_field, wxSizerFlags(1).Expand());
 
 	boxsizer->Add(subsizer, wxSizerFlags(1).Expand());
