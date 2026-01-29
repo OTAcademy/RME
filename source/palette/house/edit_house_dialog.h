@@ -11,6 +11,9 @@
 #include <wx/spinctrl.h>
 #include <wx/checkbox.h>
 
+#include <vector>
+#include <cstdint>
+
 class Map;
 class House;
 
@@ -34,6 +37,8 @@ protected:
 	wxSpinCtrl* id_field;
 	wxTextCtrl* rent_field;
 	wxCheckBox* guildhall_field;
+
+	std::vector<uint32_t> town_ids_;
 
 	DECLARE_EVENT_TABLE();
 };

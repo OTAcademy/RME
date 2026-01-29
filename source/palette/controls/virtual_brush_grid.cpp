@@ -179,8 +179,10 @@ bool VirtualBrushGrid::SelectBrush(const Brush* brush) {
 			int cw, ch;
 			GetClientSize(&cw, &ch);
 
+			int view_y_px = view_y * (item_size + padding);
+
 			wxRect rect = GetItemRect(selected_index);
-			if (rect.y < view_y || rect.y + rect.height > view_y + ch) {
+			if (rect.y < view_y_px || rect.y + rect.height > view_y_px + ch) {
 				Scroll(-1, (rect.y - padding) / (item_size + padding));
 			}
 

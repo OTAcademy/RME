@@ -317,10 +317,13 @@ void HousePalette::OnEditHouse(wxCommandEvent& event) {
 void HousePalette::OnRemoveHouse(wxCommandEvent& event) {
 	House* house = GetSelectedHouse();
 	if (house && map) {
-		map->houses.removeHouse(house);
-		FilterHouses();
-		g_gui.SelectBrush();
-		g_gui.RefreshView();
+		int ret = wxMessageBox("Are you sure you want to remove this house? This cannot be undone.", "Remove House", wxYES_NO | wxICON_WARNING | wxCENTER, this);
+		if (ret == wxYES) {
+			map->houses.removeHouse(house);
+			FilterHouses();
+			g_gui.SelectBrush();
+			g_gui.RefreshView();
+		}
 	}
 }
 

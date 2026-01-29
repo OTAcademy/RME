@@ -69,6 +69,7 @@ void BrushThicknessPanel::OnClickCustomThickness(wxCommandEvent& event) {
 }
 
 void BrushThicknessPanel::OnSwitchIn() {
+	PalettePanel::OnSwitchIn();
 	spdlog::info("BrushThicknessPanel::OnSwitchIn");
 	static const int lookup_table[10] = { 1, 2, 3, 5, 8, 13, 23, 35, 50, 80 };
 	g_brush_manager.SetBrushThickness(lookup_table[slider->GetValue() - 1], 100);

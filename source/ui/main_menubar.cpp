@@ -20,6 +20,7 @@
 #include "ui/main_menubar.h"
 #include "ui/dialog_util.h"
 #include "ui/gui.h"
+#include "ui/tool_options_window.h"
 
 #include "map/map_statistics.h"
 #include "map/map_search.h"
@@ -507,6 +508,18 @@ void MainMenuBar::OnChangeFloor(wxCommandEvent& event) {
 
 void MainMenuBar::OnMinimapWindow(wxCommandEvent& event) {
 	g_gui.CreateMinimap();
+}
+
+void MainMenuBar::OnToolOptionsWindow(wxCommandEvent& event) {
+	if (g_gui.tool_options) {
+		wxAuiPaneInfo& info = g_gui.aui_manager->GetPane(g_gui.tool_options);
+		if (info.IsShown()) {
+			info.Hide();
+		} else {
+			info.Show();
+		}
+		g_gui.aui_manager->Update();
+	}
 }
 
 void MainMenuBar::OnIngamePreviewWindow(wxCommandEvent& event) {

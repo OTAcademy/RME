@@ -65,7 +65,7 @@ void BrushPanel::LoadContents() {
 	if (loaded) {
 		return;
 	}
-	loaded = true;
+
 	ASSERT(tileset != nullptr);
 
 	switch (list_type) {
@@ -76,14 +76,18 @@ void BrushPanel::LoadContents() {
 			brushbox = newd VirtualBrushGrid(this, tileset, RENDER_SIZE_16x16);
 			break;
 		case BRUSHLIST_LISTBOX:
+		case BRUSHLIST_TEXT_LISTBOX:
 			brushbox = newd BrushListBox(this, tileset);
 			break;
 		default:
 			break;
 	}
+
 	if (!brushbox) {
 		return;
 	}
+
+	loaded = true;
 	sizer->Add(brushbox->GetSelfWindow(), 1, wxEXPAND);
 	Layout();
 	Fit();
@@ -367,18 +371,22 @@ void BrushListBox::OnKey(wxKeyEvent& event) {
 		case WXK_DOWN:
 		case WXK_LEFT:
 		case WXK_RIGHT:
+		case WXK_PAGEUP:
+		case WXK_PAGEDOWN:
+		case WXK_HOME:
+		case WXK_END:
 			if (g_settings.getInteger(Config::LISTBOX_EATS_ALL_EVENTS)) {
-				case WXK_PAGEUP:
-				case WXK_PAGEDOWN:
-				case WXK_HOME:
-				case WXK_END:
-					event.Skip(true);
+				event.Skip(true);
 			} else {
-				[[fallthrough]];
-				default:
-					if (g_gui.GetCurrentTab() != nullptr) {
-						g_gui.GetCurrentMapTab()->GetEventHandler()->AddPendingEvent(event);
-					}
+				if (g_gui.GetCurrentTab() != nullptr) {
+					g_gui.GetCurrentMapTab()->GetEventHandler()->AddPendingEvent(event);
+				}
 			}
+			break;
+		default:
+			if (g_gui.GetCurrentTab() != nullptr) {
+				g_gui.GetCurrentMapTab()->GetEventHandler()->AddPendingEvent(event);
+			}
+			break;
 	}
 }

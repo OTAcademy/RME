@@ -136,8 +136,13 @@ void BrushPalettePanel::SelectFirstBrush() {
 		return;
 	}
 	wxWindow* page = choicebook->GetCurrentPage();
+	if (!page) {
+		return;
+	}
 	BrushPanel* panel = dynamic_cast<BrushPanel*>(page);
-	panel->SelectFirstBrush();
+	if (panel) {
+		panel->SelectFirstBrush();
+	}
 }
 
 bool BrushPalettePanel::SelectBrush(const Brush* whatbrush) {
@@ -232,7 +237,11 @@ void BrushPalettePanel::OnClickAddItemToTileset(wxCommandEvent& WXUNUSED(event))
 	if (!choicebook) {
 		return;
 	}
-	std::string tilesetName = choicebook->GetPageText(choicebook->GetSelection()).ToStdString();
+	int selection = choicebook->GetSelection();
+	if (selection == wxNOT_FOUND) {
+		return;
+	}
+	std::string tilesetName = choicebook->GetPageText(selection).ToStdString();
 
 	auto _it = g_materials.tilesets.find(tilesetName);
 	if (_it != g_materials.tilesets.end()) {

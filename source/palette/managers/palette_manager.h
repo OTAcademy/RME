@@ -35,6 +35,9 @@ public:
 	// This is public for now as it's accessed by GUI for iteration
 public:
 	std::list<PaletteWindow*> palettes;
+
+private:
+	uint64_t palette_creation_counter;
 };
 
 extern PaletteManager g_palettes;

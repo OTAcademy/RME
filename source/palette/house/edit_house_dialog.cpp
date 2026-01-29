@@ -57,7 +57,8 @@ EditHouseDialog::EditHouseDialog(wxWindow* parent, Map* map, House* house) :
 			if (town_iter->second->getID() == houseTownId) {
 				found = true;
 			}
-			town_id_field->Append(wxstr(town_iter->second->getName()), newd int(town_iter->second->getID()));
+			town_id_field->Append(wxstr(town_iter->second->getName()));
+			town_ids_.push_back(town_iter->second->getID());
 			if (!found) {
 				++to_select_index;
 			}
@@ -65,7 +66,8 @@ EditHouseDialog::EditHouseDialog(wxWindow* parent, Map* map, House* house) :
 
 		if (!found) {
 			if (houseTownId != 0) {
-				town_id_field->Append("Undefined Town (id:" + i2ws(houseTownId) + ")", newd int(houseTownId));
+				town_id_field->Append("Undefined Town (id:" + i2ws(houseTownId) + ")");
+				town_ids_.push_back(houseTownId);
 				++to_select_index;
 			}
 		}
@@ -168,16 +170,17 @@ void EditHouseDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 			map->houses.changeId(what_house, new_house_id);
 		}
 
-		int* new_town_id = reinterpret_cast<int*>(town_id_field->GetClientData(town_id_field->GetSelection()));
-		if (!new_town_id) {
+		int selection = town_id_field->GetSelection();
+		if (selection == wxNOT_FOUND || selection < 0 || (size_t)selection >= town_ids_.size()) {
 			DialogUtil::PopupDialog(this, "Error", "Invalid town selected.", wxOK);
 			return;
 		}
+		int new_town_id = town_ids_[selection];
 
 		what_house->name = nstr(house_name);
 		what_house->rent = new_house_rent;
 		what_house->guildhall = guildhall_field->GetValue();
-		what_house->townid = *new_town_id;
+		what_house->townid = new_town_id;
 
 		EndModal(1);
 	}

@@ -87,7 +87,6 @@ void PrimitiveRenderer::drawLine(const glm::vec2& p1, const glm::vec2& p2, const
 	}
 	line_verts_.push_back({ p1, color });
 	line_verts_.push_back({ p2, color });
-	line_verts_.push_back({ p2, color });
 }
 
 void PrimitiveRenderer::drawRect(const glm::vec4& rect, const glm::vec4& color) {

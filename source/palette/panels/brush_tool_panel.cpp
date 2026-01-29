@@ -4,6 +4,7 @@
 #include "palette/managers/palette_manager.h"
 #include "brushes/managers/brush_manager.h"
 #include "palette/palette_window.h"
+#include "app/settings.h"
 
 #include "brushes/border/optional_border_brush.h"
 #include "brushes/door/door_brush.h"
@@ -213,6 +214,7 @@ void BrushToolPanel::LoadAllContents() {
 	checkbox_sub_sizer->Add(lockDoorCheckbox);
 
 	sub_sizer->Add(checkbox_sub_sizer);
+	size_sizer->Add(sub_sizer);
 
 	SetSizerAndFit(size_sizer);
 
@@ -248,46 +250,46 @@ void BrushToolPanel::DeselectAll() {
 }
 
 Brush* BrushToolPanel::GetSelectedBrush() const {
-	if (optionalBorderButton->GetValue()) {
+	if (optionalBorderButton && optionalBorderButton->GetValue()) {
 		return g_brush_manager.optional_brush;
 	}
-	if (eraserButton->GetValue()) {
+	if (eraserButton && eraserButton->GetValue()) {
 		return g_brush_manager.eraser;
 	}
-	if (normalDoorButton->GetValue()) {
+	if (normalDoorButton && normalDoorButton->GetValue()) {
 		return g_brush_manager.normal_door_brush;
 	}
-	if (lockedDoorButton->GetValue()) {
+	if (lockedDoorButton && lockedDoorButton->GetValue()) {
 		return g_brush_manager.locked_door_brush;
 	}
-	if (magicDoorButton->GetValue()) {
+	if (magicDoorButton && magicDoorButton->GetValue()) {
 		return g_brush_manager.magic_door_brush;
 	}
-	if (questDoorButton->GetValue()) {
+	if (questDoorButton && questDoorButton->GetValue()) {
 		return g_brush_manager.quest_door_brush;
 	}
-	if (hatchDoorButton->GetValue()) {
+	if (hatchDoorButton && hatchDoorButton->GetValue()) {
 		return g_brush_manager.hatch_door_brush;
 	}
-	if (windowDoorButton->GetValue()) {
+	if (windowDoorButton && windowDoorButton->GetValue()) {
 		return g_brush_manager.window_door_brush;
 	}
-	if (normalDoorAltButton->GetValue()) {
+	if (normalDoorAltButton && normalDoorAltButton->GetValue()) {
 		return g_brush_manager.normal_door_alt_brush;
 	}
-	if (archwayDoorButton->GetValue()) {
+	if (archwayDoorButton && archwayDoorButton->GetValue()) {
 		return g_brush_manager.archway_door_brush;
 	}
-	if (pzBrushButton->GetValue()) {
+	if (pzBrushButton && pzBrushButton->GetValue()) {
 		return g_brush_manager.pz_brush;
 	}
-	if (nopvpBrushButton->GetValue()) {
+	if (nopvpBrushButton && nopvpBrushButton->GetValue()) {
 		return g_brush_manager.rook_brush;
 	}
-	if (nologBrushButton->GetValue()) {
+	if (nologBrushButton && nologBrushButton->GetValue()) {
 		return g_brush_manager.nolog_brush;
 	}
-	if (pvpzoneBrushButton->GetValue()) {
+	if (pvpzoneBrushButton && pvpzoneBrushButton->GetValue()) {
 		return g_brush_manager.pvp_brush;
 	}
 	return nullptr;
@@ -439,4 +441,5 @@ void BrushToolPanel::OnClickLockDoorCheckbox(wxCommandEvent& event) {
 	g_brush_manager.SetDoorLocked(event.IsChecked());
 
 	// save user preference
+	g_settings.setInteger(Config::DRAW_LOCKED_DOOR, event.IsChecked());
 }
