@@ -43,6 +43,7 @@ public:
 	bool GetValue() const;
 
 	void SetSprite(int id);
+	void SetSprite(Sprite* sprite);
 
 	void OnPaint(wxPaintEvent&);
 	void OnClick(wxMouseEvent&);

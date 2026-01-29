@@ -20,6 +20,7 @@ public:
 
 	void OnLightSlider(wxCommandEvent& event);
 	void OnAmbientLightSlider(wxCommandEvent& event);
+	void OnToggleLight(wxCommandEvent& event);
 
 	static const wxString PANE_NAME;
 

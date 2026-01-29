@@ -21,6 +21,10 @@ DoodadPreviewManager::DoodadPreviewManager() :
 
 DoodadPreviewManager::~DoodadPreviewManager() = default;
 
+void DoodadPreviewManager::Clear() {
+	doodad_buffer_map->clear();
+}
+
 void DoodadPreviewManager::FillBuffer() {
 	Brush* current_brush = g_brush_manager.GetCurrentBrush();
 	if (!current_brush || !current_brush->isDoodad()) {

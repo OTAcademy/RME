@@ -20,6 +20,8 @@ public:
 		return doodad_buffer_map.get();
 	}
 
+	void Clear();
+
 private:
 	std::unique_ptr<BaseMap> doodad_buffer_map;
 };

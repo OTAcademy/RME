@@ -27,10 +27,6 @@ namespace IngamePreview {
 			artProviderRegistered = true;
 		}
 
-		if (!g_gui.IsAnyEditorOpen()) {
-			return;
-		}
-
 		if (!g_gui.aui_manager) {
 			return;
 		}

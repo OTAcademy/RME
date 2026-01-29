@@ -31,11 +31,31 @@ void TileColorCalculator::Calculate(const Tile* tile, const DrawingOptions& opti
 	}
 
 	if (options.show_houses && tile->isHouseTile()) {
-		if ((int)tile->getHouseID() == current_house_id) {
-			r /= 2;
-		} else {
-			r /= 2;
-			g /= 2;
+		uint32_t house_id = tile->getHouseID();
+
+		// Get unique house color
+		uint8_t hr = 255, hg = 255, hb = 255;
+		GetHouseColor(house_id, hr, hg, hb);
+
+		// Apply the house unique color tint to the tile
+		r = (uint8_t)((int)r * hr / 255);
+		g = (uint8_t)((int)g * hg / 255);
+		b = (uint8_t)((int)b * hb / 255);
+
+		if ((int)house_id == current_house_id) {
+			// Pulse Effect on top of the unique color
+			// We want to make it pulse brighter/intense
+			// options.highlight_pulse [0.0, 1.0]
+
+			// Simple intensity boost
+			// When pulse is high, we brighten the color towards white
+			if (options.highlight_pulse > 0.0f) {
+				float boost = options.highlight_pulse * 0.6f; // Max 60% boost towards white
+
+				r = (uint8_t)std::min(255, (int)(r + (255 - r) * boost));
+				g = (uint8_t)std::min(255, (int)(g + (255 - g) * boost));
+				b = (uint8_t)std::min(255, (int)(b + (255 - b) * boost));
+			}
 		}
 	} else if (showspecial && tile->isPZ()) {
 		r /= 2;
@@ -53,6 +73,27 @@ void TileColorCalculator::Calculate(const Tile* tile, const DrawingOptions& opti
 
 	if (showspecial && tile->getMapFlags() & TILESTATE_NOPVP) {
 		g /= 2;
+	}
+}
+
+void TileColorCalculator::GetHouseColor(uint32_t house_id, uint8_t& r, uint8_t& g, uint8_t& b) {
+	// Use a simple seeded random to get consistent colors
+	// Simple hash
+	uint32_t hash = house_id;
+	hash = ((hash >> 16) ^ hash) * 0x45d9f3b;
+	hash = ((hash >> 16) ^ hash) * 0x45d9f3b;
+	hash = (hash >> 16) ^ hash;
+
+	// Generate color components
+	r = (hash & 0xFF);
+	g = ((hash >> 8) & 0xFF);
+	b = ((hash >> 16) & 0xFF);
+
+	// Ensure colors aren't too dark (keep at least one channnel reasonably high)
+	if (r < 50 && g < 50 && b < 50) {
+		r += 100;
+		g += 100;
+		b += 100;
 	}
 }
 

@@ -202,6 +202,7 @@
 	</menu>
 	<menu name="Window">
 		<item name="Minimap" hotkey="M" action="WIN_MINIMAP" help="Displays the minimap window."/>
+		<item name="Tool Options" action="WIN_TOOL_OPTIONS" help="Displays the tool options window."/>
 		<item name="In-game Preview" action="WIN_INGAME_PREVIEW" help="Displays the in-game preview window."/>
 		<item name="New Palette" action="NEW_PALETTE" help="Creates a new palette."/>
 		<menu name="Palette">

@@ -64,6 +64,11 @@ void DCButton::SetSprite(int _sprid) {
 	Refresh();
 }
 
+void DCButton::SetSprite(Sprite* _sprite) {
+	sprite = _sprite;
+	Refresh();
+}
+
 void DCButton::SetOverlay(Sprite* espr) {
 	overlay = espr;
 	Refresh();
