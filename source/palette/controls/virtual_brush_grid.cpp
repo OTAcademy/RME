@@ -86,7 +86,10 @@ void VirtualBrushGrid::OnPaint(wxPaintEvent& event) {
 		// Draw sprite
 		Brush* brush = tileset->brushlist[i];
 		if (brush) {
-			Sprite* spr = g_gui.gfx.getSprite(brush->getLookID());
+			Sprite* spr = brush->getSprite();
+			if (!spr) {
+				spr = g_gui.gfx.getSprite(brush->getLookID());
+			}
 			if (spr) {
 				spr->DrawTo(&dc, spr_sz, rect.x + 1, rect.y + 1, item_size - 2, item_size - 2);
 			}

@@ -345,7 +345,10 @@ bool BrushListBox::SelectBrush(const Brush* whatbrush) {
 
 void BrushListBox::OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const {
 	ASSERT(n < tileset->size());
-	Sprite* spr = g_gui.gfx.getSprite(tileset->brushlist[n]->getLookID());
+	Sprite* spr = tileset->brushlist[n]->getSprite();
+	if (!spr) {
+		spr = g_gui.gfx.getSprite(tileset->brushlist[n]->getLookID());
+	}
 	if (spr) {
 		spr->DrawTo(&dc, SPRITE_SIZE_32x32, rect.GetX(), rect.GetY(), rect.GetWidth(), rect.GetHeight());
 	}

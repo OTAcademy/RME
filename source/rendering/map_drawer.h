@@ -51,6 +51,7 @@ class MarkerDrawer;
 class PreviewDrawer;
 class ShadeDrawer;
 class TileRenderer;
+class CreatureNameDrawer;
 
 class MapDrawer {
 	MapCanvas* canvas;
@@ -75,6 +76,7 @@ class MapDrawer {
 	std::unique_ptr<PreviewDrawer> preview_drawer;
 	std::unique_ptr<ShadeDrawer> shade_drawer;
 	std::unique_ptr<TileRenderer> tile_renderer;
+	std::unique_ptr<CreatureNameDrawer> creature_name_drawer;
 	std::unique_ptr<SpriteBatch> sprite_batch;
 	std::unique_ptr<PrimitiveRenderer> primitive_renderer;
 
@@ -102,6 +104,7 @@ public:
 	void DrawGrid();
 	void DrawTooltips();
 	void ClearTooltips();
+	void DrawCreatureNames();
 
 	void DrawLight();
 

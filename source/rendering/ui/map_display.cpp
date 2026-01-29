@@ -43,6 +43,7 @@
 #include "rendering/ui/map_status_updater.h"
 #include "rendering/map_drawer.h"
 #include "rendering/core/text_renderer.h"
+#include <nanovg.h>
 #include "app/application.h"
 #include "live/live_server.h"
 #include "live/live_client.h"
@@ -215,10 +216,16 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 		drawer->Release();
 		// BatchRenderer::End(); call removed
 
-		// Draw UI (Tooltips) using NanoVG
-		if (options.show_tooltips) {
+		// Draw UI (Tooltips & Overlays) using NanoVG
+		if (options.show_tooltips || options.show_creatures) {
 			TextRenderer::BeginFrame(GetSize().x, GetSize().y);
-			drawer->DrawTooltips();
+
+			if (options.show_creatures) {
+				drawer->DrawCreatureNames();
+			}
+			if (options.show_tooltips) {
+				drawer->DrawTooltips();
+			}
 			TextRenderer::EndFrame();
 		}
 

@@ -30,6 +30,7 @@
 // Thanks to a million forward declarations, we don't have to include any files!
 // TODO move to a declarations file.
 class ItemType;
+class Sprite;
 class CreatureType;
 class BaseMap;
 class House;
@@ -119,6 +120,9 @@ public:
 	}
 
 	virtual int getLookID() const = 0;
+	virtual Sprite* getSprite() const {
+		return nullptr;
+	}
 
 	virtual bool needBorders() const {
 		return false;

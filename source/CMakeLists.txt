@@ -153,6 +153,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/cursors/drag_shadow_drawer.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/cursors/live_cursor_drawer.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/entities/creature_drawer.h
+    ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/entities/creature_name_drawer.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/entities/item_drawer.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/entities/sprite_drawer.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/map_layer_drawer.h
@@ -451,6 +452,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/cursors/drag_shadow_drawer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/cursors/live_cursor_drawer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/entities/creature_drawer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/entities/creature_name_drawer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/entities/item_drawer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/entities/sprite_drawer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/drawers/map_layer_drawer.cpp

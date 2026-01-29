@@ -61,6 +61,19 @@ private:
 	Sprite& operator=(const Sprite&);
 };
 
+class GameSprite;
+class CreatureSprite : public Sprite {
+public:
+	CreatureSprite(GameSprite* parent, const Outfit& outfit);
+	virtual ~CreatureSprite();
+
+	virtual void DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width = -1, int height = -1) override;
+	virtual void unloadDC() override;
+
+	GameSprite* parent;
+	Outfit outfit;
+};
+
 class GameSprite : public Sprite {
 public:
 	GameSprite();
@@ -73,6 +86,7 @@ public:
 	const AtlasRegion* getAtlasRegion(int _x, int _y, int _dir, int _addon, int _pattern_z, const Outfit& _outfit, int _frame);
 
 	virtual void DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width = -1, int height = -1) override;
+	virtual void DrawTo(wxDC* dc, SpriteSize sz, const Outfit& outfit, int start_x, int start_y, int width = -1, int height = -1);
 
 	virtual void unloadDC() override;
 
@@ -95,6 +109,7 @@ protected:
 	class TemplateImage;
 
 	wxMemoryDC* getDC(SpriteSize size);
+	wxMemoryDC* getDC(SpriteSize size, const Outfit& outfit);
 	TemplateImage* getTemplateImage(int sprite_index, const Outfit& outfit);
 
 	class Image {
@@ -162,6 +177,7 @@ protected:
 
 	uint32_t id;
 	std::unique_ptr<wxMemoryDC> dc[SPRITE_SIZE_COUNT];
+	std::unique_ptr<wxBitmap> bm[SPRITE_SIZE_COUNT];
 
 public:
 	// GameSprite info
@@ -187,6 +203,51 @@ public:
 
 	std::vector<NormalImage*> spriteList;
 	std::list<std::unique_ptr<TemplateImage>> instanced_templates; // Templates that use this sprite
+	struct CachedDC {
+		std::unique_ptr<wxMemoryDC> dc;
+		std::unique_ptr<wxBitmap> bm;
+	};
+
+	struct RenderKey {
+		SpriteSize size;
+		uint32_t colorHash;
+		uint32_t mountColorHash;
+		int lookMount;
+		int lookAddon;
+		int lookMountHead;
+		int lookMountBody;
+		int lookMountLegs;
+		int lookMountFeet;
+
+		bool operator<(const RenderKey& rk) const {
+			if (size != rk.size) {
+				return size < rk.size;
+			}
+			if (colorHash != rk.colorHash) {
+				return colorHash < rk.colorHash;
+			}
+			if (mountColorHash != rk.mountColorHash) {
+				return mountColorHash < rk.mountColorHash;
+			}
+			if (lookMount != rk.lookMount) {
+				return lookMount < rk.lookMount;
+			}
+			if (lookAddon != rk.lookAddon) {
+				return lookAddon < rk.lookAddon;
+			}
+			if (lookMountHead != rk.lookMountHead) {
+				return lookMountHead < rk.lookMountHead;
+			}
+			if (lookMountBody != rk.lookMountBody) {
+				return lookMountBody < rk.lookMountBody;
+			}
+			if (lookMountLegs != rk.lookMountLegs) {
+				return lookMountLegs < rk.lookMountLegs;
+			}
+			return lookMountFeet < rk.lookMountFeet;
+		}
+	};
+	std::map<RenderKey, std::unique_ptr<CachedDC>> colored_dc;
 
 	friend class GraphicManager;
 	friend class GameSpriteLoader;
