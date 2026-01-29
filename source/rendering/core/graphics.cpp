@@ -187,7 +187,7 @@ void GraphicManager::addSpriteToCleanup(GameSprite* spr) {
 }
 
 void GraphicManager::garbageCollection() {
-	std::map<int, void*> generic_image_space;
+	std::unordered_map<int, void*> generic_image_space;
 	for (auto& pair : image_space) {
 		generic_image_space[pair.first] = (void*)pair.second.get();
 	}

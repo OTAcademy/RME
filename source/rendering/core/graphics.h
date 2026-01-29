@@ -23,6 +23,7 @@
 #include <deque>
 #include <memory>
 #include <map>
+#include <unordered_map>
 #include <list>
 #include <vector>
 
@@ -266,9 +267,9 @@ private:
 	// Atlas manager for Phase 2 texture array rendering
 	std::unique_ptr<AtlasManager> atlas_manager_ = nullptr;
 
-	using SpriteMap = std::map<int, std::unique_ptr<Sprite>>;
+	using SpriteMap = std::unordered_map<int, std::unique_ptr<Sprite>>;
 	SpriteMap sprite_space;
-	using ImageMap = std::map<int, std::unique_ptr<GameSprite::Image>>;
+	using ImageMap = std::unordered_map<int, std::unique_ptr<GameSprite::Image>>;
 	ImageMap image_space;
 
 	DatFormat dat_format;

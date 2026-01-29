@@ -20,6 +20,7 @@
 
 #include <deque>
 #include <map>
+#include <unordered_map>
 #include <memory>
 #include <time.h>
 
@@ -31,9 +32,9 @@ public:
 	TextureGarbageCollector();
 	~TextureGarbageCollector();
 
-	void GarbageCollect(std::map<int, std::unique_ptr<Sprite>>& sprite_space, std::map<int, void*>& image_space); // void* to avoid circular dependency with Image
+	void GarbageCollect(std::unordered_map<int, std::unique_ptr<Sprite>>& sprite_space, std::unordered_map<int, void*>& image_space); // void* to avoid circular dependency with Image
 	void AddSpriteToCleanup(GameSprite* spr);
-	void CleanSoftwareSprites(std::map<int, std::unique_ptr<Sprite>>& sprite_space);
+	void CleanSoftwareSprites(std::unordered_map<int, std::unique_ptr<Sprite>>& sprite_space);
 	void Clear();
 
 	void NotifyTextureLoaded();
