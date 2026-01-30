@@ -28,18 +28,7 @@
 #include "ui/properties/teleport_service.h"
 
 #include <wx/grid.h>
-
-BEGIN_EVENT_TABLE(PropertiesWindow, wxDialog)
-EVT_BUTTON(wxID_OK, PropertiesWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, PropertiesWindow::OnClickCancel)
-
-EVT_BUTTON(ITEM_PROPERTIES_ADD_ATTRIBUTE, PropertiesWindow::OnClickAddAttribute)
-EVT_BUTTON(ITEM_PROPERTIES_REMOVE_ATTRIBUTE, PropertiesWindow::OnClickRemoveAttribute)
-
-EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, PropertiesWindow::OnNotebookPageChanged)
-
-EVT_GRID_CELL_CHANGED(PropertiesWindow::OnGridValueChanged)
-END_EVENT_TABLE()
+#include <wx/wrapsizer.h>
 
 PropertiesWindow::PropertiesWindow(wxWindow* parent, const Map* map, const Tile* tile_parent, Item* item, wxPoint pos) :
 	ObjectPropertiesWindowBase(parent, "Item Properties", map, tile_parent, item, pos),
@@ -49,6 +38,17 @@ PropertiesWindow::PropertiesWindow(wxWindow* parent, const Map* map, const Tile*
 	tier_field(nullptr),
 	currentPanel(nullptr) {
 	ASSERT(edit_item);
+
+	Bind(wxEVT_BUTTON, &PropertiesWindow::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &PropertiesWindow::OnClickCancel, this, wxID_CANCEL);
+
+	Bind(wxEVT_BUTTON, &PropertiesWindow::OnClickAddAttribute, this, ITEM_PROPERTIES_ADD_ATTRIBUTE);
+	Bind(wxEVT_BUTTON, &PropertiesWindow::OnClickRemoveAttribute, this, ITEM_PROPERTIES_REMOVE_ATTRIBUTE);
+
+	Bind(wxEVT_NOTEBOOK_PAGE_CHANGED, &PropertiesWindow::OnNotebookPageChanged, this, wxID_ANY);
+
+	Bind(wxEVT_GRID_CELL_CHANGED, &PropertiesWindow::OnGridValueChanged, this);
+
 	createUI();
 }
 
@@ -142,7 +142,7 @@ wxWindow* PropertiesWindow::createContainerPanel(wxWindow* parent) {
 	wxPanel* panel = newd wxPanel(parent, ITEM_PROPERTIES_CONTAINER_TAB);
 	wxSizer* topSizer = newd wxBoxSizer(wxVERTICAL);
 
-	wxSizer* gridSizer = newd wxGridSizer(6, 5, 5);
+	wxSizer* gridSizer = newd wxWrapSizer(wxHORIZONTAL);
 
 	bool use_large_sprites = g_settings.getBoolean(Config::USE_LARGE_CONTAINER_ICONS);
 	for (uint32_t i = 0; i < container->getVolume(); ++i) {
@@ -150,7 +150,7 @@ wxWindow* PropertiesWindow::createContainerPanel(wxWindow* parent) {
 		ContainerItemButton* containerItemButton = newd ContainerItemButton(panel, use_large_sprites, i, edit_map, item);
 
 		container_items.push_back(containerItemButton);
-		gridSizer->Add(containerItemButton, wxSizerFlags(0));
+		gridSizer->Add(containerItemButton, wxSizerFlags(0).Border(wxALL, 2));
 	}
 
 	topSizer->Add(gridSizer, wxSizerFlags(1).Expand());
