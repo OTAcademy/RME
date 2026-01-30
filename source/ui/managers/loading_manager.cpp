@@ -31,7 +31,6 @@ void LoadingManager::CreateLoadBar(wxString message, bool canCancel) {
 	currentProgress = -1;
 
 	progressBar = newd wxGenericProgressDialog("Loading", progressText + " (0%)", 100, g_gui.root, wxPD_APP_MODAL | wxPD_SMOOTH | (canCancel ? wxPD_CAN_ABORT : 0));
-	progressBar->SetSize(280, -1);
 	progressBar->Show(true);
 
 	if (g_gui.tabbook) {
