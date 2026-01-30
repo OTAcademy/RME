@@ -47,18 +47,7 @@ MinimapRenderer::MinimapRenderer() {
 }
 
 MinimapRenderer::~MinimapRenderer() {
-	if (texture_id_) {
-		glDeleteTextures(1, &texture_id_);
-	}
-	if (palette_texture_id_) {
-		glDeleteTextures(1, &palette_texture_id_);
-	}
-	if (vao_) {
-		glDeleteVertexArrays(1, &vao_);
-	}
-	if (vbo_) {
-		glDeleteBuffers(1, &vbo_);
-	}
+	// RAII manages resources
 }
 
 bool MinimapRenderer::initialize() {
@@ -80,8 +69,8 @@ bool MinimapRenderer::initialize() {
 	createPaletteTexture();
 
 	// Create VAO/VBO for fullscreen quad
-	glCreateVertexArrays(1, &vao_);
-	glCreateBuffers(1, &vbo_);
+	vao_ = std::make_unique<GLVertexArray>();
+	vbo_ = std::make_unique<GLBuffer>();
 
 	float quad_vertices[] = {
 		// pos      // tex
@@ -91,10 +80,10 @@ bool MinimapRenderer::initialize() {
 		0.0f, 1.0f, 0.0f, 1.0f
 	};
 
-	glNamedBufferStorage(vbo_, sizeof(quad_vertices), quad_vertices, 0);
+	glNamedBufferStorage(vbo_->GetID(), sizeof(quad_vertices), quad_vertices, 0);
 
-	glBindVertexArray(vao_);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+	glBindVertexArray(vao_->GetID());
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_->GetID());
 
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -108,7 +97,7 @@ bool MinimapRenderer::initialize() {
 }
 
 void MinimapRenderer::createPaletteTexture() {
-	glCreateTextures(GL_TEXTURE_1D, 1, &palette_texture_id_);
+	palette_texture_id_ = std::make_unique<GLTextureResource>(GL_TEXTURE_1D);
 
 	std::vector<uint8_t> palette(256 * 4);
 	for (int i = 0; i < 256; ++i) {
@@ -120,42 +109,38 @@ void MinimapRenderer::createPaletteTexture() {
 	// Index 0 is transparent
 	palette[3] = 0;
 
-	glTextureStorage1D(palette_texture_id_, 1, GL_RGBA8, 256);
-	glTextureSubImage1D(palette_texture_id_, 0, 0, 256, GL_RGBA, GL_UNSIGNED_BYTE, palette.data());
+	glTextureStorage1D(palette_texture_id_->GetID(), 1, GL_RGBA8, 256);
+	glTextureSubImage1D(palette_texture_id_->GetID(), 0, 0, 256, GL_RGBA, GL_UNSIGNED_BYTE, palette.data());
 
-	glTextureParameteri(palette_texture_id_, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTextureParameteri(palette_texture_id_, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTextureParameteri(palette_texture_id_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(palette_texture_id_->GetID(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTextureParameteri(palette_texture_id_->GetID(), GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(palette_texture_id_->GetID(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 }
 
 void MinimapRenderer::resize(int width, int height) {
-	if (width_ == width && height_ == height && texture_id_ != 0) {
+	if (width_ == width && height_ == height && texture_id_) {
 		return;
 	}
 
 	width_ = width;
 	height_ = height;
 
-	if (texture_id_) {
-		glDeleteTextures(1, &texture_id_);
-	}
-
 	rows_ = (height + TILE_SIZE - 1) / TILE_SIZE;
 	cols_ = (width + TILE_SIZE - 1) / TILE_SIZE;
 	int num_layers = rows_ * cols_;
 
-	glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &texture_id_);
-	glTextureStorage3D(texture_id_, 1, GL_R8UI, TILE_SIZE, TILE_SIZE, num_layers);
+	texture_id_ = std::make_unique<GLTextureResource>(GL_TEXTURE_2D_ARRAY);
+	glTextureStorage3D(texture_id_->GetID(), 1, GL_R8UI, TILE_SIZE, TILE_SIZE, num_layers);
 
 	GLenum error = glGetError();
 	if (error != GL_NO_ERROR) {
 		spdlog::error("MinimapRenderer: FAILED to create texture array {}x{}x{}! Error: {}", TILE_SIZE, TILE_SIZE, num_layers, error);
 	}
 
-	glTextureParameteri(texture_id_, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTextureParameteri(texture_id_, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTextureParameteri(texture_id_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTextureParameteri(texture_id_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(texture_id_->GetID(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTextureParameteri(texture_id_->GetID(), GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(texture_id_->GetID(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(texture_id_->GetID(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	spdlog::info("MinimapRenderer: Resized tiled texture to {}x{} ({}x{} tiles, {} layers)", width_, height_, cols_, rows_, num_layers);
 }
 
@@ -240,7 +225,7 @@ void MinimapRenderer::updateRegion(const Map& map, int floor, int x, int y, int 
 				int offset_x = int_x - tile_x;
 				int offset_y = int_y - tile_y;
 
-				glTextureSubImage3D(texture_id_, 0, offset_x, offset_y, layer, update_w, update_h, 1, GL_RED_INTEGER, GL_UNSIGNED_BYTE, 0);
+				glTextureSubImage3D(texture_id_->GetID(), 0, offset_x, offset_y, layer, update_w, update_h, 1, GL_RED_INTEGER, GL_UNSIGNED_BYTE, 0);
 
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 				pbo_->unbind();
@@ -261,13 +246,13 @@ void MinimapRenderer::render(const glm::mat4& projection, int x, int y, int w, i
 	shader_->Use();
 
 	// Bind textures
-	glBindTextureUnit(0, texture_id_);
+	glBindTextureUnit(0, texture_id_->GetID());
 	shader_->SetInt("uMinimapTexture", 0);
 
-	glBindTextureUnit(1, palette_texture_id_);
+	glBindTextureUnit(1, palette_texture_id_->GetID());
 	shader_->SetInt("uPaletteTexture", 1);
 
-	glBindVertexArray(vao_);
+	glBindVertexArray(vao_->GetID());
 
 	// Constants
 	float scale_x = (float)w / map_w;
