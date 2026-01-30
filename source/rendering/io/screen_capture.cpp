@@ -23,8 +23,6 @@ void ScreenCapture::Capture(int width, int height, uint8_t* buffer) {
 		uint8_t* bottom_row = buffer + (height - 1 - y) * row_size;
 
 		// Swap rows
-		std::memcpy(temp_row.data(), top_row, row_size);
-		std::memcpy(top_row, bottom_row, row_size);
-		std::memcpy(bottom_row, temp_row.data(), row_size);
+std::swap_ranges(top_row, top_row + row_size, bottom_row);
 	}
 }
