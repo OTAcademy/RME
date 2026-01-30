@@ -52,11 +52,19 @@ void StandardToolBar::Update() {
 	if (editor) {
 		toolbar->EnableTool(wxID_UNDO, editor->actionQueue->canUndo());
 		toolbar->EnableTool(wxID_REDO, editor->actionQueue->canRedo());
-		toolbar->EnableTool(wxID_PASTE, editor->copybuffer.canPaste());
+
+		bool canPaste = editor->copybuffer.canPaste();
+		toolbar->EnableTool(wxID_PASTE, canPaste);
+		if (canPaste) {
+			toolbar->SetToolShortHelp(wxID_PASTE, "Paste (Ctrl+V)");
+		} else {
+			toolbar->SetToolShortHelp(wxID_PASTE, "Paste (Ctrl+V) - Clipboard empty");
+		}
 	} else {
 		toolbar->EnableTool(wxID_UNDO, false);
 		toolbar->EnableTool(wxID_REDO, false);
 		toolbar->EnableTool(wxID_PASTE, false);
+		toolbar->SetToolShortHelp(wxID_PASTE, "Paste (Ctrl+V) - No editor open");
 	}
 
 	bool has_map = editor != nullptr;
