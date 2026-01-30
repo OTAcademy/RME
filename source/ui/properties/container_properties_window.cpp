@@ -41,10 +41,12 @@ ContainerPropertiesWindow::ContainerPropertiesWindow(wxWindow* win_parent, const
 
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Action ID"));
 	action_id_field = newd wxSpinCtrl(this, wxID_ANY, i2ws(edit_item->getActionID()), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 0xFFFF, edit_item->getActionID());
+	action_id_field->SetToolTip("Action ID (0-65535). Used for scripting.");
 	subsizer->Add(action_id_field, wxSizerFlags(1).Expand());
 
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Unique ID"));
 	unique_id_field = newd wxSpinCtrl(this, wxID_ANY, i2ws(edit_item->getUniqueID()), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, 0xFFFF, edit_item->getUniqueID());
+	unique_id_field->SetToolTip("Unique ID (0-65535). Must be unique on the map.");
 	subsizer->Add(unique_id_field, wxSizerFlags(1).Expand());
 
 	boxsizer->Add(subsizer, wxSizerFlags(0).Expand());
