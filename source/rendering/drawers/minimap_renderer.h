@@ -4,6 +4,7 @@
 #include "app/main.h"
 #include "rendering/core/pixel_buffer_object.h"
 #include "rendering/core/shader_program.h"
+#include "rendering/core/gl_resources.h"
 #include <vector>
 #include <memory>
 #include <glm/glm.hpp>
@@ -65,10 +66,10 @@ public:
 private:
 	void createPaletteTexture();
 
-	GLuint texture_id_ = 0;
-	GLuint palette_texture_id_ = 0;
-	GLuint vao_ = 0;
-	GLuint vbo_ = 0;
+	std::unique_ptr<GLTextureResource> texture_id_;
+	std::unique_ptr<GLTextureResource> palette_texture_id_;
+	std::unique_ptr<GLVertexArray> vao_;
+	std::unique_ptr<GLBuffer> vbo_;
 
 	int width_ = 0;
 	int height_ = 0;
