@@ -86,6 +86,9 @@ public:
 	size_t size() const {
 		return tiles.size();
 	}
+	bool empty() const {
+		return tiles.empty();
+	}
 	void updateSelectionCount();
 	TileSet::iterator begin() {
 		return tiles.begin();

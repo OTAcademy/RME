@@ -99,7 +99,7 @@ bool AtlasManager::hasSprite(uint32_t sprite_id) const {
 	if (sprite_id < DIRECT_LOOKUP_SIZE) {
 		return direct_lookup_[sprite_id] != nullptr;
 	}
-	return sprite_regions_.find(sprite_id) != sprite_regions_.end();
+	return sprite_regions_.contains(sprite_id);
 }
 
 void AtlasManager::bind(uint32_t slot) const {
