@@ -268,7 +268,7 @@ MapIterator& MapIterator::operator++() {
 		}
 
 		nodestack.pop_back();
-		if (nodestack.size() == 0) {
+		if (nodestack.empty()) {
 			// Set all values to "end"
 			local_z = -1;
 			local_i = -1;

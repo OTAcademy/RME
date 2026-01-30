@@ -129,7 +129,7 @@ void GUI::SetDrawingMode() {
 	for (int idx = 0; idx < tabbook->GetTabCount(); ++idx) {
 		EditorTab* editorTab = tabbook->GetTab(idx);
 		if (auto* mapTab = dynamic_cast<MapTab*>(editorTab)) {
-			if (al.find(mapTab) != al.end()) {
+			if (al.contains(mapTab)) {
 				continue;
 			}
 

@@ -48,7 +48,7 @@ void ClipboardHandler::doDelete(Editor& editor) {
 }
 
 void ClipboardHandler::copyPosition(const Selection& selection) {
-	if (selection.size() == 0) {
+	if (selection.empty()) {
 		return;
 	}
 
