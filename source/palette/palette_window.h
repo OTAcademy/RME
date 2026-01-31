@@ -80,8 +80,6 @@ protected:
 	CreaturePalettePanel* creature_palette;
 	WaypointPalettePanel* waypoint_palette;
 	BrushPalettePanel* raw_palette;
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

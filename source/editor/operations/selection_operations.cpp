@@ -253,7 +253,7 @@ void SelectionOperations::moveSelection(Editor& editor, Position offset) {
 		action = editor.actionQueue->createAction(batchAction.get());
 		TileList borderize_tiles;
 		// Go through all modified (selected) tiles (might be slow)
-		for (TileSet::iterator it = editor.selection.begin(); it != editor.selection.end(); it++) {
+		for (auto it = editor.selection.begin(); it != editor.selection.end(); it++) {
 			bool add_me = false; // If this tile is touched
 			Position pos = (*it)->getPosition();
 			// Go through all neighbours
