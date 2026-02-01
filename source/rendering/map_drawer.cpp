@@ -231,7 +231,6 @@ void MapDrawer::DrawMap() {
 		++view.end_x;
 		++view.end_y;
 	}
-
 }
 
 void MapDrawer::DrawIngameBox() {
