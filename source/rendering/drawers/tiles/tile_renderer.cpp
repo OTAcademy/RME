@@ -212,12 +212,15 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 
 		// Map coordinates to screen coordinates
 		// draw_x, draw_y are defined in the beginning of function and are top-left of the tile
-		float x = (float)draw_x;
-		float y = (float)draw_y;
-		float s = 32.0f; // Standard tile size
-
 		// Draw 1px solid border using geometry generation
-		primitive_renderer.drawBox(glm::vec4(x, y, s, s), border_color, 1.0f);
+		// primitive_renderer.drawBox(glm::vec4(x, y, s, s), border_color, 1.0f);
+
+		// Use SpriteDrawer to keep batching unified (prevents PrimitiveRenderer flush/state change)
+		int br = (int)(border_color.r * 255.0f);
+		int bg = (int)(border_color.g * 255.0f);
+		int bb = (int)(border_color.b * 255.0f);
+		int ba = (int)(border_color.a * 255.0f);
+		sprite_drawer->glDrawBox(sprite_batch, draw_x, draw_y, 32, 32, br, bg, bb, ba);
 	}
 
 	if (!only_colors) {

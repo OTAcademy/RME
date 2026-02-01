@@ -61,6 +61,17 @@ void SpriteDrawer::glBlitSquare(SpriteBatch& sprite_batch, int sx, int sy, int r
 	}
 }
 
+void SpriteDrawer::glDrawBox(SpriteBatch& sprite_batch, int sx, int sy, int width, int height, int red, int green, int blue, int alpha) {
+	float normalizedR = red / 255.0f;
+	float normalizedG = green / 255.0f;
+	float normalizedB = blue / 255.0f;
+	float normalizedA = alpha / 255.0f;
+
+	if (g_gui.gfx.hasAtlasManager()) {
+		sprite_batch.drawRectLines((float)sx, (float)sy, (float)width, (float)height, glm::vec4(normalizedR, normalizedG, normalizedB, normalizedA), *g_gui.gfx.getAtlasManager());
+	}
+}
+
 void SpriteDrawer::glSetColor(wxColor color) {
 	// Not needed with BatchRenderer automatic color handling in DrawQuad,
 	// but if used for stateful drawing elsewhere, we might need a state setter.
