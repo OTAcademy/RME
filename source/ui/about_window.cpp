@@ -24,6 +24,8 @@
 #include <fstream>
 #include <typeinfo>
 #include <memory>
+#include <wx/clipbrd.h>
+#include <wx/dataobj.h>
 
 //=============================================================================
 // About Window - Information window about the application
@@ -57,7 +59,8 @@ AboutWindow::AboutWindow(wxWindow* parent) :
 	about << "\n\n";
 
 	about << "Using " << wxVERSION_STRING << " interface\n";
-	about << "OpenGL version " << wxString((char*)glGetString(GL_VERSION), wxConvUTF8) << "\n";
+	const char* gl_version = (const char*)glGetString(GL_VERSION);
+	about << "OpenGL version " << (gl_version ? wxString(gl_version, wxConvUTF8) : "Unknown") << "\n";
 	about << "\n";
 	about << "This program comes with ABSOLUTELY NO WARRANTY;\n";
 	about << "for details see the LICENSE file.\n";
@@ -73,6 +76,16 @@ AboutWindow::AboutWindow(wxWindow* parent) :
 
 	wxSizer* choicesizer = newd wxBoxSizer(wxHORIZONTAL);
 	choicesizer->Add(newd wxButton(this, wxID_OK, "OK"), wxSizerFlags(1).Center());
+
+	wxButton* copyBtn = newd wxButton(this, wxID_COPY, "Copy Version Info");
+	copyBtn->Bind(wxEVT_BUTTON, [about](wxCommandEvent&) {
+		if (wxTheClipboard->Open()) {
+			wxTheClipboard->SetData(new wxTextDataObject(about));
+			wxTheClipboard->Close();
+		}
+	});
+	choicesizer->Add(copyBtn, wxSizerFlags(1).Center().Border(wxLEFT, 10));
+
 	topsizer->Add(choicesizer, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT | wxBOTTOM, 20);
 
 	wxAcceleratorEntry entries[1];

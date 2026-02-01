@@ -50,19 +50,22 @@ StandardToolBar::~StandardToolBar() {
 void StandardToolBar::Update() {
 	Editor* editor = g_gui.GetCurrentEditor();
 	if (editor) {
-		toolbar->EnableTool(wxID_UNDO, editor->actionQueue->canUndo());
-		toolbar->EnableTool(wxID_REDO, editor->actionQueue->canRedo());
+		bool canUndo = editor->actionQueue->canUndo();
+		toolbar->EnableTool(wxID_UNDO, canUndo);
+		toolbar->SetToolShortHelp(wxID_UNDO, canUndo ? "Undo (Ctrl+Z)" : "Undo (Ctrl+Z) - Nothing to undo");
+
+		bool canRedo = editor->actionQueue->canRedo();
+		toolbar->EnableTool(wxID_REDO, canRedo);
+		toolbar->SetToolShortHelp(wxID_REDO, canRedo ? "Redo (Ctrl+Shift+Z)" : "Redo (Ctrl+Shift+Z) - Nothing to redo");
 
 		bool canPaste = editor->copybuffer.canPaste();
 		toolbar->EnableTool(wxID_PASTE, canPaste);
-		if (canPaste) {
-			toolbar->SetToolShortHelp(wxID_PASTE, "Paste (Ctrl+V)");
-		} else {
-			toolbar->SetToolShortHelp(wxID_PASTE, "Paste (Ctrl+V) - Clipboard empty");
-		}
+		toolbar->SetToolShortHelp(wxID_PASTE, canPaste ? "Paste (Ctrl+V)" : "Paste (Ctrl+V) - Clipboard empty");
 	} else {
 		toolbar->EnableTool(wxID_UNDO, false);
+		toolbar->SetToolShortHelp(wxID_UNDO, "Undo (Ctrl+Z) - No editor open");
 		toolbar->EnableTool(wxID_REDO, false);
+		toolbar->SetToolShortHelp(wxID_REDO, "Redo (Ctrl+Shift+Z) - No editor open");
 		toolbar->EnableTool(wxID_PASTE, false);
 		toolbar->SetToolShortHelp(wxID_PASTE, "Paste (Ctrl+V) - No editor open");
 	}
@@ -71,9 +74,16 @@ void StandardToolBar::Update() {
 	bool is_host = has_map && !editor->live_manager.IsClient();
 
 	toolbar->EnableTool(wxID_SAVE, is_host);
+	toolbar->SetToolShortHelp(wxID_SAVE, is_host ? "Save Map (Ctrl+S)" : (has_map ? "Save Map (Ctrl+S) - Client cannot save" : "Save Map (Ctrl+S) - No map open"));
+
 	toolbar->EnableTool(wxID_SAVEAS, is_host);
+	toolbar->SetToolShortHelp(wxID_SAVEAS, is_host ? "Save Map As... (Ctrl+Alt+S)" : (has_map ? "Save Map As... (Ctrl+Alt+S) - Client cannot save" : "Save Map As... (Ctrl+Alt+S) - No map open"));
+
 	toolbar->EnableTool(wxID_CUT, has_map);
+	toolbar->SetToolShortHelp(wxID_CUT, has_map ? "Cut (Ctrl+X)" : "Cut (Ctrl+X) - No map open");
+
 	toolbar->EnableTool(wxID_COPY, has_map);
+	toolbar->SetToolShortHelp(wxID_COPY, has_map ? "Copy (Ctrl+C)" : "Copy (Ctrl+C) - No map open");
 
 	toolbar->Refresh();
 }

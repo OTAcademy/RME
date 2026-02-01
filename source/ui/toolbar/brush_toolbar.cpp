@@ -80,20 +80,25 @@ void BrushToolBar::Update() {
 	Editor* editor = g_gui.GetCurrentEditor();
 	bool has_map = editor != nullptr;
 
-	toolbar->EnableTool(PALETTE_TERRAIN_OPTIONAL_BORDER_TOOL, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_ERASER, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_PZ_TOOL, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_NOPVP_TOOL, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_NOLOGOUT_TOOL, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_PVPZONE_TOOL, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_NORMAL_DOOR, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_LOCKED_DOOR, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_MAGIC_DOOR, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_QUEST_DOOR, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_NORMAL_ALT_DOOR, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_ARCHWAY_DOOR, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_HATCH_DOOR, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_WINDOW_DOOR, has_map);
+	auto updateTool = [&](int id, const wxString& name) {
+		toolbar->EnableTool(id, has_map);
+		toolbar->SetToolShortHelp(id, has_map ? name : name + " - No map open");
+	};
+
+	updateTool(PALETTE_TERRAIN_OPTIONAL_BORDER_TOOL, "Border");
+	updateTool(PALETTE_TERRAIN_ERASER, "Eraser");
+	updateTool(PALETTE_TERRAIN_PZ_TOOL, "Protected Zone");
+	updateTool(PALETTE_TERRAIN_NOPVP_TOOL, "No PvP Zone");
+	updateTool(PALETTE_TERRAIN_NOLOGOUT_TOOL, "No Logout Zone");
+	updateTool(PALETTE_TERRAIN_PVPZONE_TOOL, "PvP Zone");
+	updateTool(PALETTE_TERRAIN_NORMAL_DOOR, "Normal Door");
+	updateTool(PALETTE_TERRAIN_LOCKED_DOOR, "Locked Door");
+	updateTool(PALETTE_TERRAIN_MAGIC_DOOR, "Magic Door");
+	updateTool(PALETTE_TERRAIN_QUEST_DOOR, "Quest Door");
+	updateTool(PALETTE_TERRAIN_NORMAL_ALT_DOOR, "Normal Door (alt)");
+	updateTool(PALETTE_TERRAIN_ARCHWAY_DOOR, "Archway");
+	updateTool(PALETTE_TERRAIN_HATCH_DOOR, "Hatch Window");
+	updateTool(PALETTE_TERRAIN_WINDOW_DOOR, "Window");
 
 	Brush* brush = g_gui.GetCurrentBrush();
 	if (brush) {
