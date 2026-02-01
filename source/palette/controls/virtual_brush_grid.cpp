@@ -8,6 +8,7 @@ EVT_PAINT(VirtualBrushGrid::OnPaint)
 EVT_SIZE(VirtualBrushGrid::OnSize)
 EVT_LEFT_DOWN(VirtualBrushGrid::OnMouse)
 EVT_ERASE_BACKGROUND(VirtualBrushGrid::OnEraseBackground)
+EVT_MOTION(VirtualBrushGrid::OnMotion)
 END_EVENT_TABLE()
 
 VirtualBrushGrid::VirtualBrushGrid(wxWindow* parent, const TilesetCategory* _tileset, RenderSize rsz) :
@@ -196,4 +197,20 @@ bool VirtualBrushGrid::SelectBrush(const Brush* brush) {
 	selected_index = -1;
 	Refresh();
 	return false;
+}
+
+void VirtualBrushGrid::OnMotion(wxMouseEvent& event) {
+	int index = HitTest(event.GetX(), event.GetY());
+	if (index != -1) {
+		Brush* brush = tileset->brushlist[index];
+		if (brush) {
+			wxString tip = wxstr(brush->getName());
+			if (GetToolTipText() != tip) {
+				SetToolTip(tip);
+			}
+		}
+	} else {
+		UnsetToolTip();
+	}
+	event.Skip();
 }
