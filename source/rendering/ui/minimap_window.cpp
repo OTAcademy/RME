@@ -58,6 +58,7 @@ MinimapWindow::MinimapWindow(wxWindow* parent) :
 	if (!context->IsOK()) {
 		spdlog::error("MinimapWindow::MinimapWindow - Context creation failed");
 	}
+	SetToolTip("Click to move camera");
 	drawer = std::make_unique<MinimapDrawer>();
 }
 

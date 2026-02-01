@@ -29,11 +29,13 @@ MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor&
 	// Description
 	grid_sizer->Add(newd wxStaticText(this, wxID_ANY, "Map Description"));
 	description_ctrl = newd wxTextCtrl(this, wxID_ANY, wxstr(map.getMapDescription()), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+	description_ctrl->SetToolTip("Enter a description for the map");
 	grid_sizer->Add(description_ctrl, wxSizerFlags(1).Expand());
 
 	// Map version
 	grid_sizer->Add(newd wxStaticText(this, wxID_ANY, "Map Version"));
 	version_choice = newd wxChoice(this, MAP_PROPERTIES_VERSION);
+	version_choice->SetToolTip("Select the OTBM version");
 	version_choice->Append("OTServ 0.5.0");
 	version_choice->Append("OTServ 0.6.0");
 	version_choice->Append("OTServ 0.6.1");
@@ -61,6 +63,7 @@ MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor&
 	// Version
 	grid_sizer->Add(newd wxStaticText(this, wxID_ANY, "Client Version"));
 	protocol_choice = newd wxChoice(this, wxID_ANY);
+	protocol_choice->SetToolTip("Select the client version");
 
 	protocol_choice->SetStringSelection(wxstr(g_version.GetCurrentVersion().getName()));
 
@@ -73,9 +76,11 @@ MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor&
 		subsizer->Add(
 			width_spin = newd wxSpinCtrl(this, wxID_ANY, wxstr(i2s(map.getWidth())), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 256, MAP_MAX_WIDTH), wxSizerFlags(1).Expand()
 		);
+		width_spin->SetToolTip("Map width in tiles");
 		subsizer->Add(
 			height_spin = newd wxSpinCtrl(this, wxID_ANY, wxstr(i2s(map.getHeight())), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 256, MAP_MAX_HEIGHT), wxSizerFlags(1).Expand()
 		);
+		height_spin->SetToolTip("Map height in tiles");
 		grid_sizer->Add(subsizer, 1, wxEXPAND);
 	}
 
@@ -87,6 +92,7 @@ MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor&
 	grid_sizer->Add(
 		house_filename_ctrl = newd wxTextCtrl(this, wxID_ANY, wxstr(map.getHouseFilename())), 1, wxEXPAND
 	);
+	house_filename_ctrl->SetToolTip("External house XML file");
 
 	grid_sizer->Add(
 		newd wxStaticText(this, wxID_ANY, "External Spawnfile")
@@ -95,12 +101,18 @@ MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor&
 	grid_sizer->Add(
 		spawn_filename_ctrl = newd wxTextCtrl(this, wxID_ANY, wxstr(map.getSpawnFilename())), 1, wxEXPAND
 	);
+	spawn_filename_ctrl->SetToolTip("External spawn XML file");
 
 	topsizer->Add(grid_sizer, wxSizerFlags(1).Expand().Border(wxALL, 20));
 
 	wxSizer* subsizer = newd wxBoxSizer(wxHORIZONTAL);
-	subsizer->Add(newd wxButton(this, wxID_OK, "OK"), wxSizerFlags(1).Center());
-	subsizer->Add(newd wxButton(this, wxID_CANCEL, "Cancel"), wxSizerFlags(1).Center());
+	wxButton* okBtn = newd wxButton(this, wxID_OK, "OK");
+	okBtn->SetToolTip("Confirm changes");
+	subsizer->Add(okBtn, wxSizerFlags(1).Center());
+
+	wxButton* cancelBtn = newd wxButton(this, wxID_CANCEL, "Cancel");
+	cancelBtn->SetToolTip("Discard changes");
+	subsizer->Add(cancelBtn, wxSizerFlags(1).Center());
 	topsizer->Add(subsizer, wxSizerFlags(0).Center().Border(wxLEFT | wxRIGHT | wxBOTTOM, 20));
 
 	SetSizerAndFit(topsizer);

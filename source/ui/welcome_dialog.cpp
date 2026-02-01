@@ -92,13 +92,16 @@ WelcomeDialogPanel::WelcomeDialogPanel(WelcomeDialog* dialog, const wxSize& size
 	wxPoint newMapButtonPoint(button_pos_center_x, button_pos_center_y);
 	auto* new_map_button = newd WelcomeDialogButton(this, wxDefaultPosition, button_size, button_base_colour, "New");
 	new_map_button->SetAction(wxID_NEW);
+	new_map_button->SetToolTip("Create a new map");
 	new_map_button->Bind(wxEVT_LEFT_UP, &WelcomeDialog::OnButtonClicked, dialog);
 
 	auto* open_map_button = newd WelcomeDialogButton(this, wxDefaultPosition, button_size, button_base_colour, "Open");
 	open_map_button->SetAction(wxID_OPEN);
+	open_map_button->SetToolTip("Open an existing map");
 	open_map_button->Bind(wxEVT_LEFT_UP, &WelcomeDialog::OnButtonClicked, dialog);
 	auto* preferences_button = newd WelcomeDialogButton(this, wxDefaultPosition, button_size, button_base_colour, "Preferences");
 	preferences_button->SetAction(wxID_PREFERENCES);
+	preferences_button->SetToolTip("Configure editor preferences");
 	preferences_button->Bind(wxEVT_LEFT_UP, &WelcomeDialog::OnButtonClicked, dialog);
 
 	Bind(wxEVT_PAINT, &WelcomeDialogPanel::OnPaint, this);
