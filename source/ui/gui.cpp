@@ -236,6 +236,7 @@ void GUI::ChangeFloor(int new_floor) {
 
 		if (old_floor != new_floor) {
 			tab->GetCanvas()->ChangeFloor(new_floor);
+			g_status.SetStatusText(wxString::Format("Floor: %d", new_floor));
 		}
 	}
 }

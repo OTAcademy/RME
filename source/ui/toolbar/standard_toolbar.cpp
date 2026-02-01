@@ -6,6 +6,7 @@
 #include "ui/toolbar/standard_toolbar.h"
 #include "ui/gui.h"
 #include "ui/gui_ids.h"
+#include "ui/main_menubar.h"
 #include "editor/editor.h"
 #include "editor/action_queue.h"
 #include "ui/artprovider.h"
@@ -24,6 +25,7 @@ StandardToolBar::StandardToolBar(wxWindow* parent) {
 	wxBitmap cut_bitmap = wxArtProvider::GetBitmap(wxART_CUT, wxART_TOOLBAR, icon_size);
 	wxBitmap copy_bitmap = wxArtProvider::GetBitmap(wxART_COPY, wxART_TOOLBAR, icon_size);
 	wxBitmap paste_bitmap = wxArtProvider::GetBitmap(wxART_PASTE, wxART_TOOLBAR, icon_size);
+	wxBitmap find_bitmap = wxArtProvider::GetBitmap(wxART_FIND, wxART_TOOLBAR, icon_size);
 
 	toolbar = newd wxAuiToolBar(parent, TOOLBAR_STANDARD, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
 	toolbar->SetToolBitmapSize(icon_size);
@@ -38,6 +40,8 @@ StandardToolBar::StandardToolBar(wxWindow* parent) {
 	toolbar->AddTool(wxID_CUT, wxEmptyString, cut_bitmap, wxNullBitmap, wxITEM_NORMAL, "Cut (Ctrl+X)", wxEmptyString, nullptr);
 	toolbar->AddTool(wxID_COPY, wxEmptyString, copy_bitmap, wxNullBitmap, wxITEM_NORMAL, "Copy (Ctrl+C)", wxEmptyString, nullptr);
 	toolbar->AddTool(wxID_PASTE, wxEmptyString, paste_bitmap, wxNullBitmap, wxITEM_NORMAL, "Paste (Ctrl+V)", wxEmptyString, nullptr);
+	toolbar->AddSeparator();
+	toolbar->AddTool(MAIN_FRAME_MENU + MenuBar::JUMP_TO_BRUSH, wxEmptyString, find_bitmap, wxNullBitmap, wxITEM_NORMAL, "Jump to Brush (J)", wxEmptyString, nullptr);
 	toolbar->Realize();
 
 	toolbar->Bind(wxEVT_COMMAND_MENU_SELECTED, &StandardToolBar::OnButtonClick, this);
@@ -108,6 +112,7 @@ void StandardToolBar::OnButtonClick(wxCommandEvent& event) {
 			g_gui.PreparePaste();
 			break;
 		default:
+			event.Skip();
 			break;
 	}
 }

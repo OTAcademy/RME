@@ -189,6 +189,7 @@ void EditorManager::SaveCurrentMap(FileName fileName, bool showdialog) {
 			stream << position;
 			g_settings.setString(Config::RECENT_EDITED_MAP_PATH, path);
 			g_settings.setString(Config::RECENT_EDITED_MAP_POSITION, stream.str());
+			g_status.SetStatusText("Map saved.");
 		}
 	}
 
