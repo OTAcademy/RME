@@ -26,6 +26,9 @@ protected:
 
 	PaletteType current_type;
 	wxSizer* main_sizer;
+	wxCheckBox* autoborder_checkbox;
+
+	void OnAutoborderToggle(wxCommandEvent& event);
 };
 
 #endif

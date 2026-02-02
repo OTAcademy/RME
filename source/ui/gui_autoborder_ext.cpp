@@ -19,7 +19,7 @@ void GUI::UpdateAutoborderPreview(Position pos) {
 
 	// Check for editor to ensure we don't dereference a null pointer
 	Editor* editor = GetCurrentEditor();
-	if (IsDrawingMode() && brush && brush->needBorders() && g_settings.getInteger(Config::USE_AUTOMAGIC) && editor) {
+	if (IsDrawingMode() && brush && brush->needBorders() && g_settings.getInteger(Config::USE_AUTOMAGIC) && g_settings.getInteger(Config::SHOW_AUTOBORDER_PREVIEW) && editor) {
 		g_autoborder_preview.Update(*editor, pos, wxGetKeyState(WXK_ALT));
 		secondary_map = g_autoborder_preview.GetBufferMap();
 	} else {

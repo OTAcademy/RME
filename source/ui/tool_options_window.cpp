@@ -3,14 +3,19 @@
 #include "palette/panels/brush_tool_panel.h"
 #include "palette/panels/brush_thickness_panel.h"
 #include "app/settings.h"
+#include "ui/gui.h"
+#include "ui/gui_ids.h"
+#include "ui/main_menubar.h"
+#include "app/application.h"
 #include <spdlog/spdlog.h>
 
 ToolOptionsWindow::ToolOptionsWindow(wxWindow* parent) :
 	wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize), // wxTAB_TRAVERSAL?
-	size_panel(nullptr),
 	tool_panel(nullptr),
 	thickness_panel(nullptr),
-	current_type(TILESET_UNKNOWN) {
+	size_panel(nullptr),
+	current_type(TILESET_UNKNOWN),
+	autoborder_checkbox(nullptr) {
 
 	main_sizer = newd wxBoxSizer(wxVERTICAL);
 
@@ -20,6 +25,10 @@ ToolOptionsWindow::ToolOptionsWindow(wxWindow* parent) :
 	thickness_panel = newd BrushThicknessPanel(this);
 	size_panel = newd BrushSizePanel(this);
 
+	autoborder_checkbox = newd wxCheckBox(this, wxID_ANY, "Preview");
+	autoborder_checkbox->SetValue(g_settings.getInteger(Config::SHOW_AUTOBORDER_PREVIEW));
+	autoborder_checkbox->Bind(wxEVT_CHECKBOX, &ToolOptionsWindow::OnAutoborderToggle, this);
+
 	// Order matters for display? usually Tools then Size?
 	// In old palette: it depended on creation order.
 	// Usually: Tools, then Thickness, then Size.
@@ -27,6 +36,7 @@ ToolOptionsWindow::ToolOptionsWindow(wxWindow* parent) :
 	main_sizer->Add(tool_panel, 0, wxEXPAND | wxALL, 2);
 	main_sizer->Add(thickness_panel, 0, wxEXPAND | wxALL, 2);
 	main_sizer->Add(size_panel, 0, wxEXPAND | wxALL, 2);
+	main_sizer->Add(autoborder_checkbox, 0, wxALL, 4);
 
 	SetSizer(main_sizer);
 
@@ -36,6 +46,13 @@ ToolOptionsWindow::ToolOptionsWindow(wxWindow* parent) :
 
 ToolOptionsWindow::~ToolOptionsWindow() {
 	// Children deleted automatically
+}
+
+void ToolOptionsWindow::OnAutoborderToggle(wxCommandEvent& event) {
+	bool active = event.IsChecked();
+	g_settings.setInteger(Config::SHOW_AUTOBORDER_PREVIEW, active);
+
+	g_gui.RefreshView();
 }
 
 void ToolOptionsWindow::SetPaletteType(PaletteType type) {
@@ -48,15 +65,18 @@ void ToolOptionsWindow::SetPaletteType(PaletteType type) {
 	bool show_tools = false;
 	bool show_thickness = false;
 	bool show_size = false;
+	bool show_autoborder = false;
 
 	switch (type) {
 		case TILESET_TERRAIN:
+			show_tools = true;
+			show_size = true;
+			show_autoborder = true;
+			break;
 		case TILESET_COLLECTION: // Collections had tools and size in old code (and thickness!)
 			show_tools = true;
 			show_size = true;
-			if (type == TILESET_COLLECTION) {
-				show_thickness = true;
-			}
+			show_thickness = true;
 			break;
 		case TILESET_DOODAD:
 			show_thickness = true;
@@ -75,6 +95,7 @@ void ToolOptionsWindow::SetPaletteType(PaletteType type) {
 	tool_panel->Show(show_tools);
 	thickness_panel->Show(show_thickness);
 	size_panel->Show(show_size);
+	autoborder_checkbox->Show(show_autoborder);
 
 	// Configure specific settings for the palette type if needed
 	// E.g. icon sizes
@@ -126,6 +147,10 @@ void ToolOptionsWindow::UpdateBrushSize(BrushShape shape, int size) {
 }
 
 void ToolOptionsWindow::ReloadSettings() {
+	if (autoborder_checkbox) {
+		autoborder_checkbox->SetValue(g_settings.getInteger(Config::SHOW_AUTOBORDER_PREVIEW));
+	}
+
 	// Re-apply settings based on current type
 	PaletteType t = current_type;
 	current_type = TILESET_UNKNOWN; // Force refresh
