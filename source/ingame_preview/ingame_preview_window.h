@@ -2,6 +2,7 @@
 #define RME_INGAME_PREVIEW_WINDOW_H_
 
 #include "app/main.h"
+#include "game/outfit.h"
 #include <memory>
 
 class Editor;
@@ -17,6 +18,7 @@ namespace IngamePreview {
 
 		void OnUpdateTimer(wxTimerEvent& event);
 		void OnToggleFollow(wxCommandEvent& event);
+		void SetFollowSelection(bool follow);
 		void OnToggleLighting(wxCommandEvent& event);
 		void OnAmbientSlider(wxCommandEvent& event);
 		void OnIntensitySlider(wxCommandEvent& event);
@@ -25,17 +27,18 @@ namespace IngamePreview {
 		void OnViewportHeightUp(wxCommandEvent& event);
 		void OnViewportHeightDown(wxCommandEvent& event);
 
+		void OnChooseOutfit(wxCommandEvent& event);
+
 		void UpdateState();
 
 	private:
-		// Editor reference removed to prevent dangling pointer.
-		// Active editor is retrieved dynamically in UpdateState.
 		std::unique_ptr<IngamePreviewCanvas> canvas;
 		wxTimer update_timer;
 
-		// UI Controls (Owned by wxWindow parent, managed by wxWidgets)
+		// UI Controls
 		wxToggleButton* follow_btn;
 		wxToggleButton* lighting_btn;
+		wxButton* outfit_btn;
 		wxSlider* ambient_slider;
 		wxSlider* intensity_slider;
 
@@ -46,6 +49,9 @@ namespace IngamePreview {
 		wxButton* viewport_h_up;
 		wxButton* viewport_h_down;
 
+		Outfit preview_outfit;
+		wxString current_name;
+		uint16_t current_speed;
 		bool follow_selection;
 	};
 

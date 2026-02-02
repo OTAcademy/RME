@@ -85,9 +85,12 @@ CreatureType* CreatureType::loadFromXML(pugi::xml_node node, wxArrayString& warn
 
 	if ((attribute = node.attribute("looktype"))) {
 		ct->outfit.lookType = attribute.as_int();
+
 		if (g_gui.gfx.getCreatureSprite(ct->outfit.lookType) == nullptr) {
 			warnings.push_back("Invalid creature \"" + wxstr(ct->name) + "\" look type #" + std::to_string(ct->outfit.lookType));
 		}
+	} else {
+		// Log if no looktype is present (defaulting to 0)
 	}
 
 	if ((attribute = node.attribute("lookitem"))) {
@@ -251,7 +254,12 @@ CreatureType* CreatureDatabase::addMissingCreatureType(const std::string& name, 
 	ct->name = name;
 	ct->isNpc = isNpc;
 	ct->missing = true;
-	ct->outfit.lookType = 130;
+	ct->outfit.lookType = 128;
+	ct->outfit.lookHead = 78;
+	ct->outfit.lookBody = 69;
+	ct->outfit.lookLegs = 58;
+	ct->outfit.lookFeet = 76;
+	ct->outfit.lookAddon = 0;
 
 	creature_map.insert(std::make_pair(as_lower_str(name), ct));
 	return ct;

@@ -7,7 +7,7 @@
 #include "app/settings.h"
 #include "ui/gui.h"
 
-wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size) {
+wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size, bool rescale) {
 	ASSERT(sprite->width >= 1 && sprite->height >= 1);
 
 	const int bgshade = g_settings.getInteger(Config::ICON_BACKGROUND);
@@ -36,15 +36,20 @@ wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size) {
 	}
 
 	// Now comes the resizing / antialiasing
-	if (size == SPRITE_SIZE_16x16 || image.GetWidth() > SPRITE_PIXELS || image.GetHeight() > SPRITE_PIXELS) {
-		int new_size = (size == SPRITE_SIZE_16x16) ? 16 : 32;
+	if (rescale && (size == SPRITE_SIZE_16x16 || size == SPRITE_SIZE_64x64 || image.GetWidth() > SPRITE_PIXELS || image.GetHeight() > SPRITE_PIXELS)) {
+		int new_size = 32;
+		if (size == SPRITE_SIZE_16x16) {
+			new_size = 16;
+		} else if (size == SPRITE_SIZE_64x64) {
+			new_size = 64;
+		}
 		image.Rescale(new_size, new_size, wxIMAGE_QUALITY_HIGH);
 	}
 
 	return wxBitmap(image);
 }
 
-wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size, const Outfit& outfit) {
+wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size, const Outfit& outfit, bool rescale, Direction direction) {
 	ASSERT(sprite->width >= 1 && sprite->height >= 1);
 
 	const int bgshade = g_settings.getInteger(Config::ICON_BACKGROUND);
@@ -60,7 +65,7 @@ wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size, cons
 
 	int frame_index = 0;
 	if (sprite->pattern_x == 4) {
-		frame_index = 2; // South
+		frame_index = direction;
 	}
 
 	// Mounts
@@ -79,7 +84,7 @@ wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size, cons
 			// Simplified rendering: just render base frame 0 for mount (or south)
 			int mount_frame_index = 0;
 			if (mountSpr->pattern_x == 4) {
-				mount_frame_index = 2;
+				mount_frame_index = direction;
 			}
 
 			for (uint8_t l = 0; l < mountSpr->layers; l++) {
@@ -155,8 +160,13 @@ wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size, cons
 	}
 
 	// Now comes the resizing / antialiasing
-	if (size == SPRITE_SIZE_16x16 || image.GetWidth() > SPRITE_PIXELS || image.GetHeight() > SPRITE_PIXELS) {
-		int new_size = (size == SPRITE_SIZE_16x16) ? 16 : 32;
+	if (rescale && (size == SPRITE_SIZE_16x16 || size == SPRITE_SIZE_64x64 || image.GetWidth() > SPRITE_PIXELS || image.GetHeight() > SPRITE_PIXELS)) {
+		int new_size = 32;
+		if (size == SPRITE_SIZE_16x16) {
+			new_size = 16;
+		} else if (size == SPRITE_SIZE_64x64) {
+			new_size = 64;
+		}
 		image.Rescale(new_size, new_size, wxIMAGE_QUALITY_HIGH);
 	}
 

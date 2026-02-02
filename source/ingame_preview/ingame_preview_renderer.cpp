@@ -1,4 +1,3 @@
-#include <iostream>
 #include "ingame_preview/ingame_preview_renderer.h"
 #include "ingame_preview/floor_visibility_calculator.h"
 #include "rendering/drawers/tiles/tile_renderer.h"
@@ -6,9 +5,17 @@
 #include "rendering/core/primitive_renderer.h"
 #include "rendering/core/light_buffer.h"
 #include "rendering/utilities/light_drawer.h"
+#include "rendering/drawers/entities/creature_drawer.h"
+#include "rendering/drawers/entities/creature_name_drawer.h"
+#include "rendering/drawers/entities/sprite_drawer.h"
+#include "game/outfit.h"
 #include "map/basemap.h"
+#include "map/tile.h"
+#include "game/creature.h"
 #include "ui/gui.h"
+#include "rendering/core/text_renderer.h"
 #include <glad/glad.h>
+#include <nanovg.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <spdlog/spdlog.h>
 
@@ -21,6 +28,9 @@ namespace IngamePreview {
 		primitive_renderer = std::make_unique<PrimitiveRenderer>();
 		light_buffer = std::make_unique<LightBuffer>();
 		light_drawer = std::make_shared<LightDrawer>();
+		creature_drawer = std::make_unique<CreatureDrawer>();
+		creature_name_drawer = std::make_unique<CreatureNameDrawer>();
+		sprite_drawer = std::make_unique<SpriteDrawer>();
 
 		sprite_batch->initialize();
 		primitive_renderer->initialize();
@@ -48,7 +58,7 @@ namespace IngamePreview {
 		}
 	}
 
-	void IngamePreviewRenderer::Render(const BaseMap& map, int viewport_x, int viewport_y, int viewport_width, int viewport_height, const Position& camera_pos, float zoom, bool lighting_enabled, uint8_t ambient_light) {
+	void IngamePreviewRenderer::Render(const BaseMap& map, int viewport_x, int viewport_y, int viewport_width, int viewport_height, const Position& camera_pos, float zoom, bool lighting_enabled, uint8_t ambient_light, const Outfit& preview_outfit, Direction preview_direction, int animation_phase, int offset_x, int offset_y) {
 		auto now = std::chrono::steady_clock::now();
 		double dt = std::chrono::duration<double>(now - last_time).count();
 		last_time = now;
@@ -65,14 +75,15 @@ namespace IngamePreview {
 		view.floor = camera_pos.z;
 		view.screensize_x = viewport_width;
 		view.screensize_y = viewport_height;
+		view.camera_pos = camera_pos;
 		view.viewport_x = viewport_x;
 		view.viewport_y = viewport_y;
 
 		// Proper coordinate alignment
 		// We want camera_pos to be at the center of the viewport
 		int offset = (camera_pos.z <= GROUND_LAYER) ? (GROUND_LAYER - camera_pos.z) * TileSize : 0;
-		view.view_scroll_x = (camera_pos.x * TileSize) - offset - static_cast<int>(viewport_width * zoom / 2.0f);
-		view.view_scroll_y = (camera_pos.y * TileSize) - offset - static_cast<int>(viewport_height * zoom / 2.0f);
+		view.view_scroll_x = (camera_pos.x * TileSize) + (TileSize / 2) - offset + offset_x - static_cast<int>(viewport_width * zoom / 2.0f);
+		view.view_scroll_y = (camera_pos.y * TileSize) + (TileSize / 2) - offset + offset_y - static_cast<int>(viewport_height * zoom / 2.0f);
 
 		// Matching RME's projection (width * zoom x height * zoom)
 		view.projectionMatrix = glm::ortho(0.0f, static_cast<float>(viewport_width) * zoom, static_cast<float>(viewport_height) * zoom, 0.0f, -1.0f, 1.0f);
@@ -91,6 +102,9 @@ namespace IngamePreview {
 
 		primitive_renderer->setProjectionMatrix(view.projectionMatrix);
 		light_buffer->Clear();
+		if (creature_name_drawer) {
+			creature_name_drawer->clear(); // Clear old labels
+		}
 
 		std::ostringstream tooltip_stream;
 
@@ -119,14 +133,141 @@ namespace IngamePreview {
 						if (lighting_enabled) {
 							tile_renderer->AddLight(tile->location, view, options, *light_buffer);
 						}
+						// Add names of creatures on this floor
+						if (creature_name_drawer && z == camera_pos.z) {
+							if (tile->creature) {
+								creature_name_drawer->addLabel(tile->location->getPosition(), tile->creature->getName(), tile->creature);
+							}
+						}
 					}
 				}
 			}
 			sprite_batch->end(*g_gui.gfx.getAtlasManager());
 		}
 
+		// Draw Preview Character (Center Screen)
+		// Only if on the camera Z floor (or always visible as "player"?) - Request says "center of the screen".
+		// Assuming always drawn on top.
+		{
+			sprite_batch->begin(view.projectionMatrix);
+
+			// Calculate center position in logical coordinates
+			int center_x = static_cast<int>((viewport_width * zoom) / 2.0f);
+			int center_y = static_cast<int>((viewport_height * zoom) / 2.0f);
+
+			// Adjust for sprite size (assuming 32x32 centered)
+			// BlitCreature usually draws top-left at (screenx, screeny) relative to the tile grid logic?
+			// It draws at (screenx, screeny).
+			// We want center of sprite at center of screen.
+			// 1. Fetch Elevation of current logical tile (camera_pos)
+			int elevation_offset = 0;
+			const Tile* player_tile = map.getTile(camera_pos);
+			if (player_tile) {
+				// Access draw elevation.
+				// Tile::getDrawElevation() or similar.
+				// Based on TileRenderer usage, it might be computed from items.
+				// In RME 'Tile' class, we can check items.
+				// Actually, TileRenderer usually handles this stack logic.
+				// Let's iterate items and check 'elevation' property.
+				for (const Item* item : player_tile->items) {
+					elevation_offset += item->getHeight();
+				}
+				if (player_tile->ground) {
+					// Some grounds have elevation? Usually not, but let's check.
+					elevation_offset += player_tile->ground->getHeight();
+				}
+				// Cap elevation to 24 pixels usually or similar? Client caps it.
+				if (elevation_offset > 24) {
+					elevation_offset = 24;
+				}
+			}
+
+			// 2. Adjust for sprite size (assuming 32x32 centered)
+			// BlitCreature usually draws top-left at (screenx, screeny) relative to the tile grid logic?
+			// It draws at (screenx, screeny).
+			// We want center of sprite at center of screen.
+			int draw_x = center_x - 16;
+			int draw_y = center_y - 16 - elevation_offset;
+
+			// Adjust for "walking offset" from standard drawing logic?
+			// Standard Tile drawing: x * 32 - scroll_x.
+			// Center of screen X in map coords = scroll_x + width/2.
+			// Since we added offset_x/y to the camera scroll logic in IngamePreviewCanvas::Render,
+			// the character should stay exactly at the center of the screen
+			// while the map moves smoothly under it.
+			// So we DO NOT add offset_x/y to draw_x/y again.
+
+			creature_drawer->BlitCreature(*sprite_batch, sprite_drawer.get(), draw_x, draw_y, preview_outfit, preview_direction, 255, 255, 255, 255, animation_phase);
+
+			sprite_batch->end(*g_gui.gfx.getAtlasManager());
+		}
+
 		if (lighting_enabled && light_drawer) {
+			// Ensure light options are fully initialized to avoid black screen from garbage values
+			options.experimental_fog = false;
+			options.global_light_color = wxColor(255, 255, 255); // Full light color
 			light_drawer->draw(view, options.experimental_fog, *light_buffer, options.global_light_color, options.light_intensity, options.ambient_light_level);
+		}
+
+		// Draw Names
+		if (creature_name_drawer) {
+			TextRenderer::BeginFrame(viewport_width, viewport_height);
+
+			// 1. Draw creatures on map
+			creature_name_drawer->draw(view);
+
+			// 2. Draw our own label at precise center
+			NVGcontext* vg = TextRenderer::GetContext();
+			if (vg) {
+				nvgSave(vg);
+				float fontSize = 11.0f;
+				nvgFontSize(vg, fontSize);
+				nvgFontFace(vg, "sans");
+				nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);
+
+				// Re-calculate center for label
+				float labelX = (viewport_width * zoom) / 2.0f / zoom;
+				// Total elevation offset was calculated above.
+				// For the label to stay synced, we should probably fetch it again or store it.
+				// Since we are at the center of the screen, we can just use screen-relative coords.
+				float screenCenterX = (float)viewport_width / 2.0f;
+				float screenCenterY = (float)viewport_height / 2.0f;
+
+				// Fetch elevation again to be precise
+				int elevation_offset = 0;
+				if (const Tile* player_tile = map.getTile(camera_pos)) {
+					for (const Item* item : player_tile->items) {
+						elevation_offset += item->getHeight();
+					}
+					if (player_tile->ground) {
+						elevation_offset += player_tile->ground->getHeight();
+					}
+					if (elevation_offset > 24) {
+						elevation_offset = 24;
+					}
+				}
+
+				float labelY = screenCenterY - (16.0f + static_cast<float>(elevation_offset)) / zoom - 2.0f;
+
+				std::string name = preview_name;
+				float textBounds[4];
+				nvgTextBounds(vg, 0, 0, name.c_str(), nullptr, textBounds);
+				float textWidth = textBounds[2] - textBounds[0];
+				float textHeight = textBounds[3] - textBounds[1];
+
+				float paddingX = 4.0f;
+				float paddingY = 2.0f;
+
+				nvgBeginPath(vg);
+				nvgRoundedRect(vg, screenCenterX - textWidth / 2.0f - paddingX, labelY - textHeight - paddingY * 2.0f, textWidth + paddingX * 2.0f, textHeight + paddingY * 2.0f, 3.0f);
+				nvgFillColor(vg, nvgRGBA(0, 0, 0, 160));
+				nvgFill(vg);
+
+				nvgFillColor(vg, nvgRGBA(255, 255, 255, 255));
+				nvgText(vg, screenCenterX, labelY - paddingY, name.c_str(), nullptr);
+				nvgRestore(vg);
+			}
+			TextRenderer::EndFrame();
 		}
 	}
 
