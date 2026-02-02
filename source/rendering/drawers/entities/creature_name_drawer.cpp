@@ -47,6 +47,10 @@ void CreatureNameDrawer::draw(const RenderView& view) {
 	nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);
 
 	for (const auto& label : labels) {
+		if (label.pos.z != view.camera_pos.z) {
+			continue;
+		}
+
 		int unscaled_x, unscaled_y;
 		view.getScreenPosition(label.pos.x, label.pos.y, label.pos.z, unscaled_x, unscaled_y);
 

@@ -95,6 +95,7 @@ ItemType::ItemType() :
 
 	alwaysOnTopOrder(0),
 	rotateTo(0),
+	way_speed(100),
 	border_alignment(BORDER_NONE) {
 	////
 }
@@ -254,10 +255,11 @@ bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, wxArra
 						return false;
 					}
 
-					// t->speed = itemNode->getU16();
-					if (!itemNode->skip(2)) { // Just skip two bytes, we don't need speed
+					uint16_t speed;
+					if (!itemNode->getU16(speed)) {
 						warnings.push_back("Invalid item type property (3)");
 					}
+					t->way_speed = speed;
 					break;
 				}
 
@@ -525,10 +527,11 @@ bool ItemDatabase::loadFromOtbVer2(BinaryNode* itemNode, wxString& error, wxArra
 						return false;
 					}
 
-					// t->speed = itemNode->getU16();
-					if (!itemNode->skip(2)) { // Just skip two bytes, we don't need speed
+					uint16_t speed;
+					if (!itemNode->getU16(speed)) {
 						warnings.push_back("Invalid item type property (3)");
 					}
+					t->way_speed = speed;
 					break;
 				}
 
@@ -685,10 +688,11 @@ bool ItemDatabase::loadFromOtbVer3(BinaryNode* itemNode, wxString& error, wxArra
 						return false;
 					}
 
-					// t->speed = itemNode->getU16();
-					if (!itemNode->skip(2)) { // Just skip two bytes, we don't need speed
+					uint16_t speed;
+					if (!itemNode->getU16(speed)) {
 						warnings.push_back("Invalid item type property (3)");
 					}
+					t->way_speed = speed;
 					break;
 				}
 
@@ -884,6 +888,10 @@ bool ItemDatabase::loadItemFromGameXml(pugi::xml_node itemNode, int id) {
 			/*if((attribute = itemAttributesNode.attribute("value"))) {
 				it.runeSpellName = attribute.as_string();
 			}*/
+		} else if (key == "speed") {
+			if ((attribute = itemAttributesNode.attribute("value"))) {
+				it.way_speed = attribute.as_uint();
+			}
 		} else if (key == "weight") {
 			if ((attribute = itemAttributesNode.attribute("value"))) {
 				it.weight = attribute.as_int() / 100.f;
