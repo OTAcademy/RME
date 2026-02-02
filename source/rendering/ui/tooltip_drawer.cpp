@@ -51,6 +51,13 @@ void TooltipDrawer::addItemTooltip(const TooltipData& data) {
 	tooltips.push_back(data);
 }
 
+void TooltipDrawer::addItemTooltip(TooltipData&& data) {
+	if (!data.hasVisibleFields()) {
+		return;
+	}
+	tooltips.push_back(std::move(data));
+}
+
 void TooltipDrawer::addWaypointTooltip(Position pos, const std::string& name) {
 	if (name.empty()) {
 		return;
@@ -228,13 +235,8 @@ void TooltipDrawer::draw(const RenderView& view) {
 		float maxWidth = 220.0f; // Max content width for wrapping
 
 		// Build content lines with word wrapping support
-		struct FieldLine {
-			std::string label;
-			std::string value;
-			uint8_t r, g, b;
-			std::vector<std::string> wrappedLines; // For multi-line values
-		};
-		std::vector<FieldLine> fields;
+		scratch_fields.clear();
+		std::vector<FieldLine>& fields = scratch_fields;
 
 		if (tooltip.category == TooltipCategory::WAYPOINT) {
 			fields.push_back({ "Waypoint", tooltip.waypointName, WAYPOINT_HEADER_R, WAYPOINT_HEADER_G, WAYPOINT_HEADER_B, {} });
