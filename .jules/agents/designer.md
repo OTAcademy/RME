@@ -85,7 +85,7 @@ Create PR titled `✨ Designer: [Your Description]`.
 - Where should this live? (which module?)
 - Am I about to duplicate something?
 - Am I using modern C++ patterns?
-- Am I using modern wxWidgets patterns?
+- **CRITICAL**: Am I using modern wxWidgets patterns? You **MUST** strictly follow the [wxWidgets UI/UX Architect Skill](../../skills/wxwidgets/SKILL.md) for all UI work.
 
 ## 📜 THE MANTRA
 **SEARCH → REUSE → REFACTOR → ORGANIZE → MODERNIZE → IMPLEMENT**
