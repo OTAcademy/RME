@@ -13,18 +13,18 @@
 #include "brushes/door/door_brush.h"
 #include "brushes/flag/flag_brush.h"
 
-BEGIN_EVENT_TABLE(ToolOptionsSurface, wxControl)
-EVT_PAINT(ToolOptionsSurface::OnPaint)
-EVT_ERASE_BACKGROUND(ToolOptionsSurface::OnEraseBackground)
-EVT_MOUSE_EVENTS(ToolOptionsSurface::OnMouse)
-EVT_LEAVE_WINDOW(ToolOptionsSurface::OnLeave)
-EVT_SIZE(ToolOptionsSurface::OnSize)
-EVT_TIMER(wxID_ANY, ToolOptionsSurface::OnTimer)
-END_EVENT_TABLE()
-
 ToolOptionsSurface::ToolOptionsSurface(wxWindow* parent) : wxControl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxWANTS_CHARS) {
 	SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_animTimer.SetOwner(this);
+
+	Bind(wxEVT_PAINT, &ToolOptionsSurface::OnPaint, this);
+	Bind(wxEVT_ERASE_BACKGROUND, &ToolOptionsSurface::OnEraseBackground, this);
+	Bind(wxEVT_LEFT_DOWN, &ToolOptionsSurface::OnMouse, this);
+	Bind(wxEVT_LEFT_UP, &ToolOptionsSurface::OnMouse, this);
+	Bind(wxEVT_MOTION, &ToolOptionsSurface::OnMouse, this);
+	Bind(wxEVT_LEAVE_WINDOW, &ToolOptionsSurface::OnLeave, this);
+	Bind(wxEVT_SIZE, &ToolOptionsSurface::OnSize, this);
+	Bind(wxEVT_TIMER, &ToolOptionsSurface::OnTimer, this);
 }
 
 ToolOptionsSurface::~ToolOptionsSurface() {

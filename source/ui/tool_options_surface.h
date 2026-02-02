@@ -89,8 +89,6 @@ private:
 	Brush* GetBrushAt(const wxPoint& pt);
 	void HandleClick(const wxPoint& pt);
 	void SelectBrush(Brush* brush);
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif
