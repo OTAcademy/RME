@@ -70,15 +70,14 @@ void AutoborderPreviewManager::CopyMapArea(Editor& editor, const Position& pos) 
 	int end_y = pos.y + range;
 
 	// Copy area from editor map to buffer map
-	for (int z = pos.z; z <= pos.z; ++z) { // usually we only affect current Z
-		for (int y = start_y; y <= end_y; ++y) {
-			for (int x = start_x; x <= end_x; ++x) {
-				Tile* src_tile = editor.map.getTile(x, y, z);
-				if (src_tile) {
-					// deeply copies tile and its items to buffer map
-					Tile* new_tile = src_tile->deepCopy(*preview_buffer_map);
-					preview_buffer_map->setTile(new_tile);
-				}
+	int z = pos.z;
+	for (int y = start_y; y <= end_y; ++y) {
+		for (int x = start_x; x <= end_x; ++x) {
+			Tile* src_tile = editor.map.getTile(x, y, z);
+			if (src_tile) {
+				// deeply copies tile and its items to buffer map
+				Tile* new_tile = src_tile->deepCopy(*preview_buffer_map);
+				preview_buffer_map->setTile(new_tile);
 			}
 		}
 	}
@@ -175,26 +174,26 @@ void AutoborderPreviewManager::PruneUnchanged(Editor& editor, const Position& po
 	int end_y = pos.y + range;
 
 	// Prune tiles that haven't changed to avoid "shade" overlay
-	for (int z = pos.z; z <= pos.z; ++z) {
-		for (int y = start_y; y <= end_y; ++y) {
-			for (int x = start_x; x <= end_x; ++x) {
-				Tile* buf_tile = preview_buffer_map->getTile(x, y, z);
-				if (!buf_tile) {
-					continue;
-				}
+	// Prune tiles that haven't changed to avoid "shade" overlay
+	int z = pos.z;
+	for (int y = start_y; y <= end_y; ++y) {
+		for (int x = start_x; x <= end_x; ++x) {
+			Tile* buf_tile = preview_buffer_map->getTile(x, y, z);
+			if (!buf_tile) {
+				continue;
+			}
 
-				Tile* src_tile = editor.map.getTile(x, y, z);
-				if (!src_tile) {
-					continue;
-				}
+			Tile* src_tile = editor.map.getTile(x, y, z);
+			if (!src_tile) {
+				continue;
+			}
 
-				// Compare tiles
-				bool equal = buf_tile->isContentEqual(src_tile);
+			// Compare tiles
+			bool equal = buf_tile->isContentEqual(src_tile);
 
-				if (equal) {
-					// Remove unmodified tile from buffer to prevent ghosting
-					preview_buffer_map->setTile(x, y, z, nullptr, true);
-				}
+			if (equal) {
+				// Remove unmodified tile from buffer to prevent ghosting
+				preview_buffer_map->setTile(x, y, z, nullptr, true);
 			}
 		}
 	}

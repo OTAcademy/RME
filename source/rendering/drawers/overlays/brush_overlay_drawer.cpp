@@ -157,36 +157,7 @@ void BrushOverlayDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& prim
 
 				// Right
 				if (delta_x > TileSize && delta_y > TileSize) {
-					sprite_batch.drawRect((float)(last_click_end_sx - TileSize), (float)(last_click_start_sy + TileSize), (float)TileSize, (float)(last_click_end_sy - last_click_start_sy - 2 * TileSize), brushColor, atlas);
 					float h = (last_click_end_sy - TileSize) - (last_click_start_sy + TileSize);
-					// Redundant draw removed as it was just overwriting the previous one with same logic in the loop logic in suggestion but here it was duplicated in original code too?
-					// Wait, original code had:
-					// sprite_batch.drawRect((float)(last_click_end_sx - TileSize), (float)(last_click_start_sy + TileSize), (float)TileSize, (float)(last_click_end_sy - last_click_start_sy - 2 * TileSize + TileSize), brushColor, atlas);
-					// float h = (last_click_end_sy - TileSize) - (last_click_start_sy + TileSize);
-					// sprite_batch.drawRect((float)(last_click_end_sx - TileSize), (float)(last_click_start_sy + TileSize), (float)TileSize, h, brushColor, atlas);
-
-					// The suggestion is:
-					// Right (avoiding corners)
-					// sprite_batch.drawRect((float)(last_click_start_sx + w - thickness), (float)(last_click_start_sy + thickness), thickness, h - 2 * thickness, brushColor, atlas);
-
-					// In my case:
-					// x = last_click_end_sx - TileSize
-					// y = last_click_start_sy + TileSize
-					// h = delta_y - 2 * TileSize
-
-					// The original code seemingly drew it twice? Lines 160-162.
-					// 160: height was `... - 2*TileSize + TileSize` = `... - TileSize`
-					// 161: h calculation
-					// 162: draw again with h
-
-					// I will just use the correct logic once.
-
-					// sprite_batch.drawRect((float)(last_click_end_sx - TileSize), (float)(last_click_start_sy + TileSize), (float)TileSize, (float)(last_click_end_sy - last_click_start_sy - 2 * TileSize), brushColor, atlas);
-				}
-
-				// Right
-				if (delta_x > TileSize && delta_y > TileSize) {
-					float h = (last_click_end_sy - TileSize) - (last_click_start_sy + TileSize); // Height between top and bottom bars
 					sprite_batch.drawRect((float)(last_click_end_sx - TileSize), (float)(last_click_start_sy + TileSize), (float)TileSize, h, brushColor, atlas);
 				}
 
