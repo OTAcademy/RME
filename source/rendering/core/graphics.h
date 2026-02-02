@@ -90,7 +90,7 @@ public:
 
 	virtual void unloadDC() override;
 
-	void clean(int time);
+	void clean(time_t time);
 
 	int getDrawHeight() const;
 	std::pair<int, int> getDrawOffset() const;
@@ -118,13 +118,13 @@ protected:
 		virtual ~Image();
 
 		bool isGLLoaded;
-		int lastaccess;
+		time_t lastaccess;
 
 		void visit();
-		virtual void clean(int time);
+		virtual void clean(time_t time);
 
-		virtual uint8_t* getRGBData() = 0;
-		virtual uint8_t* getRGBAData() = 0;
+		virtual std::unique_ptr<uint8_t[]> getRGBData() = 0;
+		virtual std::unique_ptr<uint8_t[]> getRGBAData() = 0;
 
 	protected:
 		// Helper to handle atlas interactions
@@ -144,10 +144,10 @@ protected:
 		uint16_t size;
 		std::unique_ptr<uint8_t[]> dump;
 
-		virtual void clean(int time) override;
+		virtual void clean(time_t time) override;
 
-		virtual uint8_t* getRGBData() override;
-		virtual uint8_t* getRGBAData() override;
+		virtual std::unique_ptr<uint8_t[]> getRGBData() override;
+		virtual std::unique_ptr<uint8_t[]> getRGBAData() override;
 
 		// Phase 2: Get atlas region (ensures loaded first)
 		const AtlasRegion* getAtlasRegion();
@@ -158,10 +158,10 @@ protected:
 		TemplateImage(GameSprite* parent, int v, const Outfit& outfit);
 		virtual ~TemplateImage();
 
-		virtual void clean(int time) override;
+		virtual void clean(time_t time) override;
 
-		virtual uint8_t* getRGBData() override;
-		virtual uint8_t* getRGBAData() override;
+		virtual std::unique_ptr<uint8_t[]> getRGBData() override;
+		virtual std::unique_ptr<uint8_t[]> getRGBAData() override;
 
 		const AtlasRegion* getAtlasRegion();
 		const AtlasRegion* atlas_region;
@@ -278,6 +278,14 @@ public:
 		return animation_timer->getElapsedTime();
 	}
 
+	void updateTime() {
+		cached_time_ = time(nullptr);
+	}
+
+	time_t getCachedTime() const {
+		return cached_time_;
+	}
+
 	uint16_t getItemSpriteMaxID() const;
 	uint16_t getCreatureSpriteMaxID() const;
 
@@ -347,6 +355,7 @@ private:
 	TextureGarbageCollector collector;
 
 	std::unique_ptr<RenderTimer> animation_timer;
+	time_t cached_time_ = 0;
 
 	friend class GameSprite::Image;
 	friend class GameSprite::NormalImage;

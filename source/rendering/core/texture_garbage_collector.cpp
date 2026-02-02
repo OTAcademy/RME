@@ -56,7 +56,7 @@ void TextureGarbageCollector::AddSpriteToCleanup(GameSprite* spr) {
 
 void TextureGarbageCollector::GarbageCollect(std::unordered_map<int, std::unique_ptr<Sprite>>& sprite_space, std::unordered_map<int, void*>& image_space) {
 	if (g_settings.getInteger(Config::TEXTURE_MANAGEMENT)) {
-		time_t t = time(nullptr);
+		time_t t = g_gui.gfx.getCachedTime();
 		if (loaded_textures > g_settings.getInteger(Config::TEXTURE_CLEAN_THRESHOLD) && t - lastclean > g_settings.getInteger(Config::TEXTURE_CLEAN_PULSE)) {
 			// We cast void* back to Image* here. This is ugly but avoids circular dependency hell for now.
 			// Ideally Image should be in its own header.
