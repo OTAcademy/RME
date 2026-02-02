@@ -37,8 +37,6 @@ protected:
 	int item_size;
 	int padding;
 	bool is_dragging;
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif
