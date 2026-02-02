@@ -35,6 +35,7 @@ jobs:
           config.fallback_models: '["openai/kimi-for-coding"]'
           config.model_turbo: "openai/kimi-for-coding"
           config.max_model_tokens: "32768"
+          config.custom_model_max_tokens: "262144"
           config.enable_streaming: "true"
           
           # --- Kimi (Moonshot AI) Connection ---
