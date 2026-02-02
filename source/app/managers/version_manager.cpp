@@ -132,21 +132,21 @@ bool VersionManager::LoadDataFiles(wxString& error, wxArrayString& warnings) {
 		warnings.push_back("Couldn't load creatures.xml: " + error);
 	}
 
-	g_loading.SetLoadDone(45, "Loading user creatures.xml ...");
-	{
-		FileName cdb = getLoadedVersion()->getLocalDataPath();
-		cdb.SetFullName("creatures.xml");
-		wxString nerr;
-		wxArrayString nwarn;
-		if (!g_creatures.loadFromXML(cdb, false, nerr, nwarn)) {
-			warnings.push_back("Couldn't load user creatures.xml: " + nerr);
-			spdlog::error("Couldn't load user creatures.xml: {}", nerr.ToStdString());
-		}
-		for (const auto& warn : nwarn) {
-			warnings.push_back(warn);
-			spdlog::warn("User creature XML warning: {}", warn.ToStdString());
-		}
-	}
+	// g_loading.SetLoadDone(45, "Loading user creatures.xml ...");
+	// {
+	// 	FileName cdb = getLoadedVersion()->getLocalDataPath();
+	// 	cdb.SetFullName("creatures.xml");
+	// 	wxString nerr;
+	// 	wxArrayString nwarn;
+	// 	if (!g_creatures.loadFromXML(cdb, false, nerr, nwarn)) {
+	// 		warnings.push_back("Couldn't load user creatures.xml: " + nerr);
+	// 		spdlog::error("Couldn't load user creatures.xml: {}", nerr.ToStdString());
+	// 	}
+	// 	for (const auto& warn : nwarn) {
+	// 		warnings.push_back(warn);
+	// 		spdlog::warn("User creature XML warning: {}", warn.ToStdString());
+	// 	}
+	// }
 
 	g_loading.SetLoadDone(50, "Loading materials.xml ...");
 	if (!g_materials.loadMaterials(base_data_path + "materials.xml", error, warnings)) {
@@ -178,9 +178,9 @@ void VersionManager::UnloadVersion() {
 		g_items.clear();
 		g_gui.gfx.clear();
 
-		FileName cdb = getLoadedVersion()->getLocalDataPath();
-		cdb.SetFullName("creatures.xml");
-		g_creatures.saveToXML(cdb);
+		// FileName cdb = getLoadedVersion()->getLocalDataPath();
+		// cdb.SetFullName("creatures.xml");
+		// g_creatures.saveToXML(cdb); // Disabled to prevent dual source of truth
 		g_creatures.clear();
 
 		loaded_version = CLIENT_VERSION_NONE;

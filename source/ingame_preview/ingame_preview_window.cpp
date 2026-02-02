@@ -1,6 +1,8 @@
 #include <iostream>
 #include "ingame_preview/ingame_preview_window.h"
 #include "ingame_preview/ingame_preview_canvas.h"
+#include "ui/dialogs/outfit_chooser_dialog.h"
+#include "game/preview_preferences.h"
 #include "MaterialDesign/wxMaterialDesignArtProvider.hpp"
 
 #include "editor/editor.h"
@@ -13,6 +15,7 @@ namespace IngamePreview {
 	enum {
 		ID_FOLLOW_SELECTION = 10001,
 		ID_ENABLE_LIGHTING,
+		ID_CHOOSE_OUTFIT,
 		ID_AMBIENT_SLIDER,
 		ID_INTENSITY_SLIDER,
 		ID_VIEWPORT_W_UP,
@@ -27,6 +30,12 @@ namespace IngamePreview {
 		update_timer(this, ID_UPDATE_TIMER),
 		follow_selection(true) {
 
+		// Load initial preferences
+		g_preview_preferences.load();
+		preview_outfit = g_preview_preferences.getOutfit();
+		current_name = wxString::FromUTF8(g_preview_preferences.getName());
+		current_speed = g_preview_preferences.getSpeed();
+
 		// Bind Events
 		Bind(wxEVT_TIMER, &IngamePreviewWindow::OnUpdateTimer, this, ID_UPDATE_TIMER);
 		Bind(wxEVT_TOGGLEBUTTON, &IngamePreviewWindow::OnToggleFollow, this, ID_FOLLOW_SELECTION);
@@ -37,6 +46,7 @@ namespace IngamePreview {
 		Bind(wxEVT_BUTTON, &IngamePreviewWindow::OnViewportWidthDown, this, ID_VIEWPORT_W_DOWN);
 		Bind(wxEVT_BUTTON, &IngamePreviewWindow::OnViewportHeightUp, this, ID_VIEWPORT_H_UP);
 		Bind(wxEVT_BUTTON, &IngamePreviewWindow::OnViewportHeightDown, this, ID_VIEWPORT_H_DOWN);
+		Bind(wxEVT_BUTTON, &IngamePreviewWindow::OnChooseOutfit, this, ID_CHOOSE_OUTFIT);
 
 		wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
 
@@ -55,6 +65,11 @@ namespace IngamePreview {
 		lighting_btn->SetValue(true);
 		lighting_btn->SetToolTip("Toggle Lighting");
 		toolbar_sizer->Add(lighting_btn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 1);
+
+		outfit_btn = new wxButton(this, ID_CHOOSE_OUTFIT, "", wxDefaultPosition, wxSize(28, 24));
+		outfit_btn->SetBitmap(wxMaterialDesignArtProvider::GetBitmap(wxART_ACCOUNT_CIRCLE, wxART_CLIENT_MATERIAL_FILLED, wxSize(16, 16), wxColour(96, 125, 139)));
+		outfit_btn->SetToolTip("Change Preview Creature Outfit");
+		toolbar_sizer->Add(outfit_btn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 1);
 
 		// Sliders
 		ambient_slider = new wxSlider(this, ID_AMBIENT_SLIDER, 128, 0, 255, wxDefaultPosition, wxSize(60, -1));
@@ -107,6 +122,9 @@ namespace IngamePreview {
 		canvas->SetLightingEnabled(lighting_btn->GetValue());
 		canvas->SetAmbientLight((uint8_t)ambient_slider->GetValue());
 		canvas->SetLightIntensity(intensity_slider->GetValue() / 100.0f);
+		canvas->SetPreviewOutfit(preview_outfit);
+		canvas->SetName(current_name.ToStdString());
+		canvas->SetSpeed(current_speed);
 
 		SetSizer(main_sizer);
 
@@ -136,7 +154,7 @@ namespace IngamePreview {
 			return;
 		}
 
-		if (follow_selection) {
+		if (follow_selection && !canvas->IsWalking()) {
 			Position target;
 			// Prioritize Active Selection
 			if (active_editor->selection.size() > 0) {
@@ -155,12 +173,17 @@ namespace IngamePreview {
 	}
 
 	void IngamePreviewWindow::OnToggleFollow(wxCommandEvent& event) {
-		follow_selection = follow_btn->GetValue();
+		SetFollowSelection(follow_btn->GetValue());
+	}
+
+	void IngamePreviewWindow::SetFollowSelection(bool follow) {
+		follow_selection = follow;
 		if (follow_selection) {
 			follow_btn->SetBitmap(wxMaterialDesignArtProvider::GetBitmap(wxART_MY_LOCATION, wxART_CLIENT_MATERIAL_FILLED, wxSize(16, 16), wxColour(76, 175, 80)));
 		} else {
 			follow_btn->SetBitmap(wxMaterialDesignArtProvider::GetBitmap(wxART_MY_LOCATION, wxART_CLIENT_MATERIAL_FILLED, wxSize(16, 16), wxColour(158, 158, 158)));
 		}
+		follow_btn->SetValue(follow_selection);
 	}
 
 	void IngamePreviewWindow::OnToggleLighting(wxCommandEvent& event) {
@@ -208,6 +231,19 @@ namespace IngamePreview {
 			h--;
 			canvas->SetViewportSize(w, h);
 			viewport_y_text->SetValue(wxString::Format("%d", h));
+		}
+	}
+
+	void IngamePreviewWindow::OnChooseOutfit(wxCommandEvent& event) {
+		OutfitChooserDialog dialog(this, preview_outfit);
+		if (dialog.ShowModal() == wxID_OK) {
+			preview_outfit = dialog.GetOutfit();
+			current_name = dialog.GetName();
+			current_speed = dialog.GetSpeed();
+
+			canvas->SetPreviewOutfit(preview_outfit);
+			canvas->SetName(current_name.ToStdString());
+			canvas->SetSpeed(current_speed);
 		}
 	}
 

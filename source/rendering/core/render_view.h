@@ -5,6 +5,7 @@ class MapCanvas;
 struct DrawingOptions;
 
 #include <glm/glm.hpp>
+#include "map/position.h"
 
 struct RenderView {
 	float zoom;
@@ -16,6 +17,8 @@ struct RenderView {
 	int view_scroll_x, view_scroll_y;
 	int screensize_x, screensize_y;
 	int viewport_x, viewport_y;
+
+	Position camera_pos;
 
 	int mouse_map_x, mouse_map_y;
 

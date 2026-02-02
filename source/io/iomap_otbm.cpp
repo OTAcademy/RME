@@ -602,7 +602,6 @@ bool IOMapOTBM::getVersionInfo(NodeFileReadHandle* f, MapVersion& out_ver) {
 }
 
 bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
-	spdlog::info("IOMapOTBM::loadMap - Start loading from file: {}", nstr(filename.GetFullPath()));
 #ifdef OTGZ_SUPPORT
 	if (filename.GetExt() == "otgz") {
 		// Open the archive
@@ -786,7 +785,6 @@ bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
 		// warning("Failed to load waypoints.");
 		map.waypointfile = nstr(filename.GetName()) + "-waypoint.xml";
 	}
-	spdlog::info("IOMapOTBM::loadMap - Finished loading from file: {}", nstr(filename.GetFullPath()));
 	return true;
 }
 
@@ -1231,6 +1229,10 @@ bool IOMapOTBM::loadSpawns(Map& map, pugi::xml_document& doc) {
 			CreatureType* type = g_creatures[name];
 			if (!type) {
 				type = g_creatures.addMissingCreatureType(name, isNpc);
+			} else {
+				if (type->outfit.lookType == 130) {
+					spdlog::info("Found existing creature in map: '{}' with lookType 130", name);
+				}
 			}
 
 			Creature* creature = newd Creature(type);

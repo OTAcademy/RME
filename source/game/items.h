@@ -417,6 +417,7 @@ public:
 
 	int alwaysOnTopOrder;
 	uint16_t rotateTo;
+	uint16_t way_speed;
 	BorderType border_alignment;
 };
 
