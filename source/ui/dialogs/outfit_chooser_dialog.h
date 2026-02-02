@@ -8,6 +8,9 @@
 #include <map>
 #include <vector>
 
+#include "ui/dialogs/outfit_preview_panel.h"
+#include "ui/dialogs/outfit_selection_grid.h"
+
 class OutfitChooserDialog : public wxDialog {
 public:
 	enum {
@@ -34,6 +37,8 @@ public:
 	virtual ~OutfitChooserDialog();
 
 	Outfit GetOutfit() const;
+	void SetOutfit(const Outfit& outfit);
+
 	wxString GetName() const {
 		return current_name;
 	}
@@ -41,76 +46,36 @@ public:
 		return current_speed;
 	}
 
+	void UpdatePreview();
+	void ApplyFavorite(const FavoriteItem& fav);
+
+	// Public for OutfitSelectionGrid access
+	void OnFavoriteRename(wxCommandEvent& event);
+	void OnFavoriteEdit(wxCommandEvent& event);
+	void OnFavoriteDelete(wxCommandEvent& event);
+
+	Outfit current_outfit; // Made public or keep friend? Friend is messy with circular includes. Let's make it public for now or add getter/setter.
+	// Actually, OutfitSelectionGrid accesses current_outfit. Let's use getter/setter in the grid.
+	// But current_outfit is used extensively. Let's keep it private and add friends or accessors.
+	// Wait, I already added GetOutfit/SetOutfit. I'll make members public/accessors as needed.
+	// For now, I'll keep the private section but moving specific handlers to public so Grid can bind them.
+
 private:
-	class PreviewPanel : public wxPanel {
-	public:
-		PreviewPanel(wxWindow* parent, const Outfit& outfit);
-		void SetOutfit(const Outfit& outfit);
-		void OnPaint(wxPaintEvent& event);
-		void OnMouse(wxMouseEvent& event);
-		void OnWheel(wxMouseEvent& event);
-
-	private:
-		Outfit preview_outfit;
-		int preview_direction; // 0, 1, 2, 3 (South, East, North, West)
-	};
-
-	struct OutfitItem {
-		int lookType;
-		wxString name;
-	};
-
-	class OutfitSelectionGrid : public wxScrolledWindow {
-	public:
-		OutfitSelectionGrid(wxWindow* parent, OutfitChooserDialog* owner, bool is_favorites = false);
-		void UpdateFilter(const wxString& filter);
-		void UpdateVirtualSize();
-		std::vector<OutfitItem> all_outfits;
-		std::vector<OutfitItem> filtered_outfits;
-		std::vector<FavoriteItem> favorite_items;
-		bool is_favorites;
-		int selected_index;
-
-	private:
-		void OnPaint(wxPaintEvent& event);
-		void OnSize(wxSizeEvent& event);
-		void OnMouse(wxMouseEvent& event);
-		void OnEraseBackground(wxEraseEvent& event);
-		void OnMotion(wxMouseEvent& event);
-		void OnContextMenu(wxContextMenuEvent& event);
-
-		int HitTest(int x, int y) const;
-		wxRect GetItemRect(int index) const;
-
-		OutfitChooserDialog* owner;
-		std::map<uint64_t, wxBitmap> icon_cache;
-		int columns;
-		int item_width;
-		int item_height;
-		int padding;
-	};
-
 	void OnColorPartChange(wxCommandEvent& event);
 	void OnAddonChange(wxCommandEvent& event);
 	void OnSearchOutfit(wxCommandEvent& event);
 	void OnRandomize(wxCommandEvent& event);
 	void OnAddFavorite(wxCommandEvent& event);
-	void OnFavoriteRename(wxCommandEvent& event);
-	void OnFavoriteEdit(wxCommandEvent& event);
-	void OnFavoriteDelete(wxCommandEvent& event);
 	void OnOK(wxCommandEvent& event);
 
-	void UpdatePreview();
 	void SelectColor(int color_id);
-	void ApplyFavorite(const FavoriteItem& fav);
 
-	Outfit current_outfit;
 	int current_speed;
 	wxString current_name;
 	std::vector<FavoriteItem> favorites;
 	int selected_color_part; // 0: head, 1: primary, 2: secondary, 3: detail
 
-	PreviewPanel* preview_panel;
+	OutfitPreviewPanel* preview_panel;
 	wxSearchCtrl* outfit_search;
 	OutfitSelectionGrid* selection_panel;
 	OutfitSelectionGrid* favorites_panel;

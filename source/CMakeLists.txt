@@ -84,6 +84,8 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/ingame_preview_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/ingame_preview_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/outfit_chooser_dialog.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/outfit_preview_panel.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/outfit_selection_grid.h
 
     ${CMAKE_CURRENT_LIST_DIR}/io/filehandle.h
     ${CMAKE_CURRENT_LIST_DIR}/io/iomap.h
@@ -393,6 +395,8 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/ingame_preview_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/ingame_preview_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/outfit_chooser_dialog.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/outfit_preview_panel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/outfit_selection_grid.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/io/filehandle.cpp
     ${CMAKE_CURRENT_LIST_DIR}/io/iomap.cpp

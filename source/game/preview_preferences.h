@@ -2,6 +2,7 @@
 #define RME_GAME_PREVIEW_PREFERENCES_H_
 
 #include "game/outfit.h"
+#include "util/json.h"
 #include <string>
 #include <vector>
 
@@ -11,6 +12,12 @@ struct FavoriteItem {
 	int speed;
 	std::string label;
 };
+
+void to_json(nlohmann::json& j, const Outfit& o);
+void from_json(const nlohmann::json& j, Outfit& o);
+
+void to_json(nlohmann::json& j, const FavoriteItem& f);
+void from_json(const nlohmann::json& j, FavoriteItem& f);
 
 class PreviewPreferences {
 public:

@@ -15,6 +15,46 @@ PreviewPreferences::PreviewPreferences() :
 PreviewPreferences::~PreviewPreferences() {
 }
 
+void to_json(nlohmann::json& j, const Outfit& o) {
+	j = nlohmann::json {
+		{ "type", o.lookType },
+		{ "head", o.lookHead },
+		{ "body", o.lookBody },
+		{ "legs", o.lookLegs },
+		{ "feet", o.lookFeet },
+		{ "addons", o.lookAddon },
+		{ "mount", o.lookMount }
+	};
+}
+
+void from_json(const nlohmann::json& j, Outfit& o) {
+	o.lookType = j.value("type", 0);
+	o.lookHead = j.value("head", 0);
+	o.lookBody = j.value("body", 0);
+	o.lookLegs = j.value("legs", 0);
+	o.lookFeet = j.value("feet", 0);
+	o.lookAddon = j.value("addons", 0);
+	o.lookMount = j.value("mount", 0);
+}
+
+void to_json(nlohmann::json& j, const FavoriteItem& f) {
+	j = nlohmann::json {
+		{ "label", f.label },
+		{ "name", f.name },
+		{ "speed", f.speed },
+		{ "outfit", f.outfit }
+	};
+}
+
+void from_json(const nlohmann::json& j, FavoriteItem& f) {
+	f.label = j.value("label", "");
+	f.name = j.value("name", "");
+	f.speed = j.value("speed", 220);
+	if (j.contains("outfit")) {
+		j.at("outfit").get_to(f.outfit);
+	}
+}
+
 void PreviewPreferences::load() {
 	wxFileName fn(wxStandardPaths::Get().GetUserDataDir(), "preferences.json");
 	std::string path = fn.GetFullPath().ToStdString();
@@ -36,36 +76,10 @@ void PreviewPreferences::load() {
 		}
 
 		if (j.contains("last_outfit")) {
-			nlohmann::json lo = j["last_outfit"];
-			current_outfit.lookType = lo.value("type", 0);
-			current_outfit.lookHead = lo.value("head", 0);
-			current_outfit.lookBody = lo.value("body", 0);
-			current_outfit.lookLegs = lo.value("legs", 0);
-			current_outfit.lookFeet = lo.value("feet", 0);
-			current_outfit.lookAddon = lo.value("addons", 0);
-			current_outfit.lookMount = lo.value("mount", 0);
+			j.at("last_outfit").get_to(current_outfit);
 		}
-
 		if (j.contains("favorites")) {
-			favorites.clear();
-			for (auto& fj : j["favorites"]) {
-				FavoriteItem item;
-				item.label = fj.value("label", "");
-				item.name = fj.value("name", "");
-				item.speed = fj.value("speed", 220);
-
-				if (fj.contains("outfit")) {
-					nlohmann::json o = fj["outfit"];
-					item.outfit.lookType = o.value("type", 0);
-					item.outfit.lookHead = o.value("head", 0);
-					item.outfit.lookBody = o.value("body", 0);
-					item.outfit.lookLegs = o.value("legs", 0);
-					item.outfit.lookFeet = o.value("feet", 0);
-					item.outfit.lookAddon = o.value("addons", 0);
-					item.outfit.lookMount = o.value("mount", 0);
-				}
-				favorites.push_back(item);
-			}
+			j.at("favorites").get_to(favorites);
 		}
 	} catch (const std::exception& e) {
 		spdlog::error("Failed to load preview preferences: {}", e.what());
@@ -85,21 +99,8 @@ void PreviewPreferences::save() {
 	j["speed"] = current_speed;
 	j["name"] = current_name;
 
-	j["last_outfit"] = {
-		{ "type", current_outfit.lookType },
-		{ "head", current_outfit.lookHead },
-		{ "body", current_outfit.lookBody },
-		{ "legs", current_outfit.lookLegs },
-		{ "feet", current_outfit.lookFeet },
-		{ "addons", current_outfit.lookAddon },
-		{ "mount", current_outfit.lookMount }
-	};
-
-	nlohmann::json favs = nlohmann::json::array();
-	for (const auto& fav : favorites) {
-		favs.push_back({ { "label", fav.label }, { "name", fav.name }, { "speed", fav.speed }, { "outfit", { { "type", fav.outfit.lookType }, { "head", fav.outfit.lookHead }, { "body", fav.outfit.lookBody }, { "legs", fav.outfit.lookLegs }, { "feet", fav.outfit.lookFeet }, { "addons", fav.outfit.lookAddon }, { "mount", fav.outfit.lookMount } } } });
-	}
-	j["favorites"] = favs;
+	j["last_outfit"] = current_outfit;
+	j["favorites"] = favorites;
 
 	std::ofstream f(fn.GetFullPath().ToStdString());
 	if (f.is_open()) {

@@ -196,7 +196,7 @@ namespace IngamePreview {
 					return;
 				}
 				if (const Item* ground = tile->ground) {
-					ground_speed = 100; // Use default for now
+					ground_speed = g_items[ground->getID()].way_speed;
 				}
 			}
 		}
