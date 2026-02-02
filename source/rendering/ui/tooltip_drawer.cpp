@@ -136,7 +136,7 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 			// For legacy sprites (no transparency), use getRGBData + Magenta Masking
 			// This matches how WxWidgets/SpriteIconGenerator renders icons
 			if (!g_gui.gfx.hasTransparency()) {
-				uint8_t* rgb = img->getRGBData();
+				std::unique_ptr<uint8_t[]> rgb = img->getRGBData();
 				if (rgb) {
 					rgba = std::make_unique<uint8_t[]>(32 * 32 * 4);
 					for (int i = 0; i < 32 * 32; ++i) {
@@ -157,7 +157,6 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 							rgba[i * 4 + 3] = 255;
 						}
 					}
-					delete[] rgb;
 				} else {
 					// getRGBData failed, should ideally not happen if sprite exists logic is correct
 				}
@@ -165,7 +164,7 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 
 			// Fallback/Standard path for alpha sprites or if RGB failed
 			if (!rgba) {
-				rgba.reset(img->getRGBAData());
+				rgba = img->getRGBAData();
 				if (!rgba) {
 					// getRGBAData failed
 				}

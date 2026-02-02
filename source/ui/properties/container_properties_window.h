@@ -16,13 +16,13 @@ public:
 		DCButton(parent, wxID_ANY, wxDefaultPosition, DC_BTN_NORMAL, (large ? RENDER_SIZE_32x32 : RENDER_SIZE_16x16), (item ? item->getClientID() : 0)),
 		index(index),
 		item(item) {
-		SetToolTip(item ? wxstr(item->getName()) : "Empty Slot");
+		SetToolTip(item ? wxstr(item->getName()) : wxstr("Empty Slot"));
 	}
 
 	void setItem(Item* new_item) {
 		item = new_item;
 		SetSprite(item ? item->getClientID() : 0);
-		SetToolTip(item ? wxstr(item->getName()) : "Empty Slot");
+		SetToolTip(item ? wxstr(item->getName()) : wxstr("Empty Slot"));
 	}
 
 	Item* getItem() const {

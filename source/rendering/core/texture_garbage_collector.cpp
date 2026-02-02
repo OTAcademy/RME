@@ -54,10 +54,9 @@ void TextureGarbageCollector::AddSpriteToCleanup(GameSprite* spr) {
 	}
 }
 
-void TextureGarbageCollector::GarbageCollect(std::unordered_map<int, std::unique_ptr<Sprite>>& sprite_space, std::unordered_map<int, void*>& image_space) {
+void TextureGarbageCollector::GarbageCollect(std::unordered_map<int, std::unique_ptr<Sprite>>& sprite_space, std::unordered_map<int, void*>& image_space, time_t current_time) {
 	if (g_settings.getInteger(Config::TEXTURE_MANAGEMENT)) {
-		time_t t = g_gui.gfx.getCachedTime();
-		if (loaded_textures > g_settings.getInteger(Config::TEXTURE_CLEAN_THRESHOLD) && t - lastclean > g_settings.getInteger(Config::TEXTURE_CLEAN_PULSE)) {
+		if (loaded_textures > g_settings.getInteger(Config::TEXTURE_CLEAN_THRESHOLD) && current_time - lastclean > g_settings.getInteger(Config::TEXTURE_CLEAN_PULSE)) {
 			// We cast void* back to Image* here. This is ugly but avoids circular dependency hell for now.
 			// Ideally Image should be in its own header.
 			// But GameSprite::Image is a nested class.
@@ -69,16 +68,16 @@ void TextureGarbageCollector::GarbageCollect(std::unordered_map<int, std::unique
 			// Re-implementing loops:
 			for (auto& pair : image_space) {
 				GameSprite::Image* img = static_cast<GameSprite::Image*>(pair.second);
-				img->clean(t);
+				img->clean(current_time);
 			}
 
 			for (auto& pair : sprite_space) {
 				GameSprite* gs = dynamic_cast<GameSprite*>(pair.second.get());
 				if (gs) {
-					gs->clean(t);
+					gs->clean(current_time);
 				}
 			}
-			lastclean = t;
+			lastclean = current_time;
 		}
 	}
 }

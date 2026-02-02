@@ -190,7 +190,7 @@ void GraphicManager::garbageCollection() {
 	for (auto& pair : image_space) {
 		generic_image_space[pair.first] = (void*)pair.second.get();
 	}
-	collector.GarbageCollect(sprite_space, generic_image_space);
+	collector.GarbageCollect(sprite_space, generic_image_space, cached_time_);
 }
 
 CreatureSprite::CreatureSprite(GameSprite* parent, const Outfit& outfit) :

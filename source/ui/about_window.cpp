@@ -60,7 +60,7 @@ AboutWindow::AboutWindow(wxWindow* parent) :
 
 	about << "Using " << wxVERSION_STRING << " interface\n";
 	const char* gl_version = (const char*)glGetString(GL_VERSION);
-	about << "OpenGL version " << (gl_version ? wxString(gl_version, wxConvUTF8) : "Unknown") << "\n";
+	about << "OpenGL version " << (gl_version ? wxString(gl_version, wxConvUTF8) : wxString("Unknown")) << "\n";
 	about << "\n";
 	about << "This program comes with ABSOLUTELY NO WARRANTY;\n";
 	about << "for details see the LICENSE file.\n";
