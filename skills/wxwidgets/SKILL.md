@@ -204,12 +204,17 @@ Avoid:
 ---
 
 ### Menus & Commands
-
 * Menus are **command discovery**, not primary workflow
 * All actions must be:
   * In menu
   * AND bound to keyboard shortcut
   * AND callable programmatically
+
+### Event Handling Strategy (Mandatory)
+* **Always use `Bind()`**: Dynamic event binding is mandatory.
+* **Legacy Ban**: `BEGIN_EVENT_TABLE` / `END_EVENT_TABLE` macros are **STRICTLY FORBIDDEN**.
+* **Refactoring Rule**: If you encounter legacy event tables in existing code, **rework them to `Bind()` immediately**.
+* **Lambdas**: Use lambdas for short, non-reusable handlers (under 5 lines). Use member functions for complex logic.
 
 Use:
 * `wxMenuBar`
@@ -381,6 +386,7 @@ Use `wxConfig` or equivalent abstraction.
 ❌ **Pixel Literals**: `sizer->Add(w, 0, wxALL, 5)` -> **BANNED**. Use `FromDIP(5)`.
 ❌ **Repaint Storms**: calling `Refresh()` on the parent instead of the specific dirty rect.
 ❌ **Legacy Icons**: Using `.png` directly instead of `wxBitmapBundle::FromSVG`.
+❌ **Static Event Tables**: `BEGIN_EVENT_TABLE` is banned. Use `Bind()`.
 
 | Pattern                                  | Why Banned                     | Detection                                 |
 | ---------------------------------------- | ------------------------------ | ----------------------------------------- |

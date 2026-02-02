@@ -97,8 +97,11 @@ Application::~Application() {
 }
 
 bool Application::OnInit() {
+	// Enable modern appearance handling (wxWidgets 3.3+)
+	SetAppearance(wxApp::Appearance::System);
+
 #ifdef __WXMSW__
-	// Enable dark mode support for Windows (wxWidgets 3.3+)
+	// Enable dark mode support for Windows
 	MSWEnableDarkMode(wxApp::DarkMode_Always);
 #endif
 

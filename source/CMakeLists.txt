@@ -201,6 +201,8 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/browse_tile_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/controls/item_buttons.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/controls/sortable_list_box.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/controls/modern_button.h
+
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/goto_position_dialog.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/object_properties_base.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_validator.h
@@ -502,6 +504,8 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/artprovider.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/browse_tile_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/controls/sortable_list_box.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/controls/modern_button.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/goto_position_dialog.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/object_properties_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_validator.cpp
