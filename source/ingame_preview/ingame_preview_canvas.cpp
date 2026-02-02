@@ -77,24 +77,20 @@ namespace IngamePreview {
 		bool shift = event.ShiftDown();
 
 		// Floor Change (Shift + Up/Down)
-		if (shift) {
+		// Floor Change (Shift + Up/Down)
+		if (shift && (key == WXK_UP || key == WXK_DOWN)) {
+			Position pos = camera_pos;
 			if (key == WXK_UP) {
-				Position pos = camera_pos;
 				pos.z = std::max(0, pos.z - 1);
-				SetCameraPosition(pos);
-				if (auto* parent = dynamic_cast<IngamePreviewWindow*>(GetParent())) {
-					parent->SetFollowSelection(false);
-				}
-				return;
-			} else if (key == WXK_DOWN) {
-				Position pos = camera_pos;
+			} else { // WXK_DOWN
 				pos.z = std::min(MAP_MAX_LAYER, pos.z + 1);
-				SetCameraPosition(pos);
-				if (auto* parent = dynamic_cast<IngamePreviewWindow*>(GetParent())) {
-					parent->SetFollowSelection(false);
-				}
-				return;
 			}
+
+			SetCameraPosition(pos);
+			if (auto* parent = dynamic_cast<IngamePreviewWindow*>(GetParent())) {
+				parent->SetFollowSelection(false);
+			}
+			return;
 		}
 
 		Direction dir = SOUTH;
