@@ -11,12 +11,12 @@ class Brush;
 class KeyForwardingTextCtrl : public wxTextCtrl {
 public:
 	KeyForwardingTextCtrl(wxWindow* parent, wxWindowID id, const wxString& value = "", const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxTextCtrlNameStr) :
-		wxTextCtrl(parent, id, value, pos, size, style, validator, name) { }
+		wxTextCtrl(parent, id, value, pos, size, style, validator, name) {
+		Bind(wxEVT_KEY_DOWN, &KeyForwardingTextCtrl::OnKeyDown, this);
+	}
 	~KeyForwardingTextCtrl() { }
 
 	void OnKeyDown(wxKeyEvent&);
-
-	DECLARE_EVENT_TABLE()
 };
 
 class FindDialogListBox : public wxVListBox {
@@ -68,8 +68,6 @@ protected:
 	wxTimer idle_input_timer;
 	const Brush* result_brush;
 	int result_id;
-
-	DECLARE_EVENT_TABLE()
 };
 
 class FindBrushDialog : public FindDialog {

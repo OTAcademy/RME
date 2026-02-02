@@ -87,6 +87,11 @@ PaletteWindow::PaletteWindow(wxWindow* parent, const TilesetContainer& tilesets)
 	LoadCurrentContents();
 
 	Fit();
+
+	Bind(wxEVT_CHOICEBOOK_PAGE_CHANGING, &PaletteWindow::OnSwitchingPage, this, PALETTE_CHOICEBOOK);
+	Bind(wxEVT_CHOICEBOOK_PAGE_CHANGED, &PaletteWindow::OnPageChanged, this, PALETTE_CHOICEBOOK);
+	Bind(wxEVT_CLOSE_WINDOW, &PaletteWindow::OnClose, this);
+	Bind(wxEVT_KEY_DOWN, &PaletteWindow::OnKey, this);
 }
 
 PaletteWindow::~PaletteWindow() {

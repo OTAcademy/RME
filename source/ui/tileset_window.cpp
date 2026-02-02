@@ -101,6 +101,9 @@ TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* t
 
 	SetSizerAndFit(topsizer);
 	Centre(wxBOTH);
+
+	Bind(wxEVT_BUTTON, &TilesetWindow::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &TilesetWindow::OnClickCancel, this, wxID_CANCEL);
 }
 
 void TilesetWindow::OnChangePalette(wxCommandEvent& WXUNUSED(event)) {
