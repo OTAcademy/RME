@@ -7,6 +7,9 @@
 #include "ui/gui.h"
 #include "ui/dialog_util.h"
 
+#include <algorithm>
+#include <iterator>
+
 BEGIN_EVENT_TABLE(EditTownsDialog, wxDialog)
 EVT_LISTBOX(EDIT_TOWNS_LISTBOX, EditTownsDialog::OnListBoxChange)
 EVT_BUTTON(EDIT_TOWNS_SELECT_TEMPLE, EditTownsDialog::OnClickSelectTemplePosition)
@@ -25,8 +28,7 @@ EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 	wxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
 	wxSizer* tmpsizer;
 
-	for (TownMap::const_iterator town_iter = map.towns.begin(); town_iter != map.towns.end(); ++town_iter) {
-		Town* town = town_iter->second;
+	for (const auto& [id, town] : map.towns) {
 		town_list.push_back(newd Town(*town));
 		if (max_town_id < town->getID()) {
 			max_town_id = town->getID();
@@ -72,8 +74,8 @@ EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 }
 
 EditTownsDialog::~EditTownsDialog() {
-	for (std::vector<Town*>::iterator town_iter = town_list.begin(); town_iter != town_list.end(); ++town_iter) {
-		delete *town_iter;
+	for (auto* town : town_list) {
+		delete town;
 	}
 }
 
@@ -86,16 +88,15 @@ void EditTownsDialog::BuildListBox(bool doselect) {
 	if (doselect && id_field->GetValue().ToLong(&tmplong)) {
 		uint32_t old_town_id = tmplong;
 
-		for (std::vector<Town*>::iterator town_iter = town_list.begin(); town_iter != town_list.end(); ++town_iter) {
-			if (old_town_id == (*town_iter)->getID()) {
-				selection_before = (*town_iter)->getID();
+		for (const auto* town : town_list) {
+			if (old_town_id == town->getID()) {
+				selection_before = town->getID();
 				break;
 			}
 		}
 	}
 
-	for (std::vector<Town*>::iterator town_iter = town_list.begin(); town_iter != town_list.end(); ++town_iter) {
-		Town* town = *town_iter;
+	for (const auto* town : town_list) {
 		town_name_list.Add(wxstr(town->getName()));
 		if (max_town_id < town->getID()) {
 			max_town_id = town->getID();
@@ -109,8 +110,8 @@ void EditTownsDialog::BuildListBox(bool doselect) {
 	if (doselect) {
 		if (selection_before) {
 			int i = 0;
-			for (std::vector<Town*>::iterator town_iter = town_list.begin(); town_iter != town_list.end(); ++town_iter) {
-				if (selection_before == (*town_iter)->getID()) {
+			for (const auto* town : town_list) {
+				if (selection_before == town->getID()) {
 					town_listbox->SetSelection(i);
 					return;
 				}
@@ -131,9 +132,9 @@ void EditTownsDialog::UpdateSelection(int new_selection) {
 
 			Town* old_town = nullptr;
 
-			for (std::vector<Town*>::iterator town_iter = town_list.begin(); town_iter != town_list.end(); ++town_iter) {
-				if (old_town_id == (*town_iter)->getID()) {
-					old_town = *town_iter;
+			for (auto* town : town_list) {
+				if (old_town_id == town->getID()) {
+					old_town = town;
 					break;
 				}
 			}
@@ -214,25 +215,23 @@ void EditTownsDialog::OnClickRemove(wxCommandEvent& WXUNUSED(event)) {
 		uint32_t old_town_id = tmplong;
 
 		Town* town = nullptr;
-
-		std::vector<Town*>::iterator town_iter = town_list.begin();
-
 		int selection_index = 0;
-		while (town_iter != town_list.end()) {
-			if (old_town_id == (*town_iter)->getID()) {
-				town = *town_iter;
-				break;
-			}
-			++selection_index;
-			++town_iter;
+
+		auto town_iter = std::ranges::find_if(town_list, [old_town_id](const Town* t) {
+			return t->getID() == old_town_id;
+		});
+
+		if (town_iter != town_list.end()) {
+			town = *town_iter;
+			selection_index = static_cast<int>(std::distance(town_list.begin(), town_iter));
 		}
+
 		if (!town) {
 			return;
 		}
 
 		Map& map = editor.map;
-		for (HouseMap::iterator house_iter = map.houses.begin(); house_iter != map.houses.end(); ++house_iter) {
-			House* house = house_iter->second;
+		for (const auto& [id, house] : map.houses) {
 			if (house->townid == town->getID()) {
 				DialogUtil::PopupDialog(this, "Error", "You cannot delete a town which still has houses associated with it.", wxOK);
 				return;
@@ -260,9 +259,9 @@ void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 
 			Town* old_town = nullptr;
 
-			for (std::vector<Town*>::iterator town_iter = town_list.begin(); town_iter != town_list.end(); ++town_iter) {
-				if (old_town_id == (*town_iter)->getID()) {
-					old_town = *town_iter;
+			for (auto* town : town_list) {
+				if (old_town_id == town->getID()) {
+					old_town = town;
 					break;
 				}
 			}
@@ -290,8 +289,7 @@ void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		Towns& towns = editor.map.towns;
 
 		// Verify the newd information
-		for (std::vector<Town*>::iterator town_iter = town_list.begin(); town_iter != town_list.end(); ++town_iter) {
-			Town* town = *town_iter;
+		for (const auto* town : town_list) {
 			if (town->getName() == "") {
 				DialogUtil::PopupDialog(this, "Error", "You can't have a town with an empty name.", wxOK);
 				return;
@@ -308,8 +306,8 @@ void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		towns.clear();
 
 		// Build the newd town map
-		for (std::vector<Town*>::iterator town_iter = town_list.begin(); town_iter != town_list.end(); ++town_iter) {
-			towns.addTown(*town_iter);
+		for (auto* town : town_list) {
+			towns.addTown(town);
 		}
 		town_list.clear();
 		editor.map.doChange();

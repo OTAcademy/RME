@@ -422,11 +422,11 @@ void SelectionController::ExecuteBoundboxSelection(const Position& start_pos, co
 	ASSERT(remainder == 0);
 
 	editor.selection.start(); // Start a selection session
-	for (std::vector<SelectionThread*>::iterator iter = threads.begin(); iter != threads.end(); ++iter) {
-		(*iter)->Execute();
+	for (auto* thread : threads) {
+		thread->Execute();
 	}
-	for (std::vector<SelectionThread*>::iterator iter = threads.begin(); iter != threads.end(); ++iter) {
-		editor.selection.join(*iter);
+	for (auto* thread : threads) {
+		editor.selection.join(thread);
 	}
 	editor.selection.finish(); // Finish the selection session
 	editor.selection.updateSelectionCount();
