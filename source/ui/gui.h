@@ -17,6 +17,7 @@
 #include "ui/managers/layout_manager.h"
 #include "ui/managers/minimap_manager.h"
 #include "brushes/managers/doodad_preview_manager.h"
+#include "brushes/managers/autoborder_preview_manager.h"
 #include "ui/managers/status_manager.h"
 #include "ui/managers/search_manager.h"
 #include "ui/managers/welcome_manager.h"
@@ -204,6 +205,7 @@ public:
 
 	// Brushes
 	void FillDoodadPreviewBuffer();
+	void UpdateAutoborderPreview(Position pos);
 	// Selects the currently seleceted brush in the active palette
 	void SelectBrush();
 	// Updates the palette AND selects the brush, second parameter is first palette to look in

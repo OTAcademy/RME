@@ -184,6 +184,7 @@ void MapDrawer::Draw() {
 		selection_drawer->draw(*sprite_batch, view, canvas, options);
 	}
 	live_cursor_drawer->draw(*sprite_batch, view, editor, options);
+
 	brush_overlay_drawer->draw(*sprite_batch, *primitive_renderer, this, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor);
 
 	if (options.show_grid) {

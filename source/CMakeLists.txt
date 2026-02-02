@@ -123,9 +123,6 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/palette/palette_window.h
     ${CMAKE_CURRENT_LIST_DIR}/palette/controls/brush_button.h
     ${CMAKE_CURRENT_LIST_DIR}/palette/controls/virtual_brush_grid.h
-    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_size_panel.h
-    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_tool_panel.h
-    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_thickness_panel.h
     ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_palette_panel.h
     ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_panel.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.h
@@ -204,6 +201,8 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/browse_tile_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/controls/item_buttons.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/controls/sortable_list_box.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/controls/modern_button.h
+
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/goto_position_dialog.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/object_properties_base.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_validator.h
@@ -235,6 +234,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/layout_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/minimap_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/doodad_preview_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/autoborder_preview_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/status_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/brush_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/palette/managers/palette_manager.h
@@ -278,6 +278,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/live_dialogs.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/menubar_loader.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/tool_options_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/tool_options_surface.h
     ${CMAKE_CURRENT_LIST_DIR}/util/common.h
     ${CMAKE_CURRENT_LIST_DIR}/util/con_vector.h
     ${CMAKE_CURRENT_LIST_DIR}/util/json.h
@@ -430,9 +431,6 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/palette/palette_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/palette/controls/brush_button.cpp
     ${CMAKE_CURRENT_LIST_DIR}/palette/controls/virtual_brush_grid.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_size_panel.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_tool_panel.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_thickness_panel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_palette_panel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/palette/panels/brush_panel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/animator.cpp
@@ -506,6 +504,8 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/artprovider.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/browse_tile_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/controls/sortable_list_box.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/controls/modern_button.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/goto_position_dialog.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/object_properties_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/property_validator.cpp
@@ -532,6 +532,7 @@ set(rme_SRC
 
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_tilesets_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/gui_autoborder_ext.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_menubar.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/menubar_action_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/search_handler.cpp
@@ -545,6 +546,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/layout_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/minimap_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/doodad_preview_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/autoborder_preview_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/managers/status_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/brushes/managers/brush_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/palette/managers/palette_manager.cpp
@@ -580,6 +582,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/menubar_loader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/common.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/tool_options_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/tool_options_surface.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/file_system.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/mt_rand.cpp
     ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxAwesomeBrandsArt.cpp

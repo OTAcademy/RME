@@ -73,7 +73,7 @@ void FindDialog::OnKeyDown(wxKeyEvent& event) {
 				ssize_t n = item_list->GetSelection();
 				if (n == wxNOT_FOUND) {
 					n = 0;
-				} else if (n != amount && n - amount < n) { // latter is needed for unsigned overflow
+				} else if (static_cast<size_t>(n) >= amount) {
 					n -= amount;
 				} else {
 					n = 0;

@@ -98,6 +98,9 @@ public: // Functions
 	// Absorb the other tile into this tile
 	void merge(Tile* other);
 
+	// Compare the content (ground and items) of two tiles
+	bool isContentEqual(const Tile* other) const;
+
 	// Has tile been modified since the map was loaded/created?
 	bool isModified() const {
 		return testFlags(statflags, TILESTATE_MODIFIED);

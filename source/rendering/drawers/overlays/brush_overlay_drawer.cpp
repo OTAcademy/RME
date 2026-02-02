@@ -157,7 +157,6 @@ void BrushOverlayDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& prim
 
 				// Right
 				if (delta_x > TileSize && delta_y > TileSize) {
-					sprite_batch.drawRect((float)(last_click_end_sx - TileSize), (float)(last_click_start_sy + TileSize), (float)TileSize, (float)(last_click_end_sy - last_click_start_sy - 2 * TileSize + TileSize), brushColor, atlas);
 					float h = (last_click_end_sy - TileSize) - (last_click_start_sy + TileSize);
 					sprite_batch.drawRect((float)(last_click_end_sx - TileSize), (float)(last_click_start_sy + TileSize), (float)TileSize, h, brushColor, atlas);
 				}
@@ -224,7 +223,23 @@ void BrushOverlayDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& prim
 					float w = last_click_end_sx - last_click_start_sx;
 					float h = last_click_end_sy - last_click_start_sy;
 					if (g_gui.gfx.ensureAtlasManager()) {
-						sprite_batch.drawRect((float)last_click_start_sx, (float)last_click_start_sy, w, h, brushColor, *g_gui.gfx.getAtlasManager());
+						bool autoborder_active = g_settings.getInteger(Config::USE_AUTOMAGIC) && brush->needBorders();
+						if (autoborder_active) {
+							// Draw outline only
+							const AtlasManager& atlas = *g_gui.gfx.getAtlasManager();
+							float thickness = 1.0f; // Thin border
+
+							// Top
+							sprite_batch.drawRect((float)last_click_start_sx, (float)last_click_start_sy, w, thickness, brushColor, atlas);
+							// Bottom
+							sprite_batch.drawRect((float)last_click_start_sx, (float)(last_click_start_sy + h - thickness), w, thickness, brushColor, atlas);
+							// Left
+							sprite_batch.drawRect((float)last_click_start_sx, (float)(last_click_start_sy + thickness), thickness, h - 2 * thickness, brushColor, atlas);
+							// Right
+							sprite_batch.drawRect((float)(last_click_start_sx + w - thickness), (float)(last_click_start_sy + thickness), thickness, h - 2 * thickness, brushColor, atlas);
+						} else {
+							sprite_batch.drawRect((float)last_click_start_sx, (float)last_click_start_sy, w, h, brushColor, *g_gui.gfx.getAtlasManager());
+						}
 					}
 				}
 			} else if (g_gui.GetBrushShape() == BRUSHSHAPE_CIRCLE) {
@@ -311,12 +326,14 @@ void BrushOverlayDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& prim
 
 				// Right
 				if (delta_x > TileSize && delta_y > TileSize) {
-					sprite_batch.drawRect((float)(end_sx - TileSize), (float)(start_sy + TileSize), (float)TileSize, (float)(end_sy - start_sy - 2 * TileSize + TileSize), brushColor, atlas);
+					float h = (float)(end_sy - start_sy - 2 * TileSize);
+					sprite_batch.drawRect((float)(end_sx - TileSize), (float)(start_sy + TileSize), (float)TileSize, h, brushColor, atlas);
 				}
 
 				// Left
 				if (delta_y > TileSize) {
-					sprite_batch.drawRect((float)start_sx, (float)(start_sy + TileSize), (float)TileSize, (float)(end_sy - start_sy - 2 * TileSize + TileSize), brushColor, atlas);
+					float h = (float)(end_sy - start_sy - 2 * TileSize);
+					sprite_batch.drawRect((float)start_sx, (float)(start_sy + TileSize), (float)TileSize, h, brushColor, atlas);
 				}
 			}
 		} else if (brush->isDoor()) {

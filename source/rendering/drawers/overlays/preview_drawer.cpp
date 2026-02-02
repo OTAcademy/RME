@@ -29,6 +29,8 @@ void PreviewDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive
 			normalPos = editor.copybuffer.getPosition();
 		} else if (brush && brush->isDoodad()) {
 			normalPos = Position(0x8000, 0x8000, 0x8);
+		} else {
+			normalPos = to;
 		}
 
 		for (int map_x = view.start_x; map_x <= view.end_x; map_x++) {
@@ -54,7 +56,7 @@ void PreviewDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive
 					int draw_y = ((map_y * TileSize) - view.view_scroll_y) - offset;
 
 					// Draw ground
-					uint8_t r = 160, g = 160, b = 160;
+					uint8_t r = 255, g = 255, b = 255;
 					if (tile->ground) {
 						if (tile->isBlocking() && options.show_blocking) {
 							g = g / 3 * 2;
@@ -82,7 +84,7 @@ void PreviewDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive
 							g /= 2;
 						}
 						if (tile->ground) {
-							item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, tile->ground, options, true, r, g, b, 160);
+							item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, tile->ground, options, true, r, g, b, 255);
 						}
 					}
 
@@ -91,9 +93,9 @@ void PreviewDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive
 						ItemVector::iterator it;
 						for (it = tile->items.begin(); it != tile->items.end(); it++) {
 							if ((*it)->isBorder()) {
-								item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, true, 160, r, g, b);
+								item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, true, 255, r, g, b);
 							} else {
-								item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, true, 160, 160, 160, 160);
+								item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, true, 255, 255, 255, 255);
 							}
 						}
 						if (tile->creature && options.show_creatures) {
@@ -101,6 +103,26 @@ void PreviewDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive
 						}
 					}
 				}
+			}
+		}
+		// Draw highlight on the specific tile under mouse
+		// This helps user see where they are pointing in the "chaos"
+		Position mousePos(view.mouse_map_x, view.mouse_map_y, view.floor);
+		if (mousePos.z == map_z) {
+			// Use correct offset logic
+			int offset;
+			if (map_z <= GROUND_LAYER) {
+				offset = (GROUND_LAYER - map_z) * TileSize;
+			} else {
+				offset = TileSize * (view.floor - map_z);
+			}
+			int draw_x = ((mousePos.x * TileSize) - view.view_scroll_x) - offset;
+			int draw_y = ((mousePos.y * TileSize) - view.view_scroll_y) - offset;
+
+			if (g_gui.gfx.ensureAtlasManager()) {
+				// Draw a semi-transparent white box over the tile
+				glm::vec4 highlightColor(1.0f, 1.0f, 1.0f, 0.25f); // 25% white
+				sprite_batch.drawRect((float)draw_x, (float)draw_y, (float)TileSize, (float)TileSize, highlightColor, *g_gui.gfx.getAtlasManager());
 			}
 		}
 	}

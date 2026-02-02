@@ -1,2 +1,0 @@
-C:\Users\karol\Documents\GitHub\RME_v2\source\ui\dialogs\outfit_chooser_dialog.cpp(403,23): error C2084: funkcja "OutfitChooserDialog::~OutfitChooserDialog(void)" ma już treść [C:\Users\karol\Documents\GitHub\RME_v2\build\rme.vcxproj]
-ERROR: Build failed 
