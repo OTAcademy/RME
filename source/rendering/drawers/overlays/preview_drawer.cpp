@@ -109,7 +109,6 @@ void PreviewDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive
 		// This helps user see where they are pointing in the "chaos"
 		Position mousePos(view.mouse_map_x, view.mouse_map_y, view.floor);
 		if (mousePos.z == map_z) {
-			int highlight_x = ((mousePos.x * TileSize) - view.view_scroll_x) - (view.floor - map_z) * TileSize;
 			// Use correct offset logic
 			int offset;
 			if (map_z <= GROUND_LAYER) {

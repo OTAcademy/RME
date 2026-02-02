@@ -16,8 +16,7 @@ AutoborderPreviewManager g_autoborder_preview;
 
 AutoborderPreviewManager::AutoborderPreviewManager() :
 	preview_buffer_map(std::make_unique<BaseMap>()),
-	last_pos(Position(-1, -1, -1)),
-	last_z(-1) {
+	last_pos(Position(-1, -1, -1)) {
 }
 
 AutoborderPreviewManager::~AutoborderPreviewManager() = default;
@@ -27,35 +26,39 @@ void AutoborderPreviewManager::Clear() {
 	last_pos = Position(-1, -1, -1);
 }
 
-void AutoborderPreviewManager::Update(Editor& editor, const Position& pos) {
-
-	if (!g_settings.getInteger(Config::USE_AUTOMAGIC)) {
-		if (preview_buffer_map->size() > 0) {
-			Clear();
-		}
+void AutoborderPreviewManager::Update(Editor& editor, const Position& pos, bool alt_pressed) {
+	if (!CheckPreconditions(pos)) {
 		return;
 	}
+
+	CopyMapArea(editor, pos);
 
 	Brush* brush = g_gui.GetCurrentBrush();
-	if (!brush || !brush->needBorders()) {
+	PositionVector tilestodraw;
+	PositionVector tilestoborder;
+
+	// Use BrushUtility to get affected tiles based on shape
+	BrushUtility::GetTilesToDraw(pos.x, pos.y, pos.z, &tilestodraw, &tilestoborder);
+
+	SimulateBrush(editor, pos, tilestodraw, alt_pressed);
+	ApplyBorders(tilestodraw, tilestoborder);
+	PruneUnchanged(editor, pos);
+}
+
+bool AutoborderPreviewManager::CheckPreconditions(const Position& pos) {
+	Brush* brush = g_gui.GetCurrentBrush();
+	if (!g_settings.getInteger(Config::USE_AUTOMAGIC) || !brush || !brush->needBorders()) {
 		if (preview_buffer_map->size() > 0) {
 			Clear();
 		}
-		return;
+		return false;
 	}
 
-	// Avoid updating if nothing changed (optimization)
-	// Actually, we need to update if brush shape/size changed too, but that's harder to track cheaply.
-	// We'll rely on pos changing for now, but mouse move usually implies pos might change.
-	// Note: 'pos' passed here should be the map position (tile coords).
-
-	if (pos == last_pos && brush->isGround()) {
-		// If position is same, check if we really need to update?
-		// Brush settings might have changed. For now, let's update always or check simple things.
-		// Safe to re-update.
-	}
 	last_pos = pos;
+	return true;
+}
 
+void AutoborderPreviewManager::CopyMapArea(Editor& editor, const Position& pos) {
 	preview_buffer_map->clear();
 
 	int brush_size = g_gui.GetBrushSize();
@@ -79,26 +82,16 @@ void AutoborderPreviewManager::Update(Editor& editor, const Position& pos) {
 			}
 		}
 	}
+}
 
-	// Now apply the brush operation on the buffer map
-	// We need to simulate the draw operation.
-	// Similar to DrawingController::HandleClick/Drag logic for drawing.
+void AutoborderPreviewManager::SimulateBrush(Editor& editor, const Position& pos, const std::vector<Position>& tilestodraw, bool alt_pressed) {
+	Brush* brush = g_gui.GetCurrentBrush();
+	if (!brush) {
+		return;
+	}
 
 	bool is_wall = brush->isWall() || brush->isDoor();
 	bool is_ground = brush->isGround();
-	bool is_eraser = brush->isEraser();
-	bool is_table = brush->isTable();
-	bool is_carpet = brush->isCarpet();
-
-	PositionVector tilestodraw;
-	PositionVector tilestoborder;
-
-	// Use BrushUtility to get affected tiles based on shape
-	// Warning: BrushUtility might use g_gui state (brush size/shape).
-	BrushUtility::GetTilesToDraw(pos.x, pos.y, pos.z, &tilestodraw, &tilestoborder);
-
-	// Modify 'tilestodraw' to point to buffer map coordinates (which are same as absolute, fine)
-	// But we need to use tiles from buffer_map.
 
 	// Apply draw
 	for (const auto& p : tilestodraw) {
@@ -117,9 +110,7 @@ void AutoborderPreviewManager::Update(Editor& editor, const Position& pos) {
 
 		// Draw the brush
 		// Handle ALT key for ground brushes (replace mode)
-		bool alt = wxGetKeyState(WXK_ALT);
-
-		if (is_ground && alt) {
+		if (is_ground && alt_pressed) {
 			if (editor.replace_brush) {
 				std::pair<bool, GroundBrush*> param(false, editor.replace_brush);
 				brush->draw(preview_buffer_map.get(), tile, &param);
@@ -131,19 +122,19 @@ void AutoborderPreviewManager::Update(Editor& editor, const Position& pos) {
 			brush->draw(preview_buffer_map.get(), tile, nullptr);
 		}
 	}
+}
 
-	// Apply borderize
-	// We borderize 'tilestoborder' AND 'tilestodraw' (because they might need re-bordering)
-	// DrawingController logic:
-	// 1. cleanBorders on tilestodraw
-	// 2. draw on tilestodraw
-	// 3. borderize tilestoborder (neighbors)
-	// 4. borderize tilestodraw (new tiles)
+void AutoborderPreviewManager::ApplyBorders(const std::vector<Position>& tilestodraw, const std::vector<Position>& tilestoborder) {
+	Brush* brush = g_gui.GetCurrentBrush();
+	if (!brush) {
+		return;
+	}
 
-	// In the loop above we cleaned and drew.
+	bool is_eraser = brush->isEraser();
+	bool is_wall = brush->isWall() || brush->isDoor();
+	bool is_table = brush->isTable();
+	bool is_carpet = brush->isCarpet();
 
-	// Now borderize neighbor tiles
-	// Robust autoborder logic
 	auto process_tile = [&](const Position& p) {
 		Tile* tile = preview_buffer_map->getTile(p);
 		if (tile) {
@@ -172,6 +163,16 @@ void AutoborderPreviewManager::Update(Editor& editor, const Position& pos) {
 	for (const auto& p : tilestodraw) {
 		process_tile(p);
 	}
+}
+
+void AutoborderPreviewManager::PruneUnchanged(Editor& editor, const Position& pos) {
+	int brush_size = g_gui.GetBrushSize();
+	int range = brush_size + 3;
+
+	int start_x = pos.x - range;
+	int end_x = pos.x + range;
+	int start_y = pos.y - range;
+	int end_y = pos.y + range;
 
 	// Prune tiles that haven't changed to avoid "shade" overlay
 	for (int z = pos.z; z <= pos.z; ++z) {
@@ -188,32 +189,7 @@ void AutoborderPreviewManager::Update(Editor& editor, const Position& pos) {
 				}
 
 				// Compare tiles
-				bool equal = true;
-
-				// Compare ground
-				if (buf_tile->ground != nullptr && src_tile->ground != nullptr) {
-					if (buf_tile->ground->getID() != src_tile->ground->getID() || buf_tile->ground->getSubtype() != src_tile->ground->getSubtype()) {
-						equal = false;
-					}
-				} else if (buf_tile->ground != src_tile->ground) {
-					equal = false;
-				}
-
-				if (equal) {
-					// Compare items
-					if (buf_tile->items.size() != src_tile->items.size()) {
-						equal = false;
-					} else {
-						for (size_t i = 0; i < buf_tile->items.size(); ++i) {
-							Item* it1 = buf_tile->items[i];
-							Item* it2 = src_tile->items[i];
-							if (it1->getID() != it2->getID() || it1->getSubtype() != it2->getSubtype()) {
-								equal = false;
-								break;
-							}
-						}
-					}
-				}
+				bool equal = buf_tile->isContentEqual(src_tile);
 
 				if (equal) {
 					// Remove unmodified tile from buffer to prevent ghosting

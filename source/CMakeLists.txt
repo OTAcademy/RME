@@ -533,6 +533,7 @@ set(rme_SRC
 
     ${CMAKE_CURRENT_LIST_DIR}/ui/map/export_tilesets_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/gui.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/gui_autoborder_ext.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/main_menubar.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/menubar_action_manager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/menubar/search_handler.cpp
