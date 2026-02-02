@@ -35,7 +35,7 @@ MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor&
 	// Map version
 	grid_sizer->Add(newd wxStaticText(this, wxID_ANY, "Map Version"));
 	version_choice = newd wxChoice(this, MAP_PROPERTIES_VERSION);
-	version_choice->SetToolTip("Select the OTBM version");
+	version_choice->SetToolTip("Select the OTBM version (Determines feature support)");
 	version_choice->Append("OTServ 0.5.0");
 	version_choice->Append("OTServ 0.6.0");
 	version_choice->Append("OTServ 0.6.1");
@@ -63,7 +63,7 @@ MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor&
 	// Version
 	grid_sizer->Add(newd wxStaticText(this, wxID_ANY, "Client Version"));
 	protocol_choice = newd wxChoice(this, wxID_ANY);
-	protocol_choice->SetToolTip("Select the client version");
+	protocol_choice->SetToolTip("Select the target client version");
 
 	protocol_choice->SetStringSelection(wxstr(g_version.GetCurrentVersion().getName()));
 
@@ -92,7 +92,7 @@ MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor&
 	grid_sizer->Add(
 		house_filename_ctrl = newd wxTextCtrl(this, wxID_ANY, wxstr(map.getHouseFilename())), 1, wxEXPAND
 	);
-	house_filename_ctrl->SetToolTip("External house XML file");
+	house_filename_ctrl->SetToolTip("External house XML file (leave empty for internal)");
 
 	grid_sizer->Add(
 		newd wxStaticText(this, wxID_ANY, "External Spawnfile")
@@ -101,7 +101,7 @@ MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor&
 	grid_sizer->Add(
 		spawn_filename_ctrl = newd wxTextCtrl(this, wxID_ANY, wxstr(map.getSpawnFilename())), 1, wxEXPAND
 	);
-	spawn_filename_ctrl->SetToolTip("External spawn XML file");
+	spawn_filename_ctrl->SetToolTip("External spawn XML file (leave empty for internal)");
 
 	topsizer->Add(grid_sizer, wxSizerFlags(1).Expand().Border(wxALL, 20));
 

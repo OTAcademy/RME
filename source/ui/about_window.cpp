@@ -84,7 +84,15 @@ AboutWindow::AboutWindow(wxWindow* parent) :
 			wxTheClipboard->Close();
 		}
 	});
+	copyBtn->SetToolTip("Copy version information to clipboard");
 	choicesizer->Add(copyBtn, wxSizerFlags(1).Center().Border(wxLEFT, 10));
+
+	wxButton* websiteBtn = newd wxButton(this, wxID_ANY, "Visit Website");
+	websiteBtn->Bind(wxEVT_BUTTON, [](wxCommandEvent&) {
+		::wxLaunchDefaultBrowser(__SITE_URL__, wxBROWSER_NEW_WINDOW);
+	});
+	websiteBtn->SetToolTip("Open the official website in your browser");
+	choicesizer->Add(websiteBtn, wxSizerFlags(1).Center().Border(wxLEFT, 10));
 
 	topsizer->Add(choicesizer, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT | wxBOTTOM, 20);
 

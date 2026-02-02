@@ -80,9 +80,13 @@ void ExtensionsDialog::OnClickOpenFolder(wxCommandEvent& evt) {
 
 wxString ExtensionsDialog::HTML() const {
 	wxString markup;
-	for (MaterialsExtensionList::const_iterator me = g_materials.getExtensions().begin(); me != g_materials.getExtensions().end(); ++me) {
-		markup << HTMLForExtension(*me);
-		markup << "<hr>";
+	if (g_materials.getExtensions().empty()) {
+		markup << "<i>No extensions loaded.</i>";
+	} else {
+		for (MaterialsExtensionList::const_iterator me = g_materials.getExtensions().begin(); me != g_materials.getExtensions().end(); ++me) {
+			markup << HTMLForExtension(*me);
+			markup << "<hr>";
+		}
 	}
 	return markup;
 }

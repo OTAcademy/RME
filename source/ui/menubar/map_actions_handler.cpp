@@ -34,7 +34,7 @@ void MapActionsHandler::OnMapRemoveItems(wxCommandEvent& WXUNUSED(event)) {
 		wxString msg;
 		msg << count << " items deleted.";
 
-		DialogUtil::PopupDialog("Search completed", msg, wxOK);
+		g_gui.SetStatusText(msg);
 		g_gui.GetCurrentMap().doChange();
 		g_gui.RefreshView();
 	}
@@ -61,7 +61,7 @@ void MapActionsHandler::OnMapRemoveCorpses(wxCommandEvent& WXUNUSED(event)) {
 
 		wxString msg;
 		msg << count << " items deleted.";
-		DialogUtil::PopupDialog("Search completed", msg, wxOK);
+		g_gui.SetStatusText(msg);
 		g_gui.GetCurrentMap().doChange();
 	}
 }
@@ -87,7 +87,7 @@ void MapActionsHandler::OnMapRemoveUnreachable(wxCommandEvent& WXUNUSED(event)) 
 		wxString msg;
 		msg << removed << " tiles deleted.";
 
-		DialogUtil::PopupDialog("Search completed", msg, wxOK);
+		g_gui.SetStatusText(msg);
 
 		g_gui.GetCurrentMap().doChange();
 	}

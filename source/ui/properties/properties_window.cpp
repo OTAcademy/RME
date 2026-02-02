@@ -137,6 +137,7 @@ void PropertiesWindow::createClassificationFields(wxFlexGridSizer* gridsizer, wx
 
 		gridsizer->Add(newd wxStaticText(panel, wxID_ANY, "Tier"));
 		tier_field = newd wxSpinCtrl(panel, wxID_ANY, i2ws(edit_item->getTier()), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, 0xFF, edit_item->getTier());
+		tier_field->SetToolTip("Item tier (0-255)");
 		gridsizer->Add(tier_field, wxSizerFlags(1).Expand());
 	}
 }

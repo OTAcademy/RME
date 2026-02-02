@@ -73,7 +73,7 @@ FindItemDialog::FindItemDialog(wxWindow* parent, const wxString& title, bool onl
 
 	wxStaticBoxSizer* name_box_sizer = newd wxStaticBoxSizer(newd wxStaticBox(this, wxID_ANY, "Name"), wxVERTICAL);
 	name_text_input = newd wxTextCtrl(name_box_sizer->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-	name_text_input->SetToolTip("Search by item name");
+	name_text_input->SetToolTip("Search by item name (requires 2+ characters)");
 	name_text_input->Enable(false);
 	name_box_sizer->Add(name_text_input, 0, wxALL | wxEXPAND, 5);
 	options_box_sizer->Add(name_box_sizer, 1, wxALL | wxEXPAND, 5);

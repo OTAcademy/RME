@@ -123,7 +123,7 @@ void TilesetWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		std::string tilesetName = *static_cast<std::string*>(tileset_field->GetClientData(tileset_field->GetSelection()));
 
 		g_materials.addToTileset(tilesetName, edit_item->getID(), categoryType);
-		DialogUtil::PopupDialog("Added to Tileset", "'" + std::string(edit_item->getName()) + "' has been added to tileset '" + tilesetName + "' of palette '" + palette_field->GetStringSelection() + "'", wxOK);
+		g_gui.SetStatusText("'" + std::string(edit_item->getName()) + "' added to tileset '" + tilesetName + "'");
 	}
 	EndModal(1);
 }
