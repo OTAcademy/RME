@@ -97,7 +97,7 @@ void DrawOperations::draw(Editor& editor, Position offset, bool alt, bool dodraw
 		}
 		batch->addAndCommitAction(std::move(action));
 
-		if (tilestoborder.size() > 0) {
+		if (!tilestoborder.empty()) {
 			action = editor.actionQueue->createAction(batch.get());
 
 			// Remove duplicates
@@ -231,7 +231,7 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, boo
 				Tile* new_tile = editor.map.allocator(location);
 				brush->draw(&editor.map, new_tile);
 				new_tile->borderize(&editor.map);
-				if (new_tile->size() == 0) {
+				if (new_tile->empty()) {
 					delete new_tile;
 					continue;
 				}
@@ -344,7 +344,7 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, Pos
 						// new_tile->carpetize(map);
 					}
 					new_tile->borderize(&editor.map);
-					if (new_tile->size() > 0) {
+					if (!new_tile->empty()) {
 						action->addChange(std::make_unique<Change>(new_tile));
 					} else {
 						delete new_tile;

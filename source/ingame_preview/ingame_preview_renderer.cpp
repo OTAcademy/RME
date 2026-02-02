@@ -40,9 +40,9 @@ namespace IngamePreview {
 			float target = (z >= first_visible && z <= last_visible) ? 1.0f : 0.0f;
 			float current = floor_opacity[z];
 			if (current < target) {
-				current = std::min(target, current + (float)(dt * fade_speed));
+				current = std::min(target, current + static_cast<float>(dt * fade_speed));
 			} else if (current > target) {
-				current = std::max(target, current - (float)(dt * fade_speed));
+				current = std::max(target, current - static_cast<float>(dt * fade_speed));
 			}
 			floor_opacity[z] = current;
 		}
@@ -71,17 +71,17 @@ namespace IngamePreview {
 		// Proper coordinate alignment
 		// We want camera_pos to be at the center of the viewport
 		int offset = (camera_pos.z <= GROUND_LAYER) ? (GROUND_LAYER - camera_pos.z) * TileSize : 0;
-		view.view_scroll_x = (camera_pos.x * TileSize) - offset - (int)(viewport_width * zoom / 2.0f);
-		view.view_scroll_y = (camera_pos.y * TileSize) - offset - (int)(viewport_height * zoom / 2.0f);
+		view.view_scroll_x = (camera_pos.x * TileSize) - offset - static_cast<int>(viewport_width * zoom / 2.0f);
+		view.view_scroll_y = (camera_pos.y * TileSize) - offset - static_cast<int>(viewport_height * zoom / 2.0f);
 
 		// Matching RME's projection (width * zoom x height * zoom)
-		view.projectionMatrix = glm::ortho(0.0f, (float)viewport_width * zoom, (float)viewport_height * zoom, 0.0f, -1.0f, 1.0f);
+		view.projectionMatrix = glm::ortho(0.0f, static_cast<float>(viewport_width) * zoom, static_cast<float>(viewport_height) * zoom, 0.0f, -1.0f, 1.0f);
 		view.viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.375f, 0.375f, 0.0f));
 
 		DrawingOptions options;
 		options.SetIngame();
 		options.show_lights = lighting_enabled;
-		options.ambient_light_level = (float)ambient_light / 255.0f;
+		options.ambient_light_level = static_cast<float>(ambient_light) / 255.0f;
 		options.light_intensity = light_intensity;
 
 		// Initialize GL state
@@ -106,10 +106,10 @@ namespace IngamePreview {
 			sprite_batch->setGlobalTint(1.0f, 1.0f, 1.0f, alpha);
 
 			// Dynamic viewport culling
-			view.start_x = (int)std::floor((view.view_scroll_x - TileSize * 2) / (float)TileSize);
-			view.start_y = (int)std::floor((view.view_scroll_y - TileSize * 2) / (float)TileSize);
-			view.end_x = (int)std::ceil((view.view_scroll_x + viewport_width * zoom + TileSize * 2) / (float)TileSize);
-			view.end_y = (int)std::ceil((view.view_scroll_y + viewport_height * zoom + TileSize * 2) / (float)TileSize);
+			view.start_x = static_cast<int>(std::floor((view.view_scroll_x - TileSize * 2) / static_cast<float>(TileSize)));
+			view.start_y = static_cast<int>(std::floor((view.view_scroll_y - TileSize * 2) / static_cast<float>(TileSize)));
+			view.end_x = static_cast<int>(std::ceil((view.view_scroll_x + viewport_width * zoom + TileSize * 2) / static_cast<float>(TileSize)));
+			view.end_y = static_cast<int>(std::ceil((view.view_scroll_y + viewport_height * zoom + TileSize * 2) / static_cast<float>(TileSize)));
 
 			for (int x = view.start_x; x <= view.end_x; ++x) {
 				for (int y = view.start_y; y <= view.end_y; ++y) {

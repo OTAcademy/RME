@@ -43,7 +43,7 @@ void SelectionOperations::removeDuplicateWalls(Tile* buffer, Tile* tile) {
 }
 
 void SelectionOperations::borderizeSelection(Editor& editor) {
-	if (editor.selection.size() == 0) {
+	if (editor.selection.empty()) {
 		g_gui.SetStatusText("No items selected. Can't borderize.");
 	}
 
@@ -58,7 +58,7 @@ void SelectionOperations::borderizeSelection(Editor& editor) {
 }
 
 void SelectionOperations::randomizeSelection(Editor& editor) {
-	if (editor.selection.size() == 0) {
+	if (editor.selection.empty()) {
 		g_gui.SetStatusText("No items selected. Can't randomize.");
 	}
 
@@ -342,7 +342,7 @@ void SelectionOperations::moveSelection(Editor& editor, Position offset) {
 }
 
 void SelectionOperations::destroySelection(Editor& editor) {
-	if (editor.selection.size() == 0) {
+	if (editor.selection.empty()) {
 		g_gui.SetStatusText("No selected items to delete.");
 	} else {
 		int tile_count = 0;
