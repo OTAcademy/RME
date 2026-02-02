@@ -20,6 +20,7 @@
 
 #include "map/position.h"
 #include <functional>
+#include <set>
 
 class Action;
 class Editor;
@@ -86,14 +87,17 @@ public:
 	size_t size() const {
 		return tiles.size();
 	}
+	bool empty() const {
+		return tiles.empty();
+	}
 	void updateSelectionCount();
-	TileSet::iterator begin() {
+	auto begin() {
 		return tiles.begin();
 	}
-	TileSet::iterator end() {
+	auto end() {
 		return tiles.end();
 	}
-	TileSet& getTiles() {
+	const std::set<Tile*>& getTiles() const {
 		return tiles;
 	}
 	Tile* getSelectedTile() {
@@ -114,7 +118,7 @@ private:
 	std::unique_ptr<BatchAction> session;
 	std::unique_ptr<Action> subsession;
 
-	TileSet tiles;
+	std::set<Tile*> tiles;
 	std::vector<Tile*> pending_adds;
 	std::vector<Tile*> pending_removes;
 

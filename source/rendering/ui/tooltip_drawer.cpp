@@ -51,6 +51,13 @@ void TooltipDrawer::addItemTooltip(const TooltipData& data) {
 	tooltips.push_back(data);
 }
 
+void TooltipDrawer::addItemTooltip(TooltipData&& data) {
+	if (!data.hasVisibleFields()) {
+		return;
+	}
+	tooltips.push_back(std::move(data));
+}
+
 void TooltipDrawer::addWaypointTooltip(Position pos, const std::string& name) {
 	if (name.empty()) {
 		return;
@@ -136,7 +143,7 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 			// For legacy sprites (no transparency), use getRGBData + Magenta Masking
 			// This matches how WxWidgets/SpriteIconGenerator renders icons
 			if (!g_gui.gfx.hasTransparency()) {
-				uint8_t* rgb = img->getRGBData();
+				std::unique_ptr<uint8_t[]> rgb = img->getRGBData();
 				if (rgb) {
 					rgba = std::make_unique<uint8_t[]>(32 * 32 * 4);
 					for (int i = 0; i < 32 * 32; ++i) {
@@ -157,7 +164,6 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 							rgba[i * 4 + 3] = 255;
 						}
 					}
-					delete[] rgb;
 				} else {
 					// getRGBData failed, should ideally not happen if sprite exists logic is correct
 				}
@@ -165,7 +171,7 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 
 			// Fallback/Standard path for alpha sprites or if RGB failed
 			if (!rgba) {
-				rgba.reset(img->getRGBAData());
+				rgba = img->getRGBAData();
 				if (!rgba) {
 					// getRGBAData failed
 				}
@@ -228,13 +234,8 @@ void TooltipDrawer::draw(const RenderView& view) {
 		float maxWidth = 220.0f; // Max content width for wrapping
 
 		// Build content lines with word wrapping support
-		struct FieldLine {
-			std::string label;
-			std::string value;
-			uint8_t r, g, b;
-			std::vector<std::string> wrappedLines; // For multi-line values
-		};
-		std::vector<FieldLine> fields;
+		scratch_fields.clear();
+		std::vector<FieldLine>& fields = scratch_fields;
 
 		if (tooltip.category == TooltipCategory::WAYPOINT) {
 			fields.push_back({ "Waypoint", tooltip.waypointName, WAYPOINT_HEADER_R, WAYPOINT_HEADER_G, WAYPOINT_HEADER_B, {} });

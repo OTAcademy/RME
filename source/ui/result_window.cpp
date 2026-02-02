@@ -34,8 +34,13 @@ SearchResultWindow::SearchResultWindow(wxWindow* parent) :
 	sizer->Add(result_list, wxSizerFlags(1).Expand());
 
 	wxSizer* buttonsSizer = newd wxBoxSizer(wxHORIZONTAL);
-	buttonsSizer->Add(newd wxButton(this, wxID_FILE, "Export"), wxSizerFlags(0).Center());
-	buttonsSizer->Add(newd wxButton(this, wxID_CLEAR, "Clear"), wxSizerFlags(0).Center());
+	wxButton* exportBtn = newd wxButton(this, wxID_FILE, "Export");
+	exportBtn->SetToolTip("Export results to text file");
+	buttonsSizer->Add(exportBtn, wxSizerFlags(0).Center());
+
+	wxButton* clearBtn = newd wxButton(this, wxID_CLEAR, "Clear");
+	clearBtn->SetToolTip("Clear search results");
+	buttonsSizer->Add(clearBtn, wxSizerFlags(0).Center());
 	sizer->Add(buttonsSizer, wxSizerFlags(0).Center().DoubleBorder());
 	SetSizerAndFit(sizer);
 }

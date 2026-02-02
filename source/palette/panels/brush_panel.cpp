@@ -5,15 +5,11 @@
 #include "palette/palette_window.h" // For PaletteWindow dynamic_casts
 #include "palette/controls/virtual_brush_grid.h"
 #include <spdlog/spdlog.h>
+#include <wx/wrapsizer.h>
 
 // ============================================================================
 // Brush Panel
 // A container of brush buttons
-
-BEGIN_EVENT_TABLE(BrushPanel, wxPanel)
-// Listbox style
-EVT_LISTBOX(wxID_ANY, BrushPanel::OnClickListBoxRow)
-END_EVENT_TABLE()
 
 BrushPanel::BrushPanel(wxWindow* parent) :
 	wxPanel(parent, wxID_ANY),
@@ -23,6 +19,8 @@ BrushPanel::BrushPanel(wxWindow* parent) :
 	list_type(BRUSHLIST_LISTBOX) {
 	sizer = newd wxBoxSizer(wxVERTICAL);
 	SetSizerAndFit(sizer);
+
+	Bind(wxEVT_LISTBOX, &BrushPanel::OnClickListBoxRow, this, wxID_ANY);
 }
 
 BrushPanel::~BrushPanel() {
@@ -119,8 +117,8 @@ bool BrushPanel::SelectBrush(const Brush* whatbrush) {
 		return brushbox->SelectBrush(whatbrush);
 	}
 
-	for (BrushVector::const_iterator iter = tileset->brushlist.begin(); iter != tileset->brushlist.end(); ++iter) {
-		if (*iter == whatbrush) {
+	for (const auto* brush : tileset->brushlist) {
+		if (brush == whatbrush) {
 			LoadContents();
 			return brushbox->SelectBrush(whatbrush);
 		}
@@ -159,50 +157,32 @@ void BrushPanel::OnClickListBoxRow(wxCommandEvent& event) {
 // ============================================================================
 // BrushIconBox
 
-BEGIN_EVENT_TABLE(BrushIconBox, wxScrolledWindow)
-// Listbox style
-EVT_TOGGLEBUTTON(wxID_ANY, BrushIconBox::OnClickBrushButton)
-END_EVENT_TABLE()
-
 BrushIconBox::BrushIconBox(wxWindow* parent, const TilesetCategory* _tileset, RenderSize rsz) :
 	wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL),
 	BrushBoxInterface(_tileset),
 	icon_size(rsz) {
 	ASSERT(tileset->getType() >= TILESET_UNKNOWN && tileset->getType() <= TILESET_HOUSE);
-	int width;
-	if (icon_size == RENDER_SIZE_32x32) {
-		width = max(g_settings.getInteger(Config::PALETTE_COL_COUNT) / 2 + 1, 1);
-	} else {
-		width = max(g_settings.getInteger(Config::PALETTE_COL_COUNT) + 1, 1);
-	}
+
+	Bind(wxEVT_TOGGLEBUTTON, &BrushIconBox::OnClickBrushButton, this, wxID_ANY);
+	Bind(wxEVT_SIZE, [this](wxSizeEvent& ev) {
+		Layout();
+		FitInside();
+		ev.Skip();
+	});
 
 	// Create buttons
-	wxSizer* stacksizer = newd wxBoxSizer(wxVERTICAL);
-	wxSizer* rowsizer = nullptr;
-	int item_counter = 0;
-	for (BrushVector::const_iterator iter = tileset->brushlist.begin(); iter != tileset->brushlist.end(); ++iter) {
-		ASSERT(*iter);
-		++item_counter;
+	wxSizer* sizer = newd wxWrapSizer(wxHORIZONTAL);
+	for (auto* brush : tileset->brushlist) {
+		ASSERT(brush);
 
-		if (!rowsizer) {
-			rowsizer = newd wxBoxSizer(wxHORIZONTAL);
-		}
-
-		BrushButton* bb = newd BrushButton(this, *iter, rsz);
-		rowsizer->Add(bb);
+		BrushButton* bb = newd BrushButton(this, brush, rsz);
+		sizer->Add(bb);
 		brush_buttons.push_back(bb);
-
-		if (item_counter % width == 0) { // newd row
-			stacksizer->Add(rowsizer);
-			rowsizer = nullptr;
-		}
-	}
-	if (rowsizer) {
-		stacksizer->Add(rowsizer);
 	}
 
-	SetScrollbars(20, 20, 8, item_counter / width, 0, 0);
-	SetSizer(stacksizer);
+	SetSizer(sizer);
+	SetScrollRate(20, 20);
+	FitInside();
 }
 
 BrushIconBox::~BrushIconBox() {
@@ -222,9 +202,9 @@ Brush* BrushIconBox::GetSelectedBrush() const {
 		return nullptr;
 	}
 
-	for (std::vector<BrushButton*>::const_iterator it = brush_buttons.begin(); it != brush_buttons.end(); ++it) {
-		if ((*it)->GetValue()) {
-			return (*it)->brush;
+	for (const auto* btn : brush_buttons) {
+		if (btn->GetValue()) {
+			return btn->brush;
 		}
 	}
 	return nullptr;
@@ -232,10 +212,10 @@ Brush* BrushIconBox::GetSelectedBrush() const {
 
 bool BrushIconBox::SelectBrush(const Brush* whatbrush) {
 	DeselectAll();
-	for (std::vector<BrushButton*>::iterator it = brush_buttons.begin(); it != brush_buttons.end(); ++it) {
-		if ((*it)->brush == whatbrush) {
-			(*it)->SetValue(true);
-			EnsureVisible(*it);
+	for (auto* btn : brush_buttons) {
+		if (btn->brush == whatbrush) {
+			btn->SetValue(true);
+			EnsureVisible(btn);
 			return true;
 		}
 	}
@@ -243,8 +223,8 @@ bool BrushIconBox::SelectBrush(const Brush* whatbrush) {
 }
 
 void BrushIconBox::DeselectAll() {
-	for (std::vector<BrushButton*>::iterator it = brush_buttons.begin(); it != brush_buttons.end(); ++it) {
-		(*it)->SetValue(false);
+	for (auto* btn : brush_buttons) {
+		btn->SetValue(false);
 	}
 }
 
@@ -300,14 +280,11 @@ void BrushIconBox::OnClickBrushButton(wxCommandEvent& event) {
 // ============================================================================
 // BrushListBox
 
-BEGIN_EVENT_TABLE(BrushListBox, wxVListBox)
-EVT_KEY_DOWN(BrushListBox::OnKey)
-END_EVENT_TABLE()
-
 BrushListBox::BrushListBox(wxWindow* parent, const TilesetCategory* tileset) :
 	wxVListBox(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLB_SINGLE),
 	BrushBoxInterface(tileset) {
 	SetItemCount(tileset->size());
+	Bind(wxEVT_KEY_DOWN, &BrushListBox::OnKey, this);
 }
 
 BrushListBox::~BrushListBox() {

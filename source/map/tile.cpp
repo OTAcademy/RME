@@ -288,7 +288,7 @@ void Tile::addItem(Item* item) {
 }
 
 void Tile::select() {
-	if (size() == 0) {
+	if (empty()) {
 		return;
 	}
 	if (ground) {
@@ -492,7 +492,7 @@ void Tile::update() {
 	}
 
 	if ((statflags & TILESTATE_BLOCKING) == 0) {
-		if (ground == nullptr && items.size() == 0) {
+		if (ground == nullptr && items.empty()) {
 			statflags |= TILESTATE_BLOCKING;
 		}
 	}

@@ -39,7 +39,7 @@ void DragShadowDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 
 	// Draw dragging shadow
 	if (!drawer->editor.selection.isBusy() && options.dragging && !options.ingame) {
-		for (TileSet::iterator tit = drawer->editor.selection.begin(); tit != drawer->editor.selection.end(); tit++) {
+		for (auto tit = drawer->editor.selection.begin(); tit != drawer->editor.selection.end(); tit++) {
 			Tile* tile = *tit;
 			Position pos = tile->getPosition();
 

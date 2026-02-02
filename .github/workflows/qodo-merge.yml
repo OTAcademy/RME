@@ -30,13 +30,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
           # --- Model Configuration ---
-          # MiniMax via OpenAI-compatible endpoint
-          config.model: "openai/MiniMax-M2.1"
-          config.fallback_models: '["openai/MiniMax-M2.1"]'
+          # Kimi (Moonshot AI) via OpenAI-compatible endpoint
+          config.model: "openai/kimi-for-coding"
+          config.fallback_models: '["openai/kimi-for-coding"]'
+          config.model_turbo: "openai/kimi-for-coding"
+          config.max_model_tokens: "32768"
+          config.enable_streaming: "true"
           
-          # --- MiniMax (via OpenAI-compatible Protocol) ---
-          OPENAI_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
-          OPENAI_API_BASE: "https://api.minimax.io/v1"
+          # --- Kimi (Moonshot AI) Connection ---
+          OPENAI_API_KEY: ${{ secrets.KIMI_API_KEY }}
+          OPENAI_API_BASE: "https://api.kimi.com/coding/v1"
           
           # --- PR Agent Tool Configuration ---
           # Enable automatic tools on PR events

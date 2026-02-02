@@ -149,6 +149,7 @@ void MapDrawer::Release() {
 }
 
 void MapDrawer::Draw() {
+	g_gui.gfx.updateTime();
 
 	light_buffer.Clear();
 	creature_name_drawer->clear();
@@ -214,9 +215,6 @@ void MapDrawer::DrawMap() {
 	bool only_colors = options.show_as_minimap || options.show_only_colors;
 
 	// Enable texture mode
-	// if (!only_colors) {
-	// 	glEnable(GL_TEXTURE_2D);
-	// }
 
 	for (int map_z = view.start_z; map_z >= view.superend_z; map_z--) {
 		if (map_z == view.end_z && view.start_z != view.end_z) {
@@ -227,10 +225,6 @@ void MapDrawer::DrawMap() {
 			DrawMapLayer(map_z, live_client);
 		}
 
-		// if (only_colors) {
-		// 	glEnable(GL_TEXTURE_2D);
-		// }
-
 		preview_drawer->draw(*sprite_batch, *primitive_renderer, canvas, view, map_z, options, editor, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), options.current_house_id);
 
 		--view.start_x;
@@ -238,10 +232,6 @@ void MapDrawer::DrawMap() {
 		++view.end_x;
 		++view.end_y;
 	}
-
-	// if (!only_colors) {
-	// 	glEnable(GL_TEXTURE_2D);
-	// }
 }
 
 void MapDrawer::DrawIngameBox() {

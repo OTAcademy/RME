@@ -19,8 +19,8 @@ public:
 	CreatureDrawer();
 	~CreatureDrawer();
 
-	void BlitCreature(SpriteBatch& sprite_batch, SpriteDrawer* sprite_drawer, int screenx, int screeny, const Creature* c, int red = 255, int green = 255, int blue = 255, int alpha = 255, bool ingame = false);
-	void BlitCreature(SpriteBatch& sprite_batch, SpriteDrawer* sprite_drawer, int screenx, int screeny, const Outfit& outfit, Direction dir, int red = 255, int green = 255, int blue = 255, int alpha = 255);
+	void BlitCreature(SpriteBatch& sprite_batch, SpriteDrawer* sprite_drawer, int screenx, int screeny, const Creature* c, int red = 255, int green = 255, int blue = 255, int alpha = 255, bool ingame = false, int animationPhase = 0);
+	void BlitCreature(SpriteBatch& sprite_batch, SpriteDrawer* sprite_drawer, int screenx, int screeny, const Outfit& outfit, Direction dir, int red = 255, int green = 255, int blue = 255, int alpha = 255, int animationPhase = 0);
 };
 
 #endif

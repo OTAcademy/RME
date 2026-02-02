@@ -6,6 +6,7 @@
 #include "ui/toolbar/standard_toolbar.h"
 #include "ui/gui.h"
 #include "ui/gui_ids.h"
+#include "ui/main_menubar.h"
 #include "editor/editor.h"
 #include "editor/action_queue.h"
 #include "ui/artprovider.h"
@@ -24,11 +25,12 @@ StandardToolBar::StandardToolBar(wxWindow* parent) {
 	wxBitmap cut_bitmap = wxArtProvider::GetBitmap(wxART_CUT, wxART_TOOLBAR, icon_size);
 	wxBitmap copy_bitmap = wxArtProvider::GetBitmap(wxART_COPY, wxART_TOOLBAR, icon_size);
 	wxBitmap paste_bitmap = wxArtProvider::GetBitmap(wxART_PASTE, wxART_TOOLBAR, icon_size);
+	wxBitmap find_bitmap = wxArtProvider::GetBitmap(wxART_FIND, wxART_TOOLBAR, icon_size);
 
 	toolbar = newd wxAuiToolBar(parent, TOOLBAR_STANDARD, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
 	toolbar->SetToolBitmapSize(icon_size);
-	toolbar->AddTool(wxID_NEW, wxEmptyString, new_bitmap, wxNullBitmap, wxITEM_NORMAL, "New Map (Ctrl+N)", wxEmptyString, nullptr);
-	toolbar->AddTool(wxID_OPEN, wxEmptyString, open_bitmap, wxNullBitmap, wxITEM_NORMAL, "Open Map (Ctrl+O)", wxEmptyString, nullptr);
+	toolbar->AddTool(wxID_NEW, wxEmptyString, new_bitmap, wxNullBitmap, wxITEM_NORMAL, "New Map (Ctrl+N) - Create a new empty map", wxEmptyString, nullptr);
+	toolbar->AddTool(wxID_OPEN, wxEmptyString, open_bitmap, wxNullBitmap, wxITEM_NORMAL, "Open Map (Ctrl+O) - Open an existing map", wxEmptyString, nullptr);
 	toolbar->AddTool(wxID_SAVE, wxEmptyString, save_bitmap, wxNullBitmap, wxITEM_NORMAL, "Save Map (Ctrl+S)", wxEmptyString, nullptr);
 	toolbar->AddTool(wxID_SAVEAS, wxEmptyString, saveas_bitmap, wxNullBitmap, wxITEM_NORMAL, "Save Map As... (Ctrl+Alt+S)", wxEmptyString, nullptr);
 	toolbar->AddSeparator();
@@ -38,6 +40,8 @@ StandardToolBar::StandardToolBar(wxWindow* parent) {
 	toolbar->AddTool(wxID_CUT, wxEmptyString, cut_bitmap, wxNullBitmap, wxITEM_NORMAL, "Cut (Ctrl+X)", wxEmptyString, nullptr);
 	toolbar->AddTool(wxID_COPY, wxEmptyString, copy_bitmap, wxNullBitmap, wxITEM_NORMAL, "Copy (Ctrl+C)", wxEmptyString, nullptr);
 	toolbar->AddTool(wxID_PASTE, wxEmptyString, paste_bitmap, wxNullBitmap, wxITEM_NORMAL, "Paste (Ctrl+V)", wxEmptyString, nullptr);
+	toolbar->AddSeparator();
+	toolbar->AddTool(MAIN_FRAME_MENU + MenuBar::JUMP_TO_BRUSH, wxEmptyString, find_bitmap, wxNullBitmap, wxITEM_NORMAL, "Jump to Brush (J)", wxEmptyString, nullptr);
 	toolbar->Realize();
 
 	toolbar->Bind(wxEVT_COMMAND_MENU_SELECTED, &StandardToolBar::OnButtonClick, this);
@@ -50,22 +54,40 @@ StandardToolBar::~StandardToolBar() {
 void StandardToolBar::Update() {
 	Editor* editor = g_gui.GetCurrentEditor();
 	if (editor) {
-		toolbar->EnableTool(wxID_UNDO, editor->actionQueue->canUndo());
-		toolbar->EnableTool(wxID_REDO, editor->actionQueue->canRedo());
-		toolbar->EnableTool(wxID_PASTE, editor->copybuffer.canPaste());
+		bool canUndo = editor->actionQueue->canUndo();
+		toolbar->EnableTool(wxID_UNDO, canUndo);
+		toolbar->SetToolShortHelp(wxID_UNDO, canUndo ? "Undo (Ctrl+Z)" : "Undo (Ctrl+Z) - Nothing to undo");
+
+		bool canRedo = editor->actionQueue->canRedo();
+		toolbar->EnableTool(wxID_REDO, canRedo);
+		toolbar->SetToolShortHelp(wxID_REDO, canRedo ? "Redo (Ctrl+Shift+Z)" : "Redo (Ctrl+Shift+Z) - Nothing to redo");
+
+		bool canPaste = editor->copybuffer.canPaste();
+		toolbar->EnableTool(wxID_PASTE, canPaste);
+		toolbar->SetToolShortHelp(wxID_PASTE, canPaste ? "Paste (Ctrl+V)" : "Paste (Ctrl+V) - Clipboard empty");
 	} else {
 		toolbar->EnableTool(wxID_UNDO, false);
+		toolbar->SetToolShortHelp(wxID_UNDO, "Undo (Ctrl+Z) - No editor open");
 		toolbar->EnableTool(wxID_REDO, false);
+		toolbar->SetToolShortHelp(wxID_REDO, "Redo (Ctrl+Shift+Z) - No editor open");
 		toolbar->EnableTool(wxID_PASTE, false);
+		toolbar->SetToolShortHelp(wxID_PASTE, "Paste (Ctrl+V) - No editor open");
 	}
 
 	bool has_map = editor != nullptr;
 	bool is_host = has_map && !editor->live_manager.IsClient();
 
 	toolbar->EnableTool(wxID_SAVE, is_host);
+	toolbar->SetToolShortHelp(wxID_SAVE, is_host ? "Save Map (Ctrl+S)" : (has_map ? "Save Map (Ctrl+S) - Client cannot save" : "Save Map (Ctrl+S) - No map open"));
+
 	toolbar->EnableTool(wxID_SAVEAS, is_host);
+	toolbar->SetToolShortHelp(wxID_SAVEAS, is_host ? "Save Map As... (Ctrl+Alt+S)" : (has_map ? "Save Map As... (Ctrl+Alt+S) - Client cannot save" : "Save Map As... (Ctrl+Alt+S) - No map open"));
+
 	toolbar->EnableTool(wxID_CUT, has_map);
+	toolbar->SetToolShortHelp(wxID_CUT, has_map ? "Cut (Ctrl+X)" : "Cut (Ctrl+X) - No map open");
+
 	toolbar->EnableTool(wxID_COPY, has_map);
+	toolbar->SetToolShortHelp(wxID_COPY, has_map ? "Copy (Ctrl+C)" : "Copy (Ctrl+C) - No map open");
 
 	toolbar->Refresh();
 }
@@ -100,6 +122,7 @@ void StandardToolBar::OnButtonClick(wxCommandEvent& event) {
 			g_gui.PreparePaste();
 			break;
 		default:
+			event.Skip();
 			break;
 	}
 }

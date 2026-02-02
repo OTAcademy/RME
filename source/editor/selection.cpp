@@ -193,10 +193,7 @@ void Selection::addInternal(Tile* tile) {
 	if (deferred) {
 		pending_adds.push_back(tile);
 	} else {
-		auto it = std::lower_bound(tiles.begin(), tiles.end(), tile, std::less<Tile*>());
-		if (it == tiles.end() || *it != tile) {
-			tiles.insert(it, tile);
-		}
+		tiles.insert(tile);
 	}
 }
 
@@ -205,10 +202,7 @@ void Selection::removeInternal(Tile* tile) {
 	if (deferred) {
 		pending_removes.push_back(tile);
 	} else {
-		auto it = std::lower_bound(tiles.begin(), tiles.end(), tile, std::less<Tile*>());
-		if (it != tiles.end() && *it == tile) {
-			tiles.erase(it);
-		}
+		tiles.erase(tile);
 	}
 }
 
@@ -217,22 +211,13 @@ void Selection::flush() {
 		return;
 	}
 
-	std::sort(pending_adds.begin(), pending_adds.end(), std::less<Tile*>());
-	pending_adds.erase(std::unique(pending_adds.begin(), pending_adds.end()), pending_adds.end());
+	for (Tile* t : pending_removes) {
+		tiles.erase(t);
+	}
 
-	std::sort(pending_removes.begin(), pending_removes.end(), std::less<Tile*>());
-	pending_removes.erase(std::unique(pending_removes.begin(), pending_removes.end()), pending_removes.end());
-
-	TileSet temp;
-	temp.reserve(tiles.size());
-
-	// Remove
-	std::set_difference(tiles.begin(), tiles.end(), pending_removes.begin(), pending_removes.end(), std::back_inserter(temp), std::less<Tile*>());
-
-	// Add
-	tiles.clear();
-	tiles.reserve(temp.size() + pending_adds.size());
-	std::set_union(temp.begin(), temp.end(), pending_adds.begin(), pending_adds.end(), std::back_inserter(tiles), std::less<Tile*>());
+	for (Tile* t : pending_adds) {
+		tiles.insert(t);
+	}
 
 	pending_adds.clear();
 	pending_removes.clear();

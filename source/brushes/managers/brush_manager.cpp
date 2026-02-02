@@ -8,6 +8,7 @@
 #include "brushes/brush.h"
 #include "brushes/managers/doodad_preview_manager.h"
 #include "brushes/spawn/spawn_brush.h"
+#include "ui/managers/status_manager.h"
 #include "palette/managers/palette_manager.h"
 #include "palette/palette_window.h"
 #include "palette/house/house_palette.h"
@@ -98,6 +99,8 @@ void BrushManager::SelectBrushInternal(Brush* brush) {
 	if (!current_brush) {
 		return;
 	}
+
+	g_status.SetStatusText("Selected brush: " + wxstr(brush->getName()));
 
 	brush_variation = std::min(brush_variation, brush->getMaxVariation());
 	// If we are switching away from a doodad brush, we need to clear the secondary map

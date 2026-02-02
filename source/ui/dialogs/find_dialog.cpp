@@ -8,10 +8,6 @@
 // ============================================================================
 // Numkey forwarding text control
 
-BEGIN_EVENT_TABLE(KeyForwardingTextCtrl, wxTextCtrl)
-EVT_KEY_DOWN(KeyForwardingTextCtrl::OnKeyDown)
-END_EVENT_TABLE()
-
 void KeyForwardingTextCtrl::OnKeyDown(wxKeyEvent& event) {
 	if (event.GetKeyCode() == WXK_UP || event.GetKeyCode() == WXK_DOWN || event.GetKeyCode() == WXK_PAGEDOWN || event.GetKeyCode() == WXK_PAGEUP) {
 		GetParent()->GetEventHandler()->AddPendingEvent(event);
@@ -23,16 +19,6 @@ void KeyForwardingTextCtrl::OnKeyDown(wxKeyEvent& event) {
 // ============================================================================
 // Find Item Dialog (Jump to item)
 
-BEGIN_EVENT_TABLE(FindDialog, wxDialog)
-EVT_TIMER(wxID_ANY, FindDialog::OnTextIdle)
-EVT_TEXT(JUMP_DIALOG_TEXT, FindDialog::OnTextChange)
-EVT_KEY_DOWN(FindDialog::OnKeyDown)
-EVT_TEXT_ENTER(JUMP_DIALOG_TEXT, FindDialog::OnClickOK)
-EVT_LISTBOX_DCLICK(JUMP_DIALOG_LIST, FindDialog::OnClickList)
-EVT_BUTTON(wxID_OK, FindDialog::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, FindDialog::OnClickCancel)
-END_EVENT_TABLE()
-
 FindDialog::FindDialog(wxWindow* parent, wxString title) :
 	wxDialog(g_gui.root, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX),
 	idle_input_timer(this),
@@ -41,11 +27,14 @@ FindDialog::FindDialog(wxWindow* parent, wxString title) :
 	wxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
 
 	search_field = newd KeyForwardingTextCtrl(this, JUMP_DIALOG_TEXT, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
+	search_field->SetHint("Type to search...");
+	search_field->SetToolTip("Type at least 2 characters to search for brushes or items.");
 	search_field->SetFocus();
 	sizer->Add(search_field, 0, wxEXPAND);
 
 	item_list = newd FindDialogListBox(this, JUMP_DIALOG_LIST);
 	item_list->SetMinSize(wxSize(470, 400));
+	item_list->SetToolTip("Double click to select.");
 	sizer->Add(item_list, wxSizerFlags(1).Expand().Border());
 
 	wxSizer* stdsizer = newd wxBoxSizer(wxHORIZONTAL);
@@ -55,6 +44,15 @@ FindDialog::FindDialog(wxWindow* parent, wxString title) :
 
 	SetSizerAndFit(sizer);
 	Centre(wxBOTH);
+
+	Bind(wxEVT_TIMER, &FindDialog::OnTextIdle, this, wxID_ANY);
+	Bind(wxEVT_TEXT, &FindDialog::OnTextChange, this, JUMP_DIALOG_TEXT);
+	Bind(wxEVT_KEY_DOWN, &FindDialog::OnKeyDown, this);
+	Bind(wxEVT_TEXT_ENTER, &FindDialog::OnClickOK, this, JUMP_DIALOG_TEXT);
+	Bind(wxEVT_LISTBOX_DCLICK, &FindDialog::OnClickList, this, JUMP_DIALOG_LIST);
+	Bind(wxEVT_BUTTON, &FindDialog::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &FindDialog::OnClickCancel, this, wxID_CANCEL);
+
 	// We can't call it here since it calls an abstract function, call in child constructors instead.
 	// RefreshContents();
 }

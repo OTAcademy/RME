@@ -102,6 +102,7 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 			// but getItem(i) is safer if available, or just iterating vector.
 			// Container::getVector() returns ItemVector& (std::vector<Item*>)
 			const ItemVector& items = container->getVector();
+			data.containerItems.reserve(items.size());
 			for (Item* subItem : items) {
 				if (subItem) {
 					ContainerItem ci;
@@ -217,23 +218,33 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 
 		// Map coordinates to screen coordinates
 		// draw_x, draw_y are defined in the beginning of function and are top-left of the tile
-		float x = (float)draw_x;
-		float y = (float)draw_y;
-		float s = 32.0f; // Standard tile size
-
 		// Draw 1px solid border using geometry generation
-		primitive_renderer.drawBox(glm::vec4(x, y, s, s), border_color, 1.0f);
+		// primitive_renderer.drawBox(glm::vec4(x, y, s, s), border_color, 1.0f);
+
+		// Use SpriteDrawer to keep batching unified (prevents PrimitiveRenderer flush/state change)
+		int br = (int)(border_color.r * 255.0f);
+		int bg = (int)(border_color.g * 255.0f);
+		int bb = (int)(border_color.b * 255.0f);
+		int ba = (int)(border_color.a * 255.0f);
+		sprite_drawer->glDrawBox(sprite_batch, draw_x, draw_y, 32, 32, br, bg, bb, ba);
 	}
 
 	if (!only_colors) {
 		if (view.zoom < 10.0 || !options.hide_items_when_zoomed) {
+			// Hoist house color calculation out of item loop
+			uint8_t house_r = 255, house_g = 255, house_b = 255;
+			bool calculate_house_color = options.extended_house_shader && options.show_houses && tile->isHouseTile();
+			if (calculate_house_color) {
+				TileColorCalculator::GetHouseColor(tile->getHouseID(), house_r, house_g, house_b);
+			}
+
 			// items on tile
 			for (ItemVector::iterator it = tile->items.begin(); it != tile->items.end(); it++) {
 				// item tooltip (one per item)
 				if (options.show_tooltips && map_z == view.floor) {
 					TooltipData itemData = CreateItemTooltipData(*it, location->getPosition(), tile->isHouseTile());
 					if (itemData.hasVisibleFields()) {
-						tooltip_drawer->addItemTooltip(itemData);
+						tooltip_drawer->addItemTooltip(std::move(itemData));
 					}
 				}
 
@@ -248,17 +259,13 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 				} else {
 					uint8_t ir = 255, ig = 255, ib = 255;
 
-					if (options.extended_house_shader && options.show_houses && tile->isHouseTile()) {
-						uint32_t house_id = tile->getHouseID();
-						uint8_t hr = 255, hg = 255, hb = 255;
-						TileColorCalculator::GetHouseColor(house_id, hr, hg, hb);
-
+					if (calculate_house_color) {
 						// Apply house color tint
-						ir = (uint8_t)((int)ir * hr / 255);
-						ig = (uint8_t)((int)ig * hg / 255);
-						ib = (uint8_t)((int)ib * hb / 255);
+						ir = (uint8_t)((int)ir * house_r / 255);
+						ig = (uint8_t)((int)ig * house_g / 255);
+						ib = (uint8_t)((int)ib * house_b / 255);
 
-						if ((int)house_id == current_house_id) {
+						if ((int)tile->getHouseID() == current_house_id) {
 							// Pulse effect matching the tile pulse
 							if (options.highlight_pulse > 0.0f) {
 								float boost = options.highlight_pulse * 0.6f;

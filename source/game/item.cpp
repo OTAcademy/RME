@@ -266,6 +266,16 @@ double Item::getWeight() const {
 	return it.weight;
 }
 
+int Item::getHeight() const {
+	// Simple implementation based on hasElevation flag
+	const ItemType& it = g_items[id];
+	// In Tibia, elevation is typically equal to a full tile step (sometimes variable).
+	// RME's ItemType has 'hasElevation' bool.
+	// If hasElevation is true, we assume standard elevation (8px usually in client draw logic terms, but logical step is 1).
+	// For drawing: we want pixels. 8px is standard elevation step.
+	return it.hasElevation ? 8 : 0;
+}
+
 void Item::setUniqueID(unsigned short n) {
 	setAttribute("uid", n);
 }

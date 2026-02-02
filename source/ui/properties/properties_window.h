@@ -76,8 +76,6 @@ private:
 	void createUI();
 	void createGeneralFields(wxFlexGridSizer* sizer, wxWindow* parent);
 	void createClassificationFields(wxFlexGridSizer* sizer, wxWindow* parent);
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

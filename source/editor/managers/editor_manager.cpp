@@ -183,12 +183,17 @@ void EditorManager::SaveCurrentMap(FileName fileName, bool showdialog) {
 		if (editor) {
 			EditorPersistence::saveMap(*editor, fileName, showdialog);
 
+			if (!editor->map.hasChanged()) {
+				g_status.SetStatusText("Map saved successfully.");
+			}
+
 			const std::string& path = editor->map.getFilename();
 			const Position& position = mapTab->GetScreenCenterPosition();
 			std::ostringstream stream;
 			stream << position;
 			g_settings.setString(Config::RECENT_EDITED_MAP_PATH, path);
 			g_settings.setString(Config::RECENT_EDITED_MAP_POSITION, stream.str());
+			g_status.SetStatusText("Map saved.");
 		}
 	}
 

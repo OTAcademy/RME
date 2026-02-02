@@ -49,13 +49,13 @@ BrushToolBar::BrushToolBar(wxWindow* parent) {
 
 	toolbar = newd wxAuiToolBar(parent, TOOLBAR_BRUSHES, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
 	toolbar->SetToolBitmapSize(icon_size);
-	toolbar->AddTool(PALETTE_TERRAIN_OPTIONAL_BORDER_TOOL, wxEmptyString, border_bitmap, wxNullBitmap, wxITEM_CHECK, "Border", wxEmptyString, nullptr);
-	toolbar->AddTool(PALETTE_TERRAIN_ERASER, wxEmptyString, eraser_bitmap, wxNullBitmap, wxITEM_CHECK, "Eraser", wxEmptyString, nullptr);
+	toolbar->AddTool(PALETTE_TERRAIN_OPTIONAL_BORDER_TOOL, wxEmptyString, border_bitmap, wxNullBitmap, wxITEM_CHECK, "Border (Add borders to ground)", wxEmptyString, nullptr);
+	toolbar->AddTool(PALETTE_TERRAIN_ERASER, wxEmptyString, eraser_bitmap, wxNullBitmap, wxITEM_CHECK, "Eraser (Clear tile content)", wxEmptyString, nullptr);
 	toolbar->AddSeparator();
-	toolbar->AddTool(PALETTE_TERRAIN_PZ_TOOL, wxEmptyString, pz_bitmap, wxNullBitmap, wxITEM_CHECK, "Protected Zone", wxEmptyString, nullptr);
-	toolbar->AddTool(PALETTE_TERRAIN_NOPVP_TOOL, wxEmptyString, nopvp_bitmap, wxNullBitmap, wxITEM_CHECK, "No PvP Zone", wxEmptyString, nullptr);
-	toolbar->AddTool(PALETTE_TERRAIN_NOLOGOUT_TOOL, wxEmptyString, nologout_bitmap, wxNullBitmap, wxITEM_CHECK, "No Logout Zone", wxEmptyString, nullptr);
-	toolbar->AddTool(PALETTE_TERRAIN_PVPZONE_TOOL, wxEmptyString, pvp_bitmap, wxNullBitmap, wxITEM_CHECK, "PvP Zone", wxEmptyString, nullptr);
+	toolbar->AddTool(PALETTE_TERRAIN_PZ_TOOL, wxEmptyString, pz_bitmap, wxNullBitmap, wxITEM_CHECK, "Protected Zone (Non-combat area)", wxEmptyString, nullptr);
+	toolbar->AddTool(PALETTE_TERRAIN_NOPVP_TOOL, wxEmptyString, nopvp_bitmap, wxNullBitmap, wxITEM_CHECK, "No PvP Zone (Non-PvP area)", wxEmptyString, nullptr);
+	toolbar->AddTool(PALETTE_TERRAIN_NOLOGOUT_TOOL, wxEmptyString, nologout_bitmap, wxNullBitmap, wxITEM_CHECK, "No Logout Zone (Prevents logout)", wxEmptyString, nullptr);
+	toolbar->AddTool(PALETTE_TERRAIN_PVPZONE_TOOL, wxEmptyString, pvp_bitmap, wxNullBitmap, wxITEM_CHECK, "PvP Zone (Combat area)", wxEmptyString, nullptr);
 	toolbar->AddSeparator();
 
 	toolbar->AddTool(PALETTE_TERRAIN_NORMAL_DOOR, wxEmptyString, normal_bitmap, wxNullBitmap, wxITEM_CHECK, "Normal Door", wxEmptyString, nullptr);
@@ -80,20 +80,25 @@ void BrushToolBar::Update() {
 	Editor* editor = g_gui.GetCurrentEditor();
 	bool has_map = editor != nullptr;
 
-	toolbar->EnableTool(PALETTE_TERRAIN_OPTIONAL_BORDER_TOOL, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_ERASER, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_PZ_TOOL, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_NOPVP_TOOL, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_NOLOGOUT_TOOL, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_PVPZONE_TOOL, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_NORMAL_DOOR, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_LOCKED_DOOR, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_MAGIC_DOOR, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_QUEST_DOOR, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_NORMAL_ALT_DOOR, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_ARCHWAY_DOOR, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_HATCH_DOOR, has_map);
-	toolbar->EnableTool(PALETTE_TERRAIN_WINDOW_DOOR, has_map);
+	auto updateTool = [&](int id, const wxString& name) {
+		toolbar->EnableTool(id, has_map);
+		toolbar->SetToolShortHelp(id, has_map ? name : name + " - No map open");
+	};
+
+	updateTool(PALETTE_TERRAIN_OPTIONAL_BORDER_TOOL, "Border (Add borders to ground)");
+	updateTool(PALETTE_TERRAIN_ERASER, "Eraser (Clear tile content)");
+	updateTool(PALETTE_TERRAIN_PZ_TOOL, "Protected Zone (Non-combat area)");
+	updateTool(PALETTE_TERRAIN_NOPVP_TOOL, "No PvP Zone (Non-PvP area)");
+	updateTool(PALETTE_TERRAIN_NOLOGOUT_TOOL, "No Logout Zone (Prevents logout)");
+	updateTool(PALETTE_TERRAIN_PVPZONE_TOOL, "PvP Zone (Combat area)");
+	updateTool(PALETTE_TERRAIN_NORMAL_DOOR, "Normal Door");
+	updateTool(PALETTE_TERRAIN_LOCKED_DOOR, "Locked Door");
+	updateTool(PALETTE_TERRAIN_MAGIC_DOOR, "Magic Door");
+	updateTool(PALETTE_TERRAIN_QUEST_DOOR, "Quest Door");
+	updateTool(PALETTE_TERRAIN_NORMAL_ALT_DOOR, "Normal Door (alt)");
+	updateTool(PALETTE_TERRAIN_ARCHWAY_DOOR, "Archway");
+	updateTool(PALETTE_TERRAIN_HATCH_DOOR, "Hatch Window");
+	updateTool(PALETTE_TERRAIN_WINDOW_DOOR, "Window");
 
 	Brush* brush = g_gui.GetCurrentBrush();
 	if (brush) {
