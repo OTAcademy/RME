@@ -205,8 +205,6 @@ namespace IngamePreview {
 				nvgFontFace(vg, "sans");
 				nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);
 
-				// Re-calculate center for label
-				float labelX = (viewport_width * zoom) / 2.0f / zoom;
 				// Total elevation offset was calculated above.
 				// For the label to stay synced, we should probably fetch it again or store it.
 				// Since we are at the center of the screen, we can just use screen-relative coords.

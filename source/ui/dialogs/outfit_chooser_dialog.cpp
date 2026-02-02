@@ -137,6 +137,11 @@ OutfitChooserDialog::OutfitSelectionGrid::OutfitSelectionGrid(wxWindow* parent, 
 	Bind(wxEVT_ERASE_BACKGROUND, &OutfitSelectionGrid::OnEraseBackground, this);
 	Bind(wxEVT_MOTION, &OutfitSelectionGrid::OnMotion, this);
 	Bind(wxEVT_CONTEXT_MENU, &OutfitSelectionGrid::OnContextMenu, this);
+	if (is_favorites) {
+		Bind(wxEVT_MENU, &OutfitChooserDialog::OnFavoriteRename, owner, ID_FAVORITE_RENAME);
+		Bind(wxEVT_MENU, &OutfitChooserDialog::OnFavoriteEdit, owner, ID_FAVORITE_EDIT);
+		Bind(wxEVT_MENU, &OutfitChooserDialog::OnFavoriteDelete, owner, ID_FAVORITE_DELETE);
+	}
 
 	SetScrollRate(0, item_height + padding);
 }
@@ -356,10 +361,6 @@ void OutfitChooserDialog::OutfitSelectionGrid::OnContextMenu(wxContextMenuEvent&
 	menu.Append(ID_FAVORITE_RENAME, "Rename...");
 	menu.Append(ID_FAVORITE_EDIT, "Update with Current");
 	menu.Append(ID_FAVORITE_DELETE, "Delete");
-
-	Bind(wxEVT_MENU, &OutfitChooserDialog::OnFavoriteRename, owner, ID_FAVORITE_RENAME);
-	Bind(wxEVT_MENU, &OutfitChooserDialog::OnFavoriteEdit, owner, ID_FAVORITE_EDIT);
-	Bind(wxEVT_MENU, &OutfitChooserDialog::OnFavoriteDelete, owner, ID_FAVORITE_DELETE);
 
 	PopupMenu(&menu);
 }
