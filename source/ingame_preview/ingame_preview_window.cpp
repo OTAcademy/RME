@@ -2,6 +2,7 @@
 #include "ingame_preview/ingame_preview_window.h"
 #include "ingame_preview/ingame_preview_canvas.h"
 #include "ui/dialogs/outfit_chooser_dialog.h"
+#include "game/preview_preferences.h"
 #include "MaterialDesign/wxMaterialDesignArtProvider.hpp"
 
 #include "editor/editor.h"
@@ -30,12 +31,10 @@ namespace IngamePreview {
 		follow_selection(true) {
 
 		// Load initial preferences
-		{
-			OutfitChooserDialog dialog(this, preview_outfit);
-			preview_outfit = dialog.GetOutfit();
-			current_name = dialog.GetName();
-			current_speed = dialog.GetSpeed();
-		}
+		g_preview_preferences.load();
+		preview_outfit = g_preview_preferences.getOutfit();
+		current_name = wxString::FromUTF8(g_preview_preferences.getName());
+		current_speed = g_preview_preferences.getSpeed();
 
 		// Bind Events
 		Bind(wxEVT_TIMER, &IngamePreviewWindow::OnUpdateTimer, this, ID_UPDATE_TIMER);

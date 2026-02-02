@@ -75,6 +75,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/game/spawn.h
     ${CMAKE_CURRENT_LIST_DIR}/game/sprites.h
     ${CMAKE_CURRENT_LIST_DIR}/game/town.h
+    ${CMAKE_CURRENT_LIST_DIR}/game/preview_preferences.h
     ${CMAKE_CURRENT_LIST_DIR}/game/waypoints.h
 
     ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/floor_visibility_calculator.h
@@ -383,6 +384,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/game/materials.cpp
     ${CMAKE_CURRENT_LIST_DIR}/game/spawn.cpp
     ${CMAKE_CURRENT_LIST_DIR}/game/town.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/game/preview_preferences.cpp
     ${CMAKE_CURRENT_LIST_DIR}/game/waypoints.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/ingame_preview/floor_visibility_calculator.cpp

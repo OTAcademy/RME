@@ -3,6 +3,7 @@
 
 #include "app/main.h"
 #include "game/outfit.h"
+#include "game/preview_preferences.h"
 #include <wx/srchctrl.h>
 #include <map>
 #include <vector>
@@ -22,6 +23,9 @@ public:
 		ID_NAME,
 		ID_RANDOMIZE,
 		ID_ADD_FAVORITE,
+		ID_FAVORITE_RENAME,
+		ID_FAVORITE_EDIT,
+		ID_FAVORITE_DELETE,
 		ID_OUTFIT_START = 31000,
 		ID_FAVORITE_START = 32000
 	};
@@ -56,13 +60,6 @@ private:
 		wxString name;
 	};
 
-	struct FavoriteItem {
-		Outfit outfit;
-		wxString name; // customName in cpp
-		int speed;
-		wxString label; // entryLabel in cpp/header
-	};
-
 	class OutfitSelectionGrid : public wxScrolledWindow {
 	public:
 		OutfitSelectionGrid(wxWindow* parent, OutfitChooserDialog* owner, bool is_favorites = false);
@@ -72,6 +69,7 @@ private:
 		std::vector<OutfitItem> filtered_outfits;
 		std::vector<FavoriteItem> favorite_items;
 		bool is_favorites;
+		int selected_index;
 
 	private:
 		void OnPaint(wxPaintEvent& event);
@@ -79,31 +77,31 @@ private:
 		void OnMouse(wxMouseEvent& event);
 		void OnEraseBackground(wxEraseEvent& event);
 		void OnMotion(wxMouseEvent& event);
+		void OnContextMenu(wxContextMenuEvent& event);
 
 		int HitTest(int x, int y) const;
 		wxRect GetItemRect(int index) const;
 
 		OutfitChooserDialog* owner;
-		std::map<int, wxBitmap> icon_cache;
-		int selected_index;
+		std::map<uint64_t, wxBitmap> icon_cache;
 		int columns;
 		int item_width;
 		int item_height;
 		int padding;
 	};
 
-	void OnColorClick(wxCommandEvent& event);
 	void OnColorPartChange(wxCommandEvent& event);
 	void OnAddonChange(wxCommandEvent& event);
 	void OnSearchOutfit(wxCommandEvent& event);
 	void OnRandomize(wxCommandEvent& event);
 	void OnAddFavorite(wxCommandEvent& event);
+	void OnFavoriteRename(wxCommandEvent& event);
+	void OnFavoriteEdit(wxCommandEvent& event);
+	void OnFavoriteDelete(wxCommandEvent& event);
 	void OnOK(wxCommandEvent& event);
 
 	void UpdatePreview();
 	void SelectColor(int color_id);
-	void LoadPreferences();
-	void SavePreferences();
 	void ApplyFavorite(const FavoriteItem& fav);
 
 	Outfit current_outfit;

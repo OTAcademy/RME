@@ -160,27 +160,7 @@ namespace IngamePreview {
 			// It draws at (screenx, screeny).
 			// We want center of sprite at center of screen.
 			// 1. Fetch Elevation of current logical tile (camera_pos)
-			int elevation_offset = 0;
-			const Tile* player_tile = map.getTile(camera_pos);
-			if (player_tile) {
-				// Access draw elevation.
-				// Tile::getDrawElevation() or similar.
-				// Based on TileRenderer usage, it might be computed from items.
-				// In RME 'Tile' class, we can check items.
-				// Actually, TileRenderer usually handles this stack logic.
-				// Let's iterate items and check 'elevation' property.
-				for (const Item* item : player_tile->items) {
-					elevation_offset += item->getHeight();
-				}
-				if (player_tile->ground) {
-					// Some grounds have elevation? Usually not, but let's check.
-					elevation_offset += player_tile->ground->getHeight();
-				}
-				// Cap elevation to 24 pixels usually or similar? Client caps it.
-				if (elevation_offset > 24) {
-					elevation_offset = 24;
-				}
-			}
+			int elevation_offset = GetTileElevationOffset(map.getTile(camera_pos));
 
 			// 2. Adjust for sprite size (assuming 32x32 centered)
 			// BlitCreature usually draws top-left at (screenx, screeny) relative to the tile grid logic?
@@ -234,18 +214,7 @@ namespace IngamePreview {
 				float screenCenterY = (float)viewport_height / 2.0f;
 
 				// Fetch elevation again to be precise
-				int elevation_offset = 0;
-				if (const Tile* player_tile = map.getTile(camera_pos)) {
-					for (const Item* item : player_tile->items) {
-						elevation_offset += item->getHeight();
-					}
-					if (player_tile->ground) {
-						elevation_offset += player_tile->ground->getHeight();
-					}
-					if (elevation_offset > 24) {
-						elevation_offset = 24;
-					}
-				}
+				int elevation_offset = GetTileElevationOffset(map.getTile(camera_pos));
 
 				float labelY = screenCenterY - (16.0f + static_cast<float>(elevation_offset)) / zoom - 2.0f;
 
@@ -269,6 +238,22 @@ namespace IngamePreview {
 			}
 			TextRenderer::EndFrame();
 		}
+	}
+
+	int IngamePreviewRenderer::GetTileElevationOffset(const Tile* tile) const {
+		int elevation_offset = 0;
+		if (tile) {
+			for (const Item* item : tile->items) {
+				elevation_offset += item->getHeight();
+			}
+			if (tile->ground) {
+				elevation_offset += tile->ground->getHeight();
+			}
+			if (elevation_offset > 24) {
+				elevation_offset = 24;
+			}
+		}
+		return elevation_offset;
 	}
 
 } // namespace IngamePreview

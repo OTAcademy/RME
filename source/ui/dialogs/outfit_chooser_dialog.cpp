@@ -14,6 +14,7 @@
 #include <wx/spinctrl.h>
 #include <wx/textdlg.h>
 #include <wx/stdpaths.h>
+#include <wx/menu.h>
 
 #include "game/creatures.h"
 #include "rendering/drawers/entities/creature_drawer.h"
@@ -135,6 +136,7 @@ OutfitChooserDialog::OutfitSelectionGrid::OutfitSelectionGrid(wxWindow* parent, 
 	Bind(wxEVT_LEFT_DOWN, &OutfitSelectionGrid::OnMouse, this);
 	Bind(wxEVT_ERASE_BACKGROUND, &OutfitSelectionGrid::OnEraseBackground, this);
 	Bind(wxEVT_MOTION, &OutfitSelectionGrid::OnMotion, this);
+	Bind(wxEVT_CONTEXT_MENU, &OutfitSelectionGrid::OnContextMenu, this);
 
 	SetScrollRate(0, item_height + padding);
 }
@@ -231,21 +233,23 @@ void OutfitChooserDialog::OutfitSelectionGrid::OnPaint(wxPaintEvent& event) {
 		dc.DrawRectangle(rect);
 
 		// Draw icon
-		auto it = icon_cache.find(lookType);
+		Outfit dummy;
+		if (is_favorites) {
+			dummy = favorite_items[i].outfit;
+		} else {
+			dummy.lookType = lookType;
+		}
+
+		uint64_t cache_key = ((uint64_t)lookType << 32) | dummy.getColorHash();
+		auto it = icon_cache.find(cache_key);
 		if (it == icon_cache.end()) {
 			GameSprite* spr = g_gui.gfx.getCreatureSprite(lookType);
 			if (spr) {
-				Outfit dummy;
-				if (is_favorites) {
-					dummy = favorite_items[i].outfit;
-				} else {
-					dummy.lookType = lookType;
-				}
-				icon_cache[lookType] = SpriteIconGenerator::Generate(spr, SPRITE_SIZE_64x64, dummy);
+				icon_cache[cache_key] = SpriteIconGenerator::Generate(spr, SPRITE_SIZE_64x64, dummy);
 			} else {
-				icon_cache[lookType] = wxNullBitmap;
+				icon_cache[cache_key] = wxNullBitmap;
 			}
-			it = icon_cache.find(lookType);
+			it = icon_cache.find(cache_key);
 		}
 
 		if (it->second.IsOk()) {
@@ -322,6 +326,44 @@ void OutfitChooserDialog::OutfitSelectionGrid::OnMouse(wxMouseEvent& event) {
 	}
 }
 
+void OutfitChooserDialog::OutfitSelectionGrid::OnContextMenu(wxContextMenuEvent& event) {
+	if (!is_favorites) {
+		return;
+	}
+
+	wxPoint pt = event.GetPosition();
+	if (pt == wxDefaultPosition) {
+		// Keyboard-invoked context menu
+		if (selected_index != -1) {
+			wxRect rect = GetItemRect(selected_index);
+			pt = ClientToScreen(wxPoint(rect.x + rect.width / 2, rect.y + rect.height / 2));
+		} else {
+			return;
+		}
+	} else {
+		pt = ScreenToClient(pt);
+		int index = HitTest(pt.x, pt.y);
+		if (index != -1) {
+			selected_index = index;
+			owner->ApplyFavorite(favorite_items[selected_index]);
+			Refresh();
+		} else {
+			return;
+		}
+	}
+
+	wxMenu menu;
+	menu.Append(ID_FAVORITE_RENAME, "Rename...");
+	menu.Append(ID_FAVORITE_EDIT, "Update with Current");
+	menu.Append(ID_FAVORITE_DELETE, "Delete");
+
+	Bind(wxEVT_MENU, &OutfitChooserDialog::OnFavoriteRename, owner, ID_FAVORITE_RENAME);
+	Bind(wxEVT_MENU, &OutfitChooserDialog::OnFavoriteEdit, owner, ID_FAVORITE_EDIT);
+	Bind(wxEVT_MENU, &OutfitChooserDialog::OnFavoriteDelete, owner, ID_FAVORITE_DELETE);
+
+	PopupMenu(&menu);
+}
+
 void OutfitChooserDialog::OutfitSelectionGrid::OnMotion(wxMouseEvent& event) {
 	int index = HitTest(event.GetX(), event.GetY());
 	if (index != -1) {
@@ -347,7 +389,10 @@ OutfitChooserDialog::OutfitChooserDialog(wxWindow* parent, const Outfit& current
 	favorites_panel = new OutfitSelectionGrid(this, this, true);
 
 	// Load preferences on startup
-	LoadPreferences();
+	g_preview_preferences.load();
+	current_speed = g_preview_preferences.getSpeed();
+	current_name = wxString::FromUTF8(g_preview_preferences.getName());
+	favorites = g_preview_preferences.getFavorites();
 
 	// Resolve names from g_creatures
 	std::map<int, wxString> looktype_to_name;
@@ -584,7 +629,13 @@ void OutfitChooserDialog::UpdatePreview() {
 void OutfitChooserDialog::OnOK(wxCommandEvent& event) {
 	current_name = name_ctrl->GetValue();
 	current_speed = speed_ctrl->GetValue();
-	SavePreferences();
+
+	g_preview_preferences.setName(current_name.ToUTF8().data());
+	g_preview_preferences.setSpeed(current_speed);
+	g_preview_preferences.setOutfit(current_outfit);
+	g_preview_preferences.setFavorites(favorites);
+	g_preview_preferences.save();
+
 	EndModal(wxID_OK);
 }
 
@@ -603,10 +654,10 @@ void OutfitChooserDialog::OnAddFavorite(wxCommandEvent& event) {
 	}
 
 	FavoriteItem item;
-	item.label = label;
+	item.label = label.ToUTF8().data();
 	item.outfit = current_outfit;
 	item.speed = speed_ctrl->GetValue();
-	item.name = name_ctrl->GetValue();
+	item.name = name_ctrl->GetValue().ToUTF8().data();
 
 	favorites.push_back(item);
 	favorites_panel->favorite_items = favorites;
@@ -616,7 +667,7 @@ void OutfitChooserDialog::OnAddFavorite(wxCommandEvent& event) {
 void OutfitChooserDialog::ApplyFavorite(const FavoriteItem& item) {
 	current_outfit = item.outfit;
 	current_speed = item.speed;
-	current_name = item.name;
+	current_name = wxString::FromUTF8(item.name);
 
 	speed_ctrl->SetValue(current_speed);
 	name_ctrl->SetValue(current_name);
@@ -627,90 +678,50 @@ void OutfitChooserDialog::ApplyFavorite(const FavoriteItem& item) {
 	UpdatePreview();
 }
 
-void OutfitChooserDialog::LoadPreferences() {
-	wxFileName fn(wxStandardPaths::Get().GetUserDataDir(), "preferences.json");
-	std::string path = fn.GetFullPath().ToStdString();
-
-	std::ifstream f(path);
-	if (!f.is_open()) {
+void OutfitChooserDialog::OnFavoriteRename(wxCommandEvent& event) {
+	int idx = favorites_panel->selected_index;
+	if (idx < 0 || idx >= (int)favorites.size()) {
 		return;
 	}
 
-	try {
-		nlohmann::json j;
-		f >> j;
-
-		if (j.contains("speed")) {
-			current_speed = j["speed"];
-		}
-		if (j.contains("name")) {
-			current_name = wxString::FromUTF8(j["name"].get<std::string>());
-		}
-
-		if (j.contains("last_outfit")) {
-			nlohmann::json lo = j["last_outfit"];
-			current_outfit.lookType = lo["type"];
-			current_outfit.lookHead = lo["head"];
-			current_outfit.lookBody = lo["body"];
-			current_outfit.lookLegs = lo["legs"];
-			current_outfit.lookFeet = lo["feet"];
-			current_outfit.lookAddon = lo["addons"];
-			current_outfit.lookMount = lo["mount"];
-		}
-
-		if (j.contains("favorites")) {
-			favorites.clear();
-			for (auto& fj : j["favorites"]) {
-				FavoriteItem item;
-				item.label = wxString::FromUTF8(fj["label"].get<std::string>());
-				item.name = wxString::FromUTF8(fj["name"].get<std::string>());
-				item.speed = fj["speed"];
-
-				nlohmann::json o = fj["outfit"];
-				item.outfit.lookType = o["type"];
-				item.outfit.lookHead = o["head"];
-				item.outfit.lookBody = o["body"];
-				item.outfit.lookLegs = o["legs"];
-				item.outfit.lookFeet = o["feet"];
-				item.outfit.lookAddon = o["addons"];
-				item.outfit.lookMount = o["mount"];
-
-				favorites.push_back(item);
-			}
-		}
-	} catch (...) { }
+	wxString oldLabel = wxString::FromUTF8(favorites[idx].label);
+	wxString newLabel = wxGetTextFromUser("Enter a new name for this favorite:", "Rename Favorite", oldLabel);
+	if (!newLabel.IsEmpty() && newLabel != oldLabel) {
+		favorites[idx].label = newLabel.ToUTF8().data();
+		favorites_panel->favorite_items = favorites;
+		favorites_panel->Refresh();
+	}
 }
 
-void OutfitChooserDialog::SavePreferences() {
-	wxFileName fn(wxStandardPaths::Get().GetUserDataDir(), "preferences.json");
-	wxString dir = fn.GetPath();
-	if (!wxDirExists(dir)) {
-		wxMkdir(dir);
+void OutfitChooserDialog::OnFavoriteEdit(wxCommandEvent& event) {
+	int idx = favorites_panel->selected_index;
+	if (idx < 0 || idx >= (int)favorites.size()) {
+		return;
 	}
 
-	nlohmann::json j;
-	j["speed"] = current_speed;
-	j["name"] = current_name.ToStdString();
+	if (wxMessageBox("Update this favorite with current preview settings?", "Edit Favorite", wxYES_NO | wxICON_QUESTION) == wxYES) {
+		favorites[idx].outfit = current_outfit;
+		favorites[idx].speed = speed_ctrl->GetValue();
+		favorites[idx].name = name_ctrl->GetValue().ToUTF8().data();
 
-	j["last_outfit"] = {
-		{ "type", current_outfit.lookType },
-		{ "head", current_outfit.lookHead },
-		{ "body", current_outfit.lookBody },
-		{ "legs", current_outfit.lookLegs },
-		{ "feet", current_outfit.lookFeet },
-		{ "addons", current_outfit.lookAddon },
-		{ "mount", current_outfit.lookMount }
-	};
-
-	nlohmann::json favs = nlohmann::json::array();
-	for (const auto& fav : favorites) {
-		favs.push_back({ { "label", fav.label.ToStdString() }, { "name", fav.name.ToStdString() }, { "speed", fav.speed }, { "outfit", { { "type", fav.outfit.lookType }, { "head", fav.outfit.lookHead }, { "body", fav.outfit.lookBody }, { "legs", fav.outfit.lookLegs }, { "feet", fav.outfit.lookFeet }, { "addons", fav.outfit.lookAddon }, { "mount", fav.outfit.lookMount } } } });
+		// Update cache key for the persistent icon if outfit changed
+		favorites_panel->favorite_items = favorites;
+		favorites_panel->Refresh();
 	}
-	j["favorites"] = favs;
+}
 
-	std::ofstream f(fn.GetFullPath().ToStdString());
-	if (f.is_open()) {
-		f << j.dump(4);
+void OutfitChooserDialog::OnFavoriteDelete(wxCommandEvent& event) {
+	int idx = favorites_panel->selected_index;
+	if (idx < 0 || idx >= (int)favorites.size()) {
+		return;
+	}
+
+	if (wxMessageBox("Are you sure you want to delete this favorite?", "Delete Favorite", wxYES_NO | wxICON_WARNING) == wxYES) {
+		favorites.erase(favorites.begin() + idx);
+		favorites_panel->favorite_items = favorites;
+		favorites_panel->selected_index = -1;
+		favorites_panel->UpdateVirtualSize();
+		favorites_panel->Refresh();
 	}
 }
 

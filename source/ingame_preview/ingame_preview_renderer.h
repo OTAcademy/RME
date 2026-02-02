@@ -11,6 +11,7 @@
 #include <chrono>
 #include <string>
 
+class Tile;
 class BaseMap;
 class TileRenderer;
 class SpriteBatch;
@@ -70,6 +71,7 @@ namespace IngamePreview {
 		std::unique_ptr<SpriteDrawer> sprite_drawer;
 
 		void UpdateOpacity(double dt, int first_visible, int last_visible);
+		int GetTileElevationOffset(const Tile* tile) const;
 	};
 
 } // namespace IngamePreview
