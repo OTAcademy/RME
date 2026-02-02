@@ -39,11 +39,6 @@
 // ============================================================================
 // Tileset Window
 
-BEGIN_EVENT_TABLE(TilesetWindow, wxDialog)
-EVT_BUTTON(wxID_OK, TilesetWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, TilesetWindow::OnClickCancel)
-END_EVENT_TABLE()
-
 static constexpr int OUTFIT_COLOR_MAX = 133;
 
 TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* tile_parent, Item* item, wxPoint pos) :
@@ -51,6 +46,9 @@ TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* t
 	palette_field(nullptr),
 	tileset_field(nullptr) {
 	ASSERT(edit_item);
+
+	Bind(wxEVT_BUTTON, &TilesetWindow::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &TilesetWindow::OnClickCancel, this, wxID_CANCEL);
 
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
 	wxString description = "Move to Tileset";
@@ -74,7 +72,7 @@ TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* t
 	palette_field->Append("Raw", newd int(TILESET_RAW));
 	palette_field->SetSelection(3);
 
-	palette_field->Connect(wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(TilesetWindow::OnChangePalette), nullptr, this);
+	palette_field->Bind(wxEVT_CHOICE, &TilesetWindow::OnChangePalette, this);
 	subsizer->Add(palette_field, wxSizerFlags(1).Expand());
 
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Tileset"));

@@ -46,8 +46,6 @@ protected:
 
 	TilesetCategoryType category_type;
 	DCButton* item_button;
-
-	DECLARE_EVENT_TABLE();
 };
 
 #endif
