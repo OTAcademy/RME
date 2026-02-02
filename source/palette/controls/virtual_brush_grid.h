@@ -26,6 +26,7 @@ public:
 	void OnEraseBackground(wxEraseEvent& event);
 
 protected:
+	void OnMotion(wxMouseEvent& event);
 	void UpdateVirtualSize();
 	int HitTest(int x, int y) const;
 	wxRect GetItemRect(int index) const;
@@ -36,8 +37,6 @@ protected:
 	int item_size;
 	int padding;
 	bool is_dragging;
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

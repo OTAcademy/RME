@@ -40,11 +40,6 @@
 // ============================================================================
 // Add Tileset Window
 
-BEGIN_EVENT_TABLE(AddTilesetWindow, wxDialog)
-EVT_BUTTON(wxID_OK, AddTilesetWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, AddTilesetWindow::OnClickCancel)
-END_EVENT_TABLE()
-
 static constexpr int OUTFIT_COLOR_MAX = 133;
 
 AddTilesetWindow::AddTilesetWindow(wxWindow* win_parent, TilesetCategoryType categoryType, wxPoint pos) :
@@ -55,6 +50,9 @@ AddTilesetWindow::AddTilesetWindow(wxWindow* win_parent, TilesetCategoryType cat
 	tileset_name_field(nullptr),
 	item_id_field(nullptr),
 	item_button(nullptr) {
+	Bind(wxEVT_BUTTON, &AddTilesetWindow::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &AddTilesetWindow::OnClickCancel, this, wxID_CANCEL);
+
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
 	wxString description = "Add a Tileset";
 
@@ -94,8 +92,8 @@ AddTilesetWindow::AddTilesetWindow(wxWindow* win_parent, TilesetCategoryType cat
 	SetSizerAndFit(topsizer);
 	Centre(wxBOTH);
 
-	item_id_field->Connect(wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler(AddTilesetWindow::OnChangeItemId), nullptr, this);
-	item_button->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(AddTilesetWindow::OnItemClicked), nullptr, this);
+	item_id_field->Bind(wxEVT_SPINCTRL, &AddTilesetWindow::OnChangeItemId, this);
+	item_button->Bind(wxEVT_LEFT_DOWN, &AddTilesetWindow::OnItemClicked, this);
 }
 
 void AddTilesetWindow::OnChangeItemId(wxCommandEvent& WXUNUSED(event)) {

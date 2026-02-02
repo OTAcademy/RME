@@ -131,6 +131,7 @@ public:
 
 	// Add a structured tooltip for an item
 	void addItemTooltip(const TooltipData& data);
+	void addItemTooltip(TooltipData&& data);
 
 	// Add a waypoint tooltip
 	void addWaypointTooltip(Position pos, const std::string& name);
@@ -142,6 +143,14 @@ public:
 	void clear();
 
 protected:
+	struct FieldLine {
+		std::string label;
+		std::string value;
+		uint8_t r, g, b;
+		std::vector<std::string> wrappedLines; // For multi-line values
+	};
+	std::vector<FieldLine> scratch_fields;
+
 	std::vector<TooltipData> tooltips;
 	std::map<uint32_t, int> spriteCache; // sprite_id -> nvg image handle
 	NVGcontext* lastContext = nullptr;

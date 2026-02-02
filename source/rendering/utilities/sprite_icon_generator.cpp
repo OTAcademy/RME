@@ -25,12 +25,11 @@ wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size) {
 		for (uint8_t w = 0; w < sprite->width; w++) {
 			for (uint8_t h = 0; h < sprite->height; h++) {
 				const int i = sprite->getIndex(w, h, l, 0, 0, 0, 0);
-				uint8_t* data = sprite->spriteList[i]->getRGBData();
+				std::unique_ptr<uint8_t[]> data = sprite->spriteList[i]->getRGBData();
 				if (data) {
-					wxImage img(SPRITE_PIXELS, SPRITE_PIXELS, data, true);
+					wxImage img(SPRITE_PIXELS, SPRITE_PIXELS, data.get(), true);
 					img.SetMaskColour(0xFF, 0x00, 0xFF);
 					image.Paste(img, (sprite->width - w - 1) * SPRITE_PIXELS, (sprite->height - h - 1) * SPRITE_PIXELS);
-					delete[] data;
 				}
 			}
 		}
@@ -86,7 +85,7 @@ wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size, cons
 			for (uint8_t l = 0; l < mountSpr->layers; l++) {
 				for (uint8_t w = 0; w < mountSpr->width; w++) {
 					for (uint8_t h = 0; h < mountSpr->height; h++) {
-						uint8_t* data = nullptr;
+						std::unique_ptr<uint8_t[]> data = nullptr;
 						// Handle mount sprite layers/templates similar to main sprite
 						// (Usually mounts are standard creatures)
 						if (mountSpr->layers == 2) {
@@ -100,13 +99,12 @@ wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size, cons
 						}
 
 						if (data) {
-							wxImage img(SPRITE_PIXELS, SPRITE_PIXELS, data, true);
+							wxImage img(SPRITE_PIXELS, SPRITE_PIXELS, data.get(), true);
 							img.SetMaskColour(0xFF, 0x00, 0xFF);
 							// Mount offset
 							int mount_x = (sprite->width - w - 1) * SPRITE_PIXELS - mountSpr->getDrawOffset().first;
 							int mount_y = (sprite->height - h - 1) * SPRITE_PIXELS - mountSpr->getDrawOffset().second;
 							image.Paste(img, mount_x, mount_y);
-							delete[] data;
 						}
 					}
 				}
@@ -125,7 +123,7 @@ wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size, cons
 		for (uint8_t l = 0; l < sprite->layers; l++) {
 			for (uint8_t w = 0; w < sprite->width; w++) {
 				for (uint8_t h = 0; h < sprite->height; h++) {
-					uint8_t* data = nullptr;
+					std::unique_ptr<uint8_t[]> data = nullptr;
 
 					if (sprite->layers == 2) {
 						if (l == 1) {
@@ -147,10 +145,9 @@ wxBitmap SpriteIconGenerator::Generate(GameSprite* sprite, SpriteSize size, cons
 					}
 
 					if (data) {
-						wxImage img(SPRITE_PIXELS, SPRITE_PIXELS, data, true);
+						wxImage img(SPRITE_PIXELS, SPRITE_PIXELS, data.get(), true);
 						img.SetMaskColour(0xFF, 0x00, 0xFF);
 						image.Paste(img, (sprite->width - w - 1) * SPRITE_PIXELS, (sprite->height - h - 1) * SPRITE_PIXELS);
-						delete[] data;
 					}
 				}
 			}

@@ -29,16 +29,6 @@
 
 #include "rendering/drawers/minimap_drawer.h"
 
-BEGIN_EVENT_TABLE(MinimapWindow, wxPanel)
-EVT_LEFT_DOWN(MinimapWindow::OnMouseClick)
-EVT_SIZE(MinimapWindow::OnSize)
-EVT_PAINT(MinimapWindow::OnPaint)
-EVT_ERASE_BACKGROUND(MinimapWindow::OnEraseBackground)
-EVT_CLOSE(MinimapWindow::OnClose)
-EVT_TIMER(wxID_ANY, MinimapWindow::OnDelayedUpdate)
-EVT_KEY_DOWN(MinimapWindow::OnKey)
-END_EVENT_TABLE()
-
 // Helper to create attributes
 static wxGLAttributes& GetCoreProfileAttributes() {
 	static wxGLAttributes vAttrs = []() {
@@ -54,15 +44,23 @@ MinimapWindow::MinimapWindow(wxWindow* parent) :
 	update_timer(this),
 	context(nullptr) {
 	spdlog::info("MinimapWindow::MinimapWindow - Creating context");
-	context = new wxGLContext(this);
+	context = std::make_unique<wxGLContext>(this);
 	if (!context->IsOK()) {
 		spdlog::error("MinimapWindow::MinimapWindow - Context creation failed");
 	}
+	SetToolTip("Click to move camera");
 	drawer = std::make_unique<MinimapDrawer>();
+
+	Bind(wxEVT_LEFT_DOWN, &MinimapWindow::OnMouseClick, this);
+	Bind(wxEVT_SIZE, &MinimapWindow::OnSize, this);
+	Bind(wxEVT_PAINT, &MinimapWindow::OnPaint, this);
+	Bind(wxEVT_ERASE_BACKGROUND, &MinimapWindow::OnEraseBackground, this);
+	Bind(wxEVT_CLOSE_WINDOW, &MinimapWindow::OnClose, this);
+	Bind(wxEVT_TIMER, &MinimapWindow::OnDelayedUpdate, this, wxID_ANY);
+	Bind(wxEVT_KEY_DOWN, &MinimapWindow::OnKey, this);
 }
 
 MinimapWindow::~MinimapWindow() {
-	delete context;
 }
 
 void MinimapWindow::OnSize(wxSizeEvent& event) {

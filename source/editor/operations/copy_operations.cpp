@@ -17,7 +17,7 @@
 #include <sstream>
 
 void CopyOperations::copy(Editor& editor, CopyBuffer& buffer, int floor) {
-	if (editor.selection.size() == 0) {
+	if (editor.selection.empty()) {
 		g_gui.SetStatusText("No tiles to copy.");
 		return;
 	}
@@ -72,7 +72,7 @@ void CopyOperations::copy(Editor& editor, CopyBuffer& buffer, int floor) {
 }
 
 void CopyOperations::cut(Editor& editor, CopyBuffer& buffer, int floor) {
-	if (editor.selection.size() == 0) {
+	if (editor.selection.empty()) {
 		g_gui.SetStatusText("No tiles to cut.");
 		return;
 	}

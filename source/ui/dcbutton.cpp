@@ -23,11 +23,6 @@
 #include "game/sprites.h"
 #include "ui/gui.h"
 
-BEGIN_EVENT_TABLE(DCButton, wxPanel)
-EVT_PAINT(DCButton::OnPaint)
-EVT_LEFT_DOWN(DCButton::OnClick)
-END_EVENT_TABLE()
-
 IMPLEMENT_DYNAMIC_CLASS(DCButton, wxPanel)
 
 DCButton::DCButton() :
@@ -37,6 +32,8 @@ DCButton::DCButton() :
 	size(RENDER_SIZE_16x16),
 	sprite(nullptr),
 	overlay(nullptr) {
+	Bind(wxEVT_PAINT, &DCButton::OnPaint, this);
+	Bind(wxEVT_LEFT_DOWN, &DCButton::OnClick, this);
 	SetSprite(0);
 }
 
@@ -48,6 +45,8 @@ DCButton::DCButton(wxWindow* parent, wxWindowID id, wxPoint pos, int type, Rende
 	size(sz),
 	sprite(nullptr),
 	overlay(nullptr) {
+	Bind(wxEVT_PAINT, &DCButton::OnPaint, this);
+	Bind(wxEVT_LEFT_DOWN, &DCButton::OnClick, this);
 	SetSprite(sprite_id);
 }
 
@@ -101,23 +100,10 @@ void DCButton::OnPaint(wxPaintEvent& event) {
 		return;
 	}
 
-	static std::unique_ptr<wxPen> highlight_pen;
-	static std::unique_ptr<wxPen> dark_highlight_pen;
-	static std::unique_ptr<wxPen> light_shadow_pen;
-	static std::unique_ptr<wxPen> shadow_pen;
-
-	if (highlight_pen.get() == nullptr) {
-		highlight_pen.reset(newd wxPen(wxColor(0xFF, 0xFF, 0xFF), 1, wxSOLID));
-	}
-	if (dark_highlight_pen.get() == nullptr) {
-		dark_highlight_pen.reset(newd wxPen(wxColor(0xD4, 0xD0, 0xC8), 1, wxSOLID));
-	}
-	if (light_shadow_pen.get() == nullptr) {
-		light_shadow_pen.reset(newd wxPen(wxColor(0x80, 0x80, 0x80), 1, wxSOLID));
-	}
-	if (shadow_pen.get() == nullptr) {
-		shadow_pen.reset(newd wxPen(wxColor(0x40, 0x40, 0x40), 1, wxSOLID));
-	}
+	wxPen* highlight_pen = wxThePenList->FindOrCreatePen(wxColor(0xFF, 0xFF, 0xFF), 1, wxSOLID);
+	wxPen* dark_highlight_pen = wxThePenList->FindOrCreatePen(wxColor(0xD4, 0xD0, 0xC8), 1, wxSOLID);
+	wxPen* light_shadow_pen = wxThePenList->FindOrCreatePen(wxColor(0x80, 0x80, 0x80), 1, wxSOLID);
+	wxPen* shadow_pen = wxThePenList->FindOrCreatePen(wxColor(0x40, 0x40, 0x40), 1, wxSOLID);
 
 	int size_x = 20, size_y = 20;
 

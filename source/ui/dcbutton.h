@@ -58,7 +58,6 @@ protected:
 	Sprite* overlay;
 
 	DECLARE_DYNAMIC_CLASS(DCButton)
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

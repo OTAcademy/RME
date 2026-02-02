@@ -3,13 +3,6 @@
 #include <wx/dcbuffer.h>
 #include <spdlog/spdlog.h>
 
-BEGIN_EVENT_TABLE(VirtualBrushGrid, wxScrolledWindow)
-EVT_PAINT(VirtualBrushGrid::OnPaint)
-EVT_SIZE(VirtualBrushGrid::OnSize)
-EVT_LEFT_DOWN(VirtualBrushGrid::OnMouse)
-EVT_ERASE_BACKGROUND(VirtualBrushGrid::OnEraseBackground)
-END_EVENT_TABLE()
-
 VirtualBrushGrid::VirtualBrushGrid(wxWindow* parent, const TilesetCategory* _tileset, RenderSize rsz) :
 	wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL | wxWANTS_CHARS),
 	BrushBoxInterface(_tileset),
@@ -23,6 +16,12 @@ VirtualBrushGrid::VirtualBrushGrid(wxWindow* parent, const TilesetCategory* _til
 	} else {
 		item_size = 34; // 32 + border
 	}
+
+	Bind(wxEVT_PAINT, &VirtualBrushGrid::OnPaint, this);
+	Bind(wxEVT_SIZE, &VirtualBrushGrid::OnSize, this);
+	Bind(wxEVT_LEFT_DOWN, &VirtualBrushGrid::OnMouse, this);
+	Bind(wxEVT_ERASE_BACKGROUND, &VirtualBrushGrid::OnEraseBackground, this);
+	Bind(wxEVT_MOTION, &VirtualBrushGrid::OnMotion, this);
 
 	SetBackgroundStyle(wxBG_STYLE_PAINT);
 	UpdateVirtualSize();
@@ -196,4 +195,20 @@ bool VirtualBrushGrid::SelectBrush(const Brush* brush) {
 	selected_index = -1;
 	Refresh();
 	return false;
+}
+
+void VirtualBrushGrid::OnMotion(wxMouseEvent& event) {
+	int index = HitTest(event.GetX(), event.GetY());
+	if (index != -1) {
+		Brush* brush = tileset->brushlist[index];
+		if (brush) {
+			wxString tip = wxstr(brush->getName());
+			if (GetToolTipText() != tip) {
+				SetToolTip(tip);
+			}
+		}
+	} else {
+		UnsetToolTip();
+	}
+	event.Skip();
 }

@@ -47,6 +47,9 @@ TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* t
 	tileset_field(nullptr) {
 	ASSERT(edit_item);
 
+	Bind(wxEVT_BUTTON, &TilesetWindow::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &TilesetWindow::OnClickCancel, this, wxID_CANCEL);
+
 	wxSizer* topsizer = newd wxBoxSizer(wxVERTICAL);
 	wxString description = "Move to Tileset";
 
@@ -87,8 +90,13 @@ TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* t
 	topsizer->Add(boxsizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 20));
 
 	wxSizer* subsizer_ = newd wxBoxSizer(wxHORIZONTAL);
-	subsizer_->Add(newd wxButton(this, wxID_OK, "OK"), wxSizerFlags(1).Center().Border(wxTOP | wxBOTTOM, 10));
-	subsizer_->Add(newd wxButton(this, wxID_CANCEL, "Cancel"), wxSizerFlags(1).Center().Border(wxTOP | wxBOTTOM, 10));
+	wxButton* okBtn = newd wxButton(this, wxID_OK, "OK");
+	okBtn->SetToolTip("Confirm changes");
+	subsizer_->Add(okBtn, wxSizerFlags(1).Center().Border(wxTOP | wxBOTTOM, 10));
+
+	wxButton* cancelBtn = newd wxButton(this, wxID_CANCEL, "Cancel");
+	cancelBtn->SetToolTip("Discard changes");
+	subsizer_->Add(cancelBtn, wxSizerFlags(1).Center().Border(wxTOP | wxBOTTOM, 10));
 	topsizer->Add(subsizer_, wxSizerFlags(0).Center().Border(wxLEFT | wxRIGHT, 20));
 
 	SetSizerAndFit(topsizer);
@@ -116,7 +124,7 @@ void TilesetWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		std::string tilesetName = *static_cast<std::string*>(tileset_field->GetClientData(tileset_field->GetSelection()));
 
 		g_materials.addToTileset(tilesetName, edit_item->getID(), categoryType);
-		DialogUtil::PopupDialog("Added to Tileset", "'" + std::string(edit_item->getName()) + "' has been added to tileset '" + tilesetName + "' of palette '" + palette_field->GetStringSelection() + "'", wxOK);
+		g_gui.SetStatusText("'" + std::string(edit_item->getName()) + "' added to tileset '" + tilesetName + "'");
 	}
 	EndModal(1);
 }
