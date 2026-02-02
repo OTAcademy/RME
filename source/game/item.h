@@ -95,20 +95,42 @@ public:
 
 	// Get memory footprint size
 	uint32_t memsize() const;
-	/*
-	virtual Container* getContainer() {return nullptr;}
-	virtual const Container* getContainer() const {return nullptr;}
-	virtual Teleport* getTeleport() {return nullptr;}
-	virtual const Teleport* getTeleport() const {return nullptr;}
-	virtual TrashHolder* getTrashHolder() {return nullptr;}
-	virtual const TrashHolder* getTrashHolder() const {return nullptr;}
-	virtual Mailbox* getMailbox() {return nullptr;}
-	virtual const Mailbox* getMailbox() const {return nullptr;}
-	virtual Door* getDoor() {return nullptr;}
-	virtual const Door* getDoor() const {return nullptr;}
-	virtual MagicField* getMagicField() {return nullptr;}
-	virtual const MagicField* getMagicField() const {return nullptr;}
-	*/
+	virtual class Container* asContainer() {
+		return nullptr;
+	}
+	virtual const class Container* asContainer() const {
+		return nullptr;
+	}
+	virtual class Teleport* asTeleport() {
+		return nullptr;
+	}
+	virtual const class Teleport* asTeleport() const {
+		return nullptr;
+	}
+	virtual class TrashHolder* asTrashHolder() {
+		return nullptr;
+	}
+	virtual const class TrashHolder* asTrashHolder() const {
+		return nullptr;
+	}
+	virtual class Mailbox* asMailbox() {
+		return nullptr;
+	}
+	virtual const class Mailbox* asMailbox() const {
+		return nullptr;
+	}
+	virtual class Door* asDoor() {
+		return nullptr;
+	}
+	virtual const class Door* asDoor() const {
+		return nullptr;
+	}
+	virtual class MagicField* asMagicField() {
+		return nullptr;
+	}
+	virtual const class MagicField* asMagicField() const {
+		return nullptr;
+	}
 
 	// OTBM map interface
 	// Serialize and unserialize (for save/load)

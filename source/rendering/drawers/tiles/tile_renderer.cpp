@@ -50,7 +50,7 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 
 	// Check if it's a door
 	if (isHouseTile && item->isDoor()) {
-		if (Door* door = dynamic_cast<Door*>(item)) {
+		if (const Door* door = item->asDoor()) {
 			if (door->isRealDoor()) {
 				doorId = door->getDoorID();
 			}
@@ -68,7 +68,7 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 	// Check if container has content
 	bool hasContent = false;
 	if (g_items[id].isContainer()) {
-		if (Container* container = dynamic_cast<Container*>(item)) {
+		if (const Container* container = item->asContainer()) {
 			hasContent = container->getItemCount() > 0;
 		}
 	}
@@ -94,7 +94,7 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 
 	// Populate container items
 	if (g_items[id].isContainer()) {
-		if (Container* container = dynamic_cast<Container*>(item)) {
+		if (const Container* container = item->asContainer()) {
 			// Set capacity for rendering empty slots
 			data.containerCapacity = static_cast<uint8_t>(container->getVolume());
 

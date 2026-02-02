@@ -40,6 +40,13 @@ public:
 	Item* deepCopy() const;
 	Item* getItem(size_t index) const;
 
+	Container* asContainer() override {
+		return this;
+	}
+	const Container* asContainer() const override {
+		return this;
+	}
+
 	size_t getItemCount() const {
 		return contents.size();
 	}
@@ -50,7 +57,10 @@ public:
 	ItemVector& getVector() {
 		return contents;
 	}
-	double getWeight();
+	const ItemVector& getVector() const {
+		return contents;
+	}
+	double getWeight() const;
 
 	virtual bool unserializeItemNode_OTBM(const IOMap& maphandle, BinaryNode* node);
 	virtual bool serializeItemNode_OTBM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
@@ -66,6 +76,13 @@ public:
 	Teleport(const uint16_t type);
 
 	Item* deepCopy() const;
+
+	Teleport* asTeleport() override {
+		return this;
+	}
+	const Teleport* asTeleport() const override {
+		return this;
+	}
 
 	virtual void serializeItemAttributes_OTBM(const IOMap& maphandle, NodeFileWriteHandle& f) const;
 	virtual bool readItemAttribute_OTBM(const IOMap& maphandle, OTBM_ItemAttribute attr, BinaryNode* node);
@@ -105,6 +122,13 @@ public:
 	Door(const uint16_t type);
 
 	Item* deepCopy() const;
+
+	Door* asDoor() override {
+		return this;
+	}
+	const Door* asDoor() const override {
+		return this;
+	}
 
 	uint8_t getDoorID() const;
 	void setDoorID(uint8_t id);

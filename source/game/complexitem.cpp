@@ -51,7 +51,7 @@ Item* Container::getItem(size_t index) const {
 	return nullptr;
 }
 
-double Container::getWeight() {
+double Container::getWeight() const {
 	return g_items[id].weight;
 }
 

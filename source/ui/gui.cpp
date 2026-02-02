@@ -155,26 +155,11 @@ void GUI::SetDrawingMode() {
 }
 
 void GUI::RefreshView() {
-	EditorTab* editorTab = GetCurrentTab();
-	if (!editorTab) {
-		return;
-	}
-
-	if (!dynamic_cast<MapTab*>(editorTab)) {
-		editorTab->GetWindow()->Refresh();
-		return;
-	}
-
-	std::vector<EditorTab*> editorTabs;
-	for (int32_t index = 0; index < tabbook->GetTabCount(); ++index) {
-		auto* mapTab = dynamic_cast<MapTab*>(tabbook->GetTab(index));
-		if (mapTab) {
-			editorTabs.push_back(mapTab);
+	for (int i = 0; i < tabbook->GetTabCount(); ++i) {
+		EditorTab* editorTab = tabbook->GetTab(i);
+		if (editorTab) {
+			editorTab->GetWindow()->Refresh();
 		}
-	}
-
-	for (EditorTab* editorTab : editorTabs) {
-		editorTab->GetWindow()->Refresh();
 	}
 }
 
