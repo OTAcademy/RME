@@ -44,12 +44,7 @@ void MapLayerDrawer::Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 	int nd_end_x = (view.end_x & ~3) + 4;
 	int nd_end_y = (view.end_y & ~3) + 4;
 
-	// Pre-calculate view offsets to avoid recalculation per tile in DrawTile
-	int offset = (map_z <= GROUND_LAYER)
-		? (GROUND_LAYER - map_z) * TileSize
-		: TileSize * (view.floor - map_z);
-	int base_draw_x = -view.view_scroll_x - offset;
-	int base_draw_y = -view.view_scroll_y - offset;
+	// ND visibility
 
 	if (live_client) {
 		for (int nd_map_x = nd_start_x; nd_map_x <= nd_end_x; nd_map_x += 4) {
@@ -63,9 +58,12 @@ void MapLayerDrawer::Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 				if (nd->isVisible(map_z > GROUND_LAYER)) {
 					for (int map_x = 0; map_x < 4; ++map_x) {
 						for (int map_y = 0; map_y < 4; ++map_y) {
+							int draw_x, draw_y;
+							if (!view.IsTileVisible(nd_map_x + map_x, nd_map_y + map_y, map_z, draw_x, draw_y)) {
+								continue;
+							}
 							TileLocation* location = nd->getTile(map_x, map_y, map_z);
-							int draw_x = (nd_map_x + map_x) * TileSize + base_draw_x;
-							int draw_y = (nd_map_y + map_y) * TileSize + base_draw_y;
+
 							tile_renderer->DrawTile(sprite_batch, primitive_renderer, location, view, options, options.current_house_id, tooltip, draw_x, draw_y);
 							// draw light, but only if not zoomed too far
 							if (location && options.isDrawLight() && view.zoom <= 10.0) {
@@ -89,9 +87,12 @@ void MapLayerDrawer::Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 		editor->map.visitLeaves(nd_start_x, nd_start_y, nd_end_x, nd_end_y, [&](QTreeNode* nd, int nd_map_x, int nd_map_y) {
 			for (int map_x = 0; map_x < 4; ++map_x) {
 				for (int map_y = 0; map_y < 4; ++map_y) {
+					int draw_x, draw_y;
+					if (!view.IsTileVisible(nd_map_x + map_x, nd_map_y + map_y, map_z, draw_x, draw_y)) {
+						continue;
+					}
 					TileLocation* location = nd->getTile(map_x, map_y, map_z);
-					int draw_x = (nd_map_x + map_x) * TileSize + base_draw_x;
-					int draw_y = (nd_map_y + map_y) * TileSize + base_draw_y;
+
 					tile_renderer->DrawTile(sprite_batch, primitive_renderer, location, view, options, options.current_house_id, tooltip, draw_x, draw_y);
 					// draw light, but only if not zoomed too far
 					if (location && options.isDrawLight() && view.zoom <= 10.0) {

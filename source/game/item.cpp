@@ -121,7 +121,7 @@ Item* transformItem(Item* old_item, uint16_t new_id, Tile* parent) {
 				return new_item;
 			}
 
-			Container* c = dynamic_cast<Container*>(*item_iter);
+			Container* c = (*item_iter)->asContainer();
 			if (c) {
 				containers.push(c);
 			}
@@ -132,7 +132,7 @@ Item* transformItem(Item* old_item, uint16_t new_id, Tile* parent) {
 			ItemVector& v = container->getVector();
 			for (ItemVector::iterator item_iter = v.begin(); item_iter != v.end(); ++item_iter) {
 				Item* i = *item_iter;
-				Container* c = dynamic_cast<Container*>(i);
+				Container* c = i->asContainer();
 				if (c) {
 					containers.push(c);
 				}

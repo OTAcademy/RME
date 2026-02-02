@@ -53,8 +53,10 @@ void FPSCounter::LimitFPS(int limit) {
 
 	if (elapsed < target_frame_duration) {
 		std::this_thread::sleep_for(target_frame_duration - elapsed);
+		last_frame_time += target_frame_duration;
+	} else {
+		last_frame_time = now;
 	}
-	last_frame_time = std::chrono::steady_clock::now();
 }
 
 wxString FPSCounter::GetStatusString() const {
