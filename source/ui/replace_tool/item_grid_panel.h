@@ -21,6 +21,8 @@ public:
 	void SetDraggable(bool check);
 	void SetItems(const std::vector<uint16_t>& items);
 	void SetFilter(const wxString& filter);
+	void SetOverrideNames(const std::map<uint16_t, wxString>& names);
+	void SetShowDetails(bool show);
 
 	// wxWindow overrides
 	wxSize DoGetBestClientSize() const override;
@@ -42,6 +44,8 @@ private:
 	uint16_t selectedId = 0;
 	Listener* listener;
 	bool m_draggable = false;
+	bool m_showDetails = true;
+	std::map<uint16_t, wxString> m_nameOverrides;
 
 	// Animation state (retaining this for now, though standard OutfitGrid doesn't emphasize it as much, it's a nice touch)
 	struct HoverState {

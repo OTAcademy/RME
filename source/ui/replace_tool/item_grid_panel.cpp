@@ -34,7 +34,13 @@ ItemGridPanel::~ItemGridPanel() { }
 
 void ItemGridPanel::SetItems(const std::vector<uint16_t>& items) {
 	allItems = items;
+	m_nameOverrides.clear();
 	SetFilter("");
+}
+
+void ItemGridPanel::SetOverrideNames(const std::map<uint16_t, wxString>& names) {
+	m_nameOverrides = names;
+	Refresh();
 }
 
 void ItemGridPanel::SetFilter(const wxString& filter) {
@@ -81,6 +87,11 @@ wxSize ItemGridPanel::DoGetBestClientSize() const {
 void ItemGridPanel::OnSize(wxSizeEvent& event) {
 	UpdateVirtualSize();
 	event.Skip();
+}
+
+void ItemGridPanel::SetShowDetails(bool show) {
+	m_showDetails = show;
+	Refresh();
 }
 
 void ItemGridPanel::OnPaint(wxPaintEvent& event) {
@@ -154,29 +165,38 @@ void ItemGridPanel::OnPaint(wxPaintEvent& event) {
 		dc.SetFont(nameFont);
 		dc.SetTextForeground(*wxWHITE);
 
-		wxString label = it.name;
+		wxString label;
+		auto itName = m_nameOverrides.find(id);
+		if (itName != m_nameOverrides.end()) {
+			label = itName->second;
+		} else {
+			label = it.name;
+		}
+
 		if (label.Length() > 14) {
 			label = label.Left(12) + "..";
 		}
 		dc.GetTextExtent(label, &tw, &th);
 		dc.DrawText(label, rect.x + (rect.width - tw) / 2, rect.y + 45);
 
-		// 3. Server ID & Client ID
-		wxFont detailFont = GetFont();
-		detailFont.SetPointSize(7);
-		dc.SetFont(detailFont);
+		// 3. Server ID & Client ID (Only if showDetails is true)
+		if (m_showDetails) {
+			wxFont detailFont = GetFont();
+			detailFont.SetPointSize(7);
+			dc.SetFont(detailFont);
 
-		// SID (y: 65)
-		wxString sidStr = wxString::Format("S: %d", id);
-		dc.SetTextForeground(wxColour(180, 180, 180));
-		dc.GetTextExtent(sidStr, &tw, &th);
-		dc.DrawText(sidStr, rect.x + (rect.width - tw) / 2, rect.y + 65);
+			// SID (y: 65)
+			wxString sidStr = wxString::Format("S: %d", id);
+			dc.SetTextForeground(wxColour(180, 180, 180));
+			dc.GetTextExtent(sidStr, &tw, &th);
+			dc.DrawText(sidStr, rect.x + (rect.width - tw) / 2, rect.y + 65);
 
-		// CID (y: 80)
-		wxString cidStr = wxString::Format("C: %d", it.clientID);
-		dc.SetTextForeground(wxColour(150, 150, 150));
-		dc.GetTextExtent(cidStr, &tw, &th);
-		dc.DrawText(cidStr, rect.x + (rect.width - tw) / 2, rect.y + 80);
+			// CID (y: 80)
+			wxString cidStr = wxString::Format("C: %d", it.clientID);
+			dc.SetTextForeground(wxColour(150, 150, 150));
+			dc.GetTextExtent(cidStr, &tw, &th);
+			dc.DrawText(cidStr, rect.x + (rect.width - tw) / 2, rect.y + 80);
+		}
 	}
 }
 

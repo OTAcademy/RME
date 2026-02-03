@@ -25,6 +25,7 @@
 class GroundBrush : public TerrainBrush {
 	friend class GroundBrushLoader;
 	friend class GroundBorderCalculator;
+	friend class ReplaceToolWindow;
 
 protected:
 	struct BorderBlock;

@@ -13,6 +13,8 @@
 // Doodadbrush, add doodads!
 
 class DoodadBrush : public Brush {
+	friend class ReplaceToolWindow;
+
 public:
 	DoodadBrush();
 	~DoodadBrush() override;

@@ -8,7 +8,8 @@
 #include "ui/replace_tool/rule_list_control.h"
 #include "ui/replace_tool/rule_builder_panel.h"
 #include <wx/srchctrl.h>
-#include <vector>
+#include <wx/notebook.h>
+#include <map>
 
 class Editor;
 
@@ -47,6 +48,23 @@ private:
 	wxButton* m_executeBtn;
 
 	ReplacementEngine engine;
+
+	// Helper
+	void PopulateBrushGrid();
+	void PopulateRelatedItems(uint16_t brushLookId);
+	void OnBrushSearchChange(wxCommandEvent& event);
+
+	// New components
+	wxNotebook* libraryTabs;
+	wxSearchCtrl* brushSearchCtrl;
+	ItemGridPanel* brushListGrid;
+	ItemGridPanel* brushRelatedGrid;
+
+	std::map<uint16_t, uint16_t> cidToSidCache;
+	uint16_t GetSidFromCid(uint16_t cid);
+
+	// Map lookup from LookID -> Brush* for easier access when selecting a brush
+	std::map<uint16_t, class Brush*> brushLookup;
 };
 
 #endif
