@@ -75,11 +75,8 @@ RuleBuilderPanel::RuleBuilderPanel(wxWindow* parent, Listener* listener) : wxCon
 	SetBackgroundStyle(wxBG_STYLE_PAINT);
 	SetBackgroundColour(Theme::Get(Theme::Role::Surface));
 
-	m_rowHeight = FromDIP(48); // 32px + padding
-	// User requested layout: Sprite | Original ID | Replacement ID | Replacements List | Similar Sprites?
-	// Simplified to: Source (Sprite+ID) | Replacements (List)
-
-	m_sourceColWidth = FromDIP(80);
+	m_rowHeight = FromDIP(80);
+	m_sourceColWidth = FromDIP(120);
 
 	SetDropTarget(new ItemDropTarget(this));
 
@@ -174,7 +171,7 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 		} else {
 			// Check specific target
 			int targetX = x - m_sourceColWidth;
-			int itemWithPad = FromDIP(36); // 32 item + 4 pad
+			int itemWithPad = FromDIP(68); // 64 item + 4 pad
 			int targetIdx = targetX / itemWithPad;
 
 			if (targetIdx < m_rules[rowIndex].targets.size()) {
@@ -238,14 +235,15 @@ void RuleBuilderPanel::OnPaint(wxPaintEvent& event) {
 
 		// Source Item
 		if (rule.fromId != 0) {
-			Sprite* s = g_gui.gfx.getSprite(rule.fromId);
+			const ItemType& it = g_items.getItemType(rule.fromId);
+			Sprite* s = g_gui.gfx.getSprite(it.clientID);
 			if (s) {
-				s->DrawTo(&dc, SPRITE_SIZE_32x32, Theme::Grid(1), y + (m_rowHeight - 32) / 2);
+				s->DrawTo(&dc, SPRITE_SIZE_64x64, Theme::Grid(1), y + (m_rowHeight - 64) / 2);
 			}
 			// ID text
 			dc.SetFont(Theme::GetFont(8));
 			dc.SetTextForeground(textCol);
-			dc.DrawText(wxString::Format("%d", rule.fromId), Theme::Grid(1) + 32 + 5, y + (m_rowHeight - 12) / 2);
+			dc.DrawText(wxString::Format("%d", rule.fromId), Theme::Grid(1) + 64 + 5, y + (m_rowHeight - 12) / 2);
 		}
 
 		// Highlight Source Drop
@@ -257,15 +255,16 @@ void RuleBuilderPanel::OnPaint(wxPaintEvent& event) {
 
 		// Targets
 		int x = m_sourceColWidth;
-		int itemWithPad = FromDIP(36);
+		int itemWithPad = FromDIP(68);
 
 		for (size_t t = 0; t < rule.targets.size(); ++t) {
 			const auto& target = rule.targets[t];
 
 			// Draw Target Sprite
-			Sprite* s = g_gui.gfx.getSprite(target.id);
+			const ItemType& it = g_items.getItemType(target.id);
+			Sprite* s = g_gui.gfx.getSprite(it.clientID);
 			if (s) {
-				s->DrawTo(&dc, SPRITE_SIZE_32x32, x, y + (m_rowHeight - 32) / 2);
+				s->DrawTo(&dc, SPRITE_SIZE_64x64, x, y + (m_rowHeight - 64) / 2);
 			}
 
 			// Probability overlay?
@@ -278,8 +277,8 @@ void RuleBuilderPanel::OnPaint(wxPaintEvent& event) {
 				// Make a tiny box for readability
 				dc.SetBrush(wxBrush(wxColour(0, 0, 0, 180)));
 				dc.SetPen(*wxTRANSPARENT_PEN);
-				dc.DrawRectangle(x + 32 - sz.x, y + (m_rowHeight - 32) / 2 + 32 - sz.y, sz.x, sz.y);
-				dc.DrawText(prob, x + 32 - sz.x, y + (m_rowHeight - 32) / 2 + 32 - sz.y);
+				dc.DrawRectangle(x + 64 - sz.x, y + (m_rowHeight - 64) / 2 + 64 - sz.y, sz.x, sz.y);
+				dc.DrawText(prob, x + 64 - sz.x, y + (m_rowHeight - 64) / 2 + 64 - sz.y);
 			}
 
 			x += itemWithPad;
@@ -290,7 +289,7 @@ void RuleBuilderPanel::OnPaint(wxPaintEvent& event) {
 			gc->SetPen(wxPen(accent, 2));
 			gc->SetBrush(*wxTRANSPARENT_BRUSH);
 			// Draw rect around the "add new target" slot at end of list
-			gc->DrawRectangle(x, y + (m_rowHeight - 32) / 2, 32, 32);
+			gc->DrawRectangle(x, y + (m_rowHeight - 64) / 2, 64, 64);
 		}
 
 		// Divider

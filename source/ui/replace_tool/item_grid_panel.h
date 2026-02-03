@@ -59,9 +59,9 @@ private:
 
 	// Visual Constants (Compact styling)
 	// Need slightly more height for 3 lines of text (Name, SID, CID) if we want them distinct
-	// 32px sprite + 14px name + 12px SID + 12px CID + padding
-	const int item_width = 80; // Slightly wider for text
-	const int item_height = 105;
+	// 64px sprite + 14px name + 12px SID + 12px CID + padding
+	const int item_width = 96;
+	const int item_height = 140;
 	const int padding = 2;
 };
 

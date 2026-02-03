@@ -345,7 +345,7 @@ const AtlasRegion* GameSprite::getAtlasRegion(int _x, int _y, int _dir, int _add
 #include "rendering/utilities/sprite_icon_generator.h"
 
 wxMemoryDC* GameSprite::getDC(SpriteSize size) {
-	ASSERT(size == SPRITE_SIZE_16x16 || size == SPRITE_SIZE_32x32);
+	ASSERT(size == SPRITE_SIZE_16x16 || size == SPRITE_SIZE_32x32 || size == SPRITE_SIZE_64x64);
 
 	if (!dc[size]) {
 		wxBitmap bmp = SpriteIconGenerator::Generate(this, size);
@@ -359,7 +359,7 @@ wxMemoryDC* GameSprite::getDC(SpriteSize size) {
 }
 
 wxMemoryDC* GameSprite::getDC(SpriteSize size, const Outfit& outfit) {
-	ASSERT(size == SPRITE_SIZE_16x16 || size == SPRITE_SIZE_32x32);
+	ASSERT(size == SPRITE_SIZE_16x16 || size == SPRITE_SIZE_32x32 || size == SPRITE_SIZE_64x64);
 
 	RenderKey key;
 	key.size = size;
@@ -391,10 +391,22 @@ wxMemoryDC* GameSprite::getDC(SpriteSize size, const Outfit& outfit) {
 
 void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width, int height) {
 	if (width == -1) {
-		width = sz == SPRITE_SIZE_32x32 ? 32 : 16;
+		if (sz == SPRITE_SIZE_64x64) {
+			width = 64;
+		} else if (sz == SPRITE_SIZE_32x32) {
+			width = 32;
+		} else {
+			width = 16;
+		}
 	}
 	if (height == -1) {
-		height = sz == SPRITE_SIZE_32x32 ? 32 : 16;
+		if (sz == SPRITE_SIZE_64x64) {
+			height = 64;
+		} else if (sz == SPRITE_SIZE_32x32) {
+			height = 32;
+		} else {
+			height = 16;
+		}
 	}
 	wxDC* sdc = getDC(sz);
 	if (sdc) {
@@ -409,10 +421,22 @@ void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int w
 
 void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, const Outfit& outfit, int start_x, int start_y, int width, int height) {
 	if (width == -1) {
-		width = sz == SPRITE_SIZE_32x32 ? 32 : 16;
+		if (sz == SPRITE_SIZE_64x64) {
+			width = 64;
+		} else if (sz == SPRITE_SIZE_32x32) {
+			width = 32;
+		} else {
+			width = 16;
+		}
 	}
 	if (height == -1) {
-		height = sz == SPRITE_SIZE_32x32 ? 32 : 16;
+		if (sz == SPRITE_SIZE_64x64) {
+			height = 64;
+		} else if (sz == SPRITE_SIZE_32x32) {
+			height = 32;
+		} else {
+			height = 16;
+		}
 	}
 	wxDC* sdc = getDC(sz, outfit);
 	if (sdc) {

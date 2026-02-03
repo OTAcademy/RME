@@ -34,7 +34,7 @@
 ReplaceToolWindow::ReplaceToolWindow(wxWindow* parent, Editor* editor) : wxDialog(parent, wxID_ANY, "Advanced Replace Tool", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
 																		 editor(editor) {
 
-	SetSize(FromDIP(wxSize(1200, 700))); // Wider for 4 columns
+	SetSize(FromDIP(wxSize(1400, 850))); // Wider for 64px columns
 	VisualSimilarityService::Get().StartIndexing();
 	SetBackgroundColour(Theme::Get(Theme::Role::Surface));
 

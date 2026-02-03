@@ -148,12 +148,12 @@ void ItemGridPanel::OnPaint(wxPaintEvent& event) {
 
 		const ItemType& it = g_items.getItemType(id);
 
-		// 1. Sprite -- Top centered (y: 6 to 38)
+		// 1. Sprite -- Top centered (y: 6 to 70 for 64x64)
 		Sprite* sprite = g_gui.gfx.getSprite(it.clientID);
 		if (sprite && g_version.getLoadedVersion()) {
-			int ix = rect.x + (rect.width - 32) / 2;
+			int ix = rect.x + (rect.width - 64) / 2;
 			int iy = rect.y + 6;
-			sprite->DrawTo(&dc, SPRITE_SIZE_32x32, ix, iy);
+			sprite->DrawTo(&dc, SPRITE_SIZE_64x64, ix, iy);
 		}
 
 		// Draw Text
@@ -177,7 +177,7 @@ void ItemGridPanel::OnPaint(wxPaintEvent& event) {
 			label = label.Left(12) + "..";
 		}
 		dc.GetTextExtent(label, &tw, &th);
-		dc.DrawText(label, rect.x + (rect.width - tw) / 2, rect.y + 45);
+		dc.DrawText(label, rect.x + (rect.width - tw) / 2, rect.y + 75);
 
 		// 3. Server ID & Client ID (Only if showDetails is true)
 		if (m_showDetails) {
@@ -185,17 +185,17 @@ void ItemGridPanel::OnPaint(wxPaintEvent& event) {
 			detailFont.SetPointSize(7);
 			dc.SetFont(detailFont);
 
-			// SID (y: 65)
+			// SID (y: 95)
 			wxString sidStr = wxString::Format("S: %d", id);
 			dc.SetTextForeground(wxColour(180, 180, 180));
 			dc.GetTextExtent(sidStr, &tw, &th);
-			dc.DrawText(sidStr, rect.x + (rect.width - tw) / 2, rect.y + 65);
+			dc.DrawText(sidStr, rect.x + (rect.width - tw) / 2, rect.y + 95);
 
-			// CID (y: 80)
+			// CID (y: 110)
 			wxString cidStr = wxString::Format("C: %d", it.clientID);
 			dc.SetTextForeground(wxColour(150, 150, 150));
 			dc.GetTextExtent(cidStr, &tw, &th);
-			dc.DrawText(cidStr, rect.x + (rect.width - tw) / 2, rect.y + 80);
+			dc.DrawText(cidStr, rect.x + (rect.width - tw) / 2, rect.y + 110);
 		}
 	}
 }

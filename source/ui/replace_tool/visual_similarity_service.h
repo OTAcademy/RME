@@ -2,6 +2,7 @@
 #define RME_VISUAL_SIMILARITY_SERVICE_H_
 
 #include "app/main.h"
+#include <wx/event.h>
 #include <wx/timer.h>
 #include <vector>
 #include <map>
@@ -12,14 +13,24 @@ class VisualSimilarityService : public wxEvtHandler {
 public:
 	static VisualSimilarityService& Get();
 
+	struct VisualItemData {
+		uint16_t id;
+		bool isOpaque;
+		uint64_t aHash;
+		int width;
+		int height;
+		std::vector<bool> binaryMask; // Flattened mask
+		int truePixels; // Count of 1s
+	};
+
 	// Find top N similar items
-	std::vector<uint16_t> FindSimilar(uint16_t itemId, size_t count = 20);
+	std::vector<uint16_t> FindSimilar(uint16_t itemId, size_t count = 50);
 
 	// Start background indexing
 	void StartIndexing();
 
-	// Calculate a single hash (useful for preview)
-	uint64_t CalculateHash(uint16_t itemId);
+	// Calculate data for a single item (useful for preview/debug)
+	VisualItemData CalculateData(uint16_t itemId);
 
 private:
 	VisualSimilarityService();
@@ -27,8 +38,8 @@ private:
 
 	void OnTimer(wxTimerEvent& event);
 
-	std::map<uint16_t, uint64_t> itemHashes;
-	std::mutex hashMutex;
+	std::map<uint16_t, VisualItemData> itemDataCache;
+	std::mutex dataMutex;
 
 	wxTimer m_timer;
 	uint16_t m_nextIdToIndex;
