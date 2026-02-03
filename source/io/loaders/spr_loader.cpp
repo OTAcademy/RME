@@ -81,9 +81,8 @@ bool SprLoader::LoadData(GraphicManager* manager, const wxFileName& datafile, wx
 	}
 
 	// Pre-allocate image_space if total_pics is known
-	if (total_pics + 1 > manager->image_space.size()) {
-		manager->image_space.resize(total_pics + 1);
-	}
+	// Resize image_space to match exact sprite count, removing potential stale entries
+	manager->image_space.resize(total_pics + 1);
 
 	std::vector<uint32_t> sprite_indexes = ReadSpriteIndexes(fh, total_pics, error);
 	if (sprite_indexes.empty() && total_pics > 0) {

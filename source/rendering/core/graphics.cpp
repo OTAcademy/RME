@@ -83,7 +83,7 @@ bool GraphicManager::isUnloaded() const {
 void GraphicManager::clear() {
 	sprite_space.clear();
 	image_space.clear();
-	editor_sprite_space.clear();
+	// editor_sprite_space.clear(); // Editor sprites are global/internal and should persist across version changes
 	resident_images.clear();
 	resident_game_sprites.clear();
 

@@ -4,6 +4,7 @@
 #include "app/main.h"
 #include <unordered_map>
 #include <cstdint>
+#include <memory>
 
 class MapNode;
 class BaseMap;
@@ -16,7 +17,7 @@ public:
 	static constexpr int NODES_PER_CELL = CELL_SIZE >> NODE_SHIFT; // 16 nodes (4x4 tiles each)
 
 	struct GridCell {
-		MapNode* nodes[NODES_PER_CELL * NODES_PER_CELL];
+		std::unique_ptr<MapNode> nodes[NODES_PER_CELL * NODES_PER_CELL];
 		GridCell();
 		~GridCell();
 	};
@@ -24,6 +25,7 @@ public:
 	SpatialHashGrid(BaseMap& map);
 	~SpatialHashGrid();
 
+	// Returns observer pointer (non-owning)
 	MapNode* getLeaf(int x, int y);
 	// Forces leaf creation. Throws std::bad_alloc on memory failure.
 	MapNode* getLeafForce(int x, int y);
@@ -56,7 +58,7 @@ public:
 
 protected:
 	BaseMap& map;
-	std::unordered_map<uint64_t, GridCell*> cells;
+	std::unordered_map<uint64_t, std::unique_ptr<GridCell>> cells;
 
 	static uint64_t makeKey(int x, int y) {
 		// Assumption: cell coordinates fit in 32 bits (covering +/- 2 billion tiles).

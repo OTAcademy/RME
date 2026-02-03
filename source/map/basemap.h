@@ -25,6 +25,7 @@
 #include "map/tile.h"
 #include "map/spatial_hash_grid.h"
 #include <unordered_map>
+#include <memory>
 
 // Class declarations
 class SpatialHashGrid;
@@ -52,7 +53,7 @@ public:
 private:
 	bool findNext();
 
-	using CellIterator = std::unordered_map<uint64_t, SpatialHashGrid::GridCell*>::iterator;
+	using CellIterator = std::unordered_map<uint64_t, std::unique_ptr<SpatialHashGrid::GridCell>>::iterator;
 	CellIterator cell_it;
 	int node_i, floor_i, tile_i;
 

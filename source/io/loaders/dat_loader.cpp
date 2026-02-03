@@ -291,10 +291,11 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 
 	// Pre-size containers to avoid rehashing and frequent allocations
 	manager->sprite_space.resize(max_id_needed);
-	// image_space is still used for individual sprites, but we'll use a vector
-	// We don't know the exact max sprite ID yet, but we can guess or wait for SprLoader
-	// For now, let's pre-size it with a reasonable estimate if we can't find total_pics here
-	// Actually, DatLoader reads sprite IDs, so it needs image_space to be ready.
+	// Resize image_space to MAX_SPRITES to ensure OOB access doesn't happen during sprite id reading.
+	// SprLoader will later resize it to the exact count, but we need it safe now.
+	if (manager->image_space.size() < MAX_SPRITES) {
+		manager->image_space.resize(MAX_SPRITES);
+	}
 
 	manager->dat_format = manager->client_version->getDatFormatForSignature(datSignature);
 
@@ -493,15 +494,11 @@ bool DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, G
 				return false;
 			}
 
-			if (sprite_id >= manager->image_space.size()) {
-				manager->image_space.resize(sprite_id + 1);
-			}
-
 			auto& imgPtr = manager->image_space[sprite_id];
 			if (!imgPtr) {
-				auto img = newd GameSprite::NormalImage();
+				auto img = std::make_unique<GameSprite::NormalImage>();
 				img->id = sprite_id;
-				imgPtr = std::unique_ptr<GameSprite::NormalImage>(img);
+				imgPtr = std::move(img);
 			}
 			sType->spriteList.push_back(static_cast<GameSprite::NormalImage*>(imgPtr.get()));
 		}

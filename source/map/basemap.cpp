@@ -151,6 +151,7 @@ MapIterator::~MapIterator() {
 	////
 }
 
+// Copy constructor for flat iterator design - copies all stateful members
 MapIterator::MapIterator(const MapIterator& other) :
 	cell_it(other.cell_it),
 	node_i(other.node_i),
@@ -208,9 +209,13 @@ bool MapIterator::operator==(const MapIterator& other) const {
 
 bool MapIterator::findNext() {
 	while (cell_it != map->grid.cells.end()) {
-		SpatialHashGrid::GridCell* cell = cell_it->second;
+		SpatialHashGrid::GridCell* cell = cell_it->second.get();
+		if (!cell) {
+			++cell_it;
+			continue;
+		}
 		while (node_i < SpatialHashGrid::NODES_PER_CELL * SpatialHashGrid::NODES_PER_CELL) {
-			MapNode* node = cell->nodes[node_i];
+			MapNode* node = cell->nodes[node_i].get();
 			if (node) {
 				while (floor_i < MAP_LAYERS) {
 					Floor* floor = node->array[floor_i];

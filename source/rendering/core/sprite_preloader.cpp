@@ -27,6 +27,10 @@ namespace SpritePreloader {
 			GameSprite* spr = g_items[tile->ground->getID()].sprite;
 			if (spr) {
 				int frame = tile->ground->getFrame();
+
+				if (spr->pattern_x == 0 || spr->pattern_y == 0 || spr->pattern_z == 0) {
+					return;
+				}
 				int pattern_x = map_x % spr->pattern_x;
 				int pattern_y = map_y % spr->pattern_y;
 				int pattern_z = map_z % spr->pattern_z;
@@ -50,6 +54,10 @@ namespace SpritePreloader {
 			GameSprite* spr = g_items[item->getID()].sprite;
 			if (spr) {
 				int frame = item->getFrame();
+
+				if (spr->pattern_x == 0 || spr->pattern_y == 0 || spr->pattern_z == 0) {
+					continue;
+				}
 				int pattern_x = map_x % spr->pattern_x;
 				int pattern_y = map_y % spr->pattern_y;
 				int pattern_z = map_z % spr->pattern_z;
@@ -99,9 +107,11 @@ namespace SpritePreloader {
 			int animationPhase = 0;
 
 			if (outfit.lookItem != 0) {
-				ItemType& it = g_items[outfit.lookItem];
-				if (it.sprite) {
-					it.sprite->getAtlasRegion(0, 0, 0, -1, 0, 0, 0, 0);
+				if (g_items.typeExists(outfit.lookItem)) {
+					ItemType& it = g_items[outfit.lookItem];
+					if (it.sprite) {
+						it.sprite->getAtlasRegion(0, 0, 0, -1, 0, 0, 0, 0);
+					}
 				}
 			} else {
 				GameSprite* spr = g_gui.gfx.getCreatureSprite(outfit.lookType);

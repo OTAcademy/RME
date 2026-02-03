@@ -124,8 +124,6 @@ void LiveSocket::sendNode(uint32_t clientId, MapNode* node, int32_t ndx, int32_t
 		underground = false;
 	}
 
-	node->setVisible(clientId, underground, true);
-
 	// Send message
 	NetworkMessage message;
 	message.write<uint8_t>(PACKET_NODE);
@@ -134,6 +132,7 @@ void LiveSocket::sendNode(uint32_t clientId, MapNode* node, int32_t ndx, int32_t
 	if (!node) {
 		message.write<uint8_t>(0x00);
 	} else {
+		node->setVisible(clientId, underground, true);
 		Floor** floors = node->getFloors();
 
 		uint16_t sendMask = 0;

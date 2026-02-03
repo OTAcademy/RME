@@ -101,9 +101,9 @@ void MapNode::clearVisible(uint32_t u) {
 
 bool MapNode::isVisible(uint32_t client, bool underground) {
 	if (underground) {
-		return testFlags(visible >> MAP_LAYERS, static_cast<uint64_t>(1) << client);
+		return testFlags(visible >> MAP_LAYERS, 1u << client);
 	} else {
-		return testFlags(visible, static_cast<uint64_t>(1) << client);
+		return testFlags(visible, 1u << client);
 	}
 }
 
@@ -134,9 +134,9 @@ void MapNode::setRequested(bool underground, bool r) {
 
 void MapNode::setVisible(uint32_t client, bool underground, bool value) {
 	if (value) {
-		visible |= (1 << client << (underground ? MAP_LAYERS : 0));
+		visible |= (1u << client << (underground ? MAP_LAYERS : 0));
 	} else {
-		visible &= ~(1 << client << (underground ? MAP_LAYERS : 0));
+		visible &= ~(1u << client << (underground ? MAP_LAYERS : 0));
 	}
 }
 
@@ -190,15 +190,11 @@ void MapNode::clearTile(int x, int y, int z) {
 //**************** SpatialHashGrid **********************
 
 SpatialHashGrid::GridCell::GridCell() {
-	for (int i = 0; i < NODES_PER_CELL * NODES_PER_CELL; ++i) {
-		nodes[i] = nullptr;
-	}
+	// std::unique_ptr default constructor initializes to nullptr
 }
 
 SpatialHashGrid::GridCell::~GridCell() {
-	for (int i = 0; i < NODES_PER_CELL * NODES_PER_CELL; ++i) {
-		delete nodes[i];
-	}
+	// std::unique_ptr handles cleanup automatically
 }
 
 SpatialHashGrid::SpatialHashGrid(BaseMap& map) : map(map) {
@@ -210,9 +206,6 @@ SpatialHashGrid::~SpatialHashGrid() {
 }
 
 void SpatialHashGrid::clear() {
-	for (auto& pair : cells) {
-		delete pair.second;
-	}
 	cells.clear();
 }
 
@@ -225,28 +218,31 @@ MapNode* SpatialHashGrid::getLeaf(int x, int y) {
 
 	int nx = (x >> NODE_SHIFT) & (NODES_PER_CELL - 1);
 	int ny = (y >> NODE_SHIFT) & (NODES_PER_CELL - 1);
-	return it->second->nodes[ny * NODES_PER_CELL + nx];
+	return it->second->nodes[ny * NODES_PER_CELL + nx].get();
 }
 
 MapNode* SpatialHashGrid::getLeafForce(int x, int y) {
 	uint64_t key = makeKey(x, y);
-	GridCell*& cell = cells[key];
+	auto& cell = cells[key];
 	if (!cell) {
-		cell = newd GridCell();
+		cell = std::make_unique<GridCell>();
 	}
 
 	int nx = (x >> NODE_SHIFT) & (NODES_PER_CELL - 1);
 	int ny = (y >> NODE_SHIFT) & (NODES_PER_CELL - 1);
-	MapNode*& node = cell->nodes[ny * NODES_PER_CELL + nx];
+	auto& node = cell->nodes[ny * NODES_PER_CELL + nx];
 	if (!node) {
-		node = newd MapNode(map);
+		node = std::make_unique<MapNode>(map);
 	}
-	return node;
+	return node.get();
 }
 
 void SpatialHashGrid::clearVisible(uint32_t mask) {
 	for (auto& pair : cells) {
-		GridCell* cell = pair.second;
+		auto& cell = pair.second;
+		if (!cell) {
+			continue;
+		}
 		for (int i = 0; i < NODES_PER_CELL * NODES_PER_CELL; ++i) {
 			if (cell->nodes[i]) {
 				cell->nodes[i]->clearVisible(mask);
