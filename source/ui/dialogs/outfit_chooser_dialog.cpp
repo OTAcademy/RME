@@ -16,6 +16,7 @@
 #include <wx/textdlg.h>
 #include <wx/stdpaths.h>
 #include <wx/menu.h>
+#include <algorithm>
 
 #include "game/creatures.h"
 #include "rendering/drawers/entities/creature_drawer.h"
@@ -58,8 +59,7 @@ OutfitChooserDialog::OutfitChooserDialog(wxWindow* parent, const Outfit& current
 
 	// Resolve names from g_creatures
 	std::map<int, wxString> looktype_to_name;
-	for (auto it = g_creatures.begin(); it != g_creatures.end(); ++it) {
-		CreatureType* ct = it->second;
+	for (const auto& [name, ct] : g_creatures) {
 		if (ct && ct->outfit.lookType != 0) {
 			if (looktype_to_name.find(ct->outfit.lookType) == looktype_to_name.end()) {
 				looktype_to_name[ct->outfit.lookType] = wxstr(ct->name);
@@ -119,9 +119,9 @@ OutfitChooserDialog::OutfitChooserDialog(wxWindow* parent, const Outfit& current
 	col1_sizer->Add(part_sizer, 0, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, 8);
 
 	wxGridSizer* palette_sizer = new wxGridSizer(COLOR_ROWS, COLOR_COLUMNS, 1, 1);
-	for (int i = 0; i < (int)TemplateOutfitLookupTableSize; ++i) {
+	for (size_t i = 0; i < TemplateOutfitLookupTableSize; ++i) {
 		uint32_t color = TemplateOutfitLookupTable[i];
-		wxButton* btn = new wxButton(this, ID_COLOR_START + i, "", wxDefaultPosition, wxSize(16, 16), wxBORDER_NONE);
+		wxButton* btn = new wxButton(this, ID_COLOR_START + static_cast<int>(i), "", wxDefaultPosition, wxSize(16, 16), wxBORDER_NONE);
 		btn->SetBackgroundColour(wxColour((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF));
 		palette_sizer->Add(btn);
 		color_buttons.push_back(btn);

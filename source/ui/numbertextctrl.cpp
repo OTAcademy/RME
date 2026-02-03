@@ -83,9 +83,9 @@ void NumberTextCtrl::CheckRange() {
 	wxString text = GetValue();
 	wxString ntext;
 
-	for (size_t s = 0; s < text.size(); ++s) {
-		if (text[s] >= '0' && text[s] <= '9') {
-			ntext.Append(text[s]);
+	for (auto ch : text) {
+		if (ch >= '0' && ch <= '9') {
+			ntext.Append(ch);
 		}
 	}
 
