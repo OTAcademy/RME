@@ -6,10 +6,17 @@
 #include "app/main.h" // For ASSETS_NAME
 
 bool OtfiLoader::Load(GraphicManager* manager, const wxFileName& filename, wxString& error, wxArrayString& warnings) {
+	// Set default values first
+	manager->is_extended = false;
+	manager->has_transparency = false;
+	manager->has_frame_durations = false;
+	manager->has_frame_groups = false;
+	manager->metadata_file = wxFileName(filename.GetFullPath(), wxString(ASSETS_NAME) + ".dat");
+	manager->sprites_file = wxFileName(filename.GetFullPath(), wxString(ASSETS_NAME) + ".spr");
+	manager->otfi_found = false;
+
 	wxDir dir(filename.GetFullPath());
 	wxString otfi_file;
-
-	manager->otfi_found = false;
 
 	if (dir.GetFirst(&otfi_file, "*.otfi", wxDIR_FILES)) {
 		wxFileName otfi(filename.GetFullPath(), otfi_file);
@@ -32,15 +39,6 @@ bool OtfiLoader::Load(GraphicManager* manager, const wxFileName& filename, wxStr
 		manager->metadata_file = wxFileName(filename.GetFullPath(), wxString(metadata));
 		manager->sprites_file = wxFileName(filename.GetFullPath(), wxString(sprites));
 		manager->otfi_found = true;
-	}
-
-	if (!manager->otfi_found) {
-		manager->is_extended = false;
-		manager->has_transparency = false;
-		manager->has_frame_durations = false;
-		manager->has_frame_groups = false;
-		manager->metadata_file = wxFileName(filename.GetFullPath(), wxString(ASSETS_NAME) + ".dat");
-		manager->sprites_file = wxFileName(filename.GetFullPath(), wxString(ASSETS_NAME) + ".spr");
 	}
 
 	return true;

@@ -220,7 +220,7 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 		manager->has_frame_groups = manager->dat_format >= DAT_FORMAT_1057;
 	}
 
-	uint16_t id = minID;
+	uint32_t id = minID;
 	while (id <= maxID) {
 		auto sTypeUnique = std::make_unique<GameSprite>();
 		GameSprite* sType = sTypeUnique.get();
@@ -247,6 +247,7 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 }
 
 void DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, GameSprite* sType, uint32_t group_index, wxArrayString& warnings) {
+
 	// Skipping the group type
 	if (manager->has_frame_groups && sType->id > manager->item_count) {
 		file.skip(1);
@@ -305,7 +306,7 @@ void DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, G
 				file.getU32(max);
 				if (group_index == 0) {
 					FrameDuration* frame_duration = sType->animator->getFrameDuration(i);
-					frame_duration->setValues(int(min), int(max));
+					frame_duration->setValues(static_cast<int>(min), static_cast<int>(max));
 				}
 			}
 			if (group_index == 0) {
@@ -314,7 +315,7 @@ void DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, G
 		}
 	}
 
-	uint32_t numsprites = static_cast<uint32_t>(width) * height * layers * pattern_x * pattern_y * pattern_z * frames;
+	uint32_t numsprites = static_cast<uint32_t>(width) * static_cast<uint32_t>(height) * static_cast<uint32_t>(layers) * static_cast<uint32_t>(pattern_x) * static_cast<uint32_t>(pattern_y) * static_cast<uint32_t>(pattern_z) * static_cast<uint32_t>(frames);
 	if (group_index == 0) {
 		sType->numsprites = numsprites;
 	}

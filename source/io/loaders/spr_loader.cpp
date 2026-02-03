@@ -4,12 +4,18 @@
 #include "io/filehandle.h"
 #include "app/settings.h"
 #include <vector>
+#include <format>
+#include <memory>
 
 bool SprLoader::LoadData(GraphicManager* manager, const wxFileName& datafile, wxString& error, wxArrayString& warnings) {
 	FileReadHandle fh(nstr(datafile.GetFullPath()));
 
 	if (!fh.isOk()) {
+#if __cpp_lib_format >= 201907L
+		error = wxstr(std::format("Failed to open file {} for reading", datafile.GetFullPath().ToStdString()));
+#else
 		error = "Failed to open file for reading";
+#endif
 		return false;
 	}
 
@@ -33,6 +39,8 @@ bool SprLoader::LoadData(GraphicManager* manager, const wxFileName& datafile, wx
 		total_pics = u16;
 	}
 
+#undef safe_get
+
 	manager->spritefile = nstr(datafile.GetFullPath());
 	manager->unloaded = false;
 
@@ -40,38 +48,56 @@ bool SprLoader::LoadData(GraphicManager* manager, const wxFileName& datafile, wx
 		return true;
 	}
 
-	std::vector<uint32_t> sprite_indexes;
-	sprite_indexes.reserve(total_pics); // Optimization: Reserve
-	for (uint32_t i = 0; i < total_pics; ++i) {
-		uint32_t index;
-		safe_get(U32, index);
-		sprite_indexes.push_back(index);
+	std::vector<uint32_t> sprite_indexes = ReadSpriteIndexes(fh, total_pics, error);
+	if (sprite_indexes.empty() && total_pics > 0) {
+		return false;
 	}
 
-	// Now read individual sprites
+	return ReadSprites(manager, fh, sprite_indexes, warnings, error);
+}
+
+std::vector<uint32_t> SprLoader::ReadSpriteIndexes(FileReadHandle& fh, uint32_t total_pics, wxString& error) {
+	std::vector<uint32_t> sprite_indexes;
+	sprite_indexes.reserve(total_pics);
+
+	for (uint32_t i = 0; i < total_pics; ++i) {
+		uint32_t index;
+		if (!fh.getU32(index)) {
+			error = wxstr(fh.getErrorMessage());
+			return {};
+		}
+		sprite_indexes.push_back(index);
+	}
+	return sprite_indexes;
+}
+
+bool SprLoader::ReadSprites(GraphicManager* manager, FileReadHandle& fh, const std::vector<uint32_t>& sprite_indexes, wxArrayString& warnings, wxString& error) {
 	int id = 1;
 	for (uint32_t index : sprite_indexes) {
-		// uint32_t index = *sprite_iter + 3; // Original logic was iterating + 3?
-		// Wait, original code:
-		/*
-		for (std::vector<uint32_t>::iterator sprite_iter = sprite_indexes.begin(); sprite_iter != sprite_indexes.end(); ++sprite_iter, ++id) {
-			uint32_t index = *sprite_iter + 3;
-			fh.seek(index);
-		*/
-		// The index from file is likely an offset. +3 might be header offset or something.
-
 		uint32_t seek_pos = index + 3;
-		fh.seek(seek_pos);
+		if (!fh.seek(seek_pos)) {
+			// Seek failed, likely bad index or EOF?
+			continue;
+		}
+
 		uint16_t size;
-		safe_get(U16, size);
+		if (!fh.getU16(size)) {
+			error = wxstr(fh.getErrorMessage());
+			return false;
+		}
 
 		if (auto it = manager->image_space.find(id); it != manager->image_space.end()) {
 			GameSprite::NormalImage* spr = dynamic_cast<GameSprite::NormalImage*>(it->second.get());
 			if (spr && size > 0) {
 				if (spr->size > 0) {
+					// Duplicate GameSprite id
+#if __cpp_lib_format >= 201907L
+					warnings.push_back(wxstr(std::format("items.spr: Duplicate GameSprite id {}", id)));
+#else
 					wxString ss;
 					ss << "items.spr: Duplicate GameSprite id " << id;
 					warnings.push_back(ss);
+#endif
 					fh.seekRelative(size);
 				} else {
 					spr->id = id;
@@ -88,8 +114,6 @@ bool SprLoader::LoadData(GraphicManager* manager, const wxFileName& datafile, wx
 		}
 		id++;
 	}
-#undef safe_get
-	manager->unloaded = false;
 	return true;
 }
 
@@ -126,9 +150,8 @@ bool SprLoader::LoadDump(GraphicManager* manager, std::unique_ptr<uint8_t[]>& ta
 		fh.seek(to_seek + 3);
 		uint16_t sprite_size;
 		if (fh.getU16(sprite_size)) {
-			target = std::make_unique<uint8_t[]>(sprite_size);
+			target = std::make_unique<uint8_t[]>(size = sprite_size);
 			if (fh.getRAW(target.get(), sprite_size)) {
-				size = sprite_size;
 				return true;
 			}
 			target.reset();
