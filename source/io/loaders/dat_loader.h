@@ -15,9 +15,7 @@ public:
 	static bool LoadMetadata(GraphicManager* manager, const wxFileName& datafile, wxString& error, wxArrayString& warnings);
 
 private:
-	static bool LoadMetadataFlags(GraphicManager* manager, FileReadHandle& file, GameSprite* sType, wxString& error, wxArrayString& warnings);
-	static uint8_t RemapFlag(uint8_t flag, DatFormat format);
-	static bool ReadFlagData(GraphicManager* manager, FileReadHandle& file, GameSprite* sType, uint8_t flag, wxArrayString& warnings);
+	static void ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, GameSprite* sType, uint32_t group_index, wxArrayString& warnings);
 };
 
 #endif
