@@ -11,6 +11,11 @@
 
 class Map;
 
+struct InstanceData {
+	float x, y, w, h; // dest rect
+	float layer;      // layer index
+};
+
 class MinimapRenderer {
 public:
 	MinimapRenderer();
@@ -70,6 +75,9 @@ private:
 	std::unique_ptr<GLTextureResource> palette_texture_id_;
 	std::unique_ptr<GLVertexArray> vao_;
 	std::unique_ptr<GLBuffer> vbo_;
+	std::unique_ptr<GLBuffer> instance_vbo_;
+	std::vector<InstanceData> instance_data_;
+	size_t instance_vbo_capacity_ = 0;
 
 	int width_ = 0;
 	int height_ = 0;
