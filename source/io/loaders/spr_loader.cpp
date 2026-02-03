@@ -124,7 +124,10 @@ bool SprLoader::ReadSprites(GraphicManager* manager, FileReadHandle& fh, const s
 					ss << "items.spr: Duplicate GameSprite id " << id;
 					warnings.push_back(ss);
 #endif
-					fh.seekRelative(size);
+					if (!fh.seekRelative(size)) {
+						error = wxstr(fh.getErrorMessage());
+						return false;
+					}
 				} else {
 					spr->id = id;
 					spr->size = size;
@@ -136,7 +139,10 @@ bool SprLoader::ReadSprites(GraphicManager* manager, FileReadHandle& fh, const s
 				}
 			}
 		} else {
-			fh.seekRelative(size);
+			if (!fh.seekRelative(size)) {
+				error = wxstr(fh.getErrorMessage());
+				return false;
+			}
 		}
 		id++;
 	}
@@ -174,7 +180,9 @@ bool SprLoader::LoadDump(GraphicManager* manager, std::unique_ptr<uint8_t[]>& ta
 			target.reset(); // ensure null
 			return true;
 		}
-		fh.seek(to_seek + SPRITE_DATA_OFFSET);
+		if (!fh.seek(to_seek + SPRITE_DATA_OFFSET)) {
+			return false;
+		}
 		uint16_t sprite_size;
 		if (fh.getU16(sprite_size)) {
 			target = std::make_unique<uint8_t[]>(size = sprite_size);

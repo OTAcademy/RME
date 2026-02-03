@@ -161,9 +161,14 @@ namespace {
 			}
 
 			default: {
-				// C++20 std::format usage
+#if __cpp_lib_format >= 201907L
 				std::string err = std::format("Metadata: Unknown flag: {}. Previous flag: {}.", static_cast<int>(flag), static_cast<int>(previous_flag));
 				warnings.push_back(err);
+#else
+				wxString err;
+				err.Printf("Metadata: Unknown flag: %d. Previous flag: %d.", static_cast<int>(flag), static_cast<int>(previous_flag));
+				warnings.push_back(err);
+#endif
 				break;
 			}
 		}
@@ -183,7 +188,13 @@ namespace {
 			ReadFlagData(format, file, sType, flag, previous_flag, warnings);
 		}
 		// Sanity check: If we exit the loop without hitting DatFlagLast, it's potential corruption.
+#if __cpp_lib_format >= 201907L
 		warnings.push_back(std::format("Metadata: corruption warning - flag list exceeded limit (255) without terminator for sprite id {}", sprite_id));
+#else
+		wxString err;
+		err.Printf("Metadata: corruption warning - flag list exceeded limit (255) without terminator for sprite id %d", sprite_id);
+		warnings.push_back(err);
+#endif
 	}
 
 } // namespace

@@ -6,6 +6,7 @@
 #include <wx/filename.h>
 #include <memory>
 #include <cstdint>
+#include <vector>
 
 class GraphicManager;
 class FileReadHandle;
