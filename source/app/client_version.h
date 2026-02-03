@@ -169,6 +169,8 @@ enum DatFlags : uint8_t {
 	DatFlagWrappable = 35,
 	DatFlagUnwrappable = 36,
 	DatFlagTopEffect = 37,
+	DatFlagWings = 38,
+	DatFlagDefault = 40,
 
 	DatFlagFloorChange = 252,
 	DatFlagNoMoveAnimation = 253, // 10.10: real value is 16, but we need to do this for backwards compatibility
@@ -222,6 +224,10 @@ public:
 	DatFormat getDatFormatForSignature(uint32_t signature) const;
 	ClientVersionList getExtensionsSupported() const;
 
+	bool isTransparent() const {
+		return is_transparent;
+	}
+
 	FileName getDataPath() const;
 	FileName getLocalDataPath() const;
 	FileName getClientPath() const {
@@ -239,6 +245,7 @@ private:
 
 	std::string name;
 	bool visible;
+	bool is_transparent;
 	bool usesFuckedUpCharges;
 
 	std::vector<MapVersionID> map_versions_supported;

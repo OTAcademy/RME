@@ -252,6 +252,8 @@ public:
 
 	friend class GraphicManager;
 	friend class GameSpriteLoader;
+	friend class DatLoader;
+	friend class SprLoader;
 	friend class SpriteIconGenerator;
 	friend class TextureGarbageCollector;
 	friend class TooltipDrawer;
@@ -301,6 +303,9 @@ public:
 	bool loadSpriteData(const FileName& datafile, wxString& error, wxArrayString& warnings);
 
 	friend class GameSpriteLoader;
+	friend class OtfiLoader;
+	friend class DatLoader;
+	friend class SprLoader;
 
 	// Cleans old & unused textures according to config settings
 	void garbageCollection();

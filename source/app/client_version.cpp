@@ -340,6 +340,7 @@ ClientVersion::ClientVersion(OtbVersion otb, std::string versionName, wxString p
 	otb(otb),
 	name(versionName),
 	visible(false),
+	is_transparent(false),
 	preferred_map_version(MAP_OTBM_UNKNOWN),
 	data_path(path) {
 	////
@@ -419,8 +420,13 @@ bool ClientVersion::hasValidPaths() {
 
 	wxDir dir(client_path.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR));
 	wxString otfi_file;
-	metadata_path = wxFileName(client_path.GetFullPath(), wxString(ASSETS_NAME) + ".dat");
-	sprites_path = wxFileName(client_path.GetFullPath(), wxString(ASSETS_NAME) + ".spr");
+
+	metadata_path = wxFileName(client_path.GetFullPath(), wxString(ASSETS_NAME).Lower() + ".dat");
+	sprites_path = wxFileName(client_path.GetFullPath(), wxString(ASSETS_NAME).Lower() + ".spr");
+	if (!metadata_path.FileExists()) {
+		metadata_path = wxFileName(client_path.GetFullPath(), wxString(ASSETS_NAME) + ".dat");
+		sprites_path = wxFileName(client_path.GetFullPath(), wxString(ASSETS_NAME) + ".spr");
+	}
 
 	if (dir.GetFirst(&otfi_file, "*.otfi", wxDIR_FILES)) {
 		wxFileName otfi(client_path.GetFullPath(), otfi_file);
@@ -429,8 +435,24 @@ bool ClientVersion::hasValidPaths() {
 			OTMLNodePtr node = doc->get("DatSpr");
 			std::string metadata = node->valueAt<std::string>("metadata-file", std::string(ASSETS_NAME) + ".dat");
 			std::string sprites = node->valueAt<std::string>("sprites-file", std::string(ASSETS_NAME) + ".spr");
+			is_transparent = node->valueAt<bool>("transparency", false);
 			metadata_path = wxFileName(client_path.GetFullPath(), wxString(metadata));
 			sprites_path = wxFileName(client_path.GetFullPath(), wxString(sprites));
+		}
+	} else if (metadata_path.GetFullName().IsSameAs("tibia.dat", false)) {
+		// Fallback for standard clients: 10.10+ are transparent
+		// This is a heuristic since standard clients don't have .otfi
+		// but standard 10.10+ clients are transparent.
+		// If it's a "tibia.dat" but opaque, user should probably use a custom .otfi
+		FileReadHandle dat_file(static_cast<const char*>(metadata_path.GetFullPath().mb_str()));
+		if (dat_file.isOk()) {
+			uint32_t sig;
+			if (dat_file.getU32(sig)) {
+				DatFormat format = getDatFormatForSignature(sig);
+				if (format >= DAT_FORMAT_1010) {
+					is_transparent = true;
+				}
+			}
 		}
 	}
 

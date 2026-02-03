@@ -103,8 +103,8 @@ public:
 	void close() override;
 	bool seek(size_t offset);
 	bool seekRelative(size_t offset);
-	FORCEINLINE void skip(size_t offset) {
-		seekRelative(offset);
+	FORCEINLINE bool skip(size_t offset) {
+		return seekRelative(offset);
 	}
 	size_t size() {
 		return file_size;
