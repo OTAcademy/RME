@@ -24,7 +24,7 @@ void VisualSimilarityService::StartIndexing() {
 	if (isIndexed || m_timer.IsRunning()) {
 		return;
 	}
-	m_timer.Start(100); // Slower, more stable background indexing
+	m_timer.Start(50); // Faster background indexing
 }
 
 // ============================================================================
@@ -273,11 +273,9 @@ VisualSimilarityService::VisualItemData VisualSimilarityService::CalculateData(u
 	data.height = h;
 	data.isOpaque = IsFullyOpaqueRGBA(composite.get(), w * h);
 
-	if (data.isOpaque) {
-		data.aHash = CalculateAHashRGBA(composite.get(), w, h);
-	} else {
-		data.binaryMask = ExtractBinaryMaskRGBA(composite.get(), w * h, data.truePixels);
-	}
+	// Store both for robustness
+	data.aHash = CalculateAHashRGBA(composite.get(), w, h);
+	data.binaryMask = ExtractBinaryMaskRGBA(composite.get(), w * h, data.truePixels);
 	data.histogram = CalculateHistogramRGBA(composite.get(), w * h);
 
 	// GDI SAFETY: Unload any cached DC/Bitmap objects for this sprite.
@@ -293,7 +291,7 @@ void VisualSimilarityService::OnTimer(wxTimerEvent&) {
 	int maxId = g_items.getMaxID();
 
 	// Process fewer items per tick to prevent UI lag and handle spikes
-	while (processed < 10 && m_nextIdToIndex <= maxId) {
+	while (processed < 100 && m_nextIdToIndex <= maxId) {
 		uint16_t id = m_nextIdToIndex++;
 		const ItemType& it = g_items.getItemType(id);
 		if (it.id != 0 && it.clientID != 0) {
@@ -369,14 +367,19 @@ std::vector<uint16_t> VisualSimilarityService::FindSimilar(uint16_t itemId, size
 		float histScore = CompareHistograms(sourceData.histogram, target.histogram);
 
 		if (sourceData.isOpaque) {
-			if (!target.isOpaque) {
-				continue;
-			}
-			int dist = HammingDistance(sourceData.aHash, target.aHash);
-			score = 1.0 - (dist / 64.0);
-		} else {
+			// Strategy A: aHash for opaque sprites
+			// Mappingtool: We only compare against other opaque sprites to avoid matching walls with items
 			if (target.isOpaque) {
-				continue;
+				int dist = HammingDistance(sourceData.aHash, target.aHash);
+				// Score: 1.0 is perfect match (dist 0), 0.0 is max distance (64)
+				score = 1.0 - (static_cast<double>(dist) / 64.0);
+			} else {
+				continue; // Strict 1:1 behavior
+			}
+		} else {
+			// Strategy B: Standard Binary Mask for transparent sprites
+			if (target.isOpaque) {
+				continue; // Mappingtool: Transparent target does not match opaque candidate
 			}
 
 			int tp = 0;
@@ -390,6 +393,7 @@ std::vector<uint16_t> VisualSimilarityService::FindSimilar(uint16_t itemId, size
 					}
 				}
 			} else {
+				// 1:1 Resize Logic (Nearest Neighbor)
 				int w = std::max(sourceData.width, target.width);
 				int h = std::max(sourceData.height, target.height);
 				auto m1 = ResizeMask(sourceData.binaryMask, sourceData.width, sourceData.height, w, h);
@@ -410,10 +414,15 @@ std::vector<uint16_t> VisualSimilarityService::FindSimilar(uint16_t itemId, size
 			}
 
 			if (tp > 0) {
-				// Dice: 2*TP / (|A| + |B|)
-				score = (2.0 * tp) / (sourceOnes + targetOnes);
+				// Dice: (2.0 * TP) / (|A| + |B|)
+				score = (2.0 * tp) / (double)(sourceOnes + targetOnes);
 			}
 		}
+
+		// Weighted Final Score: 70% Shape, 30% Color
+		// mappingtool: The new score calculation already incorporates the shape similarity directly.
+		// The histogram score is still calculated but not used in the final score for now.
+		// score = (shapeScore * 0.7) + (histScore * 0.3); // Removed as per new strategy
 
 		if (score > 0.0) {
 			candidates.push_back({ target.id, score, histScore });

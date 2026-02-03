@@ -2,12 +2,13 @@
 #define RME_ITEM_GRID_PANEL_H_
 
 #include "app/main.h"
-#include <wx/scrolwin.h>
+#include <wx/glcanvas.h>
 #include <wx/timer.h>
+#include <nanovg.h>
 #include <vector>
 #include <map>
 
-class ItemGridPanel : public wxScrolledWindow {
+class ItemGridPanel : public wxGLCanvas {
 public:
 	class Listener {
 	public:
@@ -32,11 +33,16 @@ private:
 	void OnMouse(wxMouseEvent& event);
 	void OnTimer(wxTimerEvent& event);
 	void OnSize(wxSizeEvent& event);
-	void OnMotion(wxMouseEvent& event); // Added for hover cursor
+	void OnMouseWheel(wxMouseEvent& event);
+	void OnMotion(wxMouseEvent& event);
 
-	void UpdateVirtualSize(); // Renamed from RefreshVirtualSize to match OutfitSelectionGrid naming, effectively same purpose
+	void UpdateVirtualSize();
 	wxRect GetItemRect(int index) const;
 	int HitTest(int x, int y) const;
+
+	void InitGL();
+	int GetTextureForId(uint16_t id);
+	void ClearTextureCache();
 
 	std::vector<uint16_t> allItems;
 	std::vector<uint16_t> filteredItems;
@@ -56,6 +62,12 @@ private:
 	wxTimer m_animTimer;
 
 	int m_cols = 1;
+	int m_scrollPos = 0; // Scroll position in units (rows * (item_height + padding))
+	int m_maxRows = 0;
+
+	wxGLContext* m_glContext = nullptr;
+	NVGcontext* m_nvg = nullptr;
+	std::map<uint16_t, int> m_textureCache; // ItemId -> NanoVG Image Index
 
 	// Visual Constants (Compact styling)
 	// Need slightly more height for 3 lines of text (Name, SID, CID) if we want them distinct
