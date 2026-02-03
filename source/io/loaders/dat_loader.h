@@ -4,6 +4,7 @@
 #include <wx/string.h>
 #include <wx/arrstr.h>
 #include <wx/filename.h>
+#include "app/client_version.h"
 
 class GraphicManager;
 class FileReadHandle;
@@ -15,6 +16,8 @@ public:
 
 private:
 	static bool LoadMetadataFlags(GraphicManager* manager, FileReadHandle& file, GameSprite* sType, wxString& error, wxArrayString& warnings);
+	static uint8_t RemapFlag(uint8_t flag, DatFormat format);
+	static bool ReadFlagData(GraphicManager* manager, FileReadHandle& file, GameSprite* sType, uint8_t flag, wxArrayString& warnings);
 };
 
 #endif
