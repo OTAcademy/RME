@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <vector>
+#include <memory>
 
 VisualSimilarityService& VisualSimilarityService::Get() {
 	static VisualSimilarityService instance;
@@ -23,16 +24,16 @@ void VisualSimilarityService::StartIndexing() {
 	if (isIndexed || m_timer.IsRunning()) {
 		return;
 	}
-	m_timer.Start(20); // Fast interval
+	m_timer.Start(100); // Slower, more stable background indexing
 }
 
 // ============================================================================
-// CORE ALGORITHM HELPERS (RGBA versions)
+// CORE ALGORITHM HELPERS (Mappingtool 1:1)
 // ============================================================================
 
-static bool IsFullyOpaqueRGBA(const uint8_t* rgba, int count) {
+static bool IsFullyOpaqueRGBA(const uint8_t* rgba, int count, uint8_t threshold = 10) {
 	for (int i = 0; i < count; ++i) {
-		if (rgba[i * 4 + 3] <= 10) {
+		if (rgba[i * 4 + 3] <= threshold) {
 			return false;
 		}
 	}
@@ -40,44 +41,43 @@ static bool IsFullyOpaqueRGBA(const uint8_t* rgba, int count) {
 }
 
 static uint64_t CalculateAHashRGBA(const uint8_t* rgba, int w, int h) {
-	// Simple 8x8 downsample and average
-	// If it's not 32x32, we'll just use the first 8x8 block or scale poorly for now
-	// but Tibia sprites are 32x32.
+	// mappingtool: 1. Resize to 8x8 using box sampling
+	// grayscale = 0.299*R + 0.587*G + 0.114*B
+	uint8_t gray_8x8[64];
+	double total_brightness = 0;
 
-	long total = 0;
-	uint8_t gray[64];
+	float block_w = (float)w / 8.0f;
+	float block_h = (float)h / 8.0f;
 
-	for (int row = 0; row < 8; ++row) {
-		for (int col = 0; col < 8; ++col) {
-			// Box average 4x4 block for 32x32 source
-			int r_sum = 0, g_sum = 0, b_sum = 0;
-			int samples = 0;
+	for (int y = 0; y < 8; ++y) {
+		for (int x = 0; x < 8; ++x) {
+			double block_sum = 0;
+			int pixel_count = 0;
 
-			int sx_start = (col * w) / 8;
-			int sx_end = ((col + 1) * w) / 8;
-			int sy_start = (row * h) / 8;
-			int sy_end = ((row + 1) * h) / 8;
+			int start_x = (int)(x * block_w);
+			int start_y = (int)(y * block_h);
+			int end_x = (int)((x + 1) * block_w);
+			int end_y = (int)((y + 1) * block_h);
 
-			for (int sy = sy_start; sy < sy_end; ++sy) {
-				for (int sx = sx_start; sx < sx_end; ++sx) {
-					int idx = (sy * w + sx) * 4;
-					r_sum += rgba[idx + 0];
-					g_sum += rgba[idx + 1];
-					b_sum += rgba[idx + 2];
-					samples++;
+			for (int py = start_y; py < end_y && py < h; ++py) {
+				for (int px = start_x; px < end_x && px < w; ++px) {
+					int idx = (py * w + px) * 4;
+					double gray = 0.299 * rgba[idx] + 0.587 * rgba[idx + 1] + 0.114 * rgba[idx + 2];
+					block_sum += gray;
+					pixel_count++;
 				}
 			}
 
-			int gray_val = samples > 0 ? (r_sum + g_sum + b_sum) / (3 * samples) : 0;
-			gray[row * 8 + col] = (uint8_t)gray_val;
-			total += gray_val;
+			uint8_t avg = (uint8_t)((pixel_count > 0) ? (block_sum / pixel_count) : 0);
+			gray_8x8[y * 8 + x] = avg;
+			total_brightness += avg;
 		}
 	}
 
-	int avg = total / 64;
+	uint8_t global_avg = (uint8_t)(total_brightness / 64.0);
 	uint64_t hash = 0;
 	for (int i = 0; i < 64; ++i) {
-		if (gray[i] >= avg) {
+		if (gray_8x8[i] >= global_avg) {
 			hash |= (1ULL << i);
 		}
 	}
@@ -88,6 +88,7 @@ static std::vector<bool> ExtractBinaryMaskRGBA(const uint8_t* rgba, int count, i
 	std::vector<bool> mask(count);
 	outTruePixels = 0;
 	for (int i = 0; i < count; ++i) {
+		// Strictly > 10 per mappingtool docs
 		bool val = (rgba[i * 4 + 3] > 10);
 		mask[i] = val;
 		if (val) {
@@ -95,6 +96,43 @@ static std::vector<bool> ExtractBinaryMaskRGBA(const uint8_t* rgba, int count, i
 		}
 	}
 	return mask;
+}
+
+static std::vector<float> CalculateHistogramRGBA(const uint8_t* rgba, int count, uint8_t threshold = 10) {
+	const int BINS = 8;
+	std::vector<int> hist(BINS * BINS * BINS, 0);
+	int pixel_count = 0;
+
+	for (int i = 0; i < count; ++i) {
+		if (rgba[i * 4 + 3] > threshold) {
+			int r_bin = std::min((int)(rgba[i * 4 + 0] * BINS / 256), BINS - 1);
+			int g_bin = std::min((int)(rgba[i * 4 + 1] * BINS / 256), BINS - 1);
+			int b_bin = std::min((int)(rgba[i * 4 + 2] * BINS / 256), BINS - 1);
+
+			int bin_idx = r_bin * BINS * BINS + g_bin * BINS + b_bin;
+			hist[bin_idx]++;
+			pixel_count++;
+		}
+	}
+
+	std::vector<float> normalized(hist.size(), 0.0f);
+	if (pixel_count > 0) {
+		for (size_t i = 0; i < hist.size(); ++i) {
+			normalized[i] = (float)hist[i] / pixel_count;
+		}
+	}
+	return normalized;
+}
+
+static float CompareHistograms(const std::vector<float>& h1, const std::vector<float>& h2) {
+	if (h1.empty() || h2.empty()) {
+		return 0.0f;
+	}
+	float intersection = 0.0f;
+	for (size_t i = 0; i < h1.size(); ++i) {
+		intersection += std::min(h1[i], h2[i]);
+	}
+	return intersection;
 }
 
 static int HammingDistance(uint64_t h1, uint64_t h2) {
@@ -107,23 +145,90 @@ static int HammingDistance(uint64_t h1, uint64_t h2) {
 	return dist;
 }
 
-// Nearest Neighbor Resize for Mask
 static std::vector<bool> ResizeMask(const std::vector<bool>& src, int srcW, int srcH, int dstW, int dstH) {
 	std::vector<bool> dst(dstW * dstH);
 	for (int y = 0; y < dstH; ++y) {
 		for (int x = 0; x < dstW; ++x) {
+			// mappingtool: nearest neighbor scaling
 			int sx = (x * srcW) / dstW;
 			int sy = (y * srcH) / dstH;
-			if (sx >= srcW) {
-				sx = srcW - 1;
-			}
-			if (sy >= srcH) {
-				sy = srcH - 1;
-			}
+			sx = std::min(sx, srcW - 1);
+			sy = std::min(sy, srcH - 1);
 			dst[y * dstW + x] = src[sy * srcW + sx];
 		}
 	}
 	return dst;
+}
+
+static std::unique_ptr<uint8_t[]> CreateCompositeRGBA(GameSprite& gs, int& outW, int& outH) {
+	outW = gs.width * 32;
+	outH = gs.height * 32;
+
+	if (outW <= 0 || outH <= 0) {
+		return nullptr;
+	}
+
+	size_t bufferSize = static_cast<size_t>(outW) * outH * 4;
+	auto composite = std::make_unique<uint8_t[]>(bufferSize);
+	std::fill(composite.get(), composite.get() + bufferSize, 0);
+
+	int pattern_x = (gs.pattern_x >= 3) ? 2 : 0;
+	int pattern_y = 0;
+	int pattern_z = 0;
+	int frame = 0;
+
+	for (int l = 0; l < gs.layers; ++l) {
+		for (int w = 0; w < gs.width; ++w) {
+			for (int h = 0; h < gs.height; ++h) {
+				int spriteIdx = gs.getIndex(w, h, l, pattern_x, pattern_y, pattern_z, frame);
+				if (spriteIdx < 0 || (size_t)spriteIdx >= gs.spriteList.size()) {
+					continue;
+				}
+
+				auto spriteData = gs.spriteList[spriteIdx]->getRGBAData();
+				if (!spriteData) {
+					continue;
+				}
+
+				// mappingtool logic: Right-to-left, bottom-to-top arrangement
+				int part_x = (gs.width - w - 1) * 32;
+				int part_y = (gs.height - h - 1) * 32;
+
+				for (int sy = 0; sy < 32; ++sy) {
+					for (int sx = 0; sx < 32; ++sx) {
+						int dy = part_y + sy;
+						int dx = part_x + sx;
+						if (dx < 0 || dx >= outW || dy < 0 || dy >= outH) {
+							continue;
+						}
+
+						int src_idx = (sy * 32 + sx) * 4;
+						int dst_idx = (dy * outW + dx) * 4;
+
+						uint8_t sa = spriteData[src_idx + 3];
+						if (sa == 0) {
+							continue;
+						}
+
+						if (sa == 255) {
+							composite[dst_idx + 0] = spriteData[src_idx + 0];
+							composite[dst_idx + 1] = spriteData[src_idx + 1];
+							composite[dst_idx + 2] = spriteData[src_idx + 2];
+							composite[dst_idx + 3] = 255;
+						} else {
+							float a = sa / 255.0f;
+							float inv_a = 1.0f - a;
+							composite[dst_idx + 0] = (uint8_t)(spriteData[src_idx + 0] * a + composite[dst_idx + 0] * inv_a);
+							composite[dst_idx + 1] = (uint8_t)(spriteData[src_idx + 1] * a + composite[dst_idx + 1] * inv_a);
+							composite[dst_idx + 2] = (uint8_t)(spriteData[src_idx + 2] * a + composite[dst_idx + 2] * inv_a);
+							composite[dst_idx + 3] = std::max(composite[dst_idx + 3], sa);
+						}
+					}
+				}
+			}
+		}
+	}
+	return composite;
 }
 
 // ============================================================================
@@ -154,31 +259,31 @@ VisualSimilarityService::VisualItemData VisualSimilarityService::CalculateData(u
 	}
 
 	GameSprite* gs = dynamic_cast<GameSprite*>(sprite);
-	if (!gs || gs->spriteList.empty()) {
+	if (!gs) {
 		return data;
 	}
 
-	// Use first sprite for shape similarity
-	// This avoids complex compositing and is 1:1 with how shape search usually works
-	auto rgba = gs->spriteList[0]->getRGBAData();
-	if (!rgba) {
+	int w, h;
+	auto composite = CreateCompositeRGBA(*gs, w, h);
+	if (!composite) {
 		return data;
 	}
 
-	// Standard Tibia sprite size
-	int w = 32;
-	int h = 32;
-
-	// Populate Data
 	data.width = w;
 	data.height = h;
-	data.isOpaque = IsFullyOpaqueRGBA(rgba.get(), w * h);
+	data.isOpaque = IsFullyOpaqueRGBA(composite.get(), w * h);
 
 	if (data.isOpaque) {
-		data.aHash = CalculateAHashRGBA(rgba.get(), w, h);
+		data.aHash = CalculateAHashRGBA(composite.get(), w, h);
 	} else {
-		data.binaryMask = ExtractBinaryMaskRGBA(rgba.get(), w * h, data.truePixels);
+		data.binaryMask = ExtractBinaryMaskRGBA(composite.get(), w * h, data.truePixels);
 	}
+	data.histogram = CalculateHistogramRGBA(composite.get(), w * h);
+
+	// GDI SAFETY: Unload any cached DC/Bitmap objects for this sprite.
+	// Indexing touches every sprite; if we don't unload them, the UI
+	// might exhaust GDI handles (10k limit) if it previously cached them.
+	gs->unloadDC();
 
 	return data;
 }
@@ -187,12 +292,10 @@ void VisualSimilarityService::OnTimer(wxTimerEvent&) {
 	int processed = 0;
 	int maxId = g_items.getMaxID();
 
-	// Process batch
-	while (processed < 20 && m_nextIdToIndex <= maxId) {
+	// Process fewer items per tick to prevent UI lag and handle spikes
+	while (processed < 10 && m_nextIdToIndex <= maxId) {
 		uint16_t id = m_nextIdToIndex++;
 		const ItemType& it = g_items.getItemType(id);
-
-		// Skip invalid or empty items
 		if (it.id != 0 && it.clientID != 0) {
 			VisualItemData data = CalculateData(id);
 			if (data.width > 0) {
@@ -203,6 +306,11 @@ void VisualSimilarityService::OnTimer(wxTimerEvent&) {
 		processed++;
 	}
 
+	// Periodically run garbage collection to free GDI resources
+	if (m_nextIdToIndex % 500 == 0) {
+		g_gui.gfx.garbageCollection();
+	}
+
 	if (m_nextIdToIndex > maxId) {
 		m_timer.Stop();
 		isIndexed = true;
@@ -210,7 +318,6 @@ void VisualSimilarityService::OnTimer(wxTimerEvent&) {
 }
 
 std::vector<uint16_t> VisualSimilarityService::FindSimilar(uint16_t itemId, size_t count) {
-	// 1. Get Source Data
 	VisualItemData sourceData;
 	{
 		std::lock_guard<std::mutex> lock(dataMutex);
@@ -220,7 +327,6 @@ std::vector<uint16_t> VisualSimilarityService::FindSimilar(uint16_t itemId, size
 		}
 	}
 
-	// If not cached (e.g. indexing not done), calculate on fly
 	if (sourceData.width == 0) {
 		sourceData = CalculateData(itemId);
 		if (sourceData.width == 0) {
@@ -228,12 +334,16 @@ std::vector<uint16_t> VisualSimilarityService::FindSimilar(uint16_t itemId, size
 		}
 	}
 
+#include <memory>
+
+	// ... inside FindSimilar ...
 	struct ScoredItem {
 		uint16_t id;
 		double score;
+		float histogram;
 		bool operator<(const ScoredItem& other) const {
-			// Sort DESC by score, then ASC by ID
-			if (std::abs(score - other.score) > 0.0001) {
+			// mappingtool: sort by similarity_score DESC, then ID ASC
+			if (std::abs(score - other.score) > 0.00001) {
 				return score > other.score;
 			}
 			return id < other.id;
@@ -241,11 +351,6 @@ std::vector<uint16_t> VisualSimilarityService::FindSimilar(uint16_t itemId, size
 	};
 	std::vector<ScoredItem> candidates;
 
-	// 2. Select Algorithm based on Source Type
-	// Copy cache keys/values to avoid locking mutex during expensive loop?
-	// Or just lock. Iteration over map is fast, comparison takes time.
-	// For responsiveness, we should copy the vector of items then process?
-	// The cache might be large (10k items). Copying is okay.
 	std::vector<VisualItemData> targets;
 	{
 		std::lock_guard<std::mutex> lock(dataMutex);
@@ -255,104 +360,72 @@ std::vector<uint16_t> VisualSimilarityService::FindSimilar(uint16_t itemId, size
 		}
 	}
 
-	if (sourceData.isOpaque) {
-		// ALGORITHM A: Opaque (aHash)
-		for (const auto& target : targets) {
-			if (target.id == itemId) {
-				continue;
-			}
-			if (!target.isOpaque) {
-				continue; // Only compare opaque with opaque per doc
-			}
-
-			int dist = HammingDistance(sourceData.aHash, target.aHash);
-			double score = 1.0 - (dist / 64.0);
-			if (score > 0.0) {
-				candidates.push_back({ target.id, score });
-			}
+	for (const auto& target : targets) {
+		if (target.id == itemId) {
+			continue;
 		}
-	} else {
-		// ALGORITHM B: Transparent (Dice on Binary Mask)
-		for (const auto& target : targets) {
-			if (target.id == itemId) {
+
+		double score = 0.0;
+		float histScore = CompareHistograms(sourceData.histogram, target.histogram);
+
+		if (sourceData.isOpaque) {
+			if (!target.isOpaque) {
 				continue;
 			}
+			int dist = HammingDistance(sourceData.aHash, target.aHash);
+			score = 1.0 - (dist / 64.0);
+		} else {
 			if (target.isOpaque) {
-				continue; // Skip opaque targets? Doc says "compare masks", implies similar types.
-			}
-			// Actually doc says "For opaque... use aHash... DO NOT compare opaque with transparent".
-			// So if source is transparent, we should ideally compare with transparent.
-			// But if we compare with opaque, the Opaque item has no mask stored in my structure (to save RAM).
-			// So yes, skip opaque.
-
-			// Dice Coefficient: 2*TP / (|A| + |B|)
-			// Denominator
-			int denom = sourceData.truePixels + target.truePixels;
-			if (denom == 0) {
 				continue;
 			}
 
 			int tp = 0;
+			int sourceOnes = sourceData.truePixels;
+			int targetOnes = target.truePixels;
 
-			// Optimized path: Same Dimensions
 			if (sourceData.width == target.width && sourceData.height == target.height) {
-				// Linear compare
-				size_t sz = sourceData.binaryMask.size();
-				// Use raw access if possible, or just iter
-				for (size_t i = 0; i < sz; ++i) {
+				for (size_t i = 0; i < sourceData.binaryMask.size(); ++i) {
 					if (sourceData.binaryMask[i] && target.binaryMask[i]) {
 						tp++;
 					}
 				}
 			} else {
-				// Resizing path
 				int w = std::max(sourceData.width, target.width);
 				int h = std::max(sourceData.height, target.height);
-
-				std::vector<bool> m1 = ResizeMask(sourceData.binaryMask, sourceData.width, sourceData.height, w, h);
-				std::vector<bool> m2 = ResizeMask(target.binaryMask, target.width, target.height, w, h);
-
+				auto m1 = ResizeMask(sourceData.binaryMask, sourceData.width, sourceData.height, w, h);
+				auto m2 = ResizeMask(target.binaryMask, target.width, target.height, w, h);
+				sourceOnes = 0;
+				targetOnes = 0;
 				for (size_t i = 0; i < m1.size(); ++i) {
+					if (m1[i]) {
+						sourceOnes++;
+					}
+					if (m2[i]) {
+						targetOnes++;
+					}
 					if (m1[i] && m2[i]) {
 						tp++;
 					}
 				}
-				// NOTICE: Denominator strictly should be count of 1s in RESIZED masks?
-				// Math wise: Scaling up preserves ratio of 1s approx.
-				// Dice = 2*|A n B| / (|A| + |B|).
-				// If we resize, |A| changes (scales up).
-				// So we should recount 1s in m1/m2.
-				denom = 0;
-				for (bool b : m1) {
-					if (b) {
-						denom++;
-					}
-				}
-				for (bool b : m2) {
-					if (b) {
-						denom++;
-					}
-				}
 			}
 
-			if (denom > 0) {
-				double score = (2.0 * tp) / denom;
-				if (score > 0.1) { // Min threshold
-					candidates.push_back({ target.id, score });
-				}
+			if (tp > 0) {
+				// Dice: 2*TP / (|A| + |B|)
+				score = (2.0 * tp) / (sourceOnes + targetOnes);
 			}
+		}
+
+		if (score > 0.0) {
+			candidates.push_back({ target.id, score, histScore });
 		}
 	}
 
-	// 3. Sort and Limit
-	// Use partial sort for top N
 	if (count > candidates.size()) {
 		count = candidates.size();
 	}
 	std::partial_sort(candidates.begin(), candidates.begin() + count, candidates.end());
 
 	std::vector<uint16_t> results;
-	results.reserve(count);
 	for (size_t i = 0; i < count; ++i) {
 		results.push_back(candidates[i].id);
 	}

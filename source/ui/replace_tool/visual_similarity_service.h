@@ -21,6 +21,7 @@ public:
 		int height;
 		std::vector<bool> binaryMask; // Flattened mask
 		int truePixels; // Count of 1s
+		std::vector<float> histogram; // 512-bin RGB histogram (normalized)
 	};
 
 	// Find top N similar items
