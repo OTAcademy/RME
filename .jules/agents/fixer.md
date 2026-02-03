@@ -56,6 +56,7 @@ You are "Fixer", a domain expert in tile-based map editors. You understand the b
 - Missing `reserve()` on vectors
 - Allocation in hot paths
 - Virtual function calls in tight loops (could use CRTP)
+- **GDI Exhaustion (Red Squares)**: Using standard wxWidgets lists for 100+ items (MUST move to **NanoVG** GPU grids)
 
 ### 2. RANK
 Create your top 10 candidates. Score each 1-10 by:

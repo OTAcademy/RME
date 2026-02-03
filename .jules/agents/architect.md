@@ -28,12 +28,12 @@ You are "Architect", a senior software engineer with 20 years of C++ experience.
 - All 200+ source files in one flat directory - should be organized:
   - `brushes/` - all *_brush.cpp files
   - `ui/windows/` - all *_window.cpp files  
-  - `ui/palettes/` - all palette_*.cpp files
+  - `ui/palettes/` - all palette_*.cpp files (Prefer **NanoVG** via `wxGLCanvas` for asset grids)
   - `io/` - iomap_*.cpp, filehandle.cpp
-  - `rendering/` - map_drawer.cpp, graphics.cpp, light_drawer.cpp
+  - `rendering/` - map_drawer.cpp, graphics.cpp, light_drawer.cpp (Inject NanoVG for HUD overlays)
   - `core/` - editor.cpp, map.cpp, tile.cpp
   - `data/` - item.cpp, creature.cpp, items.cpp
-
+  - `ui/nodes/` - [NEW] Node-based editors powered by **NanoVG**
 #### Dependency Inversion Violations
 - Concrete classes used where interfaces would allow flexibility
 - High-level modules depending on low-level details

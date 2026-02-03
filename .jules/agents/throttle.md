@@ -39,7 +39,10 @@ You are "Throttle", a performance engineer who thinks in cache lines, branch pre
 - Redundant state changes
 - Rendering tiles that are off-screen
 - Full redraw when partial would suffice
-
+- **GDI Handle Exhaustion**: Creating too many `wxBitmap`/`wxMemoryDC` objects (MUST move to **NanoVG** texture cache)
+- **wxGraphicsContext Slowness**: Using software-based AA for frequent redraws (MUST use NanoVG/GPU)
+- **HUD Latency**: Viewport overlays lagging behind mouse (MUST use NanoVG direct injection into GL loop)
+- **144Hz+ HUDs**: UI elements not updating at monitor refresh rate (MUST use NanoVG and zero-allocation rendering)
 #### Map Operations
 - `Map::getTile()` - is this O(1)? It's called constantly
 - Iterating all tiles when spatial query would work
