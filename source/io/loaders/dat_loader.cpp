@@ -4,6 +4,8 @@
 #include "io/filehandle.h"
 #include "util/common.h"
 #include <memory>
+#include <cstdint>
+#include <climits>
 #if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
 	#include <format>
 #endif
@@ -486,17 +488,22 @@ bool DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, G
 		}
 
 		if (group_index == 0) {
+			// Validate sprite_id
+			if (sprite_id == UINT32_MAX || sprite_id >= MAX_SPRITES || sprite_id + 1 > manager->image_space.max_size()) {
+				return false;
+			}
+
 			if (sprite_id >= manager->image_space.size()) {
 				manager->image_space.resize(sprite_id + 1);
 			}
 
-			auto& img_ptr = manager->image_space[sprite_id];
-			if (!img_ptr) {
-				auto img = std::make_unique<GameSprite::NormalImage>();
+			auto& imgPtr = manager->image_space[sprite_id];
+			if (!imgPtr) {
+				auto img = newd GameSprite::NormalImage();
 				img->id = sprite_id;
-				img_ptr = std::move(img);
+				imgPtr = std::unique_ptr<GameSprite::NormalImage>(img);
 			}
-			sType->spriteList.push_back(static_cast<GameSprite::NormalImage*>(img_ptr.get()));
+			sType->spriteList.push_back(static_cast<GameSprite::NormalImage*>(imgPtr.get()));
 		}
 	}
 

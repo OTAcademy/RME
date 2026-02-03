@@ -14,7 +14,6 @@ namespace {
 	constexpr uint32_t SPRITE_DATA_OFFSET = 3;
 	constexpr uint32_t SPRITE_ADDRESS_SIZE_EXTENDED = 4;
 	constexpr uint32_t SPRITE_ADDRESS_SIZE_NORMAL = 2;
-	constexpr uint32_t MAX_SPRITES = 3000000; // Sanity limit for sprite counts
 }
 
 bool SprLoader::LoadData(GraphicManager* manager, const wxFileName& datafile, wxString& error, wxArrayString& warnings) {

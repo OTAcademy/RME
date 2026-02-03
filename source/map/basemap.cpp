@@ -140,8 +140,6 @@ MapIterator::MapIterator(BaseMap* _map) :
 	node_i(0),
 	floor_i(0),
 	tile_i(0),
-	local_i(0),
-	local_z(0),
 	current_tile(nullptr),
 	map(_map) {
 	if (map) {
@@ -158,9 +156,6 @@ MapIterator::MapIterator(const MapIterator& other) :
 	node_i(other.node_i),
 	floor_i(other.floor_i),
 	tile_i(other.tile_i),
-	nodestack(other.nodestack),
-	local_i(other.local_i),
-	local_z(other.local_z),
 	map(other.map),
 	current_tile(other.current_tile) {
 }

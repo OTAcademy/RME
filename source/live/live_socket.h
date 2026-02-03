@@ -71,7 +71,6 @@ protected:
 	// receive / send methods
 	void receiveNode(NetworkMessage& message, Editor& editor, Action* action, int32_t ndx, int32_t ndy, bool underground);
 	void sendNode(uint32_t clientId, MapNode* node, int32_t ndx, int32_t ndy, uint32_t floorMask);
-	void receiveFlood(NetworkMessage& message, Editor& editor, Action* action, int32_t ndx, int32_t ndy, int32_t z);
 	void receiveFloor(NetworkMessage& message, Editor& editor, Action* action, int32_t ndx, int32_t ndy, int32_t z, MapNode* node, Floor* floor);
 	void sendFloor(NetworkMessage& message, Floor* floor);
 

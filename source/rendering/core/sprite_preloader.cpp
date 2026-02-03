@@ -23,7 +23,7 @@ namespace SpritePreloader {
 		}
 
 		// 1. Ground
-		if (tile->ground) {
+		if (tile->ground && g_items.typeExists(tile->ground->getID())) {
 			GameSprite* spr = g_items[tile->ground->getID()].sprite;
 			if (spr) {
 				int frame = tile->ground->getFrame();
@@ -44,6 +44,9 @@ namespace SpritePreloader {
 
 		// 2. Items
 		for (Item* item : tile->items) {
+			if (!g_items.typeExists(item->getID())) {
+				continue;
+			}
 			GameSprite* spr = g_items[item->getID()].sprite;
 			if (spr) {
 				int frame = item->getFrame();

@@ -96,8 +96,8 @@ bool Tile::isHouseExit() const {
 bool Tile::hasHouseExit(uint32_t exit) const {
 	const HouseExitList* house_exits = getHouseExits();
 	if (house_exits) {
-		for (auto it = house_exits->begin(); it != house_exits->end(); ++it) {
-			if (*it == exit) {
+		for (const auto& current_exit : *house_exits) {
+			if (current_exit == exit) {
 				return true;
 			}
 		}

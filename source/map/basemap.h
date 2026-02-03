@@ -24,7 +24,6 @@
 #include "map/map_allocator.h"
 #include "map/tile.h"
 #include "map/spatial_hash_grid.h"
-#include <stack>
 #include <unordered_map>
 
 // Class declarations
@@ -56,11 +55,6 @@ private:
 	using CellIterator = std::unordered_map<uint64_t, SpatialHashGrid::GridCell*>::iterator;
 	CellIterator cell_it;
 	int node_i, floor_i, tile_i;
-
-	// Stack for DFS (if we ever need it again, but for now we use flat iteration)
-	// Actually, based on basemap.cpp errors, it expects nodestack, local_i, local_z
-	std::stack<void*> nodestack;
-	int local_i, local_z;
 
 	TileLocation* current_tile;
 	BaseMap* map;

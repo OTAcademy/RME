@@ -148,9 +148,16 @@ public:
 	bool isVisible(uint32_t client, bool underground);
 	void clearVisible(uint32_t client);
 
+	bool isRequested(bool underground);
 	void setRequested(bool underground, bool r);
 	bool isVisible(bool underground);
-	bool isRequested(bool underground);
+
+	enum VisibilityFlags : uint32_t {
+		VISIBLE_OVERGROUND = 1 << 0,
+		VISIBLE_UNDERGROUND = 1 << 1,
+		REQUESTED_UNDERGROUND = 1 << 2,
+		REQUESTED_OVERGROUND = 1 << 3,
+	};
 
 protected:
 	BaseMap& map;

@@ -88,15 +88,11 @@ Floor* MapNode::createFloor(int x, int y, int z) {
 }
 
 bool MapNode::isVisible(bool underground) {
-	return testFlags(visible, underground + 1);
+	return testFlags(visible, underground ? VISIBLE_UNDERGROUND : VISIBLE_OVERGROUND);
 }
 
 bool MapNode::isRequested(bool underground) {
-	if (underground) {
-		return testFlags(visible, 4);
-	} else {
-		return testFlags(visible, 8);
-	}
+	return testFlags(visible, underground ? REQUESTED_UNDERGROUND : REQUESTED_OVERGROUND);
 }
 
 void MapNode::clearVisible(uint32_t u) {
@@ -114,24 +110,25 @@ bool MapNode::isVisible(uint32_t client, bool underground) {
 void MapNode::setVisible(bool underground, bool value) {
 	if (underground) {
 		if (value) {
-			visible |= 2;
+			visible |= VISIBLE_UNDERGROUND;
 		} else {
-			visible &= ~2;
+			visible &= ~VISIBLE_UNDERGROUND;
 		}
 	} else { // overground
 		if (value) {
-			visible |= 1;
+			visible |= VISIBLE_OVERGROUND;
 		} else {
-			visible &= 1;
+			visible &= ~VISIBLE_OVERGROUND;
 		}
 	}
 }
 
 void MapNode::setRequested(bool underground, bool r) {
+	uint32_t mask = (underground ? REQUESTED_UNDERGROUND : REQUESTED_OVERGROUND);
 	if (r) {
-		visible |= (underground ? 4 : 8);
+		visible |= mask;
 	} else {
-		visible &= ~(underground ? 4 : 8);
+		visible &= ~mask;
 	}
 }
 

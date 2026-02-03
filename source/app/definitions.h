@@ -18,6 +18,8 @@
 #ifndef RME_DEFINITIONS_H_
 #define RME_DEFINITIONS_H_
 
+#include <cstdint>
+
 #define __W_RME_APPLICATION_NAME__ wxString("OTAcademy Map Editor")
 #define __RME_APPLICATION_NAME__ std::string("OTAcademy Map Editor")
 
@@ -30,7 +32,7 @@
 #define __LIVE_NET_VERSION__ 5
 
 #define MAKE_VERSION_ID(major, minor, subversion) \
-	((major)*10000000 + (minor)*100000 + (subversion)*1000)
+	((major) * 10000000 + (minor) * 100000 + (subversion) * 1000)
 
 #define __RME_VERSION_ID__ MAKE_VERSION_ID( \
 	__RME_VERSION_MAJOR__,                  \
@@ -123,6 +125,9 @@
 #define MAP_MAX_WIDTH 65000
 #define MAP_MAX_HEIGHT 65000
 #define MAP_MAX_LAYER 15
+
+// Sanity limit for sprite counts
+constexpr std::uint32_t MAX_SPRITES = 3000000;
 
 // The size of the tile in pixels
 constexpr int TileSize = 32;

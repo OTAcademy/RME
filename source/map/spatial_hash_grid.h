@@ -25,6 +25,7 @@ public:
 	~SpatialHashGrid();
 
 	MapNode* getLeaf(int x, int y);
+	// Forces leaf creation. Throws std::bad_alloc on memory failure.
 	MapNode* getLeafForce(int x, int y);
 
 	void clear();
@@ -58,6 +59,8 @@ protected:
 	std::unordered_map<uint64_t, GridCell*> cells;
 
 	static uint64_t makeKey(int x, int y) {
+		// Assumption: cell coordinates fit in 32 bits (covering +/- 2 billion tiles).
+		// Tibia maps are typically limited to 65k x 65k.
 		return (static_cast<uint64_t>(static_cast<uint32_t>(x >> CELL_SHIFT)) << 32) | (static_cast<uint64_t>(static_cast<uint32_t>(y >> CELL_SHIFT)));
 	}
 
