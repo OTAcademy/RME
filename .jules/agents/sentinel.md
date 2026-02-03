@@ -65,6 +65,23 @@ GLuint fbo; glGenFramebuffers(1, &fbo);  // → Framebuffer class
 - Sharing resources between contexts
 - Context destruction while resources exist
 
+#### 🎨 NanoVG Context Management
+
+When using NanoVG in UI controls:
+- Each `wxGLCanvas` subclass owns its own `wxGLContext*` and `NVGcontext*`
+- Lazy-init in first `OnPaint()` using `gladLoadGL()` check
+- **Share fonts** - load once, reuse across controls via static font manager
+- **Texture cleanup** - use `nvgDeleteImage()` in destructor
+- **Context switching** - always call `SetCurrent()` before NanoVG operations
+
+**Anti-Patterns**:
+- ❌ Creating NVGcontext without `NVG_ANTIALIAS | NVG_STENCIL_STROKES`
+- ❌ Calling NanoVG without `SetCurrent(*m_glContext)` first
+- ❌ Forgetting `glClear(GL_STENCIL_BUFFER_BIT)` (causes artifacts)
+- ❌ Not calling `nvgDeleteGL3()` in destructor
+
+**Reference**: `source/ui/replace_tool/item_grid_panel.cpp`
+
 ### 2. RANK
 Create your top 10 candidates. Score each 1-10 by:
 - Legacy Score: How obsolete is this code?

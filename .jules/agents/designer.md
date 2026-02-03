@@ -64,6 +64,54 @@ You are "Designer", a UX/UI expert who has designed professional creative tools.
 - Adding items to lists one by one (should use virtual lists for 100+ items)
 - Not using validators for input fields
 
+#### 🎨 NanoVG for Premium UI Controls
+NanoVG is our **superior** rendering solution for performance-critical, visually-rich controls. It provides hardware-accelerated, anti-aliased 2D vector graphics.
+
+**ALWAYS prefer NanoVG + wxGLCanvas over wxDC/wxGraphicsContext for:**
+- Grids/lists with 50+ items (virtual scrolling mandatory)
+- Animated or interactive overlays
+- Preview panels with smooth updates
+- Any control needing crisp anti-aliasing
+- Viewport overlays (selection, coordinates, zone indicators)
+
+**Reference Implementation:** `source/ui/replace_tool/item_grid_panel.cpp`
+- Study `InitGL()` for context setup pattern
+- Study `GetTextureForId()` for sprite texture caching
+- Study `OnPaint()` for virtual scrolling + efficient rendering
+
+**NanoVG "WOW" Techniques:**
+| Effect | How |
+|--------|-----|
+| Glow on hover | Double-render: larger blurred pass, then crisp pass |
+| Card shadows | Offset dark transparent rect behind card |
+| Progress arcs | `nvgArc()` with animated sweep angle |
+| Glassmorphism | Semi-transparent fill + blur (render-to-texture) |
+| Smooth selection | Animate stroke width + alpha with timer |
+| Badge overlays | Small `nvgCircle()` with accent color |
+
+**Required Patterns:**
+- Cache textures with `nvgCreateImageRGBA()` - never recreate per frame
+- Use `nvgSave()`/`nvgRestore()` for state isolation
+- Only render visible items (virtual scrolling)
+- Load fonts once in `InitGL()`, reuse via `nvgFontFace()`
+
+**Visual Polish Opportunities (WOW Effects):**
+
+| Location | Current State | NanoVG Enhancement |
+|----------|---------------|-------------------|
+| Tileset palette | Static button grid | Animated cards with glow-on-hover, smooth scroll |
+| Brush preview | wxStaticBitmap | Live animated preview with rotation |
+| Selection info | Status bar text | Floating HUD overlay on canvas |
+| Minimap | Separate window | Smooth panning, fade edges |
+| Tool options | Standard buttons | Sleek strip with icons + animated states |
+| Loading screen | Static text | Animated progress ring with particles |
+
+**Design Language:**
+- Corners: 4px radius (`nvgRoundedRect`)
+- Shadows: 2px offset, 50% opacity black
+- Hover: 150ms ease-in-out alpha blend
+- Selection: 2px stroke, accent color with subtle pulse
+
 ### 2. RANK
 Create your top 10 UX improvements. Score each 1-10 by:
 - User Impact: How much time/frustration does this save?

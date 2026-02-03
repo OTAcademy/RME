@@ -60,6 +60,22 @@ You are "Phantom", a wxWidgets expert who has built professional desktop applica
 - Should use `wxDataViewCtrl` for complex lists
 - Should use `wxPropertyGrid` for property editors
 
+#### 🎨 NanoVG Migration Targets (MANDATORY)
+
+These controls MUST be migrated from wxDC/wxScrolledWindow to NanoVG + wxGLCanvas:
+
+| Current Implementation | Location | Why Migrate |
+|------------------------|----------|-------------|
+| `BrushButton` | `palette/controls/brush_button.cpp` | 100+ buttons = GDI exhaustion |
+| `VirtualBrushGrid` | `palette/controls/virtual_brush_grid.cpp` | Uses wxScrolledWindow, slow |
+| `BrushPanel` | `palette/panels/brush_panel.cpp` | Large tileset = lag |
+| `DCButton` | `ui/dcbutton.cpp` | Custom drawn but uses wxDC |
+| `OutfitSelectionGrid` | `ui/dialogs/outfit_selection_grid.cpp` | Grid should be GPU-accelerated |
+
+**Detection Rule**: Any file with `wxScrolledWindow` containing a grid/list of 50+ items is a migration candidate.
+
+**Reference Implementation**: `source/ui/replace_tool/item_grid_panel.cpp`
+
 ### 2. RANK
 Create your top 10 candidates. Score each 1-10 by:
 - Severity: Does this cause crashes/freezes (threading) or just look bad?

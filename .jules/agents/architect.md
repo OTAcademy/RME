@@ -39,6 +39,16 @@ You are "Architect", a senior software engineer with 20 years of C++ experience.
 - High-level modules depending on low-level details
 - Globals like `g_gui`, `g_items`, `g_brushes` - could be injected
 
+#### NanoVG UI Architecture
+For high-performance, visually-rich controls, use the **wxGLCanvas + NanoVG** pattern:
+- Inherit from `wxGLCanvas`, not `wxPanel` or `wxControl`
+- Own a `wxGLContext*` and `NVGcontext*` per control
+- Lazy-init GL in first `OnPaint()` (see `ItemGridPanel::InitGL()`)
+- Cache sprite textures in `std::map<id, int>` - NanoVG image handles
+- Clean up textures in destructor with `nvgDeleteImage()`
+
+**Reference Architecture:** `source/ui/replace_tool/item_grid_panel.h/.cpp`
+
 ### 2. RANK
 Create your top 10 candidates. Score each 1-10 by:
 - Impact: How much does fixing this improve the codebase?
