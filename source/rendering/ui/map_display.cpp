@@ -232,8 +232,13 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 		drawer->ClearTooltips();
 	}
 
-	// Clean unused textures
-	g_gui.gfx.garbageCollection();
+	// Clean unused textures once every second
+	static long last_gc_time = 0;
+	long current_time = wxGetLocalTime();
+	if (current_time - last_gc_time >= 1) {
+		g_gui.gfx.garbageCollection();
+		last_gc_time = current_time;
+	}
 
 	// Swap buffer
 	SwapBuffers();

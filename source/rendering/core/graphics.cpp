@@ -81,13 +81,11 @@ bool GraphicManager::isUnloaded() const {
 }
 
 void GraphicManager::clear() {
-	// Erase all non-internal sprites. The unique_ptrs will be automatically destroyed.
-	std::erase_if(sprite_space, [](const auto& pair) {
-		return pair.first >= 0;
-	});
-
-	// Image space cleaned automatically by clear()
+	sprite_space.clear();
 	image_space.clear();
+	// editor_sprite_space.clear(); // Editor sprites are global/internal and should persist across version changes
+	resident_images.clear();
+	resident_game_sprites.clear();
 
 	item_count = 0;
 	creature_count = 0;
@@ -129,11 +127,28 @@ bool GraphicManager::ensureAtlasManager() {
 }
 
 Sprite* GraphicManager::getSprite(int id) {
-	auto it = sprite_space.find(id);
-	if (it != sprite_space.end()) {
-		return it->second.get();
+	if (id < 0) {
+		auto it = editor_sprite_space.find(id);
+		if (it != editor_sprite_space.end()) {
+			return it->second.get();
+		}
+		return nullptr;
 	}
-	return nullptr;
+	if (static_cast<size_t>(id) >= sprite_space.size()) {
+		return nullptr;
+	}
+	return sprite_space[id].get();
+}
+
+void GraphicManager::insertSprite(int id, std::unique_ptr<Sprite> sprite) {
+	if (id < 0) {
+		editor_sprite_space[id] = std::move(sprite);
+	} else {
+		if (static_cast<size_t>(id) >= sprite_space.size()) {
+			sprite_space.resize(id + 1);
+		}
+		sprite_space[id] = std::move(sprite);
+	}
 }
 
 GameSprite* GraphicManager::getCreatureSprite(int id) {
@@ -141,11 +156,11 @@ GameSprite* GraphicManager::getCreatureSprite(int id) {
 		return nullptr;
 	}
 
-	auto it = sprite_space.find(id + item_count);
-	if (it != sprite_space.end()) {
-		return static_cast<GameSprite*>(it->second.get());
+	size_t target_id = static_cast<size_t>(id) + item_count;
+	if (target_id >= sprite_space.size()) {
+		return nullptr;
 	}
-	return nullptr;
+	return static_cast<GameSprite*>(sprite_space[target_id].get());
 }
 
 uint16_t GraphicManager::getItemSpriteMaxID() const {
@@ -186,11 +201,7 @@ void GraphicManager::addSpriteToCleanup(GameSprite* spr) {
 }
 
 void GraphicManager::garbageCollection() {
-	std::unordered_map<int, void*> generic_image_space;
-	for (auto& pair : image_space) {
-		generic_image_space[pair.first] = (void*)pair.second.get();
-	}
-	collector.GarbageCollect(sprite_space, generic_image_space, cached_time_);
+	collector.GarbageCollect(resident_game_sprites, resident_images, cached_time_);
 }
 
 CreatureSprite::CreatureSprite(GameSprite* parent, const Outfit& outfit) :
@@ -464,6 +475,7 @@ const AtlasRegion* GameSprite::Image::EnsureAtlasSprite(uint32_t sprite_id) {
 
 			if (region) {
 				isGLLoaded = true;
+				g_gui.gfx.resident_images.push_back(this); // Add to resident set
 				g_gui.gfx.collector.NotifyTextureLoaded();
 				return region;
 			} else {
@@ -501,6 +513,7 @@ void GameSprite::NormalImage::clean(time_t time) {
 		}
 		isGLLoaded = false;
 		atlas_region = nullptr;
+		// resident_images removal is handled by GC loop using swap-and-pop
 		g_gui.gfx.collector.NotifyTextureUnloaded();
 	}
 

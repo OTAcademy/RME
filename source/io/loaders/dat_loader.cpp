@@ -4,6 +4,8 @@
 #include "io/filehandle.h"
 #include "util/common.h"
 #include <memory>
+#include <cstdint>
+#include <climits>
 #if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
 	#include <format>
 #endif
@@ -285,7 +287,15 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 	}
 
 	constexpr uint32_t minID = 100; // items start with id 100
-	const uint32_t maxID = manager->item_count + manager->creature_count;
+	const uint32_t max_id_needed = manager->item_count + manager->creature_count + 1;
+
+	// Pre-size containers to avoid rehashing and frequent allocations
+	manager->sprite_space.resize(max_id_needed);
+	// Resize image_space to MAX_SPRITES to ensure OOB access doesn't happen during sprite id reading.
+	// SprLoader will later resize it to the exact count, but we need it safe now.
+	if (manager->image_space.size() < MAX_SPRITES) {
+		manager->image_space.resize(MAX_SPRITES);
+	}
 
 	manager->dat_format = manager->client_version->getDatFormatForSignature(datSignature);
 
@@ -308,6 +318,7 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 	}
 
 	uint32_t id = minID;
+	const uint32_t maxID = manager->item_count + manager->creature_count;
 	while (id <= maxID) {
 		auto sTypeUnique = std::make_unique<GameSprite>();
 		GameSprite* sType = sTypeUnique.get();
@@ -478,13 +489,18 @@ bool DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, G
 		}
 
 		if (group_index == 0) {
-			auto [it, inserted] = manager->image_space.try_emplace(sprite_id, nullptr);
-			if (inserted) {
+			// Validate sprite_id
+			if (sprite_id == UINT32_MAX || sprite_id >= MAX_SPRITES || sprite_id >= manager->image_space.size()) {
+				return false;
+			}
+
+			auto& imgPtr = manager->image_space[sprite_id];
+			if (!imgPtr) {
 				auto img = std::make_unique<GameSprite::NormalImage>();
 				img->id = sprite_id;
-				it->second = std::move(img);
+				imgPtr = std::move(img);
 			}
-			sType->spriteList.push_back(static_cast<GameSprite::NormalImage*>(it->second.get()));
+			sType->spriteList.push_back(static_cast<GameSprite::NormalImage*>(imgPtr.get()));
 		}
 	}
 

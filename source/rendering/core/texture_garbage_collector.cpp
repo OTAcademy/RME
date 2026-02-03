@@ -54,38 +54,42 @@ void TextureGarbageCollector::AddSpriteToCleanup(GameSprite* spr) {
 	}
 }
 
-void TextureGarbageCollector::GarbageCollect(std::unordered_map<int, std::unique_ptr<Sprite>>& sprite_space, std::unordered_map<int, void*>& image_space, time_t current_time) {
+void TextureGarbageCollector::GarbageCollect(std::vector<GameSprite*>& resident_game_sprites, std::vector<void*>& resident_images, time_t current_time) {
 	if (g_settings.getInteger(Config::TEXTURE_MANAGEMENT)) {
 		if (loaded_textures > g_settings.getInteger(Config::TEXTURE_CLEAN_THRESHOLD) && current_time - lastclean > g_settings.getInteger(Config::TEXTURE_CLEAN_PULSE)) {
-			// We cast void* back to Image* here. This is ugly but avoids circular dependency hell for now.
-			// Ideally Image should be in its own header.
-			// But GameSprite::Image is a nested class.
-			// We can use a template or just assume the caller handles this iteration?
-			// Actually the iteration logic IS the garbage collection.
-			// Let's rely on GraphicManager to pass the iterators or just handle the logic here assuming we know the types.
-			// Since we include graphics.h, we know GameSprite::Image.
 
-			// Re-implementing loops:
-			for (auto& pair : image_space) {
-				GameSprite::Image* img = static_cast<GameSprite::Image*>(pair.second);
+			for (size_t i = resident_images.size(); i > 0; --i) {
+				GameSprite::Image* img = static_cast<GameSprite::Image*>(resident_images[i - 1]);
 				img->clean(current_time);
-			}
 
-			for (auto& pair : sprite_space) {
-				GameSprite* gs = dynamic_cast<GameSprite*>(pair.second.get());
-				if (gs) {
-					gs->clean(current_time);
+				if (!img->isGLLoaded) {
+					// Image evicted itself during clean()
+					if (i - 1 < resident_images.size() - 1) {
+						resident_images[i - 1] = resident_images.back();
+					}
+					resident_images.pop_back();
 				}
 			}
+
+			// 2. Clean GameSprites (Software caches/animators)
+			for (size_t i = resident_game_sprites.size(); i > 0; --i) {
+				GameSprite* gs = resident_game_sprites[i - 1];
+				gs->clean(current_time);
+
+				// Optional: Add logic to check if GameSprite is still "active"
+				// For now, GameSprites stay resident if they have software DC/animator state
+				// This part of the refactor is more subtle; we'll keep it simple first.
+			}
+
 			lastclean = current_time;
 		}
 	}
 }
 
-void TextureGarbageCollector::CleanSoftwareSprites(std::unordered_map<int, std::unique_ptr<Sprite>>& sprite_space) {
-	for (auto& pair : sprite_space) {
-		if (pair.first >= 0) { // Don't clean internal sprites
-			pair.second->unloadDC();
+void TextureGarbageCollector::CleanSoftwareSprites(std::vector<std::unique_ptr<Sprite>>& sprite_space) {
+	for (auto& sprite_ptr : sprite_space) {
+		if (sprite_ptr) {
+			sprite_ptr->unloadDC();
 		}
 	}
 }

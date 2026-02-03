@@ -29,6 +29,8 @@
 
 class LiveLogTab;
 class Action;
+class MapNode;
+class Floor;
 
 struct LiveCursor {
 	uint32_t id;
@@ -68,9 +70,8 @@ public:
 protected:
 	// receive / send methods
 	void receiveNode(NetworkMessage& message, Editor& editor, Action* action, int32_t ndx, int32_t ndy, bool underground);
-	void sendNode(uint32_t clientId, QTreeNode* node, int32_t ndx, int32_t ndy, uint32_t floorMask);
-
-	void receiveFloor(NetworkMessage& message, Editor& editor, Action* action, int32_t ndx, int32_t ndy, int32_t z, QTreeNode* node, Floor* floor);
+	void sendNode(uint32_t clientId, MapNode* node, int32_t ndx, int32_t ndy, uint32_t floorMask);
+	void receiveFloor(NetworkMessage& message, Editor& editor, Action* action, int32_t ndx, int32_t ndy, int32_t z, MapNode* node, Floor* floor);
 	void sendFloor(NetworkMessage& message, Floor* floor);
 
 	void receiveTile(BinaryNode* node, Editor& editor, Action* action, const Position* position);

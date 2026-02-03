@@ -19,11 +19,12 @@
 
 #include "map/tile.h"
 #include "map/basemap.h"
+#include "map/spatial_hash_grid.h"
 
 BaseMap::BaseMap() :
 	allocator(),
 	tilecount(0),
-	root(*this) {
+	grid(*this) {
 	////
 }
 
@@ -43,12 +44,12 @@ void BaseMap::clear(bool del) {
 }
 
 void BaseMap::clearVisible(uint32_t mask) {
-	root.clearVisible(mask);
+	grid.clearVisible(mask);
 }
 
 Tile* BaseMap::createTile(int x, int y, int z) {
 	ASSERT(z < MAP_LAYERS);
-	QTreeNode* leaf = root.getLeafForce(x, y);
+	MapNode* leaf = grid.getLeafForce(x, y);
 	TileLocation* loc = leaf->createTile(x, y, z);
 	if (loc->get()) {
 		return loc->get();
@@ -70,7 +71,7 @@ Tile* BaseMap::getOrCreateTile(const Position& pos) {
 
 TileLocation* BaseMap::getTileL(int x, int y, int z) {
 	ASSERT(z < MAP_LAYERS);
-	QTreeNode* leaf = root.getLeaf(x, y);
+	MapNode* leaf = grid.getLeaf(x, y);
 	if (leaf) {
 		Floor* floor = leaf->getFloor(z);
 		if (floor) {
@@ -98,7 +99,7 @@ const TileLocation* BaseMap::getTileL(const Position& pos) const {
 TileLocation* BaseMap::createTileL(int x, int y, int z) {
 	ASSERT(z < MAP_LAYERS);
 
-	QTreeNode* leaf = root.getLeafForce(x, y);
+	MapNode* leaf = grid.getLeafForce(x, y);
 	Floor* floor = leaf->createFloor(x, y, z);
 	uint32_t offsetX = x & 3;
 	uint32_t offsetY = y & 3;
@@ -115,7 +116,7 @@ void BaseMap::setTile(int x, int y, int z, Tile* newtile, bool remove) {
 	ASSERT(!newtile || newtile->getY() == int(y));
 	ASSERT(!newtile || newtile->getZ() == int(z));
 
-	QTreeNode* leaf = root.getLeafForce(x, y);
+	MapNode* leaf = grid.getLeafForce(x, y);
 	Tile* old = leaf->setTile(x, y, z, newtile);
 	if (remove) {
 		delete old;
@@ -128,83 +129,60 @@ Tile* BaseMap::swapTile(int x, int y, int z, Tile* newtile) {
 	ASSERT(!newtile || newtile->getY() == int(y));
 	ASSERT(!newtile || newtile->getZ() == int(z));
 
-	QTreeNode* leaf = root.getLeafForce(x, y);
+	MapNode* leaf = grid.getLeafForce(x, y);
 	return leaf->setTile(x, y, z, newtile);
 }
 
 // Iterators
 
 MapIterator::MapIterator(BaseMap* _map) :
-	local_i(0),
-	local_z(0),
+	cell_it(),
+	node_i(0),
+	floor_i(0),
+	tile_i(0),
 	current_tile(nullptr),
 	map(_map) {
-	////
+	if (map) {
+		cell_it = map->grid.cells.begin();
+	}
 }
 
 MapIterator::~MapIterator() {
 	////
 }
 
-MapIterator::MapIterator(const MapIterator& other) {
-	for (std::vector<MapIterator::NodeIndex>::const_iterator it = other.nodestack.begin(); it != other.nodestack.end(); it++) {
-		nodestack.push_back(MapIterator::NodeIndex(*it));
-	}
-	local_i = other.local_i;
-	local_z = other.local_z;
-	map = other.map;
-	current_tile = other.current_tile;
+// Copy constructor for flat iterator design - copies all stateful members
+MapIterator::MapIterator(const MapIterator& other) :
+	cell_it(other.cell_it),
+	node_i(other.node_i),
+	floor_i(other.floor_i),
+	tile_i(other.tile_i),
+	map(other.map),
+	current_tile(other.current_tile) {
 }
 
 MapIterator BaseMap::begin() {
 	MapIterator it(this);
-	it.nodestack.push_back(MapIterator::NodeIndex(&root));
+	it.cell_it = grid.cells.begin();
+	it.node_i = 0;
+	it.floor_i = 0;
+	it.tile_i = 0;
+	it.current_tile = nullptr;
 
-	while (true) {
-		MapIterator::NodeIndex& current = it.nodestack.back();
-		QTreeNode* node = current.node;
-		int& index = current.index;
-
-		bool unwind = false;
-		for (; index < MAP_LAYERS; ++index) {
-			if (QTreeNode* child = node->child[index]) {
-				if (child->isLeaf) {
-					QTreeNode* leaf = child;
-					for (it.local_z = 0; it.local_z < MAP_LAYERS; ++it.local_z) {
-						if (Floor* floor = leaf->array[it.local_z]) {
-							for (it.local_i = 0; it.local_i < MAP_LAYERS; ++it.local_i) {
-								TileLocation& t = floor->locs[it.local_i];
-								if (t.get()) {
-									it.current_tile = &t;
-									return it;
-								}
-							}
-						}
-					}
-				} else {
-					++index;
-					it.nodestack.push_back(MapIterator::NodeIndex(child));
-					unwind = true;
-					break;
-				}
-			}
+	if (it.cell_it != grid.cells.end()) {
+		if (!it.findNext()) {
+			return end();
 		}
-		if (unwind) {
-			continue;
-		}
-
-		it.nodestack.pop_back();
-		if (it.nodestack.empty()) {
-			break;
-		}
+	} else {
+		return end();
 	}
-	return end();
+	return it;
 }
 
 MapIterator BaseMap::end() {
 	MapIterator it(this);
-	it.local_i = -1;
-	it.local_z = -1;
+	it.cell_it = grid.cells.end();
+	it.current_tile = nullptr;
 	return it;
 }
 
@@ -216,64 +194,62 @@ TileLocation* MapIterator::operator->() {
 	return current_tile;
 }
 
-MapIterator& MapIterator::operator++() {
-	bool increased = false;
-	bool first = true;
-	while (true) {
-		MapIterator::NodeIndex& current = nodestack.back();
-		QTreeNode* node = current.node;
-		int& index = current.index;
-
-		bool unwind = false;
-		for (; index < MAP_LAYERS; ++index) {
-			if (QTreeNode* child = node->child[index]) {
-				if (child->isLeaf) {
-					QTreeNode* leaf = child;
-					for (; local_z < MAP_LAYERS; ++local_z) {
-						if (Floor* floor = leaf->array[local_z]) {
-							for (; local_i < MAP_LAYERS; ++local_i) {
-								TileLocation& t = floor->locs[local_i];
-								if (t.get()) {
-									if (increased) {
-										current_tile = &t;
-										return *this;
-									} else {
-										increased = true;
-									}
-								} else if (first) {
-									increased = true;
-									first = false;
-								}
-							}
-
-							if (local_i > MAP_MAX_LAYER) {
-								local_i = 0;
-							}
-						} else {
-						}
-					}
-					if (local_z == MAP_LAYERS) {
-						local_z = 0;
-					}
-				} else {
-					++index;
-					nodestack.push_back(MapIterator::NodeIndex(child));
-					unwind = true;
-					break;
-				}
-			}
+bool MapIterator::operator==(const MapIterator& other) const {
+	if (map != other.map) {
+		return false;
+	}
+	if (cell_it == other.cell_it) {
+		if (map && cell_it == map->getGrid().cells.end()) {
+			return true;
 		}
-		if (unwind) {
+		return node_i == other.node_i && floor_i == other.floor_i && tile_i == other.tile_i;
+	}
+	return false;
+}
+
+bool MapIterator::findNext() {
+	while (cell_it != map->grid.cells.end()) {
+		SpatialHashGrid::GridCell* cell = cell_it->second.get();
+		if (!cell) {
+			++cell_it;
 			continue;
 		}
-
-		nodestack.pop_back();
-		if (nodestack.empty()) {
-			// Set all values to "end"
-			local_z = -1;
-			local_i = -1;
-			return *this;
+		while (node_i < SpatialHashGrid::NODES_PER_CELL * SpatialHashGrid::NODES_PER_CELL) {
+			MapNode* node = cell->nodes[node_i].get();
+			if (node) {
+				while (floor_i < MAP_LAYERS) {
+					Floor* floor = node->array[floor_i];
+					if (floor) {
+						while (tile_i < MAP_LAYERS) {
+							TileLocation& t = floor->locs[tile_i];
+							if (t.get()) {
+								current_tile = &t;
+								return true;
+							}
+							tile_i++;
+						}
+					}
+					floor_i++;
+					tile_i = 0;
+				}
+			}
+			node_i++;
+			floor_i = 0;
+			tile_i = 0;
 		}
+		++cell_it;
+		node_i = 0;
+		floor_i = 0;
+		tile_i = 0;
+	}
+	current_tile = nullptr;
+	return false;
+}
+
+MapIterator& MapIterator::operator++() {
+	if (current_tile) {
+		tile_i++;
+		findNext();
 	}
 	return *this;
 }

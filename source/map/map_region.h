@@ -19,11 +19,15 @@
 #define RME_MAP_REGION_H
 
 #include "map/position.h"
+#include "map/tile.h"
+#include "map/spatial_hash_grid.h"
 #include <utility>
+#include <unordered_map>
 
 class Tile;
 class Floor;
 class BaseMap;
+class MapNode;
 
 class TileLocation {
 	TileLocation();
@@ -107,7 +111,7 @@ public:
 	}
 
 	friend class Floor;
-	friend class QTreeNode;
+	friend class MapNode;
 	friend class Waypoints;
 };
 
@@ -117,91 +121,52 @@ public:
 	TileLocation locs[MAP_LAYERS];
 };
 
-// This is not a QuadTree, but a HexTree (16 child nodes to every node), so the name is abit misleading
-class QTreeNode {
+class MapNode {
 public:
-	QTreeNode(BaseMap& map);
-	virtual ~QTreeNode();
+	MapNode(BaseMap& map);
+	~MapNode();
 
-	QTreeNode(const QTreeNode&) = delete;
-	QTreeNode& operator=(const QTreeNode&) = delete;
+	MapNode(const MapNode&) = delete;
+	MapNode& operator=(const MapNode&) = delete;
 
-	QTreeNode* getLeaf(int x, int y); // Might return nullptr
-	QTreeNode* getLeafForce(int x, int y); // Will never return nullptr, it will create the node if it's not there
-
-	// Coordinates are NOT relative
 	TileLocation* createTile(int x, int y, int z);
 	TileLocation* getTile(int x, int y, int z);
 	Tile* setTile(int x, int y, int z, Tile* tile);
 	void clearTile(int x, int y, int z);
 
-	template <typename Func>
-	void visitLeaves(int x, int y, int size, int min_x, int min_y, int max_x, int max_y, Func&& func) {
-		if (x >= max_x || y >= max_y || x + size <= min_x || y + size <= min_y) {
-			return;
-		}
-
-		if (isLeaf) {
-			func(this, x, y);
-			return;
-		}
-
-		int child_size = size / 4;
-		for (int iy = 0; iy < 4; ++iy) {
-			int cy = y + iy * child_size;
-			if (cy >= max_y || cy + child_size <= min_y) {
-				continue;
-			}
-
-			for (int ix = 0; ix < 4; ++ix) {
-				int cx = x + ix * child_size;
-				if (cx >= max_x || cx + child_size <= min_x) {
-					continue;
-				}
-
-				int index = (iy << 2) | ix;
-				if (child[index]) {
-					child[index]->visitLeaves(cx, cy, child_size, min_x, min_y, max_x, max_y, std::forward<Func>(func));
-				}
-			}
-		}
-	}
-
 	Floor* createFloor(int x, int y, int z);
 	Floor* getFloor(uint32_t z) {
-		ASSERT(isLeaf);
 		return array[z];
 	}
 	Floor** getFloors() {
 		return array;
 	}
+	bool hasFloor(uint32_t z);
 
-	void setVisible(bool overground, bool underground);
+	void setVisible(bool underground, bool value);
 	void setVisible(uint32_t client, bool underground, bool value);
 	bool isVisible(uint32_t client, bool underground);
 	void clearVisible(uint32_t client);
 
+	bool isRequested(bool underground);
 	void setRequested(bool underground, bool r);
 	bool isVisible(bool underground);
-	bool isRequested(bool underground);
+
+	enum VisibilityFlags : uint32_t {
+		VISIBLE_OVERGROUND = 1 << 0,
+		VISIBLE_UNDERGROUND = 1 << 1,
+		REQUESTED_UNDERGROUND = 1 << 2,
+		REQUESTED_OVERGROUND = 1 << 3,
+	};
 
 protected:
 	BaseMap& map;
 	uint32_t visible;
-
-	bool isLeaf;
-	union {
-		QTreeNode* child[MAP_LAYERS];
-		Floor* array[MAP_LAYERS];
-		/*
-		#if 16 != MAP_LAYERS
-		#    error "You need to rewrite the QuadTree in order to handle more or less than 16 floors"
-		#endif
-		*/
-	};
+	Floor* array[MAP_LAYERS];
 
 	friend class BaseMap;
 	friend class MapIterator;
+	friend class SpatialHashGrid;
 };
 
 #endif

@@ -18,7 +18,7 @@
 class AtlasManager {
 public:
 	// Max sprite ID for O(1) direct lookup
-	static constexpr uint32_t DIRECT_LOOKUP_SIZE = 100000;
+	static constexpr uint32_t DIRECT_LOOKUP_SIZE = 2000000; // Support 10.x+ sprite counts
 	static constexpr uint32_t WHITE_PIXEL_ID = 0xFFFFFFFF;
 
 	AtlasManager() = default;

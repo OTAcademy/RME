@@ -49,7 +49,7 @@ void MapLayerDrawer::Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 	if (live_client) {
 		for (int nd_map_x = nd_start_x; nd_map_x <= nd_end_x; nd_map_x += 4) {
 			for (int nd_map_y = nd_start_y; nd_map_y <= nd_end_y; nd_map_y += 4) {
-				QTreeNode* nd = editor->map.getLeaf(nd_map_x, nd_map_y);
+				MapNode* nd = editor->map.getLeaf(nd_map_x, nd_map_y);
 				if (!nd) {
 					nd = editor->map.createLeaf(nd_map_x, nd_map_y);
 					nd->setVisible(false, false);
@@ -84,7 +84,7 @@ void MapLayerDrawer::Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 			}
 		}
 	} else {
-		editor->map.visitLeaves(nd_start_x, nd_start_y, nd_end_x, nd_end_y, [&](QTreeNode* nd, int nd_map_x, int nd_map_y) {
+		editor->map.visitLeaves(nd_start_x, nd_start_y, nd_end_x, nd_end_y, [&](MapNode* nd, int nd_map_x, int nd_map_y) {
 			for (int map_x = 0; map_x < 4; ++map_x) {
 				for (int map_y = 0; map_y < 4; ++map_y) {
 					int draw_x, draw_y;

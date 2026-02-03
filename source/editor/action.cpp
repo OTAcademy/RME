@@ -152,7 +152,7 @@ void Action::commit(DirtyList* dirty_list) {
 				Position pos = newtile->getPosition();
 
 				if (editor.live_manager.IsClient()) {
-					QTreeNode* nd = editor.map.getLeaf(pos.x, pos.y);
+					MapNode* nd = editor.map.getLeaf(pos.x, pos.y);
 					if (!nd || !nd->isVisible(pos.z > GROUND_LAYER)) {
 						// Delete all changes that affect tiles outside our view
 						c->clear();
@@ -300,7 +300,7 @@ void Action::undo(DirtyList* dirty_list) {
 				Position pos = oldtile->getPosition();
 
 				if (editor.live_manager.IsClient()) {
-					QTreeNode* nd = editor.map.getLeaf(pos.x, pos.y);
+					MapNode* nd = editor.map.getLeaf(pos.x, pos.y);
 					if (!nd || !nd->isVisible(pos.z > GROUND_LAYER)) {
 						// Delete all changes that affect tiles outside our view
 						c->clear();

@@ -17,10 +17,13 @@
 
 #include "app/main.h"
 
+#include <bit>
+
 #include "map/map_region.h"
 #include "map/basemap.h"
 #include "map/position.h"
 #include "map/tile.h"
+#include "map/spatial_hash_grid.h"
 
 //**************** Tile Location **********************
 
@@ -63,155 +66,120 @@ Floor::Floor(int sx, int sy, int z) {
 	}
 }
 
-//**************** QTreeNode **********************
+//**************** MapNode **********************
 
-QTreeNode::QTreeNode(BaseMap& map) :
+MapNode::MapNode(BaseMap& map) :
 	map(map),
-	visible(0),
-	isLeaf(false) {
-	// Doesn't matter if we're leaf or node
+	visible(0) {
 	for (int i = 0; i < MAP_LAYERS; ++i) {
-		child[i] = nullptr;
+		array[i] = nullptr;
 	}
 }
 
-QTreeNode::~QTreeNode() {
-	if (isLeaf) {
-		for (int i = 0; i < MAP_LAYERS; ++i) {
-			delete array[i];
-		}
-	} else {
-		for (int i = 0; i < MAP_LAYERS; ++i) {
-			delete child[i];
-		}
+MapNode::~MapNode() {
+	for (int i = 0; i < MAP_LAYERS; ++i) {
+		delete array[i];
 	}
 }
 
-QTreeNode* QTreeNode::getLeaf(int x, int y) {
-	QTreeNode* node = this;
-	uint32_t cx = x, cy = y;
-	while (node) {
-		if (node->isLeaf) {
-			return node;
-		} else {
-			uint32_t index = ((cx & 0xC000) >> 14) | ((cy & 0xC000) >> 12);
-			if (node->child[index]) {
-				node = node->child[index];
-				cx <<= 2;
-				cy <<= 2;
-			} else {
-				return nullptr;
-			}
-		}
-	}
-	return nullptr;
-}
-
-QTreeNode* QTreeNode::getLeafForce(int x, int y) {
-	QTreeNode* node = this;
-	uint32_t cx = x, cy = y;
-	int level = 6;
-	while (node) {
-		uint32_t index = ((cx & 0xC000) >> 14) | ((cy & 0xC000) >> 12);
-
-		QTreeNode*& qt = node->child[index];
-		if (qt) {
-			if (qt->isLeaf) {
-				return qt;
-			}
-
-		} else {
-			if (level == 0) {
-				qt = newd QTreeNode(map);
-				qt->isLeaf = true;
-				return qt;
-			} else {
-				qt = newd QTreeNode(map);
-			}
-		}
-		node = node->child[index];
-		cx <<= 2;
-		cy <<= 2;
-		level -= 1;
-	}
-
-	return nullptr;
-}
-
-Floor* QTreeNode::createFloor(int x, int y, int z) {
-	ASSERT(isLeaf);
+Floor* MapNode::createFloor(int x, int y, int z) {
 	if (!array[z]) {
 		array[z] = newd Floor(x, y, z);
 	}
 	return array[z];
 }
 
-bool QTreeNode::isVisible(bool underground) {
-	return testFlags(visible, underground + 1);
+bool MapNode::isVisible(bool underground) {
+	return testFlags(visible, underground ? VISIBLE_UNDERGROUND : VISIBLE_OVERGROUND);
 }
 
-bool QTreeNode::isRequested(bool underground) {
+bool MapNode::isRequested(bool underground) {
+	return testFlags(visible, underground ? REQUESTED_UNDERGROUND : REQUESTED_OVERGROUND);
+}
+
+void MapNode::clearVisible(uint32_t u) {
+	// u contains the mask of ACTIVE clients (as bitmask of their IDs)
+	// We want to clear visibility for clients NOT in u.
+	// So we keep bits set in u.
+	// BUT, we must also preserve global flags (bits 0-3).
+	// AND we must preserve the "underground" versions of the active clients in u.
+	// The client ID format (from LiveServer) is single bit 1<<N.
+	// MapNode storage logic:
+	//   Overground: 1u << N
+	//   Underground: 1u << (N + MAP_LAYERS)
+
+	// So we construct a mask of BITS TO KEEP.
+	// explicit Keep Mask = u (overground clients) | (u << MAP_LAYERS) (underground clients) | 0xF (global flags)
+	// Actually, u passed from LiveServer::removeClient is the UPDATED list of active clients.
+	// So yes, we want to KEEP u and its underground variant.
+
+	uint32_t keep_mask = u | (u << MAP_LAYERS) | 0xF;
+	visible &= keep_mask;
+}
+
+bool MapNode::isVisible(uint32_t client, bool underground) {
+	if (client == 0 || !std::has_single_bit(client)) {
+		return false;
+	}
+	int position = std::countr_zero(client);
+	if (position >= MAP_LAYERS) {
+		return false;
+	}
+
 	if (underground) {
-		return testFlags(visible, 4);
+		return testFlags(visible, 1u << (position + MAP_LAYERS));
 	} else {
-		return testFlags(visible, 8);
+		return testFlags(visible, 1u << position);
 	}
 }
 
-void QTreeNode::clearVisible(uint32_t u) {
-	if (isLeaf) {
-		visible &= u;
-	} else {
-		for (int i = 0; i < MAP_LAYERS; ++i) {
-			if (child[i]) {
-				child[i]->clearVisible(u);
-			}
-		}
-	}
-}
-
-bool QTreeNode::isVisible(uint32_t client, bool underground) {
-	if (underground) {
-		return testFlags(visible >> MAP_LAYERS, static_cast<uint64_t>(1) << client);
-	} else {
-		return testFlags(visible, static_cast<uint64_t>(1) << client);
-	}
-}
-
-void QTreeNode::setVisible(bool underground, bool value) {
+void MapNode::setVisible(bool underground, bool value) {
 	if (underground) {
 		if (value) {
-			visible |= 2;
+			visible |= VISIBLE_UNDERGROUND;
 		} else {
-			visible &= ~2;
+			visible &= ~VISIBLE_UNDERGROUND;
 		}
 	} else { // overground
 		if (value) {
-			visible |= 1;
+			visible |= VISIBLE_OVERGROUND;
 		} else {
-			visible &= 1;
+			visible &= ~VISIBLE_OVERGROUND;
 		}
 	}
 }
 
-void QTreeNode::setRequested(bool underground, bool r) {
+void MapNode::setRequested(bool underground, bool r) {
+	uint32_t mask = (underground ? REQUESTED_UNDERGROUND : REQUESTED_OVERGROUND);
 	if (r) {
-		visible |= (underground ? 4 : 8);
+		visible |= mask;
 	} else {
-		visible &= ~(underground ? 4 : 8);
+		visible &= ~mask;
 	}
 }
 
-void QTreeNode::setVisible(uint32_t client, bool underground, bool value) {
+void MapNode::setVisible(uint32_t client, bool underground, bool value) {
+	if (client == 0 || !std::has_single_bit(client)) {
+		return;
+	}
+	int position = std::countr_zero(client);
+	if (position >= MAP_LAYERS) {
+		return;
+	}
+
+	uint32_t bit = 1u << (position + (underground ? MAP_LAYERS : 0));
 	if (value) {
-		visible |= (1 << client << (underground ? MAP_LAYERS : 0));
+		visible |= bit;
 	} else {
-		visible &= ~(1 << client << (underground ? MAP_LAYERS : 0));
+		visible &= ~bit;
 	}
 }
 
-TileLocation* QTreeNode::getTile(int x, int y, int z) {
-	ASSERT(isLeaf);
+bool MapNode::hasFloor(uint32_t z) {
+	return array[z] != nullptr;
+}
+
+TileLocation* MapNode::getTile(int x, int y, int z) {
 	Floor* f = array[z];
 	if (!f) {
 		return nullptr;
@@ -219,14 +187,12 @@ TileLocation* QTreeNode::getTile(int x, int y, int z) {
 	return &f->locs[(x & 3) * 4 + (y & 3)];
 }
 
-TileLocation* QTreeNode::createTile(int x, int y, int z) {
-	ASSERT(isLeaf);
+TileLocation* MapNode::createTile(int x, int y, int z) {
 	Floor* f = createFloor(x, y, z);
 	return &f->locs[(x & 3) * 4 + (y & 3)];
 }
 
-Tile* QTreeNode::setTile(int x, int y, int z, Tile* newtile) {
-	ASSERT(isLeaf);
+Tile* MapNode::setTile(int x, int y, int z, Tile* newtile) {
 	Floor* f = createFloor(x, y, z);
 
 	int offset_x = x & 3;
@@ -245,8 +211,7 @@ Tile* QTreeNode::setTile(int x, int y, int z, Tile* newtile) {
 	return oldtile;
 }
 
-void QTreeNode::clearTile(int x, int y, int z) {
-	ASSERT(isLeaf);
+void MapNode::clearTile(int x, int y, int z) {
 	Floor* f = createFloor(x, y, z);
 
 	int offset_x = x & 3;
@@ -255,4 +220,68 @@ void QTreeNode::clearTile(int x, int y, int z) {
 	TileLocation* tmp = &f->locs[offset_x * 4 + offset_y];
 	delete tmp->tile;
 	tmp->tile = map.allocator(tmp);
+}
+
+//**************** SpatialHashGrid **********************
+
+SpatialHashGrid::GridCell::GridCell() {
+	// std::unique_ptr default constructor initializes to nullptr
+}
+
+SpatialHashGrid::GridCell::~GridCell() {
+	// std::unique_ptr handles cleanup automatically
+}
+
+SpatialHashGrid::SpatialHashGrid(BaseMap& map) : map(map) {
+	//
+}
+
+SpatialHashGrid::~SpatialHashGrid() {
+	clear();
+}
+
+void SpatialHashGrid::clear() {
+	cells.clear();
+}
+
+MapNode* SpatialHashGrid::getLeaf(int x, int y) {
+	uint64_t key = makeKey(x, y);
+	auto it = cells.find(key);
+	if (it == cells.end()) {
+		return nullptr;
+	}
+
+	int nx = (x >> NODE_SHIFT) & (NODES_PER_CELL - 1);
+	int ny = (y >> NODE_SHIFT) & (NODES_PER_CELL - 1);
+	return it->second->nodes[ny * NODES_PER_CELL + nx].get();
+}
+
+MapNode* SpatialHashGrid::getLeafForce(int x, int y) {
+	uint64_t key = makeKey(x, y);
+	auto& cell = cells[key];
+	if (!cell) {
+		cell = std::make_unique<GridCell>();
+	}
+
+	int nx = (x >> NODE_SHIFT) & (NODES_PER_CELL - 1);
+	int ny = (y >> NODE_SHIFT) & (NODES_PER_CELL - 1);
+	auto& node = cell->nodes[ny * NODES_PER_CELL + nx];
+	if (!node) {
+		node = std::make_unique<MapNode>(map);
+	}
+	return node.get();
+}
+
+void SpatialHashGrid::clearVisible(uint32_t mask) {
+	for (auto& pair : cells) {
+		auto& cell = pair.second;
+		if (!cell) {
+			continue;
+		}
+		for (int i = 0; i < NODES_PER_CELL * NODES_PER_CELL; ++i) {
+			if (cell->nodes[i]) {
+				cell->nodes[i]->clearVisible(mask);
+			}
+		}
+	}
 }

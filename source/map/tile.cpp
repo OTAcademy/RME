@@ -23,6 +23,7 @@
 #include "game/creature.h"
 #include "game/house.h"
 #include "map/basemap.h"
+#include "map/map_region.h"
 #include "game/spawn.h"
 #include "brushes/ground/ground_brush.h"
 #include "brushes/wall/wall_brush.h"
@@ -57,6 +58,51 @@ Tile::Tile(TileLocation& loc) :
 	statflags(0),
 	minimapColor(INVALID_MINIMAP_COLOR) {
 	////
+}
+
+Position Tile::getPosition() {
+	return location->getPosition();
+}
+
+const Position Tile::getPosition() const {
+	return location->getPosition();
+}
+
+int Tile::getX() const {
+	return location->getPosition().x;
+}
+
+int Tile::getY() const {
+	return location->getPosition().y;
+}
+
+int Tile::getZ() const {
+	return location->getPosition().z;
+}
+
+HouseExitList* Tile::getHouseExits() {
+	return location ? location->getHouseExits() : nullptr;
+}
+
+const HouseExitList* Tile::getHouseExits() const {
+	return location ? location->getHouseExits() : nullptr;
+}
+
+bool Tile::isHouseExit() const {
+	const HouseExitList* house_exits = getHouseExits();
+	return house_exits && !house_exits->empty();
+}
+
+bool Tile::hasHouseExit(uint32_t exit) const {
+	const HouseExitList* house_exits = getHouseExits();
+	if (house_exits) {
+		for (const auto& current_exit : *house_exits) {
+			if (current_exit == exit) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 Tile::~Tile() {

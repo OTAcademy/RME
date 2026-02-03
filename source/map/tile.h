@@ -20,7 +20,13 @@
 
 #include "map/position.h"
 #include "game/item.h"
-#include "map/map_region.h"
+
+class TileLocation;
+class GroundBrush;
+class WallBrush;
+class House;
+class Map;
+#include "app/rme_forward_declarations.h"
 #include <unordered_set>
 
 enum {
@@ -78,21 +84,11 @@ public:
 	}
 
 	// Position of the tile
-	Position getPosition() {
-		return location->getPosition();
-	}
-	const Position getPosition() const {
-		return location->getPosition();
-	}
-	int getX() const {
-		return location->getPosition().x;
-	}
-	int getY() const {
-		return location->getPosition().y;
-	}
-	int getZ() const {
-		return location->getPosition().z;
-	}
+	Position getPosition();
+	const Position getPosition() const;
+	int getX() const;
+	int getY() const;
+	int getZ() const;
 
 public: // Functions
 	// Absorb the other tile into this tile
@@ -283,34 +279,6 @@ inline bool Tile::isHouseTile() const {
 
 inline uint32_t Tile::getHouseID() const {
 	return house_id;
-}
-
-inline HouseExitList* Tile::getHouseExits() {
-	return location->getHouseExits();
-}
-
-inline const HouseExitList* Tile::getHouseExits() const {
-	return location->getHouseExits();
-}
-
-inline bool Tile::isHouseExit() const {
-	const HouseExitList* house_exits = getHouseExits();
-	if (house_exits) {
-		return !house_exits->empty();
-	}
-	return false;
-}
-
-inline bool Tile::hasHouseExit(uint32_t exit) const {
-	const HouseExitList* house_exits = getHouseExits();
-	if (house_exits) {
-		for (HouseExitList::const_iterator iter = house_exits->begin(); iter != house_exits->end(); ++iter) {
-			if (*iter == exit) {
-				return true;
-			}
-		}
-	}
-	return false;
 }
 
 inline void Tile::setMapFlags(uint16_t _flags) {

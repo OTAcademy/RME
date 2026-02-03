@@ -8,8 +8,10 @@ bool AtlasManager::ensureInitialized() {
 		return true;
 	}
 
-	// Pre-allocate 8 layers (8 * 16384 = 131K sprites capacity)
-	static constexpr int INITIAL_LAYERS = 8;
+	// Pre-allocate 16 layers (16 * 16384 = 262K sprites capacity).
+	// This fits in ~1GB VRAM and covers older clients/smaller Tibia 10+ datasets.
+	// Larger datasets will dynamically expand this via addLayer().
+	static constexpr int INITIAL_LAYERS = 16;
 
 	if (!atlas_.initialize(INITIAL_LAYERS)) {
 		spdlog::error("AtlasManager: Failed to initialize texture array");
