@@ -5,6 +5,8 @@
 #include "ui/gui.h"
 #include <wx/dcbuffer.h>
 #include <wx/menu.h>
+#include <algorithm>
+#include <iterator>
 
 namespace {
 	const int OUTFIT_TILE_WIDTH = 100;
@@ -13,9 +15,9 @@ namespace {
 
 OutfitSelectionGrid::OutfitSelectionGrid(wxWindow* parent, OutfitChooserDialog* owner, bool is_favorites) :
 	wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL | wxWANTS_CHARS),
-	owner(owner),
 	is_favorites(is_favorites),
 	selected_index(-1),
+	owner(owner),
 	columns(1),
 	item_width(OUTFIT_TILE_WIDTH),
 	item_height(OUTFIT_TILE_HEIGHT),
@@ -46,19 +48,19 @@ void OutfitSelectionGrid::UpdateFilter(const wxString& filter) {
 	}
 
 	filtered_outfits.clear();
-	for (const auto& item : all_outfits) {
-		if (filter.IsEmpty() || item.name.Lower().Contains(filter.Lower()) || wxString::Format("%d", item.lookType).Contains(filter)) {
-			filtered_outfits.push_back(item);
-		}
-	}
+	std::ranges::copy_if(all_outfits, std::back_inserter(filtered_outfits), [&](const auto& item) {
+		return filter.IsEmpty() || item.name.Lower().Contains(filter.Lower()) || wxString::Format("%d", item.lookType).Contains(filter);
+	});
 
 	// Try to restore selection
-	selected_index = -1;
-	for (size_t i = 0; i < filtered_outfits.size(); ++i) {
-		if (filtered_outfits[i].lookType == owner->GetOutfit().lookType) {
-			selected_index = (int)i;
-			break;
-		}
+	auto it = std::ranges::find_if(filtered_outfits, [&](const auto& item) {
+		return item.lookType == owner->GetOutfit().lookType;
+	});
+
+	if (it != filtered_outfits.end()) {
+		selected_index = static_cast<int>(std::distance(filtered_outfits.begin(), it));
+	} else {
+		selected_index = -1;
 	}
 
 	UpdateVirtualSize();
@@ -138,7 +140,7 @@ void OutfitSelectionGrid::OnPaint(wxPaintEvent& event) {
 			dummy.lookType = lookType;
 		}
 
-		uint64_t cache_key = ((uint64_t)lookType << 32) | dummy.getColorHash();
+		uint64_t cache_key = (static_cast<uint64_t>(lookType) << 32) | dummy.getColorHash();
 		auto it = icon_cache.find(cache_key);
 		if (it == icon_cache.end()) {
 			GameSprite* spr = g_gui.gfx.getCreatureSprite(lookType);
