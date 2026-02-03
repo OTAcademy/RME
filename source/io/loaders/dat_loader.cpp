@@ -258,7 +258,7 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 		manager->is_extended = manager->dat_format >= DAT_FORMAT_96;
 		manager->has_frame_durations = manager->dat_format >= DAT_FORMAT_1050;
 		manager->has_frame_groups = manager->dat_format >= DAT_FORMAT_1057;
-		manager->has_transparency = manager->dat_format >= DAT_FORMAT_1010;
+		manager->has_transparency = manager->client_version->isTransparent();
 	}
 
 	uint32_t id = minID;

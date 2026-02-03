@@ -224,6 +224,10 @@ public:
 	DatFormat getDatFormatForSignature(uint32_t signature) const;
 	ClientVersionList getExtensionsSupported() const;
 
+	bool isTransparent() const {
+		return is_transparent;
+	}
+
 	FileName getDataPath() const;
 	FileName getLocalDataPath() const;
 	FileName getClientPath() const {
@@ -241,6 +245,7 @@ private:
 
 	std::string name;
 	bool visible;
+	bool is_transparent;
 	bool usesFuckedUpCharges;
 
 	std::vector<MapVersionID> map_versions_supported;
