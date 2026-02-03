@@ -122,6 +122,24 @@ struct TooltipData {
 	bool hasVisibleFields() const {
 		return !waypointName.empty() || actionId > 0 || uniqueId > 0 || doorId > 0 || !text.empty() || !description.empty() || destination.x > 0 || !containerItems.empty();
 	}
+
+	void clear() {
+		// Reset scalars
+		pos = Position();
+		category = TooltipCategory::ITEM;
+		itemId = 0;
+		// clear strings but keep capacity
+		itemName.clear();
+		actionId = 0;
+		uniqueId = 0;
+		doorId = 0;
+		text.clear();
+		description.clear();
+		destination = Position();
+		waypointName.clear();
+		containerItems.clear();
+		containerCapacity = 0;
+	}
 };
 
 class TooltipDrawer {
@@ -132,6 +150,10 @@ public:
 	// Add a structured tooltip for an item
 	void addItemTooltip(const TooltipData& data);
 	void addItemTooltip(TooltipData&& data);
+
+	// Request a tooltip object from the pool. Call commitTooltip() to finalize.
+	TooltipData& requestTooltipData();
+	void commitTooltip();
 
 	// Add a waypoint tooltip
 	void addWaypointTooltip(Position pos, const std::string& name);
@@ -152,6 +174,8 @@ protected:
 	std::vector<FieldLine> scratch_fields;
 
 	std::vector<TooltipData> tooltips;
+	size_t active_count = 0;
+
 	std::map<uint32_t, int> spriteCache; // sprite_id -> nvg image handle
 	NVGcontext* lastContext = nullptr;
 

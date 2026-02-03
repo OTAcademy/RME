@@ -118,6 +118,7 @@ Tile::~Tile() {
 Tile* Tile::deepCopy(BaseMap& map) {
 	Tile* copy = map.allocator.allocateTile(location);
 	copy->flags = flags;
+	copy->minimapColor = minimapColor;
 	copy->house_id = house_id;
 	if (spawn) {
 		copy->spawn = spawn->deepCopy();
@@ -495,6 +496,8 @@ void Tile::update() {
 	if (creature && creature->isSelected()) {
 		statflags |= TILESTATE_SELECTED;
 	}
+
+	minimapColor = 0; // Reset to "no color" (valid)
 
 	if (ground) {
 		if (ground->isSelected()) {

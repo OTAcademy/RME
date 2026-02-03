@@ -255,7 +255,7 @@ void MapDrawer::DrawCreatureNames() {
 }
 
 void MapDrawer::DrawMapLayer(int map_z, bool live_client) {
-	map_layer_drawer->Draw(*sprite_batch, *primitive_renderer, map_z, live_client, view, options, light_buffer, tooltip);
+	map_layer_drawer->Draw(*sprite_batch, *primitive_renderer, map_z, live_client, view, options, light_buffer);
 }
 
 void MapDrawer::DrawLight() {

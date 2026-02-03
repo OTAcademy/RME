@@ -30,15 +30,15 @@ TileRenderer::TileRenderer(ItemDrawer* id, SpriteDrawer* sd, CreatureDrawer* cd,
 	item_drawer(id), sprite_drawer(sd), creature_drawer(cd), creature_name_drawer(cnd), floor_drawer(fd), marker_drawer(md), tooltip_drawer(td), editor(ed) {
 }
 
-// Helper function to create tooltip data from an item
-static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool isHouseTile) {
+// Helper function to populate tooltip data from an item (in-place)
+static bool FillItemTooltipData(TooltipData& data, Item* item, const Position& pos, bool isHouseTile) {
 	if (!item) {
-		return TooltipData();
+		return false;
 	}
 
 	const uint16_t id = item->getID();
 	if (id < 100) {
-		return TooltipData();
+		return false;
 	}
 
 	const uint16_t unique = item->getUniqueID();
@@ -75,7 +75,7 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 
 	// Only create tooltip if there's something to show
 	if (unique == 0 && action == 0 && doorId == 0 && text.empty() && description.empty() && destination.x == 0 && !hasContent) {
-		return TooltipData();
+		return false;
 	}
 
 	// Get item name from database
@@ -84,7 +84,10 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 		itemName = "Item";
 	}
 
-	TooltipData data(pos, id, std::string(itemName));
+	data.pos = pos;
+	data.itemId = id;
+	data.itemName = itemName; // Assign string_view to string (reuses buffer)
+
 	data.actionId = action;
 	data.uniqueId = unique;
 	data.doorId = doorId;
@@ -98,9 +101,6 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 			// Set capacity for rendering empty slots
 			data.containerCapacity = static_cast<uint8_t>(container->getVolume());
 
-			// Using getVector() might be risky if internal logic changes,
-			// but getItem(i) is safer if available, or just iterating vector.
-			// Container::getVector() returns ItemVector& (std::vector<Item*>)
 			const ItemVector& items = container->getVector();
 			data.containerItems.reserve(items.size());
 			for (Item* subItem : items) {
@@ -127,10 +127,10 @@ static TooltipData CreateItemTooltipData(Item* item, const Position& pos, bool i
 
 	data.updateCategory();
 
-	return data;
+	return true;
 }
 
-void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, TileLocation* location, const RenderView& view, const DrawingOptions& options, uint32_t current_house_id, std::ostringstream& tooltip_stream, int in_draw_x, int in_draw_y) {
+void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, TileLocation* location, const RenderView& view, const DrawingOptions& options, uint32_t current_house_id, int in_draw_x, int in_draw_y) {
 	if (!location) {
 		return;
 	}
@@ -198,9 +198,11 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 
 	// Ground tooltip (one per item)
 	if (options.show_tooltips && map_z == view.floor && tile->ground) {
-		TooltipData groundData = CreateItemTooltipData(tile->ground, location->getPosition(), tile->isHouseTile());
-		if (groundData.hasVisibleFields()) {
-			tooltip_drawer->addItemTooltip(groundData);
+		TooltipData& groundData = tooltip_drawer->requestTooltipData();
+		if (FillItemTooltipData(groundData, tile->ground, location->getPosition(), tile->isHouseTile())) {
+			if (groundData.hasVisibleFields()) {
+				tooltip_drawer->commitTooltip();
+			}
 		}
 	}
 
@@ -242,9 +244,11 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 			for (ItemVector::iterator it = tile->items.begin(); it != tile->items.end(); it++) {
 				// item tooltip (one per item)
 				if (options.show_tooltips && map_z == view.floor) {
-					TooltipData itemData = CreateItemTooltipData(*it, location->getPosition(), tile->isHouseTile());
-					if (itemData.hasVisibleFields()) {
-						tooltip_drawer->addItemTooltip(std::move(itemData));
+					TooltipData& itemData = tooltip_drawer->requestTooltipData();
+					if (FillItemTooltipData(itemData, *it, location->getPosition(), tile->isHouseTile())) {
+						if (itemData.hasVisibleFields()) {
+							tooltip_drawer->commitTooltip();
+						}
 					}
 				}
 

@@ -81,8 +81,6 @@ class MapDrawer {
 	std::unique_ptr<PrimitiveRenderer> primitive_renderer;
 
 protected:
-	std::ostringstream tooltip;
-
 	friend class BrushOverlayDrawer;
 	friend class DragShadowDrawer;
 	friend class FloorDrawer;
