@@ -92,7 +92,9 @@ void MapStatisticsDialog::Show(wxWindow* parent) {
 	choicesizer->Add(export_button, wxSizerFlags(1).Center());
 	export_button->SetToolTip("Not implemented yet");
 	export_button->Enable(false);
-	choicesizer->Add(newd wxButton(dg, wxID_CANCEL, "OK"), wxSizerFlags(1).Center());
+	wxButton* okBtn = newd wxButton(dg, wxID_CANCEL, "OK");
+	okBtn->SetToolTip("Close this window");
+	choicesizer->Add(okBtn, wxSizerFlags(1).Center());
 	topsizer->Add(choicesizer, wxSizerFlags(1).Center());
 	dg->SetSizerAndFit(topsizer);
 	dg->Centre(wxBOTH);

@@ -65,8 +65,12 @@ void PropertiesWindow::createUI() {
 	topSizer->Add(notebook, wxSizerFlags(1).DoubleBorder());
 
 	wxSizer* optSizer = newd wxBoxSizer(wxHORIZONTAL);
-	optSizer->Add(newd wxButton(this, wxID_OK, "OK"), wxSizerFlags(0).Center());
-	optSizer->Add(newd wxButton(this, wxID_CANCEL, "Cancel"), wxSizerFlags(0).Center());
+	wxButton* okBtn = newd wxButton(this, wxID_OK, "OK");
+	okBtn->SetToolTip("Apply changes and close");
+	optSizer->Add(okBtn, wxSizerFlags(0).Center());
+	wxButton* cancelBtn = newd wxButton(this, wxID_CANCEL, "Cancel");
+	cancelBtn->SetToolTip("Discard changes and close");
+	optSizer->Add(cancelBtn, wxSizerFlags(0).Center());
 	topSizer->Add(optSizer, wxSizerFlags(0).Center().DoubleBorder());
 
 	SetSizerAndFit(topSizer);
