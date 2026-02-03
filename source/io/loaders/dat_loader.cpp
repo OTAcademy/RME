@@ -161,7 +161,7 @@ namespace {
 			}
 
 			default: {
-#if __cpp_lib_format >= 201907L
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
 				std::string err = std::format("Metadata: Unknown flag: {}. Previous flag: {}.", static_cast<int>(flag), static_cast<int>(previous_flag));
 				warnings.push_back(err);
 #else
@@ -188,7 +188,7 @@ namespace {
 			ReadFlagData(format, file, sType, flag, previous_flag, warnings);
 		}
 		// Sanity check: If we exit the loop without hitting DatFlagLast, it's potential corruption.
-#if __cpp_lib_format >= 201907L
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
 		warnings.push_back(std::format("Metadata: corruption warning - flag list exceeded limit (255) without terminator for sprite id {}", sprite_id));
 #else
 		wxString err;
@@ -204,7 +204,7 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 	FileReadHandle file(nstr(datafile.GetFullPath()));
 
 	if (!file.isOk()) {
-#if __cpp_lib_format >= 201907L
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
 		// C++20 std::format
 		error += std::format("Failed to open {} for reading\nThe error reported was: {}", datafile.GetFullPath().ToStdString(), file.getErrorMessage());
 #else
@@ -216,17 +216,37 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 	uint16_t effect_count, distance_count;
 
 	uint32_t datSignature;
-	file.getU32(datSignature);
+	if (!file.getU32(datSignature)) {
+		error = "Failed to read dat signature";
+		return false;
+	}
+
 	// get max id
-	file.getU16(manager->item_count);
-	file.getU16(manager->creature_count);
-	file.getU16(effect_count);
-	file.getU16(distance_count);
+	if (!file.getU16(manager->item_count) || !file.getU16(manager->creature_count) || !file.getU16(effect_count) || !file.getU16(distance_count)) {
+		error = "Failed to read dat header counts";
+		return false;
+	}
+
+	if (manager->item_count == 0 || manager->creature_count == 0) {
+		error = "Invalid dat header counts (zero items or creatures)";
+		return false;
+	}
 
 	constexpr uint32_t minID = 100; // items start with id 100
 	const uint32_t maxID = manager->item_count + manager->creature_count;
 
 	manager->dat_format = manager->client_version->getDatFormatForSignature(datSignature);
+
+	if (manager->dat_format == DAT_FORMAT_UNKNOWN) {
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
+		error = std::format("Unknown dat signature: {:x}", datSignature);
+#else
+		wxString err;
+		err.Printf("Unknown dat signature: %x", datSignature);
+		error = err;
+#endif
+		return false;
+	}
 
 	if (!manager->otfi_found) {
 		manager->is_extended = manager->dat_format >= DAT_FORMAT_96;

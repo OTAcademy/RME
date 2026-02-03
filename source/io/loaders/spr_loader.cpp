@@ -18,7 +18,7 @@ bool SprLoader::LoadData(GraphicManager* manager, const wxFileName& datafile, wx
 	FileReadHandle fh(nstr(datafile.GetFullPath()));
 
 	if (!fh.isOk()) {
-#if __cpp_lib_format >= 201907L
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
 		error = wxstr(std::format("Failed to open file {} for reading", datafile.GetFullPath().ToStdString()));
 #else
 		error = "Failed to open file for reading";
@@ -93,10 +93,15 @@ std::vector<uint32_t> SprLoader::ReadSpriteIndexes(FileReadHandle& fh, uint32_t 
 bool SprLoader::ReadSprites(GraphicManager* manager, FileReadHandle& fh, const std::vector<uint32_t>& sprite_indexes, wxArrayString& warnings, wxString& error) {
 	int id = 1;
 	for (uint32_t index : sprite_indexes) {
+		if (index == 0) {
+			id++;
+			continue;
+		}
+
 		uint32_t seek_pos = index + SPRITE_DATA_OFFSET;
 		if (!fh.seek(seek_pos)) {
 			// Seek failed, likely bad index or EOF. Log it.
-#if __cpp_lib_format >= 201907L
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
 			warnings.push_back(wxstr(std::format("SprLoader: Failed to seek to sprite data at offset {} for id {}", seek_pos, id)));
 #else
 			wxString ss;
@@ -117,7 +122,7 @@ bool SprLoader::ReadSprites(GraphicManager* manager, FileReadHandle& fh, const s
 			if (spr && size > 0) {
 				if (spr->size > 0) {
 					// Duplicate GameSprite id
-#if __cpp_lib_format >= 201907L
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
 					warnings.push_back(wxstr(std::format("items.spr: Duplicate GameSprite id {}", id)));
 #else
 					wxString ss;
