@@ -333,7 +333,7 @@ void Settings::IO(IOMode mode) {
 	Int(INGAME_PREVIEW_VISIBLE, 0);
 	String(INGAME_PREVIEW_LAYOUT, "");
 	String(HOUSE_PALETTE_LAYOUT, "");
-	Int(MINIMAP_VISIBLE, 0);
+	Int(MINIMAP_VISIBLE, 1);
 	String(MINIMAP_LAYOUT, "name=066e2bc8486298990000259a00000003;caption=Minimap;state=2099151;dir=4;layer=0;row=0;pos=0;prop=100000;bestw=170;besth=130;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=221;floath=164");
 	Int(WINDOW_HEIGHT, 500);
 	Int(WINDOW_WIDTH, 700);

@@ -106,8 +106,6 @@ protected:
 
 	friend class Application;
 	friend class GUI;
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif
