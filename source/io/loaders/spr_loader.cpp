@@ -7,6 +7,13 @@
 #include <format>
 #include <memory>
 
+// Anonymous namespace for constants
+namespace {
+	constexpr uint32_t SPRITE_DATA_OFFSET = 3;
+	constexpr uint32_t SPRITE_ADDRESS_SIZE_EXTENDED = 4;
+	constexpr uint32_t SPRITE_ADDRESS_SIZE_NORMAL = 2;
+}
+
 bool SprLoader::LoadData(GraphicManager* manager, const wxFileName& datafile, wxString& error, wxArrayString& warnings) {
 	FileReadHandle fh(nstr(datafile.GetFullPath()));
 
@@ -19,27 +26,39 @@ bool SprLoader::LoadData(GraphicManager* manager, const wxFileName& datafile, wx
 		return false;
 	}
 
-#define safe_get(func, ...)                      \
-	do {                                         \
-		if (!fh.get##func(__VA_ARGS__)) {        \
-			error = wxstr(fh.getErrorMessage()); \
-			return false;                        \
-		}                                        \
-	} while (false)
+	// Local helper lambda for safe get
+	auto safe_get_u32 = [&](uint32_t& out) -> bool {
+		if (!fh.getU32(out)) {
+			error = wxstr(fh.getErrorMessage());
+			return false;
+		}
+		return true;
+	};
+	auto safe_get_u16 = [&](uint16_t& out) -> bool {
+		if (!fh.getU16(out)) {
+			error = wxstr(fh.getErrorMessage());
+			return false;
+		}
+		return true;
+	};
 
 	uint32_t sprSignature;
-	safe_get(U32, sprSignature);
+	if (!safe_get_u32(sprSignature)) {
+		return false;
+	}
 
 	uint32_t total_pics = 0;
 	if (manager->is_extended) {
-		safe_get(U32, total_pics);
+		if (!safe_get_u32(total_pics)) {
+			return false;
+		}
 	} else {
 		uint16_t u16 = 0;
-		safe_get(U16, u16);
+		if (!safe_get_u16(u16)) {
+			return false;
+		}
 		total_pics = u16;
 	}
-
-#undef safe_get
 
 	manager->spritefile = nstr(datafile.GetFullPath());
 	manager->unloaded = false;
@@ -74,9 +93,16 @@ std::vector<uint32_t> SprLoader::ReadSpriteIndexes(FileReadHandle& fh, uint32_t 
 bool SprLoader::ReadSprites(GraphicManager* manager, FileReadHandle& fh, const std::vector<uint32_t>& sprite_indexes, wxArrayString& warnings, wxString& error) {
 	int id = 1;
 	for (uint32_t index : sprite_indexes) {
-		uint32_t seek_pos = index + 3;
+		uint32_t seek_pos = index + SPRITE_DATA_OFFSET;
 		if (!fh.seek(seek_pos)) {
-			// Seek failed, likely bad index or EOF?
+			// Seek failed, likely bad index or EOF. Log it.
+#if __cpp_lib_format >= 201907L
+			warnings.push_back(wxstr(std::format("SprLoader: Failed to seek to sprite data at offset {} for id {}", seek_pos, id)));
+#else
+			wxString ss;
+			ss << "SprLoader: Failed to seek to sprite data at offset " << seek_pos << " for id " << id;
+			warnings.push_back(ss);
+#endif
 			continue;
 		}
 
@@ -135,7 +161,8 @@ bool SprLoader::LoadDump(GraphicManager* manager, std::unique_ptr<uint8_t[]>& ta
 	}
 	manager->unloaded = false;
 
-	if (!fh.seek((manager->is_extended ? 4 : 2) + sprite_id * sizeof(uint32_t))) {
+	uint32_t address_size = manager->is_extended ? SPRITE_ADDRESS_SIZE_EXTENDED : SPRITE_ADDRESS_SIZE_NORMAL;
+	if (!fh.seek(address_size + sprite_id * sizeof(uint32_t))) {
 		return false;
 	}
 
@@ -147,7 +174,7 @@ bool SprLoader::LoadDump(GraphicManager* manager, std::unique_ptr<uint8_t[]>& ta
 			target.reset(); // ensure null
 			return true;
 		}
-		fh.seek(to_seek + 3);
+		fh.seek(to_seek + SPRITE_DATA_OFFSET);
 		uint16_t sprite_size;
 		if (fh.getU16(sprite_size)) {
 			target = std::make_unique<uint8_t[]>(size = sprite_size);

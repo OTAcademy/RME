@@ -5,7 +5,6 @@
 #include "util/common.h"
 #include <memory>
 #include <format>
-#include <utility> // for std::to_underlying in C++23, or static_cast otherwise
 
 // Anonymous namespace for internal helpers and C++20/23 features
 namespace {
@@ -70,7 +69,7 @@ namespace {
 	}
 
 	// Helper to read flag data associated with a specific flag
-	void ReadFlagData(DatFormat format, FileReadHandle& file, GameSprite* sType, uint8_t flag, wxArrayString& warnings) {
+	void ReadFlagData(DatFormat format, FileReadHandle& file, GameSprite* sType, uint8_t flag, uint8_t previous_flag, wxArrayString& warnings) {
 		switch (flag) {
 			case DatFlagGroundBorder:
 			case DatFlagOnBottom:
@@ -163,7 +162,7 @@ namespace {
 
 			default: {
 				// C++20 std::format usage
-				std::string err = std::format("Metadata: Unknown flag: {}. Previous flag: unknown.", static_cast<int>(flag));
+				std::string err = std::format("Metadata: Unknown flag: {}. Previous flag: {}.", static_cast<int>(flag), static_cast<int>(previous_flag));
 				warnings.push_back(err);
 				break;
 			}
@@ -171,16 +170,20 @@ namespace {
 	}
 
 	// Helper loop to read all flags for a sprite
-	void LoadMetadataFlags(DatFormat format, FileReadHandle& file, GameSprite* sType, wxArrayString& warnings) {
+	void LoadMetadataFlags(DatFormat format, FileReadHandle& file, GameSprite* sType, uint32_t sprite_id, wxArrayString& warnings) {
 		uint8_t flag = DatFlagLast;
+		uint8_t previous_flag = DatFlagLast;
 		for (int i = 0; i < DatFlagLast; ++i) {
+			previous_flag = flag;
 			file.getU8(flag);
 			if (flag == DatFlagLast) {
 				return;
 			}
 			flag = RemapFlag(flag, format);
-			ReadFlagData(format, file, sType, flag, warnings);
+			ReadFlagData(format, file, sType, flag, previous_flag, warnings);
 		}
+		// Sanity check: If we exit the loop without hitting DatFlagLast, it's potential corruption.
+		warnings.push_back(std::format("Metadata: corruption warning - flag list exceeded limit (255) without terminator for sprite id {}", sprite_id));
 	}
 
 } // namespace
@@ -229,7 +232,7 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 		sType->id = id;
 
 		// Load flags
-		LoadMetadataFlags(manager->dat_format, file, sType, warnings);
+		LoadMetadataFlags(manager->dat_format, file, sType, id, warnings);
 
 		// Reads the group count
 		uint8_t group_count = 1;
