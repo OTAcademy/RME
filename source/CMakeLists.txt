@@ -88,6 +88,9 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/outfit_selection_grid.h
 
     ${CMAKE_CURRENT_LIST_DIR}/io/filehandle.h
+    ${CMAKE_CURRENT_LIST_DIR}/io/loaders/dat_loader.h
+    ${CMAKE_CURRENT_LIST_DIR}/io/loaders/otfi_loader.h
+    ${CMAKE_CURRENT_LIST_DIR}/io/loaders/spr_loader.h
     ${CMAKE_CURRENT_LIST_DIR}/io/iomap.h
     ${CMAKE_CURRENT_LIST_DIR}/io/iomap_otbm.h
     #${CMAKE_CURRENT_LIST_DIR}/io/iomap_otmm.h
@@ -400,6 +403,9 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/dialogs/outfit_selection_grid.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/io/filehandle.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/io/loaders/dat_loader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/io/loaders/otfi_loader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/io/loaders/spr_loader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/io/iomap.cpp
     ${CMAKE_CURRENT_LIST_DIR}/io/iomap_otbm.cpp
     #${CMAKE_CURRENT_LIST_DIR}/io/iomap_otmm.cpp
