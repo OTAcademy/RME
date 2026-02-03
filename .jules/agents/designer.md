@@ -154,6 +154,7 @@ Create PR titled `✨ Designer: [Your Description]`.
 - **ALWAYS** use NanoVG via `wxGLCanvas` for sprite-heavy palettes or animated previews
 - **ALWAYS** add tooltips to controls
 - **ALWAYS** use Bind() for events
+- **CRITICAL**: In-game viewport labels (item names, creature names, ID overlays) are **NOT tooltips**. They display simultaneously for ALL visible entities. **NEVER** redesign these to show only on hover/mouse position.
 
 ## 🎯 YOUR GOAL
 Find the UX friction. Eliminate it. Ship a professional, delightful editor.

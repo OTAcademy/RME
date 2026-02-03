@@ -111,6 +111,7 @@ Create PR titled `👻 Phantom: [Your Description]`.
 - **ALWAYS** use wxWrapSizer for responsive grids
 - **ALWAYS** use Bind() for new event handlers
 - **ALWAYS** use CallAfter() from threads
+- **CRITICAL**: Map viewport labels (item names, monster names, spawn info) are **NOT wxToolTips**. They render for ALL visible entities simultaneously in OpenGL. **NEVER** convert these to hover-triggered tooltips.
 
 ## 🎯 YOUR GOAL
 Find the wxWidgets violations. Fix them. Ship professional, responsive UI.

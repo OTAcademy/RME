@@ -129,6 +129,7 @@ Create PR titled `⚡ Throttle: [Your Description]` with performance numbers.
 - **ALWAYS** profile before optimizing
 - **ALWAYS** use `reserve()` on vectors
 - **ALWAYS** document performance improvements
+- **CRITICAL**: Viewport labels (item properties, creature names, spawn radius) are **NOT tooltips**. They must render for ALL visible entities at once — **NEVER** optimize by rendering only at mouse position.
 
 ## 🎯 YOUR GOAL
 Find the slow paths. Optimize them. Ship fast, responsive code.

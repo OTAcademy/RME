@@ -116,6 +116,7 @@ Create PR titled `🔒 Sentinel: [Your Description]`.
 - **NEVER** leak GPU resources
 - **ALWAYS** create RAII wrappers for GL objects
 - **ALWAYS** pair glGen* with glDelete*
+- **CRITICAL**: Viewport labels (item names, creature names, spawn info) are **NOT tooltips**. They are permanent labels rendered for ALL visible entities simultaneously. **NEVER** modify this to only show at mouse position.
 
 ## 🎯 YOUR GOAL
 Find the OpenGL legacy code. Modernize it. Ship fast, clean rendering.
