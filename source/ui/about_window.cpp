@@ -75,7 +75,9 @@ AboutWindow::AboutWindow(wxWindow* parent) :
 	topsizer->Add(newd wxStaticText(this, wxID_ANY, about), 1, wxALL, 20);
 
 	wxSizer* choicesizer = newd wxBoxSizer(wxHORIZONTAL);
-	choicesizer->Add(newd wxButton(this, wxID_OK, "OK"), wxSizerFlags(1).Center());
+	wxButton* okBtn = newd wxButton(this, wxID_OK, "OK");
+	okBtn->SetToolTip("Close this window");
+	choicesizer->Add(okBtn, wxSizerFlags(1).Center());
 
 	wxButton* copyBtn = newd wxButton(this, wxID_COPY, "Copy Version Info");
 	copyBtn->Bind(wxEVT_BUTTON, [about](wxCommandEvent&) {

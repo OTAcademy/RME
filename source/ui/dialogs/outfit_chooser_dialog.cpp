@@ -195,7 +195,9 @@ OutfitChooserDialog::OutfitChooserDialog(wxWindow* parent, const Outfit& current
 	bottom_sizer->AddStretchSpacer();
 
 	wxButton* ok_btn = new wxButton(this, wxID_OK, "OK", wxDefaultPosition, wxSize(90, 30));
+	ok_btn->SetToolTip("Confirm outfit selection");
 	wxButton* cancel_btn = new wxButton(this, wxID_CANCEL, "Cancel", wxDefaultPosition, wxSize(90, 30));
+	cancel_btn->SetToolTip("Cancel outfit selection");
 	bottom_sizer->Add(ok_btn, 0, wxALL, 8);
 	bottom_sizer->Add(cancel_btn, 0, wxALL, 8);
 
