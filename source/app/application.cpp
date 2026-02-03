@@ -47,19 +47,6 @@
 
 #include "../brushes/icon/editor_icon.xpm"
 
-BEGIN_EVENT_TABLE(MainFrame, wxFrame)
-EVT_CLOSE(MainFrame::OnExit)
-
-// Update check complete
-#ifdef _USE_UPDATER_
-EVT_ON_UPDATE_CHECK_FINISHED(wxID_ANY, MainFrame::OnUpdateReceived)
-#endif
-EVT_ON_UPDATE_MENUS(wxID_ANY, MainFrame::OnUpdateMenus)
-
-// Idle event handler
-EVT_IDLE(MainFrame::OnIdle)
-END_EVENT_TABLE()
-
 BEGIN_EVENT_TABLE(MapWindow, wxPanel)
 EVT_SIZE(MapWindow::OnSize)
 
@@ -420,6 +407,13 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	g_gui.aui_manager->Update();
 
 	UpdateMenubar();
+
+	Bind(wxEVT_CLOSE_WINDOW, &MainFrame::OnExit, this);
+#ifdef _USE_UPDATER_
+	Bind(EVT_UPDATE_CHECK_FINISHED, &MainFrame::OnUpdateReceived, this);
+#endif
+	Bind(EVT_UPDATE_MENUS, &MainFrame::OnUpdateMenus, this);
+	Bind(wxEVT_IDLE, &MainFrame::OnIdle, this);
 }
 
 MainFrame::~MainFrame() = default;

@@ -181,6 +181,11 @@ void EditorManager::SaveCurrentMap(FileName fileName, bool showdialog) {
 	if (mapTab) {
 		Editor* editor = mapTab->GetEditor();
 		if (editor) {
+			g_status.SetStatusText("Saving map...");
+			if (g_gui.root) {
+				g_gui.root->Update();
+			}
+
 			EditorPersistence::saveMap(*editor, fileName, showdialog);
 
 			if (!editor->map.hasChanged()) {
@@ -271,6 +276,10 @@ void EditorManager::SaveMapAs() {
 
 bool EditorManager::LoadMap(const FileName& fileName) {
 	spdlog::info("EditorManager::LoadMap - Loading map: {}", nstr(fileName.GetFullPath()));
+	g_status.SetStatusText("Loading map...");
+	if (g_gui.root) {
+		g_gui.root->Update();
+	}
 	g_gui.FinishWelcomeDialog();
 
 	if (GetCurrentEditor() && !GetCurrentMap().hasChanged() && !GetCurrentMap().hasFile()) {
