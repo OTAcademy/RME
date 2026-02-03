@@ -490,7 +490,7 @@ bool DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, G
 
 		if (group_index == 0) {
 			// Validate sprite_id
-			if (sprite_id == UINT32_MAX || sprite_id >= MAX_SPRITES || sprite_id + 1 > manager->image_space.max_size()) {
+			if (sprite_id == UINT32_MAX || sprite_id >= MAX_SPRITES || sprite_id >= manager->image_space.size()) {
 				return false;
 			}
 
