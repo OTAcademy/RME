@@ -19,7 +19,8 @@
 #define RME_MAP_WINDOW_H_
 
 #include "map/position.h"
-#include "ui/replace_items_window.h"
+#include "editor/editor.h"
+class ReplaceToolWindow;
 
 class MapCanvas;
 class DCButton;
@@ -92,7 +93,7 @@ protected:
 	wxScrollBar* vScroll;
 
 private:
-	ReplaceItemsDialog* replaceItemsDialog;
+	ReplaceToolWindow* replaceItemsDialog;
 	Position previous_position;
 
 	friend class MainFrame;

@@ -21,6 +21,7 @@
 #include "ui/gui.h"
 #include "game/sprites.h"
 #include "editor/editor.h"
+#include "ui/replace_tool/replace_tool_window.h"
 
 MapWindow::MapWindow(wxWindow* parent, Editor& editor) :
 	wxPanel(parent, PANE_MAIN),
@@ -60,7 +61,7 @@ void MapWindow::ShowReplaceItemsDialog(bool selectionOnly) {
 		return;
 	}
 
-	replaceItemsDialog = new ReplaceItemsDialog(this, selectionOnly);
+	replaceItemsDialog = new ReplaceToolWindow(this, &editor);
 	replaceItemsDialog->Connect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler(MapWindow::OnReplaceItemsDialogClose), nullptr, this);
 	replaceItemsDialog->Show();
 }
