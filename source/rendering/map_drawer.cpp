@@ -63,6 +63,7 @@
 #include "rendering/io/screen_capture.h"
 #include "rendering/drawers/tiles/tile_renderer.h"
 #include "rendering/drawers/entities/creature_name_drawer.h"
+#include "rendering/core/sprite_preloader.h"
 
 MapDrawer::MapDrawer(MapCanvas* canvas) :
 	canvas(canvas), editor(canvas->editor) {
@@ -138,6 +139,9 @@ void MapDrawer::SetupGL() {
 		primitive_renderer->initialize();
 		renderers_initialized = true;
 	}
+
+	// Pre-load visible sprites to avoid stalls during DrawMap()
+	SpritePreloader::PreloadVisibleSprites(&editor, view, options);
 }
 
 void MapDrawer::Release() {

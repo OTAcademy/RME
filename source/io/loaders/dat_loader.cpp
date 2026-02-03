@@ -285,10 +285,14 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 	}
 
 	constexpr uint32_t minID = 100; // items start with id 100
-	const uint32_t maxID = manager->item_count + manager->creature_count;
-	// Pre-size containers to avoid rehashing
-	manager->sprite_space.reserve(maxID);
-	manager->image_space.reserve(maxID * 8); // Estimate: ~8 sprites per item average
+	const uint32_t max_id_needed = manager->item_count + manager->creature_count + 1;
+
+	// Pre-size containers to avoid rehashing and frequent allocations
+	manager->sprite_space.resize(max_id_needed);
+	// image_space is still used for individual sprites, but we'll use a vector
+	// We don't know the exact max sprite ID yet, but we can guess or wait for SprLoader
+	// For now, let's pre-size it with a reasonable estimate if we can't find total_pics here
+	// Actually, DatLoader reads sprite IDs, so it needs image_space to be ready.
 
 	manager->dat_format = manager->client_version->getDatFormatForSignature(datSignature);
 
@@ -311,6 +315,7 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 	}
 
 	uint32_t id = minID;
+	const uint32_t maxID = manager->item_count + manager->creature_count;
 	while (id <= maxID) {
 		auto sTypeUnique = std::make_unique<GameSprite>();
 		GameSprite* sType = sTypeUnique.get();
@@ -481,13 +486,17 @@ bool DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, G
 		}
 
 		if (group_index == 0) {
-			auto [it, inserted] = manager->image_space.try_emplace(sprite_id, nullptr);
-			if (inserted) {
+			if (sprite_id >= manager->image_space.size()) {
+				manager->image_space.resize(sprite_id + 1);
+			}
+
+			auto& img_ptr = manager->image_space[sprite_id];
+			if (!img_ptr) {
 				auto img = std::make_unique<GameSprite::NormalImage>();
 				img->id = sprite_id;
-				it->second = std::move(img);
+				img_ptr = std::move(img);
 			}
-			sType->spriteList.push_back(static_cast<GameSprite::NormalImage*>(it->second.get()));
+			sType->spriteList.push_back(static_cast<GameSprite::NormalImage*>(img_ptr.get()));
 		}
 	}
 

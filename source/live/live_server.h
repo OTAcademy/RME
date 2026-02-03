@@ -24,7 +24,7 @@
 
 class LivePeer;
 class LiveLogTab;
-class QTreeNode;
+class MapNode;
 
 class LiveServer : public LiveSocket {
 public:

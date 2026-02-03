@@ -40,13 +40,14 @@ class CopyBuffer;
 class ItemType;
 class Creatures;
 class ItemDatabase;
-class QTreeNode;
+class MapNode;
 class Floor;
 class Action;
 
 class Brush;
 
 #include <unordered_set>
+#include <vector>
 
 using HouseExitList = std::vector<uint32_t>;
 using TileVector = std::vector<Tile*>;

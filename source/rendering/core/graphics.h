@@ -223,10 +223,15 @@ public:
 	struct RenderKeyHash {
 		size_t operator()(const RenderKey& k) const noexcept {
 			// Combine hashes of the most significant fields
-			return std::hash<uint64_t> {}((uint64_t(k.colorHash) << 32) | k.mountColorHash) ^ std::hash<uint64_t> {}((uint64_t(k.lookMount) << 32) | k.lookAddon) ^ std::hash<uint64_t> {}((uint64_t(k.lookMountHead) << 32) | k.lookMountBody);
+			size_t h = std::hash<uint64_t> {}((uint64_t(k.colorHash) << 32) | k.mountColorHash);
+			h ^= std::hash<uint64_t> {}((uint64_t(k.lookMount) << 32) | k.lookAddon) + 0x9e3779b9 + (h << 6) + (h >> 2);
+			h ^= std::hash<uint64_t> {}((uint64_t(k.lookMountHead) << 32) | k.lookMountBody) + 0x9e3779b9 + (h << 6) + (h >> 2);
+			return h;
 		}
 	};
 	std::unordered_map<RenderKey, std::unique_ptr<CachedDC>, RenderKeyHash> colored_dc;
+
+	bool is_resident = false; // Tracks if this GameSprite is in resident_game_sprites
 
 	friend class GraphicManager;
 	friend class GameSpriteLoader;
@@ -247,12 +252,10 @@ public:
 
 	Sprite* getSprite(int id);
 	GameSprite* getCreatureSprite(int id);
-	void insertSprite(int id, std::unique_ptr<Sprite> sprite) {
-		sprite_space[id] = std::move(sprite);
-	}
+	void insertSprite(int id, std::unique_ptr<Sprite> sprite);
 	// Overload for compatibility with existing raw pointer calls (takes ownership)
 	void insertSprite(int id, Sprite* sprite) {
-		sprite_space[id] = std::unique_ptr<Sprite>(sprite);
+		insertSprite(id, std::unique_ptr<Sprite>(sprite));
 	}
 
 	long getElapsedTime() const {
@@ -320,10 +323,19 @@ private:
 	// Atlas manager for Phase 2 texture array rendering
 	std::unique_ptr<AtlasManager> atlas_manager_ = nullptr;
 
-	using SpriteMap = std::unordered_map<int, std::unique_ptr<Sprite>>;
-	SpriteMap sprite_space;
-	using ImageMap = std::unordered_map<int, std::unique_ptr<GameSprite::Image>>;
-	ImageMap image_space;
+	// These are indexed by ID for O(1) access
+	using SpriteVector = std::vector<std::unique_ptr<Sprite>>;
+	SpriteVector sprite_space;
+	using ImageVector = std::vector<std::unique_ptr<GameSprite::Image>>;
+	ImageVector image_space;
+
+	// Editor sprites use negative IDs, so they need a separate map
+	std::unordered_map<int, std::unique_ptr<Sprite>> editor_sprite_space;
+
+	// Active Resident Sets: Track only what's currently occupying memory/VRAM
+	// This avoids O(N) scans of the entire database.
+	std::vector<void*> resident_images;
+	std::vector<GameSprite*> resident_game_sprites;
 
 	DatFormat dat_format;
 	uint16_t item_count;

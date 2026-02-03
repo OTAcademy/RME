@@ -91,7 +91,7 @@ void LiveSocket::logMessage(const wxString& message) {
 }
 
 void LiveSocket::receiveNode(NetworkMessage& message, Editor& editor, Action* action, int32_t ndx, int32_t ndy, bool underground) {
-	QTreeNode* node = editor.map.getLeaf(ndx * 4, ndy * 4);
+	MapNode* node = editor.map.getLeaf(ndx * 4, ndy * 4);
 	if (!node) {
 		log->Message("Warning: Received update for unknown tile (" + std::to_string(ndx * 4) + "/" + std::to_string(ndy * 4) + "/" + (underground ? "true" : "false") + ")");
 		return;
@@ -112,7 +112,7 @@ void LiveSocket::receiveNode(NetworkMessage& message, Editor& editor, Action* ac
 	}
 }
 
-void LiveSocket::sendNode(uint32_t clientId, QTreeNode* node, int32_t ndx, int32_t ndy, uint32_t floorMask) {
+void LiveSocket::sendNode(uint32_t clientId, MapNode* node, int32_t ndx, int32_t ndy, uint32_t floorMask) {
 	bool underground;
 	if (floorMask & 0xFF00) {
 		if (floorMask & 0x00FF) {
@@ -155,7 +155,7 @@ void LiveSocket::sendNode(uint32_t clientId, QTreeNode* node, int32_t ndx, int32
 	send(message);
 }
 
-void LiveSocket::receiveFloor(NetworkMessage& message, Editor& editor, Action* action, int32_t ndx, int32_t ndy, int32_t z, QTreeNode* node, Floor* floor) {
+void LiveSocket::receiveFloor(NetworkMessage& message, Editor& editor, Action* action, int32_t ndx, int32_t ndy, int32_t z, MapNode* node, Floor* floor) {
 	Map& map = editor.map;
 
 	uint16_t tileBits = message.read<uint16_t>();

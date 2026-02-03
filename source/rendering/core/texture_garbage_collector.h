@@ -32,9 +32,9 @@ public:
 	TextureGarbageCollector();
 	~TextureGarbageCollector();
 
-	void GarbageCollect(std::unordered_map<int, std::unique_ptr<Sprite>>& sprite_space, std::unordered_map<int, void*>& image_space, time_t current_time); // void* to avoid circular dependency with Image
+	void GarbageCollect(std::vector<GameSprite*>& resident_game_sprites, std::vector<void*>& resident_images, time_t current_time);
 	void AddSpriteToCleanup(GameSprite* spr);
-	void CleanSoftwareSprites(std::unordered_map<int, std::unique_ptr<Sprite>>& sprite_space);
+	void CleanSoftwareSprites(std::vector<std::unique_ptr<Sprite>>& sprite_space);
 	void Clear();
 
 	void NotifyTextureLoaded();

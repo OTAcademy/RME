@@ -81,6 +81,11 @@ bool SprLoader::LoadData(GraphicManager* manager, const wxFileName& datafile, wx
 		return true;
 	}
 
+	// Pre-allocate image_space if total_pics is known
+	if (total_pics + 1 > manager->image_space.size()) {
+		manager->image_space.resize(total_pics + 1);
+	}
+
 	std::vector<uint32_t> sprite_indexes = ReadSpriteIndexes(fh, total_pics, error);
 	if (sprite_indexes.empty() && total_pics > 0) {
 		return false;
@@ -131,8 +136,8 @@ bool SprLoader::ReadSprites(GraphicManager* manager, FileReadHandle& fh, const s
 			return false;
 		}
 
-		if (auto it = manager->image_space.find(id); it != manager->image_space.end()) {
-			GameSprite::NormalImage* spr = dynamic_cast<GameSprite::NormalImage*>(it->second.get());
+		if (id < manager->image_space.size() && manager->image_space[id]) {
+			GameSprite::NormalImage* spr = dynamic_cast<GameSprite::NormalImage*>(manager->image_space[id].get());
 			if (spr) {
 				if (size > 0) {
 					if (spr->size > 0) {

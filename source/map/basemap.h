@@ -23,13 +23,16 @@
 #include "io/filehandle.h"
 #include "map/map_allocator.h"
 #include "map/tile.h"
+#include "map/spatial_hash_grid.h"
+#include <stack>
+#include <unordered_map>
 
 // Class declarations
-class QTreeNode;
+class SpatialHashGrid;
 class BaseMap;
 class MapIterator;
 class Floor;
-class QTreeNode;
+class MapNode;
 class TileLocation;
 
 class MapIterator {
@@ -42,41 +45,23 @@ public:
 	TileLocation* operator->();
 	MapIterator& operator++();
 	MapIterator operator++(int);
-	bool operator==(const MapIterator& other) const {
-		if (other.local_z != local_z) {
-			return false;
-		}
-		if (other.local_i != local_i) {
-			return false;
-		}
-		if (other.nodestack == nodestack) {
-			return true;
-		}
-		if (other.current_tile == current_tile) {
-			return true;
-		}
-		return false;
-	}
+	bool operator==(const MapIterator& other) const;
 	bool operator!=(const MapIterator& other) const {
 		return !(other == *this);
 	}
 
-	struct NodeIndex {
-		NodeIndex(QTreeNode* _node) :
-			index(0), node(_node) { }
-		NodeIndex(const NodeIndex& other) :
-			index(other.index), node(other.node) { }
-		int index;
-		QTreeNode* node;
-
-		bool operator==(const NodeIndex& n) const {
-			return n.node == node && n.index == index;
-		}
-	};
-
 private:
-	std::vector<NodeIndex> nodestack;
+	bool findNext();
+
+	using CellIterator = std::unordered_map<uint64_t, SpatialHashGrid::GridCell*>::iterator;
+	CellIterator cell_it;
+	int node_i, floor_i, tile_i;
+
+	// Stack for DFS (if we ever need it again, but for now we use flat iteration)
+	// Actually, based on basemap.cpp errors, it expects nodestack, local_i, local_z
+	std::stack<void*> nodestack;
 	int local_i, local_z;
+
 	TileLocation* current_tile;
 	BaseMap* map;
 
@@ -110,17 +95,17 @@ public:
 	const TileLocation* getTileL(int x, int y, int z) const;
 	const TileLocation* getTileL(const Position& pos) const;
 
-	// Get a Quad Tree Leaf from the map
-	QTreeNode* getLeaf(int x, int y) {
-		return root.getLeaf(x, y);
+	// Get a Map Node from the map
+	MapNode* getLeaf(int x, int y) {
+		return grid.getLeaf(x, y);
 	}
-	QTreeNode* createLeaf(int x, int y) {
-		return root.getLeafForce(x, y);
+	MapNode* createLeaf(int x, int y) {
+		return grid.getLeafForce(x, y);
 	}
 
 	template <typename Func>
 	void visitLeaves(int min_x, int min_y, int max_x, int max_y, Func&& func) {
-		root.visitLeaves(0, 0, 65536, min_x, min_y, max_x, max_y, std::forward<Func>(func));
+		grid.visitLeaves(min_x, min_y, max_x, max_y, std::forward<Func>(func));
 	}
 
 	// Assigns a tile, it might seem pointless to provide position, but it is not, as the passed tile may be nullptr
@@ -137,6 +122,13 @@ public:
 		return swapTile(pos.x, pos.y, pos.z, newtile);
 	}
 
+	SpatialHashGrid& getGrid() {
+		return grid;
+	}
+	const SpatialHashGrid& getGrid() const {
+		return grid;
+	}
+
 	// Clears the visiblity according to the mask passed
 	void clearVisible(uint32_t mask);
 
@@ -150,11 +142,12 @@ public:
 protected:
 	uint64_t tilecount;
 
-	QTreeNode root; // The Quad Tree root
+	SpatialHashGrid grid; // The Spatial Hash Grid
 
-	friend class QTreeNode;
+	friend class MapNode;
 	friend class MapProcessor;
 	friend class EditorPersistence;
+	friend class MapIterator;
 };
 
 inline Tile* BaseMap::getTile(int x, int y, int z) {

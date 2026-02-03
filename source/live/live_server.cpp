@@ -185,7 +185,7 @@ void LiveServer::broadcastNodes(DirtyList& dirtyList) {
 		int32_t ndy = (ind.pos >> 4) & 0x3FFF;
 		uint32_t floors = ind.floors;
 
-		QTreeNode* node = editor->map.getLeaf(ndx * 4, ndy * 4);
+		MapNode* node = editor->map.getLeaf(ndx * 4, ndy * 4);
 		if (!node) {
 			continue;
 		}

@@ -21,6 +21,7 @@
 #include "map/basemap.h"
 #include "map/position.h"
 #include "map/tile.h"
+#include "map/spatial_hash_grid.h"
 
 //**************** Tile Location **********************
 
@@ -63,94 +64,34 @@ Floor::Floor(int sx, int sy, int z) {
 	}
 }
 
-//**************** QTreeNode **********************
+//**************** MapNode **********************
 
-QTreeNode::QTreeNode(BaseMap& map) :
+MapNode::MapNode(BaseMap& map) :
 	map(map),
-	visible(0),
-	isLeaf(false) {
-	// Doesn't matter if we're leaf or node
+	visible(0) {
 	for (int i = 0; i < MAP_LAYERS; ++i) {
-		child[i] = nullptr;
+		array[i] = nullptr;
 	}
 }
 
-QTreeNode::~QTreeNode() {
-	if (isLeaf) {
-		for (int i = 0; i < MAP_LAYERS; ++i) {
-			delete array[i];
-		}
-	} else {
-		for (int i = 0; i < MAP_LAYERS; ++i) {
-			delete child[i];
-		}
+MapNode::~MapNode() {
+	for (int i = 0; i < MAP_LAYERS; ++i) {
+		delete array[i];
 	}
 }
 
-QTreeNode* QTreeNode::getLeaf(int x, int y) {
-	QTreeNode* node = this;
-	uint32_t cx = x, cy = y;
-	while (node) {
-		if (node->isLeaf) {
-			return node;
-		} else {
-			uint32_t index = ((cx & 0xC000) >> 14) | ((cy & 0xC000) >> 12);
-			if (node->child[index]) {
-				node = node->child[index];
-				cx <<= 2;
-				cy <<= 2;
-			} else {
-				return nullptr;
-			}
-		}
-	}
-	return nullptr;
-}
-
-QTreeNode* QTreeNode::getLeafForce(int x, int y) {
-	QTreeNode* node = this;
-	uint32_t cx = x, cy = y;
-	int level = 6;
-	while (node) {
-		uint32_t index = ((cx & 0xC000) >> 14) | ((cy & 0xC000) >> 12);
-
-		QTreeNode*& qt = node->child[index];
-		if (qt) {
-			if (qt->isLeaf) {
-				return qt;
-			}
-
-		} else {
-			if (level == 0) {
-				qt = newd QTreeNode(map);
-				qt->isLeaf = true;
-				return qt;
-			} else {
-				qt = newd QTreeNode(map);
-			}
-		}
-		node = node->child[index];
-		cx <<= 2;
-		cy <<= 2;
-		level -= 1;
-	}
-
-	return nullptr;
-}
-
-Floor* QTreeNode::createFloor(int x, int y, int z) {
-	ASSERT(isLeaf);
+Floor* MapNode::createFloor(int x, int y, int z) {
 	if (!array[z]) {
 		array[z] = newd Floor(x, y, z);
 	}
 	return array[z];
 }
 
-bool QTreeNode::isVisible(bool underground) {
+bool MapNode::isVisible(bool underground) {
 	return testFlags(visible, underground + 1);
 }
 
-bool QTreeNode::isRequested(bool underground) {
+bool MapNode::isRequested(bool underground) {
 	if (underground) {
 		return testFlags(visible, 4);
 	} else {
@@ -158,19 +99,11 @@ bool QTreeNode::isRequested(bool underground) {
 	}
 }
 
-void QTreeNode::clearVisible(uint32_t u) {
-	if (isLeaf) {
-		visible &= u;
-	} else {
-		for (int i = 0; i < MAP_LAYERS; ++i) {
-			if (child[i]) {
-				child[i]->clearVisible(u);
-			}
-		}
-	}
+void MapNode::clearVisible(uint32_t u) {
+	visible &= u;
 }
 
-bool QTreeNode::isVisible(uint32_t client, bool underground) {
+bool MapNode::isVisible(uint32_t client, bool underground) {
 	if (underground) {
 		return testFlags(visible >> MAP_LAYERS, static_cast<uint64_t>(1) << client);
 	} else {
@@ -178,7 +111,7 @@ bool QTreeNode::isVisible(uint32_t client, bool underground) {
 	}
 }
 
-void QTreeNode::setVisible(bool underground, bool value) {
+void MapNode::setVisible(bool underground, bool value) {
 	if (underground) {
 		if (value) {
 			visible |= 2;
@@ -194,7 +127,7 @@ void QTreeNode::setVisible(bool underground, bool value) {
 	}
 }
 
-void QTreeNode::setRequested(bool underground, bool r) {
+void MapNode::setRequested(bool underground, bool r) {
 	if (r) {
 		visible |= (underground ? 4 : 8);
 	} else {
@@ -202,7 +135,7 @@ void QTreeNode::setRequested(bool underground, bool r) {
 	}
 }
 
-void QTreeNode::setVisible(uint32_t client, bool underground, bool value) {
+void MapNode::setVisible(uint32_t client, bool underground, bool value) {
 	if (value) {
 		visible |= (1 << client << (underground ? MAP_LAYERS : 0));
 	} else {
@@ -210,8 +143,11 @@ void QTreeNode::setVisible(uint32_t client, bool underground, bool value) {
 	}
 }
 
-TileLocation* QTreeNode::getTile(int x, int y, int z) {
-	ASSERT(isLeaf);
+bool MapNode::hasFloor(uint32_t z) {
+	return array[z] != nullptr;
+}
+
+TileLocation* MapNode::getTile(int x, int y, int z) {
 	Floor* f = array[z];
 	if (!f) {
 		return nullptr;
@@ -219,14 +155,12 @@ TileLocation* QTreeNode::getTile(int x, int y, int z) {
 	return &f->locs[(x & 3) * 4 + (y & 3)];
 }
 
-TileLocation* QTreeNode::createTile(int x, int y, int z) {
-	ASSERT(isLeaf);
+TileLocation* MapNode::createTile(int x, int y, int z) {
 	Floor* f = createFloor(x, y, z);
 	return &f->locs[(x & 3) * 4 + (y & 3)];
 }
 
-Tile* QTreeNode::setTile(int x, int y, int z, Tile* newtile) {
-	ASSERT(isLeaf);
+Tile* MapNode::setTile(int x, int y, int z, Tile* newtile) {
 	Floor* f = createFloor(x, y, z);
 
 	int offset_x = x & 3;
@@ -245,8 +179,7 @@ Tile* QTreeNode::setTile(int x, int y, int z, Tile* newtile) {
 	return oldtile;
 }
 
-void QTreeNode::clearTile(int x, int y, int z) {
-	ASSERT(isLeaf);
+void MapNode::clearTile(int x, int y, int z) {
 	Floor* f = createFloor(x, y, z);
 
 	int offset_x = x & 3;
@@ -255,4 +188,72 @@ void QTreeNode::clearTile(int x, int y, int z) {
 	TileLocation* tmp = &f->locs[offset_x * 4 + offset_y];
 	delete tmp->tile;
 	tmp->tile = map.allocator(tmp);
+}
+
+//**************** SpatialHashGrid **********************
+
+SpatialHashGrid::GridCell::GridCell() {
+	for (int i = 0; i < NODES_PER_CELL * NODES_PER_CELL; ++i) {
+		nodes[i] = nullptr;
+	}
+}
+
+SpatialHashGrid::GridCell::~GridCell() {
+	for (int i = 0; i < NODES_PER_CELL * NODES_PER_CELL; ++i) {
+		delete nodes[i];
+	}
+}
+
+SpatialHashGrid::SpatialHashGrid(BaseMap& map) : map(map) {
+	//
+}
+
+SpatialHashGrid::~SpatialHashGrid() {
+	clear();
+}
+
+void SpatialHashGrid::clear() {
+	for (auto& pair : cells) {
+		delete pair.second;
+	}
+	cells.clear();
+}
+
+MapNode* SpatialHashGrid::getLeaf(int x, int y) {
+	uint64_t key = makeKey(x, y);
+	auto it = cells.find(key);
+	if (it == cells.end()) {
+		return nullptr;
+	}
+
+	int nx = (x >> NODE_SHIFT) & (NODES_PER_CELL - 1);
+	int ny = (y >> NODE_SHIFT) & (NODES_PER_CELL - 1);
+	return it->second->nodes[ny * NODES_PER_CELL + nx];
+}
+
+MapNode* SpatialHashGrid::getLeafForce(int x, int y) {
+	uint64_t key = makeKey(x, y);
+	GridCell*& cell = cells[key];
+	if (!cell) {
+		cell = newd GridCell();
+	}
+
+	int nx = (x >> NODE_SHIFT) & (NODES_PER_CELL - 1);
+	int ny = (y >> NODE_SHIFT) & (NODES_PER_CELL - 1);
+	MapNode*& node = cell->nodes[ny * NODES_PER_CELL + nx];
+	if (!node) {
+		node = newd MapNode(map);
+	}
+	return node;
+}
+
+void SpatialHashGrid::clearVisible(uint32_t mask) {
+	for (auto& pair : cells) {
+		GridCell* cell = pair.second;
+		for (int i = 0; i < NODES_PER_CELL * NODES_PER_CELL; ++i) {
+			if (cell->nodes[i]) {
+				cell->nodes[i]->clearVisible(mask);
+			}
+		}
+	}
 }
