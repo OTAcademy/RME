@@ -17,6 +17,8 @@
 
 #include "app/main.h"
 
+#include <bit>
+
 #include "map/map_region.h"
 #include "map/basemap.h"
 #include "map/position.h"
@@ -96,14 +98,38 @@ bool MapNode::isRequested(bool underground) {
 }
 
 void MapNode::clearVisible(uint32_t u) {
-	visible &= u;
+	// u contains the mask of ACTIVE clients (as bitmask of their IDs)
+	// We want to clear visibility for clients NOT in u.
+	// So we keep bits set in u.
+	// BUT, we must also preserve global flags (bits 0-3).
+	// AND we must preserve the "underground" versions of the active clients in u.
+	// The client ID format (from LiveServer) is single bit 1<<N.
+	// MapNode storage logic:
+	//   Overground: 1u << N
+	//   Underground: 1u << (N + MAP_LAYERS)
+
+	// So we construct a mask of BITS TO KEEP.
+	// explicit Keep Mask = u (overground clients) | (u << MAP_LAYERS) (underground clients) | 0xF (global flags)
+	// Actually, u passed from LiveServer::removeClient is the UPDATED list of active clients.
+	// So yes, we want to KEEP u and its underground variant.
+
+	uint32_t keep_mask = u | (u << MAP_LAYERS) | 0xF;
+	visible &= keep_mask;
 }
 
 bool MapNode::isVisible(uint32_t client, bool underground) {
+	if (client == 0 || !std::has_single_bit(client)) {
+		return false;
+	}
+	int position = std::countr_zero(client);
+	if (position >= MAP_LAYERS) {
+		return false;
+	}
+
 	if (underground) {
-		return testFlags(visible >> MAP_LAYERS, 1u << client);
+		return testFlags(visible, 1u << (position + MAP_LAYERS));
 	} else {
-		return testFlags(visible, 1u << client);
+		return testFlags(visible, 1u << position);
 	}
 }
 
@@ -133,10 +159,19 @@ void MapNode::setRequested(bool underground, bool r) {
 }
 
 void MapNode::setVisible(uint32_t client, bool underground, bool value) {
+	if (client == 0 || !std::has_single_bit(client)) {
+		return;
+	}
+	int position = std::countr_zero(client);
+	if (position >= MAP_LAYERS) {
+		return;
+	}
+
+	uint32_t bit = 1u << (position + (underground ? MAP_LAYERS : 0));
 	if (value) {
-		visible |= (1u << client << (underground ? MAP_LAYERS : 0));
+		visible |= bit;
 	} else {
-		visible &= ~(1u << client << (underground ? MAP_LAYERS : 0));
+		visible &= ~bit;
 	}
 }
 
