@@ -41,29 +41,49 @@ TooltipDrawer::~TooltipDrawer() {
 }
 
 void TooltipDrawer::clear() {
-	tooltips.clear();
+	active_count = 0;
+}
+
+TooltipData& TooltipDrawer::requestTooltipData() {
+	if (active_count >= tooltips.size()) {
+		tooltips.emplace_back();
+	}
+	TooltipData& data = tooltips[active_count];
+	data.clear();
+	return data;
+}
+
+void TooltipDrawer::commitTooltip() {
+	active_count++;
 }
 
 void TooltipDrawer::addItemTooltip(const TooltipData& data) {
 	if (!data.hasVisibleFields()) {
 		return;
 	}
-	tooltips.push_back(data);
+	TooltipData& dest = requestTooltipData();
+	dest = data;
+	commitTooltip();
 }
 
 void TooltipDrawer::addItemTooltip(TooltipData&& data) {
 	if (!data.hasVisibleFields()) {
 		return;
 	}
-	tooltips.push_back(std::move(data));
+	TooltipData& dest = requestTooltipData();
+	dest = std::move(data);
+	commitTooltip();
 }
 
 void TooltipDrawer::addWaypointTooltip(Position pos, const std::string& name) {
 	if (name.empty()) {
 		return;
 	}
-	TooltipData data(pos, name);
-	tooltips.push_back(data);
+	TooltipData& data = requestTooltipData();
+	data.pos = pos;
+	data.category = TooltipCategory::WAYPOINT;
+	data.waypointName = name;
+	commitTooltip();
 }
 
 void TooltipDrawer::getHeaderColor(TooltipCategory cat, uint8_t& r, uint8_t& g, uint8_t& b) const {
@@ -207,7 +227,8 @@ void TooltipDrawer::draw(const RenderView& view) {
 
 	using namespace TooltipColors;
 
-	for (const auto& tooltip : tooltips) {
+	for (size_t i = 0; i < active_count; ++i) {
+		const auto& tooltip = tooltips[i];
 		int unscaled_x, unscaled_y;
 		view.getScreenPosition(tooltip.pos.x, tooltip.pos.y, tooltip.pos.z, unscaled_x, unscaled_y);
 
