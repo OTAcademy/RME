@@ -169,6 +169,8 @@ enum DatFlags : uint8_t {
 	DatFlagWrappable = 35,
 	DatFlagUnwrappable = 36,
 	DatFlagTopEffect = 37,
+	DatFlagWings = 38,
+	DatFlagDefault = 40,
 
 	DatFlagFloorChange = 252,
 	DatFlagNoMoveAnimation = 253, // 10.10: real value is 16, but we need to do this for backwards compatibility

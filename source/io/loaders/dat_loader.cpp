@@ -101,6 +101,7 @@ namespace {
 			case DatFlagFloorChange:
 			case DatFlagNoMoveAnimation:
 			case DatFlagChargeable:
+			case DatFlagDefault:
 				break;
 
 			case DatFlagGround:
@@ -157,6 +158,11 @@ namespace {
 				std::string marketName;
 				file.getString(marketName);
 				file.skip(4);
+				break;
+			}
+
+			case DatFlagWings: {
+				file.skip(16);
 				break;
 			}
 
@@ -252,6 +258,7 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 		manager->is_extended = manager->dat_format >= DAT_FORMAT_96;
 		manager->has_frame_durations = manager->dat_format >= DAT_FORMAT_1050;
 		manager->has_frame_groups = manager->dat_format >= DAT_FORMAT_1057;
+		manager->has_transparency = manager->dat_format >= DAT_FORMAT_1010;
 	}
 
 	uint32_t id = minID;
