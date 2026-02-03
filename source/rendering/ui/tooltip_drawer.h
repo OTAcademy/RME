@@ -184,6 +184,26 @@ protected:
 
 	// Helper to get header color based on category
 	void getHeaderColor(TooltipCategory cat, uint8_t& r, uint8_t& g, uint8_t& b) const;
+
+	// Refactored drawing helpers
+	struct LayoutMetrics {
+		float width;
+		float height;
+		float valueStartX;
+		float gridSlotSize;
+		int containerCols;
+		int containerRows;
+		float containerHeight;
+		int totalContainerSlots;
+		int emptyContainerSlots;
+		int numContainerItems;
+	};
+
+	void prepareFields(const TooltipData& tooltip);
+	LayoutMetrics calculateLayout(NVGcontext* vg, const TooltipData& tooltip, float maxWidth, float minWidth, float padding, float fontSize);
+	void drawBackground(NVGcontext* vg, float x, float y, float width, float height, float cornerRadius, const TooltipData& tooltip);
+	void drawFields(NVGcontext* vg, float x, float y, float valueStartX, float lineHeight, float padding, float fontSize);
+	void drawContainerGrid(NVGcontext* vg, float x, float y, const TooltipData& tooltip, const LayoutMetrics& layout);
 };
 
 #endif

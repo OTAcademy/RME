@@ -56,7 +56,7 @@ class LiveSocket;
 class SidebarWindow;
 class ToolOptionsWindow;
 
-extern const wxEventType EVT_UPDATE_MENUS;
+wxDECLARE_EVENT(EVT_UPDATE_MENUS, wxCommandEvent);
 
 #define EVT_ON_UPDATE_MENUS(id, fn)                                                             \
 	DECLARE_EVENT_TABLE_ENTRY(                                                                  \

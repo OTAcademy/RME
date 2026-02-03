@@ -22,7 +22,7 @@
 
 		#include "app/threads.h"
 
-extern const wxEventType EVT_UPDATE_CHECK_FINISHED;
+wxDECLARE_EVENT(EVT_UPDATE_CHECK_FINISHED, wxCommandEvent);
 
 		#define EVT_ON_UPDATE_CHECK_FINISHED(id, fn)                                                    \
 			DECLARE_EVENT_TABLE_ENTRY(                                                                  \

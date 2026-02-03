@@ -58,7 +58,7 @@
 	#include <AGL/agl.h>
 #endif
 
-const wxEventType EVT_UPDATE_MENUS = wxNewEventType();
+wxDEFINE_EVENT(EVT_UPDATE_MENUS, wxCommandEvent);
 
 // Global GUI instance
 GUI g_gui;

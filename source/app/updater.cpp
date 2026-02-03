@@ -25,7 +25,7 @@
 
 	#include "app/updater.h"
 
-const wxEventType EVT_UPDATE_CHECK_FINISHED = wxNewEventType();
+wxDEFINE_EVENT(EVT_UPDATE_CHECK_FINISHED, wxCommandEvent);
 
 UpdateChecker::UpdateChecker() {
 	////

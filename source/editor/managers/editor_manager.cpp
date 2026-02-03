@@ -198,7 +198,6 @@ void EditorManager::SaveCurrentMap(FileName fileName, bool showdialog) {
 			stream << position;
 			g_settings.setString(Config::RECENT_EDITED_MAP_PATH, path);
 			g_settings.setString(Config::RECENT_EDITED_MAP_POSITION, stream.str());
-			g_status.SetStatusText("Map saved.");
 		}
 	}
 
@@ -299,6 +298,7 @@ bool EditorManager::LoadMap(const FileName& fileName) {
 			wxArrayString warnings;
 			if (CloseAllEditors()) {
 				if (!g_version.LoadVersion(ver.client, error, warnings)) {
+					g_status.SetStatusText("Failed to load map.");
 					DialogUtil::PopupDialog("Error", error, wxOK);
 					return false;
 				}
@@ -310,6 +310,7 @@ bool EditorManager::LoadMap(const FileName& fileName) {
 
 		editor = EditorFactory::LoadFromFile(g_gui.copybuffer, fileName);
 	} catch (std::runtime_error& e) {
+		g_status.SetStatusText("Failed to load map.");
 		DialogUtil::PopupDialog(g_gui.root, "Error!", wxString(e.what(), wxConvUTF8), wxOK);
 		return false;
 	}
@@ -337,6 +338,8 @@ bool EditorManager::LoadMap(const FileName& fileName) {
 			mapTab->SetScreenCenterPosition(position);
 		}
 	}
+
+	g_status.SetStatusText("Map loaded successfully.");
 	return true;
 }
 

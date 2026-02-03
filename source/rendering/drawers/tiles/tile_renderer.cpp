@@ -86,7 +86,7 @@ static bool FillItemTooltipData(TooltipData& data, Item* item, const Position& p
 
 	data.pos = pos;
 	data.itemId = id;
-	data.itemName = itemName; // Assign string_view to string (reuses buffer)
+	data.itemName = itemName; // Assign string_view to string (copy/allocation happens here)
 
 	data.actionId = action;
 	data.uniqueId = unique;
@@ -102,6 +102,7 @@ static bool FillItemTooltipData(TooltipData& data, Item* item, const Position& p
 			data.containerCapacity = static_cast<uint8_t>(container->getVolume());
 
 			const ItemVector& items = container->getVector();
+			data.containerItems.clear();
 			data.containerItems.reserve(items.size());
 			for (Item* subItem : items) {
 				if (subItem) {

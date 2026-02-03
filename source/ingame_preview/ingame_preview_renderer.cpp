@@ -108,8 +108,6 @@ namespace IngamePreview {
 			creature_name_drawer->clear(); // Clear old labels
 		}
 
-		std::ostringstream tooltip_stream;
-
 		// Render floors from bottom to top
 		for (int z = last_visible; z >= 0; z--) {
 			float alpha = floor_opacity[z];
@@ -140,7 +138,7 @@ namespace IngamePreview {
 					if (tile) {
 						int draw_x = (x * TileSize) + base_draw_x;
 						int draw_y = (y * TileSize) + base_draw_y;
-						tile_renderer->DrawTile(*sprite_batch, *primitive_renderer, tile->location, view, options, 0, tooltip_stream, draw_x, draw_y);
+						tile_renderer->DrawTile(*sprite_batch, *primitive_renderer, tile->location, view, options, 0, draw_x, draw_y);
 						if (lighting_enabled) {
 							tile_renderer->AddLight(tile->location, view, options, *light_buffer);
 						}
