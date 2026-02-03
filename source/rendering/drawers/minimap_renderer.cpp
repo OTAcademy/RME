@@ -90,7 +90,7 @@ bool MinimapRenderer::initialize() {
 
 	// Pre-allocate instance buffer
 	instance_vbo_capacity_ = 1024;
-	glNamedBufferData(instance_vbo_->GetID(), instance_vbo_capacity_ * sizeof(InstanceData), nullptr, GL_DYNAMIC_DRAW);
+	glNamedBufferStorage(instance_vbo_->GetID(), instance_vbo_capacity_ * sizeof(InstanceData), nullptr, GL_DYNAMIC_STORAGE_BIT);
 
 	// Setup VAO (DSA)
 	GLuint vao = vao_->GetID();
@@ -304,7 +304,7 @@ void MinimapRenderer::render(const glm::mat4& projection, int x, int y, int w, i
 
 			int layer = r * cols_ + c;
 
-			instance_data_.push_back({ screen_tile_x, screen_tile_y, screen_tile_w, screen_tile_h, (float)layer });
+			instance_data_.push_back({ .x = screen_tile_x, .y = screen_tile_y, .w = screen_tile_w, .h = screen_tile_h, .layer = (float)layer });
 		}
 	}
 
@@ -313,13 +313,22 @@ void MinimapRenderer::render(const glm::mat4& projection, int x, int y, int w, i
 	}
 
 	// Resize buffer if needed
+	// Resize buffer if needed
 	if (instance_data_.size() > instance_vbo_capacity_) {
 		instance_vbo_capacity_ = instance_data_.size() * 2; // Grow strategy
-		glNamedBufferData(instance_vbo_->GetID(), instance_vbo_capacity_ * sizeof(InstanceData), nullptr, GL_DYNAMIC_DRAW);
+		instance_vbo_ = std::make_unique<GLBuffer>();
+		glNamedBufferStorage(instance_vbo_->GetID(), instance_vbo_capacity_ * sizeof(InstanceData), nullptr, GL_DYNAMIC_STORAGE_BIT);
+
+		// Update VAO binding
+		glVertexArrayVertexBuffer(vao_->GetID(), 1, instance_vbo_->GetID(), 0, sizeof(InstanceData));
 	}
 
 	// Upload data
 	glNamedBufferSubData(instance_vbo_->GetID(), 0, instance_data_.size() * sizeof(InstanceData), instance_data_.data());
+
+	// Save previous blend state
+	GLboolean prev_blend_enabled;
+	glGetBooleanv(GL_BLEND, &prev_blend_enabled);
 
 	// Render
 	glEnable(GL_BLEND);
@@ -336,6 +345,11 @@ void MinimapRenderer::render(const glm::mat4& projection, int x, int y, int w, i
 	shader_->SetInt("uPaletteTexture", 1);
 
 	glBindVertexArray(vao_->GetID());
-	glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, (GLsizei)instance_data_.size());
+	glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, static_cast<GLsizei>(instance_data_.size()));
 	glBindVertexArray(0);
+
+	// Restore blend state
+	if (!prev_blend_enabled) {
+		glDisable(GL_BLEND);
+	}
 }

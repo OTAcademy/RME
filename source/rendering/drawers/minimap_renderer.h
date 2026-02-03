@@ -11,15 +11,15 @@
 
 class Map;
 
-struct InstanceData {
-	float x, y, w, h; // dest rect
-	float layer;      // layer index
-};
-
 class MinimapRenderer {
 public:
 	MinimapRenderer();
 	~MinimapRenderer();
+
+	struct InstanceData {
+		float x, y, w, h; // dest rect
+		float layer; // layer index
+	};
 
 	// Non-copyable
 	MinimapRenderer(const MinimapRenderer&) = delete;
@@ -85,7 +85,6 @@ private:
 	std::unique_ptr<ShaderProgram> shader_;
 	std::unique_ptr<PixelBufferObject> pbo_;
 
-	// Temporary staging buffer for PBO uploads
 	// Temporary staging buffer for PBO uploads
 	std::vector<uint8_t> stage_buffer_;
 
