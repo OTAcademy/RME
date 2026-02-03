@@ -12,27 +12,32 @@ const char* minimap_vert = R"(
 #version 450 core
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec2 aTexCoord;
+layout (location = 2) in vec4 aDestRect; // x, y, w, h
+layout (location = 3) in float aLayer;
 
 out vec2 TexCoord;
-uniform mat4 uMVP;
+out float Layer;
+uniform mat4 uProjection;
 
 void main() {
-    gl_Position = uMVP * vec4(aPos, 0.0, 1.0);
+    vec2 pos = aDestRect.xy + aPos * aDestRect.zw;
+    gl_Position = uProjection * vec4(pos, 0.0, 1.0);
     TexCoord = aTexCoord;
+    Layer = aLayer;
 }
 )";
 
 const char* minimap_frag = R"(
 #version 450 core
 in vec2 TexCoord;
+in float Layer;
 out vec4 FragColor;
 
 uniform usampler2DArray uMinimapTexture; // R8UI Array
 uniform sampler1D uPaletteTexture;  // RGBA
-uniform float uLayer;               // Layer index for current tile
 
 void main() {
-    uint colorIndex = texture(uMinimapTexture, vec3(TexCoord, uLayer)).r;
+    uint colorIndex = texture(uMinimapTexture, vec3(TexCoord, Layer)).r;
     if (colorIndex == 0u) {
         discard; // Transparent
     }
@@ -71,6 +76,7 @@ bool MinimapRenderer::initialize() {
 	// Create VAO/VBO for fullscreen quad
 	vao_ = std::make_unique<GLVertexArray>();
 	vbo_ = std::make_unique<GLBuffer>();
+	instance_vbo_ = std::make_unique<GLBuffer>();
 
 	float quad_vertices[] = {
 		// pos      // tex
@@ -82,16 +88,41 @@ bool MinimapRenderer::initialize() {
 
 	glNamedBufferStorage(vbo_->GetID(), sizeof(quad_vertices), quad_vertices, 0);
 
-	glBindVertexArray(vao_->GetID());
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_->GetID());
+	// Pre-allocate instance buffer
+	instance_vbo_capacity_ = 1024;
+	glNamedBufferData(instance_vbo_->GetID(), instance_vbo_capacity_ * sizeof(InstanceData), nullptr, GL_DYNAMIC_DRAW);
 
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	// Setup VAO (DSA)
+	GLuint vao = vao_->GetID();
+	GLuint vbo = vbo_->GetID();
+	GLuint inst_vbo = instance_vbo_->GetID();
 
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	// Binding 0: Quad Data
+	glVertexArrayVertexBuffer(vao, 0, vbo, 0, 4 * sizeof(float));
 
-	glBindVertexArray(0);
+	// Attribute 0: Pos
+	glEnableVertexArrayAttrib(vao, 0);
+	glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, GL_FALSE, 0);
+	glVertexArrayAttribBinding(vao, 0, 0);
+
+	// Attribute 1: TexCoord
+	glEnableVertexArrayAttrib(vao, 1);
+	glVertexArrayAttribFormat(vao, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float));
+	glVertexArrayAttribBinding(vao, 1, 0);
+
+	// Binding 1: Instance Data
+	glVertexArrayVertexBuffer(vao, 1, inst_vbo, 0, sizeof(InstanceData));
+	glVertexArrayBindingDivisor(vao, 1, 1); // One instance per step
+
+	// Attribute 2: DestRect (x, y, w, h)
+	glEnableVertexArrayAttrib(vao, 2);
+	glVertexArrayAttribFormat(vao, 2, 4, GL_FLOAT, GL_FALSE, offsetof(InstanceData, x));
+	glVertexArrayAttribBinding(vao, 2, 1);
+
+	// Attribute 3: Layer
+	glEnableVertexArrayAttrib(vao, 3);
+	glVertexArrayAttribFormat(vao, 3, 1, GL_FLOAT, GL_FALSE, offsetof(InstanceData, layer));
+	glVertexArrayAttribBinding(vao, 3, 1);
 
 	return true;
 }
@@ -240,20 +271,6 @@ void MinimapRenderer::render(const glm::mat4& projection, int x, int y, int w, i
 		return;
 	}
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	shader_->Use();
-
-	// Bind textures
-	glBindTextureUnit(0, texture_id_->GetID());
-	shader_->SetInt("uMinimapTexture", 0);
-
-	glBindTextureUnit(1, palette_texture_id_->GetID());
-	shader_->SetInt("uPaletteTexture", 1);
-
-	glBindVertexArray(vao_->GetID());
-
 	// Constants
 	float scale_x = (float)w / map_w;
 	float scale_y = (float)h / map_h;
@@ -270,32 +287,55 @@ void MinimapRenderer::render(const glm::mat4& projection, int x, int y, int w, i
 	end_col = std::min(cols_ - 1, end_col);
 	end_row = std::min(rows_ - 1, end_row);
 
+	// Collect instances
+	instance_data_.clear();
+	instance_data_.reserve((end_row - start_row + 1) * (end_col - start_col + 1));
+
 	for (int r = start_row; r <= end_row; ++r) {
 		for (int c = start_col; c <= end_col; ++c) {
 			int tile_x = c * TILE_SIZE;
 			int tile_y = r * TILE_SIZE;
 
-			// Calculate screen position
+			// Calculate screen position (dest rect)
 			float screen_tile_x = x + (tile_x - map_x) * scale_x;
 			float screen_tile_y = y + (tile_y - map_y) * scale_y;
 			float screen_tile_w = TILE_SIZE * scale_x;
 			float screen_tile_h = TILE_SIZE * scale_y;
 
-			// Model matrix for this tile
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(screen_tile_x, screen_tile_y, 0.0f));
-			model = glm::scale(model, glm::vec3(screen_tile_w, screen_tile_h, 1.0f));
-
-			shader_->SetMat4("uMVP", projection * model);
-
 			int layer = r * cols_ + c;
-			shader_->SetFloat("uLayer", (float)layer);
 
-			// spdlog::info("Minimap Rendering Tile: {},{} (Layer {}) at x:{}, y:{}, w:{}, h:{}", c, r, layer, screen_tile_x, screen_tile_y, screen_tile_w, screen_tile_h);
-
-			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+			instance_data_.push_back({ screen_tile_x, screen_tile_y, screen_tile_w, screen_tile_h, (float)layer });
 		}
 	}
 
+	if (instance_data_.empty()) {
+		return;
+	}
+
+	// Resize buffer if needed
+	if (instance_data_.size() > instance_vbo_capacity_) {
+		instance_vbo_capacity_ = instance_data_.size() * 2; // Grow strategy
+		glNamedBufferData(instance_vbo_->GetID(), instance_vbo_capacity_ * sizeof(InstanceData), nullptr, GL_DYNAMIC_DRAW);
+	}
+
+	// Upload data
+	glNamedBufferSubData(instance_vbo_->GetID(), 0, instance_data_.size() * sizeof(InstanceData), instance_data_.data());
+
+	// Render
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	shader_->Use();
+	shader_->SetMat4("uProjection", projection);
+
+	// Bind textures
+	glBindTextureUnit(0, texture_id_->GetID());
+	shader_->SetInt("uMinimapTexture", 0);
+
+	glBindTextureUnit(1, palette_texture_id_->GetID());
+	shader_->SetInt("uPaletteTexture", 1);
+
+	glBindVertexArray(vao_->GetID());
+	glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, (GLsizei)instance_data_.size());
 	glBindVertexArray(0);
 }
