@@ -4,7 +4,9 @@
 #include "io/filehandle.h"
 #include "app/settings.h"
 #include <vector>
-#include <format>
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
+	#include <format>
+#endif
 #include <memory>
 
 // Anonymous namespace for constants
@@ -12,6 +14,7 @@ namespace {
 	constexpr uint32_t SPRITE_DATA_OFFSET = 3;
 	constexpr uint32_t SPRITE_ADDRESS_SIZE_EXTENDED = 4;
 	constexpr uint32_t SPRITE_ADDRESS_SIZE_NORMAL = 2;
+	constexpr uint32_t MAX_SPRITES = 3000000; // Sanity limit for sprite counts
 }
 
 bool SprLoader::LoadData(GraphicManager* manager, const wxFileName& datafile, wxString& error, wxArrayString& warnings) {
@@ -58,6 +61,17 @@ bool SprLoader::LoadData(GraphicManager* manager, const wxFileName& datafile, wx
 			return false;
 		}
 		total_pics = u16;
+	}
+
+	if (total_pics > MAX_SPRITES) {
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
+		error = wxstr(std::format("Sprite count {} exceeds limit (MAX_SPRITES={})", total_pics, MAX_SPRITES));
+#else
+		wxString err;
+		err.Printf("Sprite count %u exceeds limit (MAX_SPRITES=%u)", total_pics, MAX_SPRITES);
+		error = err;
+#endif
+		return false;
 	}
 
 	manager->spritefile = nstr(datafile.GetFullPath());
@@ -119,25 +133,41 @@ bool SprLoader::ReadSprites(GraphicManager* manager, FileReadHandle& fh, const s
 
 		if (auto it = manager->image_space.find(id); it != manager->image_space.end()) {
 			GameSprite::NormalImage* spr = dynamic_cast<GameSprite::NormalImage*>(it->second.get());
-			if (spr && size > 0) {
-				if (spr->size > 0) {
-					// Duplicate GameSprite id
+			if (spr) {
+				if (size > 0) {
+					if (spr->size > 0) {
+						// Duplicate GameSprite id
 #if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
-					warnings.push_back(wxstr(std::format("items.spr: Duplicate GameSprite id {}", id)));
+						warnings.push_back(wxstr(std::format("items.spr: Duplicate GameSprite id {}", id)));
 #else
-					wxString ss;
-					ss << "items.spr: Duplicate GameSprite id " << id;
-					warnings.push_back(ss);
+						wxString ss;
+						ss << "items.spr: Duplicate GameSprite id " << id;
+						warnings.push_back(ss);
 #endif
-					if (!fh.seekRelative(size)) {
-						error = wxstr(fh.getErrorMessage());
-						return false;
+						if (!fh.seekRelative(size)) {
+							error = wxstr(fh.getErrorMessage());
+							return false;
+						}
+					} else {
+						spr->id = id;
+						spr->size = size;
+						spr->dump = std::make_unique<uint8_t[]>(size);
+						if (!fh.getRAW(spr->dump.get(), size)) {
+							error = wxstr(fh.getErrorMessage());
+							return false;
+						}
 					}
-				} else {
-					spr->id = id;
-					spr->size = size;
-					spr->dump = std::make_unique<uint8_t[]>(size);
-					if (!fh.getRAW(spr->dump.get(), size)) {
+				}
+			} else {
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
+				warnings.push_back(wxstr(std::format("SprLoader: Failed to cast sprite id {} to NormalImage", id)));
+#else
+				wxString ss;
+				ss.Printf("SprLoader: Failed to cast sprite id %d to NormalImage", id);
+				warnings.push_back(ss);
+#endif
+				if (size > 0) {
+					if (!fh.seekRelative(size)) {
 						error = wxstr(fh.getErrorMessage());
 						return false;
 					}
@@ -162,7 +192,7 @@ bool SprLoader::LoadDump(GraphicManager* manager, std::unique_ptr<uint8_t[]>& ta
 		return true;
 	}
 
-	if (g_settings.getInteger(Config::USE_MEMCACHED_SPRITES) && manager->spritefile.empty()) {
+	if (manager->spritefile.empty()) {
 		return false;
 	}
 

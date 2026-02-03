@@ -15,7 +15,7 @@ public:
 	static bool LoadMetadata(GraphicManager* manager, const wxFileName& datafile, wxString& error, wxArrayString& warnings);
 
 private:
-	static void ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, GameSprite* sType, uint32_t group_index, wxArrayString& warnings);
+	static bool ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, GameSprite* sType, uint32_t group_index, wxArrayString& warnings);
 };
 
 #endif

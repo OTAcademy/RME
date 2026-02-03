@@ -4,7 +4,9 @@
 #include "io/filehandle.h"
 #include "util/common.h"
 #include <memory>
-#include <format>
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
+	#include <format>
+#endif
 
 // Anonymous namespace for internal helpers and C++20/23 features
 namespace {
@@ -69,7 +71,7 @@ namespace {
 	}
 
 	// Helper to read flag data associated with a specific flag
-	void ReadFlagData(DatFormat format, FileReadHandle& file, GameSprite* sType, uint8_t flag, uint8_t previous_flag, wxArrayString& warnings) {
+	bool ReadFlagData(DatFormat format, FileReadHandle& file, GameSprite* sType, uint8_t flag, uint8_t previous_flag, wxArrayString& warnings) {
 		switch (flag) {
 			case DatFlagGroundBorder:
 			case DatFlagOnBottom:
@@ -110,14 +112,20 @@ namespace {
 			case DatFlagCloth:
 			case DatFlagLensHelp:
 			case DatFlagUsable:
-				file.skip(2);
+				if (!file.skip(2)) {
+					return false;
+				}
 				break;
 
 			case DatFlagLight: {
-				uint16_t intensity;
-				uint16_t color;
-				file.getU16(intensity);
-				file.getU16(color);
+				uint16_t intensity = 0;
+				uint16_t color = 0;
+				if (!file.getU16(intensity)) {
+					return false;
+				}
+				if (!file.getU16(color)) {
+					return false;
+				}
 				sType->has_light = true;
 				sType->light = SpriteLight { static_cast<uint8_t>(intensity), static_cast<uint8_t>(color) };
 				break;
@@ -125,10 +133,14 @@ namespace {
 
 			case DatFlagDisplacement: {
 				if (format >= DAT_FORMAT_755) {
-					uint16_t offset_x;
-					uint16_t offset_y;
-					file.getU16(offset_x);
-					file.getU16(offset_y);
+					uint16_t offset_x = 0;
+					uint16_t offset_y = 0;
+					if (!file.getU16(offset_x)) {
+						return false;
+					}
+					if (!file.getU16(offset_y)) {
+						return false;
+					}
 
 					sType->drawoffset_x = offset_x;
 					sType->drawoffset_y = offset_y;
@@ -140,29 +152,41 @@ namespace {
 			}
 
 			case DatFlagElevation: {
-				uint16_t draw_height;
-				file.getU16(draw_height);
+				uint16_t draw_height = 0;
+				if (!file.getU16(draw_height)) {
+					return false;
+				}
 				sType->draw_height = draw_height;
 				break;
 			}
 
 			case DatFlagMinimapColor: {
-				uint16_t minimap_color;
-				file.getU16(minimap_color);
+				uint16_t minimap_color = 0;
+				if (!file.getU16(minimap_color)) {
+					return false;
+				}
 				sType->minimap_color = minimap_color;
 				break;
 			}
 
 			case DatFlagMarket: {
-				file.skip(6);
+				if (!file.skip(6)) {
+					return false;
+				}
 				std::string marketName;
-				file.getString(marketName);
-				file.skip(4);
+				if (!file.getString(marketName)) {
+					return false;
+				}
+				if (!file.skip(4)) {
+					return false;
+				}
 				break;
 			}
 
 			case DatFlagWings: {
-				file.skip(16);
+				if (!file.skip(16)) {
+					return false;
+				}
 				break;
 			}
 
@@ -178,20 +202,41 @@ namespace {
 				break;
 			}
 		}
+		return true;
 	}
 
 	// Helper loop to read all flags for a sprite
-	void LoadMetadataFlags(DatFormat format, FileReadHandle& file, GameSprite* sType, uint32_t sprite_id, wxArrayString& warnings) {
-		uint8_t flag = DatFlagLast;
-		uint8_t previous_flag = DatFlagLast;
+	bool LoadMetadataFlags(DatFormat format, FileReadHandle& file, GameSprite* sType, uint32_t sprite_id, wxArrayString& warnings) {
+		uint8_t flag = 0xFF; // Initialize to an invalid flag or trailing flag
+		uint8_t previous_flag = 0xFF;
+
 		for (int i = 0; i < DatFlagLast; ++i) {
 			previous_flag = flag;
-			file.getU8(flag);
+			if (!file.getU8(flag)) {
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
+				warnings.push_back(std::format("Metadata: error reading flag for sprite id {}", sprite_id));
+#else
+				wxString err;
+				err.Printf("Metadata: error reading flag for sprite id %u", sprite_id);
+				warnings.push_back(err);
+#endif
+				return false;
+			}
+
 			if (flag == DatFlagLast) {
-				return;
+				return true;
 			}
 			flag = RemapFlag(flag, format);
-			ReadFlagData(format, file, sType, flag, previous_flag, warnings);
+			if (!ReadFlagData(format, file, sType, flag, previous_flag, warnings)) {
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
+				warnings.push_back(std::format("Metadata: error reading flag data for flag {} for sprite id {}", static_cast<int>(flag), sprite_id));
+#else
+				wxString err;
+				err.Printf("Metadata: error reading flag data for flag %d for sprite id %u", static_cast<int>(flag), sprite_id);
+				warnings.push_back(err);
+#endif
+				return false;
+			}
 		}
 		// Sanity check: If we exit the loop without hitting DatFlagLast, it's potential corruption.
 #if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
@@ -201,6 +246,7 @@ namespace {
 		err.Printf("Metadata: corruption warning - flag list exceeded limit (255) without terminator for sprite id %d", sprite_id);
 		warnings.push_back(err);
 #endif
+		return true; // We continue even if there was no terminator, as it's just a warning
 	}
 
 } // namespace
@@ -270,16 +316,43 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 		sType->id = id;
 
 		// Load flags
-		LoadMetadataFlags(manager->dat_format, file, sType, id, warnings);
+		if (!LoadMetadataFlags(manager->dat_format, file, sType, id, warnings)) {
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
+			error = std::format("Failed to read metadata flags for id {}", id);
+#else
+			wxString err;
+			err.Printf("Failed to read metadata flags for id %u", id);
+			error = err;
+#endif
+			return false;
+		}
 
 		// Reads the group count
 		uint8_t group_count = 1;
 		if (manager->has_frame_groups && id > manager->item_count) {
-			file.getU8(group_count);
+			if (!file.getU8(group_count)) {
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
+				error = std::format("Failed to read group count for id {}", id);
+#else
+				wxString err;
+				err.Printf("Failed to read group count for id %u", id);
+				error = err;
+#endif
+				return false;
+			}
 		}
 
 		for (uint32_t k = 0; k < group_count; ++k) {
-			ReadSpriteGroup(manager, file, sType, k, warnings);
+			if (!ReadSpriteGroup(manager, file, sType, k, warnings)) {
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
+				error = std::format("Failed to read sprite group {} for id {}", k, id);
+#else
+				wxString err;
+				err.Printf("Failed to read sprite group %u for id %u", k, id);
+				error = err;
+#endif
+				return false;
+			}
 		}
 		++id;
 	}
@@ -287,33 +360,51 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 	return true;
 }
 
-void DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, GameSprite* sType, uint32_t group_index, wxArrayString& warnings) {
+bool DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, GameSprite* sType, uint32_t group_index, wxArrayString& warnings) {
 
 	// Skipping the group type
 	if (manager->has_frame_groups && sType->id > manager->item_count) {
-		file.skip(1);
+		if (!file.skip(1)) {
+			return false;
+		}
 	}
 
-	uint8_t width, height, layers, pattern_x, pattern_y, pattern_z, frames;
+	uint8_t width = 0, height = 0, layers = 0, pattern_x = 0, pattern_y = 0, pattern_z = 0, frames = 0;
 
 	// Size and GameSprite data
-	file.getByte(width);
-	file.getByte(height);
+	if (!file.getByte(width)) {
+		return false;
+	}
+	if (!file.getByte(height)) {
+		return false;
+	}
 
 	// Skipping the exact size
 	if ((width > 1) || (height > 1)) {
-		file.skip(1);
+		if (!file.skip(1)) {
+			return false;
+		}
 	}
 
-	file.getU8(layers);
-	file.getU8(pattern_x);
-	file.getU8(pattern_y);
+	if (!file.getU8(layers)) {
+		return false;
+	}
+	if (!file.getU8(pattern_x)) {
+		return false;
+	}
+	if (!file.getU8(pattern_y)) {
+		return false;
+	}
 	if (manager->dat_format <= DAT_FORMAT_74) {
 		pattern_z = 1;
 	} else {
-		file.getU8(pattern_z);
+		if (!file.getU8(pattern_z)) {
+			return false;
+		}
 	}
-	file.getU8(frames); // Length of animation
+	if (!file.getU8(frames)) {
+		return false; // Length of animation
+	}
 
 	if (group_index == 0) {
 		sType->width = width;
@@ -330,9 +421,15 @@ void DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, G
 		int loop_count = 0;
 		int8_t start_frame = 0;
 		if (manager->has_frame_durations) {
-			file.getByte(async);
-			file.get32(loop_count);
-			file.getSByte(start_frame);
+			if (!file.getByte(async)) {
+				return false;
+			}
+			if (!file.get32(loop_count)) {
+				return false;
+			}
+			if (!file.getSByte(start_frame)) {
+				return false;
+			}
 		}
 
 		if (group_index == 0) {
@@ -343,8 +440,12 @@ void DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, G
 			for (int i = 0; i < frames; i++) {
 				uint32_t min;
 				uint32_t max;
-				file.getU32(min);
-				file.getU32(max);
+				if (!file.getU32(min)) {
+					return false;
+				}
+				if (!file.getU32(max)) {
+					return false;
+				}
 				if (group_index == 0) {
 					FrameDuration* frame_duration = sType->animator->getFrameDuration(i);
 					frame_duration->setValues(static_cast<int>(min), static_cast<int>(max));
@@ -365,10 +466,14 @@ void DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, G
 	for (uint32_t i = 0; i < numsprites; ++i) {
 		uint32_t sprite_id;
 		if (manager->is_extended) {
-			file.getU32(sprite_id);
+			if (!file.getU32(sprite_id)) {
+				return false;
+			}
 		} else {
 			uint16_t u16 = 0;
-			file.getU16(u16);
+			if (!file.getU16(u16)) {
+				return false;
+			}
 			sprite_id = u16;
 		}
 
@@ -382,4 +487,6 @@ void DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, G
 			sType->spriteList.push_back(static_cast<GameSprite::NormalImage*>(it->second.get()));
 		}
 	}
+
+	return true;
 }
