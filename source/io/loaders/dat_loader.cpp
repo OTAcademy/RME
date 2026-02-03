@@ -286,6 +286,9 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 
 	constexpr uint32_t minID = 100; // items start with id 100
 	const uint32_t maxID = manager->item_count + manager->creature_count;
+	// Pre-size containers to avoid rehashing
+	manager->sprite_space.reserve(maxID);
+	manager->image_space.reserve(maxID * 8); // Estimate: ~8 sprites per item average
 
 	manager->dat_format = manager->client_version->getDatFormatForSignature(datSignature);
 

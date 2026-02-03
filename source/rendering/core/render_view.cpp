@@ -56,7 +56,7 @@ bool RenderView::IsTileVisible(int map_x, int map_y, int map_z, int& out_x, int&
 		: TileSize * (floor - map_z);
 	out_x = (map_x * TileSize) - view_scroll_x - offset;
 	out_y = (map_y * TileSize) - view_scroll_y - offset;
-	int margin = TileSize * 3; // Account for large sprites
+	int margin = TileSize * 6; // Account for large sprites (10.x can be 8x8 tiles)
 
 	if (out_x < -margin || out_x > screensize_x * zoom + margin || out_y < -margin || out_y > screensize_y * zoom + margin) {
 		return false;

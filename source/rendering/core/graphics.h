@@ -213,42 +213,20 @@ public:
 		SpriteSize size;
 		uint32_t colorHash;
 		uint32_t mountColorHash;
-		int lookMount;
-		int lookAddon;
-		int lookMountHead;
-		int lookMountBody;
-		int lookMountLegs;
-		int lookMountFeet;
+		int lookMount, lookAddon, lookMountHead, lookMountBody, lookMountLegs, lookMountFeet;
 
-		bool operator<(const RenderKey& rk) const {
-			if (size != rk.size) {
-				return size < rk.size;
-			}
-			if (colorHash != rk.colorHash) {
-				return colorHash < rk.colorHash;
-			}
-			if (mountColorHash != rk.mountColorHash) {
-				return mountColorHash < rk.mountColorHash;
-			}
-			if (lookMount != rk.lookMount) {
-				return lookMount < rk.lookMount;
-			}
-			if (lookAddon != rk.lookAddon) {
-				return lookAddon < rk.lookAddon;
-			}
-			if (lookMountHead != rk.lookMountHead) {
-				return lookMountHead < rk.lookMountHead;
-			}
-			if (lookMountBody != rk.lookMountBody) {
-				return lookMountBody < rk.lookMountBody;
-			}
-			if (lookMountLegs != rk.lookMountLegs) {
-				return lookMountLegs < rk.lookMountLegs;
-			}
-			return lookMountFeet < rk.lookMountFeet;
+		bool operator==(const RenderKey& rk) const {
+			return size == rk.size && colorHash == rk.colorHash && mountColorHash == rk.mountColorHash && lookMount == rk.lookMount && lookAddon == rk.lookAddon && lookMountHead == rk.lookMountHead && lookMountBody == rk.lookMountBody && lookMountLegs == rk.lookMountLegs && lookMountFeet == rk.lookMountFeet;
 		}
 	};
-	std::map<RenderKey, std::unique_ptr<CachedDC>> colored_dc;
+
+	struct RenderKeyHash {
+		size_t operator()(const RenderKey& k) const noexcept {
+			// Combine hashes of the most significant fields
+			return std::hash<uint64_t> {}((uint64_t(k.colorHash) << 32) | k.mountColorHash) ^ std::hash<uint64_t> {}((uint64_t(k.lookMount) << 32) | k.lookAddon) ^ std::hash<uint64_t> {}((uint64_t(k.lookMountHead) << 32) | k.lookMountBody);
+		}
+	};
+	std::unordered_map<RenderKey, std::unique_ptr<CachedDC>, RenderKeyHash> colored_dc;
 
 	friend class GraphicManager;
 	friend class GameSpriteLoader;

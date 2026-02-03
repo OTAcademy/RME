@@ -8,8 +8,8 @@ bool AtlasManager::ensureInitialized() {
 		return true;
 	}
 
-	// Pre-allocate 8 layers (8 * 16384 = 131K sprites capacity)
-	static constexpr int INITIAL_LAYERS = 8;
+	// Pre-allocate 32 layers (32 * 16384 = 524K sprites capacity)
+	static constexpr int INITIAL_LAYERS = 32;
 
 	if (!atlas_.initialize(INITIAL_LAYERS)) {
 		spdlog::error("AtlasManager: Failed to initialize texture array");
