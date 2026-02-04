@@ -153,6 +153,7 @@ protected:
 	bool saveHouses(Map& map, pugi::xml_document& doc);
 	bool saveWaypoints(Map& map, const FileName& dir);
 	bool saveWaypoints(Map& map, pugi::xml_document& doc);
+	void serializeTile_OTBM(Tile* tile, NodeFileWriteHandle& handle, const IOMapOTBM& self);
 };
 
 #endif

@@ -4,6 +4,7 @@
 
 #include "app/main.h"
 #include "live/live_manager.h"
+#include <spdlog/spdlog.h>
 #include "editor/editor.h"
 #include "editor/action_queue.h"
 #include "live/live_server.h"
@@ -18,10 +19,10 @@ LiveManager::LiveManager(Editor& editor) :
 	live_client(nullptr) {
 }
 
-LiveManager::LiveManager(Editor& editor, LiveClient* client) :
+LiveManager::LiveManager(Editor& editor, std::unique_ptr<LiveClient> client) :
 	editor(editor),
 	live_server(nullptr),
-	live_client(client) {
+	live_client(std::move(client)) {
 }
 
 LiveManager::~LiveManager() {
@@ -47,11 +48,11 @@ bool LiveManager::IsLocal() const {
 }
 
 LiveClient* LiveManager::GetClient() const {
-	return live_client;
+	return live_client.get();
 }
 
 LiveServer* LiveManager::GetServer() const {
-	return live_server;
+	return live_server.get();
 }
 
 LiveSocket& LiveManager::GetSocket() const {
@@ -63,25 +64,35 @@ LiveSocket& LiveManager::GetSocket() const {
 
 LiveServer* LiveManager::StartServer() {
 	ASSERT(IsLocal());
-	live_server = newd LiveServer(editor);
+	live_server = std::make_unique<LiveServer>(editor);
 
 	delete editor.actionQueue;
 	editor.actionQueue = newd NetworkedActionQueue(editor);
 
-	return live_server;
+	return live_server.get();
 }
 
 void LiveManager::CloseServer() {
 	if (live_server) {
-		live_server->close();
-		delete live_server;
-		live_server = nullptr;
+		try {
+			live_server->close();
+		} catch (const std::exception& e) {
+			spdlog::error("Error closing live server: {}", e.what());
+		} catch (...) {
+			spdlog::error("Unknown error closing live server");
+		}
+		live_server.reset();
 	}
 
 	if (live_client) {
-		live_client->close();
-		delete live_client;
-		live_client = nullptr;
+		try {
+			live_client->close();
+		} catch (const std::exception& e) {
+			spdlog::error("Error closing live client: {}", e.what());
+		} catch (...) {
+			spdlog::error("Unknown error closing live client");
+		}
+		live_client.reset();
 	}
 
 	delete editor.actionQueue;

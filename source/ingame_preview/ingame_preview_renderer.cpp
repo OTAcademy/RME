@@ -58,7 +58,7 @@ namespace IngamePreview {
 		}
 	}
 
-	void IngamePreviewRenderer::Render(const BaseMap& map, int viewport_x, int viewport_y, int viewport_width, int viewport_height, const Position& camera_pos, float zoom, bool lighting_enabled, uint8_t ambient_light, const Outfit& preview_outfit, Direction preview_direction, int animation_phase, int offset_x, int offset_y) {
+	void IngamePreviewRenderer::Render(NVGcontext* vg, const BaseMap& map, int viewport_x, int viewport_y, int viewport_width, int viewport_height, const Position& camera_pos, float zoom, bool lighting_enabled, uint8_t ambient_light, const Outfit& preview_outfit, Direction preview_direction, int animation_phase, int offset_x, int offset_y) {
 		auto now = std::chrono::steady_clock::now();
 		double dt = std::chrono::duration<double>(now - last_time).count();
 		last_time = now;
@@ -199,14 +199,13 @@ namespace IngamePreview {
 		}
 
 		// Draw Names
-		if (creature_name_drawer) {
-			TextRenderer::BeginFrame(viewport_width, viewport_height);
+		if (creature_name_drawer && vg) {
+			TextRenderer::BeginFrame(vg, viewport_width, viewport_height);
 
 			// 1. Draw creatures on map
-			creature_name_drawer->draw(view);
+			creature_name_drawer->draw(vg, view);
 
 			// 2. Draw our own label at precise center
-			NVGcontext* vg = TextRenderer::GetContext();
 			if (vg) {
 				nvgSave(vg);
 				float fontSize = 11.0f;
@@ -243,7 +242,7 @@ namespace IngamePreview {
 				nvgText(vg, screenCenterX, labelY - paddingY, name.c_str(), nullptr);
 				nvgRestore(vg);
 			}
-			TextRenderer::EndFrame();
+			TextRenderer::EndFrame(vg);
 		}
 	}
 

@@ -123,6 +123,9 @@ LiveLogTab::LiveLogTab(MapTabbook* aui, LiveSocket* server) :
 }
 
 LiveLogTab::~LiveLogTab() {
+	if (socket) {
+		socket->log = nullptr;
+	}
 }
 
 wxString LiveLogTab::GetTitle() const {
@@ -133,9 +136,11 @@ wxString LiveLogTab::GetTitle() const {
 }
 
 void LiveLogTab::Disconnect() {
-	socket->log = nullptr;
+	if (socket) {
+		socket->log = nullptr;
+		socket = nullptr;
+	}
 	input->SetWindowStyle(input->GetWindowStyle() | wxTE_READONLY);
-	socket = nullptr;
 	Refresh();
 }
 
@@ -196,18 +201,18 @@ void LiveLogTab::OnDeselectChatbox(wxFocusEvent& evt) {
 	g_hotkeys.EnableHotkeys();
 }
 
-void LiveLogTab::UpdateClientList(const std::unordered_map<uint32_t, LivePeer*>& updatedClients) {
+void LiveLogTab::UpdateClientList(const std::unordered_map<uint32_t, std::unique_ptr<LivePeer>>& updatedClients) {
+	std::lock_guard<std::mutex> lock(clients_mutex);
 	// Delete old rows
 	if (user_list->GetNumberRows() > 0) {
 		user_list->DeleteRows(0, user_list->GetNumberRows());
 	}
 
-	clients = updatedClients;
-	user_list->AppendRows(clients.size());
+	user_list->AppendRows(updatedClients.size());
 
 	int32_t i = 0;
-	for (auto& clientEntry : clients) {
-		LivePeer* peer = clientEntry.second;
+	for (const auto& clientEntry : updatedClients) {
+		LivePeer* peer = clientEntry.second.get();
 		user_list->SetCellBackgroundColour(i, 0, peer->getUsedColor());
 		user_list->SetCellValue(i, 1, i2ws((peer->getClientId() >> 1) + 1));
 		user_list->SetCellValue(i, 2, peer->getName());
