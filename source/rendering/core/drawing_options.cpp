@@ -1,6 +1,7 @@
 #include "app/main.h"
 #include "ui/gui.h"
 #include "rendering/core/drawing_options.h"
+#include "rendering/postprocess/post_process_manager.h"
 
 DrawingOptions::DrawingOptions() {
 	SetDefault();
@@ -42,6 +43,8 @@ void DrawingOptions::SetDefault() {
 	ambient_light_level = 0.5f;
 	global_light_color = wxColor(128, 128, 128);
 	highlight_pulse = 0.0f;
+	anti_aliasing = false;
+	screen_shader_name = ShaderNames::NONE;
 }
 
 void DrawingOptions::SetIngame() {
@@ -114,6 +117,8 @@ void DrawingOptions::Update() {
 	ambient_light_level = g_gui.GetAmbientLightLevel();
 
 	experimental_fog = g_settings.getBoolean(Config::EXPERIMENTAL_FOG);
+	anti_aliasing = g_settings.getBoolean(Config::ANTI_ALIASING);
+	screen_shader_name = g_settings.getString(Config::SCREEN_SHADER);
 }
 
 bool DrawingOptions::isDrawLight() const noexcept {
