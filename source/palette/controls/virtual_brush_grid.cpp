@@ -18,8 +18,8 @@ VirtualBrushGrid::VirtualBrushGrid(wxWindow* parent, const TilesetCategory* _til
 	selected_index(-1),
 	hover_index(-1),
 	columns(1),
-	item_size(0),
 	padding(4),
+	hover_alpha(0.0f),
 	m_animTimer(new wxTimer(this)) {
 
 	if (icon_size == RENDER_SIZE_16x16) {
@@ -171,76 +171,49 @@ void VirtualBrushGrid::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 
 	// Draw visible items
 	for (int i = startIdx; i < endIdx; ++i) {
-		DrawBrushItem(vg, i, GetItemRect(i));
-	}
-}
+		wxRect rect = GetItemRect(i);
 
-void VirtualBrushGrid::DrawBrushItem(NVGcontext* vg, int i, const wxRect& rect) {
-	float x = static_cast<float>(rect.x);
-	float y = static_cast<float>(rect.y);
-	float w = static_cast<float>(rect.width);
-	float h = static_cast<float>(rect.height);
-
-	// Shadow / Glow
-	if (i == selected_index) {
-		// Glow for selected
-		NVGpaint shadowPaint = nvgBoxGradient(vg, x, y, w, h, 4.0f, 10.0f, nvgRGBA(100, 150, 255, 128), nvgRGBA(0, 0, 0, 0));
+		// Card background
 		nvgBeginPath(vg);
-		nvgRect(vg, x - 10, y - 10, w + 20, h + 20);
-		nvgRoundedRect(vg, x, y, w, h, 4.0f);
-		nvgPathWinding(vg, NVG_HOLE);
-		nvgFillPaint(vg, shadowPaint);
+		nvgRoundedRect(vg, static_cast<float>(rect.x), static_cast<float>(rect.y), static_cast<float>(rect.width), static_cast<float>(rect.height), 4.0f);
+
+		if (i == selected_index) {
+			// Selected - bright accent
+			nvgFillColor(vg, nvgRGBA(100, 150, 200, 255));
+		} else if (i == hover_index) {
+			// Hover - subtle highlight
+			nvgFillColor(vg, nvgRGBA(70, 70, 80, 255));
+		} else {
+			// Normal - dark card
+			nvgFillColor(vg, nvgRGBA(55, 55, 60, 255));
+		}
 		nvgFill(vg);
-	} else if (i == hover_index) {
-		// Subtle shadow/glow for hover
-		NVGpaint shadowPaint = nvgBoxGradient(vg, x, y + 2, w, h, 4.0f, 6.0f, nvgRGBA(0, 0, 0, 64), nvgRGBA(0, 0, 0, 0));
-		nvgBeginPath(vg);
-		nvgRect(vg, x - 5, y - 5, w + 10, h + 10);
-		nvgRoundedRect(vg, x, y, w, h, 4.0f);
-		nvgPathWinding(vg, NVG_HOLE);
-		nvgFillPaint(vg, shadowPaint);
-		nvgFill(vg);
-	}
 
-	// Card background
-	nvgBeginPath(vg);
-	nvgRoundedRect(vg, x, y, w, h, 4.0f);
-
-	if (i == selected_index) {
-		nvgFillColor(vg, nvgRGBA(80, 100, 120, 255));
-	} else if (i == hover_index) {
-		nvgFillColor(vg, nvgRGBA(70, 70, 75, 255));
-	} else {
-		// Normal - dark card with subtle gradient
-		NVGpaint bgPaint = nvgLinearGradient(vg, x, y, x, y + h, nvgRGBA(60, 60, 65, 255), nvgRGBA(50, 50, 55, 255));
-		nvgFillPaint(vg, bgPaint);
-	}
-	nvgFill(vg);
-
-	// Selection border
-	if (i == selected_index) {
-		nvgBeginPath(vg);
-		nvgRoundedRect(vg, x + 0.5f, y + 0.5f, w - 1.0f, h - 1.0f, 4.0f);
-		nvgStrokeColor(vg, nvgRGBA(100, 180, 255, 255));
-		nvgStrokeWidth(vg, 2.0f);
-		nvgStroke(vg);
-	}
-
-	// Draw brush sprite
-	Brush* brush = (i < static_cast<int>(tileset->size())) ? tileset->brushlist[i] : nullptr;
-	if (brush) {
-		int tex = GetOrCreateBrushTexture(vg, brush);
-		if (tex > 0) {
-			int iconSize = item_size - 4;
-			int iconX = rect.x + 2;
-			int iconY = rect.y + 2;
-
-			NVGpaint imgPaint = nvgImagePattern(vg, static_cast<float>(iconX), static_cast<float>(iconY), static_cast<float>(iconSize), static_cast<float>(iconSize), 0.0f, tex, 1.0f);
-
+		// Selection border
+		if (i == selected_index) {
 			nvgBeginPath(vg);
-			nvgRoundedRect(vg, static_cast<float>(iconX), static_cast<float>(iconY), static_cast<float>(iconSize), static_cast<float>(iconSize), 3.0f);
-			nvgFillPaint(vg, imgPaint);
-			nvgFill(vg);
+			nvgRoundedRect(vg, static_cast<float>(rect.x) + 0.5f, static_cast<float>(rect.y) + 0.5f, static_cast<float>(rect.width) - 1.0f, static_cast<float>(rect.height) - 1.0f, 4.0f);
+			nvgStrokeColor(vg, nvgRGBA(150, 200, 255, 255));
+			nvgStrokeWidth(vg, 2.0f);
+			nvgStroke(vg);
+		}
+
+		// Draw brush sprite
+		Brush* brush = tileset->brushlist[i];
+		if (brush) {
+			int tex = GetOrCreateBrushTexture(vg, brush);
+			if (tex > 0) {
+				int iconSize = item_size - 4;
+				int iconX = rect.x + 2;
+				int iconY = rect.y + 2;
+
+				NVGpaint imgPaint = nvgImagePattern(vg, static_cast<float>(iconX), static_cast<float>(iconY), static_cast<float>(iconSize), static_cast<float>(iconSize), 0.0f, tex, 1.0f);
+
+				nvgBeginPath(vg);
+				nvgRoundedRect(vg, static_cast<float>(iconX), static_cast<float>(iconY), static_cast<float>(iconSize), static_cast<float>(iconSize), 2.0f);
+				nvgFillPaint(vg, imgPaint);
+				nvgFill(vg);
+			}
 		}
 	}
 }

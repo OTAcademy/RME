@@ -15,32 +15,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#ifndef RME_MINIMAP_WINDOW_H_
-#define RME_MINIMAP_WINDOW_H_
+#ifndef RME_MT_RAND_H_
+#define RME_MT_RAND_H_
 
-#include <wx/glcanvas.h>
-#include <memory>
-
-class MinimapDrawer;
-class MinimapWindow : public wxGLCanvas {
-public:
-	MinimapWindow(wxWindow* parent);
-	virtual ~MinimapWindow();
-
-	void OnPaint(wxPaintEvent&);
-	void OnEraseBackground(wxEraseEvent&) { }
-	void OnMouseClick(wxMouseEvent&);
-	void OnSize(wxSizeEvent&);
-	void OnClose(wxCloseEvent&);
-
-	void DelayedUpdate();
-	void OnDelayedUpdate(wxTimerEvent& event);
-	void OnKey(wxKeyEvent& event);
-
-protected:
-	std::unique_ptr<MinimapDrawer> drawer;
-	wxTimer update_timer;
-	std::unique_ptr<wxGLContext> context;
-};
+void mt_seed(unsigned long s);
+unsigned long mt_randi();
+double mt_randd();
 
 #endif

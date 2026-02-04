@@ -64,6 +64,9 @@ bool LiveServer::bind() {
 }
 
 void LiveServer::close() {
+	for (auto& clientEntry : clients) {
+		delete clientEntry.second;
+	}
 	clients.clear();
 
 	if (log) {
@@ -98,11 +101,11 @@ void LiveServer::acceptClient() {
 		if (error) {
 			//
 		} else {
-			auto peer = std::make_unique<LivePeer>(this, std::move(*socket));
+			LivePeer* peer = new LivePeer(this, std::move(*socket));
 			peer->log = log;
 			peer->receiveHeader();
 
-			clients.emplace(id++, std::move(peer));
+			clients.insert(std::make_pair(id++, peer));
 		}
 		acceptClient();
 	});
@@ -189,7 +192,7 @@ void LiveServer::broadcastNodes(DirtyList& dirtyList) {
 		}
 
 		for (auto& clientEntry : clients) {
-			LivePeer* peer = clientEntry.second.get();
+			LivePeer* peer = clientEntry.second;
 
 			const uint32_t clientId = peer->getClientId();
 			if (dirtyList.owner != 0 && dirtyList.owner == clientId) {
@@ -221,7 +224,7 @@ void LiveServer::broadcastCursor(const LiveCursor& cursor) {
 	writeCursor(message, cursor);
 
 	for (auto& clientEntry : clients) {
-		LivePeer* peer = clientEntry.second.get();
+		LivePeer* peer = clientEntry.second;
 		if (peer->getClientId() != cursor.id) {
 			peer->send(message);
 		}

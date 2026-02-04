@@ -191,25 +191,24 @@ inline void foreach_ItemOnMap(Map& map, ForeachType& foreach, bool selectedTiles
 				;
 		}
 
-		for (auto* item : tile->items) {
-			containers.clear();
-			Container* container = item->asContainer();
+		for (ItemVector::iterator itemiter = tile->items.begin(); itemiter != tile->items.end(); ++itemiter) {
+			Item* item = *itemiter;
+			Container* container = dynamic_cast<Container*>(item);
 			foreach (map, tile, item, done)
 				;
-
 			if (container) {
+				containers.clear();
 				containers.push_back(container);
 
 				size_t index = 0;
 				while (index < containers.size()) {
 					container = containers[index++];
-
 					ItemVector& v = container->getVector();
-					for (auto* i : v) {
-						Container* c = i->asContainer();
+					for (ItemVector::iterator containeriter = v.begin(); containeriter != v.end(); ++containeriter) {
+						Item* i = *containeriter;
+						Container* c = dynamic_cast<Container*>(i);
 						foreach (map, tile, i, done)
 							;
-
 						if (c) {
 							containers.push_back(c);
 						}

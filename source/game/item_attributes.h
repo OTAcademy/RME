@@ -23,7 +23,6 @@
 
 #include "io/filehandle.h"
 
-#include <variant>
 #include <boost/static_assert.hpp>
 
 class IOMap;
@@ -68,7 +67,7 @@ public:
 	const bool* getBoolean() const;
 
 private:
-	std::variant<std::monostate, std::string, int32_t, double, bool> m_value;
+	alignas(alignof(std::string) > alignof(double) ? alignof(std::string) : alignof(double)) char data[sizeof(std::string) > sizeof(double) ? sizeof(std::string) : sizeof(double)];
 };
 
 using ItemAttributeMap = std::map<std::string, ItemAttribute>;

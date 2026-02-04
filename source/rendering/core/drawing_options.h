@@ -3,7 +3,6 @@
 
 #include <cstdint>
 #include <wx/wx.h>
-#include <string>
 
 struct DrawingOptions {
 	DrawingOptions();
@@ -55,10 +54,6 @@ struct DrawingOptions {
 	float light_intensity;
 	float ambient_light_level;
 	float highlight_pulse;
-
-	bool anti_aliasing;
-
-	std::string screen_shader_name;
 };
 
 #endif

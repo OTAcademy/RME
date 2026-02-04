@@ -19,7 +19,6 @@
 
 #include "game/item_attributes.h"
 #include "io/filehandle.h"
-#include <cstring>
 
 ItemAttributes::ItemAttributes() :
 	attributes(nullptr) {
@@ -167,76 +166,115 @@ ItemAttribute::ItemAttribute() :
 }
 
 ItemAttribute::ItemAttribute(const std::string& str) :
-	type(ItemAttribute::STRING), m_value(str) {
+	type(ItemAttribute::STRING) {
+	new (data) std::string(str);
 }
 
 ItemAttribute::ItemAttribute(int32_t i) :
-	type(ItemAttribute::INTEGER), m_value(i) {
+	type(ItemAttribute::INTEGER) {
+	*reinterpret_cast<int*>(data) = i;
 }
 
 ItemAttribute::ItemAttribute(double f) :
-	type(ItemAttribute::DOUBLE), m_value(f) {
+	type(ItemAttribute::DOUBLE) {
+	*reinterpret_cast<double*>(data) = f;
 }
 
 ItemAttribute::ItemAttribute(bool b) :
-	type(ItemAttribute::BOOLEAN), m_value(b) {
+	type(ItemAttribute::BOOLEAN) {
+	*reinterpret_cast<bool*>(data) = b;
 }
 
 ItemAttribute::ItemAttribute(const ItemAttribute& o) :
-	type(o.type), m_value(o.m_value) {
+	type(ItemAttribute::NONE) {
+	*this = o;
 }
 
 ItemAttribute& ItemAttribute::operator=(const ItemAttribute& o) {
 	if (&o == this) {
 		return *this;
 	}
+
+	clear();
 	type = o.type;
-	m_value = o.m_value;
+	if (type == STRING) {
+		new (data) std::string(*reinterpret_cast<const std::string*>(&o.data));
+	} else if (type == INTEGER) {
+		*reinterpret_cast<int32_t*>(data) = *reinterpret_cast<const int32_t*>(&o.data);
+	} else if (type == FLOAT) {
+		*reinterpret_cast<float*>(data) = *reinterpret_cast<const float*>(&o.data);
+	} else if (type == DOUBLE) {
+		*reinterpret_cast<double*>(data) = *reinterpret_cast<const double*>(&o.data);
+	} else if (type == BOOLEAN) {
+		*reinterpret_cast<bool*>(data) = *reinterpret_cast<const bool*>(&o.data);
+	} else {
+		type = NONE;
+	}
+
 	return *this;
 }
 
 ItemAttribute::~ItemAttribute() {
+	clear();
 }
 
 void ItemAttribute::clear() {
-	type = NONE;
-	m_value = std::monostate {};
+	if (type == STRING) {
+		(reinterpret_cast<std::string*>(&data))->~basic_string();
+		type = NONE;
+	}
 }
 
 void ItemAttribute::set(const std::string& str) {
+	clear();
 	type = STRING;
-	m_value = str;
+	new (data) std::string(str);
 }
 
 void ItemAttribute::set(int32_t i) {
+	clear();
 	type = INTEGER;
-	m_value = i;
+	*reinterpret_cast<int32_t*>(&data) = i;
 }
 
 void ItemAttribute::set(double y) {
+	clear();
 	type = DOUBLE;
-	m_value = y;
+	*reinterpret_cast<double*>(&data) = y;
 }
 
 void ItemAttribute::set(bool b) {
+	clear();
 	type = BOOLEAN;
-	m_value = b;
+	*reinterpret_cast<bool*>(&data) = b;
 }
 
 const std::string* ItemAttribute::getString() const {
-	return std::get_if<std::string>(&m_value);
+	if (type == STRING) {
+		return reinterpret_cast<const std::string*>(&data);
+	}
+	return nullptr;
 }
 
 const int32_t* ItemAttribute::getInteger() const {
-	return std::get_if<int32_t>(&m_value);
+	if (type == INTEGER) {
+		return reinterpret_cast<const int32_t*>(&data);
+	}
+	return nullptr;
 }
 
 const double* ItemAttribute::getFloat() const {
-	return std::get_if<double>(&m_value);
+	if (type == DOUBLE) {
+		return reinterpret_cast<const double*>(&data);
+	}
+	return nullptr;
 }
 
 const bool* ItemAttribute::getBoolean() const {
-	return std::get_if<bool>(&m_value);
+	if (type == BOOLEAN) {
+		return reinterpret_cast<const bool*>(&data);
+	}
+	return nullptr;
 }
 
 bool ItemAttributes::unserializeAttributeMap(const IOMap& maphandle, BinaryNode* stream) {
@@ -299,8 +337,7 @@ bool ItemAttribute::unserialize(const IOMap& maphandle, BinaryNode* stream) {
 			if (!stream->getU32(u32)) {
 				return false;
 			}
-			// Safe conversion from u32 to int32_t (2's complement)
-			set(static_cast<int32_t>(u32));
+			set(*reinterpret_cast<int32_t*>(&u32));
 			break;
 		}
 		case FLOAT: {
@@ -308,10 +345,7 @@ bool ItemAttribute::unserialize(const IOMap& maphandle, BinaryNode* stream) {
 			if (!stream->getU32(u32)) {
 				return false;
 			}
-			// Safe type punning
-			float f;
-			std::memcpy(&f, &u32, sizeof(float));
-			set(static_cast<double>(f));
+			set((double)*reinterpret_cast<float*>(&u32));
 			break;
 		}
 		case DOUBLE: {
@@ -319,10 +353,7 @@ bool ItemAttribute::unserialize(const IOMap& maphandle, BinaryNode* stream) {
 			if (!stream->getU64(u64)) {
 				return false;
 			}
-			// Safe type punning
-			double d;
-			std::memcpy(&d, &u64, sizeof(double));
-			set(d);
+			set(*reinterpret_cast<double*>(&u64));
 			break;
 		}
 		case BOOLEAN: {
@@ -331,7 +362,6 @@ bool ItemAttribute::unserialize(const IOMap& maphandle, BinaryNode* stream) {
 				return false;
 			}
 			set(b != 0);
-			break;
 		}
 		default:
 			break;
@@ -349,18 +379,13 @@ void ItemAttribute::serialize(const IOMap& maphandle, NodeFileWriteHandle& f) co
 			f.addLongString(*getString());
 			break;
 		case INTEGER:
-			f.addU32(static_cast<uint32_t>(*getInteger()));
+			f.addU32(*(uint32_t*)getInteger());
 			break;
-		case DOUBLE: {
-			double d = *getFloat();
-			uint64_t u64;
-			std::memcpy(&u64, &d, sizeof(double));
-			f.addU64(u64);
+		case DOUBLE:
+			f.addU64(*(uint64_t*)getFloat());
 			break;
-		}
 		case BOOLEAN:
-			f.addU8(static_cast<uint8_t>(*getBoolean()));
-			break;
+			f.addU8(*(uint8_t*)getBoolean());
 		default:
 			break;
 	}

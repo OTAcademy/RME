@@ -196,17 +196,18 @@ void LiveLogTab::OnDeselectChatbox(wxFocusEvent& evt) {
 	g_hotkeys.EnableHotkeys();
 }
 
-void LiveLogTab::UpdateClientList(const std::unordered_map<uint32_t, std::unique_ptr<LivePeer>>& updatedClients) {
+void LiveLogTab::UpdateClientList(const std::unordered_map<uint32_t, LivePeer*>& updatedClients) {
 	// Delete old rows
 	if (user_list->GetNumberRows() > 0) {
 		user_list->DeleteRows(0, user_list->GetNumberRows());
 	}
 
-	user_list->AppendRows(updatedClients.size());
+	clients = updatedClients;
+	user_list->AppendRows(clients.size());
 
 	int32_t i = 0;
-	for (const auto& clientEntry : updatedClients) {
-		LivePeer* peer = clientEntry.second.get();
+	for (auto& clientEntry : clients) {
+		LivePeer* peer = clientEntry.second;
 		user_list->SetCellBackgroundColour(i, 0, peer->getUsedColor());
 		user_list->SetCellValue(i, 1, i2ws((peer->getClientId() >> 1) + 1));
 		user_list->SetCellValue(i, 2, peer->getName());

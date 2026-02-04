@@ -18,8 +18,6 @@
 #ifndef _RME_LIVE_TAB_H_
 #define _RME_LIVE_TAB_H_
 
-#include <memory>
-#include "live/live_peer.h"
 #include "app/main.h"
 
 #include "editor/editor_tabs.h"
@@ -54,7 +52,7 @@ public:
 		return socket;
 	}
 
-	void UpdateClientList(const std::unordered_map<uint32_t, std::unique_ptr<LivePeer>>& updatedClients);
+	void UpdateClientList(const std::unordered_map<uint32_t, LivePeer*>& updatedClients);
 
 	void OnSelectChatbox(wxFocusEvent& evt);
 	void OnDeselectChatbox(wxFocusEvent& evt);
@@ -69,6 +67,8 @@ protected:
 	wxGrid* log;
 	wxTextCtrl* input;
 	wxGrid* user_list;
+
+	std::unordered_map<uint32_t, LivePeer*> clients;
 
 	DECLARE_EVENT_TABLE();
 };

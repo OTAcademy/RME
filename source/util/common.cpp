@@ -21,7 +21,6 @@
 #include "math.h"
 
 #include <cstdio>
-#include <format>
 #include <random>
 #include <regex>
 #include <algorithm>
@@ -29,7 +28,7 @@
 // random generator
 std::mt19937& getRandomGenerator() {
 	static std::random_device rd;
-	thread_local std::mt19937 generator(rd());
+	static std::mt19937 generator(rd());
 	return generator;
 }
 
@@ -53,7 +52,9 @@ std::string i2s(const int _i) {
 }
 
 std::string f2s(const double _d) {
-	return std::format("{:.6g}", _d);
+	char buffer[64];
+	std::snprintf(buffer, sizeof(buffer), "%.6g", _d);
+	return std::string(buffer);
 }
 
 int s2i(const std::string s) {
@@ -142,7 +143,18 @@ bool isTrueString(std::string& str) {
 }
 
 int random(int low, int high) {
-	return uniform_random(low, high);
+	if (low == high) {
+		return low;
+	}
+
+	if (low > high) {
+		return low;
+	}
+
+	int range = high - low;
+
+	double dist = double(mt_randi()) / 0xFFFFFFFF;
+	return low + min(range, int((1 + range) * dist));
 }
 
 int random(int high) {
