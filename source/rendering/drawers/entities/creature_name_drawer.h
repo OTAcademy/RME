@@ -24,7 +24,7 @@ public:
 
 	void clear();
 	void addLabel(const Position& pos, const std::string& name, const Creature* c);
-	void draw(const RenderView& view);
+	void draw(NVGcontext* vg, const RenderView& view);
 
 private:
 	std::vector<CreatureLabel> labels;

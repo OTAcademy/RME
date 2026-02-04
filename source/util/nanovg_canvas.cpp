@@ -1,5 +1,6 @@
 #include "app/main.h"
 #include "util/nanovg_canvas.h"
+#include "rendering/core/text_renderer.h"
 
 #include <glad/glad.h>
 
@@ -64,7 +65,7 @@ void NanoVGCanvas::InitGL() {
 	m_nvg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 	if (m_nvg) {
 		// Load default font - same as TextRenderer for consistency
-		nvgCreateFont(m_nvg, "sans", "C:\\Windows\\Fonts\\arial.ttf");
+		TextRenderer::LoadFont(m_nvg);
 		m_glInitialized = true;
 	}
 }

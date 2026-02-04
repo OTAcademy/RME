@@ -28,6 +28,8 @@
 #include "game/animation_timer.h"
 #include <memory>
 
+struct NVGcontext;
+
 class Item;
 class Creature;
 class MapWindow;
@@ -171,6 +173,7 @@ public:
 private:
 	MapWindow* GetMapWindow() const;
 	bool renderer_initialized = false;
+	NVGcontext* m_nvg = nullptr;
 };
 
 #endif

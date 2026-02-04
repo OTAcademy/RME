@@ -12,6 +12,8 @@ class Editor;
 #include <deque>
 #include <string>
 
+struct NVGcontext;
+
 namespace IngamePreview {
 
 	class IngamePreviewRenderer;
@@ -56,6 +58,7 @@ namespace IngamePreview {
 
 	private:
 		std::unique_ptr<IngamePreviewRenderer> renderer;
+		NVGcontext* m_nvg = nullptr;
 		const void* last_tile_renderer; // Using void* to avoid forward declaration issues if TileRenderer isn't fully known, but forward decl is better.
 		// Actually, let's look at lines 12. IngamePreviewRenderer is forward declared.
 		// TileRenderer is in map_drawer implementation details usually.

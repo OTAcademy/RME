@@ -43,7 +43,10 @@
 #include "rendering/ui/map_status_updater.h"
 #include "rendering/map_drawer.h"
 #include "rendering/core/text_renderer.h"
+#include <glad/glad.h>
 #include <nanovg.h>
+#define NANOVG_GL3
+#include <nanovg_gl.h>
 #include "app/application.h"
 #include "live/live_server.h"
 #include "live/live_client.h"
@@ -156,7 +159,12 @@ MapCanvas::MapCanvas(MapWindow* parent, Editor& editor, int* attriblist) :
 	keyCode = WXK_NONE;
 }
 
-MapCanvas::~MapCanvas() = default;
+MapCanvas::~MapCanvas() {
+	if (m_nvg) {
+		nvgDeleteGL3(m_nvg);
+		m_nvg = nullptr;
+	}
+}
 
 void MapCanvas::Refresh() {
 	if (refresh_watch.Time() > g_settings.getInteger(Config::HARD_REFRESH_RATE)) {
@@ -182,6 +190,19 @@ MapWindow* MapCanvas::GetMapWindow() const {
 void MapCanvas::OnPaint(wxPaintEvent& event) {
 	SetCurrent(*g_gui.GetGLContext(this));
 
+	// Initialize NanoVG context for this specific canvas
+	if (!m_nvg) {
+		if (!gladLoadGL()) {
+			spdlog::error("MapCanvas: Failed to initialize GLAD");
+		}
+		m_nvg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+		if (m_nvg) {
+			TextRenderer::LoadFont(m_nvg);
+		} else {
+			spdlog::error("MapCanvas: Failed to initialize NanoVG");
+		}
+	}
+
 	if (g_gui.IsRenderingEnabled()) {
 		DrawingOptions& options = drawer->getOptions();
 		if (screenshot_controller->IsCapturing()) {
@@ -199,10 +220,6 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			animation_timer->Stop();
 		}
 
-		if (!TextRenderer::GetContext()) {
-			TextRenderer::Init();
-		}
-
 		// BatchRenderer calls removed - MapDrawer handles its own renderers
 
 		drawer->SetupVars();
@@ -217,16 +234,16 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 		// BatchRenderer::End(); call removed
 
 		// Draw UI (Tooltips & Overlays) using NanoVG
-		if (options.show_tooltips || options.show_creatures) {
-			TextRenderer::BeginFrame(GetSize().x, GetSize().y);
+		if (m_nvg && (options.show_tooltips || options.show_creatures)) {
+			TextRenderer::BeginFrame(m_nvg, GetSize().x, GetSize().y);
 
 			if (options.show_creatures) {
-				drawer->DrawCreatureNames();
+				drawer->DrawCreatureNames(m_nvg);
 			}
 			if (options.show_tooltips) {
-				drawer->DrawTooltips();
+				drawer->DrawTooltips(m_nvg);
 			}
-			TextRenderer::EndFrame();
+			TextRenderer::EndFrame(m_nvg);
 		}
 
 		drawer->ClearTooltips();

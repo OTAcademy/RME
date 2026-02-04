@@ -20,6 +20,7 @@
 #include <memory>
 class GameSprite;
 
+struct NVGcontext;
 class TooltipDrawer;
 
 // Storage during drawing, for option caching
@@ -100,9 +101,9 @@ public:
 	void DrawIngameBox();
 
 	void DrawGrid();
-	void DrawTooltips();
+	void DrawTooltips(NVGcontext* vg);
 	void ClearTooltips();
-	void DrawCreatureNames();
+	void DrawCreatureNames(NVGcontext* vg);
 
 	void DrawLight();
 
