@@ -83,6 +83,7 @@ private:
 
 	wxCheckBox* addon1;
 	wxCheckBox* addon2;
+	wxCheckBox* colorable_only_check;
 
 	wxSpinCtrl* speed_ctrl;
 	wxTextCtrl* name_ctrl;

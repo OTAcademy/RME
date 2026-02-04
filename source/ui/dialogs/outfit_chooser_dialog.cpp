@@ -126,9 +126,13 @@ OutfitChooserDialog::OutfitChooserDialog(wxWindow* parent, const Outfit& current
 		} else {
 			item.name = wxString::Format("Outfit %d", i);
 		}
+
+		GameSprite* spr = g_gui.gfx.getCreatureSprite(i);
+		item.layers = spr ? spr->layers : 1;
+
 		selection_panel->all_outfits.push_back(item);
 	}
-	selection_panel->UpdateFilter("");
+	selection_panel->UpdateFilter("", false);
 	favorites_panel->favorite_items = favorites;
 	favorites_panel->UpdateVirtualSize();
 
@@ -217,6 +221,10 @@ OutfitChooserDialog::OutfitChooserDialog(wxWindow* parent, const Outfit& current
 	outfit_search->SetDescriptiveText("Search...");
 	outfits_header_row->Add(outfit_search, 0, wxALIGN_BOTTOM | wxRIGHT, 4);
 
+	colorable_only_check = new wxCheckBox(this, wxID_ANY, "Template Only");
+	colorable_only_check->SetToolTip("Show only colorable outfits");
+	outfits_header_row->Add(colorable_only_check, 0, wxALIGN_BOTTOM | wxRIGHT | wxBOTTOM, 4);
+
 	outfits_sizer->Add(outfits_header_row, 0, wxEXPAND | wxBOTTOM, 4);
 	outfits_sizer->Add(selection_panel, 1, wxEXPAND);
 	main_sizer->Add(outfits_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
@@ -266,6 +274,7 @@ OutfitChooserDialog::OutfitChooserDialog(wxWindow* parent, const Outfit& current
 	fav_btn->Bind(wxEVT_BUTTON, &OutfitChooserDialog::OnAddFavorite, this);
 
 	outfit_search->Bind(wxEVT_TEXT, &OutfitChooserDialog::OnSearchOutfit, this);
+	colorable_only_check->Bind(wxEVT_CHECKBOX, &OutfitChooserDialog::OnSearchOutfit, this);
 
 	Bind(wxEVT_BUTTON, &OutfitChooserDialog::OnOK, this, wxID_OK);
 
@@ -352,7 +361,7 @@ void OutfitChooserDialog::OnAddonChange(wxCommandEvent& event) {
 }
 
 void OutfitChooserDialog::OnSearchOutfit(wxCommandEvent& event) {
-	selection_panel->UpdateFilter(outfit_search->GetValue());
+	selection_panel->UpdateFilter(outfit_search->GetValue(), colorable_only_check->GetValue());
 }
 
 void OutfitChooserDialog::UpdatePreview() {

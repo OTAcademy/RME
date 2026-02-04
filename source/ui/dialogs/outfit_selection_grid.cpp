@@ -5,7 +5,6 @@
 #include "ui/gui.h"
 
 #include <glad/glad.h>
-#define NANOVG_GL3
 #include <nanovg.h>
 #include <nanovg_gl.h>
 
@@ -41,7 +40,7 @@ OutfitSelectionGrid::OutfitSelectionGrid(wxWindow* parent, OutfitChooserDialog* 
 	}
 }
 
-void OutfitSelectionGrid::UpdateFilter(const wxString& filter) {
+void OutfitSelectionGrid::UpdateFilter(const wxString& filter, bool colorable_only) {
 	if (is_favorites) {
 		UpdateVirtualSize();
 		return;
@@ -49,7 +48,11 @@ void OutfitSelectionGrid::UpdateFilter(const wxString& filter) {
 
 	filtered_outfits.clear();
 	std::ranges::copy_if(all_outfits, std::back_inserter(filtered_outfits), [&](const auto& item) {
-		return filter.IsEmpty() || item.name.Lower().Contains(filter.Lower()) || wxString::Format("%d", item.lookType).Contains(filter);
+		bool match = filter.IsEmpty() || item.name.Lower().Contains(filter.Lower()) || wxString::Format("%d", item.lookType).Contains(filter);
+		if (colorable_only && item.layers < 2) {
+			match = false;
+		}
+		return match;
 	});
 
 	// Try to restore selection

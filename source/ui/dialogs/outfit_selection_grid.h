@@ -13,12 +13,13 @@ class OutfitChooserDialog; // Forward declaration
 struct OutfitItem {
 	int lookType;
 	wxString name;
+	int layers;
 };
 
 class OutfitSelectionGrid : public NanoVGCanvas {
 public:
 	OutfitSelectionGrid(wxWindow* parent, OutfitChooserDialog* owner, bool is_favorites = false);
-	void UpdateFilter(const wxString& filter);
+	void UpdateFilter(const wxString& filter, bool colorable_only);
 	void UpdateVirtualSize();
 	std::vector<OutfitItem> all_outfits;
 	std::vector<OutfitItem> filtered_outfits;
