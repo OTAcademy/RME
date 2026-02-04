@@ -42,12 +42,12 @@ BrushPalettePanel::BrushPalettePanel(wxWindow* parent, const TilesetContainer& t
 		topsizer->Add(tmpsizer, 0, wxCENTER, 10);
 	}
 
-	for (TilesetContainer::const_iterator iter = tilesets.begin(); iter != tilesets.end(); ++iter) {
-		const TilesetCategory* tcg = iter->second->getCategory(category);
+	for (const auto& tileset : GetSortedTilesets(tilesets)) {
+		const TilesetCategory* tcg = tileset->getCategory(category);
 		if (tcg && tcg->size() > 0) {
 			BrushPanel* panel = newd BrushPanel(tmp_choicebook);
 			panel->AssignTileset(tcg);
-			tmp_choicebook->AddPage(panel, wxstr(iter->second->name));
+			tmp_choicebook->AddPage(panel, wxstr(tileset->name));
 		}
 	}
 

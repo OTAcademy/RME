@@ -18,6 +18,7 @@
 #include "app/main.h"
 
 #include <bit>
+#include <algorithm>
 
 #include "map/map_region.h"
 #include "map/basemap.h"
@@ -147,6 +148,18 @@ void MapNode::setVisible(bool underground, bool value) {
 			visible &= ~VISIBLE_OVERGROUND;
 		}
 	}
+}
+
+std::vector<SpatialHashGrid::SortedGridCell> SpatialHashGrid::getSortedCells() const {
+	std::vector<SortedGridCell> sorted_cells;
+	sorted_cells.reserve(cells.size());
+	for (const auto& pair : cells) {
+		sorted_cells.emplace_back(pair.first, pair.second.get());
+	}
+	std::sort(sorted_cells.begin(), sorted_cells.end(), [](const auto& a, const auto& b) {
+		return a.key < b.key;
+	});
+	return sorted_cells;
 }
 
 void MapNode::setRequested(bool underground, bool r) {

@@ -53,6 +53,20 @@ You are "Auditor", a meticulous C++20 expert who has seen every code smell in ex
 - Loop + push_back instead of `std::transform` or range algorithms
 - Unnecessary copies (should use move semantics or references)
 
+#### 🎨 wxDC Performance Code Smells
+
+Detect these patterns that indicate need for NanoVG migration:
+
+- `wxMemoryDC` created per-item in paint loop
+- `wxBitmap::Create()` in render path
+- `wxGraphicsContext` used for grids/lists with 50+ items
+- `wxDC::DrawText()` called 50+ times in one paint handler
+- `wxScrolledWindow` with hundreds of child controls
+
+**Detection Rule**: If a file has both `OnPaint` AND a loop drawing 50+ items with wxDC, flag for NanoVG migration.
+
+**Reference**: `source/ui/replace_tool/item_grid_panel.cpp` - the correct pattern
+
 ### 2. RANK
 Create your top 10 candidates. Score each 1-10 by:
 - Severity: How bad is this smell?

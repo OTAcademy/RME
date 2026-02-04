@@ -26,7 +26,10 @@
 #include "ui/map_popup_menu.h"
 #include "ui/map_popup_menu.h"
 #include "game/animation_timer.h"
+#include "rendering/core/graphics.h"
 #include <memory>
+
+struct NVGcontext;
 
 class Item;
 class Creature;
@@ -143,6 +146,14 @@ public:
 	int last_mmb_click_x;
 	int last_mmb_click_y;
 
+	// HUD cache
+	std::string hud_cached_text;
+	float hud_cached_bounds[4] = { 0 };
+	size_t hud_cached_selection_count = 0;
+	int hud_cached_x = -1;
+	int hud_cached_y = -1;
+	int hud_cached_z = -1;
+
 	int view_scroll_x;
 	int view_scroll_y;
 
@@ -171,6 +182,7 @@ public:
 private:
 	MapWindow* GetMapWindow() const;
 	bool renderer_initialized = false;
+	std::unique_ptr<NVGcontext, NVGDeleter> m_nvg;
 };
 
 #endif

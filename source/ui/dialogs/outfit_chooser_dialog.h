@@ -68,6 +68,7 @@ private:
 	void OnAddFavorite(wxCommandEvent& event);
 	void OnOK(wxCommandEvent& event);
 
+	void UpdateColorSelection();
 	void SelectColor(int color_id);
 
 	int current_speed;
@@ -82,6 +83,7 @@ private:
 
 	wxCheckBox* addon1;
 	wxCheckBox* addon2;
+	wxCheckBox* colorable_only_check;
 
 	wxSpinCtrl* speed_ctrl;
 	wxTextCtrl* name_ctrl;
@@ -91,7 +93,7 @@ private:
 	wxButton* legs_btn;
 	wxButton* feet_btn;
 
-	std::vector<wxButton*> color_buttons;
+	std::vector<wxWindow*> color_buttons;
 };
 
 #endif

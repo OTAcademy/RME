@@ -79,8 +79,9 @@ Avoid:
 
 ### 3. Custom Drawing Pipeline (Mandatory)
 Modern UI requires owner-drawn controls.
-- Use `wxPaintDC` with `wxGCDC` / `wxGraphicsContext` for all custom rendering.
-- Implement distinctive widgets (toggles, sliders, cards) as `wxControl` subclasses.
+- **Preferred**: Use **NanoVG** via `wxGLCanvas` for any control requiring high density, animations, or 60fps micro-interactions.
+- **Fallback**: Use `wxPaintDC` with `wxGraphicsContext` ONLY for static or low-complexity sidebar controls.
+- Implement distinctive widgets (toggles, sliders, cards) as `wxControl` (GDI) or `wxGLCanvas` (NanoVG) subclasses.
 - Use `wxBitmapButton` with 9-slice scaling for skinnable interactive elements.
 
 #### Strict Control Architecture
@@ -98,8 +99,32 @@ To prevent "spaghetti code", every custom control **MUST** follow this pattern:
     - Override `MSWGetStyle` (Windows) to remove borders if using custom chrome.
 5.  **Focus**: Render a clear focus ring when `HasFocus()` is true.
 
-#### Custom Control Template (C++ Boilerplate)
-Use this as the minimum viable starting point for any interactive control:
+#### Custom Control Template (NanoVG / GPU Pattern)
+Use this pattern for high-performance, information-dense grids or animated panels:
+
+```cpp
+class GpuPanel : public wxGLCanvas {
+public:
+    GpuPanel(wxWindow* parent) : wxGLCanvas(parent, ...) {
+        Bind(wxEVT_PAINT, &GpuPanel::OnPaint, this);
+    }
+
+    void OnPaint(wxPaintEvent& evt) {
+        wxPaintDC dc(this);
+        SetCurrent(*m_glContext);
+        
+        nvgBeginFrame(vg, width, height, pixelRatio);
+        // High-performance drawing here...
+        // Use nvgRoundedRect, nvgImagePattern, nvgText
+        nvgEndFrame(vg);
+        
+        SwapBuffers();
+    }
+};
+```
+
+#### Custom Control Template (Standard GDI/wxDC Pattern)
+Use this as the minimum viable starting point for static interactive controls:
 
 ```cpp
 // Minimum viable modern wxControl subclass pattern
@@ -390,7 +415,8 @@ Use `wxConfig` or equivalent abstraction.
 
 | Pattern                                  | Why Banned                     | Detection                                 |
 | ---------------------------------------- | ------------------------------ | ----------------------------------------- |
-| `wxScrolledWindow` for large datasets    | Slow, no virtual rendering     | Use `wxVListBox` or custom virtual scroll |
+| `wxScrolledWindow` for large datasets    | Slow, no virtual rendering     | Use NanoVG + `wxGLCanvas` virtual scroll |
+| `wxGraphicsContext` in high-freq paint  | Extremely slow (forces flushes)| Use NanoVG via `wxGLCanvas`              |
 | `wxDialog::ShowModal()` for frequent ops | Blocks event loop, breaks flow | Use modeless with `wxPanel` overlays      |
 | Synchronous `wxMessageBox` in tools      | Breaks muscle memory           | Use status bar or toast notifications     |
 | `wxToolTip` for dense info               | Slow, blocks hover             | Custom instant tooltip window             |

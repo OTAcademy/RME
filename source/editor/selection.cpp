@@ -34,33 +34,53 @@ Selection::Selection(Editor& editor) :
 	deferred(false),
 	editor(editor),
 	session(nullptr),
-	subsession(nullptr) {
+	subsession(nullptr),
+	bounds_dirty(true),
+	cached_min(0, 0, 0),
+	cached_max(0, 0, 0) {
 	////
 }
 Selection::~Selection() {
 	//
 }
 
-Position Selection::minPosition() const {
+void Selection::recalculateBounds() const {
+	if (!bounds_dirty) {
+		return;
+	}
+
 	Position minPos(0x10000, 0x10000, 0x10);
-	std::ranges::for_each(tiles, [&](Tile* tile) {
-		Position pos = tile->getPosition();
-		minPos.x = std::min(minPos.x, pos.x);
-		minPos.y = std::min(minPos.y, pos.y);
-		minPos.z = std::min(minPos.z, pos.z);
-	});
-	return minPos;
+	Position maxPos(0, 0, 0);
+
+	if (tiles.empty()) {
+		minPos = Position(0, 0, 0);
+		maxPos = Position(0, 0, 0);
+	} else {
+		std::ranges::for_each(tiles, [&](Tile* tile) {
+			const Position& pos = tile->getPosition();
+			minPos.x = std::min(minPos.x, pos.x);
+			minPos.y = std::min(minPos.y, pos.y);
+			minPos.z = std::min(minPos.z, pos.z);
+
+			maxPos.x = std::max(maxPos.x, pos.x);
+			maxPos.y = std::max(maxPos.y, pos.y);
+			maxPos.z = std::max(maxPos.z, pos.z);
+		});
+	}
+
+	cached_min = minPos;
+	cached_max = maxPos;
+	bounds_dirty = false;
+}
+
+Position Selection::minPosition() const {
+	recalculateBounds();
+	return cached_min;
 }
 
 Position Selection::maxPosition() const {
-	Position maxPos(0, 0, 0);
-	std::ranges::for_each(tiles, [&](Tile* tile) {
-		Position pos = tile->getPosition();
-		maxPos.x = std::max(maxPos.x, pos.x);
-		maxPos.y = std::max(maxPos.y, pos.y);
-		maxPos.z = std::max(maxPos.z, pos.z);
-	});
-	return maxPos;
+	recalculateBounds();
+	return cached_max;
 }
 
 void Selection::add(Tile* tile, Item* item) {
@@ -194,6 +214,7 @@ void Selection::addInternal(Tile* tile) {
 		pending_adds.push_back(tile);
 	} else {
 		tiles.insert(tile);
+		bounds_dirty = true;
 	}
 }
 
@@ -203,12 +224,17 @@ void Selection::removeInternal(Tile* tile) {
 		pending_removes.push_back(tile);
 	} else {
 		tiles.erase(tile);
+		bounds_dirty = true;
 	}
 }
 
 void Selection::flush() {
 	if (pending_adds.empty() && pending_removes.empty()) {
 		return;
+	}
+
+	if (!pending_removes.empty() || !pending_adds.empty()) {
+		bounds_dirty = true;
 	}
 
 	for (Tile* t : pending_removes) {
@@ -224,6 +250,10 @@ void Selection::flush() {
 }
 
 void Selection::clear() {
+	if (tiles.empty()) {
+		return;
+	}
+
 	if (session) {
 		std::ranges::for_each(tiles, [&](Tile* tile) {
 			Tile* new_tile = tile->deepCopy(editor.map);
@@ -234,8 +264,9 @@ void Selection::clear() {
 		std::ranges::for_each(tiles, [](Tile* tile) {
 			tile->deselect();
 		});
-		tiles.clear();
 	}
+	tiles.clear();
+	bounds_dirty = true;
 }
 
 void Selection::start(SessionFlags flags) {
