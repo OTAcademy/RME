@@ -22,17 +22,6 @@
 #include "game/sprites.h"
 #include "editor/editor.h"
 
-BEGIN_EVENT_TABLE(MapWindow, wxPanel)
-EVT_SIZE(MapWindow::OnSize)
-EVT_SCROLL_LINEUP(MapWindow::OnScrollLineUp)
-EVT_SCROLL_LINEDOWN(MapWindow::OnScrollLineDown)
-EVT_SCROLL_PAGEUP(MapWindow::OnScrollPageUp)
-EVT_SCROLL_PAGEDOWN(MapWindow::OnScrollPageDown)
-EVT_SCROLL_THUMBTRACK(MapWindow::OnScroll)
-EVT_SCROLL_THUMBRELEASE(MapWindow::OnScroll)
-EVT_BUTTON(MAP_WINDOW_GEM, MapWindow::OnGem)
-END_EVENT_TABLE()
-
 MapWindow::MapWindow(wxWindow* parent, Editor& editor) :
 	wxPanel(parent, PANE_MAIN),
 	editor(editor),
@@ -60,6 +49,15 @@ MapWindow::MapWindow(wxWindow* parent, Editor& editor) :
 	topsizer->Add(gem, wxSizerFlags(1));
 
 	SetSizerAndFit(topsizer);
+
+	Bind(wxEVT_SIZE, &MapWindow::OnSize, this);
+	Bind(wxEVT_SCROLL_LINEUP, &MapWindow::OnScrollLineUp, this);
+	Bind(wxEVT_SCROLL_LINEDOWN, &MapWindow::OnScrollLineDown, this);
+	Bind(wxEVT_SCROLL_PAGEUP, &MapWindow::OnScrollPageUp, this);
+	Bind(wxEVT_SCROLL_PAGEDOWN, &MapWindow::OnScrollPageDown, this);
+	Bind(wxEVT_SCROLL_THUMBTRACK, &MapWindow::OnScroll, this);
+	Bind(wxEVT_SCROLL_THUMBRELEASE, &MapWindow::OnScroll, this);
+	Bind(wxEVT_BUTTON, &MapWindow::OnGem, this, MAP_WINDOW_GEM);
 }
 
 MapWindow::~MapWindow() {
@@ -72,7 +70,7 @@ void MapWindow::ShowReplaceItemsDialog(bool selectionOnly) {
 	}
 
 	replaceItemsDialog = new ReplaceItemsDialog(this, selectionOnly);
-	replaceItemsDialog->Connect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler(MapWindow::OnReplaceItemsDialogClose), nullptr, this);
+	replaceItemsDialog->Bind(wxEVT_CLOSE_WINDOW, &MapWindow::OnReplaceItemsDialogClose, this);
 	replaceItemsDialog->Show();
 }
 
@@ -84,7 +82,7 @@ void MapWindow::CloseReplaceItemsDialog() {
 
 void MapWindow::OnReplaceItemsDialogClose(wxCloseEvent& event) {
 	if (replaceItemsDialog) {
-		replaceItemsDialog->Disconnect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler(MapWindow::OnReplaceItemsDialogClose), nullptr, this);
+		replaceItemsDialog->Unbind(wxEVT_CLOSE_WINDOW, &MapWindow::OnReplaceItemsDialogClose, this);
 		replaceItemsDialog->Destroy();
 		replaceItemsDialog = nullptr;
 	}

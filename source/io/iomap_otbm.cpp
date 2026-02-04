@@ -1558,12 +1558,12 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f) {
 					}
 
 					for (int j = 0; j < MAP_LAYERS; ++j) {
-						Floor* floor = node->array[j];
+						Floor* floor = node->getFloor(j);
 						if (!floor) {
 							continue;
 						}
 
-						for (int k = 0; k < 16; ++k) { // 4x4 tiles = 16
+						for (int k = 0; k < SpatialHashGrid::TILES_PER_NODE; ++k) {
 							TileLocation& loc = floor->locs[k];
 							Tile* save_tile = loc.get();
 
@@ -1584,7 +1584,7 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f) {
 
 							const Position& pos = save_tile->getPosition();
 
-							// Decide if newd node should be created
+							// Decide if new node should be created
 							if (pos.x < local_x || pos.x >= local_x + 256 || pos.y < local_y || pos.y >= local_y + 256 || pos.z != local_z) {
 								// End last node
 								if (!first) {
@@ -1592,59 +1592,14 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f) {
 								}
 								first = false;
 
-								// Start newd node
+								// Start new node
 								f.addNode(OTBM_TILE_AREA);
 								f.addU16(local_x = pos.x & 0xFF00);
 								f.addU16(local_y = pos.y & 0xFF00);
 								f.addU8(local_z = pos.z);
 							}
-							f.addNode(save_tile->isHouseTile() ? OTBM_HOUSETILE : OTBM_TILE);
 
-							f.addU8(save_tile->getX() & 0xFF);
-							f.addU8(save_tile->getY() & 0xFF);
-
-							if (save_tile->isHouseTile()) {
-								f.addU32(save_tile->getHouseID());
-							}
-
-							if (save_tile->getMapFlags()) {
-								f.addByte(OTBM_ATTR_TILE_FLAGS);
-								f.addU32(save_tile->getMapFlags());
-							}
-
-							if (save_tile->ground) {
-								Item* ground = save_tile->ground;
-								if (ground->isMetaItem()) {
-									// Do nothing, we don't save metaitems...
-								} else if (ground->hasBorderEquivalent()) {
-									bool found = false;
-									for (Item* item : save_tile->items) {
-										if (item->getGroundEquivalent() == ground->getID()) {
-											// Do nothing
-											// Found equivalent
-											found = true;
-											break;
-										}
-									}
-
-									if (!found) {
-										ground->serializeItemNode_OTBM(self, f);
-									}
-								} else if (ground->isComplex()) {
-									ground->serializeItemNode_OTBM(self, f);
-								} else {
-									f.addByte(OTBM_ATTR_ITEM);
-									ground->serializeItemCompact_OTBM(self, f);
-								}
-							}
-
-							for (Item* item : save_tile->items) {
-								if (!item->isMetaItem()) {
-									item->serializeItemNode_OTBM(self, f);
-								}
-							}
-
-							f.endNode();
+							serializeTile_OTBM(save_tile, f, self);
 						}
 					}
 				}
@@ -1852,4 +1807,53 @@ bool IOMapOTBM::saveWaypoints(Map& map, pugi::xml_document& doc) {
 		houseNode.append_attribute("townid") = house->townid;
 	}
 	return true;
+}
+
+void IOMapOTBM::serializeTile_OTBM(Tile* save_tile, NodeFileWriteHandle& f, const IOMapOTBM& self) {
+	f.addNode(save_tile->isHouseTile() ? OTBM_HOUSETILE : OTBM_TILE);
+
+	f.addU8(save_tile->getX() & 0xFF);
+	f.addU8(save_tile->getY() & 0xFF);
+
+	if (save_tile->isHouseTile()) {
+		f.addU32(save_tile->getHouseID());
+	}
+
+	if (save_tile->getMapFlags()) {
+		f.addByte(OTBM_ATTR_TILE_FLAGS);
+		f.addU32(save_tile->getMapFlags());
+	}
+
+	if (save_tile->ground) {
+		Item* ground = save_tile->ground;
+		if (ground->isMetaItem()) {
+			// Do nothing, we don't save metaitems...
+		} else if (ground->hasBorderEquivalent()) {
+			bool found = false;
+			for (Item* item : save_tile->items) {
+				if (item->getGroundEquivalent() == ground->getID()) {
+					// Found equivalent
+					found = true;
+					break;
+				}
+			}
+
+			if (!found) {
+				ground->serializeItemNode_OTBM(self, f);
+			}
+		} else if (ground->isComplex()) {
+			ground->serializeItemNode_OTBM(self, f);
+		} else {
+			f.addByte(OTBM_ATTR_ITEM);
+			ground->serializeItemCompact_OTBM(self, f);
+		}
+	}
+
+	for (Item* item : save_tile->items) {
+		if (!item->isMetaItem()) {
+			item->serializeItemNode_OTBM(self, f);
+		}
+	}
+
+	f.endNode();
 }

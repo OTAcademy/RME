@@ -59,6 +59,9 @@ public:
 	}
 
 	//
+	// Returns the bounds of the selection.
+	// NOTE: Bounds queries should only be called from the main thread if
+	// the selection is being modified by another thread (e.g. SelectionThread).
 	Position minPosition() const;
 	Position maxPosition() const;
 

@@ -19,6 +19,7 @@ public:
 	static constexpr int NODE_SHIFT = 2; // 4 tiles
 	static constexpr int NODES_PER_CELL_SHIFT = CELL_SHIFT - NODE_SHIFT; // 4
 	static constexpr int NODES_PER_CELL = 1 << NODES_PER_CELL_SHIFT; // 16 nodes (4x4 tiles each)
+	static constexpr int TILES_PER_NODE = 16; // 4x4 tiles per node
 
 	struct GridCell {
 		std::unique_ptr<MapNode> nodes[NODES_PER_CELL * NODES_PER_CELL];
