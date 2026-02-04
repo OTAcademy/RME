@@ -52,6 +52,7 @@ public:
 
 			for (int nx : std::views::iota(start_nx, end_nx + 1)) {
 				int cx = nx >> NODES_PER_CELL_SHIFT;
+				int local_nx = nx & (NODES_PER_CELL - 1);
 
 				uint64_t key = makeKeyFromCell(cx, cy);
 
@@ -69,7 +70,6 @@ public:
 				}
 
 				if (cell) {
-					int local_nx = nx & (NODES_PER_CELL - 1);
 					int idx = local_ny * NODES_PER_CELL + local_nx;
 					if (MapNode* node = cell->nodes[idx].get()) {
 						func(node, nx << NODE_SHIFT, ny << NODE_SHIFT);
