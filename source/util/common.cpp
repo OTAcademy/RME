@@ -29,7 +29,7 @@
 // random generator
 std::mt19937& getRandomGenerator() {
 	static std::random_device rd;
-	static std::mt19937 generator(rd());
+	thread_local std::mt19937 generator(rd());
 	return generator;
 }
 

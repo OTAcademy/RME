@@ -18,6 +18,8 @@
 #ifndef _RME_LIVE_TAB_H_
 #define _RME_LIVE_TAB_H_
 
+#include <memory>
+#include "live/live_peer.h"
 #include "app/main.h"
 
 #include "editor/editor_tabs.h"
