@@ -39,9 +39,9 @@ void TileColorCalculator::Calculate(const Tile* tile, const DrawingOptions& opti
 		GetHouseColor(house_id, hr, hg, hb);
 
 		// Apply the house unique color tint to the tile
-		r = static_cast<uint8_t>(static_cast<int>(r) * hr / 255);
-		g = static_cast<uint8_t>(static_cast<int>(g) * hg / 255);
-		b = static_cast<uint8_t>(static_cast<int>(b) * hb / 255);
+		r = static_cast<uint8_t>(r * hr / 255);
+		g = static_cast<uint8_t>(g * hg / 255);
+		b = static_cast<uint8_t>(b * hb / 255);
 
 		if (static_cast<int>(house_id) == current_house_id) {
 			// Pulse Effect on top of the unique color
@@ -116,7 +116,7 @@ void TileColorCalculator::GetHouseColor(uint32_t house_id, uint8_t& r, uint8_t& 
 
 void TileColorCalculator::GetMinimapColor(const Tile* tile, uint8_t& r, uint8_t& g, uint8_t& b) {
 	uint8_t color = tile->getMiniMapColor();
-	r = static_cast<uint8_t>(static_cast<int>(color / 36) % 6 * 51);
-	g = static_cast<uint8_t>(static_cast<int>(color / 6) % 6 * 51);
+	r = static_cast<uint8_t>(color / 36 % 6 * 51);
+	g = static_cast<uint8_t>(color / 6 % 6 * 51);
 	b = static_cast<uint8_t>(color % 6 * 51);
 }

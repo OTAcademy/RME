@@ -217,7 +217,7 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 		TileColorCalculator::GetHouseColor(tile->getHouseID(), hr, hg, hb);
 
 		float intensity = 0.5f + (0.5f * options.highlight_pulse);
-		glm::vec4 border_color((float)hr / 255.0f, (float)hg / 255.0f, (float)hb / 255.0f, intensity); // House color border with pulsing alpha
+		glm::vec4 border_color(static_cast<float>(hr) / 255.0f, static_cast<float>(hg) / 255.0f, static_cast<float>(hb) / 255.0f, intensity); // House color border with pulsing alpha
 
 		// Map coordinates to screen coordinates
 		// draw_x, draw_y are defined in the beginning of function and are top-left of the tile
@@ -242,7 +242,7 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 			}
 
 			// items on tile
-			for (auto item : tile->items) {
+			for (auto* item : tile->items) {
 				// item tooltip (one per item)
 				if (options.show_tooltips && map_z == view.floor) {
 					TooltipData& itemData = tooltip_drawer->requestTooltipData();
@@ -266,9 +266,9 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 
 					if (calculate_house_color) {
 						// Apply house color tint
-						ir = static_cast<uint8_t>(static_cast<int>(ir) * house_r / 255);
-						ig = static_cast<uint8_t>(static_cast<int>(ig) * house_g / 255);
-						ib = static_cast<uint8_t>(static_cast<int>(ib) * house_b / 255);
+						ir = static_cast<uint8_t>(ir * house_r / 255);
+						ig = static_cast<uint8_t>(ig * house_g / 255);
+						ib = static_cast<uint8_t>(ib * house_b / 255);
 
 						if (static_cast<int>(tile->getHouseID()) == current_house_id) {
 							// Pulse effect matching the tile pulse
@@ -319,7 +319,7 @@ void TileRenderer::AddLight(TileLocation* location, const RenderView& view, cons
 
 	bool hidden = options.hide_items_when_zoomed && view.zoom > 10.f;
 	if (!hidden && !tile->items.empty()) {
-		for (auto item : tile->items) {
+		for (const auto* item : tile->items) {
 			if (item->hasLight()) {
 				light_buffer.AddLight(position.x, position.y, position.z, item->getLight());
 			}
