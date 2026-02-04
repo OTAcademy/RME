@@ -187,14 +187,17 @@ OutfitChooserDialog::OutfitChooserDialog(wxWindow* parent, const Outfit& current
 	col1_sizer->Add(CreateHeader("Configuration"), 0, wxLEFT | wxTOP, 8);
 	wxWrapSizer* check_sizer = new wxWrapSizer(wxHORIZONTAL);
 	addon1 = new wxCheckBox(this, ID_ADDON1, "Addon 1");
+	addon1->SetToolTip("Toggle Addon 1");
 	addon1->SetValue((current_outfit.lookAddon & 1) != 0);
 	addon2 = new wxCheckBox(this, ID_ADDON2, "Addon 2");
+	addon2->SetToolTip("Toggle Addon 2");
 	addon2->SetValue((current_outfit.lookAddon & 2) != 0);
 
 	check_sizer->Add(addon1, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
 	check_sizer->Add(addon2, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
 
 	wxButton* rand_btn = new wxButton(this, ID_RANDOMIZE, "Random", wxDefaultPosition, wxSize(60, 22));
+	rand_btn->SetToolTip("Randomize outfit colors");
 	check_sizer->Add(rand_btn, 0, wxLEFT | wxALIGN_CENTER_VERTICAL, 5);
 
 	col1_sizer->Add(check_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 8);
