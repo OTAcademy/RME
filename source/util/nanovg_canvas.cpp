@@ -92,15 +92,16 @@ void NanoVGCanvas::OnPaint(wxPaintEvent&) {
 	glClearColor(m_bgRed, m_bgGreen, m_bgBlue, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	nvgBeginFrame(m_nvg.get(), w, h, 1.0f);
-	nvgSave(m_nvg.get());
-	nvgTranslate(m_nvg.get(), 0, static_cast<float>(-m_scrollPos));
+	NVGcontext* vg = m_nvg.get();
+	nvgBeginFrame(vg, w, h, 1.0f);
+	nvgSave(vg);
+	nvgTranslate(vg, 0, static_cast<float>(-m_scrollPos));
 
 	// Call subclass implementation
-	OnNanoVGPaint(m_nvg.get(), w, h);
+	OnNanoVGPaint(vg, w, h);
 
-	nvgRestore(m_nvg.get());
-	nvgEndFrame(m_nvg.get());
+	nvgRestore(vg);
+	nvgEndFrame(vg);
 
 	SwapBuffers();
 }

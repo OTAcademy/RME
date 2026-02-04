@@ -61,8 +61,7 @@ namespace IngamePreview {
 		animation_timer.Start(16); // ~60 FPS update
 	}
 
-	IngamePreviewCanvas::~IngamePreviewCanvas() {
-	}
+	IngamePreviewCanvas::~IngamePreviewCanvas() = default;
 
 	void IngamePreviewCanvas::OnPaint(wxPaintEvent& event) {
 		// Validating the paint event prevents infinite paint loops on some platforms
@@ -390,9 +389,10 @@ namespace IngamePreview {
 
 		float calculated_zoom = 1.0f / scale;
 
+		NVGcontext* vg = m_nvg.get();
 		renderer->SetLightIntensity(light_intensity);
 		renderer->SetName(preview_name_str);
-		renderer->Render(m_nvg.get(), current_editor->map, view_x, view_y, view_w, view_h, camera_pos, calculated_zoom, lighting_enabled, ambient_light, preview_outfit, preview_direction, animation_phase, walk_offset_x, walk_offset_y);
+		renderer->Render(vg, current_editor->map, view_x, view_y, view_w, view_h, camera_pos, calculated_zoom, lighting_enabled, ambient_light, preview_outfit, preview_direction, animation_phase, walk_offset_x, walk_offset_y);
 
 		SwapBuffers();
 	}
