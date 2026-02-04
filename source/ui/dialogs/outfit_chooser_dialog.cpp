@@ -1,6 +1,7 @@
 #include "ui/dialogs/outfit_chooser_dialog.h"
 #include <wx/statline.h>
 #include <wx/sizer.h>
+#include <wx/wrapsizer.h>
 #include <wx/dcclient.h>
 #include <wx/stattext.h>
 #include <wx/button.h>
@@ -118,32 +119,32 @@ OutfitChooserDialog::OutfitChooserDialog(wxWindow* parent, const Outfit& current
 	part_sizer->Add(feet_btn, 1, wxEXPAND);
 	col1_sizer->Add(part_sizer, 0, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, 8);
 
-	wxGridSizer* palette_sizer = new wxGridSizer(COLOR_ROWS, COLOR_COLUMNS, 1, 1);
+	wxWrapSizer* palette_sizer = new wxWrapSizer(wxHORIZONTAL);
 	for (size_t i = 0; i < TemplateOutfitLookupTableSize; ++i) {
 		uint32_t color = TemplateOutfitLookupTable[i];
 		wxButton* btn = new wxButton(this, ID_COLOR_START + static_cast<int>(i), "", wxDefaultPosition, wxSize(16, 16), wxBORDER_NONE);
 		btn->SetBackgroundColour(wxColour((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF));
-		palette_sizer->Add(btn);
+		palette_sizer->Add(btn, 0, wxALL, 1);
 		color_buttons.push_back(btn);
 
 		btn->Bind(wxEVT_BUTTON, [this, i](wxCommandEvent&) {
 			SelectColor(i);
 		});
 	}
-	col1_sizer->Add(palette_sizer, 0, wxALIGN_CENTER | wxALL, 8);
+	col1_sizer->Add(palette_sizer, 0, wxEXPAND | wxALL, 8);
 
 	col1_sizer->Add(CreateHeader("Configuration"), 0, wxLEFT | wxTOP, 8);
-	wxGridSizer* check_sizer = new wxGridSizer(1, 4, 2, 2);
+	wxWrapSizer* check_sizer = new wxWrapSizer(wxHORIZONTAL);
 	addon1 = new wxCheckBox(this, ID_ADDON1, "Addon 1");
 	addon1->SetValue((current_outfit.lookAddon & 1) != 0);
 	addon2 = new wxCheckBox(this, ID_ADDON2, "Addon 2");
 	addon2->SetValue((current_outfit.lookAddon & 2) != 0);
 
-	check_sizer->Add(addon1, 0, wxALL, 2);
-	check_sizer->Add(addon2, 0, wxALL, 2);
+	check_sizer->Add(addon1, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+	check_sizer->Add(addon2, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
 
 	wxButton* rand_btn = new wxButton(this, ID_RANDOMIZE, "Random", wxDefaultPosition, wxSize(60, 22));
-	check_sizer->Add(rand_btn, 0, wxLEFT, 5);
+	check_sizer->Add(rand_btn, 0, wxLEFT | wxALIGN_CENTER_VERTICAL, 5);
 
 	col1_sizer->Add(check_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 8);
 
