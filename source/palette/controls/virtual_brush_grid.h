@@ -54,6 +54,7 @@ protected:
 	int HitTest(int x, int y) const;
 	wxRect GetItemRect(int index) const;
 	int GetOrCreateBrushTexture(NVGcontext* vg, Brush* brush);
+	void DrawBrushItem(NVGcontext* vg, int index, const wxRect& rect);
 
 	RenderSize icon_size;
 	int selected_index;
@@ -63,7 +64,6 @@ protected:
 	int padding;
 
 	// Animation state
-	float hover_alpha;
 	wxTimer* m_animTimer;
 	void OnTimer(wxTimerEvent& event);
 };

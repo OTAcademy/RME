@@ -32,6 +32,8 @@ class TooltipDrawer;
 #include "rendering/core/render_view.h"
 #include "rendering/core/sprite_batch.h"
 #include "rendering/core/primitive_renderer.h"
+#include "rendering/core/gl_resources.h"
+#include "rendering/core/shader_program.h"
 
 class GridDrawer;
 
@@ -79,6 +81,20 @@ class MapDrawer {
 	std::unique_ptr<CreatureNameDrawer> creature_name_drawer;
 	std::unique_ptr<SpriteBatch> sprite_batch;
 	std::unique_ptr<PrimitiveRenderer> primitive_renderer;
+
+	// Post-processing
+	std::unique_ptr<GLFramebuffer> scale_fbo;
+	std::unique_ptr<GLTextureResource> scale_texture;
+	int fbo_width = 0;
+	int fbo_height = 0;
+
+	std::unique_ptr<GLVertexArray> pp_vao;
+	std::unique_ptr<GLBuffer> pp_vbo;
+	std::unique_ptr<GLBuffer> pp_ebo;
+
+	void InitPostProcess();
+	void DrawPostProcess(const RenderView& view, const DrawingOptions& options);
+	void UpdateFBO(const RenderView& view, const DrawingOptions& options);
 
 protected:
 	friend class BrushOverlayDrawer;
