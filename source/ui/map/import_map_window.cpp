@@ -32,6 +32,7 @@ ImportMapWindow::ImportMapWindow(wxWindow* parent, Editor& editor) :
 	file_text_field = newd wxTextCtrl(tmpsizer->GetStaticBox(), wxID_ANY, "", wxDefaultPosition, wxSize(230, 23));
 	tmpsizer->Add(file_text_field, 0, wxALL, 5);
 	wxButton* browse_button = newd wxButton(tmpsizer->GetStaticBox(), MAP_WINDOW_FILE_BUTTON, "Browse...", wxDefaultPosition, wxSize(80, 23));
+	browse_button->SetToolTip("Browse for map file");
 	tmpsizer->Add(browse_button, 0, wxALL, 5);
 	sizer->Add(tmpsizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 5);
 
@@ -73,8 +74,12 @@ ImportMapWindow::ImportMapWindow(wxWindow* parent, Editor& editor) :
 
 	// OK/Cancel buttons
 	wxBoxSizer* buttons = newd wxBoxSizer(wxHORIZONTAL);
-	buttons->Add(newd wxButton(this, wxID_OK, "Ok"), 0, wxALL, 5);
-	buttons->Add(newd wxButton(this, wxID_CANCEL, "Cancel"), 0, wxALL, 5);
+	wxButton* okBtn = newd wxButton(this, wxID_OK, "Ok");
+	okBtn->SetToolTip("Start import");
+	buttons->Add(okBtn, 0, wxALL, 5);
+	wxButton* cancelBtn = newd wxButton(this, wxID_CANCEL, "Cancel");
+	cancelBtn->SetToolTip("Cancel");
+	buttons->Add(cancelBtn, 0, wxALL, 5);
 	sizer->Add(buttons, wxSizerFlags(1).Center());
 
 	SetSizer(sizer);

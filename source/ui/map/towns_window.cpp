@@ -40,8 +40,12 @@ EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 	sizer->Add(town_listbox, 1, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, 10);
 
 	tmpsizer = newd wxBoxSizer(wxHORIZONTAL);
-	tmpsizer->Add(newd wxButton(this, EDIT_TOWNS_ADD, "Add"), 0, wxTOP, 5);
-	tmpsizer->Add(remove_button = newd wxButton(this, EDIT_TOWNS_REMOVE, "Remove"), 0, wxRIGHT | wxTOP, 5);
+	wxButton* addBtn = newd wxButton(this, EDIT_TOWNS_ADD, "Add");
+	addBtn->SetToolTip("Add a new town");
+	tmpsizer->Add(addBtn, 0, wxTOP, 5);
+	remove_button = newd wxButton(this, EDIT_TOWNS_REMOVE, "Remove");
+	remove_button->SetToolTip("Remove selected town");
+	tmpsizer->Add(remove_button, 0, wxRIGHT | wxTOP, 5);
 	sizer->Add(tmpsizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
 
 	// House options
@@ -59,13 +63,18 @@ EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 	// Temple position
 	temple_position = newd PositionCtrl(this, "Temple Position", 0, 0, 0, map.getWidth(), map.getHeight());
 	select_position_button = newd wxButton(this, EDIT_TOWNS_SELECT_TEMPLE, "Go To");
+	select_position_button->SetToolTip("Jump to temple position");
 	temple_position->Add(select_position_button, 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	sizer->Add(temple_position, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
 
 	// OK/Cancel buttons
 	tmpsizer = newd wxBoxSizer(wxHORIZONTAL);
-	tmpsizer->Add(newd wxButton(this, wxID_OK, "OK"), wxSizerFlags(1).Center());
-	tmpsizer->Add(newd wxButton(this, wxID_CANCEL, "Cancel"), wxSizerFlags(1).Center());
+	wxButton* okBtn = newd wxButton(this, wxID_OK, "OK");
+	okBtn->SetToolTip("Save changes");
+	tmpsizer->Add(okBtn, wxSizerFlags(1).Center());
+	wxButton* cancelBtn = newd wxButton(this, wxID_CANCEL, "Cancel");
+	cancelBtn->SetToolTip("Discard changes");
+	tmpsizer->Add(cancelBtn, wxSizerFlags(1).Center());
 	sizer->Add(tmpsizer, 0, wxCENTER | wxALL, 10);
 
 	SetSizerAndFit(sizer);

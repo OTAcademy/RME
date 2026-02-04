@@ -54,8 +54,12 @@ void LiveDialogs::ShowHostDialog(wxWindow* parent, Editor* editor) {
 	allow_copy->SetToolTip("Allows remote clients to copy & paste from the hosted map to local maps.");
 
 	wxSizer* ok_sizer = newd wxBoxSizer(wxHORIZONTAL);
-	ok_sizer->Add(newd wxButton(live_host_dlg, wxID_OK, "OK"), 1, wxCENTER);
-	ok_sizer->Add(newd wxButton(live_host_dlg, wxID_CANCEL, "Cancel"), wxCENTER, 1);
+	wxButton* okBtn = newd wxButton(live_host_dlg, wxID_OK, "OK");
+	okBtn->SetToolTip("Start server");
+	ok_sizer->Add(okBtn, 1, wxCENTER);
+	wxButton* cancelBtn = newd wxButton(live_host_dlg, wxID_CANCEL, "Cancel");
+	cancelBtn->SetToolTip("Cancel");
+	ok_sizer->Add(cancelBtn, wxCENTER, 1);
 	top_sizer->Add(ok_sizer, 0, wxCENTER | wxALL, 20);
 
 	live_host_dlg->SetSizerAndFit(top_sizer);
@@ -118,8 +122,12 @@ void LiveDialogs::ShowJoinDialog(wxWindow* parent) {
 	top_sizer->Add(gsizer, 0, wxALL, 20);
 
 	wxSizer* ok_sizer = newd wxBoxSizer(wxHORIZONTAL);
-	ok_sizer->Add(newd wxButton(live_join_dlg, wxID_OK, "OK"), 1, wxRIGHT);
-	ok_sizer->Add(newd wxButton(live_join_dlg, wxID_CANCEL, "Cancel"), 1, wxRIGHT);
+	wxButton* okBtn = newd wxButton(live_join_dlg, wxID_OK, "OK");
+	okBtn->SetToolTip("Connect to server");
+	ok_sizer->Add(okBtn, 1, wxRIGHT);
+	wxButton* cancelBtn = newd wxButton(live_join_dlg, wxID_CANCEL, "Cancel");
+	cancelBtn->SetToolTip("Cancel");
+	ok_sizer->Add(cancelBtn, 1, wxRIGHT);
 	top_sizer->Add(ok_sizer, 0, wxCENTER | wxALL, 20);
 
 	live_join_dlg->SetSizerAndFit(top_sizer);
