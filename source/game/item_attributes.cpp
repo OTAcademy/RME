@@ -200,7 +200,7 @@ ItemAttribute::~ItemAttribute() {
 
 void ItemAttribute::clear() {
 	type = NONE;
-	m_value = std::monostate{};
+	m_value = std::monostate {};
 }
 
 void ItemAttribute::set(const std::string& str) {
@@ -331,6 +331,7 @@ bool ItemAttribute::unserialize(const IOMap& maphandle, BinaryNode* stream) {
 				return false;
 			}
 			set(b != 0);
+			break;
 		}
 		default:
 			break;
@@ -359,6 +360,7 @@ void ItemAttribute::serialize(const IOMap& maphandle, NodeFileWriteHandle& f) co
 		}
 		case BOOLEAN:
 			f.addU8(static_cast<uint8_t>(*getBoolean()));
+			break;
 		default:
 			break;
 	}
