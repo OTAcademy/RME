@@ -381,10 +381,12 @@ void GUI::NewMapView() {
 }
 
 void GUI::AddPendingLiveClient(std::unique_ptr<LiveClient> client) {
+	std::lock_guard<std::mutex> lock(pending_live_clients_mutex);
 	pending_live_clients.push_back(std::move(client));
 }
 
 std::unique_ptr<LiveClient> GUI::PopPendingLiveClient(LiveClient* ptr) {
+	std::lock_guard<std::mutex> lock(pending_live_clients_mutex);
 	auto it = std::find_if(pending_live_clients.begin(), pending_live_clients.end(), [ptr](const std::unique_ptr<LiveClient>& c) { return c.get() == ptr; });
 
 	if (it != pending_live_clients.end()) {

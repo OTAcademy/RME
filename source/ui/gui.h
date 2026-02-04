@@ -65,6 +65,7 @@ wxDECLARE_EVENT(EVT_UPDATE_MENUS, wxCommandEvent);
 		(wxObject*)nullptr                                                                      \
 	),
 
+#include <mutex>
 #include "brushes/managers/brush_manager.h"
 #include "palette/managers/palette_manager.h"
 #include "editor/managers/editor_manager.h"
@@ -360,6 +361,7 @@ protected:
 
 	int disabled_counter;
 
+	std::mutex pending_live_clients_mutex;
 	std::vector<std::unique_ptr<LiveClient>> pending_live_clients;
 
 	friend class RenderingLock;

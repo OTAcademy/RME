@@ -26,8 +26,6 @@
 #include "editor/editor_tabs.h"
 #include "app/application.h"
 #include "live/live_server.h"
-#include <memory>
-
 class wxGrid;
 
 class MapTabbook;

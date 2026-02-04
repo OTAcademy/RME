@@ -4,6 +4,7 @@
 
 #include "app/main.h"
 #include "live/live_manager.h"
+#include <spdlog/spdlog.h>
 #include "editor/editor.h"
 #include "editor/action_queue.h"
 #include "live/live_server.h"
@@ -75,8 +76,10 @@ void LiveManager::CloseServer() {
 	if (live_server) {
 		try {
 			live_server->close();
+		} catch (const std::exception& e) {
+			spdlog::error("Error closing live server: {}", e.what());
 		} catch (...) {
-			// Ignore exceptions to ensure reset() is called
+			spdlog::error("Unknown error closing live server");
 		}
 		live_server.reset();
 	}
@@ -84,8 +87,10 @@ void LiveManager::CloseServer() {
 	if (live_client) {
 		try {
 			live_client->close();
+		} catch (const std::exception& e) {
+			spdlog::error("Error closing live client: {}", e.what());
 		} catch (...) {
-			// Ignore exceptions to ensure reset() is called
+			spdlog::error("Unknown error closing live client");
 		}
 		live_client.reset();
 	}
