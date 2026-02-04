@@ -43,12 +43,6 @@ static wxGLAttributes& GetCoreProfileAttributes() {
 	return vAttrs;
 }
 
-void NVGDeleter::operator()(NVGcontext* nvg) const {
-	if (nvg) {
-		nvgDeleteGL3(nvg);
-	}
-}
-
 MinimapWindow::MinimapWindow(wxWindow* parent) :
 	wxGLCanvas(parent, GetCoreProfileAttributes(), wxID_ANY, wxDefaultPosition, wxSize(205, 130)),
 	update_timer(this),

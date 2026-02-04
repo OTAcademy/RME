@@ -5,6 +5,11 @@
 #include "ui/gui.h"
 #include "rendering/map_drawer.h"
 #include "rendering/ui/map_display.h"
+#include "rendering/core/text_renderer.h"
+#include <spdlog/spdlog.h>
+#include <glad/glad.h>
+#include <nanovg.h>
+#include <nanovg_gl.h>
 
 namespace IngamePreview {
 
@@ -331,6 +336,16 @@ namespace IngamePreview {
 
 		SetCurrent(*g_gui.GetGLContext(this));
 
+		if (!m_nvg) {
+			if (!gladLoadGL()) {
+				spdlog::error("IngamePreviewCanvas: Failed to initialize GLAD");
+			}
+			m_nvg.reset(nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES));
+			if (m_nvg) {
+				TextRenderer::LoadFont(m_nvg.get());
+			}
+		}
+
 		MapTab* tab = g_gui.GetCurrentMapTab();
 		const void* current_tile_renderer = nullptr;
 
@@ -374,9 +389,10 @@ namespace IngamePreview {
 
 		float calculated_zoom = 1.0f / scale;
 
+		NVGcontext* vg = m_nvg.get();
 		renderer->SetLightIntensity(light_intensity);
 		renderer->SetName(preview_name_str);
-		renderer->Render(current_editor->map, view_x, view_y, view_w, view_h, camera_pos, calculated_zoom, lighting_enabled, ambient_light, preview_outfit, preview_direction, animation_phase, walk_offset_x, walk_offset_y);
+		renderer->Render(vg, current_editor->map, view_x, view_y, view_w, view_h, camera_pos, calculated_zoom, lighting_enabled, ambient_light, preview_outfit, preview_direction, animation_phase, walk_offset_x, walk_offset_y);
 
 		SwapBuffers();
 	}

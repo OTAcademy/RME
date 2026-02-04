@@ -392,12 +392,12 @@ void MapDrawer::DrawGrid() {
 	grid_drawer->DrawGrid(*sprite_batch, view, options);
 }
 
-void MapDrawer::DrawTooltips() {
-	tooltip_drawer->draw(view);
+void MapDrawer::DrawTooltips(NVGcontext* vg) {
+	tooltip_drawer->draw(vg, view);
 }
 
-void MapDrawer::DrawCreatureNames() {
-	creature_name_drawer->draw(view);
+void MapDrawer::DrawCreatureNames(NVGcontext* vg) {
+	creature_name_drawer->draw(vg, view);
 }
 
 void MapDrawer::DrawMapLayer(int map_z, bool live_client) {

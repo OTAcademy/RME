@@ -5,7 +5,6 @@
 
 #include <glad/glad.h>
 
-#define NANOVG_GL3
 #include <nanovg.h>
 #include <nanovg_gl.h>
 

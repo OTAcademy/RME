@@ -17,6 +17,7 @@
 
 #include "app/main.h"
 
+#include <format>
 #include <sstream>
 #include <time.h>
 #include <thread>
@@ -35,7 +36,6 @@
 #include "ui/properties/properties_window.h"
 #include "ui/tileset_window.h"
 #include "palette/palette_window.h"
-#include "palette/palette_window.h"
 #include "rendering/ui/screenshot_controller.h"
 #include "rendering/utilities/tile_describer.h"
 #include "rendering/core/coordinate_mapper.h"
@@ -43,7 +43,9 @@
 #include "rendering/ui/map_status_updater.h"
 #include "rendering/map_drawer.h"
 #include "rendering/core/text_renderer.h"
+#include <glad/glad.h>
 #include <nanovg.h>
+#include <nanovg_gl.h>
 #include "app/application.h"
 #include "live/live_server.h"
 #include "live/live_client.h"
@@ -57,11 +59,8 @@
 #include "rendering/ui/brush_selector.h"
 #include "rendering/ui/popup_action_handler.h"
 #include "rendering/ui/zoom_controller.h"
-#include "rendering/ui/zoom_controller.h"
-#include "rendering/ui/navigation_controller.h"
 #include "rendering/ui/navigation_controller.h"
 #include "rendering/ui/selection_controller.h"
-#include "rendering/ui/drawing_controller.h"
 #include "rendering/ui/drawing_controller.h"
 #include "rendering/ui/map_menu_handler.h"
 
@@ -182,6 +181,19 @@ MapWindow* MapCanvas::GetMapWindow() const {
 void MapCanvas::OnPaint(wxPaintEvent& event) {
 	SetCurrent(*g_gui.GetGLContext(this));
 
+	// proper nvg pointer wrapper
+	if (!m_nvg) {
+		if (!gladLoadGL()) {
+			spdlog::error("MapCanvas: Failed to initialize GLAD");
+		}
+		m_nvg.reset(nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES));
+		if (m_nvg) {
+			TextRenderer::LoadFont(m_nvg.get());
+		} else {
+			spdlog::error("MapCanvas: Failed to initialize NanoVG");
+		}
+	}
+
 	if (g_gui.IsRenderingEnabled()) {
 		DrawingOptions& options = drawer->getOptions();
 		if (screenshot_controller->IsCapturing()) {
@@ -199,10 +211,6 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			animation_timer->Stop();
 		}
 
-		if (!TextRenderer::GetContext()) {
-			TextRenderer::Init();
-		}
-
 		// BatchRenderer calls removed - MapDrawer handles its own renderers
 
 		drawer->SetupVars();
@@ -217,70 +225,65 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 		// BatchRenderer::End(); call removed
 
 		// Draw UI (Tooltips, Overlays & HUD) using NanoVG
-		if (options.show_tooltips || options.show_creatures || true) {
-			TextRenderer::BeginFrame(GetSize().x, GetSize().y);
-			NVGcontext* vg = TextRenderer::GetContext();
+		if (NVGcontext* vg = m_nvg.get()) {
+			TextRenderer::BeginFrame(vg, GetSize().x, GetSize().y);
 
 			if (options.show_creatures) {
-				drawer->DrawCreatureNames();
+				drawer->DrawCreatureNames(vg);
 			}
 			if (options.show_tooltips) {
-				drawer->DrawTooltips();
+				drawer->DrawTooltips(vg);
 			}
 
 			// Floating HUD (Selection & Cursor Info)
-			if (vg) {
-				int w = GetSize().x;
-				int h = GetSize().y;
+			int w = GetSize().x;
+			int h = GetSize().y;
 
-				bool needs_update = (editor.selection.size() != hud_cached_selection_count || last_cursor_map_x != hud_cached_x || last_cursor_map_y != hud_cached_y || last_cursor_map_z != hud_cached_z);
+			bool needs_update = (editor.selection.size() != hud_cached_selection_count || last_cursor_map_x != hud_cached_x || last_cursor_map_y != hud_cached_y || last_cursor_map_z != hud_cached_z);
 
-				if (needs_update || hud_cached_text.empty()) {
-					char buffer[128];
-					if (editor.selection.size() > 0) {
-						snprintf(buffer, sizeof(buffer), "Pos: %d, %d, %d | Sel: %zu", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z, editor.selection.size());
-					} else {
-						snprintf(buffer, sizeof(buffer), "Pos: %d, %d, %d", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z);
-					}
-
-					hud_cached_text = buffer;
-					hud_cached_selection_count = editor.selection.size();
-					hud_cached_x = last_cursor_map_x;
-					hud_cached_y = last_cursor_map_y;
-					hud_cached_z = last_cursor_map_z;
-
-					nvgFontSize(vg, 14.0f);
-					nvgFontFace(vg, "sans");
-					nvgTextBounds(vg, 0, 0, hud_cached_text.c_str(), nullptr, hud_cached_bounds);
+			if (needs_update || hud_cached_text.empty()) {
+				if (editor.selection.size() > 0) {
+					hud_cached_text = std::format("Pos: {}, {}, {} | Sel: {}", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z, editor.selection.size());
+				} else {
+					hud_cached_text = std::format("Pos: {}, {}, {}", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z);
 				}
 
-				float textW = hud_cached_bounds[2] - hud_cached_bounds[0];
-				float padding = 8.0f;
-				float hudW = textW + padding * 2;
-				float hudH = 24.0f;
-				float hudX = w - hudW - 10.0f;
-				float hudY = h - hudH - 10.0f;
+				hud_cached_selection_count = editor.selection.size();
+				hud_cached_x = last_cursor_map_x;
+				hud_cached_y = last_cursor_map_y;
+				hud_cached_z = last_cursor_map_z;
 
-				// Glass Background
-				nvgBeginPath(vg);
-				nvgRoundedRect(vg, hudX, hudY, hudW, hudH, 4.0f);
-				nvgFillColor(vg, nvgRGBA(0, 0, 0, 160));
-				nvgFill(vg);
-
-				// Border
-				nvgBeginPath(vg);
-				nvgRoundedRect(vg, hudX, hudY, hudW, hudH, 4.0f);
-				nvgStrokeColor(vg, nvgRGBA(255, 255, 255, 40));
-				nvgStrokeWidth(vg, 1.0f);
-				nvgStroke(vg);
-
-				// Text
-				nvgFillColor(vg, nvgRGBA(255, 255, 255, 220));
-				nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-				nvgText(vg, hudX + padding, hudY + hudH * 0.5f, hud_cached_text.c_str(), nullptr);
+				nvgFontSize(vg, 14.0f);
+				nvgFontFace(vg, "sans");
+				nvgTextBounds(vg, 0, 0, hud_cached_text.c_str(), nullptr, hud_cached_bounds);
 			}
 
-			TextRenderer::EndFrame();
+			float textW = hud_cached_bounds[2] - hud_cached_bounds[0];
+			float padding = 8.0f;
+			float hudW = textW + padding * 2;
+			float hudH = 24.0f;
+			float hudX = w - hudW - 10.0f;
+			float hudY = h - hudH - 10.0f;
+
+			// Glass Background
+			nvgBeginPath(vg);
+			nvgRoundedRect(vg, hudX, hudY, hudW, hudH, 4.0f);
+			nvgFillColor(vg, nvgRGBA(0, 0, 0, 160));
+			nvgFill(vg);
+
+			// Border
+			nvgBeginPath(vg);
+			nvgRoundedRect(vg, hudX, hudY, hudW, hudH, 4.0f);
+			nvgStrokeColor(vg, nvgRGBA(255, 255, 255, 40));
+			nvgStrokeWidth(vg, 1.0f);
+			nvgStroke(vg);
+
+			// Text
+			nvgFillColor(vg, nvgRGBA(255, 255, 255, 220));
+			nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
+			nvgText(vg, hudX + padding, hudY + hudH * 0.5f, hud_cached_text.c_str(), nullptr);
+
+			TextRenderer::EndFrame(vg);
 		}
 
 		drawer->ClearTooltips();

@@ -26,7 +26,10 @@
 #include "ui/map_popup_menu.h"
 #include "ui/map_popup_menu.h"
 #include "game/animation_timer.h"
+#include "rendering/core/graphics.h"
 #include <memory>
+
+struct NVGcontext;
 
 class Item;
 class Creature;
@@ -179,6 +182,7 @@ public:
 private:
 	MapWindow* GetMapWindow() const;
 	bool renderer_initialized = false;
+	std::unique_ptr<NVGcontext, NVGDeleter> m_nvg;
 };
 
 #endif
