@@ -21,11 +21,7 @@
 #include <wx/glcanvas.h>
 #include <memory>
 
-struct NVGcontext;
-
-struct NVGDeleter {
-	void operator()(NVGcontext* nvg) const;
-};
+#include "rendering/core/graphics.h"
 
 class MinimapDrawer;
 class MinimapWindow : public wxGLCanvas {

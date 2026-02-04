@@ -4,9 +4,10 @@
 
 #include <glad/glad.h>
 
-#define NANOVG_GL3
+#define NANOVG_GL3_IMPLEMENTATION
 #include <nanovg.h>
 #include <nanovg_gl.h>
+#include "rendering/core/graphics.h"
 
 #include <wx/dcclient.h>
 #include <algorithm>
@@ -35,10 +36,6 @@ NanoVGCanvas::~NanoVGCanvas() {
 	if (m_glContext) {
 		SetCurrent(*m_glContext);
 		ClearImageCache();
-		if (m_nvg) {
-			nvgDeleteGL3(m_nvg);
-			m_nvg = nullptr;
-		}
 	}
 	delete m_glContext;
 	m_glContext = nullptr;
@@ -62,10 +59,10 @@ void NanoVGCanvas::InitGL() {
 		return;
 	}
 
-	m_nvg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+	m_nvg.reset(nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES));
 	if (m_nvg) {
 		// Load default font - same as TextRenderer for consistency
-		TextRenderer::LoadFont(m_nvg);
+		TextRenderer::LoadFont(m_nvg.get());
 		m_glInitialized = true;
 	}
 }
@@ -95,15 +92,15 @@ void NanoVGCanvas::OnPaint(wxPaintEvent&) {
 	glClearColor(m_bgRed, m_bgGreen, m_bgBlue, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	nvgBeginFrame(m_nvg, w, h, 1.0f);
-	nvgSave(m_nvg);
-	nvgTranslate(m_nvg, 0, static_cast<float>(-m_scrollPos));
+	nvgBeginFrame(m_nvg.get(), w, h, 1.0f);
+	nvgSave(m_nvg.get());
+	nvgTranslate(m_nvg.get(), 0, static_cast<float>(-m_scrollPos));
 
 	// Call subclass implementation
-	OnNanoVGPaint(m_nvg, w, h);
+	OnNanoVGPaint(m_nvg.get(), w, h);
 
-	nvgRestore(m_nvg);
-	nvgEndFrame(m_nvg);
+	nvgRestore(m_nvg.get());
+	nvgEndFrame(m_nvg.get());
 
 	SwapBuffers();
 }
@@ -179,7 +176,7 @@ int NanoVGCanvas::GetOrCreateImage(uint32_t id, const uint8_t* data, int width, 
 		return it->second;
 	}
 
-	int tex = nvgCreateImageRGBA(m_nvg, width, height, 0, data);
+	int tex = nvgCreateImageRGBA(m_nvg.get(), width, height, 0, data);
 	if (tex > 0) {
 		m_imageCache[id] = tex;
 	}
@@ -193,7 +190,7 @@ void NanoVGCanvas::DeleteCachedImage(uint32_t id) {
 
 	auto it = m_imageCache.find(id);
 	if (it != m_imageCache.end()) {
-		nvgDeleteImage(m_nvg, it->second);
+		nvgDeleteImage(m_nvg.get(), it->second);
 		m_imageCache.erase(it);
 	}
 }
@@ -204,7 +201,7 @@ void NanoVGCanvas::ClearImageCache() {
 	}
 
 	for (const auto& [id, tex] : m_imageCache) {
-		nvgDeleteImage(m_nvg, tex);
+		nvgDeleteImage(m_nvg.get(), tex);
 	}
 	m_imageCache.clear();
 }

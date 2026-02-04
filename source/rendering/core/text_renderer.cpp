@@ -4,27 +4,30 @@
 // GLAD must be included before NanoVG
 #include <glad/glad.h>
 
-#define NANOVG_GL3_IMPLEMENTATION
 #include <nanovg.h>
 #include <nanovg_gl.h>
 
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <mutex>
 
 // Static buffer to hold font data in memory
 // Must persist as long as any NanoVG context uses it (lifetime of app essentially)
 static std::vector<uint8_t> font_data;
+static std::once_flag font_load_flag;
 
 void TextRenderer::LoadFont(NVGcontext* vg) {
-	if (!vg) return;
+	if (!vg) {
+		return;
+	}
 
 	// Check if font is already loaded in this context
 	if (nvgFindFont(vg, "sans") >= 0) {
 		return;
 	}
 
-	if (font_data.empty()) {
+	std::call_once(font_load_flag, []() {
 		// Try to load font
 		std::vector<std::string> fontPaths = {
 			"C:\\Windows\\Fonts\\arial.ttf",
@@ -41,7 +44,7 @@ void TextRenderer::LoadFont(NVGcontext* vg) {
 				file.seekg(0, std::ios::beg);
 
 				font_data.resize(size);
-				if (file.read((char*)font_data.data(), size)) {
+				if (file.read(reinterpret_cast<char*>(font_data.data()), size)) {
 					// std::cout << "Loaded font from: " << path << std::endl;
 					break;
 				} else {
@@ -52,8 +55,11 @@ void TextRenderer::LoadFont(NVGcontext* vg) {
 
 		if (font_data.empty()) {
 			std::cerr << "TextRenderer: Failed to load any font. Text rendering will fail." << std::endl;
-			return;
 		}
+	});
+
+	if (font_data.empty()) {
+		return;
 	}
 
 	// nvgCreateFontMem does NOT copy the data, so font_data must persist
@@ -78,7 +84,9 @@ void TextRenderer::EndFrame(NVGcontext* vg) {
 }
 
 void TextRenderer::DrawText(NVGcontext* vg, int x, int y, const std::string& text, const glm::vec4& color, float fontSize) {
-	if (!vg) return;
+	if (!vg) {
+		return;
+	}
 
 	nvgFontSize(vg, fontSize);
 	nvgFontFace(vg, "sans");
@@ -88,7 +96,9 @@ void TextRenderer::DrawText(NVGcontext* vg, int x, int y, const std::string& tex
 }
 
 void TextRenderer::DrawTextBox(NVGcontext* vg, int x, int y, int width, const std::string& text, const glm::vec4& color, float fontSize) {
-	if (!vg) return;
+	if (!vg) {
+		return;
+	}
 
 	nvgFontSize(vg, fontSize);
 	nvgFontFace(vg, "sans");

@@ -9,7 +9,6 @@
 #include <spdlog/spdlog.h>
 #include <glad/glad.h>
 #include <nanovg.h>
-#define NANOVG_GL3
 #include <nanovg_gl.h>
 
 namespace IngamePreview {
@@ -63,10 +62,6 @@ namespace IngamePreview {
 	}
 
 	IngamePreviewCanvas::~IngamePreviewCanvas() {
-		if (m_nvg) {
-			nvgDeleteGL3(m_nvg);
-			m_nvg = nullptr;
-		}
 	}
 
 	void IngamePreviewCanvas::OnPaint(wxPaintEvent& event) {
@@ -346,9 +341,9 @@ namespace IngamePreview {
 			if (!gladLoadGL()) {
 				spdlog::error("IngamePreviewCanvas: Failed to initialize GLAD");
 			}
-			m_nvg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+			m_nvg.reset(nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES));
 			if (m_nvg) {
-				TextRenderer::LoadFont(m_nvg);
+				TextRenderer::LoadFont(m_nvg.get());
 			}
 		}
 
@@ -397,7 +392,7 @@ namespace IngamePreview {
 
 		renderer->SetLightIntensity(light_intensity);
 		renderer->SetName(preview_name_str);
-		renderer->Render(m_nvg, current_editor->map, view_x, view_y, view_w, view_h, camera_pos, calculated_zoom, lighting_enabled, ambient_light, preview_outfit, preview_direction, animation_phase, walk_offset_x, walk_offset_y);
+		renderer->Render(m_nvg.get(), current_editor->map, view_x, view_y, view_w, view_h, camera_pos, calculated_zoom, lighting_enabled, ambient_light, preview_outfit, preview_direction, animation_phase, walk_offset_x, walk_offset_y);
 
 		SwapBuffers();
 	}
