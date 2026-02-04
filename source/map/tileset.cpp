@@ -279,8 +279,6 @@ std::vector<Tileset*> GetSortedTilesets(const TilesetContainer& tilesets) {
 	for (const auto& pair : tilesets) {
 		sorted.push_back(pair.second);
 	}
-	std::sort(sorted.begin(), sorted.end(), [](const Tileset* a, const Tileset* b) {
-		return a->name < b->name;
-	});
+	std::ranges::sort(sorted, {}, &Tileset::name);
 	return sorted;
 }
