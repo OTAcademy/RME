@@ -16,6 +16,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "app/main.h"
+#include <string_view>
+#include <functional>
+#include <map>
 
 #include "game/materials.h"
 #include "app/managers/version_manager.h"
@@ -824,105 +827,79 @@ bool ItemDatabase::loadFromOtb(const FileName& datafile, wxString& error, wxArra
 	return true;
 }
 
-void ItemDatabase::parseItemTypeAttribute(ItemType& it, const std::string& value) {
-	if (value == "depot") {
-		it.type = ITEM_TYPE_DEPOT;
-	} else if (value == "mailbox") {
-		it.type = ITEM_TYPE_MAILBOX;
-	} else if (value == "trashholder") {
-		it.type = ITEM_TYPE_TRASHHOLDER;
-	} else if (value == "container") {
-		it.type = ITEM_TYPE_CONTAINER;
-	} else if (value == "door") {
-		it.type = ITEM_TYPE_DOOR;
-	} else if (value == "magicfield") {
-		it.group = ITEM_GROUP_MAGICFIELD;
-		it.type = ITEM_TYPE_MAGICFIELD;
-	} else if (value == "teleport") {
-		it.type = ITEM_TYPE_TELEPORT;
-	} else if (value == "bed") {
-		it.type = ITEM_TYPE_BED;
-	} else if (value == "key") {
-		it.type = ITEM_TYPE_KEY;
-	} else if (value == "podium") {
-		it.type = ITEM_TYPE_PODIUM;
+void ItemDatabase::parseItemTypeAttribute(ItemType& it, std::string_view value) {
+	static const std::map<std::string_view, std::function<void(ItemType&)>> parsers = {
+		{ "depot", [](ItemType& i) { i.type = ITEM_TYPE_DEPOT; } },
+		{ "mailbox", [](ItemType& i) { i.type = ITEM_TYPE_MAILBOX; } },
+		{ "trashholder", [](ItemType& i) { i.type = ITEM_TYPE_TRASHHOLDER; } },
+		{ "container", [](ItemType& i) { i.type = ITEM_TYPE_CONTAINER; } },
+		{ "door", [](ItemType& i) { i.type = ITEM_TYPE_DOOR; } },
+		{ "magicfield", [](ItemType& i) { i.group = ITEM_GROUP_MAGICFIELD; i.type = ITEM_TYPE_MAGICFIELD; } },
+		{ "teleport", [](ItemType& i) { i.type = ITEM_TYPE_TELEPORT; } },
+		{ "bed", [](ItemType& i) { i.type = ITEM_TYPE_BED; } },
+		{ "key", [](ItemType& i) { i.type = ITEM_TYPE_KEY; } },
+		{ "podium", [](ItemType& i) { i.type = ITEM_TYPE_PODIUM; } },
+	};
+
+	if (auto it_parser = parsers.find(value); it_parser != parsers.end()) {
+		it_parser->second(it);
 	}
 }
 
-void ItemDatabase::parseSlotTypeAttribute(ItemType& it, const std::string& value) {
-	if (value == "head") {
-		it.slot_position |= SLOTP_HEAD;
-	} else if (value == "body") {
-		it.slot_position |= SLOTP_ARMOR;
-	} else if (value == "legs") {
-		it.slot_position |= SLOTP_LEGS;
-	} else if (value == "feet") {
-		it.slot_position |= SLOTP_FEET;
-	} else if (value == "backpack") {
-		it.slot_position |= SLOTP_BACKPACK;
-	} else if (value == "two-handed") {
-		it.slot_position |= SLOTP_TWO_HAND;
-	} else if (value == "right-hand") {
-		it.slot_position &= ~SLOTP_LEFT;
-	} else if (value == "left-hand") {
-		it.slot_position &= ~SLOTP_RIGHT;
-	} else if (value == "necklace") {
-		it.slot_position |= SLOTP_NECKLACE;
-	} else if (value == "ring") {
-		it.slot_position |= SLOTP_RING;
-	} else if (value == "ammo") {
-		it.slot_position |= SLOTP_AMMO;
-	} else if (value == "hand") {
-		it.slot_position |= SLOTP_HAND;
+void ItemDatabase::parseSlotTypeAttribute(ItemType& it, std::string_view value) {
+	static const std::map<std::string_view, std::function<void(ItemType&)>> parsers = {
+		{ "head", [](ItemType& i) { i.slot_position |= SLOTP_HEAD; } },
+		{ "body", [](ItemType& i) { i.slot_position |= SLOTP_ARMOR; } },
+		{ "legs", [](ItemType& i) { i.slot_position |= SLOTP_LEGS; } },
+		{ "feet", [](ItemType& i) { i.slot_position |= SLOTP_FEET; } },
+		{ "backpack", [](ItemType& i) { i.slot_position |= SLOTP_BACKPACK; } },
+		{ "two-handed", [](ItemType& i) { i.slot_position |= SLOTP_TWO_HAND; } },
+		{ "right-hand", [](ItemType& i) { i.slot_position &= ~SLOTP_LEFT; } },
+		{ "left-hand", [](ItemType& i) { i.slot_position &= ~SLOTP_RIGHT; } },
+		{ "necklace", [](ItemType& i) { i.slot_position |= SLOTP_NECKLACE; } },
+		{ "ring", [](ItemType& i) { i.slot_position |= SLOTP_RING; } },
+		{ "ammo", [](ItemType& i) { i.slot_position |= SLOTP_AMMO; } },
+		{ "hand", [](ItemType& i) { i.slot_position |= SLOTP_HAND; } },
+	};
+
+	if (auto it_parser = parsers.find(value); it_parser != parsers.end()) {
+		it_parser->second(it);
 	}
 }
 
-void ItemDatabase::parseWeaponTypeAttribute(ItemType& it, const std::string& value) {
-	if (value == "sword") {
-		it.weapon_type = WEAPON_SWORD;
-	} else if (value == "club") {
-		it.weapon_type = WEAPON_CLUB;
-	} else if (value == "axe") {
-		it.weapon_type = WEAPON_AXE;
-	} else if (value == "shield") {
-		it.weapon_type = WEAPON_SHIELD;
-	} else if (value == "distance") {
-		it.weapon_type = WEAPON_DISTANCE;
-	} else if (value == "wand") {
-		it.weapon_type = WEAPON_WAND;
-	} else if (value == "ammunition") {
-		it.weapon_type = WEAPON_AMMO;
+void ItemDatabase::parseWeaponTypeAttribute(ItemType& it, std::string_view value) {
+	static const std::map<std::string_view, std::function<void(ItemType&)>> parsers = {
+		{ "sword", [](ItemType& i) { i.weapon_type = WEAPON_SWORD; } },
+		{ "club", [](ItemType& i) { i.weapon_type = WEAPON_CLUB; } },
+		{ "axe", [](ItemType& i) { i.weapon_type = WEAPON_AXE; } },
+		{ "shield", [](ItemType& i) { i.weapon_type = WEAPON_SHIELD; } },
+		{ "distance", [](ItemType& i) { i.weapon_type = WEAPON_DISTANCE; } },
+		{ "wand", [](ItemType& i) { i.weapon_type = WEAPON_WAND; } },
+		{ "ammunition", [](ItemType& i) { i.weapon_type = WEAPON_AMMO; } },
+	};
+
+	if (auto it_parser = parsers.find(value); it_parser != parsers.end()) {
+		it_parser->second(it);
 	}
 }
 
-void ItemDatabase::parseFloorChangeAttribute(ItemType& it, const std::string& value) {
-	if (value == "down") {
-		it.floorChangeDown = true;
-		it.floorChange = true;
-	} else if (value == "north") {
-		it.floorChangeNorth = true;
-		it.floorChange = true;
-	} else if (value == "south") {
-		it.floorChangeSouth = true;
-		it.floorChange = true;
-	} else if (value == "west") {
-		it.floorChangeWest = true;
-		it.floorChange = true;
-	} else if (value == "east") {
-		it.floorChangeEast = true;
-		it.floorChange = true;
-	} else if (value == "northex") {
-		it.floorChange = true;
-	} else if (value == "southex") {
-		it.floorChange = true;
-	} else if (value == "westex") {
-		it.floorChange = true;
-	} else if (value == "eastex") {
-		it.floorChange = true;
-	} else if (value == "southalt") {
-		it.floorChange = true;
-	} else if (value == "eastalt") {
-		it.floorChange = true;
+void ItemDatabase::parseFloorChangeAttribute(ItemType& it, std::string_view value) {
+	static const std::map<std::string_view, std::function<void(ItemType&)>> parsers = {
+		{ "down", [](ItemType& i) { i.floorChangeDown = true; i.floorChange = true; } },
+		{ "north", [](ItemType& i) { i.floorChangeNorth = true; i.floorChange = true; } },
+		{ "south", [](ItemType& i) { i.floorChangeSouth = true; i.floorChange = true; } },
+		{ "west", [](ItemType& i) { i.floorChangeWest = true; i.floorChange = true; } },
+		{ "east", [](ItemType& i) { i.floorChangeEast = true; i.floorChange = true; } },
+		{ "northex", [](ItemType& i) { i.floorChange = true; } },
+		{ "southex", [](ItemType& i) { i.floorChange = true; } },
+		{ "westex", [](ItemType& i) { i.floorChange = true; } },
+		{ "eastex", [](ItemType& i) { i.floorChange = true; } },
+		{ "southalt", [](ItemType& i) { i.floorChange = true; } },
+		{ "eastalt", [](ItemType& i) { i.floorChange = true; } },
+	};
+
+	if (auto it_parser = parsers.find(value); it_parser != parsers.end()) {
+		it_parser->second(it);
 	}
 }
 
@@ -952,6 +929,7 @@ bool ItemDatabase::loadItemFromGameXml(pugi::xml_node itemNode, int id) {
 		if (key == "type") {
 			if ((attribute = itemAttributesNode.attribute("value"))) {
 				std::string typeValue = attribute.as_string();
+				to_lower_str(typeValue);
 				parseItemTypeAttribute(it, typeValue);
 			}
 		} else if (key == "name") {
@@ -985,11 +963,13 @@ bool ItemDatabase::loadItemFromGameXml(pugi::xml_node itemNode, int id) {
 		} else if (key == "slottype") {
 			if ((attribute = itemAttributesNode.attribute("value"))) {
 				std::string typeValue = attribute.as_string();
+				to_lower_str(typeValue);
 				parseSlotTypeAttribute(it, typeValue);
 			}
 		} else if (key == "weapontype") {
 			if ((attribute = itemAttributesNode.attribute("value"))) {
 				std::string typeValue = attribute.as_string();
+				to_lower_str(typeValue);
 				parseWeaponTypeAttribute(it, typeValue);
 			}
 		} else if (key == "rotateto") {
@@ -1031,6 +1011,7 @@ bool ItemDatabase::loadItemFromGameXml(pugi::xml_node itemNode, int id) {
 		} else if (key == "floorchange") {
 			if ((attribute = itemAttributesNode.attribute("value"))) {
 				std::string value = attribute.as_string();
+				to_lower_str(value);
 				parseFloorChangeAttribute(it, value);
 			}
 		}
