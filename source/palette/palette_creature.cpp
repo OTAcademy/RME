@@ -139,14 +139,14 @@ void CreaturePalettePanel::OnUpdate() {
 
 	const BrushListType ltype = (BrushListType)g_settings.getInteger(Config::PALETTE_CREATURE_STYLE);
 
-	for (TilesetContainer::const_iterator iter = g_materials.tilesets.begin(); iter != g_materials.tilesets.end(); ++iter) {
-		const TilesetCategory* tsc = iter->second->getCategory(TILESET_CREATURE);
-		if ((tsc && tsc->size() > 0) || iter->second->name == "NPCs" || iter->second->name == "Others") {
+	for (const auto& tileset : GetSortedTilesets(g_materials.tilesets)) {
+		const TilesetCategory* tsc = tileset->getCategory(TILESET_CREATURE);
+		if ((tsc && tsc->size() > 0) || tileset->name == "NPCs" || tileset->name == "Others") {
 			BrushPanel* bp = newd BrushPanel(choicebook);
 			bp->SetListType(ltype);
 			bp->AssignTileset(tsc);
 			bp->LoadContents();
-			choicebook->AddPage(bp, wxstr(iter->second->name));
+			choicebook->AddPage(bp, wxstr(tileset->name));
 		}
 	}
 	if (choicebook->GetPageCount() > 0) {
