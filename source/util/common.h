@@ -27,8 +27,6 @@
 #include <string>
 #include <string_view>
 
-#include "util/mt_rand.h"
-
 //
 inline bool testFlags(size_t flags, size_t test) {
 	return (flags & test) != 0;
@@ -46,7 +44,6 @@ wxString i2ws(int i);
 wxString f2ws(double i);
 int ws2i(wxString s);
 double ws2f(wxString s);
-double frand();
 
 inline wxString wxstr(std::string_view sv) {
 	return wxString::FromUTF8(sv.data(), sv.length());
@@ -76,7 +73,8 @@ std::string as_upper_str(const std::string& other);
 bool isFalseString(std::string& str);
 bool isTrueString(std::string& str);
 
-// Generates a random number between low and high using the mersenne twister
+// Generates a random number between low and high using the Mersenne Twister algorithm (std::mt19937).
+// Swaps low and high if low > high for a more intuitive behavior.
 int random(int high);
 int random(int low, int high);
 
