@@ -47,11 +47,11 @@ bool LiveManager::IsLocal() const {
 }
 
 LiveClient* LiveManager::GetClient() const {
-	return live_client;
+	return live_client.get();
 }
 
 LiveServer* LiveManager::GetServer() const {
-	return live_server;
+	return live_server.get();
 }
 
 LiveSocket& LiveManager::GetSocket() const {
@@ -73,12 +73,20 @@ LiveServer* LiveManager::StartServer() {
 
 void LiveManager::CloseServer() {
 	if (live_server) {
-		live_server->close();
+		try {
+			live_server->close();
+		} catch (...) {
+			// Ignore exceptions to ensure reset() is called
+		}
 		live_server.reset();
 	}
 
 	if (live_client) {
-		live_client->close();
+		try {
+			live_client->close();
+		} catch (...) {
+			// Ignore exceptions to ensure reset() is called
+		}
 		live_client.reset();
 	}
 

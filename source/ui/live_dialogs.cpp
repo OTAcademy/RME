@@ -127,7 +127,7 @@ void LiveDialogs::ShowJoinDialog(wxWindow* parent) {
 	while (true) {
 		int ret = live_join_dlg->ShowModal();
 		if (ret == wxID_OK) {
-			LiveClient* liveClient = newd LiveClient();
+			auto liveClient = std::make_unique<LiveClient>();
 			liveClient->setPassword(password->GetValue());
 
 			wxString tmp = name->GetValue();
@@ -139,7 +139,6 @@ void LiveDialogs::ShowJoinDialog(wxWindow* parent) {
 			const wxString& error = liveClient->getLastError();
 			if (!error.empty()) {
 				DialogUtil::PopupDialog(live_join_dlg, "Error", error, wxOK);
-				delete liveClient;
 				continue;
 			}
 
@@ -149,7 +148,12 @@ void LiveDialogs::ShowJoinDialog(wxWindow* parent) {
 			liveClient->createLogWindow(g_gui.tabbook.get());
 			if (!liveClient->connect(nstr(address), portNumber)) {
 				DialogUtil::PopupDialog("Connection Error", liveClient->getLastError(), wxOK);
-				delete liveClient;
+			} else {
+				// Transfer ownership to a registry or similar?
+				// For now, if connect() succeeded, it will eventually call parseHello
+				// which will create the Editor.
+				// BUT we need to keep the unique_ptr alive.
+				g_gui.AddPendingLiveClient(std::move(liveClient));
 			}
 
 			break;

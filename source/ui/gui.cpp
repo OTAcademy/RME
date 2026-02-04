@@ -380,6 +380,21 @@ void GUI::NewMapView() {
 	g_editors.NewMapView();
 }
 
+void GUI::AddPendingLiveClient(std::unique_ptr<LiveClient> client) {
+	pending_live_clients.push_back(std::move(client));
+}
+
+std::unique_ptr<LiveClient> GUI::PopPendingLiveClient(LiveClient* ptr) {
+	auto it = std::find_if(pending_live_clients.begin(), pending_live_clients.end(), [ptr](const std::unique_ptr<LiveClient>& c) { return c.get() == ptr; });
+
+	if (it != pending_live_clients.end()) {
+		std::unique_ptr<LiveClient> client = std::move(*it);
+		pending_live_clients.erase(it);
+		return client;
+	}
+	return nullptr;
+}
+
 bool GUI::NewMap() {
 	return g_editors.NewMap();
 }

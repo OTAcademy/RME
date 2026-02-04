@@ -67,8 +67,8 @@ Editor::Editor(CopyBuffer& copybuffer, const MapVersion& version, const FileName
 	EditorPersistence::loadMap(*this, fn);
 }
 
-Editor::Editor(CopyBuffer& copybuffer, const MapVersion& version, LiveClient* client) :
-	live_manager(*this, std::unique_ptr<LiveClient>(client)),
+Editor::Editor(CopyBuffer& copybuffer, const MapVersion& version, std::unique_ptr<LiveClient> client) :
+	live_manager(*this, std::move(client)),
 	actionQueue(newd NetworkedActionQueue(*this)),
 	selection(*this),
 	copybuffer(copybuffer),

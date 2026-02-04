@@ -372,7 +372,8 @@ void LiveClient::parsePacket(NetworkMessage message) {
 
 void LiveClient::parseHello(NetworkMessage& message) {
 	ASSERT(editor == nullptr);
-	editor = EditorFactory::JoinLive(g_gui.copybuffer, this);
+	auto client = g_gui.PopPendingLiveClient(this);
+	editor = EditorFactory::JoinLive(g_gui.copybuffer, std::move(client));
 
 	Map& map = editor->map;
 	map.setName("Live Map - " + message.read<std::string>());
