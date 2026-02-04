@@ -17,6 +17,8 @@
 
 #include "app/main.h"
 
+#include <algorithm>
+
 #include "editor/editor.h"
 #include "ui/gui.h"
 #include "game/sprites.h"
@@ -64,6 +66,23 @@
 #include "rendering/drawers/tiles/tile_renderer.h"
 #include "rendering/drawers/entities/creature_name_drawer.h"
 #include "rendering/core/sprite_preloader.h"
+#include "rendering/core/gl_resources.h"
+#include "rendering/core/shader_program.h"
+#include "rendering/postprocess/post_process_manager.h"
+
+// Shader Sources
+const char* screen_vert = R"(
+#version 450 core
+layout(location = 0) in vec2 aPos; // -1..1
+layout(location = 1) in vec2 aTexCoord; // 0..1
+
+out vec2 vTexCoord;
+
+void main() {
+    gl_Position = vec4(aPos, 0.0, 1.0);
+    vTexCoord = aTexCoord;
+}
+)";
 
 MapDrawer::MapDrawer(MapCanvas* canvas) :
 	canvas(canvas), editor(canvas->editor) {
@@ -130,8 +149,6 @@ void MapDrawer::SetupGL() {
 
 	view.SetupGL();
 
-	view.SetupGL();
-
 	// Ensure renderers are initialized
 	if (!renderers_initialized) {
 
@@ -141,15 +158,127 @@ void MapDrawer::SetupGL() {
 	}
 
 	// Pre-load visible sprites to avoid stalls during DrawMap()
+	// Pre-load visible sprites to avoid stalls during DrawMap()
 	SpritePreloader::PreloadVisibleSprites(&editor, view, options);
+
+	InitPostProcess();
+}
+
+void MapDrawer::InitPostProcess() {
+	if (pp_vao) {
+		return;
+	}
+
+	// Load Shaders
+	// Load Shaders
+	PostProcessManager::Instance().Initialize(screen_vert);
+
+	// Setup Screen Quad
+	pp_vao = std::make_unique<GLVertexArray>();
+	pp_vbo = std::make_unique<GLBuffer>();
+	pp_ebo = std::make_unique<GLBuffer>();
+
+	float quadVertices[] = {
+		// positions   // texCoords
+		-1.0f, 1.0f, 0.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f, 0.0f,
+		1.0f, -1.0f, 1.0f, 0.0f,
+		1.0f, 1.0f, 1.0f, 1.0f
+	};
+
+	unsigned int quadIndices[] = {
+		0, 1, 2,
+		0, 2, 3
+	};
+
+	glNamedBufferStorage(pp_vbo->GetID(), sizeof(quadVertices), quadVertices, 0);
+	glNamedBufferStorage(pp_ebo->GetID(), sizeof(quadIndices), quadIndices, 0);
+
+	glVertexArrayVertexBuffer(pp_vao->GetID(), 0, pp_vbo->GetID(), 0, 4 * sizeof(float));
+	glVertexArrayElementBuffer(pp_vao->GetID(), pp_ebo->GetID());
+
+	glEnableVertexArrayAttrib(pp_vao->GetID(), 0);
+	glVertexArrayAttribFormat(pp_vao->GetID(), 0, 2, GL_FLOAT, GL_FALSE, 0);
+	glVertexArrayAttribBinding(pp_vao->GetID(), 0, 0);
+
+	glEnableVertexArrayAttrib(pp_vao->GetID(), 1);
+	glVertexArrayAttribFormat(pp_vao->GetID(), 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float));
+	glVertexArrayAttribBinding(pp_vao->GetID(), 1, 0);
+}
+
+void MapDrawer::DrawPostProcess(const RenderView& view, const DrawingOptions& options) {
+	if (!scale_fbo || !pp_vao) {
+		return;
+	}
+
+	ShaderProgram* shader = PostProcessManager::Instance().GetEffect(options.screen_shader_name);
+	if (!shader) {
+		// Manager already tries fallback to NONE, but if even that is missing:
+		return;
+	}
+
+	// Only clear and bind main screen once we know we can draw the result
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(view.viewport_x, view.viewport_y, view.screensize_x, view.screensize_y);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear main screen
+
+	shader->Use();
+	shader->SetInt("u_Texture", 0);
+	// Set TextureSize uniform if shader needs it
+	shader->SetVec2("u_TextureSize", glm::vec2(fbo_width, fbo_height));
+
+	glBindTextureUnit(0, scale_texture->GetID());
+	glBindVertexArray(pp_vao->GetID());
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+	shader->Unuse();
+}
+
+void MapDrawer::UpdateFBO(const RenderView& view, const DrawingOptions& options) {
+	// Determine FBO size.
+	// If upscaling (Zoom < 1.0, e.g. 0.25), we want 1 pixel = 1 map unit.
+	// width_pixels = screen_width * zoom.
+	float scale_factor = view.zoom < 1.0f ? view.zoom : 1.0f;
+	// If zoom > 1.0 (minified), we render at screen res (or native map size?)
+	// Rendering at screen res with Zoom > 1.0 means primitives are small.
+
+	int target_w = std::max(1, static_cast<int>(view.screensize_x * scale_factor));
+	int target_h = std::max(1, static_cast<int>(view.screensize_y * scale_factor));
+
+	if (fbo_width != target_w || fbo_height != target_h || !scale_fbo) {
+		fbo_width = target_w;
+		fbo_height = target_h;
+		scale_fbo = std::make_unique<GLFramebuffer>();
+		scale_texture = std::make_unique<GLTextureResource>(GL_TEXTURE_2D);
+
+		glTextureStorage2D(scale_texture->GetID(), 1, GL_RGBA8, fbo_width, fbo_height);
+		glTextureParameteri(scale_texture->GetID(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTextureParameteri(scale_texture->GetID(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		glNamedFramebufferTexture(scale_fbo->GetID(), GL_COLOR_ATTACHMENT0, scale_texture->GetID(), 0);
+		GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0 };
+		glNamedFramebufferDrawBuffers(scale_fbo->GetID(), 1, drawBuffers);
+
+		// Sanity check for division by zero risk in shaders
+		if (fbo_width < 1 || fbo_height < 1) {
+			// This should be impossible due to std::max, but good for invariant documentation
+			spdlog::error("MapDrawer: FBO dimension is zero ({}, {})!", fbo_width, fbo_height);
+		}
+	}
+
+	// Always update filtering parameters (supports toggling AA without resize)
+	if (scale_texture) {
+		GLenum filter = options.anti_aliasing ? GL_LINEAR : GL_NEAREST;
+		glTextureParameteri(scale_texture->GetID(), GL_TEXTURE_MIN_FILTER, filter);
+		glTextureParameteri(scale_texture->GetID(), GL_TEXTURE_MAG_FILTER, filter);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, scale_fbo->GetID());
+	glViewport(0, 0, fbo_width, fbo_height);
 }
 
 void MapDrawer::Release() {
 	// tooltip_drawer->clear(); // Moved to ClearTooltips(), called explicitly after UI draw
-
-	if (light_drawer) {
-		// light_drawer->unloadGLTexture(); // Removed as legacy wrapper
-	}
 }
 
 void MapDrawer::Draw() {
@@ -162,7 +291,18 @@ void MapDrawer::Draw() {
 	sprite_batch->begin(view.projectionMatrix);
 	primitive_renderer->setProjectionMatrix(view.projectionMatrix);
 
-	DrawBackground(); // Clear screen
+	// Check Framebuffer Logic
+	// Check Framebuffer Logic
+	bool use_fbo = (options.screen_shader_name != ShaderNames::NONE) || options.anti_aliasing;
+	// Use FBO if zooming IN (zoom < 1.0) for upscaling, OR if AA is requested.
+	// If zooming OUT (zoom > 1.0), FBO resolution logic needs care.
+	// Current logic: Always use FBO if shading enabled.
+
+	if (use_fbo) {
+		UpdateFBO(view, options);
+	}
+
+	DrawBackground(); // Clear screen (or FBO)
 	DrawMap();
 
 	// Flush Map for Light Pass
@@ -175,14 +315,20 @@ void MapDrawer::Draw() {
 		DrawLight();
 	}
 
+	// If using FBO, we must now Resolve to Screen
+	if (use_fbo) {
+		DrawPostProcess(view, options);
+		// Reset to default FBO for overlays
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(view.viewport_x, view.viewport_y, view.screensize_x, view.screensize_y);
+	}
+
 	// Resume Batch for Overlays
 	sprite_batch->begin(view.projectionMatrix);
 
 	if (drag_shadow_drawer) {
 		drag_shadow_drawer->draw(*sprite_batch, *primitive_renderer, this, item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options);
 	}
-	// FloorDrawer is commented out in original?
-	// floor_drawer->draw(item_drawer.get(), sprite_drawer.get(), creature_drawer.get(), view, options, editor);
 
 	if (options.boundbox_selection) {
 		selection_drawer->draw(*sprite_batch, view, canvas, options);
@@ -246,12 +392,12 @@ void MapDrawer::DrawGrid() {
 	grid_drawer->DrawGrid(*sprite_batch, view, options);
 }
 
-void MapDrawer::DrawTooltips() {
-	tooltip_drawer->draw(view);
+void MapDrawer::DrawTooltips(NVGcontext* vg) {
+	tooltip_drawer->draw(vg, view);
 }
 
-void MapDrawer::DrawCreatureNames() {
-	creature_name_drawer->draw(view);
+void MapDrawer::DrawCreatureNames(NVGcontext* vg) {
+	creature_name_drawer->draw(vg, view);
 }
 
 void MapDrawer::DrawMapLayer(int map_z, bool live_client) {

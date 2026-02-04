@@ -58,37 +58,6 @@ public:
 	void OnKey(wxKeyEvent& event);
 };
 
-class BrushIconBox : public wxScrolledWindow, public BrushBoxInterface {
-public:
-	BrushIconBox(wxWindow* parent, const TilesetCategory* _tileset, RenderSize rsz);
-	~BrushIconBox();
-
-	wxWindow* GetSelfWindow() {
-		return this;
-	}
-
-	// Scrolls the window to the position of the named brush button
-	void EnsureVisible(BrushButton* btn);
-	void EnsureVisible(size_t n);
-
-	// Select the first brush
-	void SelectFirstBrush();
-	// Returns the currently selected brush (First brush if panel is not loaded)
-	Brush* GetSelectedBrush() const;
-	// Select the brush in the parameter, this only changes the look of the panel
-	bool SelectBrush(const Brush* brush);
-
-	// Event handling...
-	void OnClickBrushButton(wxCommandEvent& event);
-
-protected:
-	// Used internally to deselect all buttons before selecting a newd one.
-	void DeselectAll();
-
-protected:
-	std::vector<BrushButton*> brush_buttons;
-	RenderSize icon_size;
-};
 
 class BrushPanel : public wxPanel {
 public:

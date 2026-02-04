@@ -27,7 +27,7 @@
 class PreferencesWindow : public wxDialog {
 public:
 	explicit PreferencesWindow(wxWindow* parent) :
-		PreferencesWindow(parent, false) {};
+		PreferencesWindow(parent, false) { };
 	PreferencesWindow(wxWindow* parent, bool clientVersionSelected);
 	virtual ~PreferencesWindow();
 
@@ -82,6 +82,10 @@ protected:
 	// FPS Settings
 	wxSpinCtrl* fps_limit_spin;
 	wxCheckBox* show_fps_chkbox;
+
+	// Shaders
+	wxCheckBox* anti_aliasing_chkbox;
+	wxChoice* screen_shader_choice;
 
 	/*
 	wxCheckBox* texture_managment_chkbox;
