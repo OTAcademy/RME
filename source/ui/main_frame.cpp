@@ -44,7 +44,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 #endif
 
 	// Creates the file-dropdown menu
-	menu_bar = newd MainMenuBar(this);
+	menu_bar = std::make_unique<MainMenuBar>(this);
 	wxArrayString warnings;
 	wxString error;
 
@@ -66,7 +66,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	g_gui.aui_manager = newd wxAuiManager(this);
 	g_gui.tabbook = newd MapTabbook(this, wxID_ANY);
 
-	tool_bar = newd MainToolBar(this, g_gui.aui_manager);
+	tool_bar = std::make_unique<MainToolBar>(this, g_gui.aui_manager);
 
 	g_gui.aui_manager->AddPane(g_gui.tabbook, wxAuiPaneInfo().CenterPane().Floatable(false).CloseButton(false).PaneBorder(false));
 
@@ -97,8 +97,13 @@ void MainFrame::OnIdle(wxIdleEvent& event) {
 
 #ifdef _USE_UPDATER_
 void MainFrame::OnUpdateReceived(wxCommandEvent& event) {
-	std::string data = *(std::string*)event.GetClientData();
-	delete (std::string*)event.GetClientData();
+	void* clientData = event.GetClientData();
+	if (!clientData) {
+		return;
+	}
+	std::string data = *static_cast<std::string*>(clientData);
+	delete static_cast<std::string*>(clientData);
+
 	size_t first_colon = data.find(':');
 	size_t second_colon = data.find(':', first_colon + 1);
 
@@ -327,7 +332,7 @@ void MainFrame::OnExit(wxCloseEvent& event) {
 	g_search.HideSearchWindow();
 
 	g_gui.aui_manager->UnInit();
-	((Application&)wxGetApp()).Unload();
+	static_cast<Application&>(wxGetApp()).Unload();
 	Destroy();
 }
 

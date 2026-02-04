@@ -5,6 +5,7 @@
 #ifndef OTML_H
 #define OTML_H
 
+#include <format>
 #include <sstream>
 #include <fstream>
 #include <string>
@@ -142,7 +143,7 @@ public:
 		m_what(error) { }
 	OTMLException(const OTMLNodePtr& node, const std::string& error);
 	OTMLException(const OTMLDocumentPtr& doc, const std::string& error, int line = -1);
-	virtual ~OTMLException() throw() {};
+	virtual ~OTMLException() throw() { };
 
 	virtual const char* what() const throw() {
 		return m_what.c_str();
@@ -154,6 +155,8 @@ protected:
 
 class OTMLNode : public OTMLNodeEnableSharedFromThis {
 public:
+	OTMLNode() :
+		m_unique(false), m_null(false) { }
 	virtual ~OTMLNode() { }
 
 	static OTMLNodePtr create(std::string tag = "", bool unique = false);
@@ -252,9 +255,6 @@ public:
 	virtual std::string emit();
 
 protected:
-	OTMLNode() :
-		m_unique(false), m_null(false) { }
-
 	OTMLNodeList m_children;
 	OTMLNodeWeakPtr m_parent;
 	std::string m_tag;
@@ -266,15 +266,13 @@ protected:
 
 class OTMLDocument : public OTMLNode {
 public:
+	OTMLDocument() { }
 	virtual ~OTMLDocument() { }
 	static OTMLDocumentPtr create();
 	static OTMLDocumentPtr parse(const std::string& fileName);
 	static OTMLDocumentPtr parse(std::istream& in, const std::string& source);
 	std::string emit();
 	bool save(const std::string& fileName);
-
-private:
-	OTMLDocument() { }
 };
 
 class OTMLParser {

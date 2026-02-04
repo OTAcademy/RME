@@ -18,11 +18,9 @@ static std::atomic<uint32_t> template_id_generator(0x1000000);
 CreatureSprite::CreatureSprite(GameSprite* parent, const Outfit& outfit) :
 	parent(parent),
 	outfit(outfit) {
-	////
 }
 
 CreatureSprite::~CreatureSprite() {
-	////
 }
 
 void CreatureSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width, int height) {
@@ -237,7 +235,6 @@ void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, const Outfit& outfit, int start
 GameSprite::Image::Image() :
 	isGLLoaded(false),
 	lastaccess(0) {
-	////
 }
 
 GameSprite::Image::~Image() {
@@ -302,7 +299,6 @@ GameSprite::NormalImage::NormalImage() :
 	atlas_region(nullptr),
 	size(0),
 	dump(nullptr) {
-	////
 }
 
 GameSprite::NormalImage::~NormalImage() {
@@ -521,7 +517,6 @@ GameSprite::TemplateImage::TemplateImage(GameSprite* parent, int v, const Outfit
 	lookFeet(outfit.lookFeet),
 	atlas_region(nullptr),
 	texture_id(template_id_generator.fetch_add(1)) { // Generate unique ID for Atlas
-	////
 }
 
 GameSprite::TemplateImage::~TemplateImage() {

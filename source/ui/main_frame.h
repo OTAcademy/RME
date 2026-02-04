@@ -28,11 +28,11 @@ public:
 	std::vector<wxString> GetRecentFiles();
 
 	MainToolBar* GetAuiToolBar() const {
-		return tool_bar;
+		return tool_bar.get();
 	}
 
 	MainMenuBar* GetMainMenuBar() const {
-		return menu_bar;
+		return menu_bar.get();
 	}
 
 	void OnUpdateMenus(wxCommandEvent& event);
@@ -51,8 +51,8 @@ public:
 	void PrepareDC(wxDC& dc);
 
 protected:
-	MainMenuBar* menu_bar;
-	MainToolBar* tool_bar;
+	std::unique_ptr<MainMenuBar> menu_bar;
+	std::unique_ptr<MainToolBar> tool_bar;
 
 	friend class Application;
 	friend class GUI;
