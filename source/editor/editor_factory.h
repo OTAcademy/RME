@@ -17,7 +17,7 @@ public:
 	static std::unique_ptr<Editor> LoadFromFile(CopyBuffer& copybuffer, const FileName& fn);
 
 	// Joins a live session
-	static std::unique_ptr<Editor> JoinLive(CopyBuffer& copybuffer, LiveClient* client);
+	static std::unique_ptr<Editor> JoinLive(CopyBuffer& copybuffer, std::unique_ptr<LiveClient> client);
 
 private:
 	// Helper to ensure the correct version is loaded in g_gui

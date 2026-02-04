@@ -21,6 +21,7 @@
 #include "live/live_socket.h"
 #include "net/net_connection.h"
 #include "editor/action.h"
+#include <memory>
 
 class LivePeer;
 class LiveLogTab;

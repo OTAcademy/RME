@@ -65,6 +65,7 @@ wxDECLARE_EVENT(EVT_UPDATE_MENUS, wxCommandEvent);
 		(wxObject*)nullptr                                                                      \
 	),
 
+#include <mutex>
 #include "brushes/managers/brush_manager.h"
 #include "palette/managers/palette_manager.h"
 #include "editor/managers/editor_manager.h"
@@ -282,6 +283,8 @@ public:
 	bool CloseLiveEditors(LiveSocket* sock);
 	bool CloseAllEditors();
 	void NewMapView();
+	void AddPendingLiveClient(std::unique_ptr<LiveClient> client);
+	std::unique_ptr<LiveClient> PopPendingLiveClient(LiveClient* ptr);
 
 	// Map
 	Map& GetCurrentMap();
@@ -357,6 +360,9 @@ protected:
 	wxWindowDisabler* winDisabler;
 
 	int disabled_counter;
+
+	std::mutex pending_live_clients_mutex;
+	std::vector<std::unique_ptr<LiveClient>> pending_live_clients;
 
 	friend class RenderingLock;
 	friend MapTab::MapTab(MapTabbook*, Editor*);

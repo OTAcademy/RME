@@ -18,6 +18,7 @@
 #ifndef _RME_LIVE_TAB_H_
 #define _RME_LIVE_TAB_H_
 
+#include <mutex>
 #include <memory>
 #include "live/live_peer.h"
 #include "app/main.h"
@@ -25,7 +26,6 @@
 #include "editor/editor_tabs.h"
 #include "app/application.h"
 #include "live/live_server.h"
-
 class wxGrid;
 
 class MapTabbook;
@@ -69,6 +69,8 @@ protected:
 	wxGrid* log;
 	wxTextCtrl* input;
 	wxGrid* user_list;
+
+	std::mutex clients_mutex;
 
 	DECLARE_EVENT_TABLE();
 };
