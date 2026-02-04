@@ -1,6 +1,7 @@
 #include "app/main.h"
 #include "ui/gui.h"
 #include "rendering/core/drawing_options.h"
+#include "rendering/postprocess/post_process_manager.h"
 
 DrawingOptions::DrawingOptions() {
 	SetDefault();
@@ -43,7 +44,7 @@ void DrawingOptions::SetDefault() {
 	global_light_color = wxColor(128, 128, 128);
 	highlight_pulse = 0.0f;
 	anti_aliasing = false;
-	screen_shader_name = "None";
+	screen_shader_name = ShaderNames::NONE;
 }
 
 void DrawingOptions::SetIngame() {

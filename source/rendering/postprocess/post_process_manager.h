@@ -44,4 +44,10 @@ private:
 	bool initialized = false;
 };
 
+namespace ShaderNames {
+	constexpr const char* NONE = "None";
+	constexpr const char* SCANLINE = "Scanline";
+	constexpr const char* XBRZ = "4xBRZ";
+}
+
 #endif

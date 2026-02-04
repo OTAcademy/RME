@@ -84,8 +84,9 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	int h = end_y - map_y;
 
 	// Save previous state to allow composing into an external FBO (e.g. MapDrawer's scale_fbo)
-	GLint old_fbo;
-	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &old_fbo);
+	GLint old_draw_fbo, old_read_fbo;
+	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &old_draw_fbo);
+	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &old_read_fbo);
 	GLint old_viewport[4];
 	glGetIntegerv(GL_VIEWPORT, old_viewport);
 
@@ -206,7 +207,8 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	}
 
 	// Restore Previous FBO and Viewport
-	glBindFramebuffer(GL_FRAMEBUFFER, old_fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, old_draw_fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, old_read_fbo);
 	glViewport(old_viewport[0], old_viewport[1], old_viewport[2], old_viewport[3]);
 
 	// 4. Composite FBO to Screen

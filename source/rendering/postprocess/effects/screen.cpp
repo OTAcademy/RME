@@ -14,9 +14,11 @@ void main() {
 }
 )";
 
-	const int registered = []() {
-		PostProcessManager::Instance().Register("None", screen_frag);
-		return 0;
-	}();
+	// Auto-register (Bilinear/Screen)
+	struct ScreenRegister {
+		ScreenRegister() {
+			PostProcessManager::Instance().Register(ShaderNames::NONE, screen_frag);
+		}
+	} screen_register;
 
-}
+} // namespace

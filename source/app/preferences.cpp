@@ -249,7 +249,8 @@ wxNotebookPage* PreferencesWindow::CreateGraphicsPage() {
 		screen_shader_choice->SetSelection(0);
 	}
 
-	subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Screen Shader: "), 0);
+	tmp = newd wxStaticText(graphics_page, wxID_ANY, "Screen Shader: ");
+	subsizer->Add(tmp, 0);
 	subsizer->Add(screen_shader_choice, 0);
 	SetWindowToolTip(screen_shader_choice, tmp, "Apply a post-processing shader to the map view.");
 

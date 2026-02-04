@@ -260,9 +260,11 @@ void main()
 }
 )";
 
-	const int registered = []() {
-		PostProcessManager::Instance().Register("4xBRZ", xbrz_frag_source, xbrz_vert);
-		return 0;
-	}();
+	// Auto-register
+	struct XBRZRegister {
+		XBRZRegister() {
+			PostProcessManager::Instance().Register(ShaderNames::XBRZ, xbrz_frag_source, xbrz_vert);
+		}
+	} xbrz_register;
 
-}
+} // namespace

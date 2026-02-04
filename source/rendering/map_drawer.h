@@ -90,9 +90,11 @@ class MapDrawer {
 
 	std::unique_ptr<GLVertexArray> pp_vao;
 	std::unique_ptr<GLBuffer> pp_vbo;
+	std::unique_ptr<GLBuffer> pp_ebo;
 
 	void InitPostProcess();
 	void DrawPostProcess(const RenderView& view, const DrawingOptions& options);
+	void UpdateFBO(const RenderView& view, const DrawingOptions& options);
 
 protected:
 	friend class BrushOverlayDrawer;

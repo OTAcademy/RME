@@ -136,9 +136,11 @@ void main(){
 }
 )";
 
-	const int registered = []() {
-		PostProcessManager::Instance().Register("Scanline", scanline_frag_source);
-		return 0;
-	}();
+	// Auto-register
+	struct ScanlineRegister {
+		ScanlineRegister() {
+			PostProcessManager::Instance().Register(ShaderNames::SCANLINE, scanline_frag_source);
+		}
+	} scanline_register;
 
-}
+} // namespace
