@@ -199,6 +199,9 @@ namespace Config {
 		FRAME_RATE_LIMIT,
 		SHOW_FPS_COUNTER,
 
+		ANTI_ALIASING,
+		SCREEN_SHADER,
+
 		LAST,
 	};
 }
