@@ -36,6 +36,54 @@ namespace {
 	const int PREVIEW_SIZE = 192;
 	const int OUTFIT_TILE_WIDTH = 100;
 	const int OUTFIT_TILE_HEIGHT = 120;
+
+	class ColorSwatch : public wxWindow {
+	public:
+		ColorSwatch(wxWindow* parent, int id, uint32_t color) :
+			wxWindow(parent, id, wxDefaultPosition, wxSize(16, 16), wxBORDER_NONE),
+			color(color), selected(false) {
+			SetBackgroundStyle(wxBG_STYLE_PAINT);
+			Bind(wxEVT_PAINT, &ColorSwatch::OnPaint, this);
+			Bind(wxEVT_LEFT_DOWN, &ColorSwatch::OnMouse, this);
+		}
+
+		void SetSelected(bool s) {
+			if (selected != s) {
+				selected = s;
+				Refresh();
+			}
+		}
+
+	private:
+		void OnPaint(wxPaintEvent&) {
+			wxAutoBufferedPaintDC dc(this);
+			dc.SetBackground(*wxBLACK_BRUSH);
+			dc.Clear();
+
+			wxRect rect = GetClientRect();
+			dc.SetPen(*wxTRANSPARENT_PEN);
+			dc.SetBrush(wxBrush(wxColor((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF)));
+			dc.DrawRectangle(rect);
+
+			if (selected) {
+				dc.SetBrush(*wxTRANSPARENT_BRUSH);
+				dc.SetPen(wxPen(*wxWHITE, 2));
+				dc.DrawRectangle(rect.Inflate(-1, -1));
+			}
+		}
+
+		void OnMouse(wxMouseEvent&) {
+			wxCommandEvent evt(wxEVT_BUTTON, GetId());
+			evt.SetEventObject(this);
+			HandleWindowEvent(evt); // Ensure internal bindings (lambdas) are called
+			if (GetParent()) {
+				GetParent()->GetEventHandler()->ProcessEvent(evt); // Also send to parent just in case
+			}
+		}
+
+		uint32_t color;
+		bool selected;
+	};
 }
 
 // ============================================================================
@@ -119,19 +167,18 @@ OutfitChooserDialog::OutfitChooserDialog(wxWindow* parent, const Outfit& current
 	part_sizer->Add(feet_btn, 1, wxEXPAND);
 	col1_sizer->Add(part_sizer, 0, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, 8);
 
-	wxWrapSizer* palette_sizer = new wxWrapSizer(wxHORIZONTAL);
+	wxFlexGridSizer* palette_sizer = new wxFlexGridSizer(COLOR_ROWS, COLOR_COLUMNS, 1, 1);
 	for (size_t i = 0; i < TemplateOutfitLookupTableSize; ++i) {
 		uint32_t color = TemplateOutfitLookupTable[i];
-		wxButton* btn = new wxButton(this, ID_COLOR_START + static_cast<int>(i), "", wxDefaultPosition, wxSize(16, 16), wxBORDER_NONE);
-		btn->SetBackgroundColour(wxColour((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF));
-		palette_sizer->Add(btn, 0, wxALL, 1);
-		color_buttons.push_back(btn);
+		ColorSwatch* swatch = new ColorSwatch(this, ID_COLOR_START + static_cast<int>(i), color);
+		palette_sizer->Add(swatch, 0);
+		color_buttons.push_back(swatch);
 
-		btn->Bind(wxEVT_BUTTON, [this, i](wxCommandEvent&) {
+		swatch->Bind(wxEVT_BUTTON, [this, i](wxCommandEvent&) {
 			SelectColor(i);
 		});
 	}
-	col1_sizer->Add(palette_sizer, 0, wxEXPAND | wxALL, 8);
+	col1_sizer->Add(palette_sizer, 0, wxALL, 8);
 
 	col1_sizer->Add(CreateHeader("Configuration"), 0, wxLEFT | wxTOP, 8);
 	wxWrapSizer* check_sizer = new wxWrapSizer(wxHORIZONTAL);
@@ -227,6 +274,8 @@ OutfitChooserDialog::OutfitChooserDialog(wxWindow* parent, const Outfit& current
 	dummy.SetId(ID_COLOR_HEAD);
 	OnColorPartChange(dummy);
 
+	UpdateColorSelection();
+
 	CenterOnParent();
 }
 
@@ -255,7 +304,25 @@ void OutfitChooserDialog::OnColorPartChange(wxCommandEvent& event) {
 	legs_btn->SetFont(selected_color_part == 2 ? boldFont : normalFont);
 	feet_btn->SetFont(selected_color_part == 3 ? boldFont : normalFont);
 
+	UpdateColorSelection();
 	Layout();
+}
+
+void OutfitChooserDialog::UpdateColorSelection() {
+	int currentColor = 0;
+	if (selected_color_part == 0) {
+		currentColor = current_outfit.lookHead;
+	} else if (selected_color_part == 1) {
+		currentColor = current_outfit.lookBody;
+	} else if (selected_color_part == 2) {
+		currentColor = current_outfit.lookLegs;
+	} else if (selected_color_part == 3) {
+		currentColor = current_outfit.lookFeet;
+	}
+
+	for (size_t i = 0; i < color_buttons.size(); ++i) {
+		static_cast<ColorSwatch*>(color_buttons[i])->SetSelected(i == (size_t)currentColor);
+	}
 }
 
 void OutfitChooserDialog::SelectColor(int color_id) {
@@ -269,6 +336,7 @@ void OutfitChooserDialog::SelectColor(int color_id) {
 		current_outfit.lookFeet = color_id;
 	}
 	UpdatePreview();
+	UpdateColorSelection();
 }
 
 void OutfitChooserDialog::OnAddonChange(wxCommandEvent& event) {

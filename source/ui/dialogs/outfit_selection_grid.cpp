@@ -11,6 +11,8 @@
 
 #include <algorithm>
 #include <iterator>
+#include <format>
+#include <string>
 
 namespace {
 	const int OUTFIT_TILE_WIDTH = 100;
@@ -91,7 +93,7 @@ wxSize OutfitSelectionGrid::DoGetBestClientSize() const {
 }
 
 int OutfitSelectionGrid::GetOrCreateOutfitImage(NVGcontext* vg, int lookType, const Outfit& outfit) {
-	uint32_t cache_key = (static_cast<uint32_t>(lookType) ^ static_cast<uint32_t>(outfit.getColorHash()));
+	uint32_t cache_key = (static_cast<uint32_t>(lookType) << 16) | (outfit.getColorHash() & 0xFFFF);
 
 	int existing = GetCachedImage(cache_key);
 	if (existing > 0) {
@@ -133,7 +135,9 @@ int OutfitSelectionGrid::GetOrCreateOutfitImage(NVGcontext* vg, int lookType, co
 }
 
 void OutfitSelectionGrid::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
-	if (width <= 0) return;
+	if (width <= 0) {
+		return;
+	}
 
 	int scrollPos = GetScrollPosition();
 
@@ -226,9 +230,9 @@ void OutfitSelectionGrid::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 		nvgText(vg, rect.x + rect.width / 2, rect.y + 75, name.ToUTF8().data(), nullptr);
 
 		// ID
-		wxString idStr = wxString::Format("#%d", lookType);
+		const std::string idStr = std::format("#{}", lookType);
 		nvgFillColor(vg, nvgRGBA(180, 180, 180, 255));
-		nvgText(vg, rect.x + rect.width / 2, rect.y + 92, idStr.ToUTF8().data(), nullptr);
+		nvgText(vg, rect.x + rect.width / 2, rect.y + 92, idStr.c_str(), nullptr);
 	}
 }
 

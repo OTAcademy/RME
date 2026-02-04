@@ -68,6 +68,7 @@ private:
 	void OnAddFavorite(wxCommandEvent& event);
 	void OnOK(wxCommandEvent& event);
 
+	void UpdateColorSelection();
 	void SelectColor(int color_id);
 
 	int current_speed;
@@ -91,7 +92,7 @@ private:
 	wxButton* legs_btn;
 	wxButton* feet_btn;
 
-	std::vector<wxButton*> color_buttons;
+	std::vector<wxWindow*> color_buttons;
 };
 
 #endif
