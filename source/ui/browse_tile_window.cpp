@@ -170,10 +170,10 @@ BrowseTileWindow::BrowseTileWindow(wxWindow* parent, Tile* tile, wxPoint positio
 
 	// OK/Cancel buttons
 	wxSizer* btnSizer = newd wxBoxSizer(wxHORIZONTAL);
-	wxButton* okBtn = newd wxButton(this, wxID_OK, "OK");
+	auto okBtn = newd wxButton(this, wxID_OK, "OK");
 	okBtn->SetToolTip("Confirm selection");
 	btnSizer->Add(okBtn, wxSizerFlags(0).Center());
-	wxButton* cancelBtn = newd wxButton(this, wxID_CANCEL, "Cancel");
+	auto cancelBtn = newd wxButton(this, wxID_CANCEL, "Cancel");
 	cancelBtn->SetToolTip("Cancel");
 	btnSizer->Add(cancelBtn, wxSizerFlags(0).Center());
 	sizer->Add(btnSizer, wxSizerFlags(0).Center().DoubleBorder());

@@ -37,7 +37,7 @@ ExportTilesetsWindow::ExportTilesetsWindow(wxWindow* parent, Editor& editor) :
 	directory_text_field->SetValue(wxString(g_settings.getString(Config::TILESET_EXPORT_DIR)));
 	tmpsizer = newd wxStaticBoxSizer(wxHORIZONTAL, this, "Output Folder");
 	tmpsizer->Add(directory_text_field, 1, wxALL, 5);
-	wxButton* browseBtn = newd wxButton(this, TILESET_FILE_BUTTON, "Browse");
+	auto browseBtn = newd wxButton(this, TILESET_FILE_BUTTON, "Browse");
 	browseBtn->SetToolTip("Browse for output directory");
 	tmpsizer->Add(browseBtn, 0, wxALL, 5);
 	sizer->Add(tmpsizer, 0, wxALL | wxEXPAND, 5);
@@ -54,7 +54,7 @@ ExportTilesetsWindow::ExportTilesetsWindow(wxWindow* parent, Editor& editor) :
 	ok_button = newd wxButton(this, wxID_OK, "OK");
 	ok_button->SetToolTip("Start export");
 	tmpsizer->Add(ok_button, wxSizerFlags(1).Center());
-	wxButton* cancelBtn = newd wxButton(this, wxID_CANCEL, "Cancel");
+	auto cancelBtn = newd wxButton(this, wxID_CANCEL, "Cancel");
 	cancelBtn->SetToolTip("Cancel");
 	tmpsizer->Add(cancelBtn, wxSizerFlags(1).Center());
 	sizer->Add(tmpsizer, 0, wxCENTER, 10);

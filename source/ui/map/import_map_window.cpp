@@ -74,10 +74,10 @@ ImportMapWindow::ImportMapWindow(wxWindow* parent, Editor& editor) :
 
 	// OK/Cancel buttons
 	wxBoxSizer* buttons = newd wxBoxSizer(wxHORIZONTAL);
-	wxButton* okBtn = newd wxButton(this, wxID_OK, "Ok");
+	auto okBtn = newd wxButton(this, wxID_OK, "Ok");
 	okBtn->SetToolTip("Start import");
 	buttons->Add(okBtn, 0, wxALL, 5);
-	wxButton* cancelBtn = newd wxButton(this, wxID_CANCEL, "Cancel");
+	auto cancelBtn = newd wxButton(this, wxID_CANCEL, "Cancel");
 	cancelBtn->SetToolTip("Cancel");
 	buttons->Add(cancelBtn, 0, wxALL, 5);
 	sizer->Add(buttons, wxSizerFlags(1).Center());

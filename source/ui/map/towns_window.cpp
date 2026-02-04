@@ -40,7 +40,7 @@ EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 	sizer->Add(town_listbox, 1, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, 10);
 
 	tmpsizer = newd wxBoxSizer(wxHORIZONTAL);
-	wxButton* addBtn = newd wxButton(this, EDIT_TOWNS_ADD, "Add");
+	auto addBtn = newd wxButton(this, EDIT_TOWNS_ADD, "Add");
 	addBtn->SetToolTip("Add a new town");
 	tmpsizer->Add(addBtn, 0, wxTOP, 5);
 	remove_button = newd wxButton(this, EDIT_TOWNS_REMOVE, "Remove");
@@ -69,11 +69,11 @@ EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 
 	// OK/Cancel buttons
 	tmpsizer = newd wxBoxSizer(wxHORIZONTAL);
-	wxButton* okBtn = newd wxButton(this, wxID_OK, "OK");
+	auto okBtn = newd wxButton(this, wxID_OK, "OK");
 	okBtn->SetToolTip("Save changes");
 	tmpsizer->Add(okBtn, wxSizerFlags(1).Center());
-	wxButton* cancelBtn = newd wxButton(this, wxID_CANCEL, "Cancel");
-	cancelBtn->SetToolTip("Discard changes");
+	auto cancelBtn = newd wxButton(this, wxID_CANCEL, "Cancel");
+	cancelBtn->SetToolTip("Cancel");
 	tmpsizer->Add(cancelBtn, wxSizerFlags(1).Center());
 	sizer->Add(tmpsizer, 0, wxCENTER | wxALL, 10);
 

@@ -40,10 +40,10 @@ ExtensionsDialog::ExtensionsDialog(wxWindow* parent) :
 	topSizer->Add(htmlWindow, wxSizerFlags(1).DoubleBorder().Expand());
 
 	wxSizer* buttonSizer = newd wxBoxSizer(wxHORIZONTAL);
-	wxButton* okBtn = newd wxButton(this, wxID_OK, "OK");
+	auto okBtn = newd wxButton(this, wxID_OK, "OK");
 	okBtn->SetToolTip("Close window");
 	buttonSizer->Add(okBtn, wxSizerFlags(1).Center());
-	wxButton* openBtn = newd wxButton(this, EXTENSIONS_OPEN_FOLDER_BUTTON, "Open Extensions Folder");
+	auto openBtn = newd wxButton(this, EXTENSIONS_OPEN_FOLDER_BUTTON, "Open Extensions Folder");
 	openBtn->SetToolTip("Open the extensions directory in file explorer");
 	buttonSizer->Add(openBtn, wxSizerFlags(1).Center());
 	topSizer->Add(buttonSizer, 0, wxCENTER | wxLEFT | wxRIGHT | wxBOTTOM, 20);
