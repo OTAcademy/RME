@@ -123,6 +123,9 @@ LiveLogTab::LiveLogTab(MapTabbook* aui, LiveSocket* server) :
 }
 
 LiveLogTab::~LiveLogTab() {
+	if (socket) {
+		socket->log = nullptr;
+	}
 }
 
 wxString LiveLogTab::GetTitle() const {
@@ -196,13 +199,17 @@ void LiveLogTab::OnDeselectChatbox(wxFocusEvent& evt) {
 	g_hotkeys.EnableHotkeys();
 }
 
-void LiveLogTab::UpdateClientList(const std::unordered_map<uint32_t, LivePeer*>& updatedClients) {
+void LiveLogTab::UpdateClientList(const std::unordered_map<uint32_t, std::unique_ptr<LivePeer>>& updatedClients) {
 	// Delete old rows
 	if (user_list->GetNumberRows() > 0) {
 		user_list->DeleteRows(0, user_list->GetNumberRows());
 	}
 
-	clients = updatedClients;
+	clients.clear();
+	for (const auto& entry : updatedClients) {
+		clients[entry.first] = entry.second.get();
+	}
+
 	user_list->AppendRows(clients.size());
 
 	int32_t i = 0;
