@@ -63,12 +63,12 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	SetStatusText(wxString("Welcome to ") << __W_RME_APPLICATION_NAME__ << " " << __W_RME_VERSION__);
 
 	// Le sizer
-	g_gui.aui_manager = newd wxAuiManager(this);
-	g_gui.tabbook = newd MapTabbook(this, wxID_ANY);
+	g_gui.aui_manager = std::make_unique<wxAuiManager>(this);
+	g_gui.tabbook = std::make_unique<MapTabbook>(this, wxID_ANY);
 
-	tool_bar = std::make_unique<MainToolBar>(this, g_gui.aui_manager);
+	tool_bar = std::make_unique<MainToolBar>(this, g_gui.aui_manager.get());
 
-	g_gui.aui_manager->AddPane(g_gui.tabbook, wxAuiPaneInfo().CenterPane().Floatable(false).CloseButton(false).PaneBorder(false));
+	g_gui.aui_manager->AddPane(g_gui.tabbook.get(), wxAuiPaneInfo().CenterPane().Floatable(false).CloseButton(false).PaneBorder(false));
 
 	g_gui.aui_manager->Update();
 

@@ -268,7 +268,7 @@ public:
 
 	// Editor interface
 	wxAuiManager* GetAuiManager() const {
-		return aui_manager;
+		return aui_manager.get();
 	}
 	EditorTab* GetCurrentTab();
 	EditorTab* GetTab(int idx);
@@ -333,8 +333,8 @@ protected:
 	// Public members
 	//=========================================================================
 public:
-	wxAuiManager* aui_manager;
-	MapTabbook* tabbook;
+	std::unique_ptr<wxAuiManager> aui_manager;
+	std::unique_ptr<MapTabbook> tabbook;
 	MainFrame* root; // The main frame
 	CopyBuffer copybuffer;
 

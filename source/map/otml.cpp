@@ -41,19 +41,16 @@ OTMLNodePtr OTMLNode::create(std::string tag, std::string value) {
 }
 
 bool OTMLNode::hasChildren() const {
-	int count = 0;
-	for (OTMLNodeList::const_iterator it = m_children.begin(), end = m_children.end(); it != end; ++it) {
-		const OTMLNodePtr& child = *it;
+	for (const auto& child : m_children) {
 		if (!child->isNull()) {
-			count++;
+			return true;
 		}
 	}
-	return count > 0;
+	return false;
 }
 
 OTMLNodePtr OTMLNode::get(const std::string& childTag) const {
-	for (OTMLNodeList::const_iterator it = m_children.begin(), end = m_children.end(); it != end; ++it) {
-		const OTMLNodePtr& child = *it;
+	for (const auto& child : m_children) {
 		if (child->tag() == childTag && !child->isNull()) {
 			return child;
 		}
@@ -69,27 +66,18 @@ OTMLNodePtr OTMLNode::getIndex(int childIndex) const {
 }
 
 OTMLNodePtr OTMLNode::at(const std::string& childTag) {
-	OTMLNodePtr res;
-	for (OTMLNodeList::iterator it = m_children.begin(), end = m_children.end(); it != end; ++it) {
-		const OTMLNodePtr& child = *it;
+	for (const auto& child : m_children) {
 		if (child->tag() == childTag && !child->isNull()) {
-			res = child;
-			break;
+			return child;
 		}
 	}
-	if (!res) {
-		std::stringstream ss;
-		ss << "child node with tag '" << childTag << "' not found";
-		throw OTMLException(shared_from_this(), ss.str());
-	}
-	return res;
+
+	throw OTMLException(shared_from_this(), std::format("child node with tag '{}' not found", childTag));
 }
 
 OTMLNodePtr OTMLNode::atIndex(int childIndex) {
 	if (childIndex >= size() || childIndex < 0) {
-		std::stringstream ss;
-		ss << "child node with index '" << childIndex << "' not found";
-		throw OTMLException(shared_from_this(), ss.str());
+		throw OTMLException(shared_from_this(), std::format("child node with index '{}' not found", childIndex));
 	}
 	return m_children[childIndex];
 }
@@ -209,9 +197,7 @@ OTMLDocumentPtr OTMLDocument::create() {
 OTMLDocumentPtr OTMLDocument::parse(const std::string& fileName) {
 	std::ifstream fin(fileName.c_str());
 	if (!fin.good()) {
-		std::stringstream ss;
-		ss << "failed to open file " << fileName;
-		throw OTMLException(ss.str());
+		throw OTMLException(std::format("failed to open file {}", fileName));
 	}
 	return parse(fin, fileName);
 }
@@ -283,11 +269,13 @@ std::string OTMLEmitter::emitNode(const OTMLNodePtr& node, int currentDepth) {
 			}
 		}
 	}
-	for (int i = 0; i < node->size(); ++i) {
+	int i = 0;
+	for (const auto& child : node->children()) {
 		if (currentDepth >= 0 || i != 0) {
 			ss << "\n";
 		}
-		ss << emitNode(node->atIndex(i), currentDepth + 1);
+		ss << emitNode(child, currentDepth + 1);
+		++i;
 	}
 	return ss.str();
 }
@@ -310,7 +298,7 @@ std::string OTMLParser::getNextLine() {
 
 int OTMLParser::getLineDepth(const std::string& line, bool multilining) {
 	std::size_t spaces = 0;
-	while (line[spaces] == ' ') {
+	while (spaces < line.size() && line[spaces] == ' ') {
 		spaces++;
 	}
 
@@ -410,8 +398,8 @@ void OTMLParser::parseNode(const std::string& data) {
 			using Tokenizer = boost::tokenizer<boost::escaped_list_separator<char>>;
 			std::string tmp = value.substr(1, value.length() - 2);
 			Tokenizer tok(tmp);
-			for (Tokenizer::iterator it = tok.begin(), end = tok.end(); it != end; ++it) {
-				std::string v = *it;
+			for (const auto& v_tok : tok) {
+				std::string v = v_tok;
 				boost::trim(v);
 				node->writeIn(v);
 			}

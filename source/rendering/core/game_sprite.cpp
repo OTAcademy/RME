@@ -120,15 +120,20 @@ const AtlasRegion* GameSprite::getAtlasRegion(int _x, int _y, int _layer, int _c
 }
 
 GameSprite::TemplateImage* GameSprite::getTemplateImage(int sprite_index, const Outfit& outfit) {
-	// While this is linear lookup, it is very rare for the list to contain more than 4-8 entries, so it's faster than a hashmap anyways.
-	for (auto& img : instanced_templates) {
-		if (img->sprite_index == sprite_index) {
-			uint32_t lookHash = img->lookHead << 24 | img->lookBody << 16 | img->lookLegs << 8 | img->lookFeet;
-			if (outfit.getColorHash() == lookHash) {
-				return img.get();
-			}
+	// While this is linear lookup, it is very rare for the list to contain more than 4-8 entries,
+	// so it's faster than a hashmap anyways.
+	auto it = std::find_if(instanced_templates.begin(), instanced_templates.end(), [sprite_index, &outfit](const auto& img) {
+		if (img->sprite_index != sprite_index) {
+			return false;
 		}
+		uint32_t lookHash = img->lookHead << 24 | img->lookBody << 16 | img->lookLegs << 8 | img->lookFeet;
+		return outfit.getColorHash() == lookHash;
+	});
+
+	if (it != instanced_templates.end()) {
+		return it->get();
 	}
+
 	auto img = std::make_unique<TemplateImage>(this, sprite_index, outfit);
 	TemplateImage* ptr = img.get();
 	instanced_templates.push_back(std::move(img));

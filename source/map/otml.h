@@ -121,8 +121,8 @@ namespace otml_util {
 
 	class BadCast : public std::bad_cast {
 	public:
-		virtual ~BadCast() throw() { }
-		virtual const char* what() {
+		virtual ~BadCast() noexcept = default;
+		virtual const char* what() const noexcept override {
 			return "failed to cast value";
 		}
 	};
@@ -143,9 +143,9 @@ public:
 		m_what(error) { }
 	OTMLException(const OTMLNodePtr& node, const std::string& error);
 	OTMLException(const OTMLDocumentPtr& doc, const std::string& error, int line = -1);
-	virtual ~OTMLException() throw() { };
+	virtual ~OTMLException() noexcept = default;
 
-	virtual const char* what() const throw() {
+	virtual const char* what() const noexcept override {
 		return m_what.c_str();
 	}
 

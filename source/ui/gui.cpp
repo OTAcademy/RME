@@ -76,7 +76,6 @@ GUI::GUI() :
 }
 
 GUI::~GUI() {
-	delete aui_manager;
 }
 
 // OpenGL context management moved to GLContextManager
