@@ -40,10 +40,38 @@ public:
 		int end_nx = (max_x - 1) >> NODE_SHIFT;
 		int end_ny = (max_y - 1) >> NODE_SHIFT;
 
+		uint64_t last_key = 0;
+		bool has_cached = false;
+		GridCell* last_cell = nullptr;
+
 		for (int ny = start_ny; ny <= end_ny; ++ny) {
+			int cy = ny >> (CELL_SHIFT - NODE_SHIFT);
+			int local_ny = ny & (NODES_PER_CELL - 1);
+
 			for (int nx = start_nx; nx <= end_nx; ++nx) {
-				if (MapNode* node = getLeaf(nx << NODE_SHIFT, ny << NODE_SHIFT)) {
-					func(node, nx << NODE_SHIFT, ny << NODE_SHIFT);
+				int cx = nx >> (CELL_SHIFT - NODE_SHIFT);
+
+				uint64_t key = (static_cast<uint64_t>(static_cast<uint32_t>(cx)) << 32) | static_cast<uint64_t>(static_cast<uint32_t>(cy));
+
+				GridCell* cell = nullptr;
+				if (has_cached && key == last_key) {
+					cell = last_cell;
+				} else {
+					auto it = cells.find(key);
+					if (it != cells.end()) {
+						cell = it->second.get();
+					}
+					last_cell = cell;
+					last_key = key;
+					has_cached = true;
+				}
+
+				if (cell) {
+					int local_nx = nx & (NODES_PER_CELL - 1);
+					int idx = (local_ny << (CELL_SHIFT - NODE_SHIFT)) | local_nx;
+					if (MapNode* node = cell->nodes[idx].get()) {
+						func(node, nx << NODE_SHIFT, ny << NODE_SHIFT);
+					}
 				}
 			}
 		}
