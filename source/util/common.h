@@ -27,8 +27,6 @@
 #include <string>
 #include <string_view>
 
-#include "util/mt_rand.h"
-
 //
 inline bool testFlags(size_t flags, size_t test) {
 	return (flags & test) != 0;

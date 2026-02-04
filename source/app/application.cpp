@@ -114,7 +114,6 @@ bool Application::OnInit() {
 	std::cout << "This is free software: you are free to change and redistribute it." << std::endl;
 	std::cout << "There is NO WARRANTY, to the extent permitted by law." << std::endl;
 	std::cout << "Review COPYING in RME distribution for details." << std::endl;
-	mt_seed(time(nullptr));
 	srand(time(nullptr));
 
 	// Discover data directory

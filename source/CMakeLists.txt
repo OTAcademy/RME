@@ -287,7 +287,6 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/util/common.h
     ${CMAKE_CURRENT_LIST_DIR}/util/con_vector.h
     ${CMAKE_CURRENT_LIST_DIR}/util/json.h
-    ${CMAKE_CURRENT_LIST_DIR}/util/mt_rand.h
     ${CMAKE_CURRENT_LIST_DIR}/util/nanovg_canvas.h
 )
 
@@ -595,7 +594,6 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/tool_options_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/tool_options_surface.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/file_system.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/util/mt_rand.cpp
     ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxAwesomeBrandsArt.cpp
     ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxAwesomeRegularArt.cpp
     ${wxmaterialdesignartprovider_SOURCE_DIR}/MaterialDesign/wxAwesomeSolidArt.cpp
