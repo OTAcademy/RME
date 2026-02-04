@@ -3,9 +3,13 @@
 #include "game/items.h"
 #include "ui/gui.h"
 #include "app/managers/version_manager.h"
+#include "util/nvg_utils.h"
 #include <wx/dcbuffer.h>
 #include <wx/graphics.h>
 #include <wx/msgdlg.h>
+#include <nanovg.h>
+#include <format>
+#include "rendering/core/text_renderer.h"
 
 // ----------------------------------------------------------------------------
 // ItemDropTarget
@@ -47,6 +51,7 @@ bool RuleBuilderPanel::ItemDropTarget::OnDropText(wxCoord x, wxCoord y, const wx
 		newRule.fromId = itemId;
 		m_panel->m_rules.push_back(newRule);
 		m_panel->m_listener->OnRuleChanged();
+		m_panel->UpdateScrollbar((int)(m_panel->m_rules.size() + 1) * m_panel->m_rowHeight + m_panel->FromDIP(24));
 		m_panel->Refresh();
 		return true;
 	}
@@ -57,7 +62,7 @@ bool RuleBuilderPanel::ItemDropTarget::OnDropText(wxCoord x, wxCoord y, const wx
 wxDragResult RuleBuilderPanel::ItemDropTarget::OnDragOver(wxCoord x, wxCoord y, wxDragResult def) {
 	RuleBuilderPanel::HitResult hit = m_panel->HitTest(x, y);
 	m_panel->m_dragHover = hit;
-	m_panel->Refresh(); // Redraw for feedback
+	m_panel->Refresh();
 	return def;
 }
 
@@ -70,17 +75,15 @@ void RuleBuilderPanel::ItemDropTarget::OnLeave() {
 // RuleBuilderPanel
 // ----------------------------------------------------------------------------
 
-RuleBuilderPanel::RuleBuilderPanel(wxWindow* parent, Listener* listener) : wxControl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE),
-																		   m_listener(listener) {
-	SetBackgroundStyle(wxBG_STYLE_PAINT);
-	SetBackgroundColour(Theme::Get(Theme::Role::Surface));
+RuleBuilderPanel::RuleBuilderPanel(wxWindow* parent, Listener* listener) :
+	NanoVGCanvas(parent, wxID_ANY),
+	m_listener(listener) {
 
 	m_rowHeight = FromDIP(80);
 	m_sourceColWidth = FromDIP(120);
 
 	SetDropTarget(new ItemDropTarget(this));
 
-	Bind(wxEVT_PAINT, &RuleBuilderPanel::OnPaint, this);
 	Bind(wxEVT_SIZE, &RuleBuilderPanel::OnSize, this);
 	Bind(wxEVT_LEFT_DOWN, &RuleBuilderPanel::OnMouse, this);
 	Bind(wxEVT_RIGHT_DOWN, [this](wxMouseEvent& evt) {
@@ -92,6 +95,7 @@ RuleBuilderPanel::RuleBuilderPanel(wxWindow* parent, Listener* listener) : wxCon
 				if (m_listener) {
 					m_listener->OnRuleChanged();
 				}
+				UpdateScrollbar((int)(m_rules.size() + 1) * m_rowHeight + FromDIP(24));
 				Refresh();
 			}
 		} else if (hit.type == HitResult::Target && hit.ruleIndex != -1 && hit.targetIndex != -1) {
@@ -115,6 +119,7 @@ RuleBuilderPanel::~RuleBuilderPanel() { }
 
 void RuleBuilderPanel::SetRules(const std::vector<ReplacementRule>& rules) {
 	m_rules = rules;
+	UpdateScrollbar((int)(m_rules.size() + 1) * m_rowHeight + FromDIP(24));
 	Refresh();
 }
 
@@ -124,6 +129,7 @@ std::vector<ReplacementRule> RuleBuilderPanel::GetRules() const {
 
 void RuleBuilderPanel::Clear() {
 	m_rules.clear();
+	UpdateScrollbar(FromDIP(24) + m_rowHeight);
 	Refresh();
 }
 
@@ -153,16 +159,21 @@ wxSize RuleBuilderPanel::DoGetBestClientSize() const {
 }
 
 void RuleBuilderPanel::OnSize(wxSizeEvent& event) {
+	UpdateScrollbar((int)(m_rules.size() + 1) * m_rowHeight + FromDIP(24));
+	Refresh();
 	event.Skip();
 }
 
 RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 	int headerHeight = FromDIP(24);
+	int scrollPos = GetScrollPosition();
+	int contentY = y + scrollPos;
+
 	if (y < headerHeight) {
 		return { HitResult::None, -1, -1 };
 	}
 
-	int relY = y - headerHeight;
+	int relY = contentY - headerHeight;
 	int rowIndex = relY / m_rowHeight;
 
 	if (rowIndex < (int)m_rules.size()) {
@@ -177,12 +188,10 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 			if (targetIdx < m_rules[rowIndex].targets.size()) {
 				return { HitResult::Target, rowIndex, targetIdx };
 			}
-			// Still technically in target area (for adding new target)
 			return { HitResult::Target, rowIndex, -1 };
 		}
 	}
 
-	// Below all rows
 	return { HitResult::NewRule, -1, -1 };
 }
 
@@ -190,67 +199,88 @@ void RuleBuilderPanel::OnMouse(wxMouseEvent& event) {
 	event.Skip();
 }
 
-void RuleBuilderPanel::OnPaint(wxPaintEvent& event) {
-	wxAutoBufferedPaintDC dc(this);
-	dc.Clear();
-
-	wxGraphicsContext* gc = wxGraphicsContext::Create(dc);
-	if (!gc) {
-		return;
-	}
-
-	gc->SetAntialiasMode(wxANTIALIAS_DEFAULT);
-
-	wxColour textCol = Theme::Get(Theme::Role::Text);
-	wxColour subTextCol = Theme::Get(Theme::Role::TextSubtle);
-	wxColour accent = Theme::Get(Theme::Role::Accent);
-	wxColour borderCol = wxColour(60, 60, 60);
-
-	int w, h;
-	GetClientSize(&w, &h);
-
+void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 	int headerHeight = FromDIP(24);
 
-	// Header
-	dc.SetFont(Theme::GetFont(8, true));
-	dc.SetTextForeground(subTextCol);
-	dc.DrawText("Original", Theme::Grid(1), Theme::Grid(1));
-	dc.DrawText("Replacements", m_sourceColWidth + Theme::Grid(1), Theme::Grid(1));
-
-	dc.SetPen(wxPen(borderCol));
-	dc.DrawLine(0, headerHeight, w, headerHeight);
-
 	int y = headerHeight;
+	int scrollPos = GetScrollPosition();
+
+	wxColour textCol = Theme::Get(Theme::Role::Text);
+
+	// Create common colors
+	NVGcolor colBg = nvgRGBA(40, 40, 40, 255);
+	NVGcolor colText = nvgRGBA(255, 255, 255, 255);
+	NVGcolor colSubText = nvgRGBA(180, 180, 180, 255);
+	NVGcolor colBorder = nvgRGBA(60, 60, 60, 255);
+	NVGcolor colAccent = nvgRGBA(Theme::Get(Theme::Role::Accent).Red(), Theme::Get(Theme::Role::Accent).Green(), Theme::Get(Theme::Role::Accent).Blue(), 255);
+
+	// Header
+	nvgBeginPath(vg);
+	nvgMoveTo(vg, 0, headerHeight);
+	nvgLineTo(vg, width, headerHeight);
+	nvgStrokeColor(vg, colBorder);
+	nvgStrokeWidth(vg, 1.0f);
+	nvgStroke(vg);
+
+	nvgFontSize(vg, 12.0f);
+	nvgFontFace(vg, "sans");
+	nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
+	nvgFillColor(vg, colSubText);
+	nvgText(vg, 10, headerHeight / 2.0f, "Original", nullptr);
+	nvgText(vg, m_sourceColWidth + 10, headerHeight / 2.0f, "Replacements", nullptr);
 
 	// Draw Rules
 	for (size_t i = 0; i < m_rules.size(); ++i) {
 		const ReplacementRule& rule = m_rules[i];
 
-		// Alternating row background?
+		// Alternating row background
 		if (i % 2 == 1) {
-			dc.SetBrush(wxBrush(wxColour(40, 40, 40)));
-			dc.SetPen(*wxTRANSPARENT_PEN);
-			dc.DrawRectangle(0, y, w, m_rowHeight);
+			nvgBeginPath(vg);
+			nvgRect(vg, 0, y, width, m_rowHeight);
+			nvgFillColor(vg, colBg);
+			nvgFill(vg);
 		}
 
 		// Source Item
 		if (rule.fromId != 0) {
-			const ItemType& it = g_items.getItemType(rule.fromId);
-			Sprite* s = g_gui.gfx.getSprite(it.clientID);
-			if (s) {
-				s->DrawTo(&dc, SPRITE_SIZE_64x64, Theme::Grid(1), y + (m_rowHeight - 64) / 2);
+			int tex = GetCachedImage(rule.fromId);
+			if (tex == 0) {
+				tex = NvgUtils::CreateItemTexture(vg, rule.fromId);
+				if (tex > 0) {
+					AddCachedImage(rule.fromId, tex);
+				}
 			}
-			// ID text
-			dc.SetFont(Theme::GetFont(8));
-			dc.SetTextForeground(textCol);
-			dc.DrawText(wxString::Format("%d", rule.fromId), Theme::Grid(1) + 64 + 5, y + (m_rowHeight - 12) / 2);
+
+			if (tex > 0) {
+				int tw, th;
+				nvgImageSize(vg, tex, &tw, &th);
+				float scale = 64.0f / (float)std::max(tw, th);
+				float dw = (float)tw * scale;
+				float dh = (float)th * scale;
+
+				float imgX = 10;
+				float imgY = y + (m_rowHeight - 64) / 2.0f;
+
+				NVGpaint imgPaint = nvgImagePattern(vg, imgX + (64 - dw) / 2.0f, imgY + (64 - dh) / 2, dw, dh, 0.0f, tex, 1.0f);
+				nvgBeginPath(vg);
+				nvgRect(vg, imgX + (64 - dw) / 2.0f, imgY + (64 - dh) / 2, dw, dh);
+				nvgFillPaint(vg, imgPaint);
+				nvgFill(vg);
+			}
+
+			// ID Text
+			nvgFillColor(vg, colText);
+			nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
+			nvgText(vg, 10 + 64 + 10, y + m_rowHeight / 2.0f, std::format("{}", rule.fromId).c_str(), nullptr);
 		}
 
 		// Highlight Source Drop
 		if (m_dragHover.type == HitResult::Source && m_dragHover.ruleIndex == (int)i) {
-			gc->SetPen(wxPen(accent, 2));
-			gc->SetBrush(*wxTRANSPARENT_BRUSH);
-			gc->DrawRectangle(1, y + 1, m_sourceColWidth - 2, m_rowHeight - 2);
+			nvgBeginPath(vg);
+			nvgRect(vg, 1, y + 1, m_sourceColWidth - 2, m_rowHeight - 2);
+			nvgStrokeColor(vg, colAccent);
+			nvgStrokeWidth(vg, 2.0f);
+			nvgStroke(vg);
 		}
 
 		// Targets
@@ -260,62 +290,87 @@ void RuleBuilderPanel::OnPaint(wxPaintEvent& event) {
 		for (size_t t = 0; t < rule.targets.size(); ++t) {
 			const auto& target = rule.targets[t];
 
-			// Draw Target Sprite
-			const ItemType& it = g_items.getItemType(target.id);
-			Sprite* s = g_gui.gfx.getSprite(it.clientID);
-			if (s) {
-				s->DrawTo(&dc, SPRITE_SIZE_64x64, x, y + (m_rowHeight - 64) / 2);
+			int tex = GetCachedImage(target.id);
+			if (tex == 0) {
+				tex = NvgUtils::CreateItemTexture(vg, target.id);
+				if (tex > 0) {
+					AddCachedImage(target.id, tex);
+				}
 			}
 
-			// Probability overlay?
+			if (tex > 0) {
+				int tw, th;
+				nvgImageSize(vg, tex, &tw, &th);
+				float scale = 64.0f / (float)std::max(tw, th);
+				float dw = (float)tw * scale;
+				float dh = (float)th * scale;
+
+				float imgX = x; // Starts after source col
+				float imgY = y + (m_rowHeight - 64) / 2.0f;
+
+				NVGpaint imgPaint = nvgImagePattern(vg, imgX + (64 - dw) / 2.0f, imgY + (64 - dh) / 2, dw, dh, 0.0f, tex, 1.0f);
+				nvgBeginPath(vg);
+				nvgRect(vg, imgX + (64 - dw) / 2.0f, imgY + (64 - dh) / 2, dw, dh);
+				nvgFillPaint(vg, imgPaint);
+				nvgFill(vg);
+			}
+
+			// Probability overlay
 			if (target.probability != 100) {
-				wxString prob = wxString::Format("%d", target.probability);
-				wxFont smallFont = Theme::GetFont(7);
-				dc.SetFont(smallFont);
-				wxSize sz = dc.GetTextExtent(prob);
-				dc.SetTextForeground(*wxWHITE);
-				// Make a tiny box for readability
-				dc.SetBrush(wxBrush(wxColour(0, 0, 0, 180)));
-				dc.SetPen(*wxTRANSPARENT_PEN);
-				dc.DrawRectangle(x + 64 - sz.x, y + (m_rowHeight - 64) / 2 + 64 - sz.y, sz.x, sz.y);
-				dc.DrawText(prob, x + 64 - sz.x, y + (m_rowHeight - 64) / 2 + 64 - sz.y);
+				std::string prob = std::to_string(target.probability);
+				nvgFontSize(vg, 10.0f);
+				nvgTextAlign(vg, NVG_ALIGN_RIGHT | NVG_ALIGN_BOTTOM);
+
+				float txtX = x + 64 - 2;
+				float txtY = y + (m_rowHeight - 64) / 2.0f + 64 - 2;
+
+				nvgFillColor(vg, nvgRGBA(0, 0, 0, 180));
+
+				// Bg check not trivially easy for text bounds without more calc, skip bg for now or assume size
+				// nvgTextBounds...
+
+				nvgFillColor(vg, colText);
+				nvgText(vg, txtX, txtY, prob.c_str(), nullptr);
 			}
 
 			x += itemWithPad;
 		}
 
-		// Highlight Target Drop for this row
+		// Highlight Target Drop
 		if (m_dragHover.type == HitResult::Target && m_dragHover.ruleIndex == (int)i) {
-			gc->SetPen(wxPen(accent, 2));
-			gc->SetBrush(*wxTRANSPARENT_BRUSH);
-			// Draw rect around the "add new target" slot at end of list
-			gc->DrawRectangle(x, y + (m_rowHeight - 64) / 2, 64, 64);
+			nvgBeginPath(vg);
+			nvgRect(vg, x, y + (m_rowHeight - 64) / 2, 64, 64);
+			nvgStrokeColor(vg, colAccent);
+			nvgStrokeWidth(vg, 2.0f);
+			nvgStroke(vg);
 		}
 
 		// Divider
-		dc.SetPen(wxPen(borderCol));
-		dc.DrawLine(0, y + m_rowHeight, w, y + m_rowHeight);
+		nvgBeginPath(vg);
+		nvgMoveTo(vg, 0, y + m_rowHeight);
+		nvgLineTo(vg, width, y + m_rowHeight);
+		nvgStrokeColor(vg, colBorder);
+		nvgStrokeWidth(vg, 1.0f);
+		nvgStroke(vg);
 
 		y += m_rowHeight;
 	}
 
-	// "New Rule" Drop Area
-	// If dragging, show a placeholder row if hovering below
+	// New Rule Drop
 	if (m_dragHover.type == HitResult::NewRule) {
-		dc.SetPen(wxPen(accent, 2, wxPENSTYLE_DOT)); // Dotted line?
-		dc.SetBrush(*wxTRANSPARENT_BRUSH);
-		dc.DrawRectangle(Theme::Grid(1), y + Theme::Grid(1), w - Theme::Grid(2), m_rowHeight);
+		nvgBeginPath(vg);
+		nvgRect(vg, 10, y + 10, width - 20, m_rowHeight);
+		nvgStrokeColor(vg, colAccent);
+		// Dash? nv features not simple dash.
+		nvgStrokeWidth(vg, 2.0f);
+		nvgStroke(vg);
 
-		dc.SetFont(Theme::GetFont(10));
-		dc.SetTextForeground(accent);
-		dc.DrawText("Drop to Add New Rule", Theme::Grid(4), y + Theme::Grid(1) + 10);
+		nvgFillColor(vg, colAccent);
+		nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+		nvgText(vg, width / 2.0f, y + m_rowHeight / 2.0f + 10, "Drop to Add New Rule", nullptr);
 	} else if (m_rules.empty()) {
-		// Empty state
-		dc.SetFont(Theme::GetFont(10));
-		dc.SetTextForeground(subTextCol);
-		wxSize sz = dc.GetTextExtent("Drag items here to create rules");
-		dc.DrawText("Drag items here to create rules", (w - sz.x) / 2, y + 20);
+		nvgFillColor(vg, colSubText);
+		nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+		nvgText(vg, width / 2.0f, y + 30.0f, "Drag items here to create rules", nullptr);
 	}
-
-	delete gc;
 }

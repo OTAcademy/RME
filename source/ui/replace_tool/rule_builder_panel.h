@@ -3,10 +3,11 @@
 
 #include "app/main.h"
 #include "ui/replace_tool/rule_manager.h"
-#include <wx/control.h>
+#include "util/nanovg_canvas.h"
+#include "ui/replace_tool/rule_manager.h"
 #include <wx/dnd.h>
 
-class RuleBuilderPanel : public wxControl {
+class RuleBuilderPanel : public NanoVGCanvas {
 public:
 	class Listener {
 	public:
@@ -24,8 +25,10 @@ public:
 	// wxControl overrides
 	wxSize DoGetBestClientSize() const override;
 
+protected:
+	void OnNanoVGPaint(NVGcontext* vg, int width, int height) override;
+
 private:
-	void OnPaint(wxPaintEvent& event);
 	void OnMouse(wxMouseEvent& event);
 	void OnSize(wxSizeEvent& event);
 
@@ -36,9 +39,9 @@ private:
 					Target,
 					NewRule // Drop area for creating a new rule
 		};
-		Type type;
-		int ruleIndex; // Index into m_rules
-		int targetIndex; // Index into m_rules[ruleIndex].targets (if Target)
+		Type type = None; // Default init
+		int ruleIndex = -1; // Index into m_rules
+		int targetIndex = -1; // Index into m_rules[ruleIndex].targets (if Target)
 	};
 	HitResult HitTest(int x, int y) const;
 	void DistributeProbabilities(int ruleIndex);

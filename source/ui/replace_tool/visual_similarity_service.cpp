@@ -332,9 +332,6 @@ std::vector<uint16_t> VisualSimilarityService::FindSimilar(uint16_t itemId, size
 		}
 	}
 
-#include <memory>
-
-	// ... inside FindSimilar ...
 	struct ScoredItem {
 		uint16_t id;
 		double score;

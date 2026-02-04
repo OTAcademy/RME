@@ -9,6 +9,7 @@ bool ReplacementEngine::ResolveReplacement(uint16_t& resultId, const Replacement
 
 	// According to requirement: Roll for first, if fail, roll for second, etc.
 	// This is slightly different from a proportional distribution but follows the requested logic.
+	// Note: This means subsequent targets have a reduced effective probability.
 	std::uniform_int_distribution<int> dist(1, 100);
 
 	for (const auto& target : rule.targets) {

@@ -51,9 +51,12 @@ public:
 	}
 
 	static wxFont GetFont(int pointSize = 9, bool bold = false) {
-		return wxFont(wxFontInfo(wxWindow::FromDIP(pointSize, nullptr))
-						  .FaceName("Segoe UI")
-						  .Bold(bold));
+		wxFont font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+		font.SetPointSize(wxWindow::FromDIP(pointSize, nullptr));
+		if (bold) {
+			font.MakeBold();
+		}
+		return font;
 	}
 };
 

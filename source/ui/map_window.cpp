@@ -23,6 +23,12 @@
 #include "editor/editor.h"
 #include "ui/replace_tool/replace_tool_window.h"
 
+void ReplaceToolWindowDeleter::operator()(ReplaceToolWindow* w) {
+	if (w) {
+		w->Destroy();
+	}
+}
+
 MapWindow::MapWindow(wxWindow* parent, Editor& editor) :
 	wxPanel(parent, PANE_MAIN),
 	editor(editor),
@@ -70,7 +76,7 @@ void MapWindow::ShowReplaceItemsDialog(bool selectionOnly) {
 		return;
 	}
 
-	replaceItemsDialog = new ReplaceToolWindow(this, &editor);
+	replaceItemsDialog.reset(new ReplaceToolWindow(this, &editor));
 	replaceItemsDialog->Bind(wxEVT_CLOSE_WINDOW, &MapWindow::OnReplaceItemsDialogClose, this);
 	replaceItemsDialog->Show();
 }
@@ -84,8 +90,8 @@ void MapWindow::CloseReplaceItemsDialog() {
 void MapWindow::OnReplaceItemsDialogClose(wxCloseEvent& event) {
 	if (replaceItemsDialog) {
 		replaceItemsDialog->Unbind(wxEVT_CLOSE_WINDOW, &MapWindow::OnReplaceItemsDialogClose, this);
-		replaceItemsDialog->Destroy();
-		replaceItemsDialog = nullptr;
+		// unique_ptr will call Destroy() via custom deleter
+		replaceItemsDialog.reset();
 	}
 }
 

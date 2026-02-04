@@ -112,6 +112,13 @@ protected:
 	void DeleteCachedImage(uint32_t id);
 
 	/**
+	 * @brief Adds an externally created image to the cache.
+	 * @param id Unique identifier
+	 * @param imageHandle NanoVG image handle
+	 */
+	void AddCachedImage(uint32_t id, int imageHandle);
+
+	/**
 	 * @brief Clears all cached images.
 	 * Call this when the data set changes entirely.
 	 */

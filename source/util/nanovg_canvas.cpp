@@ -196,6 +196,20 @@ void NanoVGCanvas::DeleteCachedImage(uint32_t id) {
 	}
 }
 
+void NanoVGCanvas::AddCachedImage(uint32_t id, int imageHandle) {
+	if (imageHandle > 0) {
+		// If exists, delete old? Or assume caller handles it?
+		// For safety, delete old if we overwrite.
+		auto it = m_imageCache.find(id);
+		if (it != m_imageCache.end()) {
+			if (m_nvg) {
+				nvgDeleteImage(m_nvg.get(), it->second);
+			}
+		}
+		m_imageCache[id] = imageHandle;
+	}
+}
+
 void NanoVGCanvas::ClearImageCache() {
 	if (!m_nvg) {
 		return;

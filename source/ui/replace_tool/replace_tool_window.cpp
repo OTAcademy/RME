@@ -15,6 +15,19 @@
 #include <wx/textdlg.h>
 #include <wx/artprov.h>
 
+// Brush includes
+#include "brushes/brush.h"
+#include "brushes/ground/ground_brush.h"
+#include "brushes/ground/auto_border.h"
+#include "brushes/wall/wall_brush.h"
+#include "brushes/doodad/doodad_brush.h"
+#include "brushes/table/table_brush_items.h"
+#include "brushes/carpet/carpet_brush_items.h"
+#include "brushes/door/door_brush.h"
+#include "brushes/table/table_brush.h"
+#include "brushes/carpet/carpet_brush.h"
+#include <wx/splitter.h>
+
 ReplaceToolWindow::ReplaceToolWindow(wxWindow* parent, Editor* editor) : wxDialog(parent, wxID_ANY, "Advanced Replace Tool", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
 																		 editor(editor) {
 
@@ -44,19 +57,6 @@ ReplaceToolWindow::ReplaceToolWindow(wxWindow* parent, Editor* editor) : wxDialo
 }
 
 ReplaceToolWindow::~ReplaceToolWindow() { }
-
-// Brush includes
-#include "brushes/brush.h"
-#include "brushes/ground/ground_brush.h"
-#include "brushes/ground/auto_border.h"
-#include "brushes/wall/wall_brush.h"
-#include "brushes/doodad/doodad_brush.h"
-#include "brushes/table/table_brush_items.h"
-#include "brushes/carpet/carpet_brush_items.h"
-#include "brushes/door/door_brush.h"
-#include "brushes/table/table_brush.h"
-#include "brushes/carpet/carpet_brush.h"
-#include <wx/splitter.h>
 
 void ReplaceToolWindow::InitLayout() {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -140,7 +140,6 @@ void ReplaceToolWindow::InitLayout() {
 	mainSizer->Add(col1, 3, wxEXPAND); // Flex 3
 
 	// PAGE 3: Similarity Grid
-	wxPanel* similarPage = new wxPanel(this); // Added back if missing? Wait, was it a separate column?
 	// It was actually in COLUMN 3 of the main sizer in previous design.
 
 	// Populate Brushes
@@ -290,13 +289,11 @@ void ReplaceToolWindow::PopulateRelatedItems(uint16_t brushLookId) {
 
 	try {
 		if (GroundBrush* gb = brush->asGround()) {
-			for (const auto* block : gb->borders) {
-				if (block && block->autoborder) {
-					for (uint32_t tileId : block->autoborder->tiles) {
-						if (tileId != 0 && g_items.typeExists(tileId)) {
-							related.push_back(tileId);
-						}
-					}
+			std::vector<uint16_t> items;
+			gb->getRelatedItems(items);
+			for (uint16_t id : items) {
+				if (id != 0 && g_items.typeExists(id)) {
+					related.push_back(id);
 				}
 			}
 		} else if (WallBrush* wb = brush->asWall()) {
@@ -354,7 +351,11 @@ void ReplaceToolWindow::PopulateRelatedItems(uint16_t brushLookId) {
 				}
 			}
 		}
-	} catch (...) { }
+	} catch (const std::exception& e) {
+		wxLogError("Error populating related items: %s", e.what());
+	} catch (...) {
+		wxLogError("Unknown error populating related items.");
+	}
 
 	if (brushLookId != 0) {
 		related.push_back(brushLookId);

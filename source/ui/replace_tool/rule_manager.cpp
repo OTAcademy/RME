@@ -40,13 +40,33 @@ RuleManager::RuleManager() {
 	wxFileName::Mkdir(GetRulesDir(), 0777, wxPATH_MKDIR_FULL);
 }
 
+// Helper to validate rule set names
+static bool IsValidRuleSetName(const std::string& name) {
+	if (name.empty()) {
+		return false;
+	}
+	// Allow alphanumeric, -, _
+	for (char c : name) {
+		if (!isalnum(c) && c != '-' && c != '_') {
+			return false;
+		}
+	}
+	return true;
+}
+
 std::string RuleManager::GetRulesDir() {
-	return (wxStandardPaths::Get().GetUserDataDir() + "\\replacer_rules").ToStdString();
+	wxFileName path(wxStandardPaths::Get().GetUserDataDir(), "replacer_rules");
+	return path.GetFullPath().ToStdString();
 }
 
 bool RuleManager::SaveRuleSet(const RuleSet& ruleSet) {
-	std::string path = GetRulesDir() + "\\" + ruleSet.name + ".json";
-	std::ofstream file(path);
+	if (!IsValidRuleSetName(ruleSet.name)) {
+		wxLogError("Invalid rule set name: %s", ruleSet.name);
+		return false;
+	}
+
+	wxFileName path(GetRulesDir(), ruleSet.name, "json");
+	std::ofstream file(path.GetFullPath().ToStdString());
 	if (!file.is_open()) {
 		return false;
 	}
@@ -57,9 +77,14 @@ bool RuleManager::SaveRuleSet(const RuleSet& ruleSet) {
 }
 
 RuleSet RuleManager::LoadRuleSet(const std::string& name) {
-	std::string path = GetRulesDir() + "\\" + name + ".json";
-	std::ifstream file(path);
 	RuleSet ruleSet;
+	if (!IsValidRuleSetName(name)) {
+		wxLogError("Invalid rule set name: %s", name);
+		return ruleSet;
+	}
+
+	wxFileName path(GetRulesDir(), name, "json");
+	std::ifstream file(path.GetFullPath().ToStdString());
 	if (!file.is_open()) {
 		return ruleSet;
 	}
@@ -68,8 +93,10 @@ RuleSet RuleManager::LoadRuleSet(const std::string& name) {
 		nlohmann::json j;
 		file >> j;
 		ruleSet = j.get<RuleSet>();
+	} catch (const std::exception& e) {
+		wxLogError("Failed to load rule set '%s': %s", name, e.what());
 	} catch (...) {
-		// Handle error
+		wxLogError("Failed to load rule set '%s' due to an unknown error.", name);
 	}
 	return ruleSet;
 }

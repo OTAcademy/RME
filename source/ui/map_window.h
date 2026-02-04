@@ -21,6 +21,11 @@
 #include "map/position.h"
 #include "editor/editor.h"
 class ReplaceToolWindow;
+#include <memory>
+
+struct ReplaceToolWindowDeleter {
+	void operator()(ReplaceToolWindow* w);
+};
 
 class MapCanvas;
 class DCButton;
@@ -93,7 +98,7 @@ protected:
 	wxScrollBar* vScroll;
 
 private:
-	ReplaceToolWindow* replaceItemsDialog;
+	std::unique_ptr<ReplaceToolWindow, ReplaceToolWindowDeleter> replaceItemsDialog;
 	Position previous_position;
 
 	friend class MainFrame;

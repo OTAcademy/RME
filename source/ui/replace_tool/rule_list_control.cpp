@@ -84,21 +84,26 @@ void RuleListControl::OnPaint(wxPaintEvent& event) {
 }
 
 void RuleListControl::OnMouse(wxMouseEvent& event) {
-	int scrollPos = GetScrollPos(wxVERTICAL);
-	int y = event.GetY() + scrollPos;
-	int idx = y / m_itemHeight;
-
 	int oldHover = m_hoveredIndex;
-	if (idx >= 0 && idx < (int)m_ruleSetNames.size()) {
-		m_hoveredIndex = idx;
-	} else {
-		m_hoveredIndex = -1;
-	}
 
-	if (event.LeftDown() && m_hoveredIndex != -1) {
-		m_selectedIndex = m_hoveredIndex;
-		if (m_listener) {
-			m_listener->OnRuleSelected(RuleManager::Get().LoadRuleSet(m_ruleSetNames[m_selectedIndex]));
+	if (event.GetEventType() == wxEVT_LEAVE_WINDOW) {
+		m_hoveredIndex = -1;
+	} else {
+		int scrollPos = GetScrollPos(wxVERTICAL);
+		int y = event.GetY() + scrollPos;
+		int idx = y / m_itemHeight;
+
+		if (idx >= 0 && idx < (int)m_ruleSetNames.size()) {
+			m_hoveredIndex = idx;
+		} else {
+			m_hoveredIndex = -1;
+		}
+
+		if (event.LeftDown() && m_hoveredIndex != -1) {
+			m_selectedIndex = m_hoveredIndex;
+			if (m_listener) {
+				m_listener->OnRuleSelected(RuleManager::Get().LoadRuleSet(m_ruleSetNames[m_selectedIndex]));
+			}
 		}
 	}
 

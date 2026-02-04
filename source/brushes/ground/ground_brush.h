@@ -25,7 +25,6 @@
 class GroundBrush : public TerrainBrush {
 	friend class GroundBrushLoader;
 	friend class GroundBorderCalculator;
-	friend class ReplaceToolWindow;
 
 protected:
 	struct BorderBlock;
@@ -47,6 +46,8 @@ public:
 
 	void draw(BaseMap* map, Tile* tile, void* parameter) override;
 	void undraw(BaseMap* map, Tile* tile) override;
+	void getRelatedItems(std::vector<uint16_t>& items) override;
+
 	static void doBorders(BaseMap* map, Tile* tile);
 	static const BorderBlock* getBrushTo(GroundBrush* first, GroundBrush* second);
 
