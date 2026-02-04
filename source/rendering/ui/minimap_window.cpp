@@ -29,6 +29,10 @@
 
 #include "rendering/drawers/minimap_drawer.h"
 
+#define NANOVG_GL3
+#include <nanovg.h>
+#include <nanovg_gl.h>
+
 // Helper to create attributes
 static wxGLAttributes& GetCoreProfileAttributes() {
 	static wxGLAttributes vAttrs = []() {
@@ -61,6 +65,10 @@ MinimapWindow::MinimapWindow(wxWindow* parent) :
 }
 
 MinimapWindow::~MinimapWindow() {
+	if (context && nvg) {
+		SetCurrent(*context);
+		nvgDeleteGL3(nvg);
+	}
 }
 
 void MinimapWindow::OnSize(wxSizeEvent& event) {
@@ -104,6 +112,10 @@ void MinimapWindow::OnPaint(wxPaintEvent& event) {
 		gladInitialized = true;
 	}
 
+	if (!nvg) {
+		nvg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+	}
+
 	if (!g_gui.IsEditorOpen()) {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -115,6 +127,29 @@ void MinimapWindow::OnPaint(wxPaintEvent& event) {
 
 	// Mock dc passed to Draw, unused by new GL implementation
 	drawer->Draw(dc, GetSize(), editor, canvas);
+
+	// Glass Overlay
+	if (nvg) {
+		int w, h;
+		GetClientSize(&w, &h);
+		nvgBeginFrame(nvg, w, h, 1.0f);
+
+		// Subtle glass border
+		nvgBeginPath(nvg);
+		nvgRoundedRect(nvg, 1.5f, 1.5f, w - 3.0f, h - 3.0f, 4.0f);
+		nvgStrokeColor(nvg, nvgRGBA(255, 255, 255, 60));
+		nvgStrokeWidth(nvg, 2.0f);
+		nvgStroke(nvg);
+
+		// Inner glow
+		NVGpaint glow = nvgBoxGradient(nvg, 0, 0, w, h, 4.0f, 20.0f, nvgRGBA(255, 255, 255, 10), nvgRGBA(0, 0, 0, 40));
+		nvgBeginPath(nvg);
+		nvgRoundedRect(nvg, 0, 0, w, h, 4.0f);
+		nvgFillPaint(nvg, glow);
+		nvgFill(nvg);
+
+		nvgEndFrame(nvg);
+	}
 
 	SwapBuffers();
 }

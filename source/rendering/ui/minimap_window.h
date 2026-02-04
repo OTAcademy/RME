@@ -21,6 +21,8 @@
 #include <wx/glcanvas.h>
 #include <memory>
 
+struct NVGcontext;
+
 class MinimapDrawer;
 class MinimapWindow : public wxGLCanvas {
 public:
@@ -41,6 +43,7 @@ protected:
 	std::unique_ptr<MinimapDrawer> drawer;
 	wxTimer update_timer;
 	std::unique_ptr<wxGLContext> context;
+	NVGcontext* nvg = nullptr;
 };
 
 #endif

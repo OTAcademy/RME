@@ -229,6 +229,53 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			TextRenderer::EndFrame();
 		}
 
+		// Floating HUD (Selection & Cursor Info)
+		{
+			TextRenderer::BeginFrame(GetSize().x, GetSize().y);
+			NVGcontext* vg = TextRenderer::GetContext();
+			if (vg) {
+				int w = GetSize().x;
+				int h = GetSize().y;
+
+				// Info string
+				std::stringstream ss;
+				ss << "Pos: " << last_cursor_map_x << ", " << last_cursor_map_y << ", " << last_cursor_map_z;
+				if (editor.selection.size() > 0) {
+					ss << " | Sel: " << editor.selection.size();
+				}
+
+				std::string text = ss.str();
+				float bounds[4];
+				nvgFontSize(vg, 14.0f);
+				nvgFontFace(vg, "sans");
+				nvgTextBounds(vg, 0, 0, text.c_str(), nullptr, bounds);
+
+				float textW = bounds[2] - bounds[0];
+				float padding = 8.0f;
+				float hudW = textW + padding * 2;
+				float hudH = 24.0f;
+				float hudX = w - hudW - 10.0f;
+				float hudY = h - hudH - 10.0f;
+
+				// Glass Background
+				nvgBeginPath(vg);
+				nvgRoundedRect(vg, hudX, hudY, hudW, hudH, 4.0f);
+				nvgFillColor(vg, nvgRGBA(0, 0, 0, 160));
+				nvgFill(vg);
+
+				// Border
+				nvgStrokeColor(vg, nvgRGBA(255, 255, 255, 40));
+				nvgStrokeWidth(vg, 1.0f);
+				nvgStroke(vg);
+
+				// Text
+				nvgFillColor(vg, nvgRGBA(255, 255, 255, 220));
+				nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
+				nvgText(vg, hudX + padding, hudY + hudH * 0.5f, text.c_str(), nullptr);
+			}
+			TextRenderer::EndFrame();
+		}
+
 		drawer->ClearTooltips();
 	}
 
