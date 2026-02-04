@@ -459,6 +459,11 @@ protected:
 	bool loadFromOtbVer2(BinaryNode* itemNode, wxString& error, wxArrayString& warnings);
 	bool loadFromOtbVer3(BinaryNode* itemNode, wxString& error, wxArrayString& warnings);
 
+	void parseItemTypeAttribute(ItemType& it, const std::string& value);
+	void parseSlotTypeAttribute(ItemType& it, const std::string& value);
+	void parseWeaponTypeAttribute(ItemType& it, const std::string& value);
+	void parseFloorChangeAttribute(ItemType& it, const std::string& value);
+
 protected:
 	// Count of GameSprite types
 	uint16_t item_count;
