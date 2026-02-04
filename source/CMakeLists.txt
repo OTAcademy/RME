@@ -199,6 +199,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/light_drawer.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/sprite_icon_generator.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/tile_describer.h
+    ${CMAKE_CURRENT_LIST_DIR}/rendering/postprocess/post_process_manager.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/about_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/add_item_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/add_tileset_window.h
@@ -507,6 +508,10 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/light_drawer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/sprite_icon_generator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/utilities/tile_describer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/rendering/postprocess/post_process_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/rendering/postprocess/effects/screen.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/rendering/postprocess/effects/scanline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/rendering/postprocess/effects/xbrz.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/about_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/add_item_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/add_tileset_window.cpp

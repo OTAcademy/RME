@@ -216,9 +216,10 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 		drawer->Release();
 		// BatchRenderer::End(); call removed
 
-		// Draw UI (Tooltips & Overlays) using NanoVG
-		if (options.show_tooltips || options.show_creatures) {
+		// Draw UI (Tooltips, Overlays & HUD) using NanoVG
+		if (options.show_tooltips || options.show_creatures || true) {
 			TextRenderer::BeginFrame(GetSize().x, GetSize().y);
+			NVGcontext* vg = TextRenderer::GetContext();
 
 			if (options.show_creatures) {
 				drawer->DrawCreatureNames();
@@ -226,6 +227,59 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			if (options.show_tooltips) {
 				drawer->DrawTooltips();
 			}
+
+			// Floating HUD (Selection & Cursor Info)
+			if (vg) {
+				int w = GetSize().x;
+				int h = GetSize().y;
+
+				bool needs_update = (editor.selection.size() != hud_cached_selection_count || last_cursor_map_x != hud_cached_x || last_cursor_map_y != hud_cached_y || last_cursor_map_z != hud_cached_z);
+
+				if (needs_update || hud_cached_text.empty()) {
+					char buffer[128];
+					if (editor.selection.size() > 0) {
+						snprintf(buffer, sizeof(buffer), "Pos: %d, %d, %d | Sel: %zu", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z, editor.selection.size());
+					} else {
+						snprintf(buffer, sizeof(buffer), "Pos: %d, %d, %d", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z);
+					}
+
+					hud_cached_text = buffer;
+					hud_cached_selection_count = editor.selection.size();
+					hud_cached_x = last_cursor_map_x;
+					hud_cached_y = last_cursor_map_y;
+					hud_cached_z = last_cursor_map_z;
+
+					nvgFontSize(vg, 14.0f);
+					nvgFontFace(vg, "sans");
+					nvgTextBounds(vg, 0, 0, hud_cached_text.c_str(), nullptr, hud_cached_bounds);
+				}
+
+				float textW = hud_cached_bounds[2] - hud_cached_bounds[0];
+				float padding = 8.0f;
+				float hudW = textW + padding * 2;
+				float hudH = 24.0f;
+				float hudX = w - hudW - 10.0f;
+				float hudY = h - hudH - 10.0f;
+
+				// Glass Background
+				nvgBeginPath(vg);
+				nvgRoundedRect(vg, hudX, hudY, hudW, hudH, 4.0f);
+				nvgFillColor(vg, nvgRGBA(0, 0, 0, 160));
+				nvgFill(vg);
+
+				// Border
+				nvgBeginPath(vg);
+				nvgRoundedRect(vg, hudX, hudY, hudW, hudH, 4.0f);
+				nvgStrokeColor(vg, nvgRGBA(255, 255, 255, 40));
+				nvgStrokeWidth(vg, 1.0f);
+				nvgStroke(vg);
+
+				// Text
+				nvgFillColor(vg, nvgRGBA(255, 255, 255, 220));
+				nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
+				nvgText(vg, hudX + padding, hudY + hudH * 0.5f, hud_cached_text.c_str(), nullptr);
+			}
+
 			TextRenderer::EndFrame();
 		}
 

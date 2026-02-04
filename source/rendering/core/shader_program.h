@@ -24,6 +24,10 @@ public:
 	void SetVec4(const std::string& name, const glm::vec4& value) const;
 	void SetMat4(const std::string& name, const glm::mat4& value) const;
 
+	bool IsValid() const {
+		return program_id != 0;
+	}
+
 	GLuint GetID() const {
 		return program_id;
 	}
