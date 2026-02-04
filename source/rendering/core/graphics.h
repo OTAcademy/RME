@@ -23,6 +23,12 @@
 #include <deque>
 #include <memory>
 #include <map>
+
+struct NVGcontext;
+struct NVGDeleter {
+	void operator()(NVGcontext* nvg) const;
+};
+
 #include <unordered_map>
 #include <list>
 #include <vector>
@@ -216,7 +222,7 @@ public:
 		int lookMount, lookAddon, lookMountHead, lookMountBody, lookMountLegs, lookMountFeet;
 
 		bool operator==(const RenderKey& rk) const {
-			return size == rk.size && colorHash == rk.colorHash && mountColorHash == rk.mountColorHash && lookMount == rk.lookMount && lookAddon == rk.lookAddon && lookMountHead == rk.lookMountHead && lookMountBody == rk.lookMountBody && lookMountLegs == rk.lookMountLegs && lookMountFeet == rk.lookMountFeet;
+			return size == rk.size && colorHash == rk.colorHash && mountColorHash == rk.mountColorHash && lookMount == rk.lookMount && lookAddon == rk.lookAddon && lookMountHead == rk.lookMountHead && lookMountBody == rk.lookMountBody && lookMountLegs == rk.lookMountLegs && rk.lookMountFeet == lookMountFeet;
 		}
 	};
 
@@ -251,6 +257,7 @@ public:
 	void cleanSoftwareSprites();
 
 	Sprite* getSprite(int id);
+	void updateTime();
 	GameSprite* getCreatureSprite(int id);
 	void insertSprite(int id, std::unique_ptr<Sprite> sprite);
 	// Overload for compatibility with existing raw pointer calls (takes ownership)
@@ -260,10 +267,6 @@ public:
 
 	long getElapsedTime() const {
 		return animation_timer->getElapsedTime();
-	}
-
-	void updateTime() {
-		cached_time_ = time(nullptr);
 	}
 
 	time_t getCachedTime() const {

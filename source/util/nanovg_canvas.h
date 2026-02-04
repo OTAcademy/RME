@@ -6,6 +6,8 @@
 #include <map>
 #include <cstdint>
 
+#include "rendering/core/graphics.h"
+
 struct NVGcontext;
 
 /**
@@ -72,7 +74,7 @@ public:
 	 * @return NanoVG context pointer, or nullptr if not initialized
 	 */
 	[[nodiscard]] NVGcontext* GetNVGContext() const {
-		return m_nvg;
+		return m_nvg.get();
 	}
 
 protected:
@@ -148,7 +150,7 @@ private:
 	void OnScroll(wxScrollWinEvent& evt);
 
 	wxGLContext* m_glContext = nullptr;
-	NVGcontext* m_nvg = nullptr;
+	std::unique_ptr<NVGcontext, NVGDeleter> m_nvg;
 	bool m_glInitialized = false;
 
 	// Texture cache: ID -> NanoVG image handle
