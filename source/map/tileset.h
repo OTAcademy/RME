@@ -19,6 +19,8 @@
 #define RME_TILESET_H_
 
 #include "brushes/brush_enums.h"
+#include <unordered_map>
+#include <vector>
 
 class Brushes;
 
@@ -82,6 +84,8 @@ protected:
 	friend class TilesetCategory;
 };
 
-using TilesetContainer = std::map<std::string, Tileset*>;
+using TilesetContainer = std::unordered_map<std::string, Tileset*>;
+
+std::vector<Tileset*> GetSortedTilesets(const TilesetContainer& tilesets);
 
 #endif

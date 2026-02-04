@@ -79,8 +79,8 @@ TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* t
 	tileset_field = newd wxChoice(this, wxID_ANY);
 	tileset_field->SetToolTip("Select the target tileset");
 
-	for (TilesetContainer::iterator iter = g_materials.tilesets.begin(); iter != g_materials.tilesets.end(); ++iter) {
-		tileset_field->Append(wxstr(iter->second->name), newd std::string(iter->second->name));
+	for (const auto& tileset : GetSortedTilesets(g_materials.tilesets)) {
+		tileset_field->Append(wxstr(tileset->name), newd std::string(tileset->name));
 	}
 	tileset_field->SetSelection(0);
 	subsizer->Add(tileset_field, wxSizerFlags(1).Expand());
@@ -109,9 +109,9 @@ TilesetWindow::TilesetWindow(wxWindow* win_parent, const Map* map, const Tile* t
 void TilesetWindow::OnChangePalette(wxCommandEvent& WXUNUSED(event)) {
 	tileset_field->Clear();
 
-	for (TilesetContainer::iterator iter = g_materials.tilesets.begin(); iter != g_materials.tilesets.end(); ++iter) {
-		if (iter->second->getCategory(TilesetCategoryType(*static_cast<int*>(palette_field->GetClientData(palette_field->GetSelection()))))->brushlist.size() > 0) {
-			tileset_field->Append(wxstr(iter->second->name), newd std::string(iter->second->name));
+	for (const auto& tileset : GetSortedTilesets(g_materials.tilesets)) {
+		if (tileset->getCategory(TilesetCategoryType(*static_cast<int*>(palette_field->GetClientData(palette_field->GetSelection()))))->brushlist.size() > 0) {
+			tileset_field->Append(wxstr(tileset->name), newd std::string(tileset->name));
 		}
 	}
 

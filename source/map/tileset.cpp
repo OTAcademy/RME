@@ -17,6 +17,7 @@
 
 #include "app/main.h"
 
+#include <algorithm>
 #include "map/tileset.h"
 #include "game/creatures.h"
 #include "brushes/creature/creature_brush.h"
@@ -270,4 +271,16 @@ void TilesetCategory::loadBrush(pugi::xml_node node, wxArrayString& warnings) {
 		}
 		brushlist.insert(insertPosition, tempBrushVector.begin(), tempBrushVector.end());
 	}
+}
+
+std::vector<Tileset*> GetSortedTilesets(const TilesetContainer& tilesets) {
+	std::vector<Tileset*> sorted;
+	sorted.reserve(tilesets.size());
+	for (const auto& pair : tilesets) {
+		sorted.push_back(pair.second);
+	}
+	std::sort(sorted.begin(), sorted.end(), [](const Tileset* a, const Tileset* b) {
+		return a->name < b->name;
+	});
+	return sorted;
 }
