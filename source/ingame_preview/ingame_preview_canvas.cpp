@@ -61,6 +61,10 @@ namespace IngamePreview {
 	void IngamePreviewCanvas::OnPaint(wxPaintEvent& event) {
 		// Validating the paint event prevents infinite paint loops on some platforms
 		wxPaintDC dc(this);
+
+		if (auto* tab = g_gui.GetCurrentMapTab()) {
+			Render(tab->GetEditor());
+		}
 	}
 
 	void IngamePreviewCanvas::OnSize(wxSizeEvent& event) {
@@ -267,8 +271,9 @@ namespace IngamePreview {
 			walk_offset_x = -offset_pixels;
 		}
 
-		// 1-2 animation loop
-		animation_phase = 1 + (static_cast<int>(progress * 2.0f) % 2);
+		// 1-2 animation loop (Tibia standard walk is Frame 1 and Frame 2)
+		// We use 4 as a multiplier to make it feel a bit faster/standard
+		animation_phase = 1 + (static_cast<int>(progress * 4.0f) % 2);
 	}
 
 	void IngamePreviewCanvas::SetCameraPosition(const Position& pos) {

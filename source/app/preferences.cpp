@@ -20,8 +20,10 @@
 #include <wx/collpane.h>
 
 #include "app/settings.h"
+
 #include "app/client_version.h"
 #include "editor/editor.h"
+#include "rendering/postprocess/post_process_manager.h"
 
 #include "ui/gui.h"
 
@@ -222,10 +224,35 @@ wxNotebookPage* PreferencesWindow::CreateGraphicsPage() {
 	sizer->Add(use_memcached_chkbox, 0, wxLEFT | wxTOP, 5);
 	SetWindowToolTip(use_memcached_chkbox, "When this is checked, sprites will be loaded into memory at startup and unpacked at runtime. This is faster but consumes more memory.\nIf it is not checked, the editor will use less memory but there will be a performance decrease due to reading sprites from the disk.");
 
+	anti_aliasing_chkbox = newd wxCheckBox(graphics_page, wxID_ANY, "Enable Anti-Aliasing");
+	anti_aliasing_chkbox->SetValue(g_settings.getBoolean(Config::ANTI_ALIASING));
+	sizer->Add(anti_aliasing_chkbox, 0, wxLEFT | wxTOP, 5);
+	SetWindowToolTip(anti_aliasing_chkbox, "Smoothens the map rendering using linear interpolation.");
+
 	sizer->AddSpacer(10);
 
 	auto* subsizer = newd wxFlexGridSizer(2, 10, 10);
 	subsizer->AddGrowableCol(1);
+
+	// Screen Shader
+	screen_shader_choice = newd wxChoice(graphics_page, wxID_ANY);
+	auto effect_names = PostProcessManager::Instance().GetEffectNames();
+	for (const auto& name : effect_names) {
+		screen_shader_choice->Append(name);
+	}
+
+	std::string current_shader = g_settings.getString(Config::SCREEN_SHADER);
+	int selection = screen_shader_choice->FindString(current_shader);
+	if (selection != wxNOT_FOUND) {
+		screen_shader_choice->SetSelection(selection);
+	} else {
+		screen_shader_choice->SetSelection(0);
+	}
+
+	tmp = newd wxStaticText(graphics_page, wxID_ANY, "Screen Shader: ");
+	subsizer->Add(tmp, 0);
+	subsizer->Add(screen_shader_choice, 0);
+	SetWindowToolTip(screen_shader_choice, tmp, "Apply a post-processing shader to the map view.");
 
 	// Icon background color
 	icon_background_choice = newd wxChoice(graphics_page, wxID_ANY);
@@ -286,54 +313,6 @@ wxNotebookPage* PreferencesWindow::CreateGraphicsPage() {
 	sizer->Add(subsizer, 1, wxEXPAND | wxALL, 5);
 
 	// Advanced g_settings
-	/*
-	wxCollapsiblePane* pane = newd wxCollapsiblePane(graphics_page, PANE_ADVANCED_GRAPHICS, "Advanced g_settings");
-	{
-		wxSizer* pane_sizer = newd wxBoxSizer(wxVERTICAL);
-
-		pane_sizer->Add(texture_managment_chkbox = newd wxCheckBox(pane->GetPane(), wxID_ANY, "Use texture managment"));
-		if(g_settings.getInteger(Config::TEXTURE_MANAGEMENT)) {
-			texture_managment_chkbox->SetValue(true);
-		}
-		pane_sizer->AddSpacer(8);
-
-		wxFlexGridSizer* pane_grid_sizer = newd wxFlexGridSizer(2, 10, 10);
-		pane_grid_sizer->AddGrowableCol(1);
-
-		pane_grid_sizer->Add(tmp = newd wxStaticText(pane->GetPane(), wxID_ANY, "Texture clean interval: "), 0);
-		clean_interval_spin = newd wxSpinCtrl(pane->GetPane(), wxID_ANY, i2ws(g_settings.getInteger(Config::TEXTURE_CLEAN_PULSE)), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 0x1000000);
-		pane_grid_sizer->Add(clean_interval_spin, 0);
-		SetWindowToolTip(clean_interval_spin, tmp, "This controls how often the editor tries to free hardware texture resources.");
-
-		pane_grid_sizer->Add(tmp = newd wxStaticText(pane->GetPane(), wxID_ANY, "Texture longevity: "), 0);
-		texture_longevity_spin = newd wxSpinCtrl(pane->GetPane(), wxID_ANY, i2ws(g_settings.getInteger(Config::TEXTURE_LONGEVITY)), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 0x1000000);
-		pane_grid_sizer->Add(texture_longevity_spin, 0);
-		SetWindowToolTip(texture_longevity_spin, tmp, "This controls for how long (in seconds) that the editor will keep textures in memory before it cleans them up.");
-
-		pane_grid_sizer->Add(tmp = newd wxStaticText(pane->GetPane(), wxID_ANY, "Texture clean threshold: "), 0);
-		texture_threshold_spin = newd wxSpinCtrl(pane->GetPane(), wxID_ANY, i2ws(g_settings.getInteger(Config::TEXTURE_CLEAN_THRESHOLD)), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 100, 0x1000000);
-		pane_grid_sizer->Add(texture_threshold_spin, 0);
-		SetWindowToolTip(texture_threshold_spin, tmp, "This controls how many textures the editor will hold in memory before it attempts to clean up old textures. However, an infinite amount MIGHT be loaded.");
-
-		pane_grid_sizer->Add(tmp = newd wxStaticText(pane->GetPane(), wxID_ANY, "Software clean threshold: "), 0);
-		software_threshold_spin = newd wxSpinCtrl(pane->GetPane(), wxID_ANY, i2ws(g_settings.getInteger(Config::SOFTWARE_CLEAN_THRESHOLD)), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 100, 0x1000000);
-		pane_grid_sizer->Add(software_threshold_spin, 0);
-		SetWindowToolTip(software_threshold_spin, tmp, "This controls how many GUI sprites (icons) the editor will hold in memory at the same time.");
-
-		pane_grid_sizer->Add(tmp = newd wxStaticText(pane->GetPane(), wxID_ANY, "Software clean amount: "), 0);
-		software_clean_amount_spin = newd wxSpinCtrl(pane->GetPane(), wxID_ANY, i2ws(g_settings.getInteger(Config::SOFTWARE_CLEAN_SIZE)), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 0x1000000);
-		pane_grid_sizer->Add(software_clean_amount_spin, 0);
-		SetWindowToolTip(software_clean_amount_spin, tmp, "How many sprites the editor will free at once when the limit is exceeded.");
-
-		pane_sizer->Add(pane_grid_sizer, 0, wxEXPAND);
-
-		pane->GetPane()->SetSizerAndFit(pane_sizer);
-
-		pane->Collapse();
-	}
-
-	sizer->Add(pane, 0);
-	*/
 
 	// FPS Settings
 	sizer->AddSpacer(10);
@@ -635,6 +614,10 @@ void PreferencesWindow::Apply() {
 		must_restart = true;
 	}
 	g_settings.setInteger(Config::USE_MEMCACHED_SPRITES_TO_SAVE, use_memcached_chkbox->GetValue());
+
+	g_settings.setInteger(Config::ANTI_ALIASING, anti_aliasing_chkbox->GetValue());
+	g_settings.setString(Config::SCREEN_SHADER, nstr(screen_shader_choice->GetStringSelection()));
+
 	if (icon_background_choice->GetSelection() == 0) {
 		if (g_settings.getInteger(Config::ICON_BACKGROUND) != 0) {
 			g_gui.gfx.cleanSoftwareSprites();
@@ -679,15 +662,6 @@ void PreferencesWindow::Apply() {
 	// g_settings.setInteger(Config::CURSOR_ALT_ALPHA, clr.Alpha());
 
 	g_settings.setInteger(Config::HIDE_ITEMS_WHEN_ZOOMED, hide_items_when_zoomed_chkbox->GetValue());
-	/*
-	g_settings.setInteger(Config::TEXTURE_MANAGEMENT, texture_managment_chkbox->GetValue());
-	g_settings.setInteger(Config::TEXTURE_CLEAN_PULSE, clean_interval_spin->GetValue());
-	g_settings.setInteger(Config::TEXTURE_LONGEVITY, texture_longevity_spin->GetValue());
-	g_settings.setInteger(Config::TEXTURE_CLEAN_THRESHOLD, texture_threshold_spin->GetValue());
-	g_settings.setInteger(Config::SOFTWARE_CLEAN_THRESHOLD, software_threshold_spin->GetValue());
-	g_settings.setInteger(Config::SOFTWARE_CLEAN_THRESHOLD, software_threshold_spin->GetValue());
-	g_settings.setInteger(Config::SOFTWARE_CLEAN_SIZE, software_clean_amount_spin->GetValue());
-	*/
 
 	// FPS
 	g_settings.setInteger(Config::FRAME_RATE_LIMIT, fps_limit_spin->GetValue());
