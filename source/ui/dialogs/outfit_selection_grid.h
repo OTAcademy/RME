@@ -6,7 +6,7 @@
 #include "game/preview_preferences.h"
 #include <wx/scrolwin.h>
 #include <vector>
-#include <map>
+#include <unordered_map>
 
 class OutfitChooserDialog; // Forward declaration
 
@@ -38,7 +38,7 @@ private:
 	wxRect GetItemRect(int index) const;
 
 	OutfitChooserDialog* owner;
-	std::map<uint64_t, wxBitmap> icon_cache;
+	std::unordered_map<uint64_t, wxBitmap> icon_cache;
 	int columns;
 	int item_width;
 	int item_height;
