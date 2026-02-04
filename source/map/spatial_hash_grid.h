@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <cstdint>
 #include <memory>
+#include <vector>
+#include <utility>
 
 class MapNode;
 class BaseMap;
@@ -32,6 +34,8 @@ public:
 
 	void clear();
 	void clearVisible(uint32_t mask);
+
+	std::vector<std::pair<uint64_t, GridCell*>> getSortedCells() const;
 
 	template <typename Func>
 	void visitLeaves(int min_x, int min_y, int max_x, int max_y, Func&& func) {

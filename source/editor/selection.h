@@ -111,6 +111,7 @@ public:
 
 private:
 	void flush();
+	void recalculateBounds() const;
 
 	bool busy;
 	bool deferred;
@@ -121,6 +122,10 @@ private:
 	std::set<Tile*> tiles;
 	std::vector<Tile*> pending_adds;
 	std::vector<Tile*> pending_removes;
+
+	mutable bool bounds_dirty;
+	mutable Position cached_min;
+	mutable Position cached_max;
 
 	friend class SelectionThread;
 };

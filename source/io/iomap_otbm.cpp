@@ -34,6 +34,7 @@
 #include "game/creatures.h"
 #include "game/creature.h"
 #include "map/map.h"
+#include "map/map_region.h"
 #include "map/tile.h"
 #include "game/item.h"
 #include "game/complexitem.h"
@@ -1542,87 +1543,111 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f) {
 
 			int local_x = -1, local_y = -1, local_z = -1;
 
-			MapIterator map_iterator = map.begin();
-			while (map_iterator != map.end()) {
-				// Update progressbar
-				++tiles_saved;
-				if (tiles_saved % 8192 == 0) {
-					g_gui.SetLoadDone(int(tiles_saved / double(map.getTileCount()) * 100.0));
-				}
-
-				// Get tile
-				Tile* save_tile = (*map_iterator)->get();
-
-				// Is it an empty tile that we can skip? (Leftovers...)
-				if (!save_tile || save_tile->size() == 0) {
-					++map_iterator;
+			// Iterate tiles in spatial order to optimize OTBM node grouping
+			auto sorted_cells = map.getGrid().getSortedCells();
+			for (const auto& pair : sorted_cells) {
+				SpatialHashGrid::GridCell* cell = pair.second;
+				if (!cell) {
 					continue;
 				}
 
-				const Position& pos = save_tile->getPosition();
-
-				// Decide if newd node should be created
-				if (pos.x < local_x || pos.x >= local_x + 256 || pos.y < local_y || pos.y >= local_y + 256 || pos.z != local_z) {
-					// End last node
-					if (!first) {
-						f.endNode();
+				for (int i = 0; i < SpatialHashGrid::NODES_PER_CELL * SpatialHashGrid::NODES_PER_CELL; ++i) {
+					MapNode* node = cell->nodes[i].get();
+					if (!node) {
+						continue;
 					}
-					first = false;
 
-					// Start newd node
-					f.addNode(OTBM_TILE_AREA);
-					f.addU16(local_x = pos.x & 0xFF00);
-					f.addU16(local_y = pos.y & 0xFF00);
-					f.addU8(local_z = pos.z);
-				}
-				f.addNode(save_tile->isHouseTile() ? OTBM_HOUSETILE : OTBM_TILE);
+					for (int j = 0; j < MAP_LAYERS; ++j) {
+						Floor* floor = node->array[j];
+						if (!floor) {
+							continue;
+						}
 
-				f.addU8(save_tile->getX() & 0xFF);
-				f.addU8(save_tile->getY() & 0xFF);
+						for (int k = 0; k < 16; ++k) { // 4x4 tiles = 16
+							TileLocation& loc = floor->locs[k];
+							Tile* save_tile = loc.get();
 
-				if (save_tile->isHouseTile()) {
-					f.addU32(save_tile->getHouseID());
-				}
-
-				if (save_tile->getMapFlags()) {
-					f.addByte(OTBM_ATTR_TILE_FLAGS);
-					f.addU32(save_tile->getMapFlags());
-				}
-
-				if (save_tile->ground) {
-					Item* ground = save_tile->ground;
-					if (ground->isMetaItem()) {
-						// Do nothing, we don't save metaitems...
-					} else if (ground->hasBorderEquivalent()) {
-						bool found = false;
-						for (Item* item : save_tile->items) {
-							if (item->getGroundEquivalent() == ground->getID()) {
-								// Do nothing
-								// Found equivalent
-								found = true;
-								break;
+							if (!save_tile) {
+								continue;
 							}
-						}
 
-						if (!found) {
-							ground->serializeItemNode_OTBM(self, f);
+							// Update progressbar
+							++tiles_saved;
+							if (tiles_saved % 8192 == 0) {
+								g_gui.SetLoadDone(int(tiles_saved / double(map.getTileCount()) * 100.0));
+							}
+
+							// Is it an empty tile that we can skip? (Leftovers...)
+							if (save_tile->size() == 0) {
+								continue;
+							}
+
+							const Position& pos = save_tile->getPosition();
+
+							// Decide if newd node should be created
+							if (pos.x < local_x || pos.x >= local_x + 256 || pos.y < local_y || pos.y >= local_y + 256 || pos.z != local_z) {
+								// End last node
+								if (!first) {
+									f.endNode();
+								}
+								first = false;
+
+								// Start newd node
+								f.addNode(OTBM_TILE_AREA);
+								f.addU16(local_x = pos.x & 0xFF00);
+								f.addU16(local_y = pos.y & 0xFF00);
+								f.addU8(local_z = pos.z);
+							}
+							f.addNode(save_tile->isHouseTile() ? OTBM_HOUSETILE : OTBM_TILE);
+
+							f.addU8(save_tile->getX() & 0xFF);
+							f.addU8(save_tile->getY() & 0xFF);
+
+							if (save_tile->isHouseTile()) {
+								f.addU32(save_tile->getHouseID());
+							}
+
+							if (save_tile->getMapFlags()) {
+								f.addByte(OTBM_ATTR_TILE_FLAGS);
+								f.addU32(save_tile->getMapFlags());
+							}
+
+							if (save_tile->ground) {
+								Item* ground = save_tile->ground;
+								if (ground->isMetaItem()) {
+									// Do nothing, we don't save metaitems...
+								} else if (ground->hasBorderEquivalent()) {
+									bool found = false;
+									for (Item* item : save_tile->items) {
+										if (item->getGroundEquivalent() == ground->getID()) {
+											// Do nothing
+											// Found equivalent
+											found = true;
+											break;
+										}
+									}
+
+									if (!found) {
+										ground->serializeItemNode_OTBM(self, f);
+									}
+								} else if (ground->isComplex()) {
+									ground->serializeItemNode_OTBM(self, f);
+								} else {
+									f.addByte(OTBM_ATTR_ITEM);
+									ground->serializeItemCompact_OTBM(self, f);
+								}
+							}
+
+							for (Item* item : save_tile->items) {
+								if (!item->isMetaItem()) {
+									item->serializeItemNode_OTBM(self, f);
+								}
+							}
+
+							f.endNode();
 						}
-					} else if (ground->isComplex()) {
-						ground->serializeItemNode_OTBM(self, f);
-					} else {
-						f.addByte(OTBM_ATTR_ITEM);
-						ground->serializeItemCompact_OTBM(self, f);
 					}
 				}
-
-				for (Item* item : save_tile->items) {
-					if (!item->isMetaItem()) {
-						item->serializeItemNode_OTBM(self, f);
-					}
-				}
-
-				f.endNode();
-				++map_iterator;
 			}
 
 			// Only close the last node if one has actually been created

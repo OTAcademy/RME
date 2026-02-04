@@ -22,6 +22,17 @@
 #include "game/sprites.h"
 #include "editor/editor.h"
 
+BEGIN_EVENT_TABLE(MapWindow, wxPanel)
+EVT_SIZE(MapWindow::OnSize)
+EVT_SCROLL_LINEUP(MapWindow::OnScrollLineUp)
+EVT_SCROLL_LINEDOWN(MapWindow::OnScrollLineDown)
+EVT_SCROLL_PAGEUP(MapWindow::OnScrollPageUp)
+EVT_SCROLL_PAGEDOWN(MapWindow::OnScrollPageDown)
+EVT_SCROLL_THUMBTRACK(MapWindow::OnScroll)
+EVT_SCROLL_THUMBRELEASE(MapWindow::OnScroll)
+EVT_BUTTON(MAP_WINDOW_GEM, MapWindow::OnGem)
+END_EVENT_TABLE()
+
 MapWindow::MapWindow(wxWindow* parent, Editor& editor) :
 	wxPanel(parent, PANE_MAIN),
 	editor(editor),
