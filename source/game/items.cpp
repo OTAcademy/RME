@@ -17,7 +17,6 @@
 
 #include "app/main.h"
 #include <string_view>
-#include <functional>
 #include <map>
 
 #include "game/materials.h"
@@ -828,7 +827,7 @@ bool ItemDatabase::loadFromOtb(const FileName& datafile, wxString& error, wxArra
 }
 
 void ItemDatabase::parseItemTypeAttribute(ItemType& it, std::string_view value) {
-	static const std::map<std::string_view, std::function<void(ItemType&)>> parsers = {
+	static const std::map<std::string_view, void (*)(ItemType&)> parsers = {
 		{ "depot", [](ItemType& i) { i.type = ITEM_TYPE_DEPOT; } },
 		{ "mailbox", [](ItemType& i) { i.type = ITEM_TYPE_MAILBOX; } },
 		{ "trashholder", [](ItemType& i) { i.type = ITEM_TYPE_TRASHHOLDER; } },
@@ -847,7 +846,7 @@ void ItemDatabase::parseItemTypeAttribute(ItemType& it, std::string_view value) 
 }
 
 void ItemDatabase::parseSlotTypeAttribute(ItemType& it, std::string_view value) {
-	static const std::map<std::string_view, std::function<void(ItemType&)>> parsers = {
+	static const std::map<std::string_view, void (*)(ItemType&)> parsers = {
 		{ "head", [](ItemType& i) { i.slot_position |= SLOTP_HEAD; } },
 		{ "body", [](ItemType& i) { i.slot_position |= SLOTP_ARMOR; } },
 		{ "legs", [](ItemType& i) { i.slot_position |= SLOTP_LEGS; } },
@@ -868,7 +867,7 @@ void ItemDatabase::parseSlotTypeAttribute(ItemType& it, std::string_view value) 
 }
 
 void ItemDatabase::parseWeaponTypeAttribute(ItemType& it, std::string_view value) {
-	static const std::map<std::string_view, std::function<void(ItemType&)>> parsers = {
+	static const std::map<std::string_view, void (*)(ItemType&)> parsers = {
 		{ "sword", [](ItemType& i) { i.weapon_type = WEAPON_SWORD; } },
 		{ "club", [](ItemType& i) { i.weapon_type = WEAPON_CLUB; } },
 		{ "axe", [](ItemType& i) { i.weapon_type = WEAPON_AXE; } },
@@ -884,7 +883,7 @@ void ItemDatabase::parseWeaponTypeAttribute(ItemType& it, std::string_view value
 }
 
 void ItemDatabase::parseFloorChangeAttribute(ItemType& it, std::string_view value) {
-	static const std::map<std::string_view, std::function<void(ItemType&)>> parsers = {
+	static const std::map<std::string_view, void (*)(ItemType&)> parsers = {
 		{ "down", [](ItemType& i) { i.floorChangeDown = true; i.floorChange = true; } },
 		{ "north", [](ItemType& i) { i.floorChangeNorth = true; i.floorChange = true; } },
 		{ "south", [](ItemType& i) { i.floorChangeSouth = true; i.floorChange = true; } },
