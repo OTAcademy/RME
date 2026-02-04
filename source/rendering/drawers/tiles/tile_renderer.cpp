@@ -211,7 +211,7 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 
 	// Draw helper border for selected house tiles
 	// Only draw on the current floor (grid)
-	if (options.show_houses && tile->isHouseTile() && (int)tile->getHouseID() == current_house_id && map_z == view.floor) {
+	if (options.show_houses && tile->isHouseTile() && static_cast<int>(tile->getHouseID()) == current_house_id && map_z == view.floor) {
 
 		uint8_t hr, hg, hb;
 		TileColorCalculator::GetHouseColor(tile->getHouseID(), hr, hg, hb);
@@ -225,10 +225,10 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 		// primitive_renderer.drawBox(glm::vec4(x, y, s, s), border_color, 1.0f);
 
 		// Use SpriteDrawer to keep batching unified (prevents PrimitiveRenderer flush/state change)
-		int br = (int)(border_color.r * 255.0f);
-		int bg = (int)(border_color.g * 255.0f);
-		int bb = (int)(border_color.b * 255.0f);
-		int ba = (int)(border_color.a * 255.0f);
+		int br = static_cast<int>(border_color.r * 255.0f);
+		int bg = static_cast<int>(border_color.g * 255.0f);
+		int bb = static_cast<int>(border_color.b * 255.0f);
+		int ba = static_cast<int>(border_color.a * 255.0f);
 		sprite_drawer->glDrawBox(sprite_batch, draw_x, draw_y, 32, 32, br, bg, bb, ba);
 	}
 
@@ -242,11 +242,11 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 			}
 
 			// items on tile
-			for (ItemVector::iterator it = tile->items.begin(); it != tile->items.end(); it++) {
+			for (auto item : tile->items) {
 				// item tooltip (one per item)
 				if (options.show_tooltips && map_z == view.floor) {
 					TooltipData& itemData = tooltip_drawer->requestTooltipData();
-					if (FillItemTooltipData(itemData, *it, location->getPosition(), tile->isHouseTile())) {
+					if (FillItemTooltipData(itemData, item, location->getPosition(), tile->isHouseTile())) {
 						if (itemData.hasVisibleFields()) {
 							tooltip_drawer->commitTooltip();
 						}
@@ -255,32 +255,32 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 
 				// item animation
 				if (options.show_preview && view.zoom <= 2.0) {
-					(*it)->animate();
+					item->animate();
 				}
 
 				// item sprite
-				if ((*it)->isBorder()) {
-					item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, false, r, g, b);
+				if (item->isBorder()) {
+					item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, item, options, false, r, g, b);
 				} else {
 					uint8_t ir = 255, ig = 255, ib = 255;
 
 					if (calculate_house_color) {
 						// Apply house color tint
-						ir = (uint8_t)((int)ir * house_r / 255);
-						ig = (uint8_t)((int)ig * house_g / 255);
-						ib = (uint8_t)((int)ib * house_b / 255);
+						ir = static_cast<uint8_t>(static_cast<int>(ir) * house_r / 255);
+						ig = static_cast<uint8_t>(static_cast<int>(ig) * house_g / 255);
+						ib = static_cast<uint8_t>(static_cast<int>(ib) * house_b / 255);
 
-						if ((int)tile->getHouseID() == current_house_id) {
+						if (static_cast<int>(tile->getHouseID()) == current_house_id) {
 							// Pulse effect matching the tile pulse
 							if (options.highlight_pulse > 0.0f) {
 								float boost = options.highlight_pulse * 0.6f;
-								ir = (uint8_t)std::min(255, (int)(ir + (255 - ir) * boost));
-								ig = (uint8_t)std::min(255, (int)(ig + (255 - ig) * boost));
-								ib = (uint8_t)std::min(255, (int)(ib + (255 - ib) * boost));
+								ir = static_cast<uint8_t>(std::min(255, static_cast<int>(ir + (255 - ir) * boost)));
+								ig = static_cast<uint8_t>(std::min(255, static_cast<int>(ig + (255 - ig) * boost)));
+								ib = static_cast<uint8_t>(std::min(255, static_cast<int>(ib + (255 - ib) * boost)));
 							}
 						}
 					}
-					item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, *it, options, false, ir, ig, ib);
+					item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, item, options, false, ir, ig, ib);
 				}
 			}
 			// monster/npc on tile

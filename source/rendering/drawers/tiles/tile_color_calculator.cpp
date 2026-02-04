@@ -18,8 +18,8 @@ void TileColorCalculator::Calculate(const Tile* tile, const DrawingOptions& opti
 	if (options.highlight_items && item_count > 0 && !tile->items.back()->isBorder()) {
 		static const float factor[5] = { 0.75f, 0.6f, 0.48f, 0.40f, 0.33f };
 		int idx = (item_count < 5 ? item_count : 5) - 1;
-		g = int(g * factor[idx]);
-		r = int(r * factor[idx]);
+		g = static_cast<int>(g * factor[idx]);
+		r = static_cast<int>(r * factor[idx]);
 	}
 
 	if (options.show_spawns && spawn_count > 0) {
@@ -27,8 +27,8 @@ void TileColorCalculator::Calculate(const Tile* tile, const DrawingOptions& opti
 		for (int i = 0; i < spawn_count; ++i) {
 			f *= 0.7f;
 		}
-		g = uint8_t(g * f);
-		b = uint8_t(b * f);
+		g = static_cast<uint8_t>(g * f);
+		b = static_cast<uint8_t>(b * f);
 	}
 
 	if (options.show_houses && tile->isHouseTile()) {
@@ -39,11 +39,11 @@ void TileColorCalculator::Calculate(const Tile* tile, const DrawingOptions& opti
 		GetHouseColor(house_id, hr, hg, hb);
 
 		// Apply the house unique color tint to the tile
-		r = (uint8_t)((int)r * hr / 255);
-		g = (uint8_t)((int)g * hg / 255);
-		b = (uint8_t)((int)b * hb / 255);
+		r = static_cast<uint8_t>(static_cast<int>(r) * hr / 255);
+		g = static_cast<uint8_t>(static_cast<int>(g) * hg / 255);
+		b = static_cast<uint8_t>(static_cast<int>(b) * hb / 255);
 
-		if ((int)house_id == current_house_id) {
+		if (static_cast<int>(house_id) == current_house_id) {
 			// Pulse Effect on top of the unique color
 			// We want to make it pulse brighter/intense
 			// options.highlight_pulse [0.0, 1.0]
@@ -53,9 +53,9 @@ void TileColorCalculator::Calculate(const Tile* tile, const DrawingOptions& opti
 			if (options.highlight_pulse > 0.0f) {
 				float boost = options.highlight_pulse * 0.6f; // Max 60% boost towards white
 
-				r = (uint8_t)std::min(255, (int)(r + (255 - r) * boost));
-				g = (uint8_t)std::min(255, (int)(g + (255 - g) * boost));
-				b = (uint8_t)std::min(255, (int)(b + (255 - b) * boost));
+				r = static_cast<uint8_t>(std::min(255, static_cast<int>(r + (255 - r) * boost)));
+				g = static_cast<uint8_t>(std::min(255, static_cast<int>(g + (255 - g) * boost)));
+				b = static_cast<uint8_t>(std::min(255, static_cast<int>(b + (255 - b) * boost)));
 			}
 		}
 	} else if (showspecial && tile->isPZ()) {
@@ -116,7 +116,7 @@ void TileColorCalculator::GetHouseColor(uint32_t house_id, uint8_t& r, uint8_t& 
 
 void TileColorCalculator::GetMinimapColor(const Tile* tile, uint8_t& r, uint8_t& g, uint8_t& b) {
 	uint8_t color = tile->getMiniMapColor();
-	r = (uint8_t)(int(color / 36) % 6 * 51);
-	g = (uint8_t)(int(color / 6) % 6 * 51);
-	b = (uint8_t)(color % 6 * 51);
+	r = static_cast<uint8_t>(static_cast<int>(color / 36) % 6 * 51);
+	g = static_cast<uint8_t>(static_cast<int>(color / 6) % 6 * 51);
+	b = static_cast<uint8_t>(color % 6 * 51);
 }
