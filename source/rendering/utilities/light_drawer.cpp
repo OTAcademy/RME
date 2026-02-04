@@ -83,6 +83,12 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	int w = end_x - map_x;
 	int h = end_y - map_y;
 
+	// Save previous state to allow composing into an external FBO (e.g. MapDrawer's scale_fbo)
+	GLint old_fbo;
+	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &old_fbo);
+	GLint old_viewport[4];
+	glGetIntegerv(GL_VIEWPORT, old_viewport);
+
 	if (w <= 0 || h <= 0) {
 		return;
 	}
@@ -199,12 +205,11 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 		glBindVertexArray(0);
 	}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// Restore Previous FBO and Viewport
+	glBindFramebuffer(GL_FRAMEBUFFER, old_fbo);
+	glViewport(old_viewport[0], old_viewport[1], old_viewport[2], old_viewport[3]);
 
 	// 4. Composite FBO to Screen
-	// We need to draw the relevant part of the FBO texture onto the screen quad.
-	// MapDrawer sets up viewport for us? Yes.
-	glViewport(view.viewport_x, view.viewport_y, view.screensize_x, view.screensize_y);
 	// Actually MapDrawer doesn't seem to set viewport every time, but `view.projectionMatrix` assumes 0..screensize.
 
 	// Use PrimitiveRenderer or just a simple quad?

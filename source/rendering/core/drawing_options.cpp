@@ -42,6 +42,8 @@ void DrawingOptions::SetDefault() {
 	ambient_light_level = 0.5f;
 	global_light_color = wxColor(128, 128, 128);
 	highlight_pulse = 0.0f;
+	anti_aliasing = false;
+	screen_shader_name = "None";
 }
 
 void DrawingOptions::SetIngame() {
@@ -114,6 +116,8 @@ void DrawingOptions::Update() {
 	ambient_light_level = g_gui.GetAmbientLightLevel();
 
 	experimental_fog = g_settings.getBoolean(Config::EXPERIMENTAL_FOG);
+	anti_aliasing = g_settings.getBoolean(Config::ANTI_ALIASING);
+	screen_shader_name = g_settings.getString(Config::SCREEN_SHADER);
 }
 
 bool DrawingOptions::isDrawLight() const noexcept {
