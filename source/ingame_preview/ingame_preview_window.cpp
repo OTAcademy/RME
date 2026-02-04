@@ -167,9 +167,6 @@ namespace IngamePreview {
 			}
 			canvas->SetCameraPosition(target);
 		}
-
-		// Trigger render with Active Editor
-		canvas->Render(active_editor);
 	}
 
 	void IngamePreviewWindow::OnToggleFollow(wxCommandEvent& event) {
