@@ -21,6 +21,7 @@
 #include "map/position.h"
 #include <functional>
 #include <set>
+#include <atomic>
 
 class Action;
 class Editor;
@@ -126,7 +127,7 @@ private:
 	std::vector<Tile*> pending_adds;
 	std::vector<Tile*> pending_removes;
 
-	mutable bool bounds_dirty;
+	mutable std::atomic<bool> bounds_dirty;
 	mutable Position cached_min;
 	mutable Position cached_max;
 

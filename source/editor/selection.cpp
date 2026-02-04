@@ -57,7 +57,7 @@ void Selection::recalculateBounds() const {
 		maxPos = Position(0, 0, 0);
 	} else {
 		std::ranges::for_each(tiles, [&](Tile* tile) {
-			Position pos = tile->getPosition();
+			const Position& pos = tile->getPosition();
 			minPos.x = std::min(minPos.x, pos.x);
 			minPos.y = std::min(minPos.y, pos.y);
 			minPos.z = std::min(minPos.z, pos.z);
@@ -250,6 +250,10 @@ void Selection::flush() {
 }
 
 void Selection::clear() {
+	if (tiles.empty()) {
+		return;
+	}
+
 	if (session) {
 		std::ranges::for_each(tiles, [&](Tile* tile) {
 			Tile* new_tile = tile->deepCopy(editor.map);
@@ -260,9 +264,9 @@ void Selection::clear() {
 		std::ranges::for_each(tiles, [](Tile* tile) {
 			tile->deselect();
 		});
-		tiles.clear();
-		bounds_dirty = true;
 	}
+	tiles.clear();
+	bounds_dirty = true;
 }
 
 void Selection::start(SessionFlags flags) {

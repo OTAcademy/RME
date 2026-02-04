@@ -150,14 +150,14 @@ void MapNode::setVisible(bool underground, bool value) {
 	}
 }
 
-std::vector<std::pair<uint64_t, SpatialHashGrid::GridCell*>> SpatialHashGrid::getSortedCells() const {
-	std::vector<std::pair<uint64_t, GridCell*>> sorted_cells;
+std::vector<SpatialHashGrid::SortedGridCell> SpatialHashGrid::getSortedCells() const {
+	std::vector<SortedGridCell> sorted_cells;
 	sorted_cells.reserve(cells.size());
 	for (const auto& pair : cells) {
 		sorted_cells.emplace_back(pair.first, pair.second.get());
 	}
 	std::sort(sorted_cells.begin(), sorted_cells.end(), [](const auto& a, const auto& b) {
-		return a.first < b.first;
+		return a.key < b.key;
 	});
 	return sorted_cells;
 }

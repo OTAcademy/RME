@@ -1545,13 +1545,13 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f) {
 
 			// Iterate tiles in spatial order to optimize OTBM node grouping
 			auto sorted_cells = map.getGrid().getSortedCells();
-			for (const auto& pair : sorted_cells) {
-				SpatialHashGrid::GridCell* cell = pair.second;
+			for (const auto& sorted_cell : sorted_cells) {
+				SpatialHashGrid::GridCell* cell = sorted_cell.cell;
 				if (!cell) {
 					continue;
 				}
 
-				for (int i = 0; i < SpatialHashGrid::NODES_PER_CELL * SpatialHashGrid::NODES_PER_CELL; ++i) {
+				for (int i = 0; i < SpatialHashGrid::NODES_IN_CELL; ++i) {
 					MapNode* node = cell->nodes[i].get();
 					if (!node) {
 						continue;
@@ -1574,7 +1574,11 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f) {
 							// Update progressbar
 							++tiles_saved;
 							if (tiles_saved % 8192 == 0) {
-								g_gui.SetLoadDone(int(tiles_saved / double(map.getTileCount()) * 100.0));
+								uint64_t total_tiles = map.getTileCount();
+								if (total_tiles > 0) {
+									int progress = std::min(100, int(tiles_saved / double(total_tiles) * 100.0));
+									g_gui.SetLoadDone(progress);
+								}
 							}
 
 							// Is it an empty tile that we can skip? (Leftovers...)
@@ -1624,7 +1628,7 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f) {
 			}
 			f.endNode();
 
-			bool supportWaypoints = version.otbm >= MAP_OTBM_3;
+			bool supportWaypoints = mapVersion.otbm >= MAP_OTBM_3;
 			if (supportWaypoints || map.waypoints.waypoints.size() > 0) {
 				if (!supportWaypoints) {
 					waypointsWarning = true;
