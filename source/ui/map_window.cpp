@@ -70,7 +70,7 @@ void MapWindow::ShowReplaceItemsDialog(bool selectionOnly) {
 		return;
 	}
 
-	replaceItemsDialog = new ReplaceItemsDialog(this, selectionOnly);
+	replaceItemsDialog = new ReplaceToolWindow(this, &editor);
 	replaceItemsDialog->Bind(wxEVT_CLOSE_WINDOW, &MapWindow::OnReplaceItemsDialogClose, this);
 	replaceItemsDialog->Show();
 }
