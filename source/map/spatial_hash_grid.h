@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <cstdint>
 #include <memory>
+#include <vector>
+#include <utility>
 #include <ranges>
 
 class MapNode;
@@ -17,11 +19,18 @@ public:
 	static constexpr int NODE_SHIFT = 2; // 4 tiles
 	static constexpr int NODES_PER_CELL_SHIFT = CELL_SHIFT - NODE_SHIFT; // 4
 	static constexpr int NODES_PER_CELL = 1 << NODES_PER_CELL_SHIFT; // 16 nodes (4x4 tiles each)
+	static constexpr int TILES_PER_NODE = 16; // 4x4 tiles per node
+	static constexpr int NODES_IN_CELL = NODES_PER_CELL * NODES_PER_CELL; // 256 nodes per cell
 
 	struct GridCell {
-		std::unique_ptr<MapNode> nodes[NODES_PER_CELL * NODES_PER_CELL];
+		std::unique_ptr<MapNode> nodes[NODES_IN_CELL];
 		GridCell();
 		~GridCell();
+	};
+
+	struct SortedGridCell {
+		uint64_t key;
+		GridCell* cell;
 	};
 
 	SpatialHashGrid(BaseMap& map);
@@ -34,6 +43,8 @@ public:
 
 	void clear();
 	void clearVisible(uint32_t mask);
+
+	std::vector<SortedGridCell> getSortedCells() const;
 
 	template <typename Func>
 	void visitLeaves(int min_x, int min_y, int max_x, int max_y, Func&& func) {
