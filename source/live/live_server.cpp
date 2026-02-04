@@ -102,7 +102,7 @@ void LiveServer::acceptClient() {
 			peer->log = log;
 			peer->receiveHeader();
 
-			clients.insert(std::make_pair(id++, std::move(peer)));
+			clients.emplace(id++, std::move(peer));
 		}
 		acceptClient();
 	});

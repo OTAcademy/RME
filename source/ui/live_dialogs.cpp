@@ -79,7 +79,7 @@ void LiveDialogs::ShowHostDialog(wxWindow* parent, Editor* editor) {
 				DialogUtil::PopupDialog("Socket Error", "Could not bind socket! Try another port?", wxOK);
 				editor->live_manager.CloseServer();
 			} else {
-				liveServer->createLogWindow(g_gui.tabbook);
+				liveServer->createLogWindow(g_gui.tabbook.get());
 			}
 			break;
 		} else {
@@ -146,7 +146,7 @@ void LiveDialogs::ShowJoinDialog(wxWindow* parent) {
 			const wxString& address = ip->GetValue();
 			int32_t portNumber = port->GetValue();
 
-			liveClient->createLogWindow(g_gui.tabbook);
+			liveClient->createLogWindow(g_gui.tabbook.get());
 			if (!liveClient->connect(nstr(address), portNumber)) {
 				DialogUtil::PopupDialog("Connection Error", liveClient->getLastError(), wxOK);
 				delete liveClient;

@@ -4,88 +4,116 @@
 // GLAD must be included before NanoVG
 #include <glad/glad.h>
 
-#define NANOVG_GL3_IMPLEMENTATION
 #include <nanovg.h>
 #include <nanovg_gl.h>
 
 #include <iostream>
+#include <vector>
+#include <fstream>
+#include <mutex>
 
-NVGcontext* TextRenderer::nvgContext = nullptr;
-int TextRenderer::fontNormal = -1;
+// Static buffer to hold font data in memory
+// Must persist as long as any NanoVG context uses it (lifetime of app essentially)
+static std::vector<uint8_t> font_data;
+static std::once_flag font_load_flag;
 
-void TextRenderer::Init() {
-	if (nvgContext) {
+void TextRenderer::LoadFont(NVGcontext* vg) {
+	if (!vg) {
 		return;
 	}
 
-	// Create NanoVG GL3 context (compatible with GL 4.5 Core if shaders version set correctly,
-	// but standard nvgGL3 uses #version 150 which is fine)
-	nvgContext = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
-	if (!nvgContext) {
-		std::cerr << "Failed to init NanoVG." << std::endl;
+	// Check if font is already loaded in this context
+	if (nvgFindFont(vg, "sans") >= 0) {
 		return;
 	}
 
-	// Load Font - fallback to Windows Arial
-	// In a real app, you should bundle a font in a resource/data folder.
-	fontNormal = nvgCreateFont(nvgContext, "sans", "C:\\Windows\\Fonts\\arial.ttf");
-	if (fontNormal == -1) {
-		std::cerr << "Could not add font 'sans' from C:\\Windows\\Fonts\\arial.ttf" << std::endl;
+	std::call_once(font_load_flag, []() {
+		// Try to load font
+		std::vector<std::string> fontPaths = {
+			"C:\\Windows\\Fonts\\arial.ttf",
+			"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+			"/usr/share/fonts/TTF/DejaVuSans.ttf",
+			"/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+			"/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+		};
+
+		for (const auto& path : fontPaths) {
+			std::ifstream file(path, std::ios::binary | std::ios::ate);
+			if (file.is_open()) {
+				std::streamsize size = file.tellg();
+				file.seekg(0, std::ios::beg);
+
+				font_data.resize(size);
+				if (file.read(reinterpret_cast<char*>(font_data.data()), size)) {
+					// std::cout << "Loaded font from: " << path << std::endl;
+					break;
+				} else {
+					font_data.clear();
+				}
+			}
+		}
+
+		if (font_data.empty()) {
+			std::cerr << "TextRenderer: Failed to load any font. Text rendering will fail." << std::endl;
+		}
+	});
+
+	if (font_data.empty()) {
+		return;
+	}
+
+	// nvgCreateFontMem does NOT copy the data, so font_data must persist
+	int font = nvgCreateFontMem(vg, "sans", font_data.data(), static_cast<int>(font_data.size()), 0);
+	if (font == -1) {
+		std::cerr << "TextRenderer: Could not create font 'sans' from memory." << std::endl;
 	}
 }
 
-void TextRenderer::Shutdown() {
-	if (nvgContext) {
-		nvgDeleteGL3(nvgContext);
-		nvgContext = nullptr;
-	}
-}
-
-void TextRenderer::BeginFrame(int width, int height) {
-	if (!nvgContext) {
+void TextRenderer::BeginFrame(NVGcontext* vg, int width, int height) {
+	if (!vg) {
 		return;
 	}
-	nvgBeginFrame(nvgContext, width, height, 1.0f); // Assuming 1.0 pixel ratio for now
+	nvgBeginFrame(vg, width, height, 1.0f); // Assuming 1.0 pixel ratio for now
 }
 
-void TextRenderer::EndFrame() {
-	if (!nvgContext) {
+void TextRenderer::EndFrame(NVGcontext* vg) {
+	if (!vg) {
 		return;
 	}
-	nvgEndFrame(nvgContext);
+	nvgEndFrame(vg);
 }
 
-void TextRenderer::DrawText(int x, int y, const std::string& text, const glm::vec4& color, float fontSize) {
-	if (!nvgContext || fontNormal == -1) {
+void TextRenderer::DrawText(NVGcontext* vg, int x, int y, const std::string& text, const glm::vec4& color, float fontSize) {
+	if (!vg) {
 		return;
 	}
 
-	nvgFontSize(nvgContext, fontSize);
-	nvgFontFace(nvgContext, "sans");
-	nvgFillColor(nvgContext, nvgRGBAf(color.r, color.g, color.b, color.a));
-	nvgTextAlign(nvgContext, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-	nvgText(nvgContext, x, y, text.c_str(), nullptr);
+	nvgFontSize(vg, fontSize);
+	nvgFontFace(vg, "sans");
+	nvgFillColor(vg, nvgRGBAf(color.r, color.g, color.b, color.a));
+	nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+	nvgText(vg, x, y, text.c_str(), nullptr);
 }
 
-void TextRenderer::DrawTextBox(int x, int y, int width, const std::string& text, const glm::vec4& color, float fontSize) {
-	if (!nvgContext || fontNormal == -1) {
+void TextRenderer::DrawTextBox(NVGcontext* vg, int x, int y, int width, const std::string& text, const glm::vec4& color, float fontSize) {
+	if (!vg) {
 		return;
 	}
 
-	nvgFontSize(nvgContext, fontSize);
-	nvgFontFace(nvgContext, "sans");
-	nvgFillColor(nvgContext, nvgRGBAf(color.r, color.g, color.b, color.a));
-	nvgTextAlign(nvgContext, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-	nvgTextBox(nvgContext, x, y, width, text.c_str(), nullptr);
+	nvgFontSize(vg, fontSize);
+	nvgFontFace(vg, "sans");
+	nvgFillColor(vg, nvgRGBAf(color.r, color.g, color.b, color.a));
+	nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+	nvgTextBox(vg, x, y, width, text.c_str(), nullptr);
 }
 
-void TextRenderer::DrawRect(int x, int y, int w, int h, const glm::vec4& color) {
-	if (!nvgContext) {
+void TextRenderer::DrawRect(NVGcontext* vg, int x, int y, int w, int h, const glm::vec4& color) {
+	if (!vg) {
 		return;
 	}
 
-	nvgBeginPath(nvgContext);
-	nvgRect(nvgContext, x, y, w, h);
-	nvgFillColor(nvgContext, nvgRGBAf(color.r, color.g, color.b, color.a));
-	nvgFill(nvgContext);
+	nvgBeginPath(vg);
+	nvgRect(vg, x, y, w, h);
+	nvgFillColor(vg, nvgRGBAf(color.r, color.g, color.b, color.a));
+	nvgFill(vg);
 }

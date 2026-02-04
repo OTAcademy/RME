@@ -21,6 +21,7 @@
 #include "map/position.h"
 #include <functional>
 #include <set>
+#include <atomic>
 
 class Action;
 class Editor;
@@ -59,6 +60,9 @@ public:
 	}
 
 	//
+	// Returns the bounds of the selection.
+	// NOTE: Bounds queries should only be called from the main thread if
+	// the selection is being modified by another thread (e.g. SelectionThread).
 	Position minPosition() const;
 	Position maxPosition() const;
 
@@ -111,6 +115,7 @@ public:
 
 private:
 	void flush();
+	void recalculateBounds() const;
 
 	bool busy;
 	bool deferred;
@@ -121,6 +126,10 @@ private:
 	std::set<Tile*> tiles;
 	std::vector<Tile*> pending_adds;
 	std::vector<Tile*> pending_removes;
+
+	mutable std::atomic<bool> bounds_dirty;
+	mutable Position cached_min;
+	mutable Position cached_max;
 
 	friend class SelectionThread;
 };

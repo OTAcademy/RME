@@ -18,6 +18,8 @@
 #ifndef _RME_LIVE_TAB_H_
 #define _RME_LIVE_TAB_H_
 
+#include <memory>
+#include "live/live_peer.h"
 #include "app/main.h"
 
 #include "editor/editor_tabs.h"
@@ -68,8 +70,6 @@ protected:
 	wxGrid* log;
 	wxTextCtrl* input;
 	wxGrid* user_list;
-
-	std::unordered_map<uint32_t, LivePeer*> clients;
 
 	DECLARE_EVENT_TABLE();
 };

@@ -3,10 +3,15 @@
 #include "rendering/utilities/sprite_icon_generator.h"
 #include "rendering/core/graphics.h"
 #include "ui/gui.h"
-#include <wx/dcbuffer.h>
-#include <wx/menu.h>
+
+#include <glad/glad.h>
+#include <nanovg.h>
+#include <nanovg_gl.h>
+
 #include <algorithm>
 #include <iterator>
+#include <format>
+#include <string>
 
 namespace {
 	const int OUTFIT_TILE_WIDTH = 100;
@@ -14,22 +19,18 @@ namespace {
 }
 
 OutfitSelectionGrid::OutfitSelectionGrid(wxWindow* parent, OutfitChooserDialog* owner, bool is_favorites) :
-	wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL | wxWANTS_CHARS),
+	NanoVGCanvas(parent, wxID_ANY, wxVSCROLL | wxWANTS_CHARS),
 	is_favorites(is_favorites),
 	selected_index(-1),
 	owner(owner),
 	columns(1),
 	item_width(OUTFIT_TILE_WIDTH),
 	item_height(OUTFIT_TILE_HEIGHT),
-	padding(4) {
+	padding(4),
+	hover_index(-1) {
 
-	SetBackgroundStyle(wxBG_STYLE_PAINT);
-	SetBackgroundColour(wxColour(45, 45, 45)); // Dark themed background
-
-	Bind(wxEVT_PAINT, &OutfitSelectionGrid::OnPaint, this);
 	Bind(wxEVT_SIZE, &OutfitSelectionGrid::OnSize, this);
 	Bind(wxEVT_LEFT_DOWN, &OutfitSelectionGrid::OnMouse, this);
-	Bind(wxEVT_ERASE_BACKGROUND, &OutfitSelectionGrid::OnEraseBackground, this);
 	Bind(wxEVT_MOTION, &OutfitSelectionGrid::OnMotion, this);
 	Bind(wxEVT_CONTEXT_MENU, &OutfitSelectionGrid::OnContextMenu, this);
 	if (is_favorites) {
@@ -37,11 +38,9 @@ OutfitSelectionGrid::OutfitSelectionGrid(wxWindow* parent, OutfitChooserDialog* 
 		Bind(wxEVT_MENU, &OutfitChooserDialog::OnFavoriteEdit, owner, OutfitChooserDialog::ID_FAVORITE_EDIT);
 		Bind(wxEVT_MENU, &OutfitChooserDialog::OnFavoriteDelete, owner, OutfitChooserDialog::ID_FAVORITE_DELETE);
 	}
-
-	SetScrollRate(0, item_height + padding);
 }
 
-void OutfitSelectionGrid::UpdateFilter(const wxString& filter) {
+void OutfitSelectionGrid::UpdateFilter(const wxString& filter, bool colorable_only) {
 	if (is_favorites) {
 		UpdateVirtualSize();
 		return;
@@ -49,7 +48,11 @@ void OutfitSelectionGrid::UpdateFilter(const wxString& filter) {
 
 	filtered_outfits.clear();
 	std::ranges::copy_if(all_outfits, std::back_inserter(filtered_outfits), [&](const auto& item) {
-		return filter.IsEmpty() || item.name.Lower().Contains(filter.Lower()) || wxString::Format("%d", item.lookType).Contains(filter);
+		bool match = filter.IsEmpty() || item.name.Lower().Contains(filter.Lower()) || wxString::Format("%d", item.lookType).Contains(filter);
+		if (colorable_only && item.layers < 2) {
+			match = false;
+		}
+		return match;
 	});
 
 	// Try to restore selection
@@ -67,8 +70,7 @@ void OutfitSelectionGrid::UpdateFilter(const wxString& filter) {
 }
 
 void OutfitSelectionGrid::UpdateVirtualSize() {
-	int width, height;
-	GetClientSize(&width, &height);
+	int width = GetClientSize().x;
 
 	if (is_favorites) {
 		columns = 4;
@@ -78,8 +80,9 @@ void OutfitSelectionGrid::UpdateVirtualSize() {
 
 	int count = is_favorites ? favorite_items.size() : filtered_outfits.size();
 	int rows = (count + columns - 1) / columns;
+	int contentHeight = rows * (item_height + padding) + padding;
 
-	SetScrollbars(0, item_height + padding, 0, rows, 0, 0);
+	UpdateScrollbar(contentHeight);
 	Refresh();
 }
 
@@ -88,91 +91,151 @@ void OutfitSelectionGrid::OnSize(wxSizeEvent& event) {
 	event.Skip();
 }
 
-void OutfitSelectionGrid::OnEraseBackground(wxEraseEvent& event) {
-	// Prevent flicker
+wxSize OutfitSelectionGrid::DoGetBestClientSize() const {
+	return wxSize(430, 300); // Reasonable default
 }
 
-void OutfitSelectionGrid::OnPaint(wxPaintEvent& event) {
-	wxAutoBufferedPaintDC dc(this);
-	DoPrepareDC(dc);
+int OutfitSelectionGrid::GetOrCreateOutfitImage(NVGcontext* vg, int lookType, const Outfit& outfit) {
+	uint32_t cache_key = (static_cast<uint32_t>(lookType) << 16) | (outfit.getColorHash() & 0xFFFF);
 
-	dc.SetBackground(wxBrush(GetBackgroundColour()));
-	dc.Clear();
+	int existing = GetCachedImage(cache_key);
+	if (existing > 0) {
+		return existing;
+	}
 
-	int unit_x, unit_y;
-	GetViewStart(&unit_x, &unit_y);
-	int view_y = unit_y * (item_height + padding);
+	GameSprite* spr = g_gui.gfx.getCreatureSprite(lookType);
+	if (!spr) {
+		return 0;
+	}
 
-	int cw, ch;
-	GetClientSize(&cw, &ch);
+	wxBitmap bmp = SpriteIconGenerator::Generate(spr, SPRITE_SIZE_64x64, outfit);
+	wxImage img = bmp.ConvertToImage();
 
-	int start_row = unit_y;
-	int end_row = (view_y + ch + item_height + padding - 1) / (item_height + padding);
+	if (!img.IsOk()) {
+		return 0;
+	}
+
+	// Convert to RGBA buffer for NanoVG
+	int w = img.GetWidth();
+	int h = img.GetHeight();
+	std::vector<uint8_t> rgba(w * h * 4);
+
+	const uint8_t* data = img.GetData();
+	const uint8_t* alpha = img.GetAlpha();
+
+	for (int i = 0; i < w * h; ++i) {
+		rgba[i * 4 + 0] = data[i * 3 + 0];
+		rgba[i * 4 + 1] = data[i * 3 + 1];
+		rgba[i * 4 + 2] = data[i * 3 + 2];
+		if (alpha) {
+			rgba[i * 4 + 3] = alpha[i];
+		} else {
+			rgba[i * 4 + 3] = 255;
+		}
+	}
+
+	return GetOrCreateImage(cache_key, rgba.data(), w, h);
+}
+
+void OutfitSelectionGrid::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
+	if (width <= 0) {
+		return;
+	}
+
+	int scrollPos = GetScrollPosition();
+
+	// Draw background
+	nvgBeginPath(vg);
+	nvgRect(vg, 0, 0, width, height); // Note: height here is canvas height, not content height. But scroll is handled by transform.
+	// Actually, width and height passed to OnNanoVGPaint are client size.
+	// Coordinate system is shifted by -scrollPos.
+	// So to fill the visible background, we need to draw at (0, scrollPos, width, height).
+	// NanoVGCanvas implementation:
+	// nvgTranslate(m_nvg, 0, -m_scrollPos);
+	// OnNanoVGPaint(m_nvg, width, height);
+	// So (0,0) is at top of virtual content.
+	// We want to fill the visible area background.
+	// Visible area is from y=scrollPos to y=scrollPos+height.
+
+	nvgBeginPath(vg);
+	nvgRect(vg, 0, scrollPos, width, height);
+	nvgFillColor(vg, nvgRGBA(45, 45, 45, 255));
+	nvgFill(vg);
+
+	int start_row = scrollPos / (item_height + padding);
+	int end_row = (scrollPos + height + (item_height + padding) - 1) / (item_height + padding);
 
 	int count = is_favorites ? favorite_items.size() : filtered_outfits.size();
 	int start_idx = start_row * columns;
 	int end_idx = std::min(count, (end_row + 1) * columns);
 
-	wxFont font = GetFont();
-	font.SetPointSize(8);
-	dc.SetFont(font);
-
 	for (int i = start_idx; i < end_idx; ++i) {
 		wxRect rect = GetItemRect(i);
+
 		int lookType = is_favorites ? favorite_items[i].outfit.lookType : filtered_outfits[i].lookType;
 		wxString name = is_favorites ? favorite_items[i].label : filtered_outfits[i].name;
 
-		// Selection highlight (Professional look)
+		// Card background
+		nvgBeginPath(vg);
+		nvgRoundedRect(vg, rect.x, rect.y, rect.width, rect.height, 4.0f);
+
 		if (i == selected_index) {
-			dc.SetPen(wxPen(wxColour(200, 200, 200), 2));
-			dc.SetBrush(wxBrush(wxColour(80, 80, 80)));
+			nvgFillColor(vg, nvgRGBA(80, 80, 80, 255));
+		} else if (i == hover_index) {
+			nvgFillColor(vg, nvgRGBA(60, 60, 60, 255));
 		} else {
-			dc.SetPen(wxPen(wxColour(60, 60, 60), 1));
-			dc.SetBrush(wxBrush(wxColour(50, 50, 50)));
+			nvgFillColor(vg, nvgRGBA(50, 50, 50, 255));
 		}
-		dc.DrawRectangle(rect);
+		nvgFill(vg);
 
-		// Draw icon
-		Outfit dummy;
+		// Border
+		nvgBeginPath(vg);
+		nvgRoundedRect(vg, rect.x + 0.5f, rect.y + 0.5f, rect.width - 1.0f, rect.height - 1.0f, 4.0f);
+		if (i == selected_index) {
+			nvgStrokeColor(vg, nvgRGBA(200, 200, 200, 255));
+			nvgStrokeWidth(vg, 2.0f);
+		} else {
+			nvgStrokeColor(vg, nvgRGBA(60, 60, 60, 255));
+			nvgStrokeWidth(vg, 1.0f);
+		}
+		nvgStroke(vg);
+
+		// Icon
+		Outfit outfit;
 		if (is_favorites) {
-			dummy = favorite_items[i].outfit;
+			outfit = favorite_items[i].outfit;
 		} else {
-			dummy.lookType = lookType;
+			outfit.lookType = lookType;
 		}
 
-		uint64_t cache_key = (static_cast<uint64_t>(lookType) << 32) | dummy.getColorHash();
-		auto it = icon_cache.find(cache_key);
-		if (it == icon_cache.end()) {
-			GameSprite* spr = g_gui.gfx.getCreatureSprite(lookType);
-			if (spr) {
-				icon_cache[cache_key] = SpriteIconGenerator::Generate(spr, SPRITE_SIZE_64x64, dummy);
-			} else {
-				icon_cache[cache_key] = wxNullBitmap;
-			}
-			it = icon_cache.find(cache_key);
-		}
-
-		if (it->second.IsOk()) {
+		int imgId = GetOrCreateOutfitImage(vg, lookType, outfit);
+		if (imgId > 0) {
 			int ix = rect.x + (rect.width - 64) / 2;
 			int iy = rect.y + 8;
-			dc.DrawBitmap(it->second, ix, iy, true);
+
+			NVGpaint imgPaint = nvgImagePattern(vg, ix, iy, 64, 64, 0, imgId, 1.0f);
+			nvgBeginPath(vg);
+			nvgRect(vg, ix, iy, 64, 64);
+			nvgFillPaint(vg, imgPaint);
+			nvgFill(vg);
 		}
 
-		// Draw text
-		dc.SetTextForeground(*wxWHITE);
-		wxString label = name;
-		if (label.Length() > 14) {
-			label = label.Left(12) + "..";
+		// Text
+		nvgFontSize(vg, 12.0f);
+		nvgFontFace(vg, "sans");
+		nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+
+		// Name
+		nvgFillColor(vg, nvgRGBA(255, 255, 255, 255));
+		if (name.length() > 14) {
+			name = name.Mid(0, 12) + "..";
 		}
+		nvgText(vg, rect.x + rect.width / 2, rect.y + 75, name.ToUTF8().data(), nullptr);
 
-		int tw, th;
-		dc.GetTextExtent(label, &tw, &th);
-		dc.DrawText(label, rect.x + (rect.width - tw) / 2, rect.y + 75);
-
-		dc.SetTextForeground(wxColour(180, 180, 180));
-		wxString idStr = wxString::Format("#%d", lookType);
-		dc.GetTextExtent(idStr, &tw, &th);
-		dc.DrawText(idStr, rect.x + (rect.width - tw) / 2, rect.y + 92);
+		// ID
+		const std::string idStr = std::format("#{}", lookType);
+		nvgFillColor(vg, nvgRGBA(180, 180, 180, 255));
+		nvgText(vg, rect.x + rect.width / 2, rect.y + 92, idStr.c_str(), nullptr);
 	}
 }
 
@@ -189,10 +252,8 @@ wxRect OutfitSelectionGrid::GetItemRect(int index) const {
 }
 
 int OutfitSelectionGrid::HitTest(int x, int y) const {
-	int unit_x, unit_y;
-	GetViewStart(&unit_x, &unit_y);
-
-	int real_y = y + (unit_y * (item_height + padding));
+	int scrollPos = GetScrollPosition();
+	int real_y = y + scrollPos;
 	int real_x = x;
 
 	int col = (real_x - padding) / (item_width + padding);
@@ -238,7 +299,10 @@ void OutfitSelectionGrid::OnContextMenu(wxContextMenuEvent& event) {
 		// Keyboard-invoked context menu
 		if (selected_index != -1) {
 			wxRect rect = GetItemRect(selected_index);
-			pt = ClientToScreen(wxPoint(rect.x + rect.width / 2, rect.y + rect.height / 2));
+			int scrollPos = GetScrollPosition();
+			int cx = rect.x + rect.width / 2;
+			int cy = rect.y + rect.height / 2 - scrollPos;
+			pt = ClientToScreen(wxPoint(cx, cy));
 		} else {
 			return;
 		}
@@ -264,6 +328,11 @@ void OutfitSelectionGrid::OnContextMenu(wxContextMenuEvent& event) {
 
 void OutfitSelectionGrid::OnMotion(wxMouseEvent& event) {
 	int index = HitTest(event.GetX(), event.GetY());
+	if (index != hover_index) {
+		hover_index = index;
+		Refresh();
+	}
+
 	if (index != -1) {
 		SetCursor(wxCursor(wxCURSOR_HAND));
 	} else {

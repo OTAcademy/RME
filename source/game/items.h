@@ -23,6 +23,7 @@
 #include "ext/pugixml.hpp"
 #include "util/con_vector.h"
 #include <wx/string.h>
+#include <string_view>
 #include <map>
 #include <vector>
 
@@ -458,6 +459,12 @@ protected:
 	bool loadFromOtbVer1(BinaryNode* itemNode, wxString& error, wxArrayString& warnings);
 	bool loadFromOtbVer2(BinaryNode* itemNode, wxString& error, wxArrayString& warnings);
 	bool loadFromOtbVer3(BinaryNode* itemNode, wxString& error, wxArrayString& warnings);
+
+private:
+	void parseItemTypeAttribute(ItemType& it, std::string_view value);
+	void parseSlotTypeAttribute(ItemType& it, std::string_view value);
+	void parseWeaponTypeAttribute(ItemType& it, std::string_view value);
+	void parseFloorChangeAttribute(ItemType& it, std::string_view value);
 
 protected:
 	// Count of GameSprite types
