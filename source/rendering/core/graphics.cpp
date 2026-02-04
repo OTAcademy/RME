@@ -19,6 +19,8 @@
 
 #include "game/sprites.h"
 #include "rendering/core/graphics.h"
+#include <nanovg.h>
+#include <nanovg_gl.h>
 #include "io/filehandle.h"
 #include "app/settings.h"
 #include "ui/gui.h"
@@ -76,6 +78,10 @@ bool GraphicManager::hasTransparency() const {
 
 bool GraphicManager::isUnloaded() const {
 	return unloaded;
+}
+
+void GraphicManager::updateTime() {
+	cached_time_ = time(nullptr);
 }
 
 void GraphicManager::clear() {
@@ -200,4 +206,10 @@ void GraphicManager::addSpriteToCleanup(GameSprite* spr) {
 
 void GraphicManager::garbageCollection() {
 	collector.GarbageCollect(resident_game_sprites, resident_images, cached_time_);
+}
+
+void NVGDeleter::operator()(NVGcontext* nvg) const {
+	if (nvg) {
+		nvgDeleteGL3(nvg);
+	}
 }

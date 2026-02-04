@@ -23,6 +23,12 @@
 #include <deque>
 #include <memory>
 #include <map>
+
+struct NVGcontext;
+struct NVGDeleter {
+	void operator()(NVGcontext* nvg) const;
+};
+
 #include <unordered_map>
 #include <list>
 #include <vector>
@@ -51,6 +57,7 @@ public:
 	void cleanSoftwareSprites();
 
 	Sprite* getSprite(int id);
+	void updateTime();
 	GameSprite* getCreatureSprite(int id);
 	void insertSprite(int id, std::unique_ptr<Sprite> sprite);
 	// Overload for compatibility with existing raw pointer calls (takes ownership)
@@ -60,10 +67,6 @@ public:
 
 	long getElapsedTime() const {
 		return animation_timer->getElapsedTime();
-	}
-
-	void updateTime() {
-		cached_time_ = time(nullptr);
 	}
 
 	time_t getCachedTime() const {
