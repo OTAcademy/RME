@@ -157,7 +157,7 @@ namespace IngamePreview {
 		if (follow_selection && !canvas->IsWalking()) {
 			Position target;
 			// Prioritize Active Selection
-			if (active_editor->selection.size() > 0) {
+			if (!active_editor->selection.empty()) {
 				Position min = active_editor->selection.minPosition();
 				Position max = active_editor->selection.maxPosition();
 				target = Position(min.x + (max.x - min.x) / 2, min.y + (max.y - min.y) / 2, min.z);
