@@ -87,3 +87,6 @@ analyze_legacy.py
 /data/1098 — kopia
 /Assets Editor
 /mappingtool
+/test_iterator_mock
+/test_selection_mock
+/test_variant_logic

@@ -21,6 +21,7 @@
 #include <ctime>
 #include <sstream>
 #include <format>
+#include <spdlog/spdlog.h>
 
 void EditorPersistence::loadMap(Editor& editor, const FileName& fn) {
 	MapVersion ver;
@@ -263,7 +264,7 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 
 	if (house_import_type != IMPORT_DONT) {
 		for (TownMap::iterator tit = imported_map.towns.begin(); tit != imported_map.towns.end();) {
-			Town* imported_town = tit->second;
+			Town* imported_town = tit->second.get();
 			Town* current_town = editor.map.towns.getTown(imported_town->getID());
 
 			Position oldexit = imported_town->getTemplePosition();
@@ -315,7 +316,9 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 				}
 			}
 
-			editor.map.towns.addTown(imported_town);
+			if (!editor.map.towns.addTown(std::move(tit->second))) {
+				spdlog::warn("Failed to add town {} during import (duplicate ID)", imported_town->getID());
+			}
 
 #ifdef __VISUALC__ // C++0x compliance to some degree :)
 			tit = imported_map.towns.erase(tit);
@@ -336,7 +339,7 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 		}
 
 		for (HouseMap::iterator hit = imported_map.houses.begin(); hit != imported_map.houses.end();) {
-			House* imported_house = hit->second;
+			House* imported_house = hit->second.get();
 			House* current_house = editor.map.houses.getHouse(imported_house->getID());
 			imported_house->townid = town_id_map[imported_house->townid];
 
@@ -401,7 +404,9 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 			if (newexit.isValid()) {
 				imported_house->setExit(&editor.map, newexit);
 			}
-			editor.map.houses.addHouse(imported_house);
+			if (!editor.map.houses.addHouse(std::move(hit->second))) {
+				spdlog::warn("Failed to add house {} during import (duplicate ID)", imported_house->getID());
+			}
 
 #ifdef __VISUALC__ // C++0x compliance to some degree :)
 			hit = imported_map.houses.erase(hit);
@@ -479,7 +484,7 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 		}
 		++tiles_merged;
 
-		Tile* import_tile = (*mit)->get();
+		Tile* import_tile = mit->get();
 		Position new_pos = import_tile->getPosition() + offset;
 		if (!new_pos.isValid()) {
 			++discarded_tiles;

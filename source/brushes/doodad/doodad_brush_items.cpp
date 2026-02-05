@@ -171,7 +171,7 @@ bool DoodadBrushItems::ownsItem(Item* item, const DoodadBrushSettings& brushSett
 }
 
 bool DoodadBrushItems::ownsItem(uint16_t id) const {
-	return owned_items_cache.count(id) > 0;
+	return owned_items_cache.contains(id);
 }
 
 Item* DoodadBrushItems::getRandomSingleItem(int variation) const {

@@ -37,8 +37,6 @@ NanoVGCanvas::~NanoVGCanvas() {
 		SetCurrent(*m_glContext);
 		ClearImageCache();
 	}
-	delete m_glContext;
-	m_glContext = nullptr;
 }
 
 void NanoVGCanvas::InitGL() {
@@ -46,10 +44,9 @@ void NanoVGCanvas::InitGL() {
 		return;
 	}
 
-	m_glContext = new wxGLContext(this);
+	m_glContext = std::make_unique<wxGLContext>(this);
 	if (!m_glContext->IsOK()) {
-		delete m_glContext;
-		m_glContext = nullptr;
+		m_glContext.reset();
 		return;
 	}
 

@@ -26,25 +26,25 @@
 class CreaturePalettePanel : public PalettePanel {
 public:
 	CreaturePalettePanel(wxWindow* parent, wxWindowID id = wxID_ANY);
-	virtual ~CreaturePalettePanel();
+	~CreaturePalettePanel() override = default;
 
-	PaletteType GetType() const;
+	PaletteType GetType() const override;
 
 	// Select the first brush
-	void SelectFirstBrush();
+	void SelectFirstBrush() override;
 	// Returns the currently selected brush (first brush if panel is not loaded)
-	Brush* GetSelectedBrush() const;
+	Brush* GetSelectedBrush() const override;
 	// Returns the currently selected brush size
-	int GetSelectedBrushSize() const;
+	int GetSelectedBrushSize() const override;
 	// Select the brush in the parameter, this only changes the look of the panel
-	bool SelectBrush(const Brush* whatbrush);
+	bool SelectBrush(const Brush* whatbrush) override;
 
 	// Updates the palette window to use the current brush size
-	void OnUpdateBrushSize(BrushShape shape, int size);
+	void OnUpdateBrushSize(BrushShape shape, int size) override;
 	// Called when this page is displayed
-	void OnSwitchIn();
+	void OnSwitchIn() override;
 	// Called sometimes?
-	void OnUpdate();
+	void OnUpdate() override;
 	void OnRefreshTilesets();
 
 	void SetListType(BrushListType ltype);

@@ -182,8 +182,8 @@ void CopyOperations::paste(Editor& editor, CopyBuffer& buffer, const Position& t
 
 	std::unique_ptr<BatchAction> batchAction = editor.actionQueue->createBatch(ACTION_PASTE_TILES);
 	std::unique_ptr<Action> action = editor.actionQueue->createAction(batchAction.get());
-	for (TileLocation* location : *buffer.tiles) {
-		Tile* buffer_tile = location->get();
+	for (TileLocation& location : *buffer.tiles) {
+		Tile* buffer_tile = location.get();
 		Position pos = buffer_tile->getPosition() - buffer.copyPos + toPosition;
 
 		if (!pos.isValid()) {
@@ -229,9 +229,9 @@ void CopyOperations::paste(Editor& editor, CopyBuffer& buffer, const Position& t
 		Map& map = editor.map;
 
 		// Go through all modified (selected) tiles (might be slow)
-		for (TileLocation* location : *buffer.tiles) {
+		for (TileLocation& location : *buffer.tiles) {
 			bool add_me = false; // If this tile is touched
-			Position pos = location->getPosition() - buffer.copyPos + toPosition;
+			Position pos = location.getPosition() - buffer.copyPos + toPosition;
 			if (pos.z < 0 || pos.z >= MAP_LAYERS) {
 				continue;
 			}

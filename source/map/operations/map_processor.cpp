@@ -16,12 +16,12 @@ void MapProcessor::borderizeMap(Editor& editor, bool showdialog) {
 	}
 
 	uint64_t tiles_done = 0;
-	for (TileLocation* tileLocation : editor.map) {
+	for (TileLocation& tileLocation : editor.map) {
 		if (showdialog && tiles_done % 4096 == 0) {
 			g_gui.SetLoadDone(static_cast<int32_t>(tiles_done / double(editor.map.getTileCount()) * 100.0));
 		}
 
-		Tile* tile = tileLocation->get();
+		Tile* tile = tileLocation.get();
 		ASSERT(tile);
 
 		tile->borderize(&editor.map);
@@ -39,12 +39,12 @@ void MapProcessor::randomizeMap(Editor& editor, bool showdialog) {
 	}
 
 	uint64_t tiles_done = 0;
-	for (TileLocation* tileLocation : editor.map) {
+	for (TileLocation& tileLocation : editor.map) {
 		if (showdialog && tiles_done % 4096 == 0) {
 			g_gui.SetLoadDone(static_cast<int32_t>(tiles_done / double(editor.map.getTileCount()) * 100.0));
 		}
 
-		Tile* tile = tileLocation->get();
+		Tile* tile = tileLocation.get();
 		ASSERT(tile);
 
 		GroundBrush* groundBrush = tile->getGroundBrush();
@@ -85,7 +85,7 @@ void MapProcessor::clearInvalidHouseTiles(Editor& editor, bool showdialog) {
 
 	HouseMap::iterator iter = houses.begin();
 	while (iter != houses.end()) {
-		House* h = iter->second;
+		House* h = iter->second.get();
 		if (editor.map.towns.getTown(h->townid) == nullptr) {
 #ifdef __VISUALC__ // C++0x compliance to some degree :)
 			iter = houses.erase(iter);
@@ -114,7 +114,7 @@ void MapProcessor::clearInvalidHouseTiles(Editor& editor, bool showdialog) {
 			g_gui.SetLoadDone(int(tiles_done / double(editor.map.getTileCount()) * 100.0));
 		}
 
-		Tile* tile = (*map_iter)->get();
+		Tile* tile = map_iter->get();
 		ASSERT(tile);
 		if (tile->isHouseTile()) {
 			if (houses.getHouse(tile->getHouseID()) == nullptr) {
@@ -140,7 +140,7 @@ void MapProcessor::clearModifiedTileState(Editor& editor, bool showdialog) {
 			g_gui.SetLoadDone(int(tiles_done / double(editor.map.getTileCount()) * 100.0));
 		}
 
-		Tile* tile = (*map_iter)->get();
+		Tile* tile = map_iter->get();
 		ASSERT(tile);
 		tile->unmodify();
 		++tiles_done;
