@@ -136,6 +136,8 @@ protected:
 
 		// Phase 2: Get atlas region (ensures loaded first)
 		const AtlasRegion* getAtlasRegion();
+
+		GameSprite* parent = nullptr;
 	};
 
 	class TemplateImage : public Image {
@@ -224,6 +226,10 @@ public:
 	friend class SpriteIconGenerator;
 	friend class TextureGarbageCollector;
 	friend class TooltipDrawer;
+
+protected:
+	// Cache for default state (0,0,0,0) to avoid lookups/virtual calls for simple sprites
+	mutable const AtlasRegion* cached_default_region = nullptr;
 };
 
 #endif

@@ -86,7 +86,7 @@ static bool FillItemTooltipData(TooltipData& data, Item* item, const Position& p
 
 	data.pos = pos;
 	data.itemId = id;
-	data.itemName = itemName; // Assign string_view to string (copy/allocation happens here)
+	data.itemName = itemName; // Assign string_view to string_view (no copy)
 
 	data.actionId = action;
 	data.uniqueId = unique;

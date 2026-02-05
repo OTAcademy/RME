@@ -103,6 +103,31 @@ int GameSprite::getIndex(int width, int height, int layer, int pattern_x, int pa
 }
 
 const AtlasRegion* GameSprite::getAtlasRegion(int _x, int _y, int _layer, int _count, int _pattern_x, int _pattern_y, int _pattern_z, int _frame) {
+	// Optimization for simple static sprites (1x1, 1 frame, etc.)
+	// Most ground tiles fall into this category.
+	if (_count == -1 && numsprites == 1 && frames == 1 && layers == 1 && width == 1 && height == 1) {
+		// Also check default params
+		if (_x == 0 && _y == 0 && _layer == 0 && _frame == 0 && _pattern_x == 0 && _pattern_y == 0 && _pattern_z == 0) {
+			// Check cache
+			// We rely on spriteList[0] being valid for simple sprites
+			// Check isGLLoaded to ensure validity of cached region (it must correspond to loaded texture)
+			if (cached_default_region && spriteList[0]->isGLLoaded) {
+				return cached_default_region;
+			}
+
+			// Lazy set parent for cache invalidation
+			spriteList[0]->parent = this;
+
+			const AtlasRegion* r = spriteList[0]->getAtlasRegion();
+			if (spriteList[0]->isGLLoaded) {
+				cached_default_region = r;
+			} else {
+				cached_default_region = nullptr;
+			}
+			return r;
+		}
+	}
+
 	uint32_t v;
 	if (_count >= 0 && height <= 1 && width <= 1) {
 		v = _count;
@@ -116,6 +141,12 @@ const AtlasRegion* GameSprite::getAtlasRegion(int _x, int _y, int _layer, int _c
 			v %= numsprites;
 		}
 	}
+
+	// Ensure parent is set for invalidation (even in slow path)
+	if (spriteList[v]) {
+		spriteList[v]->parent = this;
+	}
+
 	return spriteList[v]->getAtlasRegion();
 }
 
@@ -323,6 +354,11 @@ void GameSprite::NormalImage::clean(time_t time) {
 		}
 		isGLLoaded = false;
 		atlas_region = nullptr;
+
+		if (parent) {
+			parent->cached_default_region = nullptr;
+		}
+
 		// resident_images removal is handled by GC loop using swap-and-pop
 		g_gui.gfx.collector.NotifyTextureUnloaded();
 	}

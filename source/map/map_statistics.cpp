@@ -95,7 +95,7 @@ MapStatistics MapStatisticsCollector::Collect(Map* map) {
 		}
 
 		if (house->size() > stats.largest_house_size) {
-			stats.largest_house = house;
+			stats.largest_house = house.get();
 			stats.largest_house_size = house->size();
 		}
 		stats.total_house_sqm += house->size();

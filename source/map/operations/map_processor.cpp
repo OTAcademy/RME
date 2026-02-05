@@ -85,7 +85,7 @@ void MapProcessor::clearInvalidHouseTiles(Editor& editor, bool showdialog) {
 
 	HouseMap::iterator iter = houses.begin();
 	while (iter != houses.end()) {
-		House* h = iter->second;
+		House* h = iter->second.get();
 		if (editor.map.towns.getTown(h->townid) == nullptr) {
 #ifdef __VISUALC__ // C++0x compliance to some degree :)
 			iter = houses.erase(iter);
