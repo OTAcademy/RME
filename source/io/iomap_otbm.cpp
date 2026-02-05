@@ -614,8 +614,8 @@ bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
 		}
 
 		// Memory buffers for the houses & spawns
-		std::shared_ptr<uint8_t> house_buffer;
-		std::shared_ptr<uint8_t> spawn_buffer;
+		std::shared_ptr<uint8_t[]> house_buffer;
+		std::shared_ptr<uint8_t[]> spawn_buffer;
 		size_t house_buffer_size = 0;
 		size_t spawn_buffer_size = 0;
 
@@ -1629,7 +1629,7 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f) {
 			f.endNode();
 
 			bool supportWaypoints = mapVersion.otbm >= MAP_OTBM_3;
-			if (supportWaypoints || map.waypoints.waypoints.size() > 0) {
+			if (supportWaypoints || !map.waypoints.waypoints.empty()) {
 				if (!supportWaypoints) {
 					waypointsWarning = true;
 				}

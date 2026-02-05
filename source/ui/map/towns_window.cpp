@@ -135,7 +135,7 @@ void EditTownsDialog::UpdateSelection(int new_selection) {
 	long tmplong;
 
 	// Save old values
-	if (town_list.size() > 0) {
+	if (!town_list.empty()) {
 		if (id_field->GetValue().ToLong(&tmplong)) {
 			uint32_t old_town_id = tmplong;
 
@@ -263,7 +263,7 @@ void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 
 	if (Validate() && TransferDataFromWindow()) {
 		// Save old values
-		if (town_list.size() > 0 && id_field->GetValue().ToLong(&tmplong)) {
+		if (!town_list.empty() && id_field->GetValue().ToLong(&tmplong)) {
 			uint32_t old_town_id = tmplong;
 
 			Town* old_town = nullptr;
