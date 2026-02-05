@@ -24,6 +24,7 @@
 #include "game/item.h"
 #include "rendering/core/drawing_options.h"
 #include "rendering/core/render_view.h"
+#include "rendering/core/gl_scoped_state.h"
 
 // GPULight struct moved to header
 
@@ -196,13 +197,13 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 		glBindVertexArray(vao->GetID());
 
 		// Enable MAX blending
-		glEnable(GL_BLEND);
-		glBlendEquation(GL_MAX);
-		glBlendFunc(GL_ONE, GL_ONE); // Factors don't matter much for MAX, but usually 1,1 is safe
+		{
+			ScopedGLCapability blendCap(GL_BLEND);
+			ScopedGLBlend blendState(GL_ONE, GL_ONE, GL_MAX); // Factors don't matter much for MAX, but usually 1,1 is safe
 
-		glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, (GLsizei)gpu_lights_.size());
+			glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, (GLsizei)gpu_lights_.size());
+		}
 
-		glBlendEquation(GL_FUNC_ADD); // Restore default
 		glBindVertexArray(0);
 	}
 
@@ -273,15 +274,14 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	shader->SetVec2("uUVMax", glm::vec2(uv_w, 1.0f - uv_h));
 
 	// Blending: Dst * Src
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_DST_COLOR, GL_ZERO);
+	{
+		ScopedGLCapability blendCap(GL_BLEND);
+		ScopedGLBlend blendState(GL_DST_COLOR, GL_ZERO);
 
-	glBindVertexArray(vao->GetID());
-	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-	glBindVertexArray(0);
-
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_BLEND);
+		glBindVertexArray(vao->GetID());
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		glBindVertexArray(0);
+	}
 
 	shader->SetInt("uMode", 0); // Reset
 }
