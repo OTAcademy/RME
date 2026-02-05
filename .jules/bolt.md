@@ -13,3 +13,15 @@ Action: Prefer modifying pooled objects in-place (`FillItemTooltipData`) over re
 ## 2025-02-18 - Minimap Color Caching
 Learning: `Tile::update` failed to reset `minimapColor` when no color was found, leading to stale colors if items were removed. Also `deepCopy` produced `INVALID_MINIMAP_COLOR` tiles, forcing `getMiniMapColor` to scan items every time.
 Action: Always initialize/reset cached values in `update()` methods to ensure state validity. Use `minimapColor = 0` (or valid "empty" value) instead of `INVALID` to enable unconditional fast-path access.
+
+## 2026-02-05 - Sprite Rendering Loop Overhead
+Learning: `ItemDrawer::BlitItem` was running a triple nested loop for every item, even though 99% of items are 1x1x1 single sprites. This caused significant branch prediction overhead per item.
+Action: Check for common trivial cases (1x1x1) early and use a fast path to bypass loops entirely.
+
+## 2026-02-05 - Spatial Color Caching
+Learning: `TileColorCalculator::GetHouseColor` used an `unordered_map` lookup for every tile. Since tiles are rendered in spatial order, adjacent tiles almost always share the same house ID.
+Action: Use a 1-element `thread_local` cache (last input -> last output) to eliminate hash lookups for spatially coherent data sequences.
+
+## 2026-02-05 - Tooltip String Allocations
+Learning: `TooltipData` was performing deep copies of strings (`itemName`, `text`, etc.) from stable memory (`g_items`) into transient per-frame objects, causing thousands of allocations.
+Action: Use `std::string_view` for transient DTOs that only live for the duration of a frame, especially when sourcing data from static or long-lived buffers.
