@@ -26,6 +26,7 @@
 #include "map/spatial_hash_grid.h"
 #include <unordered_map>
 #include <memory>
+#include <iterator>
 
 // Class declarations
 class SpatialHashGrid;
@@ -37,6 +38,12 @@ class TileLocation;
 
 class MapIterator {
 public:
+	using iterator_category = std::forward_iterator_tag;
+	using value_type = TileLocation;
+	using difference_type = std::ptrdiff_t;
+	using pointer = TileLocation*;
+	using reference = TileLocation*;
+
 	MapIterator(BaseMap* _map = nullptr);
 	~MapIterator();
 	MapIterator(const MapIterator& other);

@@ -220,7 +220,7 @@ bool MapIterator::findNext() {
 				while (floor_i < MAP_LAYERS) {
 					Floor* floor = node->array[floor_i];
 					if (floor) {
-						while (tile_i < MAP_LAYERS) {
+						while (tile_i < SpatialHashGrid::TILES_PER_NODE) {
 							TileLocation& t = floor->locs[tile_i];
 							if (t.get()) {
 								current_tile = &t;

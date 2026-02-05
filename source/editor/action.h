@@ -23,6 +23,8 @@
 #include <deque>
 #include <memory>
 #include <vector>
+#include <variant>
+#include <string>
 
 class Editor;
 class Tile;
@@ -40,10 +42,21 @@ enum ChangeType {
 	CHANGE_MOVE_WAYPOINT,
 };
 
+struct HouseExitChangeData {
+	uint32_t houseId;
+	Position pos;
+};
+
+struct WaypointChangeData {
+	std::string name;
+	Position pos;
+};
+
 class Change {
 private:
+	using Data = std::variant<std::monostate, std::unique_ptr<Tile>, HouseExitChangeData, WaypointChangeData>;
 	ChangeType type;
-	void* data;
+	Data data;
 
 	Change();
 
@@ -58,7 +71,16 @@ public:
 		return type;
 	}
 	void* getData() const {
-		return data;
+		return std::visit([](const auto& arg) -> void* {
+			using T = std::decay_t<decltype(arg)>;
+			if constexpr (std::is_same_v<T, std::unique_ptr<Tile>>) {
+				return arg.get();
+			} else if constexpr (std::is_same_v<T, std::monostate>) {
+				return nullptr;
+			} else {
+				return const_cast<void*>(static_cast<const void*>(&arg));
+			}
+		}, data);
 	}
 
 	// Get memory footprint

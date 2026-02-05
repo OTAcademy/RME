@@ -213,8 +213,11 @@ void Selection::addInternal(Tile* tile) {
 	if (deferred) {
 		pending_adds.push_back(tile);
 	} else {
-		tiles.insert(tile);
-		bounds_dirty = true;
+		auto it = std::lower_bound(tiles.begin(), tiles.end(), tile);
+		if (it == tiles.end() || *it != tile) {
+			tiles.insert(it, tile);
+			bounds_dirty = true;
+		}
 	}
 }
 
@@ -223,8 +226,11 @@ void Selection::removeInternal(Tile* tile) {
 	if (deferred) {
 		pending_removes.push_back(tile);
 	} else {
-		tiles.erase(tile);
-		bounds_dirty = true;
+		auto it = std::lower_bound(tiles.begin(), tiles.end(), tile);
+		if (it != tiles.end() && *it == tile) {
+			tiles.erase(it);
+			bounds_dirty = true;
+		}
 	}
 }
 
@@ -233,16 +239,30 @@ void Selection::flush() {
 		return;
 	}
 
-	if (!pending_removes.empty() || !pending_adds.empty()) {
-		bounds_dirty = true;
+	bounds_dirty = true;
+
+	if (!pending_removes.empty()) {
+		std::sort(pending_removes.begin(), pending_removes.end());
+		auto last = std::unique(pending_removes.begin(), pending_removes.end());
+		pending_removes.erase(last, pending_removes.end());
+
+		auto new_end = std::remove_if(tiles.begin(), tiles.end(), [&](Tile* t) {
+			return std::binary_search(pending_removes.begin(), pending_removes.end(), t);
+		});
+		tiles.erase(new_end, tiles.end());
 	}
 
-	for (Tile* t : pending_removes) {
-		tiles.erase(t);
-	}
+	if (!pending_adds.empty()) {
+		std::sort(pending_adds.begin(), pending_adds.end());
+		auto last = std::unique(pending_adds.begin(), pending_adds.end());
+		pending_adds.erase(last, pending_adds.end());
 
-	for (Tile* t : pending_adds) {
-		tiles.insert(t);
+		std::vector<Tile*> merged;
+		merged.reserve(tiles.size() + pending_adds.size());
+		std::set_union(tiles.begin(), tiles.end(),
+		               pending_adds.begin(), pending_adds.end(),
+		               std::back_inserter(merged));
+		tiles = std::move(merged);
 	}
 
 	pending_adds.clear();
