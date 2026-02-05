@@ -72,7 +72,7 @@ Create PR titled `🏗️ Architect: [Your Description]`.
 - Where should this live? (which module?)
 - Am I about to duplicate something?
 - Am I using modern C++ patterns?
-- **CRITICAL**: Am I using modern wxWidgets patterns? You **MUST** follow the [wxWidgets UI/UX Architect Skill](../../skills/wxwidgets/SKILL.md) for all UI work.
+- **CRITICAL**: You **MUST** consult the [RME Modern UI System Skill](../skills/SKILL.md) for all UI architecture work involving wxWidgets and NanoVG.
 
 ## 📜 THE MANTRA
 **SEARCH → REUSE → REFACTOR → ORGANIZE → MODERNIZE → IMPLEMENT**
