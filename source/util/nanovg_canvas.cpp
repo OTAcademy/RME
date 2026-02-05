@@ -12,6 +12,12 @@
 #include <wx/dcclient.h>
 #include <algorithm>
 
+ScopedGLContext::ScopedGLContext(NanoVGCanvas* canvas) : m_canvas(canvas) {
+	if (m_canvas) {
+		m_canvas->MakeContextCurrent();
+	}
+}
+
 NanoVGCanvas::NanoVGCanvas(wxWindow* parent, wxWindowID id, long style) :
 	wxGLCanvas(parent, id, nullptr, wxDefaultPosition, wxDefaultSize, style) {
 	SetBackgroundStyle(wxBG_STYLE_PAINT);
@@ -168,6 +174,7 @@ void NanoVGCanvas::UpdateScrollbar(int contentHeight) {
 }
 
 int NanoVGCanvas::GetOrCreateImage(uint32_t id, const uint8_t* data, int width, int height) {
+	ScopedGLContext ctx(this);
 	if (!m_nvg) {
 		return 0;
 	}
@@ -185,6 +192,7 @@ int NanoVGCanvas::GetOrCreateImage(uint32_t id, const uint8_t* data, int width, 
 }
 
 void NanoVGCanvas::DeleteCachedImage(uint32_t id) {
+	ScopedGLContext ctx(this);
 	if (!m_nvg) {
 		return;
 	}
@@ -198,6 +206,7 @@ void NanoVGCanvas::DeleteCachedImage(uint32_t id) {
 
 void NanoVGCanvas::AddCachedImage(uint32_t id, int imageHandle) {
 	if (imageHandle > 0) {
+		ScopedGLContext ctx(this);
 		// If exists, delete old? Or assume caller handles it?
 		// For safety, delete old if we overwrite.
 		auto it = m_imageCache.find(id);
@@ -211,6 +220,7 @@ void NanoVGCanvas::AddCachedImage(uint32_t id, int imageHandle) {
 }
 
 void NanoVGCanvas::ClearImageCache() {
+	ScopedGLContext ctx(this);
 	if (!m_nvg) {
 		return;
 	}
@@ -222,6 +232,9 @@ void NanoVGCanvas::ClearImageCache() {
 }
 
 int NanoVGCanvas::GetCachedImage(uint32_t id) const {
+	// Const-cast to call MakeContextCurrent if needed, or just assume it's for lookup
+	// Actually GetCachedImage doesn't call GL, it just looks in the map.
+	// So it's fine.
 	auto it = m_imageCache.find(id);
 	if (it != m_imageCache.end()) {
 		return it->second;

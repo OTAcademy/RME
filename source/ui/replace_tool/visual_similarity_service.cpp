@@ -278,11 +278,6 @@ VisualSimilarityService::VisualItemData VisualSimilarityService::CalculateData(u
 	data.binaryMask = ExtractBinaryMaskRGBA(composite.get(), w * h, data.truePixels);
 	data.histogram = CalculateHistogramRGBA(composite.get(), w * h);
 
-	// GDI SAFETY: Unload any cached DC/Bitmap objects for this sprite.
-	// Indexing touches every sprite; if we don't unload them, the UI
-	// might exhaust GDI handles (10k limit) if it previously cached them.
-	gs->unloadDC();
-
 	return data;
 }
 
@@ -304,11 +299,6 @@ void VisualSimilarityService::OnTimer(wxTimerEvent&) {
 		processed++;
 	}
 
-	// Periodically run garbage collection to free GDI resources
-	if (m_nextIdToIndex % 500 == 0) {
-		g_gui.gfx.garbageCollection();
-	}
-
 	if (m_nextIdToIndex > maxId) {
 		m_timer.Stop();
 		isIndexed = true;
@@ -323,6 +313,10 @@ std::vector<uint16_t> VisualSimilarityService::FindSimilar(uint16_t itemId, size
 		if (it != itemDataCache.end()) {
 			sourceData = it->second;
 		}
+	}
+
+	if (!isIndexed) {
+		return {};
 	}
 
 	if (sourceData.width == 0) {
