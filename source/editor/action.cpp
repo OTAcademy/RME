@@ -61,6 +61,21 @@ void Change::clear() {
 	data = std::monostate {};
 }
 
+const Tile* Change::getTile() const {
+	if (auto* t = std::get_if<std::unique_ptr<Tile>>(&data)) {
+		return t->get();
+	}
+	return nullptr;
+}
+
+const HouseExitChangeData* Change::getHouseExitData() const {
+	return std::get_if<HouseExitChangeData>(&data);
+}
+
+const WaypointChangeData* Change::getWaypointData() const {
+	return std::get_if<WaypointChangeData>(&data);
+}
+
 uint32_t Change::memsize() const {
 	uint32_t mem = sizeof(*this);
 	if (auto* t = std::get_if<std::unique_ptr<Tile>>(&data)) {

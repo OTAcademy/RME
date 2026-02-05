@@ -48,12 +48,17 @@ public:
 	~MapIterator();
 	MapIterator(const MapIterator& other);
 
-	TileLocation& operator*();
-	TileLocation* operator->();
-	MapIterator& operator++();
-	MapIterator operator++(int);
-	bool operator==(const MapIterator& other) const;
-	bool operator!=(const MapIterator& other) const {
+	TileLocation& operator*() noexcept;
+	TileLocation* operator->() noexcept {
+		return &(*(*this));
+	}
+	const TileLocation* operator->() const noexcept {
+		return &(*(*const_cast<MapIterator*>(this)));
+	}
+	MapIterator& operator++() noexcept;
+	MapIterator operator++(int) noexcept;
+	bool operator==(const MapIterator& other) const noexcept;
+	bool operator!=(const MapIterator& other) const noexcept {
 		return !(other == *this);
 	}
 

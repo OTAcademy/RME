@@ -20,13 +20,13 @@
 
 #include "map/position.h"
 
+#include <cstdint>
 #include <deque>
 #include <memory>
-#include <vector>
-#include <variant>
 #include <string>
-#include <cstdint>
 #include <type_traits>
+#include <variant>
+#include <vector>
 
 class Editor;
 class Tile;
@@ -72,19 +72,9 @@ public:
 	ChangeType getType() const {
 		return type;
 	}
-	const void* getData() const {
-		return std::visit([](const auto& arg) -> const void* {
-			using T = std::decay_t<decltype(arg)>;
-			if constexpr (std::is_same_v<T, std::unique_ptr<Tile>>) {
-				return arg.get();
-			} else if constexpr (std::is_same_v<T, std::monostate>) {
-				return nullptr;
-			} else {
-				return static_cast<const void*>(&arg);
-			}
-		},
-						  data);
-	}
+	const Tile* getTile() const;
+	const HouseExitChangeData* getHouseExitData() const;
+	const WaypointChangeData* getWaypointData() const;
 
 	// Get memory footprint
 	uint32_t memsize() const;

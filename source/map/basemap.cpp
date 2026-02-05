@@ -186,15 +186,11 @@ MapIterator BaseMap::end() {
 	return it;
 }
 
-TileLocation& MapIterator::operator*() {
+TileLocation& MapIterator::operator*() noexcept {
 	return *current_tile;
 }
 
-TileLocation* MapIterator::operator->() {
-	return current_tile;
-}
-
-bool MapIterator::operator==(const MapIterator& other) const {
+bool MapIterator::operator==(const MapIterator& other) const noexcept {
 	if (map != other.map) {
 		return false;
 	}
@@ -246,7 +242,7 @@ bool MapIterator::findNext() {
 	return false;
 }
 
-MapIterator& MapIterator::operator++() {
+MapIterator& MapIterator::operator++() noexcept {
 	if (current_tile) {
 		tile_i++;
 		findNext();
@@ -254,7 +250,7 @@ MapIterator& MapIterator::operator++() {
 	return *this;
 }
 
-MapIterator MapIterator::operator++(int) {
+MapIterator MapIterator::operator++(int) noexcept {
 	MapIterator i(*this);
 	++*this;
 	return i;
