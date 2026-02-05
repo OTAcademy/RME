@@ -6,6 +6,8 @@
 #include "palette/controls/virtual_brush_grid.h"
 #include <spdlog/spdlog.h>
 #include <wx/wrapsizer.h>
+#include <algorithm>
+#include <iterator>
 
 // ============================================================================
 // Brush Panel
@@ -154,7 +156,6 @@ void BrushPanel::OnClickListBoxRow(wxCommandEvent& event) {
 	g_gui.SelectBrush(tileset->brushlist[n], tileset->getType());
 }
 
-
 // ============================================================================
 // BrushListBox
 
@@ -189,11 +190,10 @@ Brush* BrushListBox::GetSelectedBrush() const {
 }
 
 bool BrushListBox::SelectBrush(const Brush* whatbrush) {
-	for (size_t n = 0; n < tileset->size(); ++n) {
-		if (tileset->brushlist[n] == whatbrush) {
-			SetSelection(n);
-			return true;
-		}
+	auto it = std::ranges::find(tileset->brushlist, whatbrush);
+	if (it != tileset->brushlist.end()) {
+		SetSelection(std::distance(tileset->brushlist.begin(), it));
+		return true;
 	}
 	return false;
 }
