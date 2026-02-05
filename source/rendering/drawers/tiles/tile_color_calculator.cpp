@@ -83,12 +83,23 @@ void TileColorCalculator::GetHouseColor(uint32_t house_id, uint8_t& r, uint8_t& 
 		uint8_t r, g, b;
 	};
 	static thread_local std::unordered_map<uint32_t, Color> color_cache;
+	static thread_local uint32_t last_house_id = 0xFFFFFFFF;
+	static thread_local Color last_color = { 255, 255, 255 };
+
+	if (house_id == last_house_id) {
+		r = last_color.r;
+		g = last_color.g;
+		b = last_color.b;
+		return;
+	}
 
 	auto it = color_cache.find(house_id);
 	if (it != color_cache.end()) {
 		r = it->second.r;
 		g = it->second.g;
 		b = it->second.b;
+		last_house_id = house_id;
+		last_color = it->second;
 		return;
 	}
 
@@ -111,7 +122,10 @@ void TileColorCalculator::GetHouseColor(uint32_t house_id, uint8_t& r, uint8_t& 
 		b += 100;
 	}
 
-	color_cache[house_id] = { r, g, b };
+	Color c = { r, g, b };
+	color_cache[house_id] = c;
+	last_house_id = house_id;
+	last_color = c;
 }
 
 void TileColorCalculator::GetMinimapColor(const Tile* tile, uint8_t& r, uint8_t& g, uint8_t& b) {
