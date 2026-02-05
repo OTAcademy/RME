@@ -20,7 +20,8 @@
 
 #include "map/position.h"
 #include <functional>
-#include <set>
+#include <vector>
+#include <algorithm>
 #include <atomic>
 
 class Action;
@@ -101,7 +102,7 @@ public:
 	auto end() {
 		return tiles.end();
 	}
-	const std::set<Tile*>& getTiles() const {
+	const std::vector<Tile*>& getTiles() const {
 		return tiles;
 	}
 	Tile* getSelectedTile() {
@@ -123,7 +124,10 @@ private:
 	std::unique_ptr<BatchAction> session;
 	std::unique_ptr<Action> subsession;
 
-	std::set<Tile*> tiles;
+	// We use std::vector here instead of std::set for performance reasons.
+	// Selections are typically small, and std::vector provides better cache locality
+	// and fewer allocations. We maintain sorted order to allow O(log n) lookups.
+	std::vector<Tile*> tiles;
 	std::vector<Tile*> pending_adds;
 	std::vector<Tile*> pending_removes;
 

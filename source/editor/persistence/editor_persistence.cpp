@@ -484,7 +484,7 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 		}
 		++tiles_merged;
 
-		Tile* import_tile = (*mit)->get();
+		Tile* import_tile = mit->get();
 		Position new_pos = import_tile->getPosition() + offset;
 		if (!new_pos.isValid()) {
 			++discarded_tiles;

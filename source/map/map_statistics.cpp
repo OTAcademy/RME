@@ -12,8 +12,8 @@ MapStatistics MapStatisticsCollector::Collect(Map* map) {
 
 	std::map<uint32_t, uint32_t> town_sqm_count;
 
-	for (auto tile_location : *map) {
-		Tile* tile = tile_location->get();
+	for (auto& tile_location : *map) {
+		Tile* tile = tile_location.get();
 		if (load_counter % 8192 == 0) {
 			g_gui.SetLoadDone((unsigned int)(int64_t(load_counter) * 95ll / int64_t(map->getTileCount())));
 		}

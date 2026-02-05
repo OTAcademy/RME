@@ -182,7 +182,7 @@ bool Map::convert(const ConversionMap& rm, bool showdialog) {
 	// std::ofstream conversions("converted_items.txt");
 
 	for (MapIterator miter = begin(); miter != end(); ++miter) {
-		Tile* tile = (*miter)->get();
+		Tile* tile = miter->get();
 		ASSERT(tile);
 
 		if (tile->size() == 0) {
@@ -314,7 +314,7 @@ void Map::cleanInvalidTiles(bool showdialog) {
 	uint64_t tiles_done = 0;
 
 	for (MapIterator miter = begin(); miter != end(); ++miter) {
-		Tile* tile = (*miter)->get();
+		Tile* tile = miter->get();
 		ASSERT(tile);
 
 		if (tile->size() == 0) {
@@ -346,7 +346,7 @@ void Map::convertHouseTiles(uint32_t fromId, uint32_t toId) {
 	uint64_t tiles_done = 0;
 
 	for (MapIterator miter = begin(); miter != end(); ++miter) {
-		Tile* tile = (*miter)->get();
+		Tile* tile = miter->get();
 		ASSERT(tile);
 
 		uint32_t houseId = tile->getHouseID();
