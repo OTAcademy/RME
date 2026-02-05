@@ -52,16 +52,15 @@ void CarpetBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 
 		static constexpr std::array<std::pair<int32_t, int32_t>, 8> offsets = { { { -1, -1 }, { 0, -1 }, { 1, -1 }, { -1, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } } };
 
-		for (size_t i = 0; i < offsets.size(); ++i) {
-			const auto& [dx, dy] = offsets[i];
+		size_t i = 0;
+		for (const auto& [dx, dy] : offsets) {
 			int32_t nx = x + dx;
 			int32_t ny = y + dy;
 
-			if (nx < 0 || ny < 0) {
-				continue;
+			if (nx >= 0 && ny >= 0) {
+				neighbours[i] = hasMatchingCarpetBrushAtTile(map, carpetBrush, nx, ny, z);
 			}
-
-			neighbours[i] = hasMatchingCarpetBrushAtTile(map, carpetBrush, nx, ny, z);
+			++i;
 		}
 
 		uint32_t tileData = 0;

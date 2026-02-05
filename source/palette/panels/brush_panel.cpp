@@ -7,6 +7,7 @@
 #include <spdlog/spdlog.h>
 #include <wx/wrapsizer.h>
 #include <algorithm>
+#include <iterator>
 
 // ============================================================================
 // Brush Panel
@@ -191,7 +192,7 @@ Brush* BrushListBox::GetSelectedBrush() const {
 bool BrushListBox::SelectBrush(const Brush* whatbrush) {
 	auto it = std::ranges::find(tileset->brushlist, whatbrush);
 	if (it != tileset->brushlist.end()) {
-		SetSelection(it - tileset->brushlist.begin());
+		SetSelection(std::distance(tileset->brushlist.begin(), it));
 		return true;
 	}
 	return false;
