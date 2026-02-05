@@ -29,7 +29,7 @@ EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 	wxSizer* tmpsizer;
 
 	for (const auto& [id, town] : map.towns) {
-		town_list.push_back(newd Town(*town));
+		town_list.push_back(std::make_unique<Town>(*town));
 		if (max_town_id < town->getID()) {
 			max_town_id = town->getID();
 		}
@@ -82,11 +82,7 @@ EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 	BuildListBox(true);
 }
 
-EditTownsDialog::~EditTownsDialog() {
-	for (auto* town : town_list) {
-		delete town;
-	}
-}
+EditTownsDialog::~EditTownsDialog() = default;
 
 void EditTownsDialog::BuildListBox(bool doselect) {
 	long tmplong = 0;
@@ -97,7 +93,7 @@ void EditTownsDialog::BuildListBox(bool doselect) {
 	if (doselect && id_field->GetValue().ToLong(&tmplong)) {
 		uint32_t old_town_id = tmplong;
 
-		for (const auto* town : town_list) {
+		for (const auto& town : town_list) {
 			if (old_town_id == town->getID()) {
 				selection_before = town->getID();
 				break;
@@ -105,7 +101,7 @@ void EditTownsDialog::BuildListBox(bool doselect) {
 		}
 	}
 
-	for (const auto* town : town_list) {
+	for (const auto& town : town_list) {
 		town_name_list.Add(wxstr(town->getName()));
 		if (max_town_id < town->getID()) {
 			max_town_id = town->getID();
@@ -119,7 +115,7 @@ void EditTownsDialog::BuildListBox(bool doselect) {
 	if (doselect) {
 		if (selection_before) {
 			int i = 0;
-			for (const auto* town : town_list) {
+			for (const auto& town : town_list) {
 				if (selection_before == town->getID()) {
 					town_listbox->SetSelection(i);
 					return;
@@ -141,9 +137,9 @@ void EditTownsDialog::UpdateSelection(int new_selection) {
 
 			Town* old_town = nullptr;
 
-			for (auto* town : town_list) {
+			for (auto& town : town_list) {
 				if (old_town_id == town->getID()) {
-					old_town = town;
+					old_town = town.get();
 					break;
 				}
 			}
@@ -179,7 +175,7 @@ void EditTownsDialog::UpdateSelection(int new_selection) {
 		select_position_button->Enable(true);
 
 		// Change the values to reflect the newd selection
-		Town* town = town_list[new_selection];
+		Town* town = town_list[new_selection].get();
 		ASSERT(town);
 
 		town_name << wxstr(town->getName());
@@ -206,10 +202,10 @@ void EditTownsDialog::OnClickSelectTemplePosition(wxCommandEvent& WXUNUSED(event
 }
 
 void EditTownsDialog::OnClickAdd(wxCommandEvent& WXUNUSED(event)) {
-	Town* new_town = newd Town(++max_town_id);
+	auto new_town = std::make_unique<Town>(++max_town_id);
 	new_town->setName("Unnamed Town");
 	new_town->setTemplePosition(Position(0, 0, 0));
-	town_list.push_back(new_town);
+	town_list.push_back(std::move(new_town));
 
 	editor.map.getOrCreateTile(Position(0, 0, 0))->getLocation()->increaseTownCount();
 
@@ -226,12 +222,12 @@ void EditTownsDialog::OnClickRemove(wxCommandEvent& WXUNUSED(event)) {
 		Town* town = nullptr;
 		int selection_index = 0;
 
-		auto town_iter = std::ranges::find_if(town_list, [old_town_id](const Town* t) {
+		auto town_iter = std::ranges::find_if(town_list, [old_town_id](const std::unique_ptr<Town>& t) {
 			return t->getID() == old_town_id;
 		});
 
 		if (town_iter != town_list.end()) {
-			town = *town_iter;
+			town = town_iter->get();
 			selection_index = static_cast<int>(std::distance(town_list.begin(), town_iter));
 		}
 
@@ -251,7 +247,6 @@ void EditTownsDialog::OnClickRemove(wxCommandEvent& WXUNUSED(event)) {
 		editor.map.getOrCreateTile(town->getTemplePosition())->getLocation()->decreaseTownCount();
 
 		// remove town object
-		delete town;
 		town_list.erase(town_iter);
 		BuildListBox(false);
 		UpdateSelection(selection_index - 1);
@@ -268,9 +263,9 @@ void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 
 			Town* old_town = nullptr;
 
-			for (auto* town : town_list) {
+			for (auto& town : town_list) {
 				if (old_town_id == town->getID()) {
-					old_town = town;
+					old_town = town.get();
 					break;
 				}
 			}
@@ -298,7 +293,7 @@ void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		Towns& towns = editor.map.towns;
 
 		// Verify the newd information
-		for (const auto* town : town_list) {
+		for (const auto& town : town_list) {
 			if (town->getName() == "") {
 				DialogUtil::PopupDialog(this, "Error", "You can't have a town with an empty name.", wxOK);
 				return;
@@ -315,8 +310,8 @@ void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 		towns.clear();
 
 		// Build the newd town map
-		for (auto* town : town_list) {
-			towns.addTown(std::unique_ptr<Town>(town));
+		for (auto& town : town_list) {
+			towns.addTown(std::move(town));
 		}
 		town_list.clear();
 		editor.map.doChange();

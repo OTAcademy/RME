@@ -934,8 +934,8 @@ bool IOMapOTMM::saveMap(Map& map, NodeFileWriteHandle& f, const FileName& identi
 
 			f.addNode(OTMM_TOWN_DATA);
 			{
-				for (TownMap::const_iterator it = map.towns.begin(); it != map.towns.end(); ++it) {
-					const Town* town = it->second.get();
+				for (const auto& [town_id, town_ptr] : map.towns) {
+					const Town* town = town_ptr.get();
 					f.addNode(OTMM_TOWN);
 					{
 						f.addU32(town->getID());
@@ -951,8 +951,8 @@ bool IOMapOTMM::saveMap(Map& map, NodeFileWriteHandle& f, const FileName& identi
 
 			f.addNode(OTMM_HOUSE_DATA);
 			{
-				for (HouseMap::const_iterator it = map.houses.begin(); it != map.houses.end(); ++it) {
-					const House* house = it->second.get();
+				for (const auto& [house_id, house_ptr] : map.houses) {
+					const House* house = house_ptr.get();
 					f.addNode(OTMM_HOUSE);
 					{
 						f.addU32(house->getID());
