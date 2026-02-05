@@ -4,7 +4,6 @@
 #include "game/item.h"
 #include "rendering/core/drawing_options.h"
 #include "app/definitions.h"
-#include <unordered_map>
 
 void TileColorCalculator::Calculate(const Tile* tile, const DrawingOptions& options, uint32_t current_house_id, int spawn_count, uint8_t& r, uint8_t& g, uint8_t& b) {
 	bool showspecial = options.show_only_colors || options.show_special_tiles;
@@ -78,33 +77,9 @@ void TileColorCalculator::Calculate(const Tile* tile, const DrawingOptions& opti
 }
 
 void TileColorCalculator::GetHouseColor(uint32_t house_id, uint8_t& r, uint8_t& g, uint8_t& b) {
-	// Use a simple cache to avoid recomputing colors for the same house
-	struct Color {
-		uint8_t r, g, b;
-	};
-	static thread_local std::unordered_map<uint32_t, Color> color_cache;
-	static thread_local uint32_t last_house_id = 0xFFFFFFFF;
-	static thread_local Color last_color = { 255, 255, 255 };
-
-	if (house_id == last_house_id) {
-		r = last_color.r;
-		g = last_color.g;
-		b = last_color.b;
-		return;
-	}
-
-	auto it = color_cache.find(house_id);
-	if (it != color_cache.end()) {
-		r = it->second.r;
-		g = it->second.g;
-		b = it->second.b;
-		last_house_id = house_id;
-		last_color = it->second;
-		return;
-	}
-
 	// Use a simple seeded random to get consistent colors
 	// Simple hash
+	// (Cache removed as calculation is faster than hash map lookup)
 	uint32_t hash = house_id;
 	hash = ((hash >> 16) ^ hash) * 0x45d9f3b;
 	hash = ((hash >> 16) ^ hash) * 0x45d9f3b;
@@ -121,11 +96,6 @@ void TileColorCalculator::GetHouseColor(uint32_t house_id, uint8_t& r, uint8_t& 
 		g += 100;
 		b += 100;
 	}
-
-	Color c = { r, g, b };
-	color_cache[house_id] = c;
-	last_house_id = house_id;
-	last_color = c;
 }
 
 void TileColorCalculator::GetMinimapColor(const Tile* tile, uint8_t& r, uint8_t& g, uint8_t& b) {
