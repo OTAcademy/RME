@@ -601,6 +601,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_items_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/item_grid_panel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/card_panel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/rule_builder_panel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/replace_tool_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/replacement_engine.cpp

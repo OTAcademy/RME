@@ -6,7 +6,7 @@
 RuleListControl::RuleListControl(wxWindow* parent, Listener* listener) : wxControl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL | wxNO_BORDER | wxWANTS_CHARS),
 																		 m_listener(listener) {
 	SetBackgroundStyle(wxBG_STYLE_PAINT);
-	m_itemHeight = FromDIP(48);
+	m_itemHeight = FromDIP(56);
 
 	Bind(wxEVT_PAINT, &RuleListControl::OnPaint, this);
 	Bind(wxEVT_SIZE, &RuleListControl::OnSize, this);
@@ -50,36 +50,75 @@ void RuleListControl::OnPaint(wxPaintEvent& event) {
 	wxAutoBufferedPaintDC dc(this);
 	dc.Clear();
 
+	std::unique_ptr<wxGraphicsContext> gc(wxGraphicsContext::Create(dc));
+	if (!gc) {
+		return;
+	}
+
 	wxSize clientSize = GetClientSize();
 	int scrollPos = GetScrollPos(wxVERTICAL);
 
+	// Larger height for card look, maybe 56 or 64. I'll use whatever is set for now but subtract padding for drawing
 	int startIdx = scrollPos / m_itemHeight;
 	int endIdx = std::min((int)m_ruleSetNames.size() - 1, (scrollPos + clientSize.y) / m_itemHeight);
 
-	for (int i = startIdx; i <= endIdx; ++i) {
-		wxRect rect(0, i * m_itemHeight - scrollPos, clientSize.x, m_itemHeight);
+	const double padding = 4.0;
+	const double radius = 4.0;
 
-		// Hover/Selection Background
-		if (i == m_selectedIndex) {
-			dc.SetBrush(wxBrush(Theme::Get(Theme::Role::Accent)));
-		} else if (i == m_hoveredIndex) {
-			wxColour bg = Theme::Get(Theme::Role::Surface);
-			// Slightly lighter for hover
-			dc.SetBrush(wxBrush(bg.ChangeLightness(110)));
-		} else {
-			dc.SetBrush(*wxTRANSPARENT_BRUSH);
+	// Card Colors
+	wxColour cardBase = wxColour(50, 50, 55);
+	wxColour cardBaseHover = wxColour(60, 60, 65);
+	wxColour cardBaseSelected = wxColour(70, 70, 80); // Or Accent
+
+	for (int i = startIdx; i <= endIdx; ++i) {
+		wxRect rect(padding, i * m_itemHeight - scrollPos + padding, clientSize.x - 2 * padding, m_itemHeight - 2 * padding);
+
+		// Determine State
+		bool isSelected = (i == m_selectedIndex);
+		bool isHovered = (i == m_hoveredIndex);
+
+		wxColour fillColor = cardBase;
+		if (isSelected) {
+			fillColor = Theme::Get(Theme::Role::Accent);
+		} else if (isHovered) {
+			fillColor = cardBaseHover;
 		}
 
-		dc.SetPen(*wxTRANSPARENT_PEN);
-		dc.DrawRectangle(rect);
+		// Draw Card Path
+		wxGraphicsPath path = gc->CreatePath();
+		path.AddRoundedRectangle(rect.x, rect.y, rect.width, rect.height, radius);
+
+		// Shadow (Simple offset)
+		if (!isSelected) {
+			gc->SetBrush(wxBrush(wxColour(0, 0, 0, 50)));
+			gc->SetPen(*wxTRANSPARENT_PEN);
+			gc->DrawRoundedRectangle(rect.x + 2, rect.y + 2, rect.width, rect.height, radius);
+		}
+
+		// Fill
+		gc->SetBrush(wxBrush(fillColor));
+		if (isSelected) {
+			// Add a border for selection?
+			gc->SetPen(wxPen(*wxWHITE, 1));
+		} else {
+			gc->SetPen(wxPen(wxColour(80, 80, 80), 1));
+		}
+		gc->FillPath(path);
+		gc->StrokePath(path);
 
 		// Text
-		dc.SetFont(Theme::GetFont(10, i == m_selectedIndex));
-		dc.SetTextForeground(Theme::Get(Theme::Role::Text));
+		dc.SetFont(Theme::GetFont(10, isSelected));
+		if (isSelected) {
+			dc.SetTextForeground(*wxWHITE);
+		} else {
+			dc.SetTextForeground(Theme::Get(Theme::Role::Text));
+		}
 
 		wxString label = m_ruleSetNames[i];
 		wxSize textSize = dc.GetTextExtent(label);
-		dc.DrawText(label, Theme::Grid(2), rect.y + (m_itemHeight - textSize.y) / 2);
+
+		// Clip to card ?? Or just draw
+		dc.DrawText(label, rect.x + 10, rect.y + (rect.height - textSize.y) / 2);
 	}
 }
 

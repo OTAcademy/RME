@@ -58,27 +58,31 @@ ReplaceToolWindow::ReplaceToolWindow(wxWindow* parent, Editor* editor) : wxDialo
 
 ReplaceToolWindow::~ReplaceToolWindow() { }
 
+// Include at top
+#include "ui/replace_tool/card_panel.h"
+
 void ReplaceToolWindow::InitLayout() {
-	wxBoxSizer* mainSizer = new wxBoxSizer(wxHORIZONTAL);
+	wxBoxSizer* rootSizer = new wxBoxSizer(wxVERTICAL);
 
 	int padding = Theme::Grid(2);
-	wxFont headerFont = Theme::GetFont(8, true);
+	wxFont headerFont = Theme::GetFont(9, true); // Slightly larger
 	wxColour subTextColor = Theme::Get(Theme::Role::TextSubtle);
 
 	// ---------------------------------------------------------
-	// COLUMN 1: Item Library (Tabs)
+	// MAIN CONTENT ROW
 	// ---------------------------------------------------------
-	wxBoxSizer* col1 = new wxBoxSizer(wxVERTICAL);
-	col1->SetMinSize(FromDIP(240), -1);
+	wxBoxSizer* mainRowSizer = new wxBoxSizer(wxHORIZONTAL);
 
-	// Header
-	wxStaticText* libTitle = new wxStaticText(this, wxID_ANY, "ITEM LIBRARY");
-	libTitle->SetFont(headerFont);
-	libTitle->SetForegroundColour(subTextColor);
-	col1->Add(libTitle, 0, wxALL, padding);
+	// ---------------------------------------------------------
+	// COLUMN 1: Item Library
+	// ---------------------------------------------------------
+	CardPanel* col1Card = new CardPanel(this, wxID_ANY);
+	col1Card->SetTitle("ITEM LIBRARY");
+	wxBoxSizer* col1Sizer = new wxBoxSizer(wxVERTICAL);
+	col1Sizer->AddSpacer(CardPanel::HEADER_HEIGHT);
 
 	// Notebook for Tabs
-	libraryTabs = new wxNotebook(this, wxID_ANY);
+	libraryTabs = new wxNotebook(col1Card, wxID_ANY);
 
 	// PAGE 1: Item List
 	wxPanel* itemListPage = new wxPanel(libraryTabs);
@@ -112,7 +116,7 @@ void ReplaceToolWindow::InitLayout() {
 	brushSearchCtrl->Bind(wxEVT_SEARCH, &ReplaceToolWindow::OnBrushSearchChange, this);
 	brushesSizer->Add(brushSearchCtrl, 0, wxEXPAND | wxALL, 2);
 
-	brushListGrid = new ItemGridPanel(brushesPanel, this); // Use same listener, handle via ID check
+	brushListGrid = new ItemGridPanel(brushesPanel, this);
 	brushListGrid->SetShowDetails(false);
 
 	brushesSizer->Add(new wxStaticText(brushesPanel, wxID_ANY, "Available Brushes"), 0, wxALL, 2);
@@ -136,84 +140,91 @@ void ReplaceToolWindow::InitLayout() {
 	brushListPage->SetSizer(brushListSizer);
 	libraryTabs->AddPage(brushListPage, "Brushes");
 
-	col1->Add(libraryTabs, 1, wxEXPAND);
-	mainSizer->Add(col1, 3, wxEXPAND); // Flex 3
+	col1Sizer->Add(libraryTabs, 1, wxEXPAND | wxALL, padding / 2); // Less padding inside card
+	col1Card->SetSizer(col1Sizer);
 
-	// PAGE 3: Similarity Grid
-	// It was actually in COLUMN 3 of the main sizer in previous design.
-
-	// Populate Brushes
-	PopulateBrushGrid();
-
-	mainSizer->AddSpacer(padding);
+	mainRowSizer->Add(col1Card, 3, wxEXPAND | wxLEFT | wxRIGHT, padding / 2); // Flex 3
 
 	// ---------------------------------------------------------
 	// COLUMN 2: Rule Builder
 	// ---------------------------------------------------------
-	wxBoxSizer* col2 = new wxBoxSizer(wxVERTICAL);
-	col2->SetMinSize(FromDIP(300), -1);
+	CardPanel* col2Card = new CardPanel(this, wxID_ANY);
+	col2Card->SetTitle("RULE BUILDER");
+	wxBoxSizer* col2Sizer = new wxBoxSizer(wxVERTICAL);
+	col2Sizer->AddSpacer(CardPanel::HEADER_HEIGHT);
 
-	wxStaticText* builderTitle = new wxStaticText(this, wxID_ANY, "RULE BUILDER");
-	builderTitle->SetFont(headerFont);
-	builderTitle->SetForegroundColour(subTextColor);
-	col2->Add(builderTitle, 0, wxALL, padding);
+	ruleBuilder = new RuleBuilderPanel(col2Card, this);
+	col2Sizer->Add(ruleBuilder, 1, wxEXPAND | wxALL, padding);
 
-	ruleBuilder = new RuleBuilderPanel(this, this);
-	col2->Add(ruleBuilder, 1, wxEXPAND | wxALL, padding);
+	col2Card->SetSizer(col2Sizer);
+	mainRowSizer->Add(col2Card, 4, wxEXPAND | wxLEFT | wxRIGHT, padding / 2); // Flex 4
 
-	// Actions (Save, Execute)
-	wxBoxSizer* actionSizer = new wxBoxSizer(wxHORIZONTAL);
+	// ---------------------------------------------------------
+	// COLUMN 3: Similarity Engine
+	// ---------------------------------------------------------
+	CardPanel* col3Card = new CardPanel(this, wxID_ANY);
+	col3Card->SetTitle("SMART SUGGESTIONS");
+	wxBoxSizer* col3Sizer = new wxBoxSizer(wxVERTICAL);
+	col3Sizer->AddSpacer(CardPanel::HEADER_HEIGHT);
 
-	m_saveBtn = new wxButton(this, wxID_ANY, "Save Rule");
+	similarItemsGrid = new ItemGridPanel(col3Card, this);
+	similarItemsGrid->SetDraggable(true);
+	col3Sizer->Add(similarItemsGrid, 1, wxEXPAND | wxALL, padding);
+
+	col3Card->SetSizer(col3Sizer);
+	mainRowSizer->Add(col3Card, 3, wxEXPAND | wxLEFT | wxRIGHT, padding / 2); // Flex 3
+
+	// ---------------------------------------------------------
+	// COLUMN 4: Saved Rules
+	// ---------------------------------------------------------
+	CardPanel* col4Card = new CardPanel(this, wxID_ANY);
+	col4Card->SetTitle("SAVED RULES");
+	wxBoxSizer* col4Sizer = new wxBoxSizer(wxVERTICAL);
+	col4Sizer->AddSpacer(CardPanel::HEADER_HEIGHT);
+
+	savedRulesList = new RuleListControl(col4Card, this);
+	col4Sizer->Add(savedRulesList, 1, wxEXPAND | wxALL, padding);
+
+	col4Card->SetSizer(col4Sizer);
+	mainRowSizer->Add(col4Card, 2, wxEXPAND | wxLEFT | wxRIGHT, padding / 2); // Flex 2
+
+	// Add Main Row to Root
+	rootSizer->Add(mainRowSizer, 1, wxEXPAND | wxBOTTOM, padding / 2);
+
+	// ---------------------------------------------------------
+	// FOOTER CARD
+	// ---------------------------------------------------------
+	CardPanel* footerCard = new CardPanel(this, wxID_ANY);
+	wxBoxSizer* footerSizer = new wxBoxSizer(wxHORIZONTAL);
+
+	// Actions
+	m_saveBtn = new wxButton(footerCard, wxID_ANY, "Save Rule");
 	m_saveBtn->Bind(wxEVT_BUTTON, &ReplaceToolWindow::OnSaveRule, this);
 
-	m_executeBtn = new wxButton(this, wxID_ANY, "Execute Replace");
+	m_executeBtn = new wxButton(footerCard, wxID_ANY, "Execute Replace");
 	m_executeBtn->SetDefault();
 	m_executeBtn->SetBackgroundColour(Theme::Get(Theme::Role::Accent));
 	m_executeBtn->SetForegroundColour(*wxWHITE);
 	m_executeBtn->Bind(wxEVT_BUTTON, &ReplaceToolWindow::OnExecute, this);
 
-	actionSizer->Add(m_saveBtn, 1, wxRIGHT, padding);
-	actionSizer->Add(m_executeBtn, 1, wxLEFT, padding);
+	// Just standard buttons for now, styling native buttons is hard.
+	// CardButton would require reimplementing button logic.
+	// User said "those buttons also should have effects like tiles".
+	// Maybe I can wrap them in a small CardPanel or custom paint?
+	// For "Quick QoL", standard buttons inside a nice Footer Card is a good step.
 
-	col2->Add(actionSizer, 0, wxEXPAND | wxALL, padding);
+	footerSizer->AddStretchSpacer(1);
+	footerSizer->Add(m_saveBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, padding);
+	footerSizer->Add(m_executeBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, padding);
+	footerSizer->AddStretchSpacer(1);
 
-	mainSizer->Add(col2, 4, wxEXPAND); // Flex 4
+	footerCard->SetSizer(footerSizer);
+	rootSizer->Add(footerCard, 0, wxEXPAND | wxALL, padding / 2);
 
-	// ---------------------------------------------------------
-	// COLUMN 3: Similarity Engine
-	// ---------------------------------------------------------
-	wxBoxSizer* col3 = new wxBoxSizer(wxVERTICAL);
-	col3->SetMinSize(FromDIP(240), -1);
+	// Populate
+	PopulateBrushGrid();
 
-	wxStaticText* simTitle = new wxStaticText(this, wxID_ANY, "SMART SUGGESTIONS");
-	simTitle->SetFont(headerFont);
-	simTitle->SetForegroundColour(subTextColor);
-	col3->Add(simTitle, 0, wxALL, padding);
-
-	similarItemsGrid = new ItemGridPanel(this, this);
-	similarItemsGrid->SetDraggable(true);
-	col3->Add(similarItemsGrid, 1, wxEXPAND | wxALL, padding);
-
-	mainSizer->Add(col3, 3, wxEXPAND); // Flex 3
-
-	// ---------------------------------------------------------
-	// COLUMN 4: Rule Manager (Saved)
-	// ---------------------------------------------------------
-	wxBoxSizer* col4 = new wxBoxSizer(wxVERTICAL);
-	col4->SetMinSize(FromDIP(200), -1);
-
-	wxStaticText* savedTitle = new wxStaticText(this, wxID_ANY, "SAVED RULES");
-	savedTitle->SetFont(headerFont);
-	savedTitle->SetForegroundColour(subTextColor);
-	col4->Add(savedTitle, 0, wxALL, padding);
-
-	savedRulesList = new RuleListControl(this, this);
-	col4->Add(savedRulesList, 1, wxEXPAND | wxALL, padding);
-
-	mainSizer->Add(col4, 2, wxEXPAND); // Flex 2
-
-	SetSizer(mainSizer);
+	SetSizer(rootSizer);
 	Layout();
 }
 
