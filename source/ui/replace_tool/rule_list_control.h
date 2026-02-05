@@ -1,10 +1,10 @@
 #ifndef RME_RULE_LIST_CONTROL_H_
 #define RME_RULE_LIST_CONTROL_H_
 
-#include "app/main.h"
 #include "ui/replace_tool/rule_manager.h"
 #include <wx/control.h>
 #include <vector>
+#include <string>
 
 class RuleListControl : public wxControl {
 public:
@@ -12,6 +12,8 @@ public:
 	public:
 		virtual ~Listener() { }
 		virtual void OnRuleSelected(const RuleSet& ruleSet) = 0;
+		virtual void OnRuleDeleted(const std::string& name) = 0;
+		virtual void OnRuleRenamed(const std::string& oldName, const std::string& newName) = 0;
 	};
 
 	RuleListControl(wxWindow* parent, Listener* listener);
@@ -19,9 +21,17 @@ public:
 	void SetRuleSets(const std::vector<std::string>& ruleSetNames);
 	wxSize DoGetBestClientSize() const override;
 
+	int GetSelectedIndex() const {
+		return m_selectedIndex;
+	}
+	const std::vector<std::string>& GetRuleSetNames() const {
+		return m_ruleSetNames;
+	}
+
 private:
 	void OnPaint(wxPaintEvent& event);
 	void OnMouse(wxMouseEvent& event);
+	void OnContextMenu(wxContextMenuEvent& event);
 	void OnScroll(wxScrollWinEvent& event);
 	void OnSize(wxSizeEvent& event);
 

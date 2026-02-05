@@ -13,6 +13,7 @@ RuleListControl::RuleListControl(wxWindow* parent, Listener* listener) : wxContr
 	Bind(wxEVT_LEFT_DOWN, &RuleListControl::OnMouse, this);
 	Bind(wxEVT_MOTION, &RuleListControl::OnMouse, this);
 	Bind(wxEVT_LEAVE_WINDOW, &RuleListControl::OnMouse, this);
+	Bind(wxEVT_CONTEXT_MENU, &RuleListControl::OnContextMenu, this);
 
 	// Bind scroll events
 	auto scrollHandler = [this](wxScrollWinEvent& event) { Refresh(); event.Skip(); };
@@ -149,4 +150,49 @@ void RuleListControl::OnMouse(wxMouseEvent& event) {
 	if (oldHover != m_hoveredIndex || event.LeftDown()) {
 		Refresh();
 	}
+}
+void RuleListControl::OnContextMenu(wxContextMenuEvent& event) {
+	if (m_hoveredIndex == -1) {
+		return;
+	}
+
+	wxMenu menu;
+	menu.Append(wxID_EDIT, "Edit Name");
+	menu.Append(wxID_DELETE, "Delete");
+
+	menu.Bind(wxEVT_MENU, [this](wxCommandEvent& e) {
+		if (m_hoveredIndex == -1){ return;
+}
+		std::string name = m_ruleSetNames[m_hoveredIndex];
+
+		if (e.GetId() == wxID_EDIT) {
+			wxString newName = wxGetTextFromUser("Enter new name for rule set:", "Edit Name", name);
+			if (!newName.IsEmpty() && newName.ToStdString() != name) {
+				if (m_listener) {
+					m_listener->OnRuleRenamed(name, newName.ToStdString());
+				}
+			}
+		} else if (e.GetId() == wxID_DELETE) {
+			wxMessageDialog dlg(this, "Are you sure you want to delete rule set '" + name + "'?", "Delete Rule Set", wxYES_NO | wxNO_DEFAULT | wxICON_WARNING);
+			if (dlg.ShowModal() == wxID_YES) {
+				if (m_listener) {
+					m_listener->OnRuleDeleted(name);
+				}
+			}
+		} }, wxID_EDIT);
+
+	menu.Bind(wxEVT_MENU, [this](wxCommandEvent& e) {
+		// Same lambda for delete
+		if (m_hoveredIndex == -1){ return;
+}
+		std::string name = m_ruleSetNames[m_hoveredIndex];
+
+		wxMessageDialog dlg(this, "Are you sure you want to delete rule set '" + name + "'?", "Delete Rule Set", wxYES_NO | wxNO_DEFAULT | wxICON_WARNING);
+		if (dlg.ShowModal() == wxID_YES) {
+			if (m_listener) {
+				m_listener->OnRuleDeleted(name);
+			}
+		} }, wxID_DELETE);
+
+	PopupMenu(&menu);
 }

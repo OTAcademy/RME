@@ -1,11 +1,14 @@
 #ifndef RME_RULE_BUILDER_PANEL_H_
 #define RME_RULE_BUILDER_PANEL_H_
 
-#include "app/main.h"
 #include "ui/replace_tool/rule_manager.h"
 #include "util/nanovg_canvas.h"
-#include "ui/replace_tool/rule_manager.h"
+#include <wx/wx.h>
+#include <wx/control.h>
 #include <wx/dnd.h>
+#include <vector>
+#include <string>
+#include <cstdint>
 
 class RuleBuilderPanel : public NanoVGCanvas {
 public:
@@ -13,6 +16,7 @@ public:
 	public:
 		virtual ~Listener() { }
 		virtual void OnRuleChanged() = 0;
+		virtual void OnClearRules() = 0;
 	};
 
 	RuleBuilderPanel(wxWindow* parent, Listener* listener);
@@ -40,6 +44,7 @@ private:
 			Target, // A specific target item icon
 			AddTarget, // The [+] ghost slot at the end of targets
 			NewRule, // The large "Drop New Rule" area
+			ClearRules,
 			DeleteRule, // The 'X' on the rule card
 			DeleteTarget // The 'X' overlay on a specific target
 		};

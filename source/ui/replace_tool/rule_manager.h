@@ -1,9 +1,9 @@
 #ifndef RME_RULE_MANAGER_H_
 #define RME_RULE_MANAGER_H_
 
-#include "app/main.h"
 #include <vector>
 #include <string>
+#include <cstdint>
 
 struct ReplacementTarget {
 	uint16_t id;
@@ -26,6 +26,7 @@ public:
 
 	bool SaveRuleSet(const RuleSet& ruleSet);
 	RuleSet LoadRuleSet(const std::string& name);
+	bool DeleteRuleSet(const std::string& name);
 	std::vector<std::string> GetAvailableRuleSets();
 
 private:

@@ -22,10 +22,12 @@ public:
 	void OnItemSelected(ItemGridPanel* source, uint16_t itemId) override;
 
 	// RuleListControl::Listener
-	void OnRuleSelected(const RuleSet& ruleSet) override;
-
+	virtual void OnRuleSelected(const RuleSet& rs) override;
+	virtual void OnRuleDeleted(const std::string& name) override;
+	virtual void OnRuleRenamed(const std::string& oldName, const std::string& newName) override;
 	// RuleBuilderPanel::Listener
-	void OnRuleChanged() override;
+	virtual void OnRuleChanged() override;
+	virtual void OnClearRules() override;
 
 private:
 	void InitLayout();
@@ -35,7 +37,6 @@ private:
 	void OnSearchChange(wxCommandEvent& event);
 	void OnExecute(wxCommandEvent& event);
 	void OnSaveRule(wxCommandEvent& event);
-	void OnClearSource(wxCommandEvent& event);
 
 	Editor* editor;
 
@@ -46,6 +47,9 @@ private:
 	wxSearchCtrl* searchCtrl;
 	wxButton* m_saveBtn;
 	wxButton* m_executeBtn;
+	wxButton* m_addRuleBtn;
+	wxButton* m_editRuleBtn;
+	wxButton* m_deleteRuleBtn;
 
 	ReplacementEngine engine;
 

@@ -101,6 +101,20 @@ RuleSet RuleManager::LoadRuleSet(const std::string& name) {
 	return ruleSet;
 }
 
+bool RuleManager::DeleteRuleSet(const std::string& name) {
+	if (!IsValidRuleSetName(name)) {
+		wxLogError("Invalid rule set name: %s", name);
+		return false;
+	}
+
+	wxFileName path(GetRulesDir(), name, "json");
+	if (!path.FileExists()) {
+		return false;
+	}
+
+	return wxRemoveFile(path.GetFullPath());
+}
+
 std::vector<std::string> RuleManager::GetAvailableRuleSets() {
 	std::vector<std::string> results;
 	wxDir dir(GetRulesDir());

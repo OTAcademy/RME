@@ -137,6 +137,15 @@ RuleBuilderPanel::RuleBuilderPanel(wxWindow* parent, Listener* listener) :
 
 RuleBuilderPanel::~RuleBuilderPanel() { }
 
+void RuleBuilderPanel::Clear() {
+	m_rules.clear();
+	if (!m_pulseTimer.IsRunning()) {
+		m_pulseTimer.Start(30);
+	}
+	LayoutRules();
+	Refresh();
+}
+
 void RuleBuilderPanel::OnPulseTimer(wxTimerEvent&) {
 	if (IsShownOnScreen()) {
 		Refresh();
@@ -156,15 +165,6 @@ void RuleBuilderPanel::SetRules(const std::vector<ReplacementRule>& rules) {
 
 std::vector<ReplacementRule> RuleBuilderPanel::GetRules() const {
 	return m_rules;
-}
-
-void RuleBuilderPanel::Clear() {
-	m_rules.clear();
-	if (!m_pulseTimer.IsRunning()) {
-		m_pulseTimer.Start(30);
-	}
-	LayoutRules();
-	Refresh();
 }
 
 void RuleBuilderPanel::LayoutRules() {
@@ -319,9 +319,16 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 		}
 	}
 
-	// New Rule Area
+	// Clear Rules Button (Far Right of Header)
+	const int CLEAR_BTN_W = FromDIP(100);
+	if (y < HEADER_HEIGHT && x > width - CLEAR_BTN_W - 10) {
+		return { HitResult::ClearRules, -1, -1 };
+	}
+
+	// New Rule Area (At the bottom)
 	int newRuleY = GetRuleY(m_rules.size(), width) + CARD_MARGIN_Y;
-	if (absY >= newRuleY && absY <= newRuleY + FromDIP(60)) {
+	float dropH = 60.0f; // Must match OnNanoVGPaint
+	if (absY >= newRuleY && absY <= newRuleY + dropH) {
 		return { HitResult::NewRule, -1, -1 };
 	}
 
@@ -357,6 +364,14 @@ void RuleBuilderPanel::OnMouse(wxMouseEvent& event) {
 					m_listener->OnRuleChanged();
 				}
 				Refresh();
+			}
+		} else if (hit.type == HitResult::ClearRules) {
+			wxMessageDialog dlg(this, "Are you sure you want to clear all rules? This action cannot be undone.", "Clear Rules", wxYES_NO | wxNO_DEFAULT | wxICON_WARNING);
+			if (dlg.ShowModal() == wxID_YES) {
+				Clear();
+				if (m_listener) {
+					m_listener->OnClearRules();
+				}
 			}
 		}
 	}
@@ -510,8 +525,8 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 	nvgFillColor(vg, nvgRGBA(30, 30, 30, 255)); // Darker background
 	nvgFill(vg);
 
+	// Draw Fixed Headers (Not scrolled)
 	nvgSave(vg);
-	nvgTranslate(vg, 0, -scrollPos);
 
 	NVGcolor textCol = nvgRGBA(255, 255, 255, 255);
 	NVGcolor subTextCol = nvgRGBA(150, 150, 150, 255);
@@ -531,14 +546,34 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 	float targetLabelX = sourceLabelX + CARD_W + 10 + ARROW_WIDTH;
 	nvgText(vg, targetLabelX, headerY, "REPLACE WITH", nullptr);
 
-	// Separator line for static header
-	nvgBeginPath(vg);
-	nvgMoveTo(vg, 0, HEADER_HEIGHT);
-	nvgLineTo(vg, width, HEADER_HEIGHT);
-	nvgStrokeColor(vg, nvgRGBA(60, 60, 60, 255));
 	nvgStrokeWidth(vg, 1.0f);
 	nvgStroke(vg);
 
+	// Draw Clear Rules Button
+	const int CLEAR_BTN_W = FromDIP(100);
+	const int CLEAR_BTN_H = FromDIP(24);
+	float cbX = width - CLEAR_BTN_W - 10;
+	float cbY = (HEADER_HEIGHT - CLEAR_BTN_H) / 2.0f;
+
+	bool hoverClear = (m_dragHover.type == HitResult::ClearRules);
+
+	nvgBeginPath(vg);
+	nvgRoundedRect(vg, cbX, cbY, CLEAR_BTN_W, CLEAR_BTN_H, 4);
+	if (hoverClear) {
+		nvgFillColor(vg, nvgRGBA(180, 40, 40, 255));
+	} else {
+		nvgFillColor(vg, nvgRGBA(60, 60, 60, 255));
+	}
+	nvgFill(vg);
+
+	nvgFillColor(vg, nvgRGBA(255, 255, 255, 255));
+	nvgFontSize(vg, 11.0f);
+	nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+	nvgText(vg, cbX + CLEAR_BTN_W / 2.0f, cbY + CLEAR_BTN_H / 2.0f, "CLEAR RULES", nullptr);
+
+	nvgRestore(vg);
+
+	// Now draw content (Scrolled)
 	nvgSave(vg);
 	nvgTranslate(vg, 0, -scrollPos);
 

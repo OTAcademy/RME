@@ -78,11 +78,10 @@ void ReplaceToolWindow::InitLayout() {
 	// ---------------------------------------------------------
 	CardPanel* col1Card = new CardPanel(this, wxID_ANY);
 	col1Card->SetTitle("ITEM LIBRARY");
-	wxBoxSizer* col1Sizer = new wxBoxSizer(wxVERTICAL);
-	col1Sizer->AddSpacer(CardPanel::HEADER_HEIGHT);
+	col1Card->SetShowFooter(true);
 
 	// Notebook for Tabs
-	libraryTabs = new wxNotebook(col1Card, wxID_ANY);
+	libraryTabs = new wxNotebook(col1Card, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_TOP | wxBORDER_NONE);
 
 	// PAGE 1: Item List
 	wxPanel* itemListPage = new wxPanel(libraryTabs);
@@ -140,9 +139,7 @@ void ReplaceToolWindow::InitLayout() {
 	brushListPage->SetSizer(brushListSizer);
 	libraryTabs->AddPage(brushListPage, "Brushes");
 
-	col1Sizer->Add(libraryTabs, 1, wxEXPAND | wxALL, padding / 2); // Less padding inside card
-	col1Card->SetSizer(col1Sizer);
-
+	col1Card->GetContentSizer()->Add(libraryTabs, 1, wxEXPAND | wxALL, padding / 2); // Less padding inside card
 	mainRowSizer->Add(col1Card, 3, wxEXPAND | wxLEFT | wxRIGHT, padding / 2); // Flex 3
 
 	// ---------------------------------------------------------
@@ -150,13 +147,28 @@ void ReplaceToolWindow::InitLayout() {
 	// ---------------------------------------------------------
 	CardPanel* col2Card = new CardPanel(this, wxID_ANY);
 	col2Card->SetTitle("RULE BUILDER");
-	wxBoxSizer* col2Sizer = new wxBoxSizer(wxVERTICAL);
-	col2Sizer->AddSpacer(CardPanel::HEADER_HEIGHT);
 
 	ruleBuilder = new RuleBuilderPanel(col2Card, this);
-	col2Sizer->Add(ruleBuilder, 1, wxEXPAND | wxALL, padding);
+	col2Card->GetContentSizer()->Add(ruleBuilder, 1, wxEXPAND | wxALL, padding);
+	col2Card->SetShowFooter(true);
 
-	col2Card->SetSizer(col2Sizer);
+	// Rule Builder Footer Buttons
+	wxBoxSizer* ruleFooterSizer = new wxBoxSizer(wxHORIZONTAL);
+	m_saveBtn = new wxButton(col2Card, wxID_ANY, "Save Rule");
+	m_executeBtn = new wxButton(col2Card, wxID_ANY, "Execute Replace");
+	m_executeBtn->SetDefault();
+	m_executeBtn->SetBackgroundColour(Theme::Get(Theme::Role::Accent));
+	m_executeBtn->SetForegroundColour(*wxWHITE);
+
+	ruleFooterSizer->AddStretchSpacer(1);
+	ruleFooterSizer->Add(m_saveBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, padding / 2);
+	ruleFooterSizer->Add(m_executeBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, padding / 2);
+	ruleFooterSizer->AddStretchSpacer(1);
+	col2Card->GetFooterSizer()->Add(ruleFooterSizer, 1, wxEXPAND);
+
+	m_saveBtn->Bind(wxEVT_BUTTON, &ReplaceToolWindow::OnSaveRule, this);
+	m_executeBtn->Bind(wxEVT_BUTTON, &ReplaceToolWindow::OnExecute, this);
+
 	mainRowSizer->Add(col2Card, 4, wxEXPAND | wxLEFT | wxRIGHT, padding / 2); // Flex 4
 
 	// ---------------------------------------------------------
@@ -164,14 +176,11 @@ void ReplaceToolWindow::InitLayout() {
 	// ---------------------------------------------------------
 	CardPanel* col3Card = new CardPanel(this, wxID_ANY);
 	col3Card->SetTitle("SMART SUGGESTIONS");
-	wxBoxSizer* col3Sizer = new wxBoxSizer(wxVERTICAL);
-	col3Sizer->AddSpacer(CardPanel::HEADER_HEIGHT);
+	col3Card->SetShowFooter(true);
 
 	similarItemsGrid = new ItemGridPanel(col3Card, this);
 	similarItemsGrid->SetDraggable(true);
-	col3Sizer->Add(similarItemsGrid, 1, wxEXPAND | wxALL, padding);
-
-	col3Card->SetSizer(col3Sizer);
+	col3Card->GetContentSizer()->Add(similarItemsGrid, 1, wxEXPAND | wxALL, padding);
 	mainRowSizer->Add(col3Card, 3, wxEXPAND | wxLEFT | wxRIGHT, padding / 2); // Flex 3
 
 	// ---------------------------------------------------------
@@ -179,47 +188,70 @@ void ReplaceToolWindow::InitLayout() {
 	// ---------------------------------------------------------
 	CardPanel* col4Card = new CardPanel(this, wxID_ANY);
 	col4Card->SetTitle("SAVED RULES");
-	wxBoxSizer* col4Sizer = new wxBoxSizer(wxVERTICAL);
-	col4Sizer->AddSpacer(CardPanel::HEADER_HEIGHT);
+	col4Card->SetShowFooter(true);
 
 	savedRulesList = new RuleListControl(col4Card, this);
-	col4Sizer->Add(savedRulesList, 1, wxEXPAND | wxALL, padding);
+	col4Card->GetContentSizer()->Add(savedRulesList, 1, wxEXPAND | wxALL, padding);
 
-	col4Card->SetSizer(col4Sizer);
+	// Saved Rules Footer Buttons
+	wxBoxSizer* savedFooterSizer = new wxBoxSizer(wxHORIZONTAL);
+	m_addRuleBtn = new wxButton(col4Card, wxID_ANY, "Add", wxDefaultPosition, FromDIP(wxSize(60, -1)));
+	m_editRuleBtn = new wxButton(col4Card, wxID_ANY, "Edit", wxDefaultPosition, FromDIP(wxSize(60, -1)));
+	m_deleteRuleBtn = new wxButton(col4Card, wxID_ANY, "Del", wxDefaultPosition, FromDIP(wxSize(60, -1)));
+
+	savedFooterSizer->AddStretchSpacer(1);
+	savedFooterSizer->Add(m_addRuleBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+	savedFooterSizer->Add(m_editRuleBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+	savedFooterSizer->Add(m_deleteRuleBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+	savedFooterSizer->AddStretchSpacer(1);
+	col4Card->GetFooterSizer()->Add(savedFooterSizer, 1, wxEXPAND);
+
+	m_addRuleBtn->Bind(wxEVT_BUTTON, [this](wxCommandEvent&) {
+		std::vector<ReplacementRule> rules = ruleBuilder->GetRules();
+		if (rules.empty()) {
+			return;
+		}
+		wxString name = wxGetTextFromUser("Enter name for this rule set:", "Add Rule", "");
+		if (!name.IsEmpty()) {
+			RuleSet rs;
+			rs.name = name.ToStdString();
+			rs.rules = rules;
+			if (RuleManager::Get().SaveRuleSet(rs)) {
+				UpdateSavedRulesList();
+			}
+		}
+	});
+
+	m_editRuleBtn->Bind(wxEVT_BUTTON, [this](wxCommandEvent&) {
+		if (savedRulesList->GetSelectedIndex() != -1) {
+			std::string oldName = savedRulesList->GetRuleSetNames()[savedRulesList->GetSelectedIndex()];
+			wxString newName = wxGetTextFromUser("Enter new name for rule set:", "Edit Name", oldName);
+			if (!newName.IsEmpty() && newName.ToStdString() != oldName) {
+				OnRuleRenamed(oldName, newName.ToStdString());
+			}
+		}
+	});
+
+	m_deleteRuleBtn->Bind(wxEVT_BUTTON, [this](wxCommandEvent&) {
+		if (savedRulesList->GetSelectedIndex() != -1) {
+			std::string name = savedRulesList->GetRuleSetNames()[savedRulesList->GetSelectedIndex()];
+			wxMessageDialog dlg(this, "Are you sure you want to delete rule set '" + name + "'?", "Delete Rule Set", wxYES_NO | wxNO_DEFAULT | wxICON_WARNING);
+			if (dlg.ShowModal() == wxID_YES) {
+				OnRuleDeleted(name);
+			}
+		}
+	});
+
 	mainRowSizer->Add(col4Card, 2, wxEXPAND | wxLEFT | wxRIGHT, padding / 2); // Flex 2
 
 	// Add Main Row to Root
-	rootSizer->Add(mainRowSizer, 1, wxEXPAND | wxBOTTOM, padding / 2);
+	rootSizer->Add(mainRowSizer, 1, wxEXPAND | wxALL, padding / 2);
 
-	// ---------------------------------------------------------
-	// FOOTER CARD
-	// ---------------------------------------------------------
+	// Remove Global FooterCard
+	/*
 	CardPanel* footerCard = new CardPanel(this, wxID_ANY);
-	wxBoxSizer* footerSizer = new wxBoxSizer(wxHORIZONTAL);
-
-	// Actions
-	m_saveBtn = new wxButton(footerCard, wxID_ANY, "Save Rule");
-	m_saveBtn->Bind(wxEVT_BUTTON, &ReplaceToolWindow::OnSaveRule, this);
-
-	m_executeBtn = new wxButton(footerCard, wxID_ANY, "Execute Replace");
-	m_executeBtn->SetDefault();
-	m_executeBtn->SetBackgroundColour(Theme::Get(Theme::Role::Accent));
-	m_executeBtn->SetForegroundColour(*wxWHITE);
-	m_executeBtn->Bind(wxEVT_BUTTON, &ReplaceToolWindow::OnExecute, this);
-
-	// Just standard buttons for now, styling native buttons is hard.
-	// CardButton would require reimplementing button logic.
-	// User said "those buttons also should have effects like tiles".
-	// Maybe I can wrap them in a small CardPanel or custom paint?
-	// For "Quick QoL", standard buttons inside a nice Footer Card is a good step.
-
-	footerSizer->AddStretchSpacer(1);
-	footerSizer->Add(m_saveBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, padding);
-	footerSizer->Add(m_executeBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, padding);
-	footerSizer->AddStretchSpacer(1);
-
-	footerCard->SetSizer(footerSizer);
-	rootSizer->Add(footerCard, 0, wxEXPAND | wxALL, padding / 2);
+	...
+	*/
 
 	// Populate
 	PopulateBrushGrid();
@@ -399,6 +431,24 @@ void ReplaceToolWindow::OnRuleSelected(const RuleSet& rs) {
 	}
 }
 
+void ReplaceToolWindow::OnRuleDeleted(const std::string& name) {
+	if (RuleManager::Get().DeleteRuleSet(name)) {
+		UpdateSavedRulesList();
+	}
+}
+
+void ReplaceToolWindow::OnRuleRenamed(const std::string& oldName, const std::string& newName) {
+	// Rename essentially involves loading, renaming, saving new, and deleting old
+	RuleSet rs = RuleManager::Get().LoadRuleSet(oldName);
+	if (!rs.name.empty()) {
+		rs.name = newName;
+		if (RuleManager::Get().SaveRuleSet(rs)) {
+			RuleManager::Get().DeleteRuleSet(oldName);
+			UpdateSavedRulesList();
+		}
+	}
+}
+
 void ReplaceToolWindow::OnRuleChanged() { }
 
 void ReplaceToolWindow::OnSearchChange(wxCommandEvent&) {
@@ -464,7 +514,9 @@ void ReplaceToolWindow::UpdateSavedRulesList() {
 	savedRulesList->SetRuleSets(RuleManager::Get().GetAvailableRuleSets());
 }
 
-void ReplaceToolWindow::OnClearSource(wxCommandEvent&) {
+void ReplaceToolWindow::OnClearRules() {
+	// Any additional logic when rules are cleared?
+	// The rule builder already cleared itself.
 	ruleBuilder->Clear();
 	similarItemsGrid->SetItems({});
 }

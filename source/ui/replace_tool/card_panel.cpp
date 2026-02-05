@@ -8,12 +8,31 @@ CardPanel::CardPanel(wxWindow* parent, wxWindowID id) : wxPanel(parent, id) {
 	SetBackgroundStyle(wxBG_STYLE_PAINT);
 	Bind(wxEVT_PAINT, &CardPanel::OnPaint, this);
 	Bind(wxEVT_SIZE, &CardPanel::OnSize, this);
+
+	m_mainSizer = new wxBoxSizer(wxVERTICAL);
+	m_mainSizer->AddSpacer(HEADER_HEIGHT);
+
+	m_contentSizer = new wxBoxSizer(wxVERTICAL);
+	m_mainSizer->Add(m_contentSizer, 1, wxEXPAND);
+
+	m_footerSizer = new wxBoxSizer(wxVERTICAL);
+	m_mainSizer->Add(m_footerSizer, 0, wxEXPAND);
+
+	SetSizer(m_mainSizer);
 }
 
-void CardPanel::SetIsActive(bool active) {
-	m_isActive = active;
+void CardPanel::SetShowFooter(bool show) {
+	m_showFooter = show;
+	if (m_showFooter) {
+		m_mainSizer->SetItemMinSize(m_footerSizer, wxSize(-1, FOOTER_HEIGHT));
+	} else {
+		m_mainSizer->SetItemMinSize(m_footerSizer, wxSize(-1, 0));
+	}
+	Layout();
 	Refresh();
 }
+
+// SetIsActive removed for now or just ignored
 
 void CardPanel::SetTitle(const wxString& title) {
 	m_title = title;
@@ -126,5 +145,50 @@ void CardPanel::OnPaint(wxPaintEvent& event) {
 		double ty = y + (ch - th) / 2.0;
 
 		gc->DrawText(m_title, tx, ty);
+	}
+
+	// Draw Footer if requested
+	if (m_showFooter) {
+		double footerH = (double)FOOTER_HEIGHT;
+		double x = margin;
+		double y = h - margin - footerH;
+		double cw = w - 2 * margin;
+		double ch = footerH;
+
+		// Create path for footer (Bottom corners rounded, top square)
+		wxGraphicsPath footerPath = gc->CreatePath();
+
+		// Start at Top-Left of footer
+		footerPath.MoveToPoint(x, y);
+
+		// Top Line (Separator)
+		footerPath.AddLineToPoint(x + cw, y);
+
+		// Right vertical down to start of round
+		footerPath.AddLineToPoint(x + cw, y + ch - r);
+
+		// Bottom-Right Corner
+		const double PI = 3.14159265358979323846;
+		footerPath.AddArc(x + cw - r, y + ch - r, r, 0, 0.5 * PI, true);
+
+		// Bottom Line
+		footerPath.AddLineToPoint(x + r, y + ch);
+
+		// Bottom-Left Corner
+		footerPath.AddArc(x + r, y + ch - r, r, 0.5 * PI, PI, true);
+
+		// Left vertical up
+		footerPath.AddLineToPoint(x, y);
+
+		footerPath.CloseSubpath();
+
+		// Fill Footer
+		gc->SetBrush(wxBrush(headerBg));
+		gc->SetPen(*wxTRANSPARENT_PEN);
+		gc->FillPath(footerPath);
+
+		// Draw Separator Line
+		gc->SetPen(wxPen(wxColour(0, 0, 0, 50), 1));
+		gc->StrokeLine(x, y, x + cw, y);
 	}
 }
