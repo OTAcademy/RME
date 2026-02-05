@@ -434,9 +434,10 @@ bool IOMapOTMM::loadMap(Map& map, NodeFileReadHandle& f, const FileName& identif
 								if (house_id) {
 									house = map.houses.getHouse(house_id);
 									if (!house) {
-										house = newd House(map);
-										house->id = house_id;
-										map.houses.addHouse(house);
+										auto new_house = std::make_unique<House>(map);
+										house = new_house.get();
+										new_house->setID(house_id);
+										map.houses.addHouse(std::move(new_house));
 									}
 								} else {
 									warning("Invalid house id from tile %d:%d:%d", pos.x, pos.y, pos.z);
@@ -649,9 +650,9 @@ bool IOMapOTMM::loadMap(Map& map, NodeFileReadHandle& f, const FileName& identif
 								warning("Duplicate town id %d, discarding duplicate", town_id);
 								continue;
 							} else {
-								town = newd Town(town_id);
-								if (!map.towns.addTown(town)) {
-									delete town;
+								auto new_town = std::make_unique<Town>(town_id);
+								town = new_town.get();
+								if (!map.towns.addTown(std::move(new_town))) {
 									continue;
 								}
 							}
@@ -933,8 +934,8 @@ bool IOMapOTMM::saveMap(Map& map, NodeFileWriteHandle& f, const FileName& identi
 
 			f.addNode(OTMM_TOWN_DATA);
 			{
-				for (TownMap::const_iterator it = map.towns.begin(); it != map.towns.end(); ++it) {
-					const Town* town = it->second;
+				for (const auto& [town_id, town_ptr] : map.towns) {
+					const Town* town = town_ptr.get();
 					f.addNode(OTMM_TOWN);
 					{
 						f.addU32(town->getID());
@@ -950,11 +951,11 @@ bool IOMapOTMM::saveMap(Map& map, NodeFileWriteHandle& f, const FileName& identi
 
 			f.addNode(OTMM_HOUSE_DATA);
 			{
-				for (HouseMap::const_iterator it = map.houses.begin(); it != map.houses.end(); ++it) {
-					const House* house = it->second;
+				for (const auto& [house_id, house_ptr] : map.houses) {
+					const House* house = house_ptr.get();
 					f.addNode(OTMM_HOUSE);
 					{
-						f.addU32(house->id);
+						f.addU32(house->getID());
 						f.addString(house->name);
 						f.addU16(house->townid);
 						f.addU16(house->rent);

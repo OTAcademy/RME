@@ -141,7 +141,7 @@ void HousePalette::UpdateHouses() {
 	// Populate towns
 	town_choice->Append("All Towns", (void*)nullptr);
 	for (auto& it : map->towns) {
-		town_choice->Append(wxstr(it.second->getName()), it.second);
+		town_choice->Append(wxstr(it.second->getName()), it.second.get());
 	}
 	town_choice->Append("No Town", (void*)nullptr);
 	town_choice->SetSelection(0);
@@ -169,7 +169,7 @@ void HousePalette::FilterHouses() {
 	}
 
 	for (auto& it : map->houses) {
-		House* house = it.second;
+		House* house = it.second.get();
 
 		bool search_match = search_query.IsEmpty() || wxstr(house->name).Lower().Contains(search_query) || wxstr(std::to_string(house->getID())).Contains(search_query);
 
@@ -274,7 +274,7 @@ void HousePalette::OnAddHouse(wxCommandEvent& event) {
 		return;
 	}
 
-	House* new_house = newd House(*map);
+	auto new_house = std::make_unique<House>(*map);
 	new_house->setID(map->houses.getEmptyID());
 
 	std::ostringstream os;
@@ -288,13 +288,14 @@ void HousePalette::OnAddHouse(wxCommandEvent& event) {
 		new_house->townid = town->getID();
 	}
 
-	map->houses.addHouse(new_house);
+	House* house_ptr = new_house.get();
+	map->houses.addHouse(std::move(new_house));
 	FilterHouses();
 
 	// Select the new house
 	for (int i = 0; i < (int)house_list->GetItemCount(); ++i) {
 		wxDataViewItem item = house_list->RowToItem(i);
-		if ((House*)house_list->GetItemData(item) == new_house) {
+		if ((House*)house_list->GetItemData(item) == house_ptr) {
 			house_list->Select(item);
 			break;
 		}
