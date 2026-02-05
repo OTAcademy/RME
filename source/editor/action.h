@@ -20,8 +20,12 @@
 
 #include "map/position.h"
 
+#include <cstdint>
 #include <deque>
 #include <memory>
+#include <string>
+#include <type_traits>
+#include <variant>
 #include <vector>
 
 class Editor;
@@ -40,10 +44,21 @@ enum ChangeType {
 	CHANGE_MOVE_WAYPOINT,
 };
 
+struct HouseExitChangeData {
+	uint32_t houseId;
+	Position pos;
+};
+
+struct WaypointChangeData {
+	std::string name;
+	Position pos;
+};
+
 class Change {
 private:
+	using Data = std::variant<std::monostate, std::unique_ptr<Tile>, HouseExitChangeData, WaypointChangeData>;
 	ChangeType type;
-	void* data;
+	Data data;
 
 	Change();
 
@@ -57,9 +72,9 @@ public:
 	ChangeType getType() const {
 		return type;
 	}
-	void* getData() const {
-		return data;
-	}
+	const Tile* getTile() const;
+	const HouseExitChangeData* getHouseExitData() const;
+	const WaypointChangeData* getWaypointData() const;
 
 	// Get memory footprint
 	uint32_t memsize() const;

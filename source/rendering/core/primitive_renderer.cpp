@@ -1,6 +1,7 @@
 #include "rendering/core/primitive_renderer.h"
 #include <iostream>
 #include <spdlog/spdlog.h>
+#include "rendering/core/gl_scoped_state.h"
 
 const char* primitive_vert = R"(
 #version 450 core
@@ -140,19 +141,19 @@ void PrimitiveRenderer::flushTriangles() {
 		return;
 	}
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	{
+		ScopedGLCapability blendCap(GL_BLEND);
+		ScopedGLBlend blendState(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	shader_->Use();
-	shader_->SetMat4("uMVP", projection_);
+		shader_->Use();
+		shader_->SetMat4("uMVP", projection_);
 
-	glNamedBufferSubData(vbo_->GetID(), 0, triangle_verts_.size() * sizeof(Vertex), triangle_verts_.data());
+		glNamedBufferSubData(vbo_->GetID(), 0, triangle_verts_.size() * sizeof(Vertex), triangle_verts_.data());
 
-	glBindVertexArray(vao_->GetID());
-	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)triangle_verts_.size());
-	glBindVertexArray(0);
-
-	glDisable(GL_BLEND);
+		glBindVertexArray(vao_->GetID());
+		glDrawArrays(GL_TRIANGLES, 0, (GLsizei)triangle_verts_.size());
+		glBindVertexArray(0);
+	}
 
 	triangle_verts_.clear();
 }
@@ -162,19 +163,19 @@ void PrimitiveRenderer::flushLines() {
 		return;
 	}
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	{
+		ScopedGLCapability blendCap(GL_BLEND);
+		ScopedGLBlend blendState(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	shader_->Use();
-	shader_->SetMat4("uMVP", projection_);
+		shader_->Use();
+		shader_->SetMat4("uMVP", projection_);
 
-	glNamedBufferSubData(vbo_->GetID(), 0, line_verts_.size() * sizeof(Vertex), line_verts_.data());
+		glNamedBufferSubData(vbo_->GetID(), 0, line_verts_.size() * sizeof(Vertex), line_verts_.data());
 
-	glBindVertexArray(vao_->GetID());
-	glDrawArrays(GL_LINES, 0, (GLsizei)line_verts_.size());
-	glBindVertexArray(0);
-
-	glDisable(GL_BLEND);
+		glBindVertexArray(vao_->GetID());
+		glDrawArrays(GL_LINES, 0, (GLsizei)line_verts_.size());
+		glBindVertexArray(0);
+	}
 
 	line_verts_.clear();
 }

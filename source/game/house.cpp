@@ -29,15 +29,12 @@ Houses::Houses(Map& map) :
 }
 
 Houses::~Houses() {
-	for (HouseMap::iterator it = houses.begin(); it != houses.end(); ++it) {
-		delete it->second;
-	}
 }
 
 uint32_t Houses::getEmptyID() {
 	// ids were edited or planned id is taken, search forwards
-	if (max_house_id == 0 || houses[max_house_id + 1]) {
-		while (houses[++max_house_id]) {
+	if (max_house_id == 0 || houses.contains(max_house_id + 1)) {
+		while (houses.contains(++max_house_id)) {
 			// do nothing, we search for an empty slot
 		}
 
@@ -48,36 +45,37 @@ uint32_t Houses::getEmptyID() {
 	return ++max_house_id;
 }
 
-void Houses::addHouse(House* new_house) {
+bool Houses::addHouse(std::unique_ptr<House> new_house) {
 	ASSERT(new_house);
 	HouseMap::iterator it = houses.find(new_house->id);
-	ASSERT(it == houses.end());
+	if (it != houses.end()) {
+		return false;
+	}
 	new_house->map = &map;
 	if (new_house->id > max_house_id) {
 		max_house_id = new_house->id;
 	}
-	houses[new_house->id] = new_house;
+	houses[new_house->id] = std::move(new_house);
+	return true;
 }
 
 void Houses::removeHouse(House* house_to_remove) {
 	HouseMap::iterator it = houses.find(house_to_remove->id);
 	if (it != houses.end()) {
+		house_to_remove->clean();
 		houses.erase(it);
 	}
-
-	house_to_remove->clean();
-	delete house_to_remove;
 }
 
 void Houses::changeId(House* house, uint32_t newID) {
 	ASSERT(house);
-	HouseMap::iterator it = houses.find(house->id);
+	auto it = houses.find(house->id);
 	if (it != houses.end()) {
+		auto house_ptr = std::move(it->second);
 		houses.erase(it);
+		house_ptr->setID(newID);
+		houses[newID] = std::move(house_ptr);
 	}
-
-	house->setID(newID);
-	houses[newID] = house;
 
 	// id list structure changed, prepare search for new free slot
 	max_house_id = 0;
@@ -86,7 +84,7 @@ void Houses::changeId(House* house, uint32_t newID) {
 House* Houses::getHouse(uint32_t houseid) {
 	HouseMap::iterator it = houses.find(houseid);
 	if (it != houses.end()) {
-		return it->second;
+		return it->second.get();
 	}
 	return nullptr;
 }
@@ -94,7 +92,7 @@ House* Houses::getHouse(uint32_t houseid) {
 const House* Houses::getHouse(uint32_t houseid) const {
 	HouseMap::const_iterator it = houses.find(houseid);
 	if (it != houses.end()) {
-		return it->second;
+		return it->second.get();
 	}
 
 	return nullptr;

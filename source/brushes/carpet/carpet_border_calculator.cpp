@@ -11,7 +11,7 @@
 #include <array>
 
 // Helper lambda as a static function
-static bool hasMatchingCarpetBrushAtTile(BaseMap* map, CarpetBrush* carpetBrush, uint32_t x, uint32_t y, uint32_t z) {
+static bool hasMatchingCarpetBrushAtTile(BaseMap* map, CarpetBrush* carpetBrush, int32_t x, int32_t y, int32_t z) {
 	Tile* tile = map->getTile(x, y, z);
 	if (!tile) {
 		return false;
@@ -32,9 +32,9 @@ void CarpetBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 	}
 
 	const Position& position = tile->getPosition();
-	uint32_t x = position.x;
-	uint32_t y = position.y;
-	uint32_t z = position.z;
+	int32_t x = position.x;
+	int32_t y = position.y;
+	int32_t z = position.z;
 
 	for (Item* item : tile->items) {
 		ASSERT(item);
@@ -52,12 +52,15 @@ void CarpetBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 
 		static constexpr std::array<std::pair<int32_t, int32_t>, 8> offsets = { { { -1, -1 }, { 0, -1 }, { 1, -1 }, { -1, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } } };
 
-		for (size_t i = 0; i < offsets.size(); ++i) {
-			const auto& [dx, dy] = offsets[i];
-			if ((x == 0 && dx < 0) || (y == 0 && dy < 0)) {
-				continue;
+		size_t i = 0;
+		for (const auto& [dx, dy] : offsets) {
+			int32_t nx = x + dx;
+			int32_t ny = y + dy;
+
+			if (nx >= 0 && ny >= 0) {
+				neighbours[i] = hasMatchingCarpetBrushAtTile(map, carpetBrush, nx, ny, z);
 			}
-			neighbours[i] = hasMatchingCarpetBrushAtTile(map, carpetBrush, x + dx, y + dy, z);
+			++i;
 		}
 
 		uint32_t tileData = 0;

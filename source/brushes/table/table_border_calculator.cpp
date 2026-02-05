@@ -60,20 +60,17 @@ void TableBorderCalculator::doTables(BaseMap* map, Tile* tile) {
 		static constexpr std::array<std::pair<int32_t, int32_t>, 8> offsets = { { { -1, -1 }, { 0, -1 }, { 1, -1 }, { -1, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } } };
 
 		uint32_t tiledata = 0;
-		for (size_t i = 0; i < offsets.size(); ++i) {
-			const auto& [dx, dy] = offsets[i];
-			// Check if neighbor is valid (within bounds/logic of hasMatchingTableBrushAtTile)
-
+		size_t i = 0;
+		for (const auto& [dx, dy] : offsets) {
 			int32_t nx = x + dx;
 			int32_t ny = y + dy;
 
-			if (nx < 0 || ny < 0) { // Basic sanity check matching original logic implicitly
-				continue;
+			if (nx >= 0 && ny >= 0) {
+				if (hasMatchingTableBrushAtTile(map, table_brush, nx, ny, z)) {
+					tiledata |= 1 << i;
+				}
 			}
-
-			if (hasMatchingTableBrushAtTile(map, table_brush, nx, ny, z)) {
-				tiledata |= 1 << i;
-			}
+			++i;
 		}
 
 		BorderType bt = static_cast<BorderType>(TableBrush::table_types[tiledata]);

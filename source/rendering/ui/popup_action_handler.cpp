@@ -36,7 +36,7 @@ void PopupActionHandler::RotateItem(Editor& editor) {
 	std::unique_ptr<Tile> new_tile(tile->deepCopy(editor.map));
 
 	ItemVector selected_items = new_tile->getSelectedItems();
-	ASSERT(selected_items.size() > 0);
+	ASSERT(!selected_items.empty());
 
 	selected_items.front()->doRotate();
 
@@ -49,7 +49,7 @@ void PopupActionHandler::RotateItem(Editor& editor) {
 void PopupActionHandler::GotoDestination(Editor& editor) {
 	Tile* tile = editor.selection.getSelectedTile();
 	ItemVector selected_items = tile->getSelectedItems();
-	ASSERT(selected_items.size() > 0);
+	ASSERT(!selected_items.empty());
 	Teleport* teleport = dynamic_cast<Teleport*>(selected_items.front());
 	if (teleport) {
 		Position pos = teleport->getDestination();
@@ -65,7 +65,7 @@ void PopupActionHandler::SwitchDoor(Editor& editor) {
 	std::unique_ptr<Tile> new_tile(tile->deepCopy(editor.map));
 
 	ItemVector selected_items = new_tile->getSelectedItems();
-	ASSERT(selected_items.size() > 0);
+	ASSERT(!selected_items.empty());
 
 	DoorBrush::switchDoor(selected_items.front());
 

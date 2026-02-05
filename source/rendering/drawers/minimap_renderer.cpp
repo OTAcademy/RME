@@ -7,6 +7,7 @@
 #include <cmath>
 #include <spdlog/spdlog.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include "rendering/core/gl_scoped_state.h"
 
 const char* minimap_vert = R"(
 #version 450 core
@@ -326,30 +327,23 @@ void MinimapRenderer::render(const glm::mat4& projection, int x, int y, int w, i
 	// Upload data
 	glNamedBufferSubData(instance_vbo_->GetID(), 0, instance_data_.size() * sizeof(InstanceData), instance_data_.data());
 
-	// Save previous blend state
-	GLboolean prev_blend_enabled;
-	glGetBooleanv(GL_BLEND, &prev_blend_enabled);
-
 	// Render
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	{
+		ScopedGLCapability blendCap(GL_BLEND);
+		ScopedGLBlend blendState(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	shader_->Use();
-	shader_->SetMat4("uProjection", projection);
+		shader_->Use();
+		shader_->SetMat4("uProjection", projection);
 
-	// Bind textures
-	glBindTextureUnit(0, texture_id_->GetID());
-	shader_->SetInt("uMinimapTexture", 0);
+		// Bind textures
+		glBindTextureUnit(0, texture_id_->GetID());
+		shader_->SetInt("uMinimapTexture", 0);
 
-	glBindTextureUnit(1, palette_texture_id_->GetID());
-	shader_->SetInt("uPaletteTexture", 1);
+		glBindTextureUnit(1, palette_texture_id_->GetID());
+		shader_->SetInt("uPaletteTexture", 1);
 
-	glBindVertexArray(vao_->GetID());
-	glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, static_cast<GLsizei>(instance_data_.size()));
-	glBindVertexArray(0);
-
-	// Restore blend state
-	if (!prev_blend_enabled) {
-		glDisable(GL_BLEND);
+		glBindVertexArray(vao_->GetID());
+		glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, static_cast<GLsizei>(instance_data_.size()));
+		glBindVertexArray(0);
 	}
 }

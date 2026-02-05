@@ -5,6 +5,7 @@
 
 #include <map>
 #include <cstdint>
+#include <memory>
 
 #include "rendering/core/graphics.h"
 
@@ -171,7 +172,7 @@ private:
 	void OnEraseBackground(wxEraseEvent& evt);
 	void OnScroll(wxScrollWinEvent& evt);
 
-	wxGLContext* m_glContext = nullptr;
+	std::unique_ptr<wxGLContext> m_glContext;
 	std::unique_ptr<NVGcontext, NVGDeleter> m_nvg;
 	bool m_glInitialized = false;
 

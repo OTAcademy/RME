@@ -180,7 +180,7 @@ inline void foreach_ItemOnMap(Map& map, ForeachType& foreach, bool selectedTiles
 
 	while (tileiter != end) {
 		++done;
-		Tile* tile = (*tileiter)->get();
+		Tile* tile = tileiter->get();
 		if (selectedTiles && !tile->isSelected()) {
 			++tileiter;
 			continue;
@@ -228,7 +228,7 @@ inline void foreach_TileOnMap(Map& map, ForeachType& foreach) {
 	long long done = 0;
 
 	while (tileiter != end) {
-		foreach (map, (*tileiter++)->get(), ++done)
+		foreach (map, (tileiter++)->get(), ++done)
 			;
 	}
 }
@@ -242,7 +242,7 @@ inline long long remove_if_TileOnMap(Map& map, RemoveIfType& remove_if) {
 	long long total = map.getTileCount();
 
 	while (tileiter != end) {
-		Tile* tile = (*tileiter)->get();
+		Tile* tile = tileiter->get();
 		if (remove_if(map, tile, removed, done, total)) {
 			map.setTile(tile->getPosition(), nullptr, true);
 			++removed;
@@ -264,7 +264,7 @@ inline int64_t RemoveItemOnMap(Map& map, RemoveIfType& condition, bool selectedO
 
 	while (it != end) {
 		++done;
-		Tile* tile = (*it)->get();
+		Tile* tile = it->get();
 		if (selectedOnly && !tile->isSelected()) {
 			++it;
 			continue;
