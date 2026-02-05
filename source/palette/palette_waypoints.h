@@ -26,26 +26,26 @@
 class WaypointPalettePanel : public PalettePanel {
 public:
 	WaypointPalettePanel(wxWindow* parent, wxWindowID id = wxID_ANY);
-	~WaypointPalettePanel();
+	~WaypointPalettePanel() override = default;
 
-	wxString GetName() const;
-	PaletteType GetType() const;
+	wxString GetName() const override;
+	PaletteType GetType() const override;
 
 	// Select the first brush
-	void SelectFirstBrush();
+	void SelectFirstBrush() override;
 	// Returns the currently selected brush (first brush if panel is not loaded)
-	Brush* GetSelectedBrush() const;
+	Brush* GetSelectedBrush() const override;
 	// Returns the currently selected brush size
-	int GetSelectedBrushSize() const;
+	int GetSelectedBrushSize() const override;
 	// Select the brush in the parameter, this only changes the look of the panel
-	bool SelectBrush(const Brush* whatbrush);
+	bool SelectBrush(const Brush* whatbrush) override;
 
 	// Called sometimes?
-	void OnUpdate();
+	void OnUpdate() override;
 	// Called when this page is about to be displayed
-	void OnSwitchIn();
+	void OnSwitchIn() override;
 	// Called when this page is hidden
-	void OnSwitchOut();
+	void OnSwitchOut() override;
 
 public:
 	// wxWidgets event handling

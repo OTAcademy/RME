@@ -75,7 +75,7 @@ void TooltipDrawer::addItemTooltip(TooltipData&& data) {
 	commitTooltip();
 }
 
-void TooltipDrawer::addWaypointTooltip(Position pos, const std::string& name) {
+void TooltipDrawer::addWaypointTooltip(Position pos, std::string_view name) {
 	if (name.empty()) {
 		return;
 	}
@@ -204,7 +204,7 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 				} else {
 					// Success
 					// Check if we are overwriting an existing valid image (shouldn't happen given find() above, but safest)
-					if (spriteCache.count(itemId) && spriteCache[itemId] > 0) {
+					if (spriteCache.contains(itemId) && spriteCache[itemId] > 0) {
 						nvgDeleteImage(vg, spriteCache[itemId]);
 					}
 					spriteCache[itemId] = image;
@@ -226,7 +226,7 @@ void TooltipDrawer::prepareFields(const TooltipData& tooltip) {
 	std::vector<FieldLine>& fields = scratch_fields;
 
 	if (tooltip.category == TooltipCategory::WAYPOINT) {
-		fields.push_back({ "Waypoint", tooltip.waypointName, WAYPOINT_HEADER_R, WAYPOINT_HEADER_G, WAYPOINT_HEADER_B, {} });
+		fields.push_back({ "Waypoint", std::string(tooltip.waypointName), WAYPOINT_HEADER_R, WAYPOINT_HEADER_G, WAYPOINT_HEADER_B, {} });
 	} else {
 		if (tooltip.actionId > 0) {
 			fields.push_back({ "Action ID", std::to_string(tooltip.actionId), ACTION_ID_R, ACTION_ID_G, ACTION_ID_B, {} });
@@ -242,10 +242,10 @@ void TooltipDrawer::prepareFields(const TooltipData& tooltip) {
 			fields.push_back({ "Destination", dest, TELEPORT_DEST_R, TELEPORT_DEST_G, TELEPORT_DEST_B, {} });
 		}
 		if (!tooltip.description.empty()) {
-			fields.push_back({ "Description", tooltip.description, BODY_TEXT_R, BODY_TEXT_G, BODY_TEXT_B, {} });
+			fields.push_back({ "Description", std::string(tooltip.description), BODY_TEXT_R, BODY_TEXT_G, BODY_TEXT_B, {} });
 		}
 		if (!tooltip.text.empty()) {
-			fields.push_back({ "Text", "\"" + tooltip.text + "\"", TEXT_R, TEXT_G, TEXT_B, {} });
+			fields.push_back({ "Text", "\"" + std::string(tooltip.text) + "\"", TEXT_R, TEXT_G, TEXT_B, {} });
 		}
 	}
 }

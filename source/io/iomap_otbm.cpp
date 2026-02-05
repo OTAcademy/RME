@@ -614,10 +614,8 @@ bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
 		}
 
 		// Memory buffers for the houses & spawns
-		std::shared_ptr<uint8_t> house_buffer;
-		std::shared_ptr<uint8_t> spawn_buffer;
-		size_t house_buffer_size = 0;
-		size_t spawn_buffer_size = 0;
+		std::vector<uint8_t> house_buffer;
+		std::vector<uint8_t> spawn_buffer;
 
 		// See if the otbm file has been loaded
 		bool otbm_loaded = false;
@@ -631,10 +629,10 @@ bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
 			if (entryName == "world/map.otbm") {
 				// Read the entire OTBM file into a memory region
 				size_t otbm_size = archive_entry_size(entry);
-				std::shared_ptr<uint8_t> otbm_buffer(new uint8_t[otbm_size], [](uint8_t* p) { delete[] p; });
+				std::vector<uint8_t> otbm_buffer(otbm_size);
 
 				// Read from the archive
-				size_t read_bytes = archive_read_data(a.get(), otbm_buffer.get(), otbm_size);
+				size_t read_bytes = archive_read_data(a.get(), otbm_buffer.data(), otbm_size);
 
 				// Check so it at least contains the 4-byte file id
 				if (read_bytes < 4) {
@@ -650,7 +648,7 @@ bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
 
 				// Create a read handle on it
 				std::shared_ptr<NodeFileReadHandle> f(
-					new MemoryNodeFileReadHandle(otbm_buffer.get() + 4, otbm_size - 4)
+					new MemoryNodeFileReadHandle(otbm_buffer.data() + 4, otbm_size - 4)
 				);
 
 				// Read the version info
@@ -661,29 +659,27 @@ bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
 
 				otbm_loaded = true;
 			} else if (entryName == "world/houses.xml") {
-				house_buffer_size = archive_entry_size(entry);
-				house_buffer.reset(new uint8_t[house_buffer_size]);
+				size_t house_buffer_size = archive_entry_size(entry);
+				house_buffer.resize(house_buffer_size);
 
 				// Read from the archive
-				size_t read_bytes = archive_read_data(a.get(), house_buffer.get(), house_buffer_size);
+				size_t read_bytes = archive_read_data(a.get(), house_buffer.data(), house_buffer_size);
 
 				// Check so it at least contains the 4-byte file id
 				if (read_bytes < house_buffer_size) {
-					house_buffer.reset();
-					house_buffer_size = 0;
+					house_buffer.clear();
 					warning("Failed to decompress houses.");
 				}
 			} else if (entryName == "world/spawns.xml") {
-				spawn_buffer_size = archive_entry_size(entry);
-				spawn_buffer.reset(new uint8_t[spawn_buffer_size]);
+				size_t spawn_buffer_size = archive_entry_size(entry);
+				spawn_buffer.resize(spawn_buffer_size);
 
 				// Read from the archive
-				size_t read_bytes = archive_read_data(a.get(), spawn_buffer.get(), spawn_buffer_size);
+				size_t read_bytes = archive_read_data(a.get(), spawn_buffer.data(), spawn_buffer_size);
 
 				// Check so it at least contains the 4-byte file id
 				if (read_bytes < spawn_buffer_size) {
-					spawn_buffer.reset();
-					spawn_buffer_size = 0;
+					spawn_buffer.clear();
 					warning("Failed to decompress spawns.");
 				}
 			}
@@ -695,9 +691,9 @@ bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
 		}
 
 		// Load the houses from the stored buffer
-		if (house_buffer.get() && house_buffer_size > 0) {
+		if (!house_buffer.empty()) {
 			pugi::xml_document doc;
-			pugi::xml_parse_result result = doc.load_buffer(house_buffer.get(), house_buffer_size);
+			pugi::xml_parse_result result = doc.load_buffer(house_buffer.data(), house_buffer.size());
 			if (result) {
 				if (!loadHouses(map, doc)) {
 					warning("Failed to load houses.");
@@ -708,9 +704,9 @@ bool IOMapOTBM::loadMap(Map& map, const FileName& filename) {
 		}
 
 		// Load the spawns from the stored buffer
-		if (spawn_buffer.get() && spawn_buffer_size > 0) {
+		if (!spawn_buffer.empty()) {
 			pugi::xml_document doc;
-			pugi::xml_parse_result result = doc.load_buffer(spawn_buffer.get(), spawn_buffer_size);
+			pugi::xml_parse_result result = doc.load_buffer(spawn_buffer.data(), spawn_buffer.size());
 			if (result) {
 				if (!loadSpawns(map, doc)) {
 					warning("Failed to load spawns.");
@@ -942,9 +938,10 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 						if (house_id) {
 							house = map.houses.getHouse(house_id);
 							if (!house) {
-								house = newd House(map);
-								house->setID(house_id);
-								map.houses.addHouse(house);
+								auto new_house = std::make_unique<House>(map);
+								house = new_house.get();
+								new_house->setID(house_id);
+								map.houses.addHouse(std::move(new_house));
 							}
 						} else {
 							warning("Invalid house id from tile %d:%d:%d", pos.x, pos.y, pos.z);
@@ -1031,9 +1028,9 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 					warning("Duplicate town id %d, discarding duplicate", town_id);
 					continue;
 				} else {
-					town = newd Town(town_id);
-					if (!map.towns.addTown(town)) {
-						delete town;
+					auto new_town = std::make_unique<Town>(town_id);
+					town = new_town.get();
+					if (!map.towns.addTown(std::move(new_town))) {
 						continue;
 					}
 				}
@@ -1616,7 +1613,7 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f) {
 
 			f.addNode(OTBM_TOWNS);
 			for (const auto& townEntry : map.towns) {
-				Town* town = townEntry.second;
+				Town* town = townEntry.second.get();
 				const Position& townPosition = town->getTemplePosition();
 				f.addNode(OTBM_TOWN);
 				f.addU32(town->getID());
@@ -1629,7 +1626,7 @@ bool IOMapOTBM::saveMap(Map& map, NodeFileWriteHandle& f) {
 			f.endNode();
 
 			bool supportWaypoints = mapVersion.otbm >= MAP_OTBM_3;
-			if (supportWaypoints || map.waypoints.waypoints.size() > 0) {
+			if (supportWaypoints || !map.waypoints.waypoints.empty()) {
 				if (!supportWaypoints) {
 					waypointsWarning = true;
 				}
@@ -1752,7 +1749,7 @@ bool IOMapOTBM::saveHouses(Map& map, pugi::xml_document& doc) {
 
 	pugi::xml_node houseNodes = doc.append_child("houses");
 	for (const auto& houseEntry : map.houses) {
-		const House* house = houseEntry.second;
+		const House* house = houseEntry.second.get();
 		pugi::xml_node houseNode = houseNodes.append_child("house");
 
 		houseNode.append_attribute("name") = house->name.c_str();
@@ -1796,7 +1793,7 @@ bool IOMapOTBM::saveWaypoints(Map& map, pugi::xml_document& doc) {
 
 	pugi::xml_node houseNodes = doc.append_child("waypoints");
 	for (const auto& houseEntry : map.houses) {
-		const House* house = houseEntry.second;
+		const House* house = houseEntry.second.get();
 		pugi::xml_node houseNode = houseNodes.append_child("waypoint");
 
 		houseNode.append_attribute("name") = house->name.c_str();

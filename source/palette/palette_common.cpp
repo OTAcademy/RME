@@ -61,21 +61,21 @@ PaletteWindow* PalettePanel::GetParentPalette() const {
 }
 
 void PalettePanel::InvalidateContents() {
-	for (ToolBarList::iterator iter = tool_bars.begin(); iter != tool_bars.end(); ++iter) {
-		(*iter)->InvalidateContents();
+	for (auto* toolbar : tool_bars) {
+		toolbar->InvalidateContents();
 	}
 }
 
 void PalettePanel::LoadCurrentContents() {
-	for (ToolBarList::iterator iter = tool_bars.begin(); iter != tool_bars.end(); ++iter) {
-		(*iter)->OnSwitchIn();
+	for (auto* toolbar : tool_bars) {
+		toolbar->OnSwitchIn();
 	}
 	Fit();
 }
 
 void PalettePanel::LoadAllContents() {
-	for (ToolBarList::iterator iter = tool_bars.begin(); iter != tool_bars.end(); ++iter) {
-		(*iter)->LoadAllContents();
+	for (auto* toolbar : tool_bars) {
+		toolbar->LoadAllContents();
 	}
 }
 
@@ -93,8 +93,8 @@ void PalettePanel::AddToolPanel(PalettePanel* panel) {
 }
 
 void PalettePanel::SetToolbarIconSize(bool large_icons) {
-	for (ToolBarList::iterator iter = tool_bars.begin(); iter != tool_bars.end(); ++iter) {
-		(*iter)->SetToolbarIconSize(large_icons);
+	for (auto* toolbar : tool_bars) {
+		toolbar->SetToolbarIconSize(large_icons);
 	}
 }
 
@@ -143,14 +143,14 @@ bool PalettePanel::SelectBrush(const Brush* whatbrush) {
 }
 
 void PalettePanel::OnUpdateBrushSize(BrushShape shape, int size) {
-	for (ToolBarList::iterator iter = tool_bars.begin(); iter != tool_bars.end(); ++iter) {
-		(*iter)->OnUpdateBrushSize(shape, size);
+	for (auto* toolbar : tool_bars) {
+		toolbar->OnUpdateBrushSize(shape, size);
 	}
 }
 
 void PalettePanel::OnSwitchIn() {
-	for (ToolBarList::iterator iter = tool_bars.begin(); iter != tool_bars.end(); ++iter) {
-		(*iter)->OnSwitchIn();
+	for (auto* toolbar : tool_bars) {
+		toolbar->OnSwitchIn();
 	}
 	g_palettes.ActivatePalette(GetParentPalette());
 	g_brush_manager.SetBrushSize(last_brush_size);
@@ -158,14 +158,14 @@ void PalettePanel::OnSwitchIn() {
 
 void PalettePanel::OnSwitchOut() {
 	last_brush_size = g_brush_manager.GetBrushSize();
-	for (ToolBarList::iterator iter = tool_bars.begin(); iter != tool_bars.end(); ++iter) {
-		(*iter)->OnSwitchOut();
+	for (auto* toolbar : tool_bars) {
+		toolbar->OnSwitchOut();
 	}
 }
 
 void PalettePanel::OnUpdate() {
-	for (ToolBarList::iterator iter = tool_bars.begin(); iter != tool_bars.end(); ++iter) {
-		(*iter)->OnUpdate();
+	for (auto* toolbar : tool_bars) {
+		toolbar->OnUpdate();
 	}
 }
 
