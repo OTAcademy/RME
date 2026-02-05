@@ -34,14 +34,18 @@ private:
 
 	// Hit testing
 	struct HitResult {
-		enum Type { None,
-					Source,
-					Target,
-					NewRule // Drop area for creating a new rule
+		enum Type {
+			None,
+			Source, // The source item icon
+			Target, // A specific target item icon
+			AddTarget, // The [+] ghost slot at the end of targets
+			NewRule, // The large "Drop New Rule" area
+			DeleteRule, // The 'X' on the rule card
+			DeleteTarget // The 'X' overlay on a specific target
 		};
-		Type type = None; // Default init
-		int ruleIndex = -1; // Index into m_rules
-		int targetIndex = -1; // Index into m_rules[ruleIndex].targets (if Target)
+		Type type = None;
+		int ruleIndex = -1;
+		int targetIndex = -1;
 	};
 	HitResult HitTest(int x, int y) const;
 	void DistributeProbabilities(int ruleIndex);
@@ -64,9 +68,13 @@ private:
 	// Visual Layout
 	int m_rowHeight;
 	int m_sourceColWidth;
+	void LayoutRules();
 
 	// Drag feedback
 	HitResult m_dragHover;
+
+	wxTimer m_pulseTimer;
+	void OnPulseTimer(wxTimerEvent& event);
 
 	friend class ItemDropTarget;
 };

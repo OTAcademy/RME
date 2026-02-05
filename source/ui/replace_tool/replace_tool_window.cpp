@@ -397,9 +397,10 @@ void ReplaceToolWindow::OnSearchChange(wxCommandEvent&) {
 void ReplaceToolWindow::OnExecute(wxCommandEvent&) {
 	std::vector<ReplacementRule> rules = ruleBuilder->GetRules();
 	if (rules.empty()) {
-		wxMessageBox("Please create at least one rule.", "Error", wxICON_WARNING);
 		return;
 	}
+
+	static const uint16_t TRASH_ITEM_ID = 0xFFFF; // Must match RuleBuilderPanel
 
 	bool selectionOnly = editor->selection.size() > 0;
 	std::map<uint16_t, const ReplacementRule*> ruleMap;
@@ -414,7 +415,11 @@ void ReplaceToolWindow::OnExecute(wxCommandEvent&) {
 		if (it != ruleMap.end()) {
 			uint16_t newId;
 			if (engine.ResolveReplacement(newId, *it->second)) {
-				item->setID(newId);
+				if (newId == TRASH_ITEM_ID) {
+					item->setID(0); // Delete/Clear item
+				} else {
+					item->setID(newId);
+				}
 			}
 		}
 	};
