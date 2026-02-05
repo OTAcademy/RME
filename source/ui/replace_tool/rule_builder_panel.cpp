@@ -16,15 +16,16 @@
 static const uint16_t TRASH_ITEM_ID = 0xFFFF;
 
 // Layout Constants
-static const int CARD_PADDING = 10;
+static const int CARD_PADDING = 20;
 static const int CARD_MARGIN_X = 10;
 static const int CARD_MARGIN_Y = 10;
-static const int HEADER_HEIGHT = 40; // Space for "Drop New Rule" logic or just top spacing
+static const int HEADER_HEIGHT = 40;
 static const int ITEM_SIZE = 48;
-static const int ITEM_SPACING = 8;
-static const int ARROW_WIDTH = 40;
+static const int ITEM_SPACING = 10;
+static const int ARROW_WIDTH = 60;
 static const int SECTION_GAP = 20;
-static const int GHOST_SLOT_WIDTH = 80; // Wider for easier drop
+static const int CARD_W = ITEM_SIZE + 20;
+static const int GHOST_SLOT_WIDTH = CARD_W;
 
 // ----------------------------------------------------------------------------
 // ItemDropTarget
@@ -118,9 +119,6 @@ RuleBuilderPanel::RuleBuilderPanel(wxWindow* parent, Listener* listener) :
 	m_listener(listener),
 	m_pulseTimer(this) {
 
-	m_rowHeight = FromDIP(80); // Base card height, dynamic later?
-	m_sourceColWidth = FromDIP(120);
-
 	SetDropTarget(new ItemDropTarget(this));
 
 	Bind(wxEVT_SIZE, &RuleBuilderPanel::OnSize, this);
@@ -170,11 +168,54 @@ void RuleBuilderPanel::Clear() {
 }
 
 void RuleBuilderPanel::LayoutRules() {
-	// Recalculate scroll height
-	// Card Height = PADDING + HEADER + ITEM_SIZE + PADDING (approx 100px)
-	int cardHeight = FromDIP(90);
-	int totalHeight = m_rules.size() * (cardHeight + CARD_MARGIN_Y) + FromDIP(100) + HEADER_HEIGHT; // + New Rule Area + Header
+	int width = GetClientSize().x;
+	if (width <= 0) {
+		width = FromDIP(500);
+	}
+
+	int totalHeight = HEADER_HEIGHT + CARD_MARGIN_Y;
+	for (size_t i = 0; i < m_rules.size(); ++i) {
+		totalHeight += GetRuleHeight(i, width) + CARD_MARGIN_Y;
+	}
+	totalHeight += FromDIP(100); // Space for New Rule area
 	UpdateScrollbar(totalHeight);
+}
+
+int RuleBuilderPanel::GetRuleHeight(int index, int width) const {
+	if (index < 0 || index >= (int)m_rules.size()) {
+		return FromDIP(110);
+	}
+
+	const float TARGET_START_X = CARD_PADDING + CARD_W + 10 + ARROW_WIDTH;
+	float availableWidth = width - CARD_MARGIN_X * 2 - TARGET_START_X - CARD_PADDING;
+	if (availableWidth < CARD_W) {
+		availableWidth = CARD_W;
+	}
+
+	int columns = std::max(1, (int)(availableWidth / (CARD_W + ITEM_SPACING)));
+	int targetCount = m_rules[index].targets.size();
+
+	bool hasTrash = false;
+	for (const auto& t : m_rules[index].targets) {
+		if (t.id == TRASH_ITEM_ID) {
+			hasTrash = true;
+		}
+	}
+	if (!hasTrash) {
+		targetCount++; // [+] slot
+	}
+
+	int rows = std::max(1, (targetCount + columns - 1) / columns);
+	int itemH = FromDIP(88);
+	return rows * (itemH + ITEM_SPACING) + CARD_PADDING * 2;
+}
+
+int RuleBuilderPanel::GetRuleY(int index, int width) const {
+	int y = HEADER_HEIGHT + CARD_MARGIN_Y;
+	for (int i = 0; i < index; ++i) {
+		y += GetRuleHeight(i, width) + CARD_MARGIN_Y;
+	}
+	return y;
 }
 
 void RuleBuilderPanel::DistributeProbabilities(int ruleIndex) {
@@ -208,62 +249,53 @@ void RuleBuilderPanel::OnSize(wxSizeEvent& event) {
 	event.Skip();
 }
 
-// Helper to get card rect
-wxRect GetCardRect(int index, int width, int rowHeight) {
-	int y = index * (rowHeight + CARD_MARGIN_Y) + CARD_MARGIN_Y + HEADER_HEIGHT;
-	return wxRect(CARD_MARGIN_X, y, width - CARD_MARGIN_X * 2, rowHeight);
-}
-
 RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 	int scrollPos = GetScrollPosition();
 	int absY = y + scrollPos;
 	int width = GetClientSize().x;
-	int rowHeight = FromDIP(110);
 
-	const float ITEM_SIZE = 48.0f;
-	const float CARD_W = ITEM_SIZE + 20.0f;
-	const float GHOST_SLOT_WIDTH = CARD_W;
-	const float ARROW_WIDTH = 60.0f;
-	const float ITEM_SPACING = 10.0f;
-	const float CARD_PADDING = 20.0f;
-	const float ITEM_H = ITEM_SIZE + 24.0f;
+	const float ITEM_H = FromDIP(88);
 
 	// Check Rules
 	for (size_t i = 0; i < m_rules.size(); ++i) {
-		wxRect card = GetCardRect(i, width, rowHeight);
+		int ruleH = GetRuleHeight(i, width);
+		int ruleY = GetRuleY(i, width);
+		wxRect card(CARD_MARGIN_X, ruleY, width - CARD_MARGIN_X * 2, ruleH);
+
 		if (card.Contains(x, absY)) {
-			// Inside Card
 			int localX = x - card.x;
 			int localY = absY - card.y;
 
-			// Delete Rule Button (Top Right of Card)
+			// Delete Rule Button (Top Right)
 			if (localX > card.width - 24 && localY < 24) {
 				return { HitResult::DeleteRule, (int)i, -1 };
 			}
 
-			// Source Item
+			// Source Item (Left, always in first row logically)
 			float startX = CARD_PADDING;
-			float itemY = (rowHeight - (ITEM_SIZE + 24)) / 2.0f; // Sync with Paint: Center based on full card height
+			float sourceY = CARD_PADDING; // Vertical top in card
 
-			if (localX >= startX && localX <= startX + CARD_W && localY >= itemY && localY <= itemY + ITEM_H) {
+			if (localX >= startX && localX <= startX + CARD_W && localY >= sourceY && localY <= sourceY + ITEM_H) {
 				return { HitResult::Source, (int)i, -1 };
 			}
 
-			// Targets
-			float targetX = startX + CARD_W + 10 + ARROW_WIDTH;
+			// Targets (Wrapping)
+			float targetStartX = startX + CARD_W + 10 + ARROW_WIDTH;
+			float availableWidth = card.width - targetStartX - CARD_PADDING;
+			int columns = std::max(1, (int)(availableWidth / (CARD_W + ITEM_SPACING)));
 
 			for (size_t t = 0; t < m_rules[i].targets.size(); ++t) {
-				if (localX >= targetX && localX <= targetX + CARD_W && localY >= itemY && localY <= itemY + ITEM_H) {
-					// The WHOLE card now returns DeleteTarget for hover/click intuition
-					// but we can still distinguish if we want exactly the X.
-					// Actually, user said click "it" to discard. I'll make the whole card DeleteTarget.
+				int row = t / columns;
+				int col = t % columns;
+				float tx = targetStartX + col * (CARD_W + ITEM_SPACING);
+				float ty = CARD_PADDING + row * (ITEM_H + ITEM_SPACING);
+
+				if (localX >= tx && localX <= tx + CARD_W && localY >= ty && localY <= ty + ITEM_H) {
 					return { HitResult::DeleteTarget, (int)i, (int)t };
 				}
-				targetX += CARD_W + ITEM_SPACING;
 			}
 
-			// Add Target Slot / Ghost Slot
-			// TRASH LOGIC: Hide if has trash
+			// Add Target Slot
 			bool hasTrash = false;
 			for (const auto& t : m_rules[i].targets) {
 				if (t.id == TRASH_ITEM_ID) {
@@ -271,8 +303,16 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 				}
 			}
 
-			if (!hasTrash && localX >= targetX && localX <= targetX + GHOST_SLOT_WIDTH && localY >= itemY && localY <= itemY + ITEM_H) {
-				return { HitResult::AddTarget, (int)i, -1 };
+			if (!hasTrash) {
+				int tIdx = m_rules[i].targets.size();
+				int row = tIdx / columns;
+				int col = tIdx % columns;
+				float tx = targetStartX + col * (CARD_W + ITEM_SPACING);
+				float ty = CARD_PADDING + row * (ITEM_H + ITEM_SPACING);
+
+				if (localX >= tx && localX <= tx + GHOST_SLOT_WIDTH && localY >= ty && localY <= ty + ITEM_H) {
+					return { HitResult::AddTarget, (int)i, -1 };
+				}
 			}
 
 			return { HitResult::None, (int)i, -1 };
@@ -280,8 +320,8 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 	}
 
 	// New Rule Area
-	int startNewRuleY = m_rules.size() * (rowHeight + CARD_MARGIN_Y) + CARD_MARGIN_Y * 2 + HEADER_HEIGHT;
-	if (absY >= startNewRuleY && absY <= startNewRuleY + FromDIP(60)) {
+	int newRuleY = GetRuleY(m_rules.size(), width) + CARD_MARGIN_Y;
+	if (absY >= newRuleY && absY <= newRuleY + FromDIP(60)) {
 		return { HitResult::NewRule, -1, -1 };
 	}
 
@@ -335,7 +375,7 @@ void RuleBuilderPanel::OnMouse(wxMouseEvent& event) {
 	event.Skip();
 }
 
-void DrawTrashIcon(NVGcontext* vg, float x, float y, float size, bool highlight) {
+void RuleBuilderPanel::DrawTrashIcon(NVGcontext* vg, float x, float y, float size, bool highlight) {
 	nvgBeginPath(vg);
 	// Simple Bin
 	float w = size * 0.6f;
@@ -354,9 +394,9 @@ void DrawTrashIcon(NVGcontext* vg, float x, float y, float size, bool highlight)
 	nvgFill(vg);
 }
 
-void DrawRuleItemCard(NVGcontext* vg, float x, float y, float size, uint16_t id, bool highlight, bool isTrash, bool showDeleteOverlay) {
-	float w = size + 20; // Wider card
-	float h = size + 24; // Taller for text
+void RuleBuilderPanel::DrawRuleItemCard(NVGcontext* vg, float x, float y, float size, uint16_t id, bool highlight, bool isTrash, bool showDeleteOverlay, int probability) {
+	float w = size + 20;
+	float h = FromDIP(88); // Taller for text (ID + Chance)
 
 	// Card BG Gradient (Match VirtualItemGrid: 60,60,65 -> 50,50,55)
 	NVGpaint bgPaint = nvgLinearGradient(vg, x, y, x, y + h, nvgRGBA(60, 60, 65, 255), nvgRGBA(50, 50, 55, 255));
@@ -381,9 +421,10 @@ void DrawRuleItemCard(NVGcontext* vg, float x, float y, float size, uint16_t id,
 	if (isTrash) {
 		DrawTrashIcon(vg, x + (w - drawSize) / 2, y + 8, drawSize, highlight);
 		nvgFillColor(vg, nvgRGBA(200, 200, 200, 255));
-		nvgFontSize(vg, 10.0f);
+		nvgFontSize(vg, 12.0f);
+		nvgFontFace(vg, "sans");
 		nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-		nvgText(vg, x + w / 2, y + 42, "REMOVE", nullptr);
+		nvgText(vg, x + w / 2, y + 44, "REMOVE", nullptr);
 	} else if (id != 0) {
 		// Draw Item
 		int tex = NvgUtils::CreateItemTexture(vg, id);
@@ -411,10 +452,19 @@ void DrawRuleItemCard(NVGcontext* vg, float x, float y, float size, uint16_t id,
 		}
 		std::string label = std::format("{} - {}", id, name.ToStdString());
 
-		nvgFillColor(vg, nvgRGBA(200, 200, 200, 255));
-		nvgFontSize(vg, 10.0f);
+		nvgFillColor(vg, nvgRGBA(255, 255, 255, 255));
+		nvgFontSize(vg, 12.0f);
+		nvgFontFace(vg, "sans");
 		nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-		nvgText(vg, x + w / 2, y + 42, label.c_str(), nullptr);
+		nvgText(vg, x + w / 2, y + 44, label.c_str(), nullptr);
+
+		// Probability Line
+		if (probability >= 0) {
+			std::string probLabel = std::format("Chance: {}%", probability);
+			nvgFillColor(vg, nvgRGBA(160, 160, 160, 255));
+			nvgFontSize(vg, 11.0f);
+			nvgText(vg, x + w / 2, y + 60, probLabel.c_str(), nullptr);
+		}
 	}
 
 	// Delete Icon (Small Corner X)
@@ -423,13 +473,11 @@ void DrawRuleItemCard(NVGcontext* vg, float x, float y, float size, uint16_t id,
 		float cy = y + 8;
 		float r = 8.0f;
 
-		// Red Circle
 		nvgBeginPath(vg);
 		nvgCircle(vg, cx, cy, r);
 		nvgFillColor(vg, nvgRGBA(200, 50, 50, 255));
 		nvgFill(vg);
 
-		// White X
 		nvgBeginPath(vg);
 		float crossArr = r * 0.5f;
 		nvgMoveTo(vg, cx - crossArr, cy - crossArr);
@@ -469,13 +517,7 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 	NVGcolor subTextCol = nvgRGBA(150, 150, 150, 255);
 	NVGcolor accentCol = nvgRGBA(Theme::Get(Theme::Role::Accent).Red(), Theme::Get(Theme::Role::Accent).Green(), Theme::Get(Theme::Role::Accent).Blue(), 255);
 
-	const uint16_t TRASH_ITEM_ID = 0xFFFF;
-	const float ITEM_SIZE = 48.0f;
-	const float CARD_W = ITEM_SIZE + 20.0f;
-	const float GHOST_SLOT_WIDTH = CARD_W;
-	const float ARROW_WIDTH = 60.0f;
-	const float ITEM_SPACING = 10.0f;
-	const float CARD_PADDING = 20.0f;
+	const float ITEM_H = FromDIP(88); // Height of item card
 
 	// Draw Fixed Headers
 	nvgFontSize(vg, 10.0f);
@@ -502,27 +544,29 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 
 	for (size_t i = 0; i < m_rules.size(); ++i) {
 		const auto& rule = m_rules[i];
-		wxRect r = GetCardRect(i, width, rowHeight);
+		int ruleH = GetRuleHeight(i, width);
+		int ruleY = GetRuleY(i, width);
 
 		// Card BG
 		nvgBeginPath(vg);
-		nvgRoundedRect(vg, r.x, r.y, r.width, r.height, 4);
+		nvgRoundedRect(vg, CARD_MARGIN_X, ruleY, width - CARD_MARGIN_X * 2, ruleH, 4);
 		nvgFillColor(vg, nvgRGBA(50, 50, 50, 255));
 		nvgFill(vg);
 		nvgStrokeColor(vg, nvgRGBA(70, 70, 70, 255));
 		nvgStrokeWidth(vg, 1.0f);
 		nvgStroke(vg);
 
-		// 1. Source Item
-		float startX = r.x + CARD_PADDING;
-		float itemY = r.y + (rowHeight - (ITEM_SIZE + 24)) / 2.0f; // Center based on full card height (item+label)
+		// 1. Source Item (Centered vertically in first row of card)
+		float startX = CARD_MARGIN_X + CARD_PADDING;
+		float itemH = FromDIP(88);
+		float itemY = ruleY + CARD_PADDING;
 
 		bool hoverSource = (m_dragHover.type == HitResult::Source && m_dragHover.ruleIndex == i);
 		DrawRuleItemCard(vg, startX, itemY, ITEM_SIZE, rule.fromId, hoverSource, false, false);
 
 		// 2. Arrow
-		float arrowX = startX + CARD_W + 10;
-		float arrowYCenter = itemY + (ITEM_SIZE + 24) / 2.0f; // Center arrow vertically with cards
+		float arrowX = startX + (ITEM_SIZE + 20) + 10;
+		float arrowYCenter = itemY + itemH / 2.0f;
 
 		nvgBeginPath(vg);
 		nvgMoveTo(vg, arrowX, arrowYCenter);
@@ -538,31 +582,40 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 		nvgLineTo(vg, tailX - 5, arrowYCenter + 5);
 		nvgStroke(vg);
 
-		// 3. Targets
-		float targetX = arrowX + ARROW_WIDTH;
-		bool hasTrash = false;
+		// 3. Targets (Wrapping)
+		float targetStartX = arrowX + ARROW_WIDTH;
+		float availableWidthForTargets = (width - CARD_MARGIN_X * 2) - (targetStartX - CARD_MARGIN_X) - CARD_PADDING;
+		int columns = std::max(1, (int)(availableWidthForTargets / (ITEM_SIZE + 20 + ITEM_SPACING)));
 
+		bool hasTrash = false;
 		for (size_t j = 0; j < rule.targets.size(); ++j) {
 			const auto& target = rule.targets[j];
+			int row = j / columns;
+			int col = j % columns;
+			float tx = targetStartX + col * (ITEM_SIZE + 20 + ITEM_SPACING);
+			float ty = ruleY + CARD_PADDING + row * (itemH + ITEM_SPACING);
+
 			bool isThisHovered = (m_dragHover.ruleIndex == i && m_dragHover.targetIndex == (int)j && (m_dragHover.type == HitResult::Target || m_dragHover.type == HitResult::DeleteTarget));
-			bool hoverTarget = isThisHovered;
 			bool isTrash = (target.id == TRASH_ITEM_ID);
 			if (isTrash) {
 				hasTrash = true;
 			}
 
-			bool showDeleteOverlay = (m_dragHover.ruleIndex == i && m_dragHover.targetIndex == (int)j && (m_dragHover.type == HitResult::Target || m_dragHover.type == HitResult::DeleteTarget));
-
-			DrawRuleItemCard(vg, targetX, itemY, ITEM_SIZE, target.id, hoverTarget, isTrash, showDeleteOverlay);
-			targetX += CARD_W + ITEM_SPACING;
+			DrawRuleItemCard(vg, tx, ty, ITEM_SIZE, target.id, isThisHovered, isTrash, isThisHovered, target.probability);
 		}
 
 		// Ghost Slot
 		if (!hasTrash) {
-			bool hoverNewTarget = (m_dragHover.type == HitResult::AddTarget && m_dragHover.ruleIndex == i);
+			int tIdx = rule.targets.size();
+			int row = tIdx / columns;
+			int col = tIdx % columns;
+			float tx = targetStartX + col * (ITEM_SIZE + 20 + ITEM_SPACING);
+			float ty = ruleY + CARD_PADDING + row * (itemH + ITEM_SPACING);
+
+			bool hoverNewTarget = (m_dragHover.type == HitResult::AddTarget && m_dragHover.ruleIndex == (int)i);
 
 			nvgBeginPath(vg);
-			nvgRoundedRect(vg, targetX, itemY, CARD_W, ITEM_SIZE + 24, 4);
+			nvgRoundedRect(vg, tx, ty, ITEM_SIZE + 20, itemH, 4);
 			if (hoverNewTarget) {
 				nvgStrokeColor(vg, accentCol);
 				nvgStrokeWidth(vg, 2.0f);
@@ -573,16 +626,16 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 			nvgStroke(vg);
 
 			if (hoverNewTarget && rule.targets.empty()) {
-				DrawTrashIcon(vg, targetX + (CARD_W - 32.0f) / 2, itemY + 4, 32.0f, true);
+				DrawTrashIcon(vg, tx + (ITEM_SIZE + 20 - 32.0f) / 2, ty + 8, 32.0f, true);
 				nvgFillColor(vg, nvgRGBA(255, 100, 100, 255));
-				nvgFontSize(vg, 9.0f);
+				nvgFontSize(vg, 11.0f);
 				nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-				nvgText(vg, targetX + CARD_W / 2, itemY + 32.0f + 6, "REMOVE", nullptr);
+				nvgText(vg, tx + (ITEM_SIZE + 20) / 2, ty + 44, "REMOVE", nullptr);
 			} else {
 				nvgFontSize(vg, 30.0f);
 				nvgFillColor(vg, hoverNewTarget ? accentCol : nvgRGBA(100, 100, 100, 255));
 				nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
-				nvgText(vg, targetX + CARD_W / 2, itemY + (ITEM_SIZE + 24) / 2, "+", nullptr);
+				nvgText(vg, tx + (ITEM_SIZE + 20) / 2, ty + itemH / 2, "+", nullptr);
 			}
 		}
 
@@ -590,14 +643,14 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 		nvgFillColor(vg, subTextCol);
 		nvgFontSize(vg, 16.0f);
 		nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
-		if (m_dragHover.type == HitResult::DeleteRule && m_dragHover.ruleIndex == i) {
+		if (m_dragHover.type == HitResult::DeleteRule && m_dragHover.ruleIndex == (int)i) {
 			nvgFillColor(vg, nvgRGBA(255, 80, 80, 255));
 		}
-		nvgText(vg, r.x + r.width - 15, r.y + 15, "X", nullptr);
+		nvgText(vg, CARD_MARGIN_X + (width - CARD_MARGIN_X * 2) - 15, ruleY + 15, "X", nullptr);
 	}
 
 	// New Rule Area
-	int newRuleY = m_rules.size() * (rowHeight + CARD_MARGIN_Y) + CARD_MARGIN_Y * 2 + HEADER_HEIGHT;
+	int newRuleY = GetRuleY(m_rules.size(), width) + CARD_MARGIN_Y;
 
 	// Determine card style colors
 	NVGcolor cardBgTop = nvgRGBA(45, 45, 50, 255);
