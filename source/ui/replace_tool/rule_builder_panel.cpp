@@ -20,7 +20,8 @@ static const int CARD_PADDING = 20;
 static const int CARD_MARGIN_X = 10;
 static const int CARD_MARGIN_Y = 10;
 static const int HEADER_HEIGHT = 40;
-static const int ITEM_SIZE = 48;
+static const int ITEM_SIZE = 56;
+static const int ITEM_H = 110;
 static const int ITEM_SPACING = 10;
 static const int ARROW_WIDTH = 60;
 static const int SECTION_GAP = 20;
@@ -183,7 +184,7 @@ void RuleBuilderPanel::LayoutRules() {
 
 int RuleBuilderPanel::GetRuleHeight(int index, int width) const {
 	if (index < 0 || index >= (int)m_rules.size()) {
-		return FromDIP(110);
+		return FromDIP(ITEM_H);
 	}
 
 	const float TARGET_START_X = CARD_PADDING + CARD_W + 10 + ARROW_WIDTH;
@@ -206,7 +207,7 @@ int RuleBuilderPanel::GetRuleHeight(int index, int width) const {
 	}
 
 	int rows = std::max(1, (targetCount + columns - 1) / columns);
-	int itemH = FromDIP(88);
+	int itemH = FromDIP(ITEM_H);
 	return rows * (itemH + ITEM_SPACING) + CARD_PADDING * 2;
 }
 
@@ -254,7 +255,7 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 	int absY = y + scrollPos;
 	int width = GetClientSize().x;
 
-	const float ITEM_H = FromDIP(88);
+	const float ITEM_HEIGHT = FromDIP(ITEM_H);
 
 	// Check Rules
 	for (size_t i = 0; i < m_rules.size(); ++i) {
@@ -275,7 +276,7 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 			float startX = CARD_PADDING;
 			float sourceY = CARD_PADDING; // Vertical top in card
 
-			if (localX >= startX && localX <= startX + CARD_W && localY >= sourceY && localY <= sourceY + ITEM_H) {
+			if (localX >= startX && localX <= startX + CARD_W && localY >= sourceY && localY <= sourceY + ITEM_HEIGHT) {
 				return { HitResult::Source, (int)i, -1 };
 			}
 
@@ -288,9 +289,9 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 				int row = t / columns;
 				int col = t % columns;
 				float tx = targetStartX + col * (CARD_W + ITEM_SPACING);
-				float ty = CARD_PADDING + row * (ITEM_H + ITEM_SPACING);
+				float ty = CARD_PADDING + row * (ITEM_HEIGHT + ITEM_SPACING);
 
-				if (localX >= tx && localX <= tx + CARD_W && localY >= ty && localY <= ty + ITEM_H) {
+				if (localX >= tx && localX <= tx + CARD_W && localY >= ty && localY <= ty + ITEM_HEIGHT) {
 					return { HitResult::DeleteTarget, (int)i, (int)t };
 				}
 			}
@@ -308,9 +309,9 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 				int row = tIdx / columns;
 				int col = tIdx % columns;
 				float tx = targetStartX + col * (CARD_W + ITEM_SPACING);
-				float ty = CARD_PADDING + row * (ITEM_H + ITEM_SPACING);
+				float ty = CARD_PADDING + row * (ITEM_HEIGHT + ITEM_SPACING);
 
-				if (localX >= tx && localX <= tx + GHOST_SLOT_WIDTH && localY >= ty && localY <= ty + ITEM_H) {
+				if (localX >= tx && localX <= tx + GHOST_SLOT_WIDTH && localY >= ty && localY <= ty + ITEM_HEIGHT) {
 					return { HitResult::AddTarget, (int)i, -1 };
 				}
 			}
@@ -411,7 +412,7 @@ void RuleBuilderPanel::DrawTrashIcon(NVGcontext* vg, float x, float y, float siz
 
 void RuleBuilderPanel::DrawRuleItemCard(NVGcontext* vg, float x, float y, float size, uint16_t id, bool highlight, bool isTrash, bool showDeleteOverlay, int probability) {
 	float w = size + 20;
-	float h = FromDIP(88); // Taller for text (ID + Chance)
+	float h = FromDIP(ITEM_H); // Taller for wrapped text
 
 	// Card BG Gradient (Match VirtualItemGrid: 60,60,65 -> 50,50,55)
 	NVGpaint bgPaint = nvgLinearGradient(vg, x, y, x, y + h, nvgRGBA(60, 60, 65, 255), nvgRGBA(50, 50, 55, 255));
@@ -459,7 +460,7 @@ void RuleBuilderPanel::DrawRuleItemCard(NVGcontext* vg, float x, float y, float 
 			nvgFill(vg);
 		}
 
-		// Text: "ID - Name"
+		// Text: "ID - Name" (Wrapped)
 		ItemType& it = g_items[id];
 		wxString name = it.name;
 		if (name.IsEmpty()) {
@@ -468,17 +469,22 @@ void RuleBuilderPanel::DrawRuleItemCard(NVGcontext* vg, float x, float y, float 
 		std::string label = std::format("{} - {}", id, name.ToStdString());
 
 		nvgFillColor(vg, nvgRGBA(255, 255, 255, 255));
-		nvgFontSize(vg, 12.0f);
+		nvgFontSize(vg, 11.0f);
 		nvgFontFace(vg, "sans");
 		nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-		nvgText(vg, x + w / 2, y + 44, label.c_str(), nullptr);
 
-		// Probability Line
+		// Wrap text in the middle area of the card
+		float textX = x + 5;
+		float textY = y + 44;
+		float textW = w - 10;
+		nvgTextBox(vg, textX, textY, textW, label.c_str(), nullptr);
+
+		// Probability Line (Lower down)
 		if (probability >= 0) {
 			std::string probLabel = std::format("Chance: {}%", probability);
 			nvgFillColor(vg, nvgRGBA(160, 160, 160, 255));
 			nvgFontSize(vg, 11.0f);
-			nvgText(vg, x + w / 2, y + 60, probLabel.c_str(), nullptr);
+			nvgText(vg, x + w / 2, y + 84, probLabel.c_str(), nullptr);
 		}
 	}
 
@@ -506,7 +512,7 @@ void RuleBuilderPanel::DrawRuleItemCard(NVGcontext* vg, float x, float y, float 
 }
 
 void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
-	int rowHeight = FromDIP(110);
+	int rowHeight = FromDIP(ITEM_H);
 	int scrollPos = GetScrollPosition();
 
 	wxColour bgCol = Theme::Get(Theme::Role::Surface);
@@ -532,7 +538,7 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 	NVGcolor subTextCol = nvgRGBA(150, 150, 150, 255);
 	NVGcolor accentCol = nvgRGBA(Theme::Get(Theme::Role::Accent).Red(), Theme::Get(Theme::Role::Accent).Green(), Theme::Get(Theme::Role::Accent).Blue(), 255);
 
-	const float ITEM_H = FromDIP(88); // Height of item card
+	const float ITEM_HEIGHT = FromDIP(ITEM_H); // Height of item card
 
 	// Draw Fixed Headers
 	nvgFontSize(vg, 10.0f);
@@ -593,7 +599,7 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 
 		// 1. Source Item (Centered vertically in first row of card)
 		float startX = CARD_MARGIN_X + CARD_PADDING;
-		float itemH = FromDIP(88);
+		float itemH = FromDIP(ITEM_H);
 		float itemY = ruleY + CARD_PADDING;
 
 		bool hoverSource = (m_dragHover.type == HitResult::Source && m_dragHover.ruleIndex == i);

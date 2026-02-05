@@ -5,6 +5,7 @@
 #include "game/items.h"
 #include "ui/gui.h"
 #include "app/managers/version_manager.h"
+#include <algorithm> // For std::find
 #include <wx/statline.h>
 #include <wx/stattext.h>
 #include <wx/button.h>
@@ -78,7 +79,6 @@ void ReplaceToolWindow::InitLayout() {
 	// ---------------------------------------------------------
 	CardPanel* col1Card = new CardPanel(this, wxID_ANY);
 	col1Card->SetTitle("ITEM LIBRARY");
-	col1Card->SetShowFooter(true);
 
 	// Notebook for Tabs
 	libraryTabs = new wxNotebook(col1Card, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_TOP | wxBORDER_NONE);
@@ -176,7 +176,6 @@ void ReplaceToolWindow::InitLayout() {
 	// ---------------------------------------------------------
 	CardPanel* col3Card = new CardPanel(this, wxID_ANY);
 	col3Card->SetTitle("SMART SUGGESTIONS");
-	col3Card->SetShowFooter(true);
 
 	similarItemsGrid = new ItemGridPanel(col3Card, this);
 	similarItemsGrid->SetDraggable(true);
@@ -425,9 +424,12 @@ void ReplaceToolWindow::OnItemSelected(ItemGridPanel* source, uint16_t itemId) {
 }
 
 void ReplaceToolWindow::OnRuleSelected(const RuleSet& rs) {
+	m_activeRuleSetName = rs.name;
+	ruleBuilder->SetRules(rs.rules);
 	if (!rs.rules.empty()) {
-		ruleBuilder->SetRules(rs.rules);
 		similarItemsGrid->SetItems(VisualSimilarityService::Get().FindSimilar(rs.rules[0].fromId));
+	} else {
+		similarItemsGrid->SetItems({});
 	}
 }
 
@@ -438,18 +440,34 @@ void ReplaceToolWindow::OnRuleDeleted(const std::string& name) {
 }
 
 void ReplaceToolWindow::OnRuleRenamed(const std::string& oldName, const std::string& newName) {
-	// Rename essentially involves loading, renaming, saving new, and deleting old
+	std::vector<std::string> existing = RuleManager::Get().GetAvailableRuleSets();
+	if (std::find(existing.begin(), existing.end(), newName) != existing.end()) {
+		wxMessageBox("A rule set with this name already exists.", "Rename Error", wxOK | wxICON_ERROR);
+		return;
+	}
+
 	RuleSet rs = RuleManager::Get().LoadRuleSet(oldName);
 	if (!rs.name.empty()) {
+		RuleManager::Get().DeleteRuleSet(oldName);
 		rs.name = newName;
-		if (RuleManager::Get().SaveRuleSet(rs)) {
-			RuleManager::Get().DeleteRuleSet(oldName);
-			UpdateSavedRulesList();
+		RuleManager::Get().SaveRuleSet(rs);
+
+		if (m_activeRuleSetName == oldName) {
+			m_activeRuleSetName = newName;
 		}
+
+		UpdateSavedRulesList();
 	}
 }
 
-void ReplaceToolWindow::OnRuleChanged() { }
+void ReplaceToolWindow::OnRuleChanged() {
+	if (!m_activeRuleSetName.empty()) {
+		RuleSet rs;
+		rs.name = m_activeRuleSetName;
+		rs.rules = ruleBuilder->GetRules();
+		RuleManager::Get().SaveRuleSet(rs);
+	}
+}
 
 void ReplaceToolWindow::OnSearchChange(wxCommandEvent&) {
 	allItemsGrid->SetFilter(searchCtrl->GetValue());
@@ -501,11 +519,18 @@ void ReplaceToolWindow::OnSaveRule(wxCommandEvent&) {
 		return;
 	}
 
+	std::vector<std::string> existing = RuleManager::Get().GetAvailableRuleSets();
+	if (std::find(existing.begin(), existing.end(), name.ToStdString()) != existing.end()) {
+		wxMessageBox("A rule set with this name already exists. Please choose a different name.", "Name Collision", wxOK | wxICON_ERROR);
+		return;
+	}
+
 	RuleSet rs;
 	rs.name = name.ToStdString();
 	rs.rules = rules;
 
 	if (RuleManager::Get().SaveRuleSet(rs)) {
+		m_activeRuleSetName = rs.name;
 		UpdateSavedRulesList();
 	}
 }

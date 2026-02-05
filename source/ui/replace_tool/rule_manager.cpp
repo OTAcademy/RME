@@ -45,9 +45,9 @@ static bool IsValidRuleSetName(const std::string& name) {
 	if (name.empty()) {
 		return false;
 	}
-	// Allow alphanumeric, -, _
+	// Allow alphanumeric, -, _, space
 	for (char c : name) {
-		if (!isalnum(c) && c != '-' && c != '_') {
+		if (!isalnum(c) && c != '-' && c != '_' && c != ' ') {
 			return false;
 		}
 	}
@@ -102,10 +102,6 @@ RuleSet RuleManager::LoadRuleSet(const std::string& name) {
 }
 
 bool RuleManager::DeleteRuleSet(const std::string& name) {
-	if (!IsValidRuleSetName(name)) {
-		wxLogError("Invalid rule set name: %s", name);
-		return false;
-	}
 
 	wxFileName path(GetRulesDir(), name, "json");
 	if (!path.FileExists()) {

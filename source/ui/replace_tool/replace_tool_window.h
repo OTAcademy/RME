@@ -69,6 +69,8 @@ private:
 
 	// Map lookup from LookID -> Brush* for easier access when selecting a brush
 	std::map<uint16_t, class Brush*> brushLookup;
+
+	std::string m_activeRuleSetName;
 };
 
 #endif

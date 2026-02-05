@@ -152,7 +152,8 @@ void RuleListControl::OnMouse(wxMouseEvent& event) {
 	}
 }
 void RuleListControl::OnContextMenu(wxContextMenuEvent& event) {
-	if (m_hoveredIndex == -1) {
+	int menuIdx = m_hoveredIndex;
+	if (menuIdx == -1) {
 		return;
 	}
 
@@ -160,10 +161,12 @@ void RuleListControl::OnContextMenu(wxContextMenuEvent& event) {
 	menu.Append(wxID_EDIT, "Edit Name");
 	menu.Append(wxID_DELETE, "Delete");
 
-	menu.Bind(wxEVT_MENU, [this](wxCommandEvent& e) {
-		if (m_hoveredIndex == -1){ return;
-}
-		std::string name = m_ruleSetNames[m_hoveredIndex];
+	menu.Bind(wxEVT_MENU, [this, menuIdx](wxCommandEvent& e) {
+		if (menuIdx < 0 || menuIdx >= (int)m_ruleSetNames.size()) {
+			return;
+		}
+
+		std::string name = m_ruleSetNames[menuIdx];
 
 		if (e.GetId() == wxID_EDIT) {
 			wxString newName = wxGetTextFromUser("Enter new name for rule set:", "Edit Name", name);
@@ -179,20 +182,8 @@ void RuleListControl::OnContextMenu(wxContextMenuEvent& event) {
 					m_listener->OnRuleDeleted(name);
 				}
 			}
-		} }, wxID_EDIT);
-
-	menu.Bind(wxEVT_MENU, [this](wxCommandEvent& e) {
-		// Same lambda for delete
-		if (m_hoveredIndex == -1){ return;
-}
-		std::string name = m_ruleSetNames[m_hoveredIndex];
-
-		wxMessageDialog dlg(this, "Are you sure you want to delete rule set '" + name + "'?", "Delete Rule Set", wxYES_NO | wxNO_DEFAULT | wxICON_WARNING);
-		if (dlg.ShowModal() == wxID_YES) {
-			if (m_listener) {
-				m_listener->OnRuleDeleted(name);
-			}
-		} }, wxID_DELETE);
+		}
+	});
 
 	PopupMenu(&menu);
 }
