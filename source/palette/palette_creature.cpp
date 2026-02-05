@@ -75,10 +75,6 @@ CreaturePalettePanel::CreaturePalettePanel(wxWindow* parent, wxWindowID id) :
 	OnUpdate();
 }
 
-CreaturePalettePanel::~CreaturePalettePanel() {
-	////
-}
-
 PaletteType CreaturePalettePanel::GetType() const {
 	return TILESET_CREATURE;
 }

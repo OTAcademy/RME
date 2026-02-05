@@ -26,7 +26,7 @@
 class CreaturePalettePanel : public PalettePanel {
 public:
 	CreaturePalettePanel(wxWindow* parent, wxWindowID id = wxID_ANY);
-	~CreaturePalettePanel() override;
+	~CreaturePalettePanel() override = default;
 
 	PaletteType GetType() const override;
 

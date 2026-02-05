@@ -26,7 +26,7 @@
 class WaypointPalettePanel : public PalettePanel {
 public:
 	WaypointPalettePanel(wxWindow* parent, wxWindowID id = wxID_ANY);
-	~WaypointPalettePanel() override;
+	~WaypointPalettePanel() override = default;
 
 	wxString GetName() const override;
 	PaletteType GetType() const override;
