@@ -50,6 +50,8 @@ private:
 };
 
 class NanoVGCanvas : public wxGLCanvas {
+	friend class ScopedGLContext;
+
 public:
 	/**
 	 * @brief Constructs a NanoVGCanvas control.
