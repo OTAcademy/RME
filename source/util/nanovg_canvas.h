@@ -159,6 +159,7 @@ protected:
 	 */
 	bool MakeContextCurrent();
 
+public: // Public for ScopedGLContext and future extensions
 	// Background color (can be overridden by subclasses)
 	float m_bgRed = 45.0f / 255.0f;
 	float m_bgGreen = 45.0f / 255.0f;
