@@ -109,24 +109,22 @@ const AtlasRegion* GameSprite::getAtlasRegion(int _x, int _y, int _layer, int _c
 		// Also check default params
 		if (_x == 0 && _y == 0 && _layer == 0 && _frame == 0 && _pattern_x == 0 && _pattern_y == 0 && _pattern_z == 0) {
 			// Check cache
-			if (!spriteList.empty()) {
-				// We rely on spriteList[0] being valid for simple sprites
-				// Check isGLLoaded to ensure validity of cached region (it must correspond to loaded texture)
-				if (cached_default_region && spriteList[0]->isGLLoaded) {
-					return cached_default_region;
-				}
-
-				// Lazy set parent for cache invalidation
-				spriteList[0]->parent = this;
-
-				const AtlasRegion* r = spriteList[0]->getAtlasRegion();
-				if (spriteList[0]->isGLLoaded) {
-					cached_default_region = r;
-				} else {
-					cached_default_region = nullptr;
-				}
-				return r;
+			// We rely on spriteList[0] being valid for simple sprites
+			// Check isGLLoaded to ensure validity of cached region (it must correspond to loaded texture)
+			if (cached_default_region && spriteList[0]->isGLLoaded) {
+				return cached_default_region;
 			}
+
+			// Lazy set parent for cache invalidation
+			spriteList[0]->parent = this;
+
+			const AtlasRegion* r = spriteList[0]->getAtlasRegion();
+			if (spriteList[0]->isGLLoaded) {
+				cached_default_region = r;
+			} else {
+				cached_default_region = nullptr;
+			}
+			return r;
 		}
 	}
 
