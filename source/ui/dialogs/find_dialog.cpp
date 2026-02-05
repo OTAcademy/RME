@@ -268,7 +268,7 @@ void FindBrushDialog::RefreshContentsInternal() {
 			item_list->AddBrush(raw_brush);
 		}
 
-		while (raws.size() > 0) {
+		while (!raws.empty()) {
 			item_list->AddBrush(const_cast<RAWBrush*>(raws.front()));
 			raws.pop_front();
 		}

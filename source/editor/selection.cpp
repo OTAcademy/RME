@@ -213,8 +213,11 @@ void Selection::addInternal(Tile* tile) {
 	if (deferred) {
 		pending_adds.push_back(tile);
 	} else {
-		tiles.insert(tile);
-		bounds_dirty = true;
+		auto it = std::lower_bound(tiles.begin(), tiles.end(), tile, tilePositionLessThan);
+		if (it == tiles.end() || *it != tile) {
+			tiles.insert(it, tile);
+			bounds_dirty = true;
+		}
 	}
 }
 
@@ -223,8 +226,11 @@ void Selection::removeInternal(Tile* tile) {
 	if (deferred) {
 		pending_removes.push_back(tile);
 	} else {
-		tiles.erase(tile);
-		bounds_dirty = true;
+		auto it = std::lower_bound(tiles.begin(), tiles.end(), tile, tilePositionLessThan);
+		if (it != tiles.end() && *it == tile) {
+			tiles.erase(it);
+			bounds_dirty = true;
+		}
 	}
 }
 
@@ -232,17 +238,32 @@ void Selection::flush() {
 	if (pending_adds.empty() && pending_removes.empty()) {
 		return;
 	}
-
-	if (!pending_removes.empty() || !pending_adds.empty()) {
+	if (!pending_removes.empty()) {
 		bounds_dirty = true;
+		std::sort(pending_removes.begin(), pending_removes.end(), tilePositionLessThan);
+		auto last = std::unique(pending_removes.begin(), pending_removes.end(), [](Tile* a, Tile* b) {
+			return a->getPosition() == b->getPosition();
+		});
+		pending_removes.erase(last, pending_removes.end());
+
+		std::vector<Tile*> result;
+		result.reserve(tiles.size());
+		std::set_difference(tiles.begin(), tiles.end(), pending_removes.begin(), pending_removes.end(), std::back_inserter(result), tilePositionLessThan);
+		tiles = std::move(result);
 	}
 
-	for (Tile* t : pending_removes) {
-		tiles.erase(t);
-	}
+	if (!pending_adds.empty()) {
+		bounds_dirty = true;
+		std::sort(pending_adds.begin(), pending_adds.end(), tilePositionLessThan);
+		auto last = std::unique(pending_adds.begin(), pending_adds.end(), [](Tile* a, Tile* b) {
+			return a->getPosition() == b->getPosition();
+		});
+		pending_adds.erase(last, pending_adds.end());
 
-	for (Tile* t : pending_adds) {
-		tiles.insert(t);
+		std::vector<Tile*> merged;
+		merged.reserve(tiles.size() + pending_adds.size());
+		std::set_union(tiles.begin(), tiles.end(), pending_adds.begin(), pending_adds.end(), std::back_inserter(merged), tilePositionLessThan);
+		tiles = std::move(merged);
 	}
 
 	pending_adds.clear();

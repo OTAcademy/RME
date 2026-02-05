@@ -35,7 +35,7 @@ BaseMap::~BaseMap() {
 void BaseMap::clear(bool del) {
 	PositionVector pos_vec;
 	for (MapIterator map_iter = begin(); map_iter != end(); ++map_iter) {
-		Tile* t = (*map_iter)->get();
+		Tile* t = map_iter->get();
 		pos_vec.push_back(t->getPosition());
 	}
 	for (PositionVector::iterator pos_iter = pos_vec.begin(); pos_iter != pos_vec.end(); ++pos_iter) {
@@ -186,15 +186,11 @@ MapIterator BaseMap::end() {
 	return it;
 }
 
-TileLocation* MapIterator::operator*() {
-	return current_tile;
+TileLocation& MapIterator::operator*() noexcept {
+	return *current_tile;
 }
 
-TileLocation* MapIterator::operator->() {
-	return current_tile;
-}
-
-bool MapIterator::operator==(const MapIterator& other) const {
+bool MapIterator::operator==(const MapIterator& other) const noexcept {
 	if (map != other.map) {
 		return false;
 	}
@@ -220,7 +216,7 @@ bool MapIterator::findNext() {
 				while (floor_i < MAP_LAYERS) {
 					Floor* floor = node->array[floor_i];
 					if (floor) {
-						while (tile_i < MAP_LAYERS) {
+						while (tile_i < SpatialHashGrid::TILES_PER_NODE) {
 							TileLocation& t = floor->locs[tile_i];
 							if (t.get()) {
 								current_tile = &t;
@@ -246,7 +242,7 @@ bool MapIterator::findNext() {
 	return false;
 }
 
-MapIterator& MapIterator::operator++() {
+MapIterator& MapIterator::operator++() noexcept {
 	if (current_tile) {
 		tile_i++;
 		findNext();
@@ -254,7 +250,7 @@ MapIterator& MapIterator::operator++() {
 	return *this;
 }
 
-MapIterator MapIterator::operator++(int) {
+MapIterator MapIterator::operator++(int) noexcept {
 	MapIterator i(*this);
 	++*this;
 	return i;

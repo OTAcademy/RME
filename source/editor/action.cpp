@@ -25,35 +25,30 @@
 #include "ui/gui.h"
 
 #include <ranges>
+#include <ctime>
 
 Change::Change() :
-	type(CHANGE_NONE), data(nullptr) {
+	type(CHANGE_NONE), data(std::monostate {}) {
 	////
 }
 
 Change::Change(Tile* t) :
 	type(CHANGE_TILE) {
 	ASSERT(t);
-	data = t;
+	data = std::unique_ptr<Tile>(t);
 }
 
 Change* Change::Create(House* house, const Position& where) {
 	Change* c = newd Change();
 	c->type = CHANGE_MOVE_HOUSE_EXIT;
-	std::pair<uint32_t, Position>* p = newd std::pair<uint32_t, Position>;
-	p->first = house->getID();
-	p->second = where;
-	c->data = p;
+	c->data = HouseExitChangeData { .houseId = house->getID(), .pos = where };
 	return c;
 }
 
 Change* Change::Create(Waypoint* wp, const Position& where) {
 	Change* c = newd Change();
 	c->type = CHANGE_MOVE_WAYPOINT;
-	std::pair<std::string, Position>* p = newd std::pair<std::string, Position>;
-	p->first = wp->name;
-	p->second = where;
-	c->data = p;
+	c->data = WaypointChangeData { .name = wp->name, .pos = where };
 	return c;
 }
 
@@ -62,42 +57,33 @@ Change::~Change() {
 }
 
 void Change::clear() {
-	switch (type) {
-		case CHANGE_TILE:
-			ASSERT(data);
-			delete reinterpret_cast<Tile*>(data);
-			break;
-		case CHANGE_MOVE_HOUSE_EXIT:
-			ASSERT(data);
-			delete reinterpret_cast<std::pair<uint32_t, Position>*>(data);
-			break;
-		case CHANGE_MOVE_WAYPOINT:
-			ASSERT(data);
-			delete reinterpret_cast<std::pair<std::string, Position>*>(data);
-			break;
-		case CHANGE_NONE:
-			break;
-		default:
-#ifdef __DEBUG_MODE__
-			if (data) {
-				std::cerr << "UNHANDLED CHANGE TYPE! Leak!" << std::endl;
-			}
-#endif
-			break;
-	}
 	type = CHANGE_NONE;
-	data = nullptr;
+	data = std::monostate {};
+}
+
+const Tile* Change::getTile() const {
+	if (auto* t = std::get_if<std::unique_ptr<Tile>>(&data)) {
+		return t->get();
+	}
+	return nullptr;
+}
+
+const HouseExitChangeData* Change::getHouseExitData() const {
+	return std::get_if<HouseExitChangeData>(&data);
+}
+
+const WaypointChangeData* Change::getWaypointData() const {
+	return std::get_if<WaypointChangeData>(&data);
 }
 
 uint32_t Change::memsize() const {
 	uint32_t mem = sizeof(*this);
-	switch (type) {
-		case CHANGE_TILE:
-			ASSERT(data);
-			mem += reinterpret_cast<Tile*>(data)->memsize();
-			break;
-		default:
-			break;
+	if (auto* t = std::get_if<std::unique_ptr<Tile>>(&data)) {
+		mem += (*t)->memsize();
+	} else if (auto* wp = std::get_if<WaypointChangeData>(&data)) {
+		mem += wp->name.capacity();
+	} else if (auto* house = std::get_if<HouseExitChangeData>(&data)) {
+		mem += sizeof(HouseExitChangeData);
 	}
 	return mem;
 }
@@ -121,20 +107,8 @@ size_t Action::approx_memsize() const {
 size_t Action::memsize() const {
 	uint32_t mem = sizeof(*this);
 	mem += sizeof(Change*) * 3 * changes.size();
-	ChangeList::const_iterator it = changes.begin();
-	while (it != changes.end()) {
-		Change* c = it->get();
-		switch (c->type) {
-			case CHANGE_TILE: {
-				ASSERT(c->data);
-				mem += reinterpret_cast<Tile*>(c->data)->memsize();
-				break;
-			}
-
-			default:
-				break;
-		}
-		++it;
+	for (const auto& c : changes) {
+		mem += c->memsize();
 	}
 	return mem;
 }
@@ -146,8 +120,8 @@ void Action::commit(DirtyList* dirty_list) {
 		Change* c = it->get();
 		switch (c->type) {
 			case CHANGE_TILE: {
-				void** data = &c->data;
-				Tile* newtile = reinterpret_cast<Tile*>(*data);
+				auto& uptr = std::get<std::unique_ptr<Tile>>(c->data);
+				Tile* newtile = uptr.release();
 				ASSERT(newtile);
 				Position pos = newtile->getPosition();
 
@@ -156,6 +130,7 @@ void Action::commit(DirtyList* dirty_list) {
 					if (!nd || !nd->isVisible(pos.z > GROUND_LAYER)) {
 						// Delete all changes that affect tiles outside our view
 						c->clear();
+						delete newtile;
 						++it;
 						continue;
 					}
@@ -207,9 +182,9 @@ void Action::commit(DirtyList* dirty_list) {
 						editor.selection.removeInternal(oldtile);
 					}
 
-					*data = oldtile;
+					uptr.reset(oldtile);
 				} else {
-					*data = editor.map.allocator(location);
+					uptr.reset(editor.map.allocator(location));
 					if (newtile->getHouseID() != 0) {
 						// oooooomggzzz we need to add it to the appropriate house!
 						House* house = editor.map.houses.getHouse(newtile->getHouseID());
@@ -234,30 +209,28 @@ void Action::commit(DirtyList* dirty_list) {
 			}
 
 			case CHANGE_MOVE_HOUSE_EXIT: {
-				std::pair<uint32_t, Position>* p = reinterpret_cast<std::pair<uint32_t, Position>*>(c->data);
-				ASSERT(p);
-				House* whathouse = editor.map.houses.getHouse(p->first);
+				auto& p = std::get<HouseExitChangeData>(c->data);
+				House* whathouse = editor.map.houses.getHouse(p.houseId);
 
 				if (whathouse) {
 					Position oldpos = whathouse->getExit();
-					whathouse->setExit(p->second);
-					p->second = oldpos;
+					whathouse->setExit(p.pos);
+					p.pos = oldpos;
 				}
 				break;
 			}
 
 			case CHANGE_MOVE_WAYPOINT: {
-				std::pair<std::string, Position>* p = reinterpret_cast<std::pair<std::string, Position>*>(c->data);
-				ASSERT(p);
-				Waypoint* wp = editor.map.waypoints.getWaypoint(p->first);
+				auto& p = std::get<WaypointChangeData>(c->data);
+				Waypoint* wp = editor.map.waypoints.getWaypoint(p.name);
 
 				if (wp) {
 					// Change the tiles
 					TileLocation* oldtile = editor.map.getTileL(wp->pos);
-					TileLocation* newtile = editor.map.getTileL(p->second);
+					TileLocation* newtile = editor.map.getTileL(p.pos);
 
 					// Only need to remove from old if it actually exists
-					if (p->second != Position()) {
+					if (p.pos != Position()) {
 						if (oldtile && oldtile->getWaypointCount() > 0) {
 							oldtile->decreaseWaypointCount();
 						}
@@ -267,8 +240,8 @@ void Action::commit(DirtyList* dirty_list) {
 
 					// Update shit
 					Position oldpos = wp->pos;
-					wp->pos = p->second;
-					p->second = oldpos;
+					wp->pos = p.pos;
+					p.pos = oldpos;
 				}
 				break;
 			}
@@ -294,8 +267,8 @@ void Action::undo(DirtyList* dirty_list) {
 		Change* c = it->get();
 		switch (c->type) {
 			case CHANGE_TILE: {
-				void** data = &c->data;
-				Tile* oldtile = reinterpret_cast<Tile*>(*data);
+				auto& uptr = std::get<std::unique_ptr<Tile>>(c->data);
+				Tile* oldtile = uptr.release();
 				ASSERT(oldtile);
 				Position pos = oldtile->getPosition();
 
@@ -304,6 +277,7 @@ void Action::undo(DirtyList* dirty_list) {
 					if (!nd || !nd->isVisible(pos.z > GROUND_LAYER)) {
 						// Delete all changes that affect tiles outside our view
 						c->clear();
+						delete oldtile;
 						++it;
 						continue;
 					}
@@ -351,7 +325,7 @@ void Action::undo(DirtyList* dirty_list) {
 				} else if (newtile->spawn) {
 					editor.map.removeSpawn(newtile);
 				}
-				*data = newtile;
+				uptr.reset(newtile);
 
 				// Update client dirty list
 				if (editor.live_manager.IsClient() && dirty_list && type != ACTION_REMOTE) {
@@ -362,29 +336,27 @@ void Action::undo(DirtyList* dirty_list) {
 			}
 
 			case CHANGE_MOVE_HOUSE_EXIT: {
-				std::pair<uint32_t, Position>* p = reinterpret_cast<std::pair<uint32_t, Position>*>(c->data);
-				ASSERT(p);
-				House* whathouse = editor.map.houses.getHouse(p->first);
+				auto& p = std::get<HouseExitChangeData>(c->data);
+				House* whathouse = editor.map.houses.getHouse(p.houseId);
 				if (whathouse) {
 					Position oldpos = whathouse->getExit();
-					whathouse->setExit(p->second);
-					p->second = oldpos;
+					whathouse->setExit(p.pos);
+					p.pos = oldpos;
 				}
 				break;
 			}
 
 			case CHANGE_MOVE_WAYPOINT: {
-				std::pair<std::string, Position>* p = reinterpret_cast<std::pair<std::string, Position>*>(c->data);
-				ASSERT(p);
-				Waypoint* wp = editor.map.waypoints.getWaypoint(p->first);
+				auto& p = std::get<WaypointChangeData>(c->data);
+				Waypoint* wp = editor.map.waypoints.getWaypoint(p.name);
 
 				if (wp) {
 					// Change the tiles
 					TileLocation* oldtile = editor.map.getTileL(wp->pos);
-					TileLocation* newtile = editor.map.getTileL(p->second);
+					TileLocation* newtile = editor.map.getTileL(p.pos);
 
 					// Only need to remove from old if it actually exists
-					if (p->second != Position()) {
+					if (p.pos != Position()) {
 						if (oldtile && oldtile->getWaypointCount() > 0) {
 							oldtile->decreaseWaypointCount();
 						}
@@ -396,8 +368,8 @@ void Action::undo(DirtyList* dirty_list) {
 
 					// Update shit
 					Position oldpos = wp->pos;
-					wp->pos = p->second;
-					p->second = oldpos;
+					wp->pos = p.pos;
+					p.pos = oldpos;
 				}
 				break;
 			}

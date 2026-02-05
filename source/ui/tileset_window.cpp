@@ -110,7 +110,7 @@ void TilesetWindow::OnChangePalette(wxCommandEvent& WXUNUSED(event)) {
 	tileset_field->Clear();
 
 	for (const auto& tileset : GetSortedTilesets(g_materials.tilesets)) {
-		if (tileset->getCategory(static_cast<TilesetCategoryType>(*static_cast<int*>(palette_field->GetClientData(palette_field->GetSelection()))))->brushlist.size() > 0) {
+		if (!tileset->getCategory(static_cast<TilesetCategoryType>(*static_cast<int*>(palette_field->GetClientData(palette_field->GetSelection()))))->brushlist.empty()) {
 			tileset_field->Append(wxstr(tileset->name), newd std::string(tileset->name));
 		}
 	}

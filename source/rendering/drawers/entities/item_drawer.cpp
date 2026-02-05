@@ -169,12 +169,19 @@ void ItemDrawer::BlitItem(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 	// BatchRenderer::SetAtlasManager(g_gui.gfx.getAtlasManager());
 
 	int frame = item->getFrame();
-	for (int cx = 0; cx != spr->width; cx++) {
-		for (int cy = 0; cy != spr->height; cy++) {
-			for (int cf = 0; cf != spr->layers; cf++) {
-				const AtlasRegion* region = spr->getAtlasRegion(cx, cy, cf, subtype, pattern_x, pattern_y, pattern_z, frame);
-				if (region) {
-					sprite_drawer->glBlitAtlasQuad(sprite_batch, screenx - cx * TileSize, screeny - cy * TileSize, region, red, green, blue, alpha);
+	if (spr->width == 1 && spr->height == 1 && spr->layers == 1) {
+		const AtlasRegion* region = spr->getAtlasRegion(0, 0, 0, subtype, pattern_x, pattern_y, pattern_z, frame);
+		if (region) {
+			sprite_drawer->glBlitAtlasQuad(sprite_batch, screenx, screeny, region, red, green, blue, alpha);
+		}
+	} else {
+		for (int cx = 0; cx != spr->width; cx++) {
+			for (int cy = 0; cy != spr->height; cy++) {
+				for (int cf = 0; cf != spr->layers; cf++) {
+					const AtlasRegion* region = spr->getAtlasRegion(cx, cy, cf, subtype, pattern_x, pattern_y, pattern_z, frame);
+					if (region) {
+						sprite_drawer->glBlitAtlasQuad(sprite_batch, screenx - cx * TileSize, screeny - cy * TileSize, region, red, green, blue, alpha);
+					}
 				}
 			}
 		}

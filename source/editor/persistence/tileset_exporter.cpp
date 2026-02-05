@@ -37,7 +37,7 @@ void TilesetExporter::exportTilesets(const FileName& directory, const std::strin
 				for (const auto& kv : palettes) {
 					TilesetCategory* tilesetCategory = tileset_ptr->getCategory(kv.second);
 
-					if (kv.second != TILESET_RAW && tilesetCategory->brushlist.size() > 0) {
+					if (kv.second != TILESET_RAW && !tilesetCategory->brushlist.empty()) {
 						blocked = 0;
 					}
 				}
@@ -53,7 +53,7 @@ void TilesetExporter::exportTilesets(const FileName& directory, const std::strin
 			for (const auto& kv : palettes) {
 				TilesetCategory* tilesetCategory = tileset_ptr->getCategory(kv.second);
 
-				if (tilesetCategory->brushlist.size() > 0) {
+				if (!tilesetCategory->brushlist.empty()) {
 					std::string data = kv.first;
 					std::transform(data.begin(), data.end(), data.begin(), [](unsigned char c) { return std::tolower(c); });
 

@@ -39,7 +39,7 @@ void DrawOperations::draw(Editor& editor, Position offset, bool alt, bool dodraw
 		PositionList tilestoborder;
 
 		for (MapIterator it = buffer_map->begin(); it != buffer_map->end(); ++it) {
-			Tile* buffer_tile = (*it)->get();
+			Tile* buffer_tile = it->get();
 			Position pos = buffer_tile->getPosition() + delta_pos;
 			if (!pos.isValid()) {
 				continue;

@@ -19,6 +19,7 @@
 #define RME_HOUSE_H_
 
 #include "map/position.h"
+#include <memory>
 
 class Map;
 class Tile;
@@ -69,7 +70,7 @@ protected:
 	friend class Houses;
 };
 
-using HouseMap = std::map<uint32_t, House*>;
+using HouseMap = std::map<uint32_t, std::unique_ptr<House>>;
 
 class Houses {
 public:
@@ -107,7 +108,7 @@ public:
 
 	void removeHouse(House* house_to_remove);
 	void changeId(House* house, uint32_t newID);
-	void addHouse(House* new_house);
+	bool addHouse(std::unique_ptr<House> new_house);
 	House* getHouse(uint32_t houseid);
 	const House* getHouse(uint32_t houseid) const;
 	uint32_t getEmptyID();
