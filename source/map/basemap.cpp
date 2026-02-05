@@ -35,7 +35,7 @@ BaseMap::~BaseMap() {
 void BaseMap::clear(bool del) {
 	PositionVector pos_vec;
 	for (MapIterator map_iter = begin(); map_iter != end(); ++map_iter) {
-		Tile* t = (*map_iter)->get();
+		Tile* t = map_iter->get();
 		pos_vec.push_back(t->getPosition());
 	}
 	for (PositionVector::iterator pos_iter = pos_vec.begin(); pos_iter != pos_vec.end(); ++pos_iter) {
@@ -186,8 +186,8 @@ MapIterator BaseMap::end() {
 	return it;
 }
 
-TileLocation* MapIterator::operator*() {
-	return current_tile;
+TileLocation& MapIterator::operator*() {
+	return *current_tile;
 }
 
 TileLocation* MapIterator::operator->() {

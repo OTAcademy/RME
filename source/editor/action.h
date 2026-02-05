@@ -25,6 +25,8 @@
 #include <vector>
 #include <variant>
 #include <string>
+#include <cstdint>
+#include <type_traits>
 
 class Editor;
 class Tile;
@@ -70,17 +72,18 @@ public:
 	ChangeType getType() const {
 		return type;
 	}
-	void* getData() const {
-		return std::visit([](const auto& arg) -> void* {
+	const void* getData() const {
+		return std::visit([](const auto& arg) -> const void* {
 			using T = std::decay_t<decltype(arg)>;
 			if constexpr (std::is_same_v<T, std::unique_ptr<Tile>>) {
 				return arg.get();
 			} else if constexpr (std::is_same_v<T, std::monostate>) {
 				return nullptr;
 			} else {
-				return const_cast<void*>(static_cast<const void*>(&arg));
+				return static_cast<const void*>(&arg);
 			}
-		}, data);
+		},
+						  data);
 	}
 
 	// Get memory footprint

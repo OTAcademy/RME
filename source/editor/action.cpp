@@ -25,9 +25,10 @@
 #include "ui/gui.h"
 
 #include <ranges>
+#include <ctime>
 
 Change::Change() :
-	type(CHANGE_NONE), data(std::monostate{}) {
+	type(CHANGE_NONE), data(std::monostate {}) {
 	////
 }
 
@@ -40,20 +41,14 @@ Change::Change(Tile* t) :
 Change* Change::Create(House* house, const Position& where) {
 	Change* c = newd Change();
 	c->type = CHANGE_MOVE_HOUSE_EXIT;
-	HouseExitChangeData d;
-	d.houseId = house->getID();
-	d.pos = where;
-	c->data = d;
+	c->data = HouseExitChangeData { .houseId = house->getID(), .pos = where };
 	return c;
 }
 
 Change* Change::Create(Waypoint* wp, const Position& where) {
 	Change* c = newd Change();
 	c->type = CHANGE_MOVE_WAYPOINT;
-	WaypointChangeData d;
-	d.name = wp->name;
-	d.pos = where;
-	c->data = d;
+	c->data = WaypointChangeData { .name = wp->name, .pos = where };
 	return c;
 }
 
@@ -63,7 +58,7 @@ Change::~Change() {
 
 void Change::clear() {
 	type = CHANGE_NONE;
-	data = std::monostate{};
+	data = std::monostate {};
 }
 
 uint32_t Change::memsize() const {
@@ -72,6 +67,8 @@ uint32_t Change::memsize() const {
 		mem += (*t)->memsize();
 	} else if (auto* wp = std::get_if<WaypointChangeData>(&data)) {
 		mem += wp->name.capacity();
+	} else if (auto* house = std::get_if<HouseExitChangeData>(&data)) {
+		mem += sizeof(HouseExitChangeData);
 	}
 	return mem;
 }

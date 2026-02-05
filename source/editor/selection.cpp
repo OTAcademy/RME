@@ -238,10 +238,8 @@ void Selection::flush() {
 	if (pending_adds.empty() && pending_removes.empty()) {
 		return;
 	}
-
-	bounds_dirty = true;
-
 	if (!pending_removes.empty()) {
+		bounds_dirty = true;
 		std::sort(pending_removes.begin(), pending_removes.end());
 		auto last = std::unique(pending_removes.begin(), pending_removes.end());
 		pending_removes.erase(last, pending_removes.end());
@@ -253,15 +251,14 @@ void Selection::flush() {
 	}
 
 	if (!pending_adds.empty()) {
+		bounds_dirty = true;
 		std::sort(pending_adds.begin(), pending_adds.end());
 		auto last = std::unique(pending_adds.begin(), pending_adds.end());
 		pending_adds.erase(last, pending_adds.end());
 
 		std::vector<Tile*> merged;
 		merged.reserve(tiles.size() + pending_adds.size());
-		std::set_union(tiles.begin(), tiles.end(),
-		               pending_adds.begin(), pending_adds.end(),
-		               std::back_inserter(merged));
+		std::set_union(tiles.begin(), tiles.end(), pending_adds.begin(), pending_adds.end(), std::back_inserter(merged));
 		tiles = std::move(merged);
 	}
 

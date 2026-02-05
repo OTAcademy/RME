@@ -42,13 +42,13 @@ public:
 	using value_type = TileLocation;
 	using difference_type = std::ptrdiff_t;
 	using pointer = TileLocation*;
-	using reference = TileLocation*;
+	using reference = TileLocation&;
 
 	MapIterator(BaseMap* _map = nullptr);
 	~MapIterator();
 	MapIterator(const MapIterator& other);
 
-	TileLocation* operator*();
+	TileLocation& operator*();
 	TileLocation* operator->();
 	MapIterator& operator++();
 	MapIterator operator++(int);
