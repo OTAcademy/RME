@@ -311,6 +311,8 @@ void EditTownsDialog::OnClickOK(wxCommandEvent& WXUNUSED(event)) {
 
 		// Build the newd town map
 		for (auto& town : town_list) {
+			// Movement to towns.addTown() leaves moved-from unique_ptrs in town_list.
+			// This is safe as town_list.clear() is called immediately after.
 			towns.addTown(std::move(town));
 		}
 		town_list.clear();

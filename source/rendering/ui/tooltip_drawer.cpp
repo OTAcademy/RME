@@ -204,7 +204,7 @@ int TooltipDrawer::getSpriteImage(NVGcontext* vg, uint16_t itemId) {
 				} else {
 					// Success
 					// Check if we are overwriting an existing valid image (shouldn't happen given find() above, but safest)
-					if (spriteCache.count(itemId) && spriteCache[itemId] > 0) {
+					if (spriteCache.contains(itemId) && spriteCache[itemId] > 0) {
 						nvgDeleteImage(vg, spriteCache[itemId]);
 					}
 					spriteCache[itemId] = image;

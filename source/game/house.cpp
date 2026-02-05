@@ -33,8 +33,8 @@ Houses::~Houses() {
 
 uint32_t Houses::getEmptyID() {
 	// ids were edited or planned id is taken, search forwards
-	if (max_house_id == 0 || houses.count(max_house_id + 1)) {
-		while (houses.count(++max_house_id)) {
+	if (max_house_id == 0 || houses.contains(max_house_id + 1)) {
+		while (houses.contains(++max_house_id)) {
 			// do nothing, we search for an empty slot
 		}
 
@@ -45,15 +45,18 @@ uint32_t Houses::getEmptyID() {
 	return ++max_house_id;
 }
 
-void Houses::addHouse(std::unique_ptr<House> new_house) {
+bool Houses::addHouse(std::unique_ptr<House> new_house) {
 	ASSERT(new_house);
 	HouseMap::iterator it = houses.find(new_house->id);
-	ASSERT(it == houses.end());
+	if (it != houses.end()) {
+		return false;
+	}
 	new_house->map = &map;
 	if (new_house->id > max_house_id) {
 		max_house_id = new_house->id;
 	}
 	houses[new_house->id] = std::move(new_house);
+	return true;
 }
 
 void Houses::removeHouse(House* house_to_remove) {
@@ -66,14 +69,10 @@ void Houses::removeHouse(House* house_to_remove) {
 
 void Houses::changeId(House* house, uint32_t newID) {
 	ASSERT(house);
-	HouseMap::iterator it = houses.find(house->id);
-	std::unique_ptr<House> house_ptr;
+	auto it = houses.find(house->id);
 	if (it != houses.end()) {
-		house_ptr = std::move(it->second);
+		auto house_ptr = std::move(it->second);
 		houses.erase(it);
-	}
-
-	if (house_ptr) {
 		house_ptr->setID(newID);
 		houses[newID] = std::move(house_ptr);
 	}
