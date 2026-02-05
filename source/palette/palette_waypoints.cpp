@@ -53,10 +53,6 @@ WaypointPalettePanel::WaypointPalettePanel(wxWindow* parent, wxWindowID id) :
 	SetSizerAndFit(sidesizer);
 }
 
-WaypointPalettePanel::~WaypointPalettePanel() {
-	////
-}
-
 void WaypointPalettePanel::OnSwitchIn() {
 	PalettePanel::OnSwitchIn();
 }

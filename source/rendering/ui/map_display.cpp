@@ -242,7 +242,7 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			bool needs_update = (editor.selection.size() != hud_cached_selection_count || last_cursor_map_x != hud_cached_x || last_cursor_map_y != hud_cached_y || last_cursor_map_z != hud_cached_z);
 
 			if (needs_update || hud_cached_text.empty()) {
-				if (editor.selection.size() > 0) {
+				if (!editor.selection.empty()) {
 					hud_cached_text = std::format("Pos: {}, {}, {} | Sel: {}", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z, editor.selection.size());
 				} else {
 					hud_cached_text = std::format("Pos: {}, {}, {}", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z);
