@@ -116,50 +116,30 @@ void RuleBuilderPanel::ItemDropTarget::OnLeave() {
 // ----------------------------------------------------------------------------
 
 RuleBuilderPanel::RuleBuilderPanel(wxWindow* parent, Listener* listener) :
-	NanoVGCanvas(parent, wxID_ANY),
-	m_listener(listener),
-	m_pulseTimer(this) {
+	NanoVGCanvas(parent, wxID_ANY, wxVSCROLL | wxWANTS_CHARS),
+	m_listener(listener) {
 
 	SetDropTarget(new ItemDropTarget(this));
 
 	Bind(wxEVT_SIZE, &RuleBuilderPanel::OnSize, this);
 	Bind(wxEVT_LEFT_DOWN, &RuleBuilderPanel::OnMouse, this);
+	Bind(wxEVT_LEFT_DCLICK, &RuleBuilderPanel::OnMouse, this);
 	Bind(wxEVT_MOTION, &RuleBuilderPanel::OnMouse, this);
 	Bind(wxEVT_LEAVE_WINDOW, &RuleBuilderPanel::OnMouse, this);
-	m_pulseTimer.Bind(wxEVT_TIMER, &RuleBuilderPanel::OnPulseTimer, this);
 
 	m_dragHover = { HitResult::None, -1, -1 };
-
-	// Start pulse if empty
-	if (m_rules.empty()) {
-		m_pulseTimer.Start(30); // 30ms ~ 30fps
-	}
 }
 
 RuleBuilderPanel::~RuleBuilderPanel() { }
 
 void RuleBuilderPanel::Clear() {
 	m_rules.clear();
-	if (!m_pulseTimer.IsRunning()) {
-		m_pulseTimer.Start(30);
-	}
 	LayoutRules();
 	Refresh();
 }
 
-void RuleBuilderPanel::OnPulseTimer(wxTimerEvent&) {
-	if (IsShownOnScreen()) {
-		Refresh();
-	}
-}
-
 void RuleBuilderPanel::SetRules(const std::vector<ReplacementRule>& rules) {
 	m_rules = rules;
-	if (m_rules.empty() && !m_pulseTimer.IsRunning()) {
-		m_pulseTimer.Start(30);
-	} else if (!m_rules.empty() && m_pulseTimer.IsRunning()) {
-		m_pulseTimer.Stop();
-	}
 	LayoutRules();
 	Refresh();
 }
@@ -518,13 +498,6 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 	wxColour bgCol = Theme::Get(Theme::Role::Surface);
 	NVGcolor nvgBg = nvgRGBA(bgCol.Red(), bgCol.Green(), bgCol.Blue(), 255);
 
-	// Pulse alpha calculation
-	float pulse = 0.0f;
-	if (m_rules.empty()) {
-		long long ms = wxGetLocalTimeMillis().GetValue();
-		pulse = (sinf(ms * 0.005f) + 1.0f) * 0.5f; // 0 to 1
-	}
-
 	// Clear BG
 	nvgBeginPath(vg);
 	nvgRect(vg, 0, 0, width, height);
@@ -714,10 +687,10 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 		// Hover Highlight
 		nvgStrokeColor(vg, accentCol);
 		nvgStrokeWidth(vg, 2.0f);
-		nvgFillColor(vg, nvgRGBA(accentCol.r, accentCol.g, accentCol.b, 25)); // ~0.1 alpha
+		nvgFillColor(vg, nvgRGBAf(accentCol.r, accentCol.g, accentCol.b, 0.1f));
 		nvgFill(vg);
 	} else {
-		// Standard Gray Border (Even if empty)
+		// Standard Gray Border
 		nvgStrokeColor(vg, borderColor);
 		nvgStrokeWidth(vg, 1.0f);
 	}

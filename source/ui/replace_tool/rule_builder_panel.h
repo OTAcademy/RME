@@ -80,11 +80,6 @@ private:
 
 	// Drag feedback
 	HitResult m_dragHover;
-
-	wxTimer m_pulseTimer;
-	void OnPulseTimer(wxTimerEvent& event);
-
-	friend class ItemDropTarget;
 };
 
 #endif
