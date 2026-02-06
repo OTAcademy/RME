@@ -145,7 +145,7 @@ namespace IngamePreview {
 						// Add names of creatures on this floor
 						if (creature_name_drawer && z == camera_pos.z) {
 							if (tile->creature) {
-								creature_name_drawer->addLabel(tile->location->getPosition(), tile->creature->getName(), tile->creature);
+								creature_name_drawer->addLabel(tile->location->getPosition(), tile->creature->getName(), tile->creature.get());
 							}
 						}
 					}

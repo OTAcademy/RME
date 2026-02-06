@@ -53,7 +53,7 @@ PropertiesWindow::PropertiesWindow(wxWindow* parent, const Map* map, const Tile*
 }
 
 void PropertiesWindow::createUI() {
-	notebook = newd wxNotebook(this, wxID_ANY, wxDefaultPosition, wxSize(600, 300));
+	notebook = newd wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 
 	notebook->AddPage(createGeneralPanel(notebook), "Simple", true);
 	if (dynamic_cast<Container*>(edit_item)) {
@@ -129,7 +129,7 @@ void PropertiesWindow::createGeneralFields(wxFlexGridSizer* gridsizer, wxWindow*
 	gridsizer->Add(action_id_field, wxSizerFlags(1).Expand());
 
 	gridsizer->Add(newd wxStaticText(panel, wxID_ANY, "Unique ID"));
-	unique_id_field = newd wxSpinCtrl(panel, wxID_ANY, i2ws(edit_item->getUniqueID()), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, 0xFFFF, edit_item->getUniqueID());
+	unique_id_field = newd wxSpinCtrl(panel, wxID_ANY, i2ws(edit_item->getUniqueID()), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 0xFFFF, edit_item->getUniqueID());
 	unique_id_field->SetToolTip("Unique ID (0-65535). Must be unique on the map.");
 	gridsizer->Add(unique_id_field, wxSizerFlags(1).Expand());
 }
@@ -140,7 +140,7 @@ void PropertiesWindow::createClassificationFields(wxFlexGridSizer* gridsizer, wx
 		gridsizer->Add(newd wxStaticText(panel, wxID_ANY, i2ws(edit_item->getClassification())));
 
 		gridsizer->Add(newd wxStaticText(panel, wxID_ANY, "Tier"));
-		tier_field = newd wxSpinCtrl(panel, wxID_ANY, i2ws(edit_item->getTier()), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, 0xFF, edit_item->getTier());
+		tier_field = newd wxSpinCtrl(panel, wxID_ANY, i2ws(edit_item->getTier()), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 0xFF, edit_item->getTier());
 		tier_field->SetToolTip("Item tier (0-255)");
 		gridsizer->Add(tier_field, wxSizerFlags(1).Expand());
 	}
@@ -179,7 +179,7 @@ wxWindow* PropertiesWindow::createAttributesPanel(wxWindow* parent) {
 	wxPanel* panel = newd wxPanel(parent, wxID_ANY);
 	wxSizer* topSizer = newd wxBoxSizer(wxVERTICAL);
 
-	attributesGrid = newd wxGrid(panel, ITEM_PROPERTIES_ADVANCED_TAB, wxDefaultPosition, wxSize(-1, 160));
+	attributesGrid = newd wxGrid(panel, ITEM_PROPERTIES_ADVANCED_TAB, wxDefaultPosition, wxSize(-1, FromDIP(160)));
 	topSizer->Add(attributesGrid, wxSizerFlags(1).Expand());
 
 	wxFont time_font(*wxSWISS_FONT);
@@ -194,11 +194,11 @@ wxWindow* PropertiesWindow::createAttributesPanel(wxWindow* parent) {
 	attributesGrid->EnableEditing(true);
 
 	attributesGrid->SetColLabelValue(0, "Key");
-	attributesGrid->SetColSize(0, 100);
+	attributesGrid->SetColSize(0, FromDIP(100));
 	attributesGrid->SetColLabelValue(1, "Type");
-	attributesGrid->SetColSize(1, 80);
+	attributesGrid->SetColSize(1, FromDIP(80));
 	attributesGrid->SetColLabelValue(2, "Value");
-	attributesGrid->SetColSize(2, 410);
+	attributesGrid->SetColSize(2, FromDIP(410));
 
 	// contents
 	ItemAttributeMap attrs = edit_item->getAttributes();
@@ -313,7 +313,7 @@ void PropertiesWindow::OnClickAddAttribute(wxCommandEvent&) {
 }
 
 void PropertiesWindow::OnClickRemoveAttribute(wxCommandEvent&) {
-	wxArrayInt rowIndexes = attributesGrid->GetSelectedRows();
+	const auto rowIndexes = attributesGrid->GetSelectedRows();
 	if (rowIndexes.Count() != 1) {
 		return;
 	}

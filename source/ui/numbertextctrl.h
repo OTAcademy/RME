@@ -38,7 +38,6 @@ protected:
 	void CheckRange();
 
 	long minval, maxval, lastval;
-	DECLARE_EVENT_TABLE();
 };
 
 #endif

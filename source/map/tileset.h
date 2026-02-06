@@ -33,7 +33,7 @@ public:
 	size_t size() const {
 		return brushlist.size();
 	}
-	void loadBrush(pugi::xml_node node, wxArrayString& warnings);
+	void loadBrush(pugi::xml_node node, std::vector<std::string>& warnings);
 	void clear();
 	bool containsBrush(Brush* brush) const;
 protected:
@@ -52,7 +52,7 @@ public:
 	~Tileset();
 	TilesetCategory* getCategory(TilesetCategoryType type);
 	const TilesetCategory* getCategory(TilesetCategoryType type) const;
-	void loadCategory(pugi::xml_node node, wxArrayString& warnings);
+	void loadCategory(pugi::xml_node node, std::vector<std::string>& warnings);
 	void clear();
 	bool containsBrush(Brush* brush) const;
 public:

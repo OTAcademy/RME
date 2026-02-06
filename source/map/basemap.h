@@ -124,8 +124,8 @@ public:
 		setTile(newtile->getX(), newtile->getY(), newtile->getZ(), newtile, remove);
 	}
 	// Replaces a tile and returns the old one
-	Tile* swapTile(int _x, int _y, int _z, Tile* newtile);
-	Tile* swapTile(const Position& pos, Tile* newtile) {
+	std::unique_ptr<Tile> swapTile(int _x, int _y, int _z, Tile* newtile);
+	std::unique_ptr<Tile> swapTile(const Position& pos, Tile* newtile) {
 		return swapTile(pos.x, pos.y, pos.z, newtile);
 	}
 

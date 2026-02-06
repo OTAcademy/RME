@@ -13,11 +13,6 @@
 // Go To Position Dialog
 // Jump to a position on the map by entering XYZ coordinates
 
-BEGIN_EVENT_TABLE(GotoPositionDialog, wxDialog)
-EVT_BUTTON(wxID_OK, GotoPositionDialog::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, GotoPositionDialog::OnClickCancel)
-END_EVENT_TABLE()
-
 GotoPositionDialog::GotoPositionDialog(wxWindow* parent, Editor& editor) :
 	wxDialog(parent, wxID_ANY, "Go To Position", wxDefaultPosition, wxDefaultSize),
 	editor(editor) {
@@ -41,6 +36,9 @@ GotoPositionDialog::GotoPositionDialog(wxWindow* parent, Editor& editor) :
 
 	SetSizerAndFit(sizer);
 	Centre(wxBOTH);
+
+	okBtn->Bind(wxEVT_BUTTON, &GotoPositionDialog::OnClickOK, this);
+	cancelBtn->Bind(wxEVT_BUTTON, &GotoPositionDialog::OnClickCancel, this);
 }
 
 void GotoPositionDialog::OnClickCancel(wxCommandEvent&) {

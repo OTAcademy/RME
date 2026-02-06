@@ -41,7 +41,6 @@ protected:
 	wxButton* delete_button;
 	wxButton* select_raw_button;
 
-	DECLARE_EVENT_TABLE();
 };
 
 #endif

@@ -74,8 +74,8 @@ void MapPopupMenu::Update() {
 			bool hasCollection = false;
 			Item* topItem = nullptr;
 			Item* topSelectedItem = (selected_items.size() == 1 ? selected_items.back() : nullptr);
-			Creature* topCreature = tile->creature;
-			Spawn* topSpawn = tile->spawn;
+			Creature* topCreature = tile->creature.get();
+			Spawn* topSpawn = tile->spawn.get();
 
 			for (auto* item : tile->items) {
 				if (item->isWall()) {

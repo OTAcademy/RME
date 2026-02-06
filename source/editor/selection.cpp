@@ -94,7 +94,7 @@ void Selection::add(Tile* tile, Item* item) {
 
 	// Make a copy of the tile with the item selected
 	item->select();
-	Tile* new_tile = tile->deepCopy(editor.map);
+	std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 	item->deselect();
 
 	if (g_settings.getInteger(Config::BORDER_IS_GROUND)) {
@@ -103,7 +103,7 @@ void Selection::add(Tile* tile, Item* item) {
 		}
 	}
 
-	subsession->addChange(std::make_unique<Change>(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile.release()));
 }
 
 void Selection::add(Tile* tile, Spawn* spawn) {
@@ -117,10 +117,10 @@ void Selection::add(Tile* tile, Spawn* spawn) {
 
 	// Make a copy of the tile with the item selected
 	spawn->select();
-	Tile* new_tile = tile->deepCopy(editor.map);
+	std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 	spawn->deselect();
 
-	subsession->addChange(std::make_unique<Change>(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile.release()));
 }
 
 void Selection::add(Tile* tile, Creature* creature) {
@@ -134,20 +134,20 @@ void Selection::add(Tile* tile, Creature* creature) {
 
 	// Make a copy of the tile with the item selected
 	creature->select();
-	Tile* new_tile = tile->deepCopy(editor.map);
+	std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 	creature->deselect();
 
-	subsession->addChange(std::make_unique<Change>(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile.release()));
 }
 
 void Selection::add(Tile* tile) {
 	ASSERT(subsession);
 	ASSERT(tile);
 
-	Tile* new_tile = tile->deepCopy(editor.map);
+	std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 	new_tile->select();
 
-	subsession->addChange(std::make_unique<Change>(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile.release()));
 }
 
 void Selection::remove(Tile* tile, Item* item) {
@@ -157,7 +157,7 @@ void Selection::remove(Tile* tile, Item* item) {
 
 	bool tmp = item->isSelected();
 	item->deselect();
-	Tile* new_tile = tile->deepCopy(editor.map);
+	std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 	if (tmp) {
 		item->select();
 	}
@@ -165,7 +165,7 @@ void Selection::remove(Tile* tile, Item* item) {
 		new_tile->deselectGround();
 	}
 
-	subsession->addChange(std::make_unique<Change>(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile.release()));
 }
 
 void Selection::remove(Tile* tile, Spawn* spawn) {
@@ -175,12 +175,12 @@ void Selection::remove(Tile* tile, Spawn* spawn) {
 
 	bool tmp = spawn->isSelected();
 	spawn->deselect();
-	Tile* new_tile = tile->deepCopy(editor.map);
+	std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 	if (tmp) {
 		spawn->select();
 	}
 
-	subsession->addChange(std::make_unique<Change>(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile.release()));
 }
 
 void Selection::remove(Tile* tile, Creature* creature) {
@@ -190,21 +190,21 @@ void Selection::remove(Tile* tile, Creature* creature) {
 
 	bool tmp = creature->isSelected();
 	creature->deselect();
-	Tile* new_tile = tile->deepCopy(editor.map);
+	std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 	if (tmp) {
 		creature->select();
 	}
 
-	subsession->addChange(std::make_unique<Change>(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile.release()));
 }
 
 void Selection::remove(Tile* tile) {
 	ASSERT(subsession);
 
-	Tile* new_tile = tile->deepCopy(editor.map);
+	std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 	new_tile->deselect();
 
-	subsession->addChange(std::make_unique<Change>(new_tile));
+	subsession->addChange(std::make_unique<Change>(new_tile.release()));
 }
 
 void Selection::addInternal(Tile* tile) {
@@ -277,9 +277,9 @@ void Selection::clear() {
 
 	if (session) {
 		std::ranges::for_each(tiles, [&](Tile* tile) {
-			Tile* new_tile = tile->deepCopy(editor.map);
+			std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 			new_tile->deselect();
-			subsession->addChange(std::make_unique<Change>(new_tile));
+			subsession->addChange(std::make_unique<Change>(new_tile.release()));
 		});
 	} else {
 		std::ranges::for_each(tiles, [](Tile* tile) {

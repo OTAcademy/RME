@@ -29,17 +29,15 @@ EditorTab::~EditorTab() {
 	;
 }
 
-BEGIN_EVENT_TABLE(MapTabbook, wxPanel)
-EVT_AUINOTEBOOK_PAGE_CLOSE(wxID_ANY, MapTabbook::OnNotebookPageClose)
-EVT_AUINOTEBOOK_PAGE_CHANGED(wxID_ANY, MapTabbook::OnNotebookPageChanged)
-END_EVENT_TABLE()
-
 MapTabbook::MapTabbook(wxWindow* parent, wxWindowID id) :
 	wxPanel(parent, id, wxDefaultPosition, wxDefaultSize) {
 	wxSizer* wxz = newd wxBoxSizer(wxHORIZONTAL);
 	notebook = newd wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 	wxz->Add(notebook, 1, wxEXPAND);
 	SetSizerAndFit(wxz);
+
+	notebook->Bind(wxEVT_AUINOTEBOOK_PAGE_CLOSE, &MapTabbook::OnNotebookPageClose, this);
+	notebook->Bind(wxEVT_AUINOTEBOOK_PAGE_CHANGED, &MapTabbook::OnNotebookPageChanged, this);
 }
 
 MapTabbook::~MapTabbook() {

@@ -57,7 +57,7 @@ public:
 	bool hasWarnings() const {
 		return warnings.size() != 0;
 	}
-	const wxArrayString& getWarnings() const {
+	const std::vector<std::string>& getWarnings() const {
 		return warnings;
 	}
 	bool hasError() const {
@@ -133,7 +133,7 @@ protected:
 protected:
 	void removeSpawnInternal(Tile* tile);
 
-	wxArrayString warnings;
+	std::vector<std::string> warnings;
 	wxString error;
 
 	std::string name; // The map name, NOT the same as filename

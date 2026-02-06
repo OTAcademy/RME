@@ -14,7 +14,7 @@ public:
 	~VersionManager();
 
 	void UnloadVersion();
-	bool LoadVersion(ClientVersionID ver, wxString& error, wxArrayString& warnings, bool force = false);
+	bool LoadVersion(ClientVersionID ver, wxString& error, std::vector<std::string>& warnings, bool force = false);
 
 	// The current version loaded (returns CLIENT_VERSION_NONE if no version is loaded)
 	const ClientVersion& GetCurrentVersion() const;
@@ -30,7 +30,7 @@ public:
 	}
 
 private:
-	bool LoadDataFiles(wxString& error, wxArrayString& warnings);
+	bool LoadDataFiles(wxString& error, std::vector<std::string>& warnings);
 
 	ClientVersionID loaded_version;
 };

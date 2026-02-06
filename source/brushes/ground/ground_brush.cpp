@@ -56,7 +56,7 @@ GroundBrush::~GroundBrush() {
 	borders.clear();
 }
 
-bool GroundBrush::load(pugi::xml_node node, wxArrayString& warnings) {
+bool GroundBrush::load(pugi::xml_node node, std::vector<std::string>& warnings) {
 	return GroundBrushLoader::load(*this, node, warnings);
 }
 

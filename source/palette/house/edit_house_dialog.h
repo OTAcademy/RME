@@ -39,8 +39,6 @@ protected:
 	wxCheckBox* guildhall_field;
 
 	std::vector<uint32_t> town_ids_;
-
-	DECLARE_EVENT_TABLE();
 };
 
 #endif

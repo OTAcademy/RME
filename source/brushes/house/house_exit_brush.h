@@ -38,7 +38,7 @@ public:
 	}
 
 	// Not used
-	bool load(pugi::xml_node node, wxArrayString& warnings) override {
+	bool load(pugi::xml_node node, std::vector<std::string>& warnings) override {
 		return true;
 	}
 

@@ -37,7 +37,7 @@ class DCButton;
 class MapWindow : public wxPanel {
 public:
 	MapWindow(wxWindow* parent, Editor& editor);
-	virtual ~MapWindow();
+	~MapWindow() override;
 
 	// Event handlers
 	void OnSize(wxSizeEvent& event);
@@ -103,8 +103,6 @@ private:
 
 	friend class MainFrame;
 	friend class MapCanvas;
-
-	DECLARE_EVENT_TABLE()
 };
 
 // MapScrollbar, a special scrollbar that relays alot of events
@@ -113,8 +111,14 @@ private:
 class MapScrollBar : public wxScrollBar {
 public:
 	MapScrollBar(MapWindow* parent, wxWindowID id, long style, wxWindow* canvas) :
-		wxScrollBar(parent, id, wxDefaultPosition, wxDefaultSize, style), canvas(canvas) { }
-	virtual ~MapScrollBar() { }
+		wxScrollBar(parent, id, wxDefaultPosition, wxDefaultSize, style), canvas(canvas) {
+		Bind(wxEVT_KEY_DOWN, &MapScrollBar::OnKey, this);
+		Bind(wxEVT_KEY_UP, &MapScrollBar::OnKey, this);
+		Bind(wxEVT_CHAR, &MapScrollBar::OnKey, this);
+		Bind(wxEVT_SET_FOCUS, &MapScrollBar::OnFocus, this);
+		Bind(wxEVT_MOUSEWHEEL, &MapScrollBar::OnWheel, this);
+	}
+	~MapScrollBar() override { }
 
 	void OnKey(wxKeyEvent& event) {
 		canvas->GetEventHandler()->AddPendingEvent(event);
@@ -127,7 +131,6 @@ public:
 	}
 
 	wxWindow* canvas;
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

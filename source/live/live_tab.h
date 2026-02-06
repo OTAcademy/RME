@@ -71,8 +71,6 @@ protected:
 	wxGrid* user_list;
 
 	std::mutex clients_mutex;
-
-	DECLARE_EVENT_TABLE();
 };
 
 #endif

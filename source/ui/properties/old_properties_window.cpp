@@ -24,14 +24,6 @@
 // ============================================================================
 // Old Properties Window
 
-/*
-BEGIN_EVENT_TABLE(OldPropertiesWindow, wxDialog)
-EVT_SET_FOCUS(OldPropertiesWindow::OnFocusChange)
-EVT_BUTTON(wxID_OK, OldPropertiesWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, OldPropertiesWindow::OnClickCancel)
-END_EVENT_TABLE()
-*/
-
 OldPropertiesWindow::OldPropertiesWindow(wxWindow* win_parent, const Map* map, const Tile* tile_parent, Item* item, wxPoint pos) :
 	ObjectPropertiesWindowBase(win_parent, "Item Properties", map, tile_parent, item, pos),
 	count_field(nullptr),

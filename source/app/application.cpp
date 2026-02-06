@@ -47,36 +47,6 @@
 
 #include "../brushes/icon/editor_icon.xpm"
 
-BEGIN_EVENT_TABLE(MapWindow, wxPanel)
-EVT_SIZE(MapWindow::OnSize)
-
-EVT_COMMAND_SCROLL_TOP(MAP_WINDOW_HSCROLL, MapWindow::OnScroll)
-EVT_COMMAND_SCROLL_BOTTOM(MAP_WINDOW_HSCROLL, MapWindow::OnScroll)
-EVT_COMMAND_SCROLL_THUMBTRACK(MAP_WINDOW_HSCROLL, MapWindow::OnScroll)
-EVT_COMMAND_SCROLL_LINEUP(MAP_WINDOW_HSCROLL, MapWindow::OnScrollLineUp)
-EVT_COMMAND_SCROLL_LINEDOWN(MAP_WINDOW_HSCROLL, MapWindow::OnScrollLineDown)
-EVT_COMMAND_SCROLL_PAGEUP(MAP_WINDOW_HSCROLL, MapWindow::OnScrollPageUp)
-EVT_COMMAND_SCROLL_PAGEDOWN(MAP_WINDOW_HSCROLL, MapWindow::OnScrollPageDown)
-
-EVT_COMMAND_SCROLL_TOP(MAP_WINDOW_VSCROLL, MapWindow::OnScroll)
-EVT_COMMAND_SCROLL_BOTTOM(MAP_WINDOW_VSCROLL, MapWindow::OnScroll)
-EVT_COMMAND_SCROLL_THUMBTRACK(MAP_WINDOW_VSCROLL, MapWindow::OnScroll)
-EVT_COMMAND_SCROLL_LINEUP(MAP_WINDOW_VSCROLL, MapWindow::OnScrollLineUp)
-EVT_COMMAND_SCROLL_LINEDOWN(MAP_WINDOW_VSCROLL, MapWindow::OnScrollLineDown)
-EVT_COMMAND_SCROLL_PAGEUP(MAP_WINDOW_VSCROLL, MapWindow::OnScrollPageUp)
-EVT_COMMAND_SCROLL_PAGEDOWN(MAP_WINDOW_VSCROLL, MapWindow::OnScrollPageDown)
-
-EVT_BUTTON(MAP_WINDOW_GEM, MapWindow::OnGem)
-END_EVENT_TABLE()
-
-BEGIN_EVENT_TABLE(MapScrollBar, wxScrollBar)
-EVT_KEY_DOWN(MapScrollBar::OnKey)
-EVT_KEY_UP(MapScrollBar::OnKey)
-EVT_CHAR(MapScrollBar::OnKey)
-EVT_SET_FOCUS(MapScrollBar::OnFocus)
-EVT_MOUSEWHEEL(MapScrollBar::OnWheel)
-END_EVENT_TABLE()
-
 wxIMPLEMENT_APP(Application);
 
 Application::~Application() {
@@ -111,9 +81,9 @@ bool Application::OnInit() {
 	spdlog::flush_on(spdlog::level::info);
 	spdlog::info("RME starting up - logging enabled");
 
-	std::cout << "This is free software: you are free to change and redistribute it." << std::endl;
-	std::cout << "There is NO WARRANTY, to the extent permitted by law." << std::endl;
-	std::cout << "Review COPYING in RME distribution for details." << std::endl;
+	spdlog::info("This is free software: you are free to change and redistribute it.");
+	spdlog::info("There is NO WARRANTY, to the extent permitted by law.");
+	spdlog::info("Review COPYING in RME distribution for details.");
 
 	// Discover data directory
 	FileSystem::DiscoverDataDirectory("clients.xml");
@@ -364,4 +334,3 @@ bool Application::ParseCommandLineMap(wxString& fileName) {
 	}
 	return false;
 }
-

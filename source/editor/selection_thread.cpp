@@ -24,7 +24,6 @@
 #include "editor/action.h"
 
 SelectionThread::SelectionThread(Editor& editor, Position start, Position end) :
-	wxThread(wxTHREAD_JOINABLE),
 	editor(editor),
 	start(start),
 	end(end),
@@ -37,12 +36,17 @@ SelectionThread::~SelectionThread() {
 	////
 }
 
-void SelectionThread::Execute() {
-	Create();
-	Run();
+void SelectionThread::Start() {
+	thread = std::thread(&SelectionThread::Work, this);
 }
 
-wxThread::ExitCode SelectionThread::Entry() {
+void SelectionThread::Wait() {
+	if (thread.joinable()) {
+		thread.join();
+	}
+}
+
+void SelectionThread::Work() {
 	selection.start(Selection::SUBTHREAD);
 	for (int z = start.z; z >= end.z; --z) {
 		for (int x = start.x; x <= end.x; ++x) {
@@ -66,6 +70,4 @@ wxThread::ExitCode SelectionThread::Entry() {
 	// Since SelectionThread is friend of Selection, we can access private members of selection instance
 	result = std::move(selection.subsession);
 	selection.finish(Selection::SUBTHREAD);
-
-	return nullptr;
 }

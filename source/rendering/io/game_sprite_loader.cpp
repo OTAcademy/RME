@@ -9,15 +9,15 @@
 #include "io/loaders/dat_loader.h"
 #include "io/loaders/spr_loader.h"
 
-bool GameSpriteLoader::LoadOTFI(GraphicManager* manager, const wxFileName& filename, wxString& error, wxArrayString& warnings) {
+bool GameSpriteLoader::LoadOTFI(GraphicManager* manager, const wxFileName& filename, wxString& error, std::vector<std::string>& warnings) {
 	return OtfiLoader::Load(manager, filename, error, warnings);
 }
 
-bool GameSpriteLoader::LoadSpriteMetadata(GraphicManager* manager, const wxFileName& datafile, wxString& error, wxArrayString& warnings) {
+bool GameSpriteLoader::LoadSpriteMetadata(GraphicManager* manager, const wxFileName& datafile, wxString& error, std::vector<std::string>& warnings) {
 	return DatLoader::LoadMetadata(manager, datafile, error, warnings);
 }
 
-bool GameSpriteLoader::LoadSpriteData(GraphicManager* manager, const wxFileName& datafile, wxString& error, wxArrayString& warnings) {
+bool GameSpriteLoader::LoadSpriteData(GraphicManager* manager, const wxFileName& datafile, wxString& error, std::vector<std::string>& warnings) {
 	return SprLoader::LoadData(manager, datafile, error, warnings);
 }
 

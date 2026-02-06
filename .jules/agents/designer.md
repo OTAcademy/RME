@@ -135,7 +135,7 @@ Create PR titled `✨ Designer: [Your Description]`.
 - Where should this live? (which module?)
 - Am I about to duplicate something?
 - Am I using modern C++ patterns?
-- **CRITICAL**: Am I using modern wxWidgets patterns? You **MUST** strictly follow the [wxWidgets UI/UX Architect Skill](../../skills/wxwidgets/SKILL.md) for all UI work.
+- **CRITICAL**: You **MUST** consult the [RME Modern UI System Skill](../skills/SKILL.md) before implementing ANY GUI changes. This skill documents the golden standard for wxWidgets and NanoVG usage, established by the "Advanced Replace Tool".
 
 ## 📜 THE MANTRA
 **SEARCH → REUSE → REFACTOR → ORGANIZE → MODERNIZE → IMPLEMENT**

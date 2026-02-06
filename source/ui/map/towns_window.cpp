@@ -10,15 +10,6 @@
 #include <algorithm>
 #include <iterator>
 
-BEGIN_EVENT_TABLE(EditTownsDialog, wxDialog)
-EVT_LISTBOX(EDIT_TOWNS_LISTBOX, EditTownsDialog::OnListBoxChange)
-EVT_BUTTON(EDIT_TOWNS_SELECT_TEMPLE, EditTownsDialog::OnClickSelectTemplePosition)
-EVT_BUTTON(EDIT_TOWNS_ADD, EditTownsDialog::OnClickAdd)
-EVT_BUTTON(EDIT_TOWNS_REMOVE, EditTownsDialog::OnClickRemove)
-EVT_BUTTON(wxID_OK, EditTownsDialog::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, EditTownsDialog::OnClickCancel)
-END_EVENT_TABLE()
-
 EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 	wxDialog(parent, wxID_ANY, "Towns", wxDefaultPosition, wxSize(280, 330)),
 	editor(editor) {
@@ -80,6 +71,13 @@ EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 	SetSizerAndFit(sizer);
 	Centre(wxBOTH);
 	BuildListBox(true);
+
+	town_listbox->Bind(wxEVT_LISTBOX, &EditTownsDialog::OnListBoxChange, this);
+	addBtn->Bind(wxEVT_BUTTON, &EditTownsDialog::OnClickAdd, this);
+	remove_button->Bind(wxEVT_BUTTON, &EditTownsDialog::OnClickRemove, this);
+	select_position_button->Bind(wxEVT_BUTTON, &EditTownsDialog::OnClickSelectTemplePosition, this);
+	okBtn->Bind(wxEVT_BUTTON, &EditTownsDialog::OnClickOK, this);
+	cancelBtn->Bind(wxEVT_BUTTON, &EditTownsDialog::OnClickCancel, this);
 }
 
 EditTownsDialog::~EditTownsDialog() = default;
@@ -87,7 +85,7 @@ EditTownsDialog::~EditTownsDialog() = default;
 void EditTownsDialog::BuildListBox(bool doselect) {
 	long tmplong = 0;
 	max_town_id = 0;
-	wxArrayString town_name_list;
+	std::vector<std::string> town_name_list;
 	uint32_t selection_before = 0;
 
 	if (doselect && id_field->GetValue().ToLong(&tmplong)) {
@@ -102,13 +100,16 @@ void EditTownsDialog::BuildListBox(bool doselect) {
 	}
 
 	for (const auto& town : town_list) {
-		town_name_list.Add(wxstr(town->getName()));
+		town_name_list.push_back(town->getName());
 		if (max_town_id < town->getID()) {
 			max_town_id = town->getID();
 		}
 	}
 
-	town_listbox->Set(town_name_list);
+	town_listbox->Clear();
+	for (const auto& name : town_name_list) {
+		town_listbox->Append(name);
+	}
 	remove_button->Enable(town_listbox->GetCount() != 0);
 	select_position_button->Enable(false);
 

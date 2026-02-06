@@ -42,7 +42,7 @@ public:
 		return static_cast<GroundBrush*>(this);
 	}
 
-	bool load(pugi::xml_node node, wxArrayString& warnings) override;
+	bool load(pugi::xml_node node, std::vector<std::string>& warnings) override;
 
 	void draw(BaseMap* map, Tile* tile, void* parameter) override;
 	void undraw(BaseMap* map, Tile* tile) override;

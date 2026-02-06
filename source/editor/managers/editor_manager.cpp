@@ -295,7 +295,7 @@ bool EditorManager::LoadMap(const FileName& fileName) {
 
 		if (g_version.GetCurrentVersionID() != ver.client) {
 			wxString error;
-			wxArrayString warnings;
+			std::vector<std::string> warnings;
 			if (CloseAllEditors()) {
 				if (!g_version.LoadVersion(ver.client, error, warnings)) {
 					g_status.SetStatusText("Failed to load map.");

@@ -39,7 +39,7 @@ public:
 		return static_cast<TableBrush*>(this);
 	}
 
-	bool load(pugi::xml_node node, wxArrayString& warnings) override;
+	bool load(pugi::xml_node node, std::vector<std::string>& warnings) override;
 
 	bool canDraw(BaseMap* map, const Position& position) const override;
 	void draw(BaseMap* map, Tile* tile, void* parameter) override;

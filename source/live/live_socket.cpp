@@ -133,12 +133,11 @@ void LiveSocket::sendNode(uint32_t clientId, MapNode* node, int32_t ndx, int32_t
 		message.write<uint8_t>(0x00);
 	} else {
 		node->setVisible(clientId, underground, true);
-		Floor** floors = node->getFloors();
 
 		uint16_t sendMask = 0;
 		for (uint32_t z = 0; z < MAP_LAYERS; ++z) {
 			uint32_t bit = 1 << z;
-			if (floors[z] && testFlags(floorMask, bit)) {
+			if (node->getFloor(z) && testFlags(floorMask, bit)) {
 				sendMask |= bit;
 			}
 		}
@@ -146,7 +145,7 @@ void LiveSocket::sendNode(uint32_t clientId, MapNode* node, int32_t ndx, int32_t
 		message.write<uint16_t>(sendMask);
 		for (uint32_t z = 0; z < MAP_LAYERS; ++z) {
 			if (testFlags(sendMask, static_cast<uint64_t>(1) << z)) {
-				sendFloor(message, floors[z]);
+				sendFloor(message, node->getFloor(z));
 			}
 		}
 	}

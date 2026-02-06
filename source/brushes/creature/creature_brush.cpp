@@ -89,8 +89,7 @@ bool CreatureBrush::canDraw(BaseMap* map, const Position& position) const {
 }
 
 void CreatureBrush::undraw(BaseMap* map, Tile* tile) {
-	delete tile->creature;
-	tile->creature = nullptr;
+	tile->creature.reset();
 }
 
 void CreatureBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
@@ -105,9 +104,9 @@ void CreatureBrush::draw_creature(BaseMap* map, Tile* tile) {
 		if (creature_type) {
 			if (tile->spawn == nullptr && tile->getLocation()->getSpawnCount() == 0) {
 				// manually place spawn on location
-				tile->spawn = newd Spawn(1);
+				tile->spawn = std::make_unique<Spawn>(1);
 			}
-			tile->creature = newd Creature(creature_type);
+			tile->creature = std::make_unique<Creature>(creature_type);
 			tile->creature->setSpawnTime(g_gui.GetSpawnTime());
 		}
 	}
