@@ -69,7 +69,7 @@ public:
 	~Tile();
 
 	// Argument is a the map to allocate the tile from
-	Tile* deepCopy(BaseMap& map);
+	std::unique_ptr<Tile> deepCopy(BaseMap& map);
 
 	// The location of the tile
 	// Stores state that remains between the tile being moved (like house exits)

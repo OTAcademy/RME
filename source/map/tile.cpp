@@ -109,8 +109,8 @@ Tile::~Tile() {
 	delete ground;
 }
 
-Tile* Tile::deepCopy(BaseMap& map) {
-	Tile* copy = map.allocator.allocateTile(location);
+std::unique_ptr<Tile> Tile::deepCopy(BaseMap& map) {
+	std::unique_ptr<Tile> copy(map.allocator.allocateTile(location));
 	copy->flags = flags;
 	copy->minimapColor = minimapColor;
 	copy->house_id = house_id;

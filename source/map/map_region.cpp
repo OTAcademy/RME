@@ -198,14 +198,14 @@ TileLocation* MapNode::createTile(int x, int y, int z) {
 	return &f->locs[(x & 3) * 4 + (y & 3)];
 }
 
-Tile* MapNode::setTile(int x, int y, int z, Tile* newtile) {
+std::unique_ptr<Tile> MapNode::setTile(int x, int y, int z, Tile* newtile) {
 	Floor* f = createFloor(x, y, z);
 
 	int offset_x = x & 3;
 	int offset_y = y & 3;
 
 	TileLocation* tmp = &f->locs[offset_x * 4 + offset_y];
-	Tile* oldtile = tmp->tile.release();
+	std::unique_ptr<Tile> oldtile = std::move(tmp->tile);
 	tmp->tile.reset(newtile);
 
 	if (newtile && !oldtile) {

@@ -104,9 +104,9 @@ void CreatureBrush::draw_creature(BaseMap* map, Tile* tile) {
 		if (creature_type) {
 			if (tile->spawn == nullptr && tile->getLocation()->getSpawnCount() == 0) {
 				// manually place spawn on location
-				tile->spawn.reset(newd Spawn(1));
+				tile->spawn = std::make_unique<Spawn>(1);
 			}
-			tile->creature.reset(newd Creature(creature_type));
+			tile->creature = std::make_unique<Creature>(creature_type);
 			tile->creature->setSpawnTime(g_gui.GetSpawnTime());
 		}
 	}
