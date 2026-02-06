@@ -124,12 +124,12 @@ bool VersionManager::LoadDataFiles(wxString& error, std::vector<std::string>& wa
 
 	g_loading.SetLoadDone(30, "Loading items.xml ...");
 	if (!g_items.loadFromGameXml(base_data_path + "items.xml", error, warnings)) {
-		warnings.push_back("Couldn't load items.xml: " + std::string(error.mb_str()));
+		warnings.push_back(std::format("Couldn't load items.xml: {}", error.ToStdString()));
 	}
 
 	g_loading.SetLoadDone(45, "Loading creatures.xml ...");
 	if (!g_creatures.loadFromXML(base_data_path + "creatures.xml", true, error, warnings)) {
-		warnings.push_back("Couldn't load creatures.xml: " + std::string(error.mb_str()));
+		warnings.push_back(std::format("Couldn't load creatures.xml: {}", error.ToStdString()));
 	}
 
 	// g_loading.SetLoadDone(45, "Loading user creatures.xml ...");

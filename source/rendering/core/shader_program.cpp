@@ -1,7 +1,5 @@
 #include "rendering/core/shader_program.h"
 #include <vector>
-#include <vector>
-#include <iostream>
 #include <spdlog/spdlog.h>
 
 ShaderProgram::ShaderProgram() :

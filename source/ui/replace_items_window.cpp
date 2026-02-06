@@ -66,9 +66,8 @@ void ReplaceItemsButton::SetItemId(uint16_t id) {
 
 ReplaceItemsListBox::ReplaceItemsListBox(wxWindow* parent) :
 	wxVListBox(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLB_SINGLE) {
-	m_arrow_bitmap = wxArtProvider::GetBitmap(ART_POSITION_GO, wxART_TOOLBAR, wxSize(16, 16)); // Keep specific size for bitmap or use Bundle if available, but for now fixed size is ok for bitmap resources if they are legacy. Wait, plan says "Replace ... with wxBitmapBundle ... or use FromDIP". I will use FromDIP for the size if I keep GetBitmap. But GetBitmap usually takes raw pixels. I will leave GetBitmap size as is if it pulls from specific resources, but wait, 16x16 is standard. I'll focus on the window sizing first.
-	m_arrow_bitmap = wxArtProvider::GetBitmap(ART_POSITION_GO, wxART_TOOLBAR, parent->FromDIP(wxSize(16, 16)));
-	m_flag_bitmap = wxArtProvider::GetBitmap(ART_PZ_BRUSH, wxART_TOOLBAR, parent->FromDIP(wxSize(16, 16)));
+	m_arrow_bitmap = wxArtProvider::GetBitmap(ART_POSITION_GO, wxART_TOOLBAR, FROM_DIP(parent, wxSize(16, 16)));
+	m_flag_bitmap = wxArtProvider::GetBitmap(ART_PZ_BRUSH, wxART_TOOLBAR, FROM_DIP(parent, wxSize(16, 16)));
 }
 
 bool ReplaceItemsListBox::AddItem(const ReplacingItem& item) {

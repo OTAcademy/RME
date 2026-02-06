@@ -43,8 +43,8 @@ ImportMapWindow::ImportMapWindow(wxWindow* parent, Editor& editor) :
 	// Import options
 	std::vector<std::string> house_choices;
 	house_choices.push_back("Smart Merge");
-	house_choices.push_back("Insert");
 	house_choices.push_back("Merge");
+	house_choices.push_back("Insert");
 	house_choices.push_back("Don't Import");
 
 	// House options

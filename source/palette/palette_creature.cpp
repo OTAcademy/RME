@@ -61,8 +61,6 @@ CreaturePalettePanel::CreaturePalettePanel(wxWindow* parent, wxWindowID id) :
 
 	SetSizerAndFit(topsizer);
 
-	SetSizerAndFit(topsizer);
-
 	Bind(wxEVT_CHOICEBOOK_PAGE_CHANGING, &CreaturePalettePanel::OnSwitchingPage, this);
 	Bind(wxEVT_CHOICEBOOK_PAGE_CHANGED, &CreaturePalettePanel::OnPageChanged, this);
 

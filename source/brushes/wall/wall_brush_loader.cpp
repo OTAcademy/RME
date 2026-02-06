@@ -97,7 +97,7 @@ bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_no
 			if (it != alignment_map.end()) {
 				alignment = it->second;
 			} else {
-				warnings.push_back(std::string((wxString("Unknown wall alignment '") + wxstr(typeString) + "'\n").mb_str()));
+				warnings.push_back((wxString("Unknown wall alignment '") + wxstr(typeString) + "'\n").ToStdString());
 				continue;
 			}
 
@@ -193,7 +193,7 @@ bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_no
 						if (doorIt != door_type_map.end()) {
 							specificType = doorIt->second;
 						} else {
-							warnings.push_back(std::string((wxString("Unknown door type '") + wxstr(type) + "'\n").mb_str()));
+							warnings.push_back((wxString("Unknown door type '") + wxstr(type) + "'\n").ToStdString());
 							break;
 						}
 					}
@@ -222,17 +222,17 @@ bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_no
 				if (friendBrush) {
 					brush->friends.push_back(friendBrush->getID());
 				} else {
-					warnings.push_back(std::string((wxString("Brush '") + wxstr(name) + "' is not defined.").mb_str()));
+					warnings.push_back((wxString("Brush '") + wxstr(name) + "' is not defined.").ToStdString());
 					continue;
 				}
 
 				if (childNode.attribute("redirect").as_bool()) {
 					if (!friendBrush->isWall()) {
-						warnings.push_back(std::string((wxString("Wall brush redirect link: '") + wxstr(name) + "' is not a wall brush.").mb_str()));
+						warnings.push_back((wxString("Wall brush redirect link: '") + wxstr(name) + "' is not a wall brush.").ToStdString());
 					} else if (!brush->redirect_to) {
 						brush->redirect_to = friendBrush->asWall();
 					} else {
-						warnings.push_back(std::string((wxString("Wall brush '") + wxstr(brush->getName()) + "' has more than one redirect link.").mb_str()));
+						warnings.push_back((wxString("Wall brush '") + wxstr(brush->getName()) + "' has more than one redirect link.").ToStdString());
 					}
 				}
 			}

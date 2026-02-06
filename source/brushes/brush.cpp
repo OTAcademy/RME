@@ -113,7 +113,7 @@ bool Brushes::unserializeBrush(pugi::xml_node node, std::vector<std::string>& wa
 
 	const std::string& brushName = attribute.as_string();
 	if (brushName == "all" || brushName == "none") {
-		warnings.push_back(std::string((wxString("Using reserved brushname \"") << wxstr(brushName) << "\".").mb_str()));
+		warnings.push_back(std::format("Using reserved brushname \"{}\".", brushName));
 		return false;
 	}
 
@@ -140,7 +140,7 @@ bool Brushes::unserializeBrush(pugi::xml_node node, std::vector<std::string>& wa
 		if (auto it = typeMap.find(brushType); it != typeMap.end()) {
 			brush = it->second();
 		} else {
-			warnings.push_back(std::string(wxstr(std::format("Unknown brush type {}", brushType)).mb_str()));
+			warnings.push_back(std::format("Unknown brush type {}", brushType));
 			return false;
 		}
 
@@ -157,12 +157,12 @@ bool Brushes::unserializeBrush(pugi::xml_node node, std::vector<std::string>& wa
 	brush->load(node, subWarnings);
 
 	if (!subWarnings.empty()) {
-		warnings.push_back(std::string((wxString("Errors while loading brush \"") << wxstr(brush->getName()) << "\"").mb_str()));
+		warnings.push_back((wxString("Errors while loading brush \"") << wxstr(brush->getName()) << "\"").ToStdString());
 		warnings.insert(warnings.end(), subWarnings.begin(), subWarnings.end());
 	}
 
 	if (brush->getName() == "all" || brush->getName() == "none") {
-		warnings.push_back(std::string(wxstr(std::format("Using reserved brushname '{}'.", brush->getName())).mb_str()));
+		warnings.push_back(std::format("Using reserved brushname '{}'.", brush->getName()));
 		delete brush;
 		return false;
 	}

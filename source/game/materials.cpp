@@ -70,13 +70,13 @@ bool Materials::loadMaterials(const FileName& identifier, wxString& error, std::
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(identifier.GetFullPath().mb_str());
 	if (!result) {
-		warnings.push_back(std::string((wxString("Could not open ") + identifier.GetFullName() + " (file not found or syntax error)").mb_str()));
+		warnings.push_back((wxString("Could not open ") + identifier.GetFullName() + " (file not found or syntax error)").ToStdString());
 		return false;
 	}
 
 	pugi::xml_node node = doc.child("materials");
 	if (!node) {
-		warnings.push_back(std::string((identifier.GetFullName() + ": Invalid rootheader.").mb_str()));
+		warnings.push_back((identifier.GetFullName() + ": Invalid rootheader.").ToStdString());
 		return false;
 	}
 
@@ -111,37 +111,37 @@ bool Materials::loadExtensions(FileName directoryName, wxString& error, std::vec
 		pugi::xml_document doc;
 		pugi::xml_parse_result result = doc.load_file(fn.GetFullPath().mb_str());
 		if (!result) {
-			warnings.push_back(std::string((wxString("Could not open ") + filename + " (file not found or syntax error)").mb_str()));
+			warnings.push_back((wxString("Could not open ") + filename + " (file not found or syntax error)").ToStdString());
 			continue;
 		}
 
 		pugi::xml_node extensionNode = doc.child("materialsextension");
 		if (!extensionNode) {
-			warnings.push_back(std::string((filename + ": Invalid rootheader.").mb_str()));
+			warnings.push_back((filename + ": Invalid rootheader.").ToStdString());
 			continue;
 		}
 
 		pugi::xml_attribute attribute;
 		if (!(attribute = extensionNode.attribute("name"))) {
-			warnings.push_back(std::string((filename + ": Couldn't read extension name.").mb_str()));
+			warnings.push_back((filename + ": Couldn't read extension name.").ToStdString());
 			continue;
 		}
 
 		const std::string& extensionName = attribute.as_string();
 		if (!(attribute = extensionNode.attribute("author"))) {
-			warnings.push_back(std::string((filename + ": Couldn't read extension name.").mb_str()));
+			warnings.push_back((filename + ": Couldn't read extension name.").ToStdString());
 			continue;
 		}
 
 		const std::string& extensionAuthor = attribute.as_string();
 		if (!(attribute = extensionNode.attribute("description"))) {
-			warnings.push_back(std::string((filename + ": Couldn't read extension name.").mb_str()));
+			warnings.push_back((filename + ": Couldn't read extension name.").ToStdString());
 			continue;
 		}
 
 		const std::string& extensionDescription = attribute.as_string();
 		if (extensionName.empty() || extensionAuthor.empty() || extensionDescription.empty()) {
-			warnings.push_back(std::string((filename + ": Couldn't read extension attributes (name, author, description).").mb_str()));
+			warnings.push_back((filename + ": Couldn't read extension attributes (name, author, description).").ToStdString());
 			continue;
 		}
 
@@ -180,7 +180,7 @@ bool Materials::loadExtensions(FileName directoryName, wxString& error, std::vec
 				duplicate = std::unique(materialExtension->version_list.begin(), materialExtension->version_list.end());
 			}
 		} else {
-			warnings.push_back(std::string((filename + ": Extension is not available for any version.").mb_str()));
+			warnings.push_back((filename + ": Extension is not available for any version.").ToStdString());
 		}
 
 		extensions.push_back(materialExtension);
@@ -208,19 +208,19 @@ bool Materials::unserializeMaterials(const FileName& filename, pugi::xml_node no
 
 			wxString subError;
 			if (!loadMaterials(includeName, subError, warnings)) {
-				warnings.push_back(std::string((wxString("Error while loading file \"") + includeName.GetFullName() + "\": " + subError).mb_str()));
+				warnings.push_back((wxString("Error while loading file \"") + includeName.GetFullName() + "\": " + subError).ToStdString());
 			}
 		} else if (childName == "metaitem") {
 			g_items.loadMetaItem(childNode);
 		} else if (childName == "border") {
 			g_brushes.unserializeBorder(childNode, warnings);
 			if (warning.size()) {
-				warnings.push_back(std::string((wxString("materials.xml: ") + warning).mb_str()));
+				warnings.push_back((wxString("materials.xml: ") + warning).ToStdString());
 			}
 		} else if (childName == "brush") {
 			g_brushes.unserializeBrush(childNode, warnings);
 			if (warning.size()) {
-				warnings.push_back(std::string((wxString("materials.xml: ") + warning).mb_str()));
+				warnings.push_back((wxString("materials.xml: ") + warning).ToStdString());
 			}
 		} else if (childName == "tileset") {
 			unserializeTileset(childNode, warnings);

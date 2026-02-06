@@ -141,7 +141,7 @@ void Tileset::loadCategory(pugi::xml_node node, std::vector<std::string>& warnin
 				brush->flagAsVisible();
 				category->brushlist.push_back(brush);
 			} else {
-				warnings.push_back(std::string((wxString("Unknown creature type \"") << wxstr(creatureName) << "\"").mb_str()));
+				warnings.push_back((wxString("Unknown creature type \"") << wxstr(creatureName) << "\"").ToStdString());
 			}
 		}
 	}
@@ -208,7 +208,7 @@ void TilesetCategory::loadBrush(pugi::xml_node node, std::vector<std::string>& w
 				brush->setCollection();
 			}
 		} else {
-			warnings.push_back(std::string((wxString("Brush \"") + wxString(attribute.as_string()) + "\" doesn't exist.").mb_str()));
+			warnings.push_back((wxString("Brush \"") + wxString(attribute.as_string()) + "\" doesn't exist.").ToStdString());
 		}
 	} else if (nodeName == "item") {
 		uint16_t fromId = 0, toId = 0;

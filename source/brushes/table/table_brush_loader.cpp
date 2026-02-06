@@ -102,6 +102,6 @@ uint32_t TableBrushLoader::getAlignment(const std::string& alignString, std::vec
 		}
 	}
 
-	warnings.push_back(std::string((wxString("Unknown table alignment '") + wxstr(alignString) + "'\n").mb_str()));
+	warnings.push_back((wxString("Unknown table alignment '") + wxstr(alignString) + "'\n").ToStdString());
 	return 0xFFFFFFFF;
 }

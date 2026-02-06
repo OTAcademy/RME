@@ -175,7 +175,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, std::vecto
 				} else {
 					Brush* tobrush = g_brushes.getBrush(value);
 					if (!tobrush) {
-						warnings.push_back(std::string((wxString("To brush ") + wxstr(value) + " doesn't exist.").mb_str()));
+						warnings.push_back((wxString("To brush ") + wxstr(value) + " doesn't exist.").ToStdString());
 						if (autoBorder && autoBorder->ground) {
 							delete autoBorder;
 						}
@@ -375,7 +375,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, std::vecto
 					if (otherBrush) {
 						brush.friends.push_back(otherBrush->getID());
 					} else {
-						warnings.push_back(std::string((wxString("Brush '") + wxstr(name) + "' is not defined.").mb_str()));
+						warnings.push_back((wxString("Brush '") + wxstr(name) + "' is not defined.").ToStdString());
 					}
 				}
 			}
@@ -390,7 +390,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, std::vecto
 					if (otherBrush) {
 						brush.friends.push_back(otherBrush->getID());
 					} else {
-						warnings.push_back(std::string((wxString("Brush '") + wxstr(name) + "' is not defined.").mb_str()));
+						warnings.push_back((wxString("Brush '") + wxstr(name) + "' is not defined.").ToStdString());
 					}
 				}
 			}

@@ -42,7 +42,7 @@ bool MenuBarLoader::Load(const FileName& path, wxMenuBar* menubar, std::map<Menu
 #endif
 		} else if (i) {
 			delete i;
-			warnings.push_back(std::string((path.GetFullName() + ": Only menus can be subitems of main menu").mb_str()));
+			warnings.push_back((path.GetFullName() + ": Only menus can be subitems of main menu").ToStdString());
 		}
 	}
 
@@ -105,7 +105,7 @@ wxObject* MenuBarLoader::LoadItem(pugi::xml_node node, wxMenu* parent, std::map<
 
 		auto it = actions.find(action);
 		if (it == actions.end()) {
-			warnings.push_back(std::string(("Invalid action type '" + wxstr(action) + "'.").mb_str()));
+			warnings.push_back(("Invalid action type '" + wxstr(action) + "'.").ToStdString());
 			return nullptr;
 		}
 

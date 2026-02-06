@@ -65,7 +65,7 @@ namespace IngamePreview {
 
 	void IngamePreviewCanvas::OnPaint(wxPaintEvent& event) {
 		// Validating the paint event prevents infinite paint loops on some platforms
-		wxPaintDC dc(this);
+		wxAutoBufferedPaintDC dc(this);
 
 		if (auto* tab = g_gui.GetCurrentMapTab()) {
 			Render(tab->GetEditor());

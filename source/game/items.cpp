@@ -267,7 +267,7 @@ bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::v
 
 				case ITEM_ATTR_LIGHT2: {
 					if (datalen != sizeof(lightBlock2)) {
-						warnings.push_back(std::string(("items.otb: Unexpected data length of item light (2) block (Should be " + i2ws(sizeof(lightBlock2)) + " bytes)").mb_str()));
+						warnings.push_back(("items.otb: Unexpected data length of item light (2) block (Should be " + i2ws(sizeof(lightBlock2)) + " bytes)").ToStdString());
 						break;
 					}
 
@@ -539,7 +539,7 @@ bool ItemDatabase::loadFromOtbVer2(BinaryNode* itemNode, wxString& error, std::v
 
 				case ITEM_ATTR_LIGHT2: {
 					if (datalen != sizeof(lightBlock2)) {
-						warnings.push_back(std::string(("items.otb: Unexpected data length of item light (2) block (Should be " + i2ws(sizeof(lightBlock2)) + " bytes)").mb_str()));
+						warnings.push_back(("items.otb: Unexpected data length of item light (2) block (Should be " + i2ws(sizeof(lightBlock2)) + " bytes)").ToStdString());
 						break;
 					}
 
@@ -700,7 +700,7 @@ bool ItemDatabase::loadFromOtbVer3(BinaryNode* itemNode, wxString& error, std::v
 
 				case ITEM_ATTR_LIGHT2: {
 					if (datalen != sizeof(lightBlock2)) {
-						warnings.push_back(std::string(("items.otb: Unexpected data length of item light (2) block (Should be " + i2ws(sizeof(lightBlock2)) + " bytes)").mb_str()));
+						warnings.push_back(("items.otb: Unexpected data length of item light (2) block (Should be " + i2ws(sizeof(lightBlock2)) + " bytes)").ToStdString());
 						break;
 					}
 					if (!itemNode->skip(4)) { // Just skip two bytes, we don't need light

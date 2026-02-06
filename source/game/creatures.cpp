@@ -70,7 +70,7 @@ CreatureType* CreatureType::loadFromXML(pugi::xml_node node, std::vector<std::st
 
 	const std::string& tmpType = attribute.as_string();
 	if (tmpType != "monster" && tmpType != "npc") {
-		warnings.push_back(std::string((wxString("Invalid type tag of creature node \"") + wxstr(tmpType) + "\"").mb_str()));
+		warnings.push_back((wxString("Invalid type tag of creature node \"") + wxstr(tmpType) + "\"").ToStdString());
 		return nullptr;
 	}
 
@@ -87,7 +87,7 @@ CreatureType* CreatureType::loadFromXML(pugi::xml_node node, std::vector<std::st
 		ct->outfit.lookType = attribute.as_int();
 
 		if (g_gui.gfx.getCreatureSprite(ct->outfit.lookType) == nullptr) {
-			warnings.push_back(std::string((wxString("Invalid creature \"") + wxstr(ct->name) + "\" look type #" + std::to_string(ct->outfit.lookType)).mb_str()));
+			warnings.push_back((wxString("Invalid creature \"") + wxstr(ct->name) + "\" look type #" + std::to_string(ct->outfit.lookType)).ToStdString());
 		}
 	} else {
 		// Log if no looktype is present (defaulting to 0)
@@ -310,7 +310,7 @@ bool CreatureDatabase::loadFromXML(const FileName& filename, bool standard, wxSt
 		if (creatureType) {
 			creatureType->standard = standard;
 			if ((*this)[creatureType->name]) {
-				warnings.push_back(std::string((wxString("Duplicate creature type name \"") + wxstr(creatureType->name) + "\"! Discarding...").mb_str()));
+				warnings.push_back((wxString("Duplicate creature type name \"") + wxstr(creatureType->name) + "\"! Discarding...").ToStdString());
 				delete creatureType;
 			} else {
 				creature_map[as_lower_str(creatureType->name)] = creatureType;
