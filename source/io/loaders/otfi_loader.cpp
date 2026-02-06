@@ -5,7 +5,7 @@
 #include <wx/dir.h>
 #include "app/main.h" // For ASSETS_NAME
 
-bool OtfiLoader::Load(GraphicManager* manager, const wxFileName& filename, wxString& error, wxArrayString& warnings) {
+bool OtfiLoader::Load(GraphicManager* manager, const wxFileName& filename, wxString& error, std::vector<std::string>& warnings) {
 	// Set default values first
 	manager->is_extended = false;
 	manager->has_transparency = false;

@@ -440,8 +440,8 @@ public:
 	ItemType& getItemType(int id);
 	ItemType& getItemIdByClientID(int spriteId);
 
-	bool loadFromOtb(const FileName& datafile, wxString& error, wxArrayString& warnings);
-	bool loadFromGameXml(const FileName& datafile, wxString& error, wxArrayString& warnings);
+	bool loadFromOtb(const FileName& datafile, wxString& error, std::vector<std::string>& warnings);
+	bool loadFromGameXml(const FileName& datafile, wxString& error, std::vector<std::string>& warnings);
 	bool loadItemFromGameXml(pugi::xml_node itemNode, int id);
 	bool loadMetaItem(pugi::xml_node node);
 
@@ -456,9 +456,9 @@ public:
 	uint32_t BuildNumber;
 
 protected:
-	bool loadFromOtbVer1(BinaryNode* itemNode, wxString& error, wxArrayString& warnings);
-	bool loadFromOtbVer2(BinaryNode* itemNode, wxString& error, wxArrayString& warnings);
-	bool loadFromOtbVer3(BinaryNode* itemNode, wxString& error, wxArrayString& warnings);
+	bool loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings);
+	bool loadFromOtbVer2(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings);
+	bool loadFromOtbVer3(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings);
 
 private:
 	void parseItemTypeAttribute(ItemType& it, std::string_view value);

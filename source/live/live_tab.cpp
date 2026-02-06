@@ -40,10 +40,6 @@ public:
 
 IMPLEMENT_CLASS(myGrid, wxGrid)
 
-BEGIN_EVENT_TABLE(LiveLogTab, wxPanel)
-EVT_TEXT(LIVE_CHAT_TEXTBOX, LiveLogTab::OnChat)
-END_EVENT_TABLE()
-
 LiveLogTab::LiveLogTab(MapTabbook* aui, LiveSocket* server) :
 	EditorTab(),
 	wxPanel(aui),
@@ -81,15 +77,16 @@ LiveLogTab::LiveLogTab(MapTabbook* aui, LiveSocket* server) :
 	log->SetColMinimalWidth(2, 100);
 	log->SetColSize(2, 100);
 
-	log->Connect(wxEVT_SIZE, wxSizeEventHandler(LiveLogTab::OnResizeChat), nullptr, this);
+	log->Bind(wxEVT_SIZE, &LiveLogTab::OnResizeChat, this);
 
 	left_sizer->Add(log, 1, wxEXPAND);
 
 	input = newd wxTextCtrl(left_pane, LIVE_CHAT_TEXTBOX, wxEmptyString, wxDefaultPosition, wxDefaultSize);
 	left_sizer->Add(input, 0, wxEXPAND);
 
-	input->Connect(wxEVT_SET_FOCUS, wxFocusEventHandler(LiveLogTab::OnSelectChatbox), nullptr, this);
-	input->Connect(wxEVT_KILL_FOCUS, wxFocusEventHandler(LiveLogTab::OnDeselectChatbox), nullptr, this);
+	input->Bind(wxEVT_SET_FOCUS, &LiveLogTab::OnSelectChatbox, this);
+	input->Bind(wxEVT_KILL_FOCUS, &LiveLogTab::OnDeselectChatbox, this);
+	input->Bind(wxEVT_TEXT, &LiveLogTab::OnChat, this);
 
 	left_pane->SetSizerAndFit(left_sizer);
 

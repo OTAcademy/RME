@@ -51,7 +51,7 @@ bool RMENet::Connect()
 	socket->SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_OUTPUT_FLAG | wxSOCKET_LOST_FLAG);
 	socket->Notify(true);
 
-	wxEvtHandler::Connect(wxID_ANY, wxEVT_SOCKET, wxSocketEventHandler(RMENet::HandleEvent));
+	Bind(wxEVT_SOCKET, &RMENet::HandleEvent, this);
 
 	socket->Connect(ipaddr, false);
 	if(!socket || !socket->WaitOnConnect(5, 0) ||

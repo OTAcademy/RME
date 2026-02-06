@@ -33,8 +33,6 @@ protected:
 	wxTextCtrl* directory_text_field;
 	wxTextCtrl* file_name_text_field;
 	wxButton* ok_button;
-
-	DECLARE_EVENT_TABLE();
 };
 
 #endif

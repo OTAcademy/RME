@@ -1,12 +1,18 @@
 #include "ui/controls/modern_button.h"
 
-wxBEGIN_EVENT_TABLE(ModernButton, wxControl) EVT_PAINT(ModernButton::OnPaint) EVT_MOUSE_EVENTS(ModernButton::OnMouse) EVT_ERASE_BACKGROUND(ModernButton::OnEraseBackground) EVT_TIMER(wxID_ANY, ModernButton::OnTimer) wxEND_EVENT_TABLE()
-
 	ModernButton::ModernButton(wxWindow* parent, wxWindowID id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
 	wxControl(parent, id, pos, size, style | wxBORDER_NONE),
 	m_animTimer(this) {
 	SetLabel(label);
 	SetBackgroundStyle(wxBG_STYLE_PAINT);
+
+	Bind(wxEVT_PAINT, &ModernButton::OnPaint, this);
+	Bind(wxEVT_ENTER_WINDOW, &ModernButton::OnMouse, this);
+	Bind(wxEVT_LEAVE_WINDOW, &ModernButton::OnMouse, this);
+	Bind(wxEVT_LEFT_DOWN, &ModernButton::OnMouse, this);
+	Bind(wxEVT_LEFT_UP, &ModernButton::OnMouse, this);
+	Bind(wxEVT_ERASE_BACKGROUND, &ModernButton::OnEraseBackground, this);
+	m_animTimer.Bind(wxEVT_TIMER, &ModernButton::OnTimer, this);
 }
 
 wxSize ModernButton::DoGetBestClientSize() const {

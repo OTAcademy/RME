@@ -1170,7 +1170,7 @@ bool IOMapOTBM::loadSpawns(Map& map, pugi::xml_document& doc) {
 			if (name.empty()) {
 				wxString err;
 				err << "Bad creature position data, discarding creature at spawn " << spawnPosition.x << ":" << spawnPosition.y << ":" << spawnPosition.z << " due missing name.";
-				warnings.Add(err);
+				warnings.push_back(err.ToStdString());
 				break;
 			}
 
@@ -1192,7 +1192,7 @@ bool IOMapOTBM::loadSpawns(Map& map, pugi::xml_document& doc) {
 			if (!xAttribute || !yAttribute) {
 				wxString err;
 				err << "Bad creature position data, discarding creature \"" << name << "\" at spawn " << creaturePosition.x << ":" << creaturePosition.y << ":" << creaturePosition.z << " due to invalid position.";
-				warnings.Add(err);
+				warnings.push_back(err.ToStdString());
 				break;
 			}
 
@@ -1213,14 +1213,14 @@ bool IOMapOTBM::loadSpawns(Map& map, pugi::xml_document& doc) {
 			if (!creatureTile) {
 				wxString err;
 				err << "Discarding creature \"" << name << "\" at " << creaturePosition.x << ":" << creaturePosition.y << ":" << creaturePosition.z << " due to invalid position.";
-				warnings.Add(err);
+				warnings.push_back(err.ToStdString());
 				break;
 			}
 
 			if (creatureTile->creature) {
 				wxString err;
 				err << "Duplicate creature \"" << name << "\" at " << creaturePosition.x << ":" << creaturePosition.y << ":" << creaturePosition.z << " was discarded.";
-				warnings.Add(err);
+				warnings.push_back(err.ToStdString());
 				break;
 			}
 

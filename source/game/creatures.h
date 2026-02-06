@@ -53,8 +53,8 @@ public:
 		return creature_map.end();
 	}
 
-	bool loadFromXML(const FileName& filename, bool standard, wxString& error, wxArrayString& warnings);
-	bool importXMLFromOT(const FileName& filename, wxString& error, wxArrayString& warnings);
+	bool loadFromXML(const FileName& filename, bool standard, wxString& error, std::vector<std::string>& warnings);
+	bool importXMLFromOT(const FileName& filename, wxString& error, std::vector<std::string>& warnings);
 
 	bool saveToXML(const FileName& filename);
 };
@@ -74,8 +74,8 @@ public:
 	Outfit outfit;
 	CreatureBrush* brush;
 
-	static CreatureType* loadFromXML(pugi::xml_node node, wxArrayString& warnings);
-	static CreatureType* loadFromOTXML(const FileName& filename, pugi::xml_document& node, wxArrayString& warnings);
+	static CreatureType* loadFromXML(pugi::xml_node node, std::vector<std::string>& warnings);
+	static CreatureType* loadFromOTXML(const FileName& filename, pugi::xml_document& node, std::vector<std::string>& warnings);
 };
 
 extern CreatureDatabase g_creatures;

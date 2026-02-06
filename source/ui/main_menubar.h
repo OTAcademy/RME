@@ -176,9 +176,9 @@ class MainMenuBar : public wxEvtHandler {
 
 public:
 	MainMenuBar(MainFrame* frame);
-	~MainMenuBar();
+	~MainMenuBar() override;
 
-	bool Load(const FileName& filename, wxArrayString& warnings, wxString& error);
+	bool Load(const FileName& filename, std::vector<std::string>& warnings, wxString& error);
 	void Update();
 	void LoadValues();
 	void UpdateFloorMenu(); // Only concerns the floor menu
@@ -316,8 +316,6 @@ protected:
 	FileMenuHandler* fileMenuHandler;
 	NavigationMenuHandler* navigationMenuHandler;
 	PaletteMenuHandler* paletteMenuHandler;
-
-	DECLARE_EVENT_TABLE();
 };
 
 namespace MenuBar {

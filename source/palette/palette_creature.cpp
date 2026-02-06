@@ -30,17 +30,6 @@
 // ============================================================================
 // Creature palette
 
-BEGIN_EVENT_TABLE(CreaturePalettePanel, PalettePanel)
-EVT_CHOICEBOOK_PAGE_CHANGING(wxID_ANY, CreaturePalettePanel::OnSwitchingPage)
-EVT_CHOICEBOOK_PAGE_CHANGED(wxID_ANY, CreaturePalettePanel::OnPageChanged)
-
-EVT_TOGGLEBUTTON(PALETTE_CREATURE_BRUSH_BUTTON, CreaturePalettePanel::OnClickCreatureBrushButton)
-EVT_TOGGLEBUTTON(PALETTE_SPAWN_BRUSH_BUTTON, CreaturePalettePanel::OnClickSpawnBrushButton)
-
-EVT_SPINCTRL(PALETTE_CREATURE_SPAWN_TIME, CreaturePalettePanel::OnChangeSpawnTime)
-EVT_SPINCTRL(PALETTE_CREATURE_SPAWN_SIZE, CreaturePalettePanel::OnChangeSpawnSize)
-END_EVENT_TABLE()
-
 CreaturePalettePanel::CreaturePalettePanel(wxWindow* parent, wxWindowID id) :
 	PalettePanel(parent, id),
 	handling_event(false) {
@@ -71,6 +60,15 @@ CreaturePalettePanel::CreaturePalettePanel(wxWindow* parent, wxWindowID id) :
 	topsizer->Add(sidesizer, 0, wxEXPAND);
 
 	SetSizerAndFit(topsizer);
+
+	Bind(wxEVT_CHOICEBOOK_PAGE_CHANGING, &CreaturePalettePanel::OnSwitchingPage, this);
+	Bind(wxEVT_CHOICEBOOK_PAGE_CHANGED, &CreaturePalettePanel::OnPageChanged, this);
+
+	Bind(wxEVT_TOGGLEBUTTON, &CreaturePalettePanel::OnClickCreatureBrushButton, this, PALETTE_CREATURE_BRUSH_BUTTON);
+	Bind(wxEVT_TOGGLEBUTTON, &CreaturePalettePanel::OnClickSpawnBrushButton, this, PALETTE_SPAWN_BRUSH_BUTTON);
+
+	Bind(wxEVT_SPINCTRL, &CreaturePalettePanel::OnChangeSpawnTime, this, PALETTE_CREATURE_SPAWN_TIME);
+	Bind(wxEVT_SPINCTRL, &CreaturePalettePanel::OnChangeSpawnSize, this, PALETTE_CREATURE_SPAWN_SIZE);
 
 	OnUpdate();
 }

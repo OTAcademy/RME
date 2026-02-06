@@ -117,5 +117,5 @@ void AtlasManager::clear() {
 	region_storage_.clear();
 	sprite_regions_.clear();
 	std::fill(direct_lookup_.begin(), direct_lookup_.end(), nullptr);
-	std::cout << "AtlasManager cleared" << std::endl;
+	spdlog::info("AtlasManager cleared");
 }

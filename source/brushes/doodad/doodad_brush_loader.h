@@ -18,10 +18,10 @@ class DoodadBrush; // Optional, if we need it for assignment
 
 class DoodadBrushLoader {
 public:
-	static bool load(pugi::xml_node node, DoodadBrushItems& items, DoodadBrushSettings& settings, wxArrayString& warnings, DoodadBrush* brushPtr);
+	static bool load(pugi::xml_node node, DoodadBrushItems& items, DoodadBrushSettings& settings, std::vector<std::string>& warnings, DoodadBrush* brushPtr);
 
 private:
-	static bool loadAlternative(pugi::xml_node node, DoodadBrushItems& items, wxArrayString& warnings, DoodadBrushItems::AlternativeBlock* which, DoodadBrush* brushPtr);
+	static bool loadAlternative(pugi::xml_node node, DoodadBrushItems& items, std::vector<std::string>& warnings, DoodadBrushItems::AlternativeBlock* which, DoodadBrush* brushPtr);
 };
 
 #endif

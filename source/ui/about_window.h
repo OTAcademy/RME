@@ -31,7 +31,6 @@ public:
 private:
 	wxSizer* topsizer;
 
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

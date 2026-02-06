@@ -25,8 +25,6 @@ public:
 protected:
 	Editor& editor;
 	PositionCtrl* posctrl;
-
-	DECLARE_EVENT_TABLE();
 };
 
 #endif

@@ -32,8 +32,6 @@ protected:
 
 	wxChoice* house_options;
 	wxChoice* spawn_options;
-
-	DECLARE_EVENT_TABLE();
 };
 
 #endif

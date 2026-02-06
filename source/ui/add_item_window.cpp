@@ -40,11 +40,6 @@
 // ============================================================================
 // Add Item Window
 
-BEGIN_EVENT_TABLE(AddItemWindow, wxDialog)
-EVT_BUTTON(wxID_OK, AddItemWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, AddItemWindow::OnClickCancel)
-END_EVENT_TABLE()
-
 static constexpr int OUTFIT_COLOR_MAX = 133;
 
 AddItemWindow::AddItemWindow(wxWindow* win_parent, TilesetCategoryType categoryType, Tileset* tilesetItem, wxPoint pos) :
@@ -99,6 +94,8 @@ AddItemWindow::AddItemWindow(wxWindow* win_parent, TilesetCategoryType categoryT
 	Centre(wxBOTH);
 
 	item_button->Bind(wxEVT_LEFT_DOWN, &AddItemWindow::OnItemClicked, this);
+	Bind(wxEVT_BUTTON, &AddItemWindow::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &AddItemWindow::OnClickCancel, this, wxID_CANCEL);
 }
 
 void AddItemWindow::OnClickOK(wxCommandEvent& WXUNUSED(event)) {

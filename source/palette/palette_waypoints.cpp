@@ -27,15 +27,6 @@
 #include "brushes/waypoint/waypoint_brush.h"
 #include "map/map.h"
 
-BEGIN_EVENT_TABLE(WaypointPalettePanel, PalettePanel)
-EVT_BUTTON(PALETTE_WAYPOINT_ADD_WAYPOINT, WaypointPalettePanel::OnClickAddWaypoint)
-EVT_BUTTON(PALETTE_WAYPOINT_REMOVE_WAYPOINT, WaypointPalettePanel::OnClickRemoveWaypoint)
-
-EVT_LIST_BEGIN_LABEL_EDIT(PALETTE_WAYPOINT_LISTBOX, WaypointPalettePanel::OnBeginEditWaypointLabel)
-EVT_LIST_END_LABEL_EDIT(PALETTE_WAYPOINT_LISTBOX, WaypointPalettePanel::OnEditWaypointLabel)
-EVT_LIST_ITEM_SELECTED(PALETTE_WAYPOINT_LISTBOX, WaypointPalettePanel::OnClickWaypoint)
-END_EVENT_TABLE()
-
 WaypointPalettePanel::WaypointPalettePanel(wxWindow* parent, wxWindowID id) :
 	PalettePanel(parent, id),
 	map(nullptr) {
@@ -51,6 +42,13 @@ WaypointPalettePanel::WaypointPalettePanel(wxWindow* parent, wxWindowID id) :
 	sidesizer->Add(tmpsizer, 0, wxEXPAND);
 
 	SetSizerAndFit(sidesizer);
+
+	Bind(wxEVT_BUTTON, &WaypointPalettePanel::OnClickAddWaypoint, this, PALETTE_WAYPOINT_ADD_WAYPOINT);
+	Bind(wxEVT_BUTTON, &WaypointPalettePanel::OnClickRemoveWaypoint, this, PALETTE_WAYPOINT_REMOVE_WAYPOINT);
+
+	Bind(wxEVT_LIST_BEGIN_LABEL_EDIT, &WaypointPalettePanel::OnBeginEditWaypointLabel, this, PALETTE_WAYPOINT_LISTBOX);
+	Bind(wxEVT_LIST_END_LABEL_EDIT, &WaypointPalettePanel::OnEditWaypointLabel, this, PALETTE_WAYPOINT_LISTBOX);
+	Bind(wxEVT_LIST_ITEM_SELECTED, &WaypointPalettePanel::OnClickWaypoint, this, PALETTE_WAYPOINT_LISTBOX);
 }
 
 void WaypointPalettePanel::OnSwitchIn() {

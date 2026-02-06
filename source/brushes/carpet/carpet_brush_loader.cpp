@@ -17,7 +17,7 @@ static const auto iequal = [](char a, char b) {
 	return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
 };
 
-bool CarpetBrushLoader::load(CarpetBrush& brush, pugi::xml_node node, wxArrayString& warnings) {
+bool CarpetBrushLoader::load(CarpetBrush& brush, pugi::xml_node node, std::vector<std::string>& warnings) {
 	pugi::xml_attribute attribute;
 	if ((attribute = node.attribute("lookid"))) {
 		brush.look_id = attribute.as_ushort();

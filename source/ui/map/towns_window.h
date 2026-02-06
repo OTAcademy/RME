@@ -40,8 +40,6 @@ protected:
 	PositionCtrl* temple_position;
 	wxButton* remove_button;
 	wxButton* select_position_button;
-
-	DECLARE_EVENT_TABLE();
 };
 
 #endif

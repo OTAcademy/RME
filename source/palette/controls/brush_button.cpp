@@ -7,10 +7,6 @@
 // ============================================================================
 // Brush Button
 
-BEGIN_EVENT_TABLE(BrushButton, ItemToggleButton)
-EVT_KEY_DOWN(BrushButton::OnKey)
-END_EVENT_TABLE()
-
 BrushButton::BrushButton(wxWindow* parent, Brush* _brush, RenderSize sz, uint32_t id) :
 	ItemToggleButton(parent, sz, uint16_t(0), id),
 	brush(_brush) {
@@ -22,6 +18,7 @@ BrushButton::BrushButton(wxWindow* parent, Brush* _brush, RenderSize sz, uint32_
 		SetSprite(brush->getLookID());
 	}
 	SetToolTip(wxstr(brush->getName()));
+	Bind(wxEVT_KEY_DOWN, &BrushButton::OnKey, this);
 }
 
 BrushButton::BrushButton(wxWindow* parent, Brush* _brush, RenderSize sz, EditorSprite* espr, uint32_t id) :
@@ -31,6 +28,7 @@ BrushButton::BrushButton(wxWindow* parent, Brush* _brush, RenderSize sz, EditorS
 	ASSERT(brush);
 	SetSprite(espr);
 	SetToolTip(wxstr(brush->getName()));
+	Bind(wxEVT_KEY_DOWN, &BrushButton::OnKey, this);
 }
 
 BrushButton::~BrushButton() {
