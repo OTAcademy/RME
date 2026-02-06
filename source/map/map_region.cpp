@@ -29,18 +29,15 @@
 //**************** Tile Location **********************
 
 TileLocation::TileLocation() :
-	tile(nullptr),
 	position(0, 0, 0),
 	spawn_count(0),
 	waypoint_count(0),
-	town_count(0),
-	house_exits(nullptr) {
+	town_count(0) {
 	////
 }
 
 TileLocation::~TileLocation() {
-	delete tile;
-	delete house_exits;
+	// std::unique_ptr cleans up automatically
 }
 
 int TileLocation::size() const {
@@ -72,22 +69,18 @@ Floor::Floor(int sx, int sy, int z) {
 MapNode::MapNode(BaseMap& map) :
 	map(map),
 	visible(0) {
-	for (int i = 0; i < MAP_LAYERS; ++i) {
-		array[i] = nullptr;
-	}
+	// std::array<std::unique_ptr> initializes to nullptr automatically
 }
 
 MapNode::~MapNode() {
-	for (int i = 0; i < MAP_LAYERS; ++i) {
-		delete array[i];
-	}
+	// std::unique_ptr cleans up automatically
 }
 
 Floor* MapNode::createFloor(int x, int y, int z) {
 	if (!array[z]) {
-		array[z] = newd Floor(x, y, z);
+		array[z] = std::make_unique<Floor>(x, y, z);
 	}
-	return array[z];
+	return array[z].get();
 }
 
 bool MapNode::isVisible(bool underground) {
@@ -193,7 +186,7 @@ bool MapNode::hasFloor(uint32_t z) {
 }
 
 TileLocation* MapNode::getTile(int x, int y, int z) {
-	Floor* f = array[z];
+	Floor* f = array[z].get();
 	if (!f) {
 		return nullptr;
 	}
@@ -212,8 +205,8 @@ Tile* MapNode::setTile(int x, int y, int z, Tile* newtile) {
 	int offset_y = y & 3;
 
 	TileLocation* tmp = &f->locs[offset_x * 4 + offset_y];
-	Tile* oldtile = tmp->tile;
-	tmp->tile = newtile;
+	Tile* oldtile = tmp->tile.release();
+	tmp->tile.reset(newtile);
 
 	if (newtile && !oldtile) {
 		++map.tilecount;
@@ -231,8 +224,7 @@ void MapNode::clearTile(int x, int y, int z) {
 	int offset_y = y & 3;
 
 	TileLocation* tmp = &f->locs[offset_x * 4 + offset_y];
-	delete tmp->tile;
-	tmp->tile = map.allocator(tmp);
+	tmp->tile.reset(map.allocator(tmp));
 }
 
 //**************** SpatialHashGrid **********************

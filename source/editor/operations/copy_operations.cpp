@@ -49,10 +49,10 @@ void CopyOperations::copy(Editor& editor, CopyBuffer& buffer, int floor) {
 		}
 
 		if (tile->creature && tile->creature->isSelected()) {
-			copied_tile->creature = tile->creature->deepCopy();
+			copied_tile->creature.reset(tile->creature->deepCopy());
 		}
 		if (tile->spawn && tile->spawn->isSelected()) {
-			copied_tile->spawn = tile->spawn->deepCopy();
+			copied_tile->spawn.reset(tile->spawn->deepCopy());
 		}
 
 		buffer.tiles->setTile(copied_tile);
@@ -111,13 +111,11 @@ void CopyOperations::cut(Editor& editor, CopyBuffer& buffer, int floor) {
 		}
 
 		if (newtile->creature && newtile->creature->isSelected()) {
-			copied_tile->creature = newtile->creature;
-			newtile->creature = nullptr;
+			copied_tile->creature = std::move(newtile->creature);
 		}
 
 		if (newtile->spawn && newtile->spawn->isSelected()) {
-			copied_tile->spawn = newtile->spawn;
-			newtile->spawn = nullptr;
+			copied_tile->spawn = std::move(newtile->spawn);
 		}
 
 		buffer.tiles->setTile(copied_tile->getPosition(), copied_tile);

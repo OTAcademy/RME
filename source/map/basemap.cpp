@@ -214,7 +214,7 @@ bool MapIterator::findNext() {
 			MapNode* node = cell->nodes[node_i].get();
 			if (node) {
 				while (floor_i < MAP_LAYERS) {
-					Floor* floor = node->array[floor_i];
+					Floor* floor = node->array[floor_i].get();
 					if (floor) {
 						while (tile_i < SpatialHashGrid::TILES_PER_NODE) {
 							TileLocation& t = floor->locs[tile_i];

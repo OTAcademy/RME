@@ -56,8 +56,8 @@ public: // Members
 	TileLocation* location;
 	Item* ground;
 	ItemVector items;
-	Creature* creature;
-	Spawn* spawn;
+	std::unique_ptr<Creature> creature;
+	std::unique_ptr<Spawn> spawn;
 	uint32_t house_id; // House id for this tile (pointer not safe)
 
 public:

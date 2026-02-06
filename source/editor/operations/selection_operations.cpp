@@ -116,13 +116,11 @@ void SelectionOperations::moveSelection(Editor& editor, Position offset) {
 		}
 		// Move spawns
 		if (new_src_tile->spawn && new_src_tile->spawn->isSelected()) {
-			tmp_storage_tile->spawn = new_src_tile->spawn;
-			new_src_tile->spawn = nullptr;
+			tmp_storage_tile->spawn = std::move(new_src_tile->spawn);
 		}
 		// Move creatures
 		if (new_src_tile->creature && new_src_tile->creature->isSelected()) {
-			tmp_storage_tile->creature = new_src_tile->creature;
-			new_src_tile->creature = nullptr;
+			tmp_storage_tile->creature = std::move(new_src_tile->creature);
 		}
 
 		// Move house data & tile status if ground is transferred
@@ -366,13 +364,11 @@ void SelectionOperations::destroySelection(Editor& editor) {
 			}
 
 			if (newtile->creature && newtile->creature->isSelected()) {
-				delete newtile->creature;
-				newtile->creature = nullptr;
+				newtile->creature.reset();
 			}
 
 			if (newtile->spawn && newtile->spawn->isSelected()) {
-				delete newtile->spawn;
-				newtile->spawn = nullptr;
+				newtile->spawn.reset();
 			}
 
 			if (g_settings.getInteger(Config::USE_AUTOMAGIC)) {

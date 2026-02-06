@@ -99,7 +99,7 @@ void PreviewDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive
 							}
 						}
 						if (tile->creature && options.show_creatures) {
-							creature_drawer->BlitCreature(sprite_batch, sprite_drawer, draw_x, draw_y, tile->creature);
+							creature_drawer->BlitCreature(sprite_batch, sprite_drawer, draw_x, draw_y, tile->creature.get());
 						}
 					}
 				}

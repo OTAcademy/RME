@@ -39,8 +39,6 @@
 Tile::Tile(int x, int y, int z) :
 	location(nullptr),
 	ground(nullptr),
-	creature(nullptr),
-	spawn(nullptr),
 	house_id(0),
 	mapflags(0),
 	statflags(0),
@@ -51,8 +49,6 @@ Tile::Tile(int x, int y, int z) :
 Tile::Tile(TileLocation& loc) :
 	location(&loc),
 	ground(nullptr),
-	creature(nullptr),
-	spawn(nullptr),
 	house_id(0),
 	mapflags(0),
 	statflags(0),
@@ -110,9 +106,7 @@ Tile::~Tile() {
 		delete items.back();
 		items.pop_back();
 	}
-	delete creature;
 	delete ground;
-	delete spawn;
 }
 
 Tile* Tile::deepCopy(BaseMap& map) {
@@ -121,10 +115,10 @@ Tile* Tile::deepCopy(BaseMap& map) {
 	copy->minimapColor = minimapColor;
 	copy->house_id = house_id;
 	if (spawn) {
-		copy->spawn = spawn->deepCopy();
+		copy->spawn.reset(spawn->deepCopy());
 	}
 	if (creature) {
-		copy->creature = creature->deepCopy();
+		copy->creature.reset(creature->deepCopy());
 	}
 	// Spawncount & exits are not transferred on copy!
 	if (ground) {
@@ -199,21 +193,11 @@ void Tile::merge(Tile* other) {
 	}
 
 	if (other->creature) {
-		delete creature;
-		creature = other->creature;
-		other->creature = nullptr;
+		creature = std::move(other->creature);
 	}
 
 	if (other->spawn) {
-		delete spawn;
-		spawn = other->spawn;
-		other->spawn = nullptr;
-	}
-
-	if (other->creature) {
-		delete creature;
-		creature = other->creature;
-		other->creature = nullptr;
+		spawn = std::move(other->spawn);
 	}
 
 	ItemVector::iterator it;

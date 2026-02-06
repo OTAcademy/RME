@@ -439,7 +439,7 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 					Tile* imported_tile = imported_map.getTile(old_spawn_pos);
 					if (imported_tile) {
 						ASSERT(imported_tile->spawn);
-						spawn_map[new_spawn_pos] = imported_tile->spawn;
+						spawn_map[new_spawn_pos] = imported_tile->spawn.release();
 
 						SpawnPositionList::iterator next = siter;
 						bool cont = true;
@@ -544,7 +544,16 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 		if (old_tile) {
 			editor.map.removeSpawn(old_tile);
 		}
-		import_tile->spawn = nullptr;
+		// import_tile->spawn was already released above if it was in spawns list
+		// but checking to be safe or if it wasn't in spawns list?
+		// Logic above iterates `imported_map.spawns`. If a spawn is there, it is moved to spawn_map.
+		// If import_tile has a spawn NOT in `imported_map.spawns` (should not happen), it remains.
+		// But here we set it to nullptr? Why?
+		// To prevent it from being added with the tile, maybe?
+		// The original code `import_tile->spawn = nullptr` suggests dropping it.
+		// But we released it to spawn_map. `release()` sets to nullptr.
+		// So this is redundant but safe.
+		import_tile->spawn.reset();
 
 		editor.map.setTile(new_pos, import_tile, true);
 	}
@@ -558,9 +567,9 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 			editor.map.setTile(pos, tile);
 		} else if (tile->spawn) {
 			editor.map.removeSpawnInternal(tile);
-			delete tile->spawn;
+			tile->spawn.reset();
 		}
-		tile->spawn = spawn_iter->second;
+		tile->spawn.reset(spawn_iter->second);
 
 		editor.map.addSpawn(tile);
 	}
