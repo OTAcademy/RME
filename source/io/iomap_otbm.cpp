@@ -1156,7 +1156,7 @@ bool IOMapOTBM::loadSpawns(Map& map, pugi::xml_document& doc) {
 			map.setTile(spawnPosition, tile);
 		}
 
-		tile->spawn = spawn;
+		tile->spawn.reset(spawn);
 		map.addSpawn(tile);
 
 		for (pugi::xml_node creatureNode = spawnNode.first_child(); creatureNode; creatureNode = creatureNode.next_sibling()) {
@@ -1233,16 +1233,14 @@ bool IOMapOTBM::loadSpawns(Map& map, pugi::xml_document& doc) {
 				}
 			}
 
-			Creature* creature = newd Creature(type);
-			creature->setDirection(direction);
-			creature->setSpawnTime(spawntime);
-			creatureTile->creature = creature;
+			creatureTile->creature = std::make_unique<Creature>(type);
+			creatureTile->creature->setDirection(direction);
+			creatureTile->creature->setSpawnTime(spawntime);
 
 			if (creatureTile->getLocation()->getSpawnCount() == 0) {
 				// No spawn, create a newd one
 				ASSERT(creatureTile->spawn == nullptr);
-				Spawn* spawn = newd Spawn(5);
-				creatureTile->spawn = spawn;
+				creatureTile->spawn = std::make_unique<Spawn>(5);
 				map.addSpawn(creatureTile);
 			}
 		}
@@ -1683,7 +1681,7 @@ bool IOMapOTBM::saveSpawns(Map& map, pugi::xml_document& doc) {
 			continue;
 		}
 
-		Spawn* spawn = tile->spawn;
+		Spawn* spawn = tile->spawn.get();
 		ASSERT(spawn);
 
 		pugi::xml_node spawnNode = spawnNodes.append_child("spawn");
@@ -1699,7 +1697,7 @@ bool IOMapOTBM::saveSpawns(Map& map, pugi::xml_document& doc) {
 			for (int32_t x = -radius; x <= radius; ++x) {
 				Tile* creature_tile = map.getTile(spawnPosition + Position(x, y, 0));
 				if (creature_tile) {
-					Creature* creature = creature_tile->creature;
+					Creature* creature = creature_tile->creature.get();
 					if (creature && !creature->isSaved()) {
 						pugi::xml_node creatureNode = spawnNode.append_child(creature->isNpc() ? "npc" : "monster");
 

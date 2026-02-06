@@ -56,8 +56,8 @@ public: // Members
 	TileLocation* location;
 	Item* ground;
 	ItemVector items;
-	Creature* creature;
-	Spawn* spawn;
+	std::unique_ptr<Creature> creature;
+	std::unique_ptr<Spawn> spawn;
 	uint32_t house_id; // House id for this tile (pointer not safe)
 
 public:
@@ -69,7 +69,7 @@ public:
 	~Tile();
 
 	// Argument is a the map to allocate the tile from
-	Tile* deepCopy(BaseMap& map);
+	std::unique_ptr<Tile> deepCopy(BaseMap& map);
 
 	// The location of the tile
 	// Stores state that remains between the tile being moved (like house exits)

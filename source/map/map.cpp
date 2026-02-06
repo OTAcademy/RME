@@ -422,7 +422,7 @@ void Map::setSpawnFilename(const std::string& new_spawnfile) {
 }
 
 bool Map::addSpawn(Tile* tile) {
-	Spawn* spawn = tile->spawn;
+	Spawn* spawn = tile->spawn.get();
 	if (spawn) {
 		int z = tile->getZ();
 		int start_x = tile->getX() - spawn->getSize();
@@ -443,7 +443,7 @@ bool Map::addSpawn(Tile* tile) {
 }
 
 void Map::removeSpawnInternal(Tile* tile) {
-	Spawn* spawn = tile->spawn;
+	Spawn* spawn = tile->spawn.get();
 	ASSERT(spawn);
 
 	int z = tile->getZ();
@@ -477,7 +477,7 @@ SpawnList Map::getSpawnList(Tile* where) {
 			uint32_t found = 0;
 			if (where->spawn) {
 				++found;
-				list.push_back(where->spawn);
+				list.push_back(where->spawn.get());
 			}
 
 			// Scans the border tiles in an expanding square around the original spawn
@@ -488,12 +488,12 @@ SpawnList Map::getSpawnList(Tile* where) {
 				for (int x = start_x; x <= end_x; ++x) {
 					Tile* tile = getTile(x, start_y, z);
 					if (tile && tile->spawn) {
-						list.push_back(tile->spawn);
+						list.push_back(tile->spawn.get());
 						++found;
 					}
 					tile = getTile(x, end_y, z);
 					if (tile && tile->spawn) {
-						list.push_back(tile->spawn);
+						list.push_back(tile->spawn.get());
 						++found;
 					}
 				}
@@ -501,12 +501,12 @@ SpawnList Map::getSpawnList(Tile* where) {
 				for (int y = start_y + 1; y < end_y; ++y) {
 					Tile* tile = getTile(start_x, y, z);
 					if (tile && tile->spawn) {
-						list.push_back(tile->spawn);
+						list.push_back(tile->spawn.get());
 						++found;
 					}
 					tile = getTile(end_x, y, z);
 					if (tile && tile->spawn) {
-						list.push_back(tile->spawn);
+						list.push_back(tile->spawn.get());
 						++found;
 					}
 				}

@@ -76,8 +76,8 @@ void AutoborderPreviewManager::CopyMapArea(Editor& editor, const Position& pos) 
 			Tile* src_tile = editor.map.getTile(x, y, z);
 			if (src_tile) {
 				// deeply copies tile and its items to buffer map
-				Tile* new_tile = src_tile->deepCopy(*preview_buffer_map);
-				preview_buffer_map->setTile(new_tile);
+				std::unique_ptr<Tile> new_tile = src_tile->deepCopy(*preview_buffer_map);
+				preview_buffer_map->setTile(new_tile.release());
 			}
 		}
 	}

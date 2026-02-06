@@ -39,21 +39,21 @@ public:
 	TileLocation& operator=(const TileLocation&) = delete;
 
 protected:
-	Tile* tile;
+	std::unique_ptr<Tile> tile;
 	Position position;
 	size_t spawn_count;
 	size_t waypoint_count;
 	size_t town_count;
-	HouseExitList* house_exits; // Any house exits pointing here
+	std::unique_ptr<HouseExitList> house_exits; // Any house exits pointing here
 
 public:
 	// Access tile
 	// Can't set directly since that does not update tile count
 	Tile* get() {
-		return tile;
+		return tile.get();
 	}
 	const Tile* get() const {
-		return tile;
+		return tile.get();
 	}
 
 	int size() const;
@@ -102,12 +102,13 @@ public:
 	}
 	HouseExitList* createHouseExits() {
 		if (house_exits) {
-			return house_exits;
+			return house_exits.get();
 		}
-		return house_exits = newd HouseExitList;
+		house_exits = std::make_unique<HouseExitList>();
+		return house_exits.get();
 	}
 	HouseExitList* getHouseExits() {
-		return house_exits;
+		return house_exits.get();
 	}
 
 	friend class Floor;
@@ -131,15 +132,12 @@ public:
 
 	TileLocation* createTile(int x, int y, int z);
 	TileLocation* getTile(int x, int y, int z);
-	Tile* setTile(int x, int y, int z, Tile* tile);
+	std::unique_ptr<Tile> setTile(int x, int y, int z, Tile* tile);
 	void clearTile(int x, int y, int z);
 
 	Floor* createFloor(int x, int y, int z);
 	Floor* getFloor(uint32_t z) {
-		return array[z];
-	}
-	Floor** getFloors() {
-		return array;
+		return array[z].get();
 	}
 	bool hasFloor(uint32_t z);
 
@@ -162,7 +160,7 @@ public:
 protected:
 	BaseMap& map;
 	uint32_t visible;
-	Floor* array[MAP_LAYERS];
+	std::array<std::unique_ptr<Floor>, MAP_LAYERS> array;
 
 	friend class BaseMap;
 	friend class MapIterator;

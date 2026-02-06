@@ -427,7 +427,7 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 		}
 	}
 
-	std::map<Position, Spawn*> spawn_map;
+	std::map<Position, std::unique_ptr<Spawn>> spawn_map;
 	if (spawn_import_type != IMPORT_DONT) {
 		for (SpawnPositionList::iterator siter = imported_map.spawns.begin(); siter != imported_map.spawns.end();) {
 			Position old_spawn_pos = *siter;
@@ -439,7 +439,7 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 					Tile* imported_tile = imported_map.getTile(old_spawn_pos);
 					if (imported_tile) {
 						ASSERT(imported_tile->spawn);
-						spawn_map[new_spawn_pos] = imported_tile->spawn;
+						spawn_map[new_spawn_pos] = std::move(imported_tile->spawn);
 
 						SpawnPositionList::iterator next = siter;
 						bool cont = true;
@@ -544,13 +544,22 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 		if (old_tile) {
 			editor.map.removeSpawn(old_tile);
 		}
-		import_tile->spawn = nullptr;
+		// import_tile->spawn was already released above if it was in spawns list
+		// but checking to be safe or if it wasn't in spawns list?
+		// Logic above iterates `imported_map.spawns`. If a spawn is there, it is moved to spawn_map.
+		// If import_tile has a spawn NOT in `imported_map.spawns` (should not happen), it remains.
+		// But here we set it to nullptr? Why?
+		// To prevent it from being added with the tile, maybe?
+		// The original code `import_tile->spawn = nullptr` suggests dropping it.
+		// But we released it to spawn_map. `release()` sets to nullptr.
+		// So this is redundant but safe.
+		import_tile->spawn.reset();
 
 		editor.map.setTile(new_pos, import_tile, true);
 	}
 
-	for (std::map<Position, Spawn*>::iterator spawn_iter = spawn_map.begin(); spawn_iter != spawn_map.end(); ++spawn_iter) {
-		Position pos = spawn_iter->first;
+	for (auto& spawn_entry : spawn_map) {
+		Position pos = spawn_entry.first;
 		TileLocation* location = editor.map.createTileL(pos);
 		Tile* tile = location->get();
 		if (!tile) {
@@ -558,9 +567,9 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 			editor.map.setTile(pos, tile);
 		} else if (tile->spawn) {
 			editor.map.removeSpawnInternal(tile);
-			delete tile->spawn;
+			tile->spawn.reset();
 		}
-		tile->spawn = spawn_iter->second;
+		tile->spawn = std::move(spawn_entry.second);
 
 		editor.map.addSpawn(tile);
 	}

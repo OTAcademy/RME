@@ -117,13 +117,14 @@ void BaseMap::setTile(int x, int y, int z, Tile* newtile, bool remove) {
 	ASSERT(!newtile || newtile->getZ() == int(z));
 
 	MapNode* leaf = grid.getLeafForce(x, y);
-	Tile* old = leaf->setTile(x, y, z, newtile);
-	if (remove) {
-		delete old;
+	std::unique_ptr<Tile> old = leaf->setTile(x, y, z, newtile);
+	if (!remove) {
+		old.release(); // Caller takes ownership
 	}
+	// If remove is true, 'old' is deleted when it goes out of scope
 }
 
-Tile* BaseMap::swapTile(int x, int y, int z, Tile* newtile) {
+std::unique_ptr<Tile> BaseMap::swapTile(int x, int y, int z, Tile* newtile) {
 	ASSERT(z < MAP_LAYERS);
 	ASSERT(!newtile || newtile->getX() == int(x));
 	ASSERT(!newtile || newtile->getY() == int(y));
@@ -214,7 +215,7 @@ bool MapIterator::findNext() {
 			MapNode* node = cell->nodes[node_i].get();
 			if (node) {
 				while (floor_i < MAP_LAYERS) {
-					Floor* floor = node->array[floor_i];
+					Floor* floor = node->array[floor_i].get();
 					if (floor) {
 						while (tile_i < SpatialHashGrid::TILES_PER_NODE) {
 							TileLocation& t = floor->locs[tile_i];
