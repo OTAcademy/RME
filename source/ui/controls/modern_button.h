@@ -22,9 +22,6 @@ public:
 	float m_targetHover = 0.0f;
 	wxTimer m_animTimer;
 	void OnTimer(wxTimerEvent& evt);
-
-private:
-	wxDECLARE_EVENT_TABLE();
 };
 
 #endif

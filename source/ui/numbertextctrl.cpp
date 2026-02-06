@@ -18,21 +18,18 @@
 #include "app/main.h"
 #include "ui/numbertextctrl.h"
 
-BEGIN_EVENT_TABLE(NumberTextCtrl, wxTextCtrl)
-EVT_KILL_FOCUS(NumberTextCtrl::OnKillFocus)
-EVT_TEXT_ENTER(wxID_ANY, NumberTextCtrl::OnTextEnter)
-END_EVENT_TABLE()
-
 NumberTextCtrl::NumberTextCtrl(wxWindow* parent, wxWindowID id, long value, long minvalue, long maxvalue, const wxPoint& pos, const wxSize& sz, long style, const wxString& name) :
 	wxTextCtrl(parent, id, (wxString() << value), pos, sz, style, wxTextValidator(wxFILTER_NUMERIC), name),
 	minval(minvalue), maxval(maxvalue), lastval(value) {
-	////
+	Bind(wxEVT_KILL_FOCUS, &NumberTextCtrl::OnKillFocus, this);
+	Bind(wxEVT_TEXT_ENTER, &NumberTextCtrl::OnTextEnter, this);
 }
 
 NumberTextCtrl::NumberTextCtrl(wxWindow* parent, wxWindowID id, long value, long minvalue, long maxvalue, long style, const wxString& name, const wxPoint& pos, const wxSize& sz) :
 	wxTextCtrl(parent, id, (wxString() << value), pos, sz, style, wxTextValidator(wxFILTER_NUMERIC), name),
 	minval(minvalue), maxval(maxvalue), lastval(value) {
-	////
+	Bind(wxEVT_KILL_FOCUS, &NumberTextCtrl::OnKillFocus, this);
+	Bind(wxEVT_TEXT_ENTER, &NumberTextCtrl::OnTextEnter, this);
 }
 
 NumberTextCtrl::~NumberTextCtrl() {

@@ -316,8 +316,6 @@ protected:
 	FileMenuHandler* fileMenuHandler;
 	NavigationMenuHandler* navigationMenuHandler;
 	PaletteMenuHandler* paletteMenuHandler;
-
-	DECLARE_EVENT_TABLE();
 };
 
 namespace MenuBar {

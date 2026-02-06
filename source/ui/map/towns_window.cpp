@@ -10,15 +10,6 @@
 #include <algorithm>
 #include <iterator>
 
-BEGIN_EVENT_TABLE(EditTownsDialog, wxDialog)
-EVT_LISTBOX(EDIT_TOWNS_LISTBOX, EditTownsDialog::OnListBoxChange)
-EVT_BUTTON(EDIT_TOWNS_SELECT_TEMPLE, EditTownsDialog::OnClickSelectTemplePosition)
-EVT_BUTTON(EDIT_TOWNS_ADD, EditTownsDialog::OnClickAdd)
-EVT_BUTTON(EDIT_TOWNS_REMOVE, EditTownsDialog::OnClickRemove)
-EVT_BUTTON(wxID_OK, EditTownsDialog::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, EditTownsDialog::OnClickCancel)
-END_EVENT_TABLE()
-
 EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 	wxDialog(parent, wxID_ANY, "Towns", wxDefaultPosition, wxSize(280, 330)),
 	editor(editor) {
@@ -80,6 +71,13 @@ EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 	SetSizerAndFit(sizer);
 	Centre(wxBOTH);
 	BuildListBox(true);
+
+	town_listbox->Bind(wxEVT_LISTBOX, &EditTownsDialog::OnListBoxChange, this);
+	addBtn->Bind(wxEVT_BUTTON, &EditTownsDialog::OnClickAdd, this);
+	remove_button->Bind(wxEVT_BUTTON, &EditTownsDialog::OnClickRemove, this);
+	select_position_button->Bind(wxEVT_BUTTON, &EditTownsDialog::OnClickSelectTemplePosition, this);
+	okBtn->Bind(wxEVT_BUTTON, &EditTownsDialog::OnClickOK, this);
+	cancelBtn->Bind(wxEVT_BUTTON, &EditTownsDialog::OnClickCancel, this);
 }
 
 EditTownsDialog::~EditTownsDialog() = default;

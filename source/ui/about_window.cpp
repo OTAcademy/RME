@@ -30,12 +30,6 @@
 //=============================================================================
 // About Window - Information window about the application
 
-BEGIN_EVENT_TABLE(AboutWindow, wxDialog)
-EVT_BUTTON(wxID_OK, AboutWindow::OnClickOK)
-EVT_BUTTON(ABOUT_VIEW_LICENSE, AboutWindow::OnClickLicense)
-EVT_MENU(wxID_CANCEL, AboutWindow::OnClickOK)
-END_EVENT_TABLE()
-
 AboutWindow::AboutWindow(wxWindow* parent) :
 	wxDialog(parent, wxID_ANY, "About", wxDefaultPosition, wxSize(300, 320), wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX) {
 	wxString about;
@@ -105,6 +99,10 @@ AboutWindow::AboutWindow(wxWindow* parent) :
 
 	SetSizerAndFit(topsizer);
 	Centre(wxBOTH);
+
+	Bind(wxEVT_BUTTON, &AboutWindow::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &AboutWindow::OnClickLicense, this, ABOUT_VIEW_LICENSE);
+	Bind(wxEVT_MENU, &AboutWindow::OnClickOK, this, wxID_CANCEL);
 }
 
 AboutWindow::~AboutWindow() {

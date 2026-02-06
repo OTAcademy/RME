@@ -129,13 +129,6 @@ void BrowseTileListBox::UpdateItems() {
 // ============================================================================
 //
 
-BEGIN_EVENT_TABLE(BrowseTileWindow, wxDialog)
-EVT_BUTTON(wxID_REMOVE, BrowseTileWindow::OnClickDelete)
-EVT_BUTTON(wxID_FIND, BrowseTileWindow::OnClickSelectRaw)
-EVT_BUTTON(wxID_OK, BrowseTileWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, BrowseTileWindow::OnClickCancel)
-END_EVENT_TABLE()
-
 BrowseTileWindow::BrowseTileWindow(wxWindow* parent, Tile* tile, wxPoint position /* = wxDefaultPosition */) :
 	wxDialog(parent, wxID_ANY, "Browse Field", position, wxSize(600, 400), wxCAPTION | wxCLOSE_BOX | wxRESIZE_BORDER) {
 	wxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
@@ -181,12 +174,14 @@ BrowseTileWindow::BrowseTileWindow(wxWindow* parent, Tile* tile, wxPoint positio
 	SetSizerAndFit(sizer);
 
 	// Connect Events
-	item_list->Connect(wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler(BrowseTileWindow::OnItemSelected), nullptr, this);
+	item_list->Bind(wxEVT_LISTBOX, &BrowseTileWindow::OnItemSelected, this);
+	delete_button->Bind(wxEVT_BUTTON, &BrowseTileWindow::OnClickDelete, this);
+	select_raw_button->Bind(wxEVT_BUTTON, &BrowseTileWindow::OnClickSelectRaw, this);
+	Bind(wxEVT_BUTTON, &BrowseTileWindow::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &BrowseTileWindow::OnClickCancel, this, wxID_CANCEL);
 }
 
 BrowseTileWindow::~BrowseTileWindow() {
-	// Disconnect Events
-	item_list->Disconnect(wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler(BrowseTileWindow::OnItemSelected), nullptr, this);
 }
 
 void BrowseTileWindow::OnItemSelected(wxCommandEvent& WXUNUSED(event)) {

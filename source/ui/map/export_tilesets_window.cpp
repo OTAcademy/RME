@@ -12,12 +12,6 @@
 // ============================================================================
 // Export Tilesets window
 
-BEGIN_EVENT_TABLE(ExportTilesetsWindow, wxDialog)
-EVT_BUTTON(TILESET_FILE_BUTTON, ExportTilesetsWindow::OnClickBrowse)
-EVT_BUTTON(wxID_OK, ExportTilesetsWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, ExportTilesetsWindow::OnClickCancel)
-END_EVENT_TABLE()
-
 ExportTilesetsWindow::ExportTilesetsWindow(wxWindow* parent, Editor& editor) :
 	wxDialog(parent, wxID_ANY, "Export Tilesets", wxDefaultPosition, wxSize(400, 230)),
 	editor(editor) {
@@ -63,6 +57,10 @@ ExportTilesetsWindow::ExportTilesetsWindow(wxWindow* parent, Editor& editor) :
 	Layout();
 	Centre(wxBOTH);
 	CheckValues();
+
+	browseBtn->Bind(wxEVT_BUTTON, &ExportTilesetsWindow::OnClickBrowse, this);
+	ok_button->Bind(wxEVT_BUTTON, &ExportTilesetsWindow::OnClickOK, this);
+	cancelBtn->Bind(wxEVT_BUTTON, &ExportTilesetsWindow::OnClickCancel, this);
 }
 
 ExportTilesetsWindow::~ExportTilesetsWindow() = default;

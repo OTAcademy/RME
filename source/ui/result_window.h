@@ -35,7 +35,6 @@ public:
 protected:
 	wxListBox* result_list;
 
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

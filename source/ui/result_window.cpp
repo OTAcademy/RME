@@ -21,12 +21,6 @@
 #include "ui/gui.h"
 #include "map/position.h"
 
-BEGIN_EVENT_TABLE(SearchResultWindow, wxPanel)
-EVT_LISTBOX(wxID_ANY, SearchResultWindow::OnClickResult)
-EVT_BUTTON(wxID_FILE, SearchResultWindow::OnClickExport)
-EVT_BUTTON(wxID_CLEAR, SearchResultWindow::OnClickClear)
-END_EVENT_TABLE()
-
 SearchResultWindow::SearchResultWindow(wxWindow* parent) :
 	wxPanel(parent, wxID_ANY) {
 	wxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
@@ -43,6 +37,10 @@ SearchResultWindow::SearchResultWindow(wxWindow* parent) :
 	buttonsSizer->Add(clearBtn, wxSizerFlags(0).Center());
 	sizer->Add(buttonsSizer, wxSizerFlags(0).Center().DoubleBorder());
 	SetSizerAndFit(sizer);
+
+	result_list->Bind(wxEVT_LISTBOX, &SearchResultWindow::OnClickResult, this);
+	exportBtn->Bind(wxEVT_BUTTON, &SearchResultWindow::OnClickExport, this);
+	clearBtn->Bind(wxEVT_BUTTON, &SearchResultWindow::OnClickClear, this);
 }
 
 SearchResultWindow::~SearchResultWindow() {
