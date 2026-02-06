@@ -76,36 +76,6 @@
 #include "brushes/carpet/carpet_brush.h"
 #include "brushes/table/table_brush.h"
 
-BEGIN_EVENT_TABLE(MapCanvas, wxGLCanvas)
-EVT_KEY_DOWN(MapCanvas::OnKeyDown)
-EVT_KEY_DOWN(MapCanvas::OnKeyUp)
-
-// Mouse events
-EVT_MOTION(MapCanvas::OnMouseMove)
-EVT_LEFT_UP(MapCanvas::OnMouseLeftRelease)
-EVT_LEFT_DOWN(MapCanvas::OnMouseLeftClick)
-EVT_LEFT_DCLICK(MapCanvas::OnMouseLeftDoubleClick)
-EVT_MIDDLE_DOWN(MapCanvas::OnMouseCenterClick)
-EVT_MIDDLE_UP(MapCanvas::OnMouseCenterRelease)
-EVT_RIGHT_DOWN(MapCanvas::OnMouseRightClick)
-EVT_RIGHT_UP(MapCanvas::OnMouseRightRelease)
-EVT_MOUSEWHEEL(MapCanvas::OnWheel)
-EVT_ENTER_WINDOW(MapCanvas::OnGainMouse)
-EVT_LEAVE_WINDOW(MapCanvas::OnLoseMouse)
-
-// Drawing events
-EVT_PAINT(MapCanvas::OnPaint)
-EVT_ERASE_BACKGROUND(MapCanvas::OnEraseBackground)
-
-// Menu events
-// Menu events
-//----
-// ----
-// ----
-// ----
-// ----
-END_EVENT_TABLE()
-
 bool MapCanvas::processed[] = { 0 };
 
 // Helper to create attributes
@@ -153,6 +123,24 @@ MapCanvas::MapCanvas(MapWindow* parent, Editor& editor, int* attriblist) :
 	menu_handler = std::make_unique<MapMenuHandler>(this, editor);
 	menu_handler->BindEvents();
 	keyCode = WXK_NONE;
+
+	Bind(wxEVT_KEY_DOWN, &MapCanvas::OnKeyDown, this);
+	Bind(wxEVT_KEY_UP, &MapCanvas::OnKeyUp, this);
+
+	Bind(wxEVT_MOTION, &MapCanvas::OnMouseMove, this);
+	Bind(wxEVT_LEFT_UP, &MapCanvas::OnMouseLeftRelease, this);
+	Bind(wxEVT_LEFT_DOWN, &MapCanvas::OnMouseLeftClick, this);
+	Bind(wxEVT_LEFT_DCLICK, &MapCanvas::OnMouseLeftDoubleClick, this);
+	Bind(wxEVT_MIDDLE_DOWN, &MapCanvas::OnMouseCenterClick, this);
+	Bind(wxEVT_MIDDLE_UP, &MapCanvas::OnMouseCenterRelease, this);
+	Bind(wxEVT_RIGHT_DOWN, &MapCanvas::OnMouseRightClick, this);
+	Bind(wxEVT_RIGHT_UP, &MapCanvas::OnMouseRightRelease, this);
+	Bind(wxEVT_MOUSEWHEEL, &MapCanvas::OnWheel, this);
+	Bind(wxEVT_ENTER_WINDOW, &MapCanvas::OnGainMouse, this);
+	Bind(wxEVT_LEAVE_WINDOW, &MapCanvas::OnLoseMouse, this);
+
+	Bind(wxEVT_PAINT, &MapCanvas::OnPaint, this);
+	Bind(wxEVT_ERASE_BACKGROUND, &MapCanvas::OnEraseBackground, this);
 }
 
 MapCanvas::~MapCanvas() = default;
@@ -179,6 +167,7 @@ MapWindow* MapCanvas::GetMapWindow() const {
 }
 
 void MapCanvas::OnPaint(wxPaintEvent& event) {
+	wxPaintDC dc(this); // validates the paint event
 	SetCurrent(*g_gui.GetGLContext(this));
 
 	// proper nvg pointer wrapper

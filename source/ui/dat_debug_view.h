@@ -32,7 +32,6 @@ protected:
 	DatDebugViewListBox* item_list;
 	wxTextCtrl* search_field;
 
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

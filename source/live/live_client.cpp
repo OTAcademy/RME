@@ -402,7 +402,7 @@ void LiveClient::parseChangeClientVersion(NetworkMessage& message) {
 	}
 
 	wxString error;
-	wxArrayString warnings;
+	std::vector<std::string> warnings;
 	g_version.LoadVersion(clientVersion, error, warnings);
 
 	sendReady();

@@ -7,11 +7,11 @@
 #include "game/item.h"
 
 void AttributeService::setGridValue(wxGrid* grid, int rowIndex, const std::string& label, const ItemAttribute& attr) {
-	wxArrayString types;
-	types.Add("Number");
-	types.Add("Float");
-	types.Add("Boolean");
-	types.Add("String");
+	std::vector<std::string> types;
+	types.push_back("Number");
+	types.push_back("Float");
+	types.push_back("Boolean");
+	types.push_back("String");
 
 	grid->SetCellValue(rowIndex, 0, label);
 	switch (attr.type) {
@@ -51,7 +51,11 @@ void AttributeService::setGridValue(wxGrid* grid, int rowIndex, const std::strin
 			break;
 		}
 	}
-	grid->SetCellEditor(rowIndex, 1, new wxGridCellChoiceEditor(types));
+	wxArrayString wxTypes;
+	for (const auto& t : types) {
+		wxTypes.Add(t);
+	}
+	grid->SetCellEditor(rowIndex, 1, new wxGridCellChoiceEditor(wxTypes));
 }
 
 void AttributeService::saveAttributesFromGrid(Item* item, wxGrid* grid) {

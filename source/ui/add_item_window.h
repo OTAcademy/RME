@@ -48,7 +48,6 @@ protected:
 	TilesetCategoryType category_type;
 	Tileset* tileset_item;
 
-	DECLARE_EVENT_TABLE();
 };
 
 #endif

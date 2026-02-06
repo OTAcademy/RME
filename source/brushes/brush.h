@@ -74,8 +74,8 @@ public:
 
 	void addBrush(Brush* brush);
 
-	bool unserializeBorder(pugi::xml_node node, wxArrayString& warnings);
-	bool unserializeBrush(pugi::xml_node node, wxArrayString& warnings);
+	bool unserializeBorder(pugi::xml_node node, std::vector<std::string>& warnings);
+	bool unserializeBrush(pugi::xml_node node, std::vector<std::string>& warnings);
 
 	const BrushMap& getMap() const {
 		return brushes;
@@ -101,7 +101,7 @@ public:
 	Brush();
 	virtual ~Brush();
 
-	virtual bool load(pugi::xml_node node, wxArrayString& warnings) {
+	virtual bool load(pugi::xml_node node, std::vector<std::string>& warnings) {
 		return true;
 	}
 

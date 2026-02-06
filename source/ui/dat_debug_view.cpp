@@ -81,11 +81,6 @@ wxCoord DatDebugViewListBox::OnMeasureItem(size_t n) const {
 // ============================================================================
 //
 
-BEGIN_EVENT_TABLE(DatDebugView, wxPanel)
-EVT_TEXT(wxID_ANY, DatDebugView::OnTextChange)
-EVT_LISTBOX_DCLICK(wxID_ANY, DatDebugView::OnClickList)
-END_EVENT_TABLE()
-
 DatDebugView::DatDebugView(wxWindow* parent) :
 	wxPanel(parent) {
 	wxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
@@ -100,6 +95,9 @@ DatDebugView::DatDebugView(wxWindow* parent) :
 
 	SetSizerAndFit(sizer);
 	Centre(wxBOTH);
+
+	search_field->Bind(wxEVT_TEXT, &DatDebugView::OnTextChange, this);
+	item_list->Bind(wxEVT_LISTBOX_DCLICK, &DatDebugView::OnClickList, this);
 }
 
 DatDebugView::~DatDebugView() {

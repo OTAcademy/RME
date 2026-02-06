@@ -17,7 +17,7 @@ class CarpetBrush;
 
 class CarpetBrushLoader {
 public:
-	static bool load(CarpetBrush& brush, pugi::xml_node node, wxArrayString& warnings);
+	static bool load(CarpetBrush& brush, pugi::xml_node node, std::vector<std::string>& warnings);
 };
 
 #endif

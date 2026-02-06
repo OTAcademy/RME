@@ -8,12 +8,6 @@
 #include "ui/dialog_util.h"
 #include "ui/map_tab.h"
 
-BEGIN_EVENT_TABLE(MapPropertiesWindow, wxDialog)
-EVT_CHOICE(MAP_PROPERTIES_VERSION, MapPropertiesWindow::OnChangeVersion)
-EVT_BUTTON(wxID_OK, MapPropertiesWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, MapPropertiesWindow::OnClickCancel)
-END_EVENT_TABLE()
-
 MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor& editor) :
 	wxDialog(parent, wxID_ANY, "Map Properties", wxDefaultPosition, wxSize(300, 200), wxRESIZE_BORDER | wxCAPTION),
 	view(view),
@@ -121,6 +115,10 @@ MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor&
 
 	ClientVersion* current_version = ClientVersion::get(map.getVersion().client);
 	protocol_choice->SetStringSelection(wxstr(current_version->getName()));
+
+	version_choice->Bind(wxEVT_CHOICE, &MapPropertiesWindow::OnChangeVersion, this);
+	okBtn->Bind(wxEVT_BUTTON, &MapPropertiesWindow::OnClickOK, this);
+	cancelBtn->Bind(wxEVT_BUTTON, &MapPropertiesWindow::OnClickCancel, this);
 }
 
 void MapPropertiesWindow::UpdateProtocolList() {

@@ -16,6 +16,8 @@
 #include <cmath>
 #include <boost/algorithm/string.hpp>
 #include <boost/tokenizer.hpp>
+#include <wx/string.h>
+#include <wx/filename.h>
 
 class OTMLNode;
 class OTMLDocument;
@@ -269,10 +271,10 @@ public:
 	OTMLDocument() { }
 	virtual ~OTMLDocument() { }
 	static OTMLDocumentPtr create();
-	static OTMLDocumentPtr parse(const std::string& fileName);
-	static OTMLDocumentPtr parse(std::istream& in, const std::string& source);
+	static OTMLDocumentPtr parse(const wxString& fileName);
+	static OTMLDocumentPtr parse(std::istream& in, const wxString& source);
 	std::string emit();
-	bool save(const std::string& fileName);
+	bool save(const wxString& fileName);
 };
 
 class OTMLParser {

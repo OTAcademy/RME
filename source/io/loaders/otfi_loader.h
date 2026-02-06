@@ -9,7 +9,7 @@ class GraphicManager;
 
 class OtfiLoader {
 public:
-	static bool Load(GraphicManager* manager, const wxFileName& filename, wxString& error, wxArrayString& warnings);
+	static bool Load(GraphicManager* manager, const wxFileName& filename, wxString& error, std::vector<std::string>& warnings);
 };
 
 #endif

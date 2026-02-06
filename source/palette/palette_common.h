@@ -84,8 +84,6 @@ protected:
 	ToolBarList tool_bars;
 	wxTimer refresh_timer;
 	int last_brush_size;
-
-	DECLARE_EVENT_TABLE();
 };
 
 #endif

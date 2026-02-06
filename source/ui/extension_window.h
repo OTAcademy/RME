@@ -29,8 +29,6 @@ public:
 	void OnClickOpenFolder(wxCommandEvent& evt);
 	void OnClickLink(wxHtmlLinkEvent& evt);
 
-	DECLARE_EVENT_TABLE();
-
 private:
 	wxString HTML() const;
 	wxString HTMLForExtension(MaterialsExtension* me) const;

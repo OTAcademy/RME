@@ -45,7 +45,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
 	// Creates the file-dropdown menu
 	menu_bar = std::make_unique<MainMenuBar>(this);
-	wxArrayString warnings;
+	std::vector<std::string> warnings;
 	wxString error;
 
 	wxFileName filename;
@@ -285,7 +285,7 @@ bool MainFrame::DoQueryImportCreatures() {
 					dlg.GetPaths(paths);
 					for (uint32_t i = 0; i < paths.GetCount(); ++i) {
 						wxString error;
-						wxArrayString warnings;
+						std::vector<std::string> warnings;
 						bool ok = g_creatures.importXMLFromOT(FileName(paths[i]), error, warnings);
 						if (ok) {
 							DialogUtil::ListDialog("Monster loader errors", warnings);

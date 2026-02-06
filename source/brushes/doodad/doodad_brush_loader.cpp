@@ -25,7 +25,7 @@ static const auto iequal = [](char a, char b) {
 	return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
 };
 
-bool DoodadBrushLoader::load(pugi::xml_node node, DoodadBrushItems& items, DoodadBrushSettings& settings, wxArrayString& warnings, DoodadBrush* brushPtr) {
+bool DoodadBrushLoader::load(pugi::xml_node node, DoodadBrushItems& items, DoodadBrushSettings& settings, std::vector<std::string>& warnings, DoodadBrush* brushPtr) {
 	pugi::xml_attribute attribute;
 
 	if ((attribute = node.attribute("lookid"))) {
@@ -76,7 +76,7 @@ bool DoodadBrushLoader::load(pugi::xml_node node, DoodadBrushItems& items, Dooda
 				settings.thickness = boost::lexical_cast<int32_t>(thicknessString.substr(0, slash));
 				settings.thickness_ceiling = std::max<int32_t>(settings.thickness, boost::lexical_cast<int32_t>(thicknessString.substr(slash + 1)));
 			} catch (const boost::bad_lexical_cast&) {
-				warnings.push_back("Invalid thickness format: " + wxstr(thicknessString));
+				warnings.push_back((wxString("Invalid thickness format: ") + wxstr(thicknessString)).ToStdString());
 				settings.thickness = 0;
 				settings.thickness_ceiling = 0;
 			}
@@ -97,7 +97,7 @@ bool DoodadBrushLoader::load(pugi::xml_node node, DoodadBrushItems& items, Dooda
 	return true;
 }
 
-bool DoodadBrushLoader::loadAlternative(pugi::xml_node node, DoodadBrushItems& items, wxArrayString& warnings, DoodadBrushItems::AlternativeBlock* which, DoodadBrush* brushPtr) {
+bool DoodadBrushLoader::loadAlternative(pugi::xml_node node, DoodadBrushItems& items, std::vector<std::string>& warnings, DoodadBrushItems::AlternativeBlock* which, DoodadBrush* brushPtr) {
 	DoodadBrushItems::AlternativeBlock* alternativeBlock;
 	if (which) {
 		alternativeBlock = which;

@@ -13,8 +13,6 @@ public:
 	Brush* brush;
 
 	void OnKey(wxKeyEvent& event);
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

@@ -29,20 +29,6 @@ enum {
 	ID_EXIT_BRUSH
 };
 
-BEGIN_EVENT_TABLE(HousePalette, wxPanel)
-EVT_CHOICE(ID_TOWN_CHOICE, HousePalette::OnTownChange)
-EVT_TEXT(ID_SEARCH_CTRL, HousePalette::OnSearchChange)
-EVT_DATAVIEW_SELECTION_CHANGED(ID_HOUSE_LIST, HousePalette::OnHouseSelected)
-EVT_DATAVIEW_ITEM_ACTIVATED(ID_HOUSE_LIST, HousePalette::OnHouseActivated)
-
-EVT_BUTTON(ID_ADD_HOUSE, HousePalette::OnAddHouse)
-EVT_BUTTON(ID_EDIT_HOUSE, HousePalette::OnEditHouse)
-EVT_BUTTON(ID_REMOVE_HOUSE, HousePalette::OnRemoveHouse)
-
-EVT_TOGGLEBUTTON(ID_HOUSE_BRUSH, HousePalette::OnHouseBrushButton)
-EVT_TOGGLEBUTTON(ID_EXIT_BRUSH, HousePalette::OnSelectExitButton)
-END_EVENT_TABLE()
-
 HousePalette::HousePalette(wxWindow* parent) :
 	wxPanel(parent, wxID_ANY),
 	map(nullptr) {
@@ -117,6 +103,18 @@ HousePalette::HousePalette(wxWindow* parent) :
 	}
 
 	search_ctrl->Bind(wxEVT_CHAR_HOOK, &HousePalette::OnSearchCharHook, this);
+
+	Bind(wxEVT_CHOICE, &HousePalette::OnTownChange, this, ID_TOWN_CHOICE);
+	Bind(wxEVT_TEXT, &HousePalette::OnSearchChange, this, ID_SEARCH_CTRL);
+	Bind(wxEVT_DATAVIEW_SELECTION_CHANGED, &HousePalette::OnHouseSelected, this, ID_HOUSE_LIST);
+	Bind(wxEVT_DATAVIEW_ITEM_ACTIVATED, &HousePalette::OnHouseActivated, this, ID_HOUSE_LIST);
+
+	Bind(wxEVT_BUTTON, &HousePalette::OnAddHouse, this, ID_ADD_HOUSE);
+	Bind(wxEVT_BUTTON, &HousePalette::OnEditHouse, this, ID_EDIT_HOUSE);
+	Bind(wxEVT_BUTTON, &HousePalette::OnRemoveHouse, this, ID_REMOVE_HOUSE);
+
+	Bind(wxEVT_TOGGLEBUTTON, &HousePalette::OnHouseBrushButton, this, ID_HOUSE_BRUSH);
+	Bind(wxEVT_TOGGLEBUTTON, &HousePalette::OnSelectExitButton, this, ID_EXIT_BRUSH);
 }
 
 HousePalette::~HousePalette() {
@@ -312,6 +310,7 @@ void HousePalette::OnEditHouse(wxCommandEvent& event) {
 			FilterHouses();
 			g_gui.SelectBrush();
 		}
+		d->Destroy();
 	}
 }
 

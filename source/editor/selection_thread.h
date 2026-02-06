@@ -18,21 +18,26 @@
 #ifndef RME_EDITOR_SELECTION_THREAD_H
 #define RME_EDITOR_SELECTION_THREAD_H
 
-#include <wx/thread.h>
+#include <thread>
+
 #include "map/position.h"
 #include "editor/selection.h"
 
 class Editor;
 class Action;
 
-class SelectionThread : public wxThread {
+class SelectionThread {
 public:
 	SelectionThread(Editor& editor, Position start, Position end);
 	virtual ~SelectionThread();
 
-	void Execute(); // Calls "Create" and then "Run"
+	void Start();
+	void Wait();
+
 protected:
-	virtual ExitCode Entry();
+	void Work();
+	std::thread thread;
+
 	Editor& editor;
 	Position start, end;
 	Selection selection;

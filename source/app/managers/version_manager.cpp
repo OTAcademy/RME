@@ -25,7 +25,7 @@ VersionManager::~VersionManager() {
 	UnloadVersion();
 }
 
-bool VersionManager::LoadVersion(ClientVersionID version, wxString& error, wxArrayString& warnings, bool force) {
+bool VersionManager::LoadVersion(ClientVersionID version, wxString& error, std::vector<std::string>& warnings, bool force) {
 	if (ClientVersion::get(version) == nullptr) {
 		error = "Unsupported client version! (8)";
 		return false;
@@ -78,7 +78,7 @@ const ClientVersion& VersionManager::GetCurrentVersion() const {
 	return *getLoadedVersion();
 }
 
-bool VersionManager::LoadDataFiles(wxString& error, wxArrayString& warnings) {
+bool VersionManager::LoadDataFiles(wxString& error, std::vector<std::string>& warnings) {
 	FileName data_path = getLoadedVersion()->getDataPath();
 	FileName client_path = getLoadedVersion()->getClientPath();
 	FileName extension_path = FileSystem::GetExtensionsDirectory();
@@ -124,12 +124,12 @@ bool VersionManager::LoadDataFiles(wxString& error, wxArrayString& warnings) {
 
 	g_loading.SetLoadDone(30, "Loading items.xml ...");
 	if (!g_items.loadFromGameXml(base_data_path + "items.xml", error, warnings)) {
-		warnings.push_back("Couldn't load items.xml: " + error);
+		warnings.push_back(std::format("Couldn't load items.xml: {}", error.ToStdString()));
 	}
 
 	g_loading.SetLoadDone(45, "Loading creatures.xml ...");
 	if (!g_creatures.loadFromXML(base_data_path + "creatures.xml", true, error, warnings)) {
-		warnings.push_back("Couldn't load creatures.xml: " + error);
+		warnings.push_back(std::format("Couldn't load creatures.xml: {}", error.ToStdString()));
 	}
 
 	// g_loading.SetLoadDone(45, "Loading user creatures.xml ...");
@@ -150,12 +150,12 @@ bool VersionManager::LoadDataFiles(wxString& error, wxArrayString& warnings) {
 
 	g_loading.SetLoadDone(50, "Loading materials.xml ...");
 	if (!g_materials.loadMaterials(base_data_path + "materials.xml", error, warnings)) {
-		warnings.push_back("Couldn't load materials.xml: " + error);
+		warnings.push_back("Couldn't load materials.xml: " + std::string(error.mb_str()));
 	}
 
 	g_loading.SetLoadDone(70, "Loading extensions...");
 	if (!g_materials.loadExtensions(extension_path, error, warnings)) {
-		warnings.push_back("Couldn't load extensions: " + error);
+		warnings.push_back("Couldn't load extensions: " + std::string(error.mb_str()));
 		spdlog::warn("Couldn't load extensions: {}", error.ToStdString());
 	}
 

@@ -8,7 +8,7 @@
 #include <wx/wx.h>
 #include <algorithm>
 
-bool MenuBarLoader::Load(const FileName& path, wxMenuBar* menubar, std::map<MenuBar::ActionID, std::list<wxMenuItem*>>& items, const std::map<std::string, MenuBar::Action*>& actions, RecentFilesManager& recentFilesManager, wxArrayString& warnings, wxString& error) {
+bool MenuBarLoader::Load(const FileName& path, wxMenuBar* menubar, std::map<MenuBar::ActionID, std::list<wxMenuItem*>>& items, const std::map<std::string, MenuBar::Action*>& actions, RecentFilesManager& recentFilesManager, std::vector<std::string>& warnings, wxString& error) {
 	// Open the XML file
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(path.GetFullPath().mb_str());
@@ -42,14 +42,14 @@ bool MenuBarLoader::Load(const FileName& path, wxMenuBar* menubar, std::map<Menu
 #endif
 		} else if (i) {
 			delete i;
-			warnings.push_back(path.GetFullName() + ": Only menus can be subitems of main menu");
+			warnings.push_back((path.GetFullName() + ": Only menus can be subitems of main menu").ToStdString());
 		}
 	}
 
 	return true;
 }
 
-wxObject* MenuBarLoader::LoadItem(pugi::xml_node node, wxMenu* parent, std::map<MenuBar::ActionID, std::list<wxMenuItem*>>& items, const std::map<std::string, MenuBar::Action*>& actions, RecentFilesManager& recentFilesManager, wxArrayString& warnings, wxString& error) {
+wxObject* MenuBarLoader::LoadItem(pugi::xml_node node, wxMenu* parent, std::map<MenuBar::ActionID, std::list<wxMenuItem*>>& items, const std::map<std::string, MenuBar::Action*>& actions, RecentFilesManager& recentFilesManager, std::vector<std::string>& warnings, wxString& error) {
 	pugi::xml_attribute attribute;
 
 	const std::string& nodeName = as_lower_str(node.name());
@@ -105,7 +105,7 @@ wxObject* MenuBarLoader::LoadItem(pugi::xml_node node, wxMenu* parent, std::map<
 
 		auto it = actions.find(action);
 		if (it == actions.end()) {
-			warnings.push_back("Invalid action type '" + wxstr(action) + "'.");
+			warnings.push_back(("Invalid action type '" + wxstr(action) + "'.").ToStdString());
 			return nullptr;
 		}
 

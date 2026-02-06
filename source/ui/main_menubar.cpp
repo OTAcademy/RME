@@ -59,9 +59,6 @@
 #include "editor/operations/search_operations.h"
 #include "editor/operations/clean_operations.h"
 
-BEGIN_EVENT_TABLE(MainMenuBar, wxEvtHandler)
-END_EVENT_TABLE()
-
 MainMenuBar::MainMenuBar(MainFrame* frame) :
 	frame(frame) {
 	using namespace MenuBar;
@@ -98,10 +95,10 @@ MainMenuBar::MainMenuBar(MainFrame* frame) :
 	// Tie all events to this handler!
 
 	for (std::map<std::string, MenuBar::Action*>::iterator ai = actions.begin(); ai != actions.end(); ++ai) {
-		frame->Connect(MAIN_FRAME_MENU + ai->second->id, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)(wxEventFunction)(ai->second->handler), nullptr, this);
+		frame->Bind(wxEVT_MENU, ai->second->handler, this, MAIN_FRAME_MENU + ai->second->id);
 	}
 	for (size_t i = 0; i < 10; ++i) {
-		frame->Connect(recentFilesManager.GetBaseId() + i, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainMenuBar::OnOpenRecent), nullptr, this);
+		frame->Bind(wxEVT_MENU, &MainMenuBar::OnOpenRecent, this, recentFilesManager.GetBaseId() + i);
 	}
 }
 
@@ -189,7 +186,7 @@ void MainMenuBar::UpdateFloorMenu() {
 	}
 }
 
-bool MainMenuBar::Load(const FileName& path, wxArrayString& warnings, wxString& error) {
+bool MainMenuBar::Load(const FileName& path, std::vector<std::string>& warnings, wxString& error) {
 	if (MenuBarLoader::Load(path, menubar, items, actions, recentFilesManager, warnings, error)) {
 		Update();
 		LoadValues();
