@@ -32,6 +32,7 @@ struct RenderView {
 
 	int getFloorAdjustment() const;
 	bool IsTileVisible(int map_x, int map_y, int map_z, int& out_x, int& out_y) const;
+	bool IsPixelVisible(int draw_x, int draw_y, int margin) const;
 	void getScreenPosition(int map_x, int map_y, int map_z, int& out_x, int& out_y) const;
 };
 

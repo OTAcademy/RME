@@ -64,6 +64,20 @@ bool RenderView::IsTileVisible(int map_x, int map_y, int map_z, int& out_x, int&
 	return true;
 }
 
+bool RenderView::IsPixelVisible(int draw_x, int draw_y, int margin) const {
+	// Logic matches IsTileVisible but uses pre-calculated draw coordinates.
+	// screensize_x * zoom gives the logical viewport size (since TileSize is constant 32).
+	// See SetupGL: glOrtho(0, width * zoom, ...)
+	float logical_width = screensize_x * zoom;
+	float logical_height = screensize_y * zoom;
+
+	if (draw_x + TileSize + margin < 0 || draw_x - margin > logical_width ||
+		draw_y + TileSize + margin < 0 || draw_y - margin > logical_height) {
+		return false;
+	}
+	return true;
+}
+
 void RenderView::getScreenPosition(int map_x, int map_y, int map_z, int& out_x, int& out_y) const {
 	int offset = (map_z <= GROUND_LAYER)
 		? (GROUND_LAYER - map_z) * TileSize
