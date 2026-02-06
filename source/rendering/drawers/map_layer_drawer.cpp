@@ -77,8 +77,7 @@ void MapLayerDrawer::Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 							int draw_y = node_draw_y + (map_y * TileSize);
 
 							// Culling: Skip tiles that are far outside the viewport.
-							const int margin = 160;
-							if (!view.IsPixelVisible(draw_x, draw_y, margin)) {
+							if (!view.IsPixelVisible(draw_x, draw_y, PAINTERS_ALGORITHM_SAFETY_MARGIN_PIXELS)) {
 								continue;
 							}
 
@@ -115,8 +114,7 @@ void MapLayerDrawer::Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 					int draw_y = node_draw_y + (map_y * TileSize);
 
 					// Culling: Skip tiles that are far outside the viewport.
-					const int margin = 160;
-					if (!view.IsPixelVisible(draw_x, draw_y, margin)) {
+					if (!view.IsPixelVisible(draw_x, draw_y, PAINTERS_ALGORITHM_SAFETY_MARGIN_PIXELS)) {
 						continue;
 					}
 

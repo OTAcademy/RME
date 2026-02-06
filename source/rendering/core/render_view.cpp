@@ -56,7 +56,7 @@ bool RenderView::IsTileVisible(int map_x, int map_y, int map_z, int& out_x, int&
 		: TileSize * (floor - map_z);
 	out_x = (map_x * TileSize) - view_scroll_x - offset;
 	out_y = (map_y * TileSize) - view_scroll_y - offset;
-	int margin = TileSize * 6; // Account for large sprites (10.x can be 8x8 tiles)
+	const int margin = PAINTERS_ALGORITHM_SAFETY_MARGIN_PIXELS;
 
 	if (out_x < -margin || out_x > screensize_x * zoom + margin || out_y < -margin || out_y > screensize_y * zoom + margin) {
 		return false;
@@ -71,8 +71,7 @@ bool RenderView::IsPixelVisible(int draw_x, int draw_y, int margin) const {
 	float logical_width = screensize_x * zoom;
 	float logical_height = screensize_y * zoom;
 
-	if (draw_x + TileSize + margin < 0 || draw_x - margin > logical_width ||
-		draw_y + TileSize + margin < 0 || draw_y - margin > logical_height) {
+	if (draw_x + TileSize + margin < 0 || draw_x - margin > logical_width || draw_y + TileSize + margin < 0 || draw_y - margin > logical_height) {
 		return false;
 	}
 	return true;
