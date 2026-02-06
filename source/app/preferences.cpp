@@ -725,7 +725,7 @@ void PreferencesWindow::Apply() {
 		// change palette structure
 
 		wxString error;
-		wxArrayString warnings;
+		std::vector<std::string> warnings;
 		g_version.LoadVersion(g_version.GetCurrentVersionID(), error, warnings, true);
 		DialogUtil::PopupDialog("Error", error, wxOK);
 		DialogUtil::ListDialog("Warnings", warnings);

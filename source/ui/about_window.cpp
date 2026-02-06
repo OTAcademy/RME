@@ -31,7 +31,7 @@
 // About Window - Information window about the application
 
 AboutWindow::AboutWindow(wxWindow* parent) :
-	wxDialog(parent, wxID_ANY, "About", wxDefaultPosition, wxSize(300, 320), wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX) {
+	wxDialog(parent, wxID_ANY, "About", wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX) {
 	wxString about;
 
 	about << "OTAcademy Map Editor\n";
@@ -53,7 +53,7 @@ AboutWindow::AboutWindow(wxWindow* parent) :
 	about << "\n\n";
 
 	about << "Using " << wxVERSION_STRING << " interface\n";
-	const char* gl_version = (const char*)glGetString(GL_VERSION);
+	const char* gl_version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
 	about << "OpenGL version " << (gl_version ? wxString(gl_version, wxConvUTF8) : wxString("Unknown")) << "\n";
 	about << "\n";
 	about << "This program comes with ABSOLUTELY NO WARRANTY;\n";

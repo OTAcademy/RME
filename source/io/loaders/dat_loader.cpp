@@ -73,7 +73,7 @@ namespace {
 	}
 
 	// Helper to read flag data associated with a specific flag
-	bool ReadFlagData(DatFormat format, FileReadHandle& file, GameSprite* sType, uint8_t flag, uint8_t previous_flag, wxArrayString& warnings) {
+	bool ReadFlagData(DatFormat format, FileReadHandle& file, GameSprite* sType, uint8_t flag, uint8_t previous_flag, std::vector<std::string>& warnings) {
 		switch (flag) {
 			case DatFlagGroundBorder:
 			case DatFlagOnBottom:
@@ -208,7 +208,7 @@ namespace {
 	}
 
 	// Helper loop to read all flags for a sprite
-	bool LoadMetadataFlags(DatFormat format, FileReadHandle& file, GameSprite* sType, uint32_t sprite_id, wxArrayString& warnings) {
+	bool LoadMetadataFlags(DatFormat format, FileReadHandle& file, GameSprite* sType, uint32_t sprite_id, std::vector<std::string>& warnings) {
 		uint8_t flag = 0xFF; // Initialize to an invalid flag or trailing flag
 		uint8_t previous_flag = 0xFF;
 
@@ -253,7 +253,7 @@ namespace {
 
 } // namespace
 
-bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile, wxString& error, wxArrayString& warnings) {
+bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile, wxString& error, std::vector<std::string>& warnings) {
 	// items.otb has most of the info we need. This only loads the GameSprite metadata
 	FileReadHandle file(nstr(datafile.GetFullPath()));
 
@@ -371,7 +371,7 @@ bool DatLoader::LoadMetadata(GraphicManager* manager, const wxFileName& datafile
 	return true;
 }
 
-bool DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, GameSprite* sType, uint32_t group_index, wxArrayString& warnings) {
+bool DatLoader::ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, GameSprite* sType, uint32_t group_index, std::vector<std::string>& warnings) {
 
 	// Skipping the group type
 	if (manager->has_frame_groups && sType->id > manager->item_count) {

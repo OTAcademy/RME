@@ -12,13 +12,13 @@
 namespace pugi {
 	class xml_node;
 }
-class wxArrayString;
+// class std::vector<std::string>;
 class WallBrush;
 class WallBrushItems;
 
 class WallBrushLoader {
 public:
-	static bool load(WallBrush* brush, WallBrushItems& items, pugi::xml_node node, wxArrayString& warnings);
+	static bool load(WallBrush* brush, WallBrushItems& items, pugi::xml_node node, std::vector<std::string>& warnings);
 };
 
 #endif

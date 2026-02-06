@@ -186,7 +186,7 @@ void MainMenuBar::UpdateFloorMenu() {
 	}
 }
 
-bool MainMenuBar::Load(const FileName& path, wxArrayString& warnings, wxString& error) {
+bool MainMenuBar::Load(const FileName& path, std::vector<std::string>& warnings, wxString& error) {
 	if (MenuBarLoader::Load(path, menubar, items, actions, recentFilesManager, warnings, error)) {
 		Update();
 		LoadValues();

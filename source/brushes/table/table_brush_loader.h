@@ -12,10 +12,10 @@ class TableBrushItems;
 
 class TableBrushLoader {
 public:
-	static bool load(pugi::xml_node node, TableBrush& brush, TableBrushItems& items, wxArrayString& warnings);
+	static bool load(pugi::xml_node node, TableBrush& brush, TableBrushItems& items, std::vector<std::string>& warnings);
 
 private:
-	static uint32_t getAlignment(const std::string& alignString, wxArrayString& warnings);
+	static uint32_t getAlignment(const std::string& alignString, std::vector<std::string>& warnings);
 };
 
 #endif

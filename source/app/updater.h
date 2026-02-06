@@ -20,7 +20,7 @@
 	#ifndef RME_UPDATER_H_
 		#define RME_UPDATER_H_
 
-		#include "app/threads.h"
+		#include <thread>
 
 wxDECLARE_EVENT(EVT_UPDATE_CHECK_FINISHED, wxCommandEvent);
 
@@ -32,17 +32,6 @@ wxDECLARE_EVENT(EVT_UPDATE_CHECK_FINISHED, wxCommandEvent);
 			),
 
 class wxURL;
-
-class UpdateConnectionThread : public DetachedThread {
-public:
-	UpdateConnectionThread(wxEvtHandler* receiver, wxURL* url);
-	virtual ~UpdateConnectionThread();
-
-protected:
-	virtual ExitCode Entry();
-	wxEvtHandler* receiver;
-	wxURL* url;
-};
 
 class UpdateChecker {
 public:

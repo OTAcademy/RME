@@ -16,7 +16,7 @@ static const auto iequal = [](char a, char b) {
 	return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
 };
 
-bool TableBrushLoader::load(pugi::xml_node node, TableBrush& brush, TableBrushItems& items, wxArrayString& warnings) {
+bool TableBrushLoader::load(pugi::xml_node node, TableBrush& brush, TableBrushItems& items, std::vector<std::string>& warnings) {
 	uint16_t look_id = 0;
 	if (const pugi::xml_attribute attribute = node.attribute("server_lookid")) {
 		look_id = g_items[attribute.as_ushort()].clientID;
@@ -85,7 +85,7 @@ bool TableBrushLoader::load(pugi::xml_node node, TableBrush& brush, TableBrushIt
 	return true;
 }
 
-uint32_t TableBrushLoader::getAlignment(const std::string& alignString, wxArrayString& warnings) {
+uint32_t TableBrushLoader::getAlignment(const std::string& alignString, std::vector<std::string>& warnings) {
 	static constexpr std::pair<std::string_view, uint32_t> alignments[] = {
 		{ "vertical", TABLE_VERTICAL },
 		{ "horizontal", TABLE_HORIZONTAL },
@@ -102,6 +102,6 @@ uint32_t TableBrushLoader::getAlignment(const std::string& alignString, wxArrayS
 		}
 	}
 
-	warnings.push_back("Unknown table alignment '" + wxstr(alignString) + "'\n");
+	warnings.push_back(std::string((wxString("Unknown table alignment '") + wxstr(alignString) + "'\n").mb_str()));
 	return 0xFFFFFFFF;
 }

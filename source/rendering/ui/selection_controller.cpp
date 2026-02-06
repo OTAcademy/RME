@@ -423,7 +423,7 @@ void SelectionController::ExecuteBoundboxSelection(const Position& start_pos, co
 
 	editor.selection.start(); // Start a selection session
 	for (auto* thread : threads) {
-		thread->Execute();
+		thread->Start();
 	}
 	for (auto* thread : threads) {
 		editor.selection.join(thread);

@@ -40,24 +40,23 @@ public:
 	BrushListBox(wxWindow* parent, const TilesetCategory* _tileset);
 	~BrushListBox();
 
-	wxWindow* GetSelfWindow() {
+	wxWindow* GetSelfWindow() override {
 		return this;
 	}
 
 	// Select the first brush
-	void SelectFirstBrush();
+	void SelectFirstBrush() override;
 	// Returns the currently selected brush (First brush if panel is not loaded)
-	Brush* GetSelectedBrush() const;
+	Brush* GetSelectedBrush() const override;
 	// Select the brush in the parameter, this only changes the look of the panel
-	bool SelectBrush(const Brush* brush);
+	bool SelectBrush(const Brush* brush) override;
 
 	// Event handlers
-	virtual void OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const;
-	virtual wxCoord OnMeasureItem(size_t n) const;
+	virtual void OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const override;
+	virtual wxCoord OnMeasureItem(size_t n) const override;
 
 	void OnKey(wxKeyEvent& event);
 };
-
 
 class BrushPanel : public wxPanel {
 public:

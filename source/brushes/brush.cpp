@@ -104,7 +104,7 @@ void Brushes::init() {
 	CarpetBrush::init();
 }
 
-bool Brushes::unserializeBrush(pugi::xml_node node, wxArrayString& warnings) {
+bool Brushes::unserializeBrush(pugi::xml_node node, std::vector<std::string>& warnings) {
 	pugi::xml_attribute attribute;
 	if (!(attribute = node.attribute("name"))) {
 		warnings.push_back("Brush node without name.");
@@ -113,7 +113,7 @@ bool Brushes::unserializeBrush(pugi::xml_node node, wxArrayString& warnings) {
 
 	const std::string& brushName = attribute.as_string();
 	if (brushName == "all" || brushName == "none") {
-		warnings.push_back(wxString("Using reserved brushname \"") << wxstr(brushName) << "\".");
+		warnings.push_back(std::string((wxString("Using reserved brushname \"") << wxstr(brushName) << "\".").mb_str()));
 		return false;
 	}
 
@@ -140,7 +140,7 @@ bool Brushes::unserializeBrush(pugi::xml_node node, wxArrayString& warnings) {
 		if (auto it = typeMap.find(brushType); it != typeMap.end()) {
 			brush = it->second();
 		} else {
-			warnings.push_back(wxstr(std::format("Unknown brush type {}", brushType)));
+			warnings.push_back(std::string(wxstr(std::format("Unknown brush type {}", brushType)).mb_str()));
 			return false;
 		}
 
@@ -153,16 +153,16 @@ bool Brushes::unserializeBrush(pugi::xml_node node, wxArrayString& warnings) {
 		return true;
 	}
 
-	wxArrayString subWarnings;
+	std::vector<std::string> subWarnings;
 	brush->load(node, subWarnings);
 
 	if (!subWarnings.empty()) {
-		warnings.push_back(wxString("Errors while loading brush \"") << wxstr(brush->getName()) << "\"");
+		warnings.push_back(std::string((wxString("Errors while loading brush \"") << wxstr(brush->getName()) << "\"").mb_str()));
 		warnings.insert(warnings.end(), subWarnings.begin(), subWarnings.end());
 	}
 
 	if (brush->getName() == "all" || brush->getName() == "none") {
-		warnings.push_back(wxstr(std::format("Using reserved brushname '{}'.", brush->getName())));
+		warnings.push_back(std::string(wxstr(std::format("Using reserved brushname '{}'.", brush->getName())).mb_str()));
 		delete brush;
 		return false;
 	}
@@ -170,7 +170,7 @@ bool Brushes::unserializeBrush(pugi::xml_node node, wxArrayString& warnings) {
 	Brush* otherBrush = getBrush(brush->getName());
 	if (otherBrush) {
 		if (otherBrush != brush) {
-			warnings.push_back(wxstr(std::format("Duplicate brush name {}. Undefined behaviour may ensue.", brush->getName())));
+			warnings.push_back(std::string(wxstr(std::format("Duplicate brush name {}. Undefined behaviour may ensue.", brush->getName())).mb_str()));
 		} else {
 			// Don't insert
 			return true;
@@ -181,7 +181,7 @@ bool Brushes::unserializeBrush(pugi::xml_node node, wxArrayString& warnings) {
 	return true;
 }
 
-bool Brushes::unserializeBorder(pugi::xml_node node, wxArrayString& warnings) {
+bool Brushes::unserializeBorder(pugi::xml_node node, std::vector<std::string>& warnings) {
 	pugi::xml_attribute attribute = node.attribute("id");
 	if (!attribute) {
 		warnings.push_back("Couldn't read border id node");
@@ -190,7 +190,7 @@ bool Brushes::unserializeBorder(pugi::xml_node node, wxArrayString& warnings) {
 
 	uint32_t id = attribute.as_uint();
 	if (borders.contains(id)) {
-		warnings.push_back(wxstr(std::format("Border ID {} already exists", id)));
+		warnings.push_back(std::string(wxstr(std::format("Border ID {} already exists", id)).mb_str()));
 		return false;
 	}
 

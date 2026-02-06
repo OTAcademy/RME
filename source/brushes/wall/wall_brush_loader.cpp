@@ -71,7 +71,7 @@ namespace {
 
 } // namespace
 
-bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_node node, wxArrayString& warnings) {
+bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_node node, std::vector<std::string>& warnings) {
 	pugi::xml_attribute attribute;
 	if ((attribute = node.attribute("lookid"))) {
 		brush->look_id = attribute.as_ushort();
@@ -97,7 +97,7 @@ bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_no
 			if (it != alignment_map.end()) {
 				alignment = it->second;
 			} else {
-				warnings.push_back("Unknown wall alignment '" + wxstr(typeString) + "'\n");
+				warnings.push_back(std::string((wxString("Unknown wall alignment '") + wxstr(typeString) + "'\n").mb_str()));
 				continue;
 			}
 
@@ -193,7 +193,7 @@ bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_no
 						if (doorIt != door_type_map.end()) {
 							specificType = doorIt->second;
 						} else {
-							warnings.push_back("Unknown door type '" + wxstr(type) + "'\n");
+							warnings.push_back(std::string((wxString("Unknown door type '") + wxstr(type) + "'\n").mb_str()));
 							break;
 						}
 					}
@@ -222,17 +222,17 @@ bool WallBrushLoader::load(WallBrush* brush, WallBrushItems& items, pugi::xml_no
 				if (friendBrush) {
 					brush->friends.push_back(friendBrush->getID());
 				} else {
-					warnings.push_back("Brush '" + wxstr(name) + "' is not defined.");
+					warnings.push_back(std::string((wxString("Brush '") + wxstr(name) + "' is not defined.").mb_str()));
 					continue;
 				}
 
 				if (childNode.attribute("redirect").as_bool()) {
 					if (!friendBrush->isWall()) {
-						warnings.push_back("Wall brush redirect link: '" + wxstr(name) + "' is not a wall brush.");
+						warnings.push_back(std::string((wxString("Wall brush redirect link: '") + wxstr(name) + "' is not a wall brush.").mb_str()));
 					} else if (!brush->redirect_to) {
 						brush->redirect_to = friendBrush->asWall();
 					} else {
-						warnings.push_back("Wall brush '" + wxstr(brush->getName()) + "' has more than one redirect link.");
+						warnings.push_back(std::string((wxString("Wall brush '") + wxstr(brush->getName()) + "' has more than one redirect link.").mb_str()));
 					}
 				}
 			}

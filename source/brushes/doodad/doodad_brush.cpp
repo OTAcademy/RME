@@ -18,7 +18,7 @@ DoodadBrush::DoodadBrush() {
 DoodadBrush::~DoodadBrush() {
 }
 
-bool DoodadBrush::load(pugi::xml_node node, wxArrayString& warnings) {
+bool DoodadBrush::load(pugi::xml_node node, std::vector<std::string>& warnings) {
 	return DoodadBrushLoader::load(node, items, settings, warnings, this);
 }
 

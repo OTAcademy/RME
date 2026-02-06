@@ -16,7 +16,7 @@ namespace {
 	constexpr uint32_t SPRITE_ADDRESS_SIZE_NORMAL = 2;
 }
 
-bool SprLoader::LoadData(GraphicManager* manager, const wxFileName& datafile, wxString& error, wxArrayString& warnings) {
+bool SprLoader::LoadData(GraphicManager* manager, const wxFileName& datafile, wxString& error, std::vector<std::string>& warnings) {
 	FileReadHandle fh(nstr(datafile.GetFullPath()));
 
 	if (!fh.isOk()) {
@@ -107,7 +107,7 @@ std::vector<uint32_t> SprLoader::ReadSpriteIndexes(FileReadHandle& fh, uint32_t 
 	return sprite_indexes;
 }
 
-bool SprLoader::ReadSprites(GraphicManager* manager, FileReadHandle& fh, const std::vector<uint32_t>& sprite_indexes, wxArrayString& warnings, wxString& error) {
+bool SprLoader::ReadSprites(GraphicManager* manager, FileReadHandle& fh, const std::vector<uint32_t>& sprite_indexes, std::vector<std::string>& warnings, wxString& error) {
 	int id = 1;
 	for (uint32_t index : sprite_indexes) {
 		if (index == 0) {
@@ -119,7 +119,7 @@ bool SprLoader::ReadSprites(GraphicManager* manager, FileReadHandle& fh, const s
 		if (!fh.seek(seek_pos)) {
 			// Seek failed, likely bad index or EOF. Log it.
 #if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
-			warnings.push_back(wxstr(std::format("SprLoader: Failed to seek to sprite data at offset {} for id {}", seek_pos, id)));
+			warnings.push_back(std::string(wxstr(std::format("SprLoader: Failed to seek to sprite data at offset {} for id {}", seek_pos, id)).mb_str()));
 #else
 			wxString ss;
 			ss << "SprLoader: Failed to seek to sprite data at offset " << seek_pos << " for id " << id;
@@ -141,7 +141,7 @@ bool SprLoader::ReadSprites(GraphicManager* manager, FileReadHandle& fh, const s
 					if (spr->size > 0) {
 						// Duplicate GameSprite id
 #if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
-						warnings.push_back(wxstr(std::format("items.spr: Duplicate GameSprite id {}", id)));
+						warnings.push_back(std::string(wxstr(std::format("items.spr: Duplicate GameSprite id {}", id)).mb_str()));
 #else
 						wxString ss;
 						ss << "items.spr: Duplicate GameSprite id " << id;
@@ -163,7 +163,7 @@ bool SprLoader::ReadSprites(GraphicManager* manager, FileReadHandle& fh, const s
 				}
 			} else {
 #if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
-				warnings.push_back(wxstr(std::format("SprLoader: Failed to cast sprite id {} to NormalImage", id)));
+				warnings.push_back(std::string(wxstr(std::format("SprLoader: Failed to cast sprite id {} to NormalImage", id)).mb_str()));
 #else
 				wxString ss;
 				ss.Printf("SprLoader: Failed to cast sprite id %d to NormalImage", id);

@@ -81,9 +81,9 @@ bool Application::OnInit() {
 	spdlog::flush_on(spdlog::level::info);
 	spdlog::info("RME starting up - logging enabled");
 
-	std::cout << "This is free software: you are free to change and redistribute it." << std::endl;
-	std::cout << "There is NO WARRANTY, to the extent permitted by law." << std::endl;
-	std::cout << "Review COPYING in RME distribution for details." << std::endl;
+	spdlog::info("This is free software: you are free to change and redistribute it.");
+	spdlog::info("There is NO WARRANTY, to the extent permitted by law.");
+	spdlog::info("Review COPYING in RME distribution for details.");
 
 	// Discover data directory
 	FileSystem::DiscoverDataDirectory("clients.xml");
@@ -334,4 +334,3 @@ bool Application::ParseCommandLineMap(wxString& fileName) {
 	}
 	return false;
 }
-

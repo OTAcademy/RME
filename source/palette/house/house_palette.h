@@ -65,8 +65,6 @@ protected:
 
 	wxBitmap guild_icon;
 	wxBitmap no_guild_icon;
-
-	DECLARE_EVENT_TABLE();
 };
 
 #endif

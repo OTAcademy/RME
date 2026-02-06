@@ -1,6 +1,8 @@
 #include "rendering/core/shader_program.h"
 #include <vector>
+#include <vector>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 ShaderProgram::ShaderProgram() :
 	program_id(0) {
@@ -34,7 +36,7 @@ bool ShaderProgram::Load(const std::string& vertexSource, const std::string& fra
 	if (!success) {
 		char infoLog[1024];
 		glGetProgramInfoLog(program_id, 1024, nullptr, infoLog);
-		std::cerr << "SHADER PROGRAM LINKING ERROR: " << infoLog << std::endl;
+		spdlog::error("SHADER PROGRAM LINKING ERROR: {}", infoLog);
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
 		return false;
@@ -108,8 +110,7 @@ GLuint ShaderProgram::CompileShader(GLenum type, const std::string& source) {
 	if (!success) {
 		char infoLog[1024];
 		glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-		std::cerr << "SHADER COMPILATION ERROR (" << (type == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT") << "):\n"
-				  << infoLog << std::endl;
+		spdlog::error("SHADER COMPILATION ERROR ({}):\n{}", (type == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT"), infoLog);
 		glDeleteShader(shader);
 		return 0;
 	}

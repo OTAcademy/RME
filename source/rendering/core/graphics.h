@@ -82,9 +82,9 @@ public:
 	// This fills the item / creature adress space
 
 	// This fills the item / creature adress space
-	bool loadOTFI(const FileName& filename, wxString& error, wxArrayString& warnings);
-	bool loadSpriteMetadata(const FileName& datafile, wxString& error, wxArrayString& warnings);
-	bool loadSpriteData(const FileName& datafile, wxString& error, wxArrayString& warnings);
+	bool loadOTFI(const FileName& filename, wxString& error, std::vector<std::string>& warnings);
+	bool loadSpriteMetadata(const FileName& datafile, wxString& error, std::vector<std::string>& warnings);
+	bool loadSpriteData(const FileName& datafile, wxString& error, std::vector<std::string>& warnings);
 
 	friend class GameSpriteLoader;
 	friend class OtfiLoader;

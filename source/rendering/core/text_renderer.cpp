@@ -11,6 +11,7 @@
 #include <vector>
 #include <fstream>
 #include <mutex>
+#include <spdlog/spdlog.h>
 
 // Static buffer to hold font data in memory
 // Must persist as long as any NanoVG context uses it (lifetime of app essentially)
@@ -54,7 +55,7 @@ void TextRenderer::LoadFont(NVGcontext* vg) {
 		}
 
 		if (font_data.empty()) {
-			std::cerr << "TextRenderer: Failed to load any font. Text rendering will fail." << std::endl;
+			spdlog::error("TextRenderer: Failed to load any font. Text rendering will fail.");
 		}
 	});
 
@@ -65,7 +66,7 @@ void TextRenderer::LoadFont(NVGcontext* vg) {
 	// nvgCreateFontMem does NOT copy the data, so font_data must persist
 	int font = nvgCreateFontMem(vg, "sans", font_data.data(), static_cast<int>(font_data.size()), 0);
 	if (font == -1) {
-		std::cerr << "TextRenderer: Could not create font 'sans' from memory." << std::endl;
+		spdlog::error("TextRenderer: Could not create font 'sans' from memory.");
 	}
 }
 

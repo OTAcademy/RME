@@ -39,7 +39,7 @@ TableBrush::~TableBrush() {
 	////
 }
 
-bool TableBrush::load(pugi::xml_node node, wxArrayString& warnings) {
+bool TableBrush::load(pugi::xml_node node, std::vector<std::string>& warnings) {
 	return TableBrushLoader::load(node, *this, items, warnings);
 }
 

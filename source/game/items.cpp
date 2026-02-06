@@ -140,7 +140,7 @@ void ItemDatabase::clear() {
 	}
 }
 
-bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, wxArrayString& warnings) {
+bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings) {
 	uint8_t u8;
 
 	for (; itemNode != nullptr; itemNode = itemNode->advance()) {
@@ -267,7 +267,7 @@ bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, wxArra
 
 				case ITEM_ATTR_LIGHT2: {
 					if (datalen != sizeof(lightBlock2)) {
-						warnings.push_back("items.otb: Unexpected data length of item light (2) block (Should be " + i2ws(sizeof(lightBlock2)) + " bytes)");
+						warnings.push_back(std::string(("items.otb: Unexpected data length of item light (2) block (Should be " + i2ws(sizeof(lightBlock2)) + " bytes)").mb_str()));
 						break;
 					}
 
@@ -418,7 +418,7 @@ bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, wxArra
 	return true;
 }
 
-bool ItemDatabase::loadFromOtbVer2(BinaryNode* itemNode, wxString& error, wxArrayString& warnings) {
+bool ItemDatabase::loadFromOtbVer2(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings) {
 	uint8_t u8;
 	for (; itemNode != nullptr; itemNode = itemNode->advance()) {
 		if (!itemNode->getU8(u8)) {
@@ -539,7 +539,7 @@ bool ItemDatabase::loadFromOtbVer2(BinaryNode* itemNode, wxString& error, wxArra
 
 				case ITEM_ATTR_LIGHT2: {
 					if (datalen != sizeof(lightBlock2)) {
-						warnings.push_back("items.otb: Unexpected data length of item light (2) block (Should be " + i2ws(sizeof(lightBlock2)) + " bytes)");
+						warnings.push_back(std::string(("items.otb: Unexpected data length of item light (2) block (Should be " + i2ws(sizeof(lightBlock2)) + " bytes)").mb_str()));
 						break;
 					}
 
@@ -586,7 +586,7 @@ bool ItemDatabase::loadFromOtbVer2(BinaryNode* itemNode, wxString& error, wxArra
 	return true;
 }
 
-bool ItemDatabase::loadFromOtbVer3(BinaryNode* itemNode, wxString& error, wxArrayString& warnings) {
+bool ItemDatabase::loadFromOtbVer3(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings) {
 	uint8_t u8;
 	for (; itemNode != nullptr; itemNode = itemNode->advance()) {
 		if (!itemNode->getU8(u8)) {
@@ -700,7 +700,7 @@ bool ItemDatabase::loadFromOtbVer3(BinaryNode* itemNode, wxString& error, wxArra
 
 				case ITEM_ATTR_LIGHT2: {
 					if (datalen != sizeof(lightBlock2)) {
-						warnings.push_back("items.otb: Unexpected data length of item light (2) block (Should be " + i2ws(sizeof(lightBlock2)) + " bytes)");
+						warnings.push_back(std::string(("items.otb: Unexpected data length of item light (2) block (Should be " + i2ws(sizeof(lightBlock2)) + " bytes)").mb_str()));
 						break;
 					}
 					if (!itemNode->skip(4)) { // Just skip two bytes, we don't need light
@@ -760,7 +760,7 @@ bool ItemDatabase::loadFromOtbVer3(BinaryNode* itemNode, wxString& error, wxArra
 	return true;
 }
 
-bool ItemDatabase::loadFromOtb(const FileName& datafile, wxString& error, wxArrayString& warnings) {
+bool ItemDatabase::loadFromOtb(const FileName& datafile, wxString& error, std::vector<std::string>& warnings) {
 	std::string filename = nstr((datafile.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR) + datafile.GetFullName()));
 	DiskNodeFileReadHandle f(filename, StringVector(1, "OTBI"));
 
@@ -1018,7 +1018,7 @@ bool ItemDatabase::loadItemFromGameXml(pugi::xml_node itemNode, int id) {
 	return true;
 }
 
-bool ItemDatabase::loadFromGameXml(const FileName& identifier, wxString& error, wxArrayString& warnings) {
+bool ItemDatabase::loadFromGameXml(const FileName& identifier, wxString& error, std::vector<std::string>& warnings) {
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_file(identifier.GetFullPath().mb_str());
 	if (!result) {

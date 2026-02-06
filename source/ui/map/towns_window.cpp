@@ -85,7 +85,7 @@ EditTownsDialog::~EditTownsDialog() = default;
 void EditTownsDialog::BuildListBox(bool doselect) {
 	long tmplong = 0;
 	max_town_id = 0;
-	wxArrayString town_name_list;
+	std::vector<std::string> town_name_list;
 	uint32_t selection_before = 0;
 
 	if (doselect && id_field->GetValue().ToLong(&tmplong)) {
@@ -100,13 +100,16 @@ void EditTownsDialog::BuildListBox(bool doselect) {
 	}
 
 	for (const auto& town : town_list) {
-		town_name_list.Add(wxstr(town->getName()));
+		town_name_list.push_back(town->getName());
 		if (max_town_id < town->getID()) {
 			max_town_id = town->getID();
 		}
 	}
 
-	town_listbox->Set(town_name_list);
+	town_listbox->Clear();
+	for (const auto& name : town_name_list) {
+		town_listbox->Append(name);
+	}
 	remove_button->Enable(town_listbox->GetCount() != 0);
 	select_position_button->Enable(false);
 

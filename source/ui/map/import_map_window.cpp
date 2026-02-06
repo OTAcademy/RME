@@ -41,27 +41,33 @@ ImportMapWindow::ImportMapWindow(wxWindow* parent, Editor& editor) :
 	sizer->Add(tmpsizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
 
 	// Import options
-	wxArrayString house_choices;
-	house_choices.Add("Smart Merge");
-	house_choices.Add("Insert");
-	house_choices.Add("Merge");
-	house_choices.Add("Don't Import");
+	std::vector<std::string> house_choices;
+	house_choices.push_back("Smart Merge");
+	house_choices.push_back("Insert");
+	house_choices.push_back("Merge");
+	house_choices.push_back("Don't Import");
 
 	// House options
 	tmpsizer = newd wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, "House Import Behaviour"), wxVERTICAL);
-	house_options = newd wxChoice(tmpsizer->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize, house_choices);
+	house_options = newd wxChoice(tmpsizer->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize);
+	for (const auto& choice : house_choices) {
+		house_options->Append(choice);
+	}
 	house_options->SetSelection(0);
 	tmpsizer->Add(house_options, 0, wxALL | wxEXPAND, 5);
 	sizer->Add(tmpsizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
 
 	// Import options
-	wxArrayString spawn_choices;
-	spawn_choices.Add("Merge");
-	spawn_choices.Add("Don't Import");
+	std::vector<std::string> spawn_choices;
+	spawn_choices.push_back("Merge");
+	spawn_choices.push_back("Don't Import");
 
 	// Spawn options
 	tmpsizer = newd wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, "Spawn Import Behaviour"), wxVERTICAL);
-	spawn_options = newd wxChoice(tmpsizer->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize, spawn_choices);
+	spawn_options = newd wxChoice(tmpsizer->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize);
+	for (const auto& choice : spawn_choices) {
+		spawn_options->Append(choice);
+	}
 	spawn_options->SetSelection(0);
 	tmpsizer->Add(spawn_options, 0, wxALL | wxEXPAND, 5);
 	sizer->Add(tmpsizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);

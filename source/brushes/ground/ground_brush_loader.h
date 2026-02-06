@@ -9,7 +9,7 @@
 #include <vector>
 
 class GroundBrush;
-class wxArrayString;
+// class std::vector<std::string>;
 namespace pugi {
 	class xml_node;
 }
@@ -27,7 +27,7 @@ public:
 	 * @param warnings List to append any warnings to.
 	 * @return true if loading was successful, false otherwise.
 	 */
-	static bool load(GroundBrush& brush, pugi::xml_node node, wxArrayString& warnings);
+	static bool load(GroundBrush& brush, pugi::xml_node node, std::vector<std::string>& warnings);
 };
 
 #endif // RME_GROUND_BRUSH_LOADER_H

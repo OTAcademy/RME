@@ -12,7 +12,7 @@
 #include <vector>
 
 class GroundBrush;
-class wxArrayString;
+// class std::vector<std::string>;
 namespace pugi {
 	class xml_node;
 }
@@ -55,7 +55,7 @@ public:
 	 * @param ground_equivalent The ID of the ground item this border is equivalent to (optional).
 	 * @return true if loading was successful, false otherwise.
 	 */
-	bool load(pugi::xml_node node, wxArrayString& warnings, GroundBrush* owner = nullptr, uint16_t ground_equivalent = 0);
+	bool load(pugi::xml_node node, std::vector<std::string>& warnings, GroundBrush* owner = nullptr, uint16_t ground_equivalent = 0);
 
 	/**
 	 * @brief Array of tile IDs for each border direction.
