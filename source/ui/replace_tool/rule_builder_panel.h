@@ -75,9 +75,6 @@ private:
 	int GetRuleY(int index, int width) const;
 	void LayoutRules();
 
-	void DrawRuleItemCard(NVGcontext* vg, float x, float y, float size, uint16_t id, bool highlight, bool isTrash, bool showDeleteOverlay, int probability = -1);
-	void DrawTrashIcon(NVGcontext* vg, float x, float y, float size, bool highlight);
-
 	// Drag feedback
 	HitResult m_dragHover;
 };

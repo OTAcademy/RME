@@ -13,6 +13,7 @@
 // Manages the collection of items for a carpet brush
 class CarpetBrushItems {
 	friend class ReplaceToolWindow;
+	friend class LibraryPanel;
 
 public:
 	CarpetBrushItems();

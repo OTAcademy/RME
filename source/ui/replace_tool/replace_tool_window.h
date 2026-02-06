@@ -2,7 +2,7 @@
 #define RME_REPLACE_TOOL_WINDOW_H_
 
 #include "app/main.h"
-#include "ui/replace_tool/item_grid_panel.h"
+#include "ui/replace_tool/library_panel.h"
 #include "ui/replace_tool/rule_manager.h"
 #include "ui/replace_tool/replacement_engine.h"
 #include "ui/replace_tool/rule_list_control.h"
@@ -13,13 +13,13 @@
 
 class Editor;
 
-class ReplaceToolWindow : public wxDialog, public ItemGridPanel::Listener, public RuleListControl::Listener, public RuleBuilderPanel::Listener {
+class ReplaceToolWindow : public wxDialog, public LibraryPanel::Listener, public RuleListControl::Listener, public RuleBuilderPanel::Listener, public ItemGridPanel::Listener {
 public:
 	ReplaceToolWindow(wxWindow* parent, Editor* editor);
 	virtual ~ReplaceToolWindow();
 
-	// ItemGridPanel::Listener
-	void OnItemSelected(ItemGridPanel* source, uint16_t itemId) override;
+	// LibraryPanel::Listener
+	void OnLibraryItemSelected(uint16_t itemId) override;
 
 	// RuleListControl::Listener
 	virtual void OnRuleSelected(const RuleSet& rs) override;
@@ -29,22 +29,23 @@ public:
 	virtual void OnRuleChanged() override;
 	virtual void OnClearRules() override;
 
+	// ItemGridPanel::Listener
+	virtual void OnItemSelected(ItemGridPanel* source, uint16_t itemId) override;
+
 private:
 	void InitLayout();
 	void UpdateSavedRulesList();
 
 	// Event Handlers
-	void OnSearchChange(wxCommandEvent& event);
 	void OnExecute(wxCommandEvent& event);
 	void OnSaveRule(wxCommandEvent& event);
 
 	Editor* editor;
 
-	ItemGridPanel* allItemsGrid;
+	LibraryPanel* libraryPanel;
 	ItemGridPanel* similarItemsGrid;
 	RuleBuilderPanel* ruleBuilder;
 	RuleListControl* savedRulesList;
-	wxSearchCtrl* searchCtrl;
 	wxButton* m_saveBtn;
 	wxButton* m_executeBtn;
 	wxButton* m_addRuleBtn;
@@ -52,23 +53,6 @@ private:
 	wxButton* m_deleteRuleBtn;
 
 	ReplacementEngine engine;
-
-	// Helper
-	void PopulateBrushGrid();
-	void PopulateRelatedItems(uint16_t brushLookId);
-	void OnBrushSearchChange(wxCommandEvent& event);
-
-	// New components
-	wxNotebook* libraryTabs;
-	wxSearchCtrl* brushSearchCtrl;
-	ItemGridPanel* brushListGrid;
-	ItemGridPanel* brushRelatedGrid;
-
-	std::map<uint16_t, uint16_t> cidToSidCache;
-	uint16_t GetSidFromCid(uint16_t cid);
-
-	// Map lookup from LookID -> Brush* for easier access when selecting a brush
-	std::map<uint16_t, class Brush*> brushLookup;
 
 	std::string m_activeRuleSetName;
 };

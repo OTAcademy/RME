@@ -1,3 +1,4 @@
+#include "app/main.h"
 #include "ui/replace_tool/visual_similarity_service.h"
 #include "ui/gui.h"
 #include "game/items.h"

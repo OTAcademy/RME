@@ -14,6 +14,7 @@
 
 class DoodadBrush : public Brush {
 	friend class ReplaceToolWindow;
+	friend class LibraryPanel;
 
 public:
 	DoodadBrush();

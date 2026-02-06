@@ -78,6 +78,7 @@ protected:
 	friend class TableBrushLoader;
 	friend class TableBorderCalculator;
 	friend class ReplaceToolWindow;
+	friend class LibraryPanel;
 };
 
 #endif

@@ -13,6 +13,9 @@ public:
 	// Returns true if a replacement should happen, resultId contains the new ID
 	bool ResolveReplacement(uint16_t& resultId, const ReplacementRule& rule);
 
+	// Execute the replacement on the map
+	void ExecuteReplacement(class Editor* editor, const std::vector<ReplacementRule>& rules);
+
 private:
 	std::mt19937 rng;
 };

@@ -22,3 +22,39 @@ bool ReplacementEngine::ResolveReplacement(uint16_t& resultId, const Replacement
 
 	return false;
 }
+
+#include "editor/editor.h"
+#include "ui/gui.h"
+#include <map>
+
+void ReplacementEngine::ExecuteReplacement(Editor* editor, const std::vector<ReplacementRule>& rules) {
+	if (rules.empty()) {
+		return;
+	}
+
+	bool selectionOnly = editor->selection.size() > 0;
+	std::map<uint16_t, const ReplacementRule*> ruleMap;
+	for (const auto& rule : rules) {
+		if (rule.fromId != 0) {
+			ruleMap[rule.fromId] = &rule;
+		}
+	}
+
+	auto finder = [&](Map&, Tile*, Item* item, long long) {
+		auto it = ruleMap.find(item->getID());
+		if (it != ruleMap.end()) {
+			uint16_t newId;
+			if (ResolveReplacement(newId, *it->second)) {
+				if (newId == TRASH_ITEM_ID) {
+					item->setID(0); // Delete/Clear item
+				} else {
+					item->setID(newId);
+				}
+			}
+		}
+	};
+
+	foreach_ItemOnMap(editor->map, finder, selectionOnly);
+	editor->map.doChange();
+	g_gui.RefreshView();
+}

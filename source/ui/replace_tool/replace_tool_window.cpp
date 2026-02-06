@@ -38,23 +38,7 @@ ReplaceToolWindow::ReplaceToolWindow(wxWindow* parent, Editor* editor) : wxDialo
 
 	InitLayout();
 
-	// Pre-fill
-	std::vector<uint16_t> ids;
-	for (uint16_t i = 1; i <= g_items.getMaxID(); ++i) {
-		const ItemType& it = g_items.getItemType(i);
-		if (it.id != 0) {
-			ids.push_back(i);
-		}
-	}
-	allItemsGrid->SetItems(ids);
-
 	UpdateSavedRulesList();
-
-	Bind(wxEVT_SEARCHCTRL_SEARCH_BTN, &ReplaceToolWindow::OnSearchChange, this, searchCtrl->GetId());
-	Bind(wxEVT_TEXT, &ReplaceToolWindow::OnSearchChange, this, searchCtrl->GetId());
-
-	Bind(wxEVT_SEARCHCTRL_SEARCH_BTN, &ReplaceToolWindow::OnBrushSearchChange, this, brushSearchCtrl->GetId());
-	Bind(wxEVT_TEXT, &ReplaceToolWindow::OnBrushSearchChange, this, brushSearchCtrl->GetId());
 }
 
 ReplaceToolWindow::~ReplaceToolWindow() { }
@@ -64,10 +48,7 @@ ReplaceToolWindow::~ReplaceToolWindow() { }
 
 void ReplaceToolWindow::InitLayout() {
 	wxBoxSizer* rootSizer = new wxBoxSizer(wxVERTICAL);
-
 	int padding = Theme::Grid(2);
-	wxFont headerFont = Theme::GetFont(9, true); // Slightly larger
-	wxColour subTextColor = Theme::Get(Theme::Role::TextSubtle);
 
 	// ---------------------------------------------------------
 	// MAIN CONTENT ROW
@@ -75,71 +56,13 @@ void ReplaceToolWindow::InitLayout() {
 	wxBoxSizer* mainRowSizer = new wxBoxSizer(wxHORIZONTAL);
 
 	// ---------------------------------------------------------
-	// COLUMN 1: Item Library
+	// COLUMN 1: Library Panel (Items & Brushes)
 	// ---------------------------------------------------------
 	CardPanel* col1Card = new CardPanel(this, wxID_ANY);
 	col1Card->SetTitle("ITEM LIBRARY");
 
-	// Notebook for Tabs
-	libraryTabs = new wxNotebook(col1Card, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_TOP | wxBORDER_NONE);
-
-	// PAGE 1: Item List
-	wxPanel* itemListPage = new wxPanel(libraryTabs);
-	wxBoxSizer* itemListSizer = new wxBoxSizer(wxVERTICAL);
-
-	searchCtrl = new wxSearchCtrl(itemListPage, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxBORDER_NONE);
-	searchCtrl->ShowCancelButton(true);
-	searchCtrl->SetBackgroundColour(Theme::Get(Theme::Role::Background));
-	itemListSizer->Add(searchCtrl, 0, wxEXPAND | wxALL, padding);
-
-	allItemsGrid = new ItemGridPanel(itemListPage, this);
-	allItemsGrid->SetDraggable(true);
-	itemListSizer->Add(allItemsGrid, 1, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, padding);
-
-	itemListPage->SetSizer(itemListSizer);
-	libraryTabs->AddPage(itemListPage, "Items");
-
-	// PAGE 2: Brush List
-	wxPanel* brushListPage = new wxPanel(libraryTabs);
-	wxBoxSizer* brushListSizer = new wxBoxSizer(wxVERTICAL);
-	wxSplitterWindow* brushSplitter = new wxSplitterWindow(brushListPage, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_LIVE_UPDATE);
-
-	// Top: Brushes
-	wxPanel* brushesPanel = new wxPanel(brushSplitter);
-	wxBoxSizer* brushesSizer = new wxBoxSizer(wxVERTICAL);
-
-	brushSearchCtrl = new wxSearchCtrl(brushesPanel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxBORDER_NONE);
-	brushSearchCtrl->ShowCancelButton(true);
-	brushSearchCtrl->SetBackgroundColour(Theme::Get(Theme::Role::Background));
-	brushSearchCtrl->Bind(wxEVT_TEXT, &ReplaceToolWindow::OnBrushSearchChange, this);
-	brushSearchCtrl->Bind(wxEVT_SEARCH, &ReplaceToolWindow::OnBrushSearchChange, this);
-	brushesSizer->Add(brushSearchCtrl, 0, wxEXPAND | wxALL, 2);
-
-	brushListGrid = new ItemGridPanel(brushesPanel, this);
-	brushListGrid->SetShowDetails(false);
-
-	brushesSizer->Add(new wxStaticText(brushesPanel, wxID_ANY, "Available Brushes"), 0, wxALL, 2);
-	brushesSizer->Add(brushListGrid, 1, wxEXPAND);
-	brushesPanel->SetSizer(brushesSizer);
-
-	// Bottom: Related Items
-	wxPanel* relatedPanel = new wxPanel(brushSplitter);
-	wxBoxSizer* relatedSizer = new wxBoxSizer(wxVERTICAL);
-	brushRelatedGrid = new ItemGridPanel(relatedPanel, this);
-	brushRelatedGrid->SetDraggable(true);
-
-	relatedSizer->Add(new wxStaticText(relatedPanel, wxID_ANY, "Related Items"), 0, wxALL, 2);
-	relatedSizer->Add(brushRelatedGrid, 1, wxEXPAND);
-	relatedPanel->SetSizer(relatedSizer);
-
-	brushSplitter->SplitHorizontally(brushesPanel, relatedPanel);
-	brushSplitter->SetSashGravity(0.5);
-	brushListSizer->Add(brushSplitter, 1, wxEXPAND | wxALL, padding);
-
-	brushListPage->SetSizer(brushListSizer);
-	libraryTabs->AddPage(brushListPage, "Brushes");
-
-	col1Card->GetContentSizer()->Add(libraryTabs, 1, wxEXPAND | wxALL, padding / 2); // Less padding inside card
+	libraryPanel = new LibraryPanel(col1Card, this);
+	col1Card->GetContentSizer()->Add(libraryPanel, 1, wxEXPAND | wxALL, padding / 2);
 	mainRowSizer->Add(col1Card, 3, wxEXPAND | wxLEFT | wxRIGHT, padding / 2); // Flex 3
 
 	// ---------------------------------------------------------
@@ -246,181 +169,15 @@ void ReplaceToolWindow::InitLayout() {
 	// Add Main Row to Root
 	rootSizer->Add(mainRowSizer, 1, wxEXPAND | wxALL, padding / 2);
 
-	// Remove Global FooterCard
-	/*
-	CardPanel* footerCard = new CardPanel(this, wxID_ANY);
-	...
-	*/
-
-	// Populate
-	PopulateBrushGrid();
-
 	SetSizer(rootSizer);
 	Layout();
 }
 
-uint16_t ReplaceToolWindow::GetSidFromCid(uint16_t cid) {
-	if (cidToSidCache.empty()) {
-		uint16_t maxId = g_items.getMaxID();
-		for (uint16_t id = 100; id <= maxId; ++id) {
-			const ItemType& it = g_items.getItemType(id);
-			if (it.id != 0 && it.clientID != 0) {
-				if (cidToSidCache.find(it.clientID) == cidToSidCache.end()) {
-					cidToSidCache[it.clientID] = it.id;
-				}
-			}
-		}
-	}
-	auto it = cidToSidCache.find(cid);
-	return (it != cidToSidCache.end()) ? it->second : 0;
-}
-
-void ReplaceToolWindow::PopulateBrushGrid() {
-	std::vector<uint16_t> brushIds;
-	std::map<uint16_t, wxString> overrides;
-	brushLookup.clear();
-
-	wxString query = brushSearchCtrl->GetValue().Lower();
-
-	for (const auto& pair : g_brushes.getMap()) {
-		Brush* brush = pair.second.get();
-		if (!brush || brush->isEraser() || brush->isRaw()) {
-			continue;
-		}
-
-		std::string name = brush->getName();
-		if (name.empty()) {
-			continue;
-		}
-
-		if (!query.IsEmpty() && !wxString(name).Lower().Contains(query)) {
-			continue;
-		}
-
-		uint16_t lookId = static_cast<uint16_t>(brush->getLookID());
-		uint16_t serverId = GetSidFromCid(lookId);
-
-		if (serverId != 0) {
-			if (brushLookup.find(serverId) == brushLookup.end()) {
-				brushIds.push_back(serverId);
-				brushLookup[serverId] = brush;
-				overrides[serverId] = name;
-			}
-		}
-	}
-	brushListGrid->SetItems(brushIds);
-	brushListGrid->SetOverrideNames(overrides);
-}
-
-void ReplaceToolWindow::OnBrushSearchChange(wxCommandEvent&) {
-	PopulateBrushGrid();
-}
-
-void ReplaceToolWindow::PopulateRelatedItems(uint16_t brushLookId) {
-	std::vector<uint16_t> related;
-	auto it = brushLookup.find(brushLookId);
-	if (it == brushLookup.end()) {
-		brushRelatedGrid->SetItems({});
-		return;
-	}
-
-	Brush* brush = it->second;
-	if (!brush) {
-		return;
-	}
-
-	try {
-		if (GroundBrush* gb = brush->asGround()) {
-			std::vector<uint16_t> items;
-			gb->getRelatedItems(items);
-			for (uint16_t id : items) {
-				if (id != 0 && g_items.typeExists(id)) {
-					related.push_back(id);
-				}
-			}
-		} else if (WallBrush* wb = brush->asWall()) {
-			for (int i = 0; i <= 16; ++i) {
-				const auto& node = wb->items.getWallNode(i);
-				for (const auto& item : node.items) {
-					if (item.id != 0) {
-						related.push_back(item.id);
-					}
-				}
-				const auto& doors = wb->items.getDoorItems(i);
-				for (const auto& door : doors) {
-					if (door.id != 0) {
-						related.push_back(door.id);
-					}
-				}
-			}
-		} else if (DoodadBrush* db = brush->asDoodad()) {
-			for (const auto& alt : db->items.getAlternatives()) {
-				if (!alt) {
-					continue;
-				}
-				for (const auto& single : alt->single_items) {
-					if (single.item && single.item->getID() != 0) {
-						related.push_back(single.item->getID());
-					}
-				}
-				for (const auto& composite : alt->composite_items) {
-					for (const auto& entry : composite.items) {
-						for (const auto& item : entry.second) {
-							if (item && item->getID() != 0) {
-								related.push_back(item->getID());
-							}
-						}
-					}
-				}
-			}
-		} else if (TableBrush* tb = brush->asTable()) {
-			for (int i = 0; i < 7; ++i) {
-				if (tb->items.hasItems(i)) {
-					const auto& node = tb->items.getItems(i);
-					for (const auto& t : node.items) {
-						if (t.item_id != 0) {
-							related.push_back(t.item_id);
-						}
-					}
-				}
-			}
-		} else if (CarpetBrush* cb = brush->asCarpet()) {
-			for (const auto& group : cb->m_items.m_groups) {
-				for (const auto& item : group.items) {
-					if (item.id != 0) {
-						related.push_back(item.id);
-					}
-				}
-			}
-		}
-	} catch (const std::exception& e) {
-		wxLogError("Error populating related items: %s", e.what());
-	} catch (...) {
-		wxLogError("Unknown error populating related items.");
-	}
-
-	if (brushLookId != 0) {
-		related.push_back(brushLookId);
-	}
-
-	std::sort(related.begin(), related.end());
-	related.erase(std::unique(related.begin(), related.end()), related.end());
-
-	brushRelatedGrid->SetItems(related);
-}
-
-void ReplaceToolWindow::OnItemSelected(ItemGridPanel* source, uint16_t itemId) {
+void ReplaceToolWindow::OnLibraryItemSelected(uint16_t itemId) {
 	if (itemId == 0) {
 		return;
 	}
-
-	if (source == allItemsGrid) {
-		similarItemsGrid->SetItems(VisualSimilarityService::Get().FindSimilar(itemId));
-	} else if (source == brushListGrid) {
-		PopulateRelatedItems(itemId);
-	} else if (source == brushRelatedGrid) {
-		similarItemsGrid->SetItems(VisualSimilarityService::Get().FindSimilar(itemId));
-	}
+	similarItemsGrid->SetItems(VisualSimilarityService::Get().FindSimilar(itemId));
 }
 
 void ReplaceToolWindow::OnRuleSelected(const RuleSet& rs) {
@@ -469,43 +226,8 @@ void ReplaceToolWindow::OnRuleChanged() {
 	}
 }
 
-void ReplaceToolWindow::OnSearchChange(wxCommandEvent&) {
-	allItemsGrid->SetFilter(searchCtrl->GetValue());
-}
-
 void ReplaceToolWindow::OnExecute(wxCommandEvent&) {
-	std::vector<ReplacementRule> rules = ruleBuilder->GetRules();
-	if (rules.empty()) {
-		return;
-	}
-
-	static const uint16_t TRASH_ITEM_ID = 0xFFFF; // Must match RuleBuilderPanel
-
-	bool selectionOnly = editor->selection.size() > 0;
-	std::map<uint16_t, const ReplacementRule*> ruleMap;
-	for (const auto& rule : rules) {
-		if (rule.fromId != 0) {
-			ruleMap[rule.fromId] = &rule;
-		}
-	}
-
-	auto finder = [&](Map&, Tile*, Item* item, long long) {
-		auto it = ruleMap.find(item->getID());
-		if (it != ruleMap.end()) {
-			uint16_t newId;
-			if (engine.ResolveReplacement(newId, *it->second)) {
-				if (newId == TRASH_ITEM_ID) {
-					item->setID(0); // Delete/Clear item
-				} else {
-					item->setID(newId);
-				}
-			}
-		}
-	};
-
-	foreach_ItemOnMap(editor->map, finder, selectionOnly);
-	editor->map.doChange();
-	g_gui.RefreshView();
+	engine.ExecuteReplacement(editor, ruleBuilder->GetRules());
 }
 
 void ReplaceToolWindow::OnSaveRule(wxCommandEvent&) {
@@ -540,8 +262,12 @@ void ReplaceToolWindow::UpdateSavedRulesList() {
 }
 
 void ReplaceToolWindow::OnClearRules() {
-	// Any additional logic when rules are cleared?
-	// The rule builder already cleared itself.
 	ruleBuilder->Clear();
 	similarItemsGrid->SetItems({});
+}
+
+void ReplaceToolWindow::OnItemSelected(ItemGridPanel* source, uint16_t itemId) {
+	if (source == similarItemsGrid) {
+		OnLibraryItemSelected(itemId);
+	}
 }

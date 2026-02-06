@@ -5,6 +5,8 @@
 #include <string>
 #include <cstdint>
 
+static const uint16_t TRASH_ITEM_ID = 0xFFFF;
+
 struct ReplacementTarget {
 	uint16_t id;
 	int probability; // 0-100

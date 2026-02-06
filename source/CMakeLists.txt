@@ -279,6 +279,8 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_items_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/item_grid_panel.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/library_panel.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/rule_card_renderer.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/rule_builder_panel.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/replace_tool_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/replacement_engine.h
@@ -599,6 +601,8 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_items_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/item_grid_panel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/library_panel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/rule_card_renderer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/card_panel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/rule_builder_panel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/replace_tool_window.cpp
