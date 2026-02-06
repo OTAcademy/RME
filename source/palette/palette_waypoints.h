@@ -62,8 +62,6 @@ protected:
 	wxListCtrl* waypoint_list;
 	wxButton* add_waypoint_button;
 	wxButton* remove_waypoint_button;
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif

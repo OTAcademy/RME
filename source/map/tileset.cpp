@@ -84,7 +84,7 @@ const TilesetCategory* Tileset::getCategory(TilesetCategoryType type) const {
 	return nullptr;
 }
 
-void Tileset::loadCategory(pugi::xml_node node, wxArrayString& warnings) {
+void Tileset::loadCategory(pugi::xml_node node, std::vector<std::string>& warnings) {
 	TilesetCategory* category = nullptr;
 	TilesetCategory* subCategory = nullptr;
 
@@ -141,7 +141,7 @@ void Tileset::loadCategory(pugi::xml_node node, wxArrayString& warnings) {
 				brush->flagAsVisible();
 				category->brushlist.push_back(brush);
 			} else {
-				warnings.push_back(wxString("Unknown creature type \"") << wxstr(creatureName) << "\"");
+				warnings.push_back((wxString("Unknown creature type \"") << wxstr(creatureName) << "\"").ToStdString());
 			}
 		}
 	}
@@ -173,7 +173,7 @@ bool TilesetCategory::isTrivial() const {
 	return (type == TILESET_ITEM) || (type == TILESET_RAW);
 }
 
-void TilesetCategory::loadBrush(pugi::xml_node node, wxArrayString& warnings) {
+void TilesetCategory::loadBrush(pugi::xml_node node, std::vector<std::string>& warnings) {
 	pugi::xml_attribute attribute;
 
 	std::string brushName = node.attribute("after").as_string();
@@ -208,7 +208,7 @@ void TilesetCategory::loadBrush(pugi::xml_node node, wxArrayString& warnings) {
 				brush->setCollection();
 			}
 		} else {
-			warnings.push_back("Brush \"" + wxString(attribute.as_string(), wxConvUTF8) + "\" doesn't exist.");
+			warnings.push_back((wxString("Brush \"") + wxString(attribute.as_string()) + "\" doesn't exist.").ToStdString());
 		}
 	} else if (nodeName == "item") {
 		uint16_t fromId = 0, toId = 0;
@@ -226,7 +226,7 @@ void TilesetCategory::loadBrush(pugi::xml_node node, wxArrayString& warnings) {
 		for (uint16_t id = fromId; id <= toId; ++id) {
 			ItemType& it = g_items[id];
 			if (it.id == 0) {
-				warnings.push_back(wxString::Format("Tileset: %s, Brush: %s, Previous %d, From: %d, To: %d", wxstr(tileset.name), wxstr(brushName), tileset.previousId, fromId, toId));
+				warnings.push_back(std::string(wxString::Format("Tileset: %s, Brush: %s, Previous %d, From: %d, To: %d", wxstr(tileset.name), wxstr(brushName), tileset.previousId, fromId, toId).mb_str()));
 				warnings.push_back("Unknown item id #" + std::to_string(id) + ".");
 				continue;
 			}

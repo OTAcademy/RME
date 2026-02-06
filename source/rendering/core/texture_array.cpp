@@ -1,5 +1,6 @@
 #include "rendering/core/texture_array.h"
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 TextureArray::TextureArray() {
 }
@@ -10,7 +11,7 @@ TextureArray::~TextureArray() {
 
 bool TextureArray::initialize(int width, int height, int maxLayers) {
 	if (initialized_) {
-		std::cerr << "TextureArray: Already initialized" << std::endl;
+		spdlog::error("TextureArray: Already initialized");
 		return true;
 	}
 
@@ -21,7 +22,7 @@ bool TextureArray::initialize(int width, int height, int maxLayers) {
 	// Create texture array
 	glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &textureId_);
 	if (textureId_ == 0) {
-		std::cerr << "TextureArray: Failed to create texture" << std::endl;
+		spdlog::error("TextureArray: Failed to create texture");
 		return false;
 	}
 
@@ -38,23 +39,22 @@ bool TextureArray::initialize(int width, int height, int maxLayers) {
 	allocatedLayers_ = 0;
 	initialized_ = true;
 
-	std::cout << "TextureArray: Initialized " << width_ << "x" << height_
-			  << " with " << maxLayers_ << " layers" << std::endl;
+	spdlog::info("TextureArray: Initialized {}x{} with {} layers", width_, height_, maxLayers_);
 
 	return true;
 }
 
 bool TextureArray::uploadLayer(int layer, const uint8_t* rgbaData) {
 	if (!initialized_) {
-		std::cerr << "TextureArray: Not initialized" << std::endl;
+		spdlog::error("TextureArray: Not initialized");
 		return false;
 	}
 	if (layer < 0 || layer >= maxLayers_) {
-		std::cerr << "TextureArray: Layer " << layer << " out of range (max: " << maxLayers_ << ")" << std::endl;
+		spdlog::error("TextureArray: Layer {} out of range (max: {})", layer, maxLayers_);
 		return false;
 	}
 	if (rgbaData == nullptr) {
-		std::cerr << "TextureArray: Null data for layer " << layer << std::endl;
+		spdlog::error("TextureArray: Null data for layer {}", layer);
 		return false;
 	}
 
@@ -69,7 +69,7 @@ int TextureArray::allocateLayer() {
 		return -1;
 	}
 	if (allocatedLayers_ >= maxLayers_) {
-		std::cerr << "TextureArray: No more layers available (allocated: " << allocatedLayers_ << ")" << std::endl;
+		spdlog::error("TextureArray: No more layers available (allocated: {})", allocatedLayers_);
 		return -1;
 	}
 	return allocatedLayers_++;

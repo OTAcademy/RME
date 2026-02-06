@@ -24,7 +24,7 @@ WallBrush::~WallBrush() {
 	////
 }
 
-bool WallBrush::load(pugi::xml_node node, wxArrayString& warnings) {
+bool WallBrush::load(pugi::xml_node node, std::vector<std::string>& warnings) {
 	return WallBrushLoader::load(this, items, node, warnings);
 }
 

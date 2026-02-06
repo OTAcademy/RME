@@ -20,6 +20,7 @@
 #include "game/sprites.h"
 #include "rendering/core/graphics.h"
 #include <nanovg.h>
+#include <spdlog/spdlog.h>
 #include <nanovg_gl.h>
 #include "io/filehandle.h"
 #include "app/settings.h"
@@ -122,7 +123,7 @@ bool GraphicManager::ensureAtlasManager() {
 
 	// Lazy initialization happens inside AtlasManager::ensureInitialized()
 	if (!atlas_manager_->ensureInitialized()) {
-		std::cerr << "GraphicManager: Failed to initialize atlas manager" << std::endl;
+		spdlog::error("GraphicManager: Failed to initialize atlas manager");
 		atlas_manager_.reset();
 		return false;
 	}
@@ -183,15 +184,15 @@ bool GraphicManager::loadEditorSprites() {
 	return EditorSpriteLoader::Load(this);
 }
 
-bool GraphicManager::loadOTFI(const FileName& filename, wxString& error, wxArrayString& warnings) {
+bool GraphicManager::loadOTFI(const FileName& filename, wxString& error, std::vector<std::string>& warnings) {
 	return GameSpriteLoader::LoadOTFI(this, filename, error, warnings);
 }
 
-bool GraphicManager::loadSpriteMetadata(const FileName& datafile, wxString& error, wxArrayString& warnings) {
+bool GraphicManager::loadSpriteMetadata(const FileName& datafile, wxString& error, std::vector<std::string>& warnings) {
 	return GameSpriteLoader::LoadSpriteMetadata(this, datafile, error, warnings);
 }
 
-bool GraphicManager::loadSpriteData(const FileName& datafile, wxString& error, wxArrayString& warnings) {
+bool GraphicManager::loadSpriteData(const FileName& datafile, wxString& error, std::vector<std::string>& warnings) {
 	return GameSpriteLoader::LoadSpriteData(this, datafile, error, warnings);
 }
 

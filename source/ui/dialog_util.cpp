@@ -23,12 +23,12 @@ long DialogUtil::PopupDialog(wxString title, wxString text, long style, wxString
 	return PopupDialog(static_cast<wxApp*>(wxTheApp)->GetTopWindow(), title, text, style, configsavename, configsavevalue);
 }
 
-void DialogUtil::ListDialog(wxWindow* parent, wxString title, const wxArrayString& param_items) {
+void DialogUtil::ListDialog(wxWindow* parent, wxString title, const std::vector<std::string>& param_items) {
 	if (param_items.empty()) {
 		return;
 	}
 
-	wxArrayString list_items(param_items);
+	std::vector<std::string> list_items(param_items);
 
 	// Create the window
 	wxDialog* dlg = newd wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER | wxCAPTION | wxCLOSE_BOX);
@@ -37,7 +37,7 @@ void DialogUtil::ListDialog(wxWindow* parent, wxString title, const wxArrayStrin
 	wxListBox* item_list = newd wxListBox(dlg, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, nullptr, wxLB_SINGLE);
 	item_list->SetMinSize(wxSize(500, 300));
 
-	for (size_t i = 0; i != list_items.GetCount();) {
+	for (size_t i = 0; i != list_items.size();) {
 		wxString str = list_items[i];
 		size_t pos = str.find("\n");
 		if (pos != wxString::npos) {

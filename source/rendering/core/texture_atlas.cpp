@@ -138,12 +138,12 @@ bool TextureAtlas::addLayer() {
 
 std::optional<AtlasRegion> TextureAtlas::addSprite(const uint8_t* rgba_data) {
 	if (!isValid()) {
-		std::cerr << "TextureAtlas::addSprite called on uninitialized atlas" << std::endl;
+		spdlog::error("TextureAtlas::addSprite called on uninitialized atlas");
 		return std::nullopt;
 	}
 
 	if (!rgba_data) {
-		std::cerr << "TextureAtlas::addSprite called with null data" << std::endl;
+		spdlog::error("TextureAtlas::addSprite called with null data");
 		return std::nullopt;
 	}
 

@@ -39,7 +39,7 @@ CarpetBrush::~CarpetBrush() {
 	////
 }
 
-bool CarpetBrush::load(pugi::xml_node node, wxArrayString& warnings) {
+bool CarpetBrush::load(pugi::xml_node node, std::vector<std::string>& warnings) {
 	return CarpetBrushLoader::load(*this, node, warnings);
 }
 

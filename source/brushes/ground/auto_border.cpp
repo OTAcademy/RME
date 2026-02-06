@@ -39,7 +39,7 @@ int AutoBorder::edgeNameToID(std::string_view edgename) {
 	return BORDER_NONE;
 }
 
-bool AutoBorder::load(pugi::xml_node node, wxArrayString& warnings, GroundBrush* owner, uint16_t ground_equivalent) {
+bool AutoBorder::load(pugi::xml_node node, std::vector<std::string>& warnings, GroundBrush* owner, uint16_t ground_equivalent) {
 	ASSERT(ground ? ground_equivalent != 0 : true);
 
 	pugi::xml_attribute attribute;

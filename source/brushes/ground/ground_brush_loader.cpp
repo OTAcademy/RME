@@ -17,7 +17,7 @@ static const auto iequal = [](char a, char b) {
 	return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
 };
 
-bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayString& warnings) {
+bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, std::vector<std::string>& warnings) {
 	pugi::xml_attribute attribute;
 	if ((attribute = node.attribute("lookid"))) {
 		brush.look_id = attribute.as_ushort();
@@ -175,7 +175,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 				} else {
 					Brush* tobrush = g_brushes.getBrush(value);
 					if (!tobrush) {
-						warnings.push_back("To brush " + wxstr(value) + " doesn't exist.");
+						warnings.push_back((wxString("To brush ") + wxstr(value) + " doesn't exist.").ToStdString());
 						if (autoBorder && autoBorder->ground) {
 							delete autoBorder;
 						}
@@ -375,7 +375,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 					if (otherBrush) {
 						brush.friends.push_back(otherBrush->getID());
 					} else {
-						warnings.push_back("Brush '" + wxstr(name) + "' is not defined.");
+						warnings.push_back((wxString("Brush '") + wxstr(name) + "' is not defined.").ToStdString());
 					}
 				}
 			}
@@ -390,7 +390,7 @@ bool GroundBrushLoader::load(GroundBrush& brush, pugi::xml_node node, wxArrayStr
 					if (otherBrush) {
 						brush.friends.push_back(otherBrush->getID());
 					} else {
-						warnings.push_back("Brush '" + wxstr(name) + "' is not defined.");
+						warnings.push_back((wxString("Brush '") + wxstr(name) + "' is not defined.").ToStdString());
 					}
 				}
 			}

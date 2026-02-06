@@ -44,7 +44,7 @@ bool MapVersionChanger::changeMapVersion(wxWindow* parent, Editor& editor, MapVe
 			return false;
 		}
 		wxString error;
-		wxArrayString warnings;
+		std::vector<std::string> warnings;
 
 		// Switch version
 		// Switch version

@@ -17,6 +17,7 @@
 
 #include "app/main.h"
 #include "net/net_connection.h"
+#include <spdlog/spdlog.h>
 
 NetworkMessage::NetworkMessage() {
 	clear();
@@ -105,7 +106,7 @@ bool NetworkConnection::start() {
 				serviceRef.restart();
 			}
 		} catch (std::exception& e) {
-			std::cout << e.what() << std::endl;
+			spdlog::error("{}", e.what());
 		}
 	});
 	return true;

@@ -31,7 +31,7 @@ class Map;
 
 class IOMap {
 protected:
-	wxArrayString warnings;
+	std::vector<std::string> warnings;
 	wxString errorstr;
 
 	bool queryUser(const wxString& title, const wxString& format);
@@ -47,7 +47,7 @@ public:
 
 	MapVersion version;
 
-	wxArrayString& getWarnings() {
+	std::vector<std::string>& getWarnings() {
 		return warnings;
 	}
 	wxString& getError() {

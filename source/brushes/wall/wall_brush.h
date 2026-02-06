@@ -25,7 +25,7 @@ public:
 		return static_cast<WallBrush*>(this);
 	}
 
-	bool load(pugi::xml_node node, wxArrayString& warnings) override;
+	bool load(pugi::xml_node node, std::vector<std::string>& warnings) override;
 
 	bool canDraw(BaseMap* map, const Position& position) const override {
 		return true;

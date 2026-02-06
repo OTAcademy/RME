@@ -178,7 +178,7 @@ public:
 	MainMenuBar(MainFrame* frame);
 	~MainMenuBar();
 
-	bool Load(const FileName& filename, wxArrayString& warnings, wxString& error);
+	bool Load(const FileName& filename, std::vector<std::string>& warnings, wxString& error);
 	void Update();
 	void LoadValues();
 	void UpdateFloorMenu(); // Only concerns the floor menu

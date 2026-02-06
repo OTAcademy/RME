@@ -12,10 +12,10 @@ class GameSprite;
 
 class DatLoader {
 public:
-	static bool LoadMetadata(GraphicManager* manager, const wxFileName& datafile, wxString& error, wxArrayString& warnings);
+	static bool LoadMetadata(GraphicManager* manager, const wxFileName& datafile, wxString& error, std::vector<std::string>& warnings);
 
 private:
-	static bool ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, GameSprite* sType, uint32_t group_index, wxArrayString& warnings);
+	static bool ReadSpriteGroup(GraphicManager* manager, FileReadHandle& file, GameSprite* sType, uint32_t group_index, std::vector<std::string>& warnings);
 };
 
 #endif

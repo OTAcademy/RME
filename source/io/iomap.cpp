@@ -32,7 +32,7 @@ void IOMap::warning(const wxString format, ...) {
 	va_start(argp, format);
 	s.PrintfV(format, argp);
 	va_end(argp);
-	warnings.push_back(s);
+	warnings.push_back(s.ToStdString());
 };
 
 bool IOMap::queryUser(const wxString& title, const wxString& text) {
