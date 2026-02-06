@@ -59,7 +59,7 @@ void DialogUtil::ListDialog(wxWindow* parent, wxString title, const std::vector<
 
 	// Show the window
 	dlg->ShowModal();
-	delete dlg;
+	dlg->Destroy();
 }
 
 void DialogUtil::ShowTextBox(wxWindow* parent, wxString title, wxString content) {
@@ -75,4 +75,5 @@ void DialogUtil::ShowTextBox(wxWindow* parent, wxString title, wxString content)
 	dlg->SetSizerAndFit(topsizer);
 
 	dlg->ShowModal();
+	dlg->Destroy();
 }

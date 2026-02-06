@@ -29,7 +29,7 @@ class ContainerItemPopupMenu;
 class OldPropertiesWindow : public ObjectPropertiesWindowBase {
 public:
 	OldPropertiesWindow(wxWindow* parent, const Map* map, const Tile* tile, Item* item, wxPoint = wxDefaultPosition);
-	virtual ~OldPropertiesWindow();
+	~OldPropertiesWindow() override;
 
 	void OnFocusChange(wxFocusEvent&);
 	void OnChar(wxKeyEvent& evt);

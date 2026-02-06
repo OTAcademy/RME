@@ -12,6 +12,7 @@
 #include <fstream>
 #include <mutex>
 #include <spdlog/spdlog.h>
+#include <wx/filename.h>
 
 // Static buffer to hold font data in memory
 // Must persist as long as any NanoVG context uses it (lifetime of app essentially)
@@ -31,7 +32,7 @@ void TextRenderer::LoadFont(NVGcontext* vg) {
 	std::call_once(font_load_flag, []() {
 		// Try to load font
 		std::vector<std::string> fontPaths = {
-			"C:\\Windows\\Fonts\\arial.ttf",
+			nstr(wxFileName(wxString("C:\\Windows\\Fonts\\arial.ttf")).GetFullPath()),
 			"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
 			"/usr/share/fonts/TTF/DejaVuSans.ttf",
 			"/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",

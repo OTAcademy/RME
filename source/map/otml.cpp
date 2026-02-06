@@ -194,17 +194,18 @@ OTMLDocumentPtr OTMLDocument::create() {
 	return doc;
 }
 
-OTMLDocumentPtr OTMLDocument::parse(const std::string& fileName) {
-	std::ifstream fin(fileName.c_str());
+OTMLDocumentPtr OTMLDocument::parse(const wxString& fileName) {
+	wxFileName fn(fileName);
+	std::ifstream fin(fn.GetFullPath().mb_str());
 	if (!fin.good()) {
-		throw OTMLException(std::format("failed to open file {}", fileName));
+		throw OTMLException("failed to open file " + std::string(fileName.mb_str()));
 	}
 	return parse(fin, fileName);
 }
 
-OTMLDocumentPtr OTMLDocument::parse(std::istream& in, const std::string& source) {
+OTMLDocumentPtr OTMLDocument::parse(std::istream& in, const wxString& source) {
 	OTMLDocumentPtr doc = std::make_shared<OTMLDocument>();
-	doc->setSource(source);
+	doc->setSource(std::string(source.mb_str()));
 	OTMLParser parser(doc, in);
 	parser.parse();
 	return doc;
@@ -214,9 +215,10 @@ std::string OTMLDocument::emit() {
 	return OTMLEmitter::emitNode(shared_from_this()) + "\n";
 }
 
-bool OTMLDocument::save(const std::string& fileName) {
-	m_source = fileName;
-	std::ofstream fout(fileName.c_str());
+bool OTMLDocument::save(const wxString& fileName) {
+	m_source = std::string(fileName.mb_str());
+	wxFileName fn(fileName);
+	std::ofstream fout(fn.GetFullPath().mb_str());
 	if (fout.good()) {
 		fout << emit();
 		fout.close();

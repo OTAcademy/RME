@@ -176,7 +176,7 @@ class MainMenuBar : public wxEvtHandler {
 
 public:
 	MainMenuBar(MainFrame* frame);
-	~MainMenuBar();
+	~MainMenuBar() override;
 
 	bool Load(const FileName& filename, std::vector<std::string>& warnings, wxString& error);
 	void Update();
