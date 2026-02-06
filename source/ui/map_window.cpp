@@ -51,12 +51,25 @@ MapWindow::MapWindow(wxWindow* parent, Editor& editor) :
 	SetSizerAndFit(topsizer);
 
 	Bind(wxEVT_SIZE, &MapWindow::OnSize, this);
-	Bind(wxEVT_SCROLL_LINEUP, &MapWindow::OnScrollLineUp, this);
-	Bind(wxEVT_SCROLL_LINEDOWN, &MapWindow::OnScrollLineDown, this);
-	Bind(wxEVT_SCROLL_PAGEUP, &MapWindow::OnScrollPageUp, this);
-	Bind(wxEVT_SCROLL_PAGEDOWN, &MapWindow::OnScrollPageDown, this);
-	Bind(wxEVT_SCROLL_THUMBTRACK, &MapWindow::OnScroll, this);
-	Bind(wxEVT_SCROLL_THUMBRELEASE, &MapWindow::OnScroll, this);
+
+	hScroll->Bind(wxEVT_SCROLL_LINEUP, &MapWindow::OnScrollLineUp, this);
+	hScroll->Bind(wxEVT_SCROLL_LINEDOWN, &MapWindow::OnScrollLineDown, this);
+	hScroll->Bind(wxEVT_SCROLL_PAGEUP, &MapWindow::OnScrollPageUp, this);
+	hScroll->Bind(wxEVT_SCROLL_PAGEDOWN, &MapWindow::OnScrollPageDown, this);
+	hScroll->Bind(wxEVT_SCROLL_THUMBTRACK, &MapWindow::OnScroll, this);
+	hScroll->Bind(wxEVT_SCROLL_THUMBRELEASE, &MapWindow::OnScroll, this);
+	hScroll->Bind(wxEVT_SCROLL_TOP, &MapWindow::OnScroll, this);
+	hScroll->Bind(wxEVT_SCROLL_BOTTOM, &MapWindow::OnScroll, this);
+
+	vScroll->Bind(wxEVT_SCROLL_LINEUP, &MapWindow::OnScrollLineUp, this);
+	vScroll->Bind(wxEVT_SCROLL_LINEDOWN, &MapWindow::OnScrollLineDown, this);
+	vScroll->Bind(wxEVT_SCROLL_PAGEUP, &MapWindow::OnScrollPageUp, this);
+	vScroll->Bind(wxEVT_SCROLL_PAGEDOWN, &MapWindow::OnScrollPageDown, this);
+	vScroll->Bind(wxEVT_SCROLL_THUMBTRACK, &MapWindow::OnScroll, this);
+	vScroll->Bind(wxEVT_SCROLL_THUMBRELEASE, &MapWindow::OnScroll, this);
+	vScroll->Bind(wxEVT_SCROLL_TOP, &MapWindow::OnScroll, this);
+	vScroll->Bind(wxEVT_SCROLL_BOTTOM, &MapWindow::OnScroll, this);
+
 	Bind(wxEVT_BUTTON, &MapWindow::OnGem, this, MAP_WINDOW_GEM);
 }
 

@@ -15,12 +15,6 @@
 // ============================================================================
 // Map Import Window
 
-BEGIN_EVENT_TABLE(ImportMapWindow, wxDialog)
-EVT_BUTTON(MAP_WINDOW_FILE_BUTTON, ImportMapWindow::OnClickBrowse)
-EVT_BUTTON(wxID_OK, ImportMapWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, ImportMapWindow::OnClickCancel)
-END_EVENT_TABLE()
-
 ImportMapWindow::ImportMapWindow(wxWindow* parent, Editor& editor) :
 	wxDialog(parent, wxID_ANY, "Import Map", wxDefaultPosition, wxSize(350, 315)),
 	editor(editor) {
@@ -85,6 +79,10 @@ ImportMapWindow::ImportMapWindow(wxWindow* parent, Editor& editor) :
 	SetSizer(sizer);
 	Layout();
 	Centre(wxBOTH);
+
+	browse_button->Bind(wxEVT_BUTTON, &ImportMapWindow::OnClickBrowse, this);
+	okBtn->Bind(wxEVT_BUTTON, &ImportMapWindow::OnClickOK, this);
+	cancelBtn->Bind(wxEVT_BUTTON, &ImportMapWindow::OnClickCancel, this);
 }
 
 ImportMapWindow::~ImportMapWindow() = default;

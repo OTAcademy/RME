@@ -50,8 +50,6 @@ protected:
 	EditorTab* GetInternalTab(int idx);
 	wxAuiNotebook* notebook;
 	std::map<wxWindow*, EditorTab*> conv;
-
-	DECLARE_EVENT_TABLE();
 };
 
 class EditorTab {

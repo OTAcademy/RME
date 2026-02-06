@@ -25,12 +25,6 @@
 
 extern Materials g_materials;
 
-BEGIN_EVENT_TABLE(ExtensionsDialog, wxDialog)
-EVT_HTML_LINK_CLICKED(wxID_ANY, ExtensionsDialog::OnClickLink)
-EVT_BUTTON(wxID_OK, ExtensionsDialog::OnClickOK)
-EVT_BUTTON(EXTENSIONS_OPEN_FOLDER_BUTTON, ExtensionsDialog::OnClickOpenFolder)
-END_EVENT_TABLE()
-
 ExtensionsDialog::ExtensionsDialog(wxWindow* parent) :
 	wxDialog(parent, wxID_ANY, "Extensions", wxDefaultPosition, wxSize(600, 500), wxRESIZE_BORDER | wxCAPTION) {
 	wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
@@ -50,6 +44,10 @@ ExtensionsDialog::ExtensionsDialog(wxWindow* parent) :
 
 	SetSizerAndFit(topSizer);
 	Centre(wxBOTH);
+
+	htmlWindow->Bind(wxEVT_HTML_LINK_CLICKED, &ExtensionsDialog::OnClickLink, this);
+	okBtn->Bind(wxEVT_BUTTON, &ExtensionsDialog::OnClickOK, this);
+	openBtn->Bind(wxEVT_BUTTON, &ExtensionsDialog::OnClickOpenFolder, this);
 }
 
 ExtensionsDialog::~ExtensionsDialog() {

@@ -111,8 +111,6 @@ private:
 	Brush* result_brush;
 	uint16_t result_id;
 	bool only_pickupables;
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif // RME_FIND_ITEM_WINDOW_H_

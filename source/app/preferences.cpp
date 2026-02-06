@@ -31,13 +31,6 @@
 #include "app/managers/version_manager.h"
 #include "app/preferences.h"
 
-BEGIN_EVENT_TABLE(PreferencesWindow, wxDialog)
-EVT_BUTTON(wxID_OK, PreferencesWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, PreferencesWindow::OnClickCancel)
-EVT_BUTTON(wxID_APPLY, PreferencesWindow::OnClickApply)
-EVT_COLLAPSIBLEPANE_CHANGED(wxID_ANY, PreferencesWindow::OnCollapsiblePane)
-END_EVENT_TABLE()
-
 PreferencesWindow::PreferencesWindow(wxWindow* parent, bool clientVersionSelected = false) :
 	wxDialog(parent, wxID_ANY, "Preferences", wxDefaultPosition, wxSize(400, 400), wxCAPTION | wxCLOSE_BOX) {
 	wxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
@@ -62,6 +55,11 @@ PreferencesWindow::PreferencesWindow(wxWindow* parent, bool clientVersionSelecte
 	SetSizerAndFit(sizer);
 	Centre(wxBOTH);
 	// FindWindowById(PANE_ADVANCED_GRAPHICS, this)->GetParent()->Fit();
+
+	Bind(wxEVT_BUTTON, &PreferencesWindow::OnClickOK, this, wxID_OK);
+	Bind(wxEVT_BUTTON, &PreferencesWindow::OnClickCancel, this, wxID_CANCEL);
+	Bind(wxEVT_BUTTON, &PreferencesWindow::OnClickApply, this, wxID_APPLY);
+	Bind(wxEVT_COLLAPSIBLEPANE_CHANGED, &PreferencesWindow::OnCollapsiblePane, this);
 }
 
 PreferencesWindow::~PreferencesWindow() {
