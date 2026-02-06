@@ -1233,16 +1233,14 @@ bool IOMapOTBM::loadSpawns(Map& map, pugi::xml_document& doc) {
 				}
 			}
 
-			Creature* creature = newd Creature(type);
-			creature->setDirection(direction);
-			creature->setSpawnTime(spawntime);
-			creatureTile->creature.reset(creature);
+			creatureTile->creature = std::make_unique<Creature>(type);
+			creatureTile->creature->setDirection(direction);
+			creatureTile->creature->setSpawnTime(spawntime);
 
 			if (creatureTile->getLocation()->getSpawnCount() == 0) {
 				// No spawn, create a newd one
 				ASSERT(creatureTile->spawn == nullptr);
-				Spawn* spawn = newd Spawn(5);
-				creatureTile->spawn.reset(spawn);
+				creatureTile->spawn = std::make_unique<Spawn>(5);
 				map.addSpawn(creatureTile);
 			}
 		}

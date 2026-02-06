@@ -59,6 +59,6 @@ void SpawnBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 	ASSERT(tile);
 	ASSERT(parameter); // Should contain an int which is the size of the newd spawn
 	if (tile->spawn == nullptr) {
-		tile->spawn.reset(newd Spawn(max(1, *(int*)parameter)));
+		tile->spawn = std::make_unique<Spawn>(max(1, *(int*)parameter));
 	}
 }
