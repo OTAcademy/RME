@@ -33,10 +33,10 @@ void TextRenderer::LoadFont(NVGcontext* vg) {
 		// Try to load font
 		std::vector<std::string> fontPaths = {
 			nstr(wxFileName(wxString("C:\\Windows\\Fonts\\arial.ttf")).GetFullPath()),
-			"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-			"/usr/share/fonts/TTF/DejaVuSans.ttf",
-			"/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
-			"/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+			nstr(wxFileName(wxString("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")).GetFullPath()),
+			nstr(wxFileName(wxString("/usr/share/fonts/TTF/DejaVuSans.ttf")).GetFullPath()),
+			nstr(wxFileName(wxString("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf")).GetFullPath()),
+			nstr(wxFileName(wxString("/usr/share/fonts/liberation/LiberationSans-Regular.ttf")).GetFullPath())
 		};
 
 		for (const auto& path : fontPaths) {

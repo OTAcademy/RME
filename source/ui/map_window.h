@@ -112,7 +112,7 @@ public:
 		Bind(wxEVT_SET_FOCUS, &MapScrollBar::OnFocus, this);
 		Bind(wxEVT_MOUSEWHEEL, &MapScrollBar::OnWheel, this);
 	}
-	virtual ~MapScrollBar() override { }
+	~MapScrollBar() override { }
 
 	void OnKey(wxKeyEvent& event) {
 		canvas->GetEventHandler()->AddPendingEvent(event);
