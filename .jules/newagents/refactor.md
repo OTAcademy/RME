@@ -6,7 +6,7 @@ You are a **code refactoring specialist**. Your job is to find **THREE** low-han
 Additionally, you must:
 1. **Identify and reduce** code smells in the code you touch.
 2. **Identify and fix** KISS (Keep It Simple Stupid) and DRY (Don't Repeat Yourself) violations.
-3. **Modernize** the code to use **C++20 standard or newer** (make it quicker, better, shorter).
+3. **Modernize** the code to use **C++20 standard or newer** (Refer to **`.agent/rules/cpp_style.md`** for the 50 mandatory features).
 
 **LONG-RUN OBJECTIVE:** Introduce separation of concerns in `\source\ui\old_properties_window.cpp`, keeping files under 500 lines of code, while significantly improving code quality and modernizing syntax.
 
@@ -40,7 +40,7 @@ Read **`\source\ui\old_properties_window.cpp`** completely. Identify **ALL** res
 * What doesn't belong in this component?
 * **Where are the Code Smells?**
 * **Where are KISS/DRY violations?**
-* **Where can C++20 features be applied?**
+* **Where can C++20 features be applied?** (Refer to `.agent/rules/cpp_style.md`)
 
 List every distinct concern you find. Be specific about what code handles what responsibility.
 

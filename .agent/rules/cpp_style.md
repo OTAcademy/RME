@@ -121,143 +121,143 @@ class Editor {
 - **Syntax:** `auto id = std::bit_cast<uint32_t>(bytes);`
 - **Use Case:** Safe type punning (e.g., converting raw byte buffers to tile IDs).
 
-**Feature 27: Structured Binding in init**
+**Feature 13: Structured Binding in init**
 - **Syntax:** `if (auto [it, inserted] = map.insert({key, val}); inserted) { ... }`
 - **Use Case:** Combine declaration and condition checking.
 
-**Feature 28: std::stop_token**
+**Feature 14: std::stop_token**
 - **Syntax:** `void export_map(std::stop_token st) { if(st.stop_requested()) return; }`
 - **Use Case:** Gracefully cancel long-running tasks like map exports.
 
-**Feature 29: [[nodiscard]] with message**
+**Feature 15: [[nodiscard]] with message**
 - **Syntax:** `[[nodiscard("Check if save succeeded!")]] bool save();`
 - **Use Case:** Warn developers if they ignore critical return values (like `save()`).
 
-**Feature 31: std::source_location**
+**Feature 16: std::source_location**
 - **Syntax:** `void log(std::source_location loc = std::source_location::current());`
 - **Use Case:** Log errors with file/line info automatically without using macros.
 
-**Feature 32: std::numbers**
+**Feature 17: std::numbers**
 - **Syntax:** `double angle = std::numbers::pi / 4;`
 - **Use Case:** Built-in constants like `std::numbers::pi` for rotation and math logic.
 
-**Feature 33: Constexpr std::vector**
+**Feature 18: Constexpr std::vector**
 - **Syntax:** `constexpr std::vector<int> lookup = {1, 2, 3, 4};`
 - **Use Case:** Create and sort small lookup tables or brush shapes at compile time.
 
-**Feature 34: std::lerp**
+**Feature 19: std::lerp**
 - **Syntax:** `float pos = std::lerp(start, end, 0.5f);`
 - **Use Case:** Smoothly interpolate camera movement or UI transitions.
 
-**Feature 35: std::midpoint**
+**Feature 20: std::midpoint**
 - **Syntax:** `int center = std::midpoint(x1, x2);`
 - **Use Case:** Safe calculation of midpoints between tile coordinates (prevents overflow).
 
-**Feature 36: Non-type Template Parameters**
+**Feature 21: Non-type Template Parameters**
 - **Syntax:** `template<auto Name> class Brush; Brush<"Grass"> grass;`
 - **Use Case:** Use strings or floats as template arguments.
 
-**Feature 37: Lambda Capture Init**
+**Feature 22: Lambda Capture Init**
 - **Syntax:** `[ptr = std::move(unique_ptr)]() { ptr->use(); }`
 - **Use Case:** Move-only types (like `std::unique_ptr`) into UI event lambdas.
 
-**Feature 38: std::identity**
+**Feature 23: std::identity**
 - **Syntax:** `std::ranges::sort(tiles, {}, std::identity{});`
 - **Use Case:** A standard "do nothing" function used for projection in ranges/algorithms.
 
 ## C++23 Features
 
-**Feature 13: Multi-dimensional operator[]**
+**Feature 24: Multi-dimensional operator[]**
 - **Syntax:** `auto& tile = map[x, y, layer];`
 - **Use Case:** Access map layers directly with clean syntax.
 
-**Feature 14: std::expected**
+**Feature 25: std::expected**
 - **Syntax:** `std::expected<Map, Error> loadMap(path);`
 - **Use Case:** Handle file I/O or script errors without exceptions.
 
-**Feature 15: std::flat_map**
+**Feature 26: std::flat_map**
 - **Syntax:** `std::flat_map<int, TileProps> properties;`
 - **Use Case:** Cache-friendly, vector-backed maps for tile properties.
 
-**Feature 16: std::print**
+**Feature 27: std::print**
 - **Syntax:** `std::print("Position: {}, {}\n", x, y);`
 - **Use Case:** Cleaner, faster alternative to `std::cout` for debug consoles.
 
-**Feature 17: Deducing this**
+**Feature 28: Deducing this**
 - **Syntax:** `void method(this auto&& self) { self.process(); }`
 - **Use Case:** Simplifies CRTP for GUI component hierarchies and callbacks.
 
-**Feature 18: std::mdspan**
+**Feature 29: std::mdspan**
 - **Syntax:** `std::mdspan<Tile, std::dextents<int, 3>> grid(data, x, y, z);`
 - **Use Case:** View 1D vectors as 2D/3D grids without memory overhead.
 
-**Feature 19: std::optional extensions**
+**Feature 30: std::optional extensions**
 - **Syntax:** `opt.and_then(process).or_else(handleError).value_or(default);`
 - **Use Case:** Monadic operations for cleaner logic flows.
 
-**Feature 20: if consteval**
+**Feature 31: if consteval**
 - **Syntax:** `if consteval { /* compile-time */ } else { /* runtime */ }`
 - **Use Case:** Optimize code differently for compile-time vs. run-time.
 
-**Feature 21: std::stacktrace**
+**Feature 32: std::stacktrace**
 - **Syntax:** `auto trace = std::stacktrace::current();`
 - **Use Case:** Automatically capture exactly where a map crash occurred.
 
-**Feature 22: std::string::contains**
+**Feature 33: std::string::contains**
 - **Syntax:** `if (filename.contains(".otbm")) { ... }`
 - **Use Case:** Simple utility for searching asset names or tags.
 
-**Feature 30: Attributes on Lambda**
+**Feature 34: Attributes on Lambda**
 - **Syntax:** `auto f = [[nodiscard]] []() -> int { return 42; };`
 - **Use Case:** Ability to use `[[nodiscard]]` or `[[deprecated]]` on lambdas.
 
-**Feature 39: std::ranges::contains**
+**Feature 35: std::ranges::contains**
 - **Syntax:** `if (std::ranges::contains(tileIDs, targetID)) { ... }`
 - **Use Case:** Quickly check if a tile list contains a specific ID without `std::find`.
 
-**Feature 40: std::generator**
+**Feature 36: std::generator**
 - **Syntax:** `std::generator<Tile*> neighbors() { co_yield tile; }`
 - **Use Case:** Use `co_yield` to iterate through complex map structures (like a spiral search).
 
-**Feature 41: Monadic std::optional**
+**Feature 37: Monadic std::optional**
 - **Syntax:** `findTile(x,y).and_then(getProp).value_or(defaultProp);`
 - **Use Case:** Chain tile lookups cleanly.
 
-**Feature 42: std::byteswap**
+**Feature 38: std::byteswap**
 - **Syntax:** `uint32_t swapped = std::byteswap(value);`
 - **Use Case:** Fast endian conversion when loading old RME/OTBM map files.
 
-**Feature 43: std::to_underlying**
+**Feature 39: std::to_underlying**
 - **Syntax:** `int val = std::to_underlying(TileColor::Red);`
 - **Use Case:** Convert enum class (like `TileColor`) to its integer type safely.
 
-**Feature 44: std::move_only_function**
+**Feature 40: std::move_only_function**
 - **Syntax:** `std::move_only_function<void()> callback = [ptr = std::move(p)](){};`
 - **Use Case:** Better for task queues where handlers shouldn't be copied.
 
-**Feature 45: Static operator()**
+**Feature 41: Static operator()**
 - **Syntax:** `struct Functor { static int operator()(int x) { return x * 2; } };`
 - **Use Case:** Optimize lambdas/functors that don't capture state for the compiler.
 
-**Feature 46: std::unreachable()**
+**Feature 42: std::unreachable()**
 - **Syntax:** `default: std::unreachable();`
 - **Use Case:** Tells the compiler a code path (like an exhaustive switch) is impossible.
 
 ## C++26 Features (Upcoming)
 
-**Feature 23: Placeholder _**
+**Feature 43: Placeholder _**
 - **Syntax:** `auto [x, y, _] = getTileCoords();`
 - **Use Case:** Ignore unused variables in structured bindings.
 
-**Feature 24: std::copyable_function**
+**Feature 44: std::copyable_function**
 - **Syntax:** `std::copyable_function<void()> handler = onClick;`
 - **Use Case:** Better replacement for `std::function` for event handlers.
 
-**Feature 25: String interpolation (v.2)**
+**Feature 45: String interpolation (v.2)**
 - **Syntax:** `auto msg = f"Tile {id} at position ({x}, {y})";`
 - **Use Case:** Further improvements to how UI strings are handled.
 
-**Feature 26: Pack Indexing**
+**Feature 46: Pack Indexing**
 - **Syntax:** `template<size_t I, typename... Ts> using At = Ts...[I];`
 - **Use Case:** Easier manipulation of variadic templates for plugin systems.
 
@@ -346,14 +346,14 @@ Since RME deals with multiple floors (Z-axis), `std::mdspan` allows you to treat
 
 ## Quick Reference by Standard
 
-### C++20 (19 features)
-Features 1-12, 27-29, 31-38
+### C++20 (23 features)
+Features 1-23
 
-### C++23 (22 features)
-Features 13-22, 30, 39-46
+### C++23 (19 features)
+Features 24-42
 
-### C++26 (9 features)
-Features 23-26, 47-50
+### C++26 (8 features)
+Features 43-50
 
 ---
 
