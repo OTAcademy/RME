@@ -18,8 +18,7 @@ FileMenuHandler::FileMenuHandler(MainFrame* frame, MainMenuBar* menubar) :
 	frame(frame), menubar(menubar) {
 }
 
-FileMenuHandler::~FileMenuHandler() {
-}
+FileMenuHandler::~FileMenuHandler() = default;
 
 void FileMenuHandler::OnNew(wxCommandEvent& WXUNUSED(event)) {
 	g_gui.NewMap();
@@ -53,6 +52,7 @@ void FileMenuHandler::OnImportMap(wxCommandEvent& WXUNUSED(event)) {
 	ASSERT(g_gui.GetCurrentEditor());
 	wxDialog* importmap = newd ImportMapWindow(frame, *g_gui.GetCurrentEditor());
 	importmap->ShowModal();
+	importmap->Destroy();
 }
 
 void FileMenuHandler::OnImportMonsterData(wxCommandEvent& WXUNUSED(event)) {

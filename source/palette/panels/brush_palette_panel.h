@@ -47,8 +47,6 @@ protected:
 	// No size_panel, it was unused
 
 	std::map<wxWindow*, Brush*> remembered_brushes;
-
-	DECLARE_EVENT_TABLE();
 };
 
 #endif
