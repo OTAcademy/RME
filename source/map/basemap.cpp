@@ -119,15 +119,9 @@ void BaseMap::setTile(int x, int y, int z, Tile* newtile, bool remove) {
 	MapNode* leaf = grid.getLeafForce(x, y);
 	std::unique_ptr<Tile> old = leaf->setTile(x, y, z, newtile);
 	if (!remove) {
-		// If we are not removing the old tile, it better be already handled or we will leak here.
-		// However, the original code had 'delete old' if remove was true.
-		// Since we now have a unique_ptr, it will be deleted automatically if we don't release it.
-		// To match the old behavior:
-		if (!remove) {
-			old.release();
-		}
+		old.release(); // Caller takes ownership
 	}
-	// If remove is true, 'old' unique_ptr will go out of scope and delete the tile.
+	// If remove is true, 'old' is deleted when it goes out of scope
 }
 
 std::unique_ptr<Tile> BaseMap::swapTile(int x, int y, int z, Tile* newtile) {

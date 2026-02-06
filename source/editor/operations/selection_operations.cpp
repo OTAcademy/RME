@@ -224,7 +224,11 @@ void SelectionOperations::moveSelection(Editor& editor, Position offset) {
 		if (g_settings.getInteger(Config::MERGE_MOVE) || !tile->ground) {
 			// Move items
 			if (old_dest_tile) {
-				new_dest_tile = old_dest_tile->deepCopy(editor.map).release();
+				std::unique_ptr<Tile> deep_copy = old_dest_tile->deepCopy(editor.map);
+				ASSERT(deep_copy);
+				if (deep_copy) {
+					new_dest_tile = deep_copy.release();
+				}
 			} else {
 				new_dest_tile = editor.map.allocator(location);
 			}

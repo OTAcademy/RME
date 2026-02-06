@@ -198,6 +198,7 @@ void CopyOperations::paste(Editor& editor, CopyBuffer& buffer, const Position& t
 			} else {
 				new_dest_tile = editor.map.allocator(dest_location);
 			}
+			// copy_tile may be partially moved-from after the merge call
 			new_dest_tile->merge(copy_tile.get());
 		} else {
 			// If the copied tile has ground, replace target tile

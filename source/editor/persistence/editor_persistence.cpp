@@ -427,7 +427,7 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 		}
 	}
 
-	std::map<Position, Spawn*> spawn_map;
+	std::map<Position, std::unique_ptr<Spawn>> spawn_map;
 	if (spawn_import_type != IMPORT_DONT) {
 		for (SpawnPositionList::iterator siter = imported_map.spawns.begin(); siter != imported_map.spawns.end();) {
 			Position old_spawn_pos = *siter;
@@ -439,7 +439,7 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 					Tile* imported_tile = imported_map.getTile(old_spawn_pos);
 					if (imported_tile) {
 						ASSERT(imported_tile->spawn);
-						spawn_map[new_spawn_pos] = imported_tile->spawn.release();
+						spawn_map[new_spawn_pos] = std::move(imported_tile->spawn);
 
 						SpawnPositionList::iterator next = siter;
 						bool cont = true;
@@ -558,8 +558,8 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 		editor.map.setTile(new_pos, import_tile, true);
 	}
 
-	for (std::map<Position, Spawn*>::iterator spawn_iter = spawn_map.begin(); spawn_iter != spawn_map.end(); ++spawn_iter) {
-		Position pos = spawn_iter->first;
+	for (auto& spawn_entry : spawn_map) {
+		Position pos = spawn_entry.first;
 		TileLocation* location = editor.map.createTileL(pos);
 		Tile* tile = location->get();
 		if (!tile) {
@@ -569,7 +569,7 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 			editor.map.removeSpawnInternal(tile);
 			tile->spawn.reset();
 		}
-		tile->spawn.reset(spawn_iter->second);
+		tile->spawn = std::move(spawn_entry.second);
 
 		editor.map.addSpawn(tile);
 	}
