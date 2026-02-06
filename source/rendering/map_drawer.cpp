@@ -65,7 +65,6 @@
 #include "rendering/io/screen_capture.h"
 #include "rendering/drawers/tiles/tile_renderer.h"
 #include "rendering/drawers/entities/creature_name_drawer.h"
-#include "rendering/core/sprite_preloader.h"
 #include "rendering/core/gl_resources.h"
 #include "rendering/core/shader_program.h"
 #include "rendering/postprocess/post_process_manager.h"
@@ -156,10 +155,6 @@ void MapDrawer::SetupGL() {
 		primitive_renderer->initialize();
 		renderers_initialized = true;
 	}
-
-	// Pre-load visible sprites to avoid stalls during DrawMap()
-	// Pre-load visible sprites to avoid stalls during DrawMap()
-	SpritePreloader::PreloadVisibleSprites(&editor, view, options);
 
 	InitPostProcess();
 }

@@ -76,6 +76,11 @@ void MapLayerDrawer::Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 							int draw_x = node_draw_x + (map_x * TileSize);
 							int draw_y = node_draw_y + (map_y * TileSize);
 
+							// Culling: Skip tiles that are far outside the viewport.
+							if (!view.IsPixelVisible(draw_x, draw_y, PAINTERS_ALGORITHM_SAFETY_MARGIN_PIXELS)) {
+								continue;
+							}
+
 							TileLocation* location = nd->getTile(map_x, map_y, map_z);
 
 							tile_renderer->DrawTile(sprite_batch, primitive_renderer, location, view, options, options.current_house_id, draw_x, draw_y);
@@ -107,6 +112,11 @@ void MapLayerDrawer::Draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 					// Calculate draw coordinates directly
 					int draw_x = node_draw_x + (map_x * TileSize);
 					int draw_y = node_draw_y + (map_y * TileSize);
+
+					// Culling: Skip tiles that are far outside the viewport.
+					if (!view.IsPixelVisible(draw_x, draw_y, PAINTERS_ALGORITHM_SAFETY_MARGIN_PIXELS)) {
+						continue;
+					}
 
 					TileLocation* location = nd->getTile(map_x, map_y, map_z);
 
