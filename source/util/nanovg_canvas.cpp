@@ -73,7 +73,7 @@ bool NanoVGCanvas::MakeContextCurrent() {
 }
 
 void NanoVGCanvas::OnPaint(wxPaintEvent&) {
-	wxAutoBufferedPaintDC dc(this); // Required even if unused
+	wxPaintDC dc(this); // validates the paint event
 
 	InitGL();
 	if (!m_nvg || !m_glContext) {

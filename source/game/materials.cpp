@@ -129,13 +129,13 @@ bool Materials::loadExtensions(FileName directoryName, wxString& error, std::vec
 
 		const std::string& extensionName = attribute.as_string();
 		if (!(attribute = extensionNode.attribute("author"))) {
-			warnings.push_back((filename + ": Couldn't read extension name.").ToStdString());
+			warnings.push_back((filename + ": Couldn't read extension author.").ToStdString());
 			continue;
 		}
 
 		const std::string& extensionAuthor = attribute.as_string();
 		if (!(attribute = extensionNode.attribute("description"))) {
-			warnings.push_back((filename + ": Couldn't read extension name.").ToStdString());
+			warnings.push_back((filename + ": Couldn't read extension description.").ToStdString());
 			continue;
 		}
 

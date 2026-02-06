@@ -167,7 +167,7 @@ MapWindow* MapCanvas::GetMapWindow() const {
 }
 
 void MapCanvas::OnPaint(wxPaintEvent& event) {
-	wxAutoBufferedPaintDC dc(this);
+	wxPaintDC dc(this); // validates the paint event
 	SetCurrent(*g_gui.GetGLContext(this));
 
 	// proper nvg pointer wrapper

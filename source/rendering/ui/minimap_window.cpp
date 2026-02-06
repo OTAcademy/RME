@@ -91,7 +91,7 @@ void MinimapWindow::OnDelayedUpdate(wxTimerEvent& event) {
 }
 
 void MinimapWindow::OnPaint(wxPaintEvent& event) {
-	wxAutoBufferedPaintDC dc(this); // Required for wxGLCanvas
+	wxPaintDC dc(this); // validates the paint event
 
 	// spdlog::info("MinimapWindow::OnPaint");
 
