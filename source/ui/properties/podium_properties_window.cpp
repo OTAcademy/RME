@@ -14,13 +14,6 @@
 
 static constexpr int OUTFIT_COLOR_MAX = 133;
 
-/*
-BEGIN_EVENT_TABLE(PodiumPropertiesWindow, wxDialog)
-EVT_BUTTON(wxID_OK, PodiumPropertiesWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, PodiumPropertiesWindow::OnClickCancel)
-END_EVENT_TABLE()
-*/
-
 PodiumPropertiesWindow::PodiumPropertiesWindow(wxWindow* win_parent, const Map* map, const Tile* tile_parent, Item* item, wxPoint pos) :
 	ObjectPropertiesWindowBase(win_parent, "Podium Properties", map, tile_parent, item, pos) {
 	ASSERT(edit_item);
