@@ -93,15 +93,9 @@ public:
 	HouseMap::const_iterator end() const {
 		return houses.end();
 	}
-#ifdef __VISUALC__ // C++0x compliance to some degree :)
 	HouseMap::iterator erase(HouseMap::iterator iter) {
 		return houses.erase(iter);
 	}
-#else
-	void erase(HouseMap::iterator iter) {
-		houses.erase(iter);
-	}
-#endif
 	HouseMap::iterator find(uint32_t val) {
 		return houses.find(val);
 	}
