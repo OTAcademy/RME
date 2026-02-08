@@ -94,7 +94,7 @@ MainMenuBar::MainMenuBar(MainFrame* frame) :
 
 	// Tie all events to this handler!
 
-	for (std::map<std::string, MenuBar::Action*>::iterator ai = actions.begin(); ai != actions.end(); ++ai) {
+	for (auto ai = actions.begin(); ai != actions.end(); ++ai) {
 		frame->Bind(wxEVT_MENU, ai->second->handler, this, MAIN_FRAME_MENU + ai->second->id);
 	}
 	for (size_t i = 0; i < 10; ++i) {
@@ -105,7 +105,7 @@ MainMenuBar::MainMenuBar(MainFrame* frame) :
 MainMenuBar::~MainMenuBar() {
 	// Don't need to delete menubar, it's owned by the frame
 
-	for (std::map<std::string, MenuBar::Action*>::iterator ai = actions.begin(); ai != actions.end(); ++ai) {
+	for (auto ai = actions.begin(); ai != actions.end(); ++ai) {
 		delete ai->second;
 	}
 
@@ -118,7 +118,7 @@ MainMenuBar::~MainMenuBar() {
 }
 
 void MainMenuBar::EnableItem(MenuBar::ActionID id, bool enable) {
-	std::map<MenuBar::ActionID, std::list<wxMenuItem*>>::iterator fi = items.find(id);
+	auto fi = items.find(id);
 	if (fi == items.end()) {
 		return;
 	}
@@ -131,7 +131,7 @@ void MainMenuBar::EnableItem(MenuBar::ActionID id, bool enable) {
 }
 
 void MainMenuBar::CheckItem(MenuBar::ActionID id, bool enable) {
-	std::map<MenuBar::ActionID, std::list<wxMenuItem*>>::iterator fi = items.find(id);
+	auto fi = items.find(id);
 	if (fi == items.end()) {
 		return;
 	}
@@ -146,7 +146,7 @@ void MainMenuBar::CheckItem(MenuBar::ActionID id, bool enable) {
 }
 
 bool MainMenuBar::IsItemChecked(MenuBar::ActionID id) const {
-	std::map<MenuBar::ActionID, std::list<wxMenuItem*>>::const_iterator fi = items.find(id);
+	auto fi = items.find(id);
 	if (fi == items.end()) {
 		return false;
 	}

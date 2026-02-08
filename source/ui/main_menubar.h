@@ -19,6 +19,7 @@
 #define RME_MAIN_BAR_H_
 
 #include <wx/docview.h>
+#include <unordered_map>
 #include "ui/managers/recent_files_manager.h"
 
 namespace MenuBar {
@@ -306,9 +307,9 @@ protected:
 	// Used so that calling Check on menu items don't trigger events (avoids infinite recursion)
 	// bool checking_programmaticly; // Already defined as public
 
-	std::map<MenuBar::ActionID, std::list<wxMenuItem*>> items;
+	std::unordered_map<MenuBar::ActionID, std::list<wxMenuItem*>> items;
 
-	std::map<std::string, MenuBar::Action*> actions;
+	std::unordered_map<std::string, MenuBar::Action*> actions;
 
 	SearchHandler* searchHandler;
 	ViewSettingsHandler* viewSettingsHandler;

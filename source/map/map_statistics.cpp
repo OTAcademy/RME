@@ -5,12 +5,13 @@
 #include "game/items.h"
 #include "ui/gui.h"
 #include <sstream>
+#include <unordered_map>
 
 MapStatistics MapStatisticsCollector::Collect(Map* map) {
 	MapStatistics stats;
 	int load_counter = 0;
 
-	std::map<uint32_t, uint32_t> town_sqm_count;
+	std::unordered_map<uint32_t, uint32_t> town_sqm_count;
 
 	for (auto& tile_location : *map) {
 		Tile* tile = tile_location.get();
