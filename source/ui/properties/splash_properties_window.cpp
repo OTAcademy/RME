@@ -13,13 +13,6 @@
 // ============================================================================
 // Splash Properties Window
 
-/*
-BEGIN_EVENT_TABLE(SplashPropertiesWindow, wxDialog)
-EVT_BUTTON(wxID_OK, SplashPropertiesWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, SplashPropertiesWindow::OnClickCancel)
-END_EVENT_TABLE()
-*/
-
 SplashPropertiesWindow::SplashPropertiesWindow(wxWindow* parent, const Map* map, const Tile* tile, Item* item, wxPoint pos) :
 	ObjectPropertiesWindowBase(parent, "Splash Properties", map, tile, item, pos),
 	action_id_field(nullptr),
@@ -68,7 +61,7 @@ SplashPropertiesWindow::SplashPropertiesWindow(wxWindow* parent, const Map* map,
 	subsizer->Add(action_id_field, wxSizerFlags(1).Expand());
 
 	subsizer->Add(newd wxStaticText(this, wxID_ANY, "Unique ID"));
-	unique_id_field = newd wxSpinCtrl(this, wxID_ANY, i2ws(edit_item->getUniqueID()), wxDefaultPosition, wxSize(-1, 20), wxSP_ARROW_KEYS, 0, 0xFFFF, edit_item->getUniqueID());
+	unique_id_field = newd wxSpinCtrl(this, wxID_ANY, i2ws(edit_item->getUniqueID()), wxDefaultPosition, FromDIP(wxSize(-1, 20)), wxSP_ARROW_KEYS, 0, 0xFFFF, edit_item->getUniqueID());
 	subsizer->Add(unique_id_field, wxSizerFlags(1).Expand());
 
 	boxsizer->Add(subsizer, wxSizerFlags(1).Expand());

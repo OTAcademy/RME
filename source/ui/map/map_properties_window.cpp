@@ -9,7 +9,7 @@
 #include "ui/map_tab.h"
 
 MapPropertiesWindow::MapPropertiesWindow(wxWindow* parent, MapTab* view, Editor& editor) :
-	wxDialog(parent, wxID_ANY, "Map Properties", wxDefaultPosition, wxSize(300, 200), wxRESIZE_BORDER | wxCAPTION),
+	wxDialog(parent, wxID_ANY, "Map Properties", wxDefaultPosition, FromDIP(wxSize(300, 200)), wxRESIZE_BORDER | wxCAPTION),
 	view(view),
 	editor(editor) {
 	// Setup data variabels

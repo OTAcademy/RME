@@ -13,7 +13,7 @@
 // Export Tilesets window
 
 ExportTilesetsWindow::ExportTilesetsWindow(wxWindow* parent, Editor& editor) :
-	wxDialog(parent, wxID_ANY, "Export Tilesets", wxDefaultPosition, wxSize(400, 230)),
+	wxDialog(parent, wxID_ANY, "Export Tilesets", wxDefaultPosition, FromDIP(wxSize(400, 230))),
 	editor(editor) {
 	wxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
 	wxSizer* tmpsizer;
