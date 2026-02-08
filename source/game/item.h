@@ -449,7 +449,8 @@ inline int Item::getCount() const {
 }
 
 inline uint16_t Item::getUniqueID() const {
-	const int32_t* a = getIntegerAttribute("uid");
+	static const std::string key = "uid";
+	const int32_t* a = getIntegerAttribute(key);
 	if (a) {
 		return *a;
 	}
@@ -457,7 +458,8 @@ inline uint16_t Item::getUniqueID() const {
 }
 
 inline uint16_t Item::getActionID() const {
-	const int32_t* a = getIntegerAttribute("aid");
+	static const std::string key = "aid";
+	const int32_t* a = getIntegerAttribute(key);
 	if (a) {
 		return *a;
 	}
@@ -465,7 +467,8 @@ inline uint16_t Item::getActionID() const {
 }
 
 inline uint16_t Item::getTier() const {
-	const int32_t* a = getIntegerAttribute("tier");
+	static const std::string key = "tier";
+	const int32_t* a = getIntegerAttribute(key);
 	if (a) {
 		return *a;
 	}
@@ -473,7 +476,8 @@ inline uint16_t Item::getTier() const {
 }
 
 inline std::string_view Item::getText() const {
-	const std::string* a = getStringAttribute("text");
+	static const std::string key = "text";
+	const std::string* a = getStringAttribute(key);
 	if (a) {
 		return *a;
 	}
@@ -481,7 +485,8 @@ inline std::string_view Item::getText() const {
 }
 
 inline std::string_view Item::getDescription() const {
-	const std::string* a = getStringAttribute("desc");
+	static const std::string key = "desc";
+	const std::string* a = getStringAttribute(key);
 	if (a) {
 		return *a;
 	}
