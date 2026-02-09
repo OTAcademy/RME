@@ -35,7 +35,7 @@ private:
 	};
 
 	std::map<void*, ContextGeometry> contexts_;
-	std::recursive_mutex mutex_;
+	std::mutex mutex_;
 };
 
 #endif

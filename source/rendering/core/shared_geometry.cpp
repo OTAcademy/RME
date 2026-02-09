@@ -26,7 +26,7 @@ bool SharedGeometry::initialize() {
 		return false;
 	}
 
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(mutex_);
 
 	if (contexts_.find(ctx) != contexts_.end()) {
 		return true;
@@ -59,7 +59,7 @@ bool SharedGeometry::initialize() {
 GLuint SharedGeometry::getQuadVBO() {
 	initialize();
 	void* ctx = GetCurrentGLContext();
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(mutex_);
 	auto it = contexts_.find(ctx);
 	if (it != contexts_.end()) {
 		return it->second.vbo->GetID();
@@ -70,7 +70,7 @@ GLuint SharedGeometry::getQuadVBO() {
 GLuint SharedGeometry::getQuadEBO() {
 	initialize();
 	void* ctx = GetCurrentGLContext();
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(mutex_);
 	auto it = contexts_.find(ctx);
 	if (it != contexts_.end()) {
 		return it->second.ebo->GetID();

@@ -297,7 +297,6 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 		last_gc_time = current_time;
 	}
 
-	glFlush(); // Ensure all commands are sent to GPU
 	SwapBuffers();
 
 	// FPS tracking and limiting
