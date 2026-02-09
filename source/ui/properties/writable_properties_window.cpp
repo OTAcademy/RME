@@ -44,9 +44,9 @@ WritablePropertiesWindow::WritablePropertiesWindow(wxWindow* parent, const Map* 
 	boxsizer->Add(subsizer, wxSizerFlags(1).Expand());
 
 	wxSizer* textsizer = newd wxBoxSizer(wxVERTICAL);
-	textsizer->Add(newd wxStaticText(this, wxID_ANY, "Text"), wxSizerFlags(1).Center());
+	textsizer->Add(newd wxStaticText(this, wxID_ANY, "Text"), wxSizerFlags(0).Center());
 	text_field = newd wxTextCtrl(this, wxID_ANY, wxstr(item->getText()), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-	textsizer->Add(text_field, wxSizerFlags(7).Expand());
+	textsizer->Add(text_field, wxSizerFlags(1).Expand());
 
 	boxsizer->Add(textsizer, wxSizerFlags(2).Expand());
 

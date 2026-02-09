@@ -8,13 +8,6 @@
 #include "game/creature.h"
 #include "ui/gui.h"
 
-/*
-BEGIN_EVENT_TABLE(CreaturePropertiesWindow, wxDialog)
-EVT_BUTTON(wxID_OK, CreaturePropertiesWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, CreaturePropertiesWindow::OnClickCancel)
-END_EVENT_TABLE()
-*/
-
 CreaturePropertiesWindow::CreaturePropertiesWindow(wxWindow* win_parent, const Map* map, const Tile* tile_parent, Creature* creature, wxPoint pos) :
 	ObjectPropertiesWindowBase(win_parent, "Creature Properties", map, tile_parent, creature, pos),
 	count_field(nullptr),
