@@ -7,6 +7,7 @@
 #include "map/operations/map_processor.h"
 #include "editor/editor.h"
 #include "map/map.h"
+#include "map/tile_operations.h"
 #include "ui/gui.h"
 #include "brushes/ground/ground_brush.h"
 
@@ -24,7 +25,7 @@ void MapProcessor::borderizeMap(Editor& editor, bool showdialog) {
 		Tile* tile = tileLocation.get();
 		ASSERT(tile);
 
-		tile->borderize(&editor.map);
+		TileOperations::borderize(tile, &editor.map);
 		++tiles_done;
 	}
 
@@ -87,22 +88,7 @@ void MapProcessor::clearInvalidHouseTiles(Editor& editor, bool showdialog) {
 	while (iter != houses.end()) {
 		House* h = iter->second.get();
 		if (editor.map.towns.getTown(h->townid) == nullptr) {
-#ifdef __VISUALC__ // C++0x compliance to some degree :)
 			iter = houses.erase(iter);
-#else // Bulky, slow way
-			HouseMap::iterator tmp_iter = iter;
-			++tmp_iter;
-			uint32_t next_key = 0;
-			if (tmp_iter != houses.end()) {
-				next_key = tmp_iter->first;
-			}
-			houses.erase(iter);
-			if (next_key != 0) {
-				iter = houses.find(next_key);
-			} else {
-				iter = houses.end();
-			}
-#endif
 		} else {
 			++iter;
 		}

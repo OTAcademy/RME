@@ -22,6 +22,7 @@
 #include "map/map.h"
 #include "map/map.h"
 #include "map/tile.h"
+#include "map/tile_operations.h"
 #include "app/settings.h"
 
 void DrawOperations::draw(Editor& editor, Position offset, bool alt, bool dodraw) {
@@ -108,8 +109,8 @@ void DrawOperations::draw(Editor& editor, Position offset, bool alt, bool dodraw
 				Tile* tile = editor.map.getTile(*it);
 				if (tile) {
 					std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
-					new_tile->borderize(&editor.map);
-					new_tile->wallize(&editor.map);
+					TileOperations::borderize(new_tile.get(), &editor.map);
+					TileOperations::wallize(new_tile.get(), &editor.map);
 					action->addChange(std::make_unique<Change>(new_tile.release()));
 				}
 			}
@@ -219,18 +220,18 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, boo
 				if (dodraw) {
 					std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 					brush->draw(&editor.map, new_tile.get());
-					new_tile->borderize(&editor.map);
+					TileOperations::borderize(new_tile.get(), &editor.map);
 					action->addChange(std::make_unique<Change>(new_tile.release()));
 				} else if (!dodraw && tile->hasOptionalBorder()) {
 					std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 					brush->undraw(&editor.map, new_tile.get());
-					new_tile->borderize(&editor.map);
+					TileOperations::borderize(new_tile.get(), &editor.map);
 					action->addChange(std::make_unique<Change>(new_tile.release()));
 				}
 			} else if (dodraw) {
 				std::unique_ptr<Tile> new_tile(editor.map.allocator(location));
 				brush->draw(&editor.map, new_tile.get());
-				new_tile->borderize(&editor.map);
+				TileOperations::borderize(new_tile.get(), &editor.map);
 				if (new_tile->empty()) {
 					continue;
 				}
@@ -276,7 +277,7 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, Pos
 			if (tile) {
 				std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 				if (g_settings.getInteger(Config::USE_AUTOMAGIC)) {
-					new_tile->cleanBorders();
+					TileOperations::cleanBorders(new_tile.get());
 				}
 				if (dodraw) {
 					if (brush->isGround() && alt) {
@@ -328,11 +329,11 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, Pos
 				if (tile) {
 					std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 					if (brush->isEraser()) {
-						new_tile->wallize(&editor.map);
-						new_tile->tableize(&editor.map);
-						new_tile->carpetize(&editor.map);
+						TileOperations::wallize(new_tile.get(), &editor.map);
+						TileOperations::tableize(new_tile.get(), &editor.map);
+						TileOperations::carpetize(new_tile.get(), &editor.map);
 					}
-					new_tile->borderize(&editor.map);
+					TileOperations::borderize(new_tile.get(), &editor.map);
 					action->addChange(std::make_unique<Change>(new_tile.release()));
 				} else {
 					std::unique_ptr<Tile> new_tile(editor.map.allocator(location));
@@ -342,7 +343,7 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, Pos
 						// new_tile->tableize(map);
 						// new_tile->carpetize(map);
 					}
-					new_tile->borderize(&editor.map);
+					TileOperations::borderize(new_tile.get(), &editor.map);
 					if (!new_tile->empty()) {
 						action->addChange(std::make_unique<Change>(new_tile.release()));
 					}
@@ -384,13 +385,13 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, Pos
 			if (brush->isTable()) {
 				if (tile && tile->hasTable()) {
 					std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
-					new_tile->tableize(&editor.map);
+					TileOperations::tableize(new_tile.get(), &editor.map);
 					action->addChange(std::make_unique<Change>(new_tile.release()));
 				}
 			} else if (brush->isCarpet()) {
 				if (tile && tile->hasCarpet()) {
 					std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
-					new_tile->carpetize(&editor.map);
+					TileOperations::carpetize(new_tile.get(), &editor.map);
 					action->addChange(std::make_unique<Change>(new_tile.release()));
 				}
 			}
@@ -412,7 +413,7 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, Pos
 				Tile* tile = location->get();
 				if (tile) {
 					std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
-					new_tile->cleanWalls(brush->isWall());
+					TileOperations::cleanWalls(new_tile.get(), brush->isWall());
 					g_gui.GetCurrentBrush()->draw(draw_map, new_tile.get());
 					draw_map->setTile(*it, new_tile.release(), true);
 				} else if (dodraw) {
@@ -425,7 +426,7 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, Pos
 				// Get the correct tiles from the draw map instead of the editor map
 				Tile* tile = draw_map->getTile(*it);
 				if (tile) {
-					tile->wallize(draw_map);
+					TileOperations::wallize(tile, draw_map);
 					action->addChange(std::make_unique<Change>(tile));
 				}
 			}
@@ -439,7 +440,7 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, Pos
 				if (tile) {
 					std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 					// Wall cleaning is exempt from automagic
-					new_tile->cleanWalls(brush->isWall());
+					TileOperations::cleanWalls(new_tile.get(), brush->isWall());
 					if (dodraw) {
 						g_gui.GetCurrentBrush()->draw(&editor.map, new_tile.get());
 					} else {
@@ -463,7 +464,7 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, Pos
 					Tile* tile = editor.map.getTile(*it);
 					if (tile) {
 						std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
-						new_tile->wallize(&editor.map);
+						TileOperations::wallize(new_tile.get(), &editor.map);
 						// if(*tile == *new_tile) delete new_tile;
 						action->addChange(std::make_unique<Change>(new_tile.release()));
 					}
@@ -486,7 +487,7 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, Pos
 				std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 				// Wall cleaning is exempt from automagic
 				if (brush->isWall()) {
-					new_tile->cleanWalls(brush->asWall());
+					TileOperations::cleanWalls(new_tile.get(), brush->asWall());
 				}
 				if (dodraw) {
 					door_brush->draw(&editor.map, new_tile.get(), &alt);
@@ -511,7 +512,7 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, Pos
 				Tile* tile = editor.map.getTile(*it);
 				if (tile) {
 					std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
-					new_tile->wallize(&editor.map);
+					TileOperations::wallize(new_tile.get(), &editor.map);
 					// if(*tile == *new_tile) delete new_tile;
 					action->addChange(std::make_unique<Change>(new_tile.release()));
 				}
