@@ -18,8 +18,13 @@ PreviewDrawer::PreviewDrawer() {
 PreviewDrawer::~PreviewDrawer() {
 }
 
+#include "ui/map_tab.h"
+
 void PreviewDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, MapCanvas* canvas, const RenderView& view, int map_z, const DrawingOptions& options, Editor& editor, ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, uint32_t current_house_id) {
-	if (g_gui.secondary_map != nullptr && !options.ingame) {
+	MapTab* mapTab = dynamic_cast<MapTab*>(canvas->GetMapWindow());
+	BaseMap* secondary_map = mapTab ? mapTab->GetSession()->secondary_map : nullptr;
+
+	if (secondary_map != nullptr && !options.ingame) {
 		Brush* brush = g_gui.GetCurrentBrush();
 
 		Position normalPos;
@@ -42,7 +47,7 @@ void PreviewDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive
 					continue;
 				}
 
-				Tile* tile = g_gui.secondary_map->getTile(pos);
+				Tile* tile = secondary_map->getTile(pos);
 				if (tile) {
 					// Compensate for underground/overground
 					int offset;

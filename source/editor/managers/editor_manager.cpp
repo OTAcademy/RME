@@ -134,7 +134,7 @@ void EditorManager::NewMapView() {
 	MapTab* mapTab = GetCurrentMapTab();
 	if (mapTab) {
 		auto* newMapTab = newd MapTab(mapTab);
-		newMapTab->OnSwitchEditorMode(g_gui.mode);
+		newMapTab->OnSwitchEditorMode(mapTab->GetMode());
 
 		g_status.SetStatusText("Created new view");
 		g_status.UpdateTitle();
@@ -219,7 +219,7 @@ bool EditorManager::NewMap() {
 	}
 
 	auto* mapTab = newd MapTab(g_gui.tabbook.get(), editor.release());
-	mapTab->OnSwitchEditorMode(g_gui.mode);
+	mapTab->OnSwitchEditorMode(SELECTION_MODE);
 	mapTab->GetMap()->clearChanges();
 
 	g_status.SetStatusText("Created new map");
@@ -316,7 +316,7 @@ bool EditorManager::LoadMap(const FileName& fileName) {
 	}
 
 	auto* mapTab = newd MapTab(g_gui.tabbook.get(), editor.release());
-	mapTab->OnSwitchEditorMode(g_gui.mode);
+	mapTab->OnSwitchEditorMode(SELECTION_MODE);
 
 	g_gui.root->AddRecentFile(fileName);
 
@@ -393,16 +393,20 @@ void EditorManager::PreparePaste() {
 }
 
 void EditorManager::StartPasting() {
-	if (GetCurrentEditor()) {
+	MapTab* mapTab = g_gui.GetCurrentMapTab();
+	if (mapTab) {
 		g_gui.pasting = true;
-		g_gui.secondary_map = &g_gui.copybuffer.getBufferMap();
+		mapTab->GetSession()->secondary_map = &g_gui.copybuffer.getBufferMap();
 	}
 }
 
 void EditorManager::EndPasting() {
 	if (g_gui.pasting) {
 		g_gui.pasting = false;
-		g_gui.secondary_map = nullptr;
+		MapTab* mapTab = g_gui.GetCurrentMapTab();
+		if (mapTab) {
+			mapTab->GetSession()->secondary_map = nullptr;
+		}
 	}
 }
 

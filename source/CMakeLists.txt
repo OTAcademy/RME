@@ -148,6 +148,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/render_view.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/ring_buffer.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/shader_program.h
+    ${CMAKE_CURRENT_LIST_DIR}/rendering/core/shared_geometry.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/sprite_batch.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/sprite_instance.h
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/sprite_light.h
@@ -463,6 +464,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/render_view.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/ring_buffer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/shader_program.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/rendering/core/shared_geometry.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/sprite_batch.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/text_renderer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/rendering/core/texture_array.cpp
