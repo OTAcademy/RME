@@ -1,7 +1,7 @@
 #ifndef RME_UI_MENUBAR_MENUBAR_ACTION_MANAGER_H_
 #define RME_UI_MENUBAR_MENUBAR_ACTION_MANAGER_H_
 
-#include <map>
+#include <unordered_map>
 #include <string>
 
 // Forward declarations
@@ -12,7 +12,7 @@ namespace MenuBar {
 
 class MenuBarActionManager {
 public:
-	static void RegisterActions(MainMenuBar* mb, std::map<std::string, MenuBar::Action*>& actions);
+	static void RegisterActions(MainMenuBar* mb, std::unordered_map<std::string, MenuBar::Action*>& actions);
 	static void UpdateState(MainMenuBar* mb);
 };
 

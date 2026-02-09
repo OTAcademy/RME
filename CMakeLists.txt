@@ -122,3 +122,51 @@ target_link_libraries(rme PRIVATE glad::glad)
 target_link_libraries(rme PRIVATE glm::glm)
 target_link_libraries(rme PRIVATE nanovg::nanovg)
 target_link_libraries(rme PRIVATE spdlog::spdlog)
+
+option(RME_BUILD_TESTS "Build test executables" OFF)
+
+if(RME_BUILD_TESTS)
+	# Test executable for autoborder preview - uses same sources as main target
+	add_executable(test_autoborder_preview ${rme_H} ${rme_SRC} ${CMAKE_CURRENT_SOURCE_DIR}/source/test_autoborder_preview.cpp)
+	target_compile_definitions(test_autoborder_preview PRIVATE WXWIN_COMPATIBILITY_3_3 NANOVG_GL3)
+
+	# Include directories
+	target_include_directories(test_autoborder_preview PRIVATE
+		${Boost_INCLUDE_DIRS}
+		${LibArchive_INCLUDE_DIRS}
+		${OPENGL_INCLUDE_DIR}
+		${ZLIB_INCLUDE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/source
+	)
+
+	# Link libraries (same as main rme target)
+	if(TARGET wxWidgets::wxWidgets)
+		target_link_libraries(test_autoborder_preview PRIVATE wxWidgets::wxWidgets)
+	else()
+		target_link_libraries(test_autoborder_preview PRIVATE ${wxWidgets_LIBRARIES})
+	endif()
+
+	if(TARGET Boost::boost)
+		target_link_libraries(test_autoborder_preview PRIVATE Boost::boost Boost::thread Boost::system)
+	else()
+		target_link_libraries(test_autoborder_preview PRIVATE ${Boost_LIBRARIES})
+	endif()
+
+	if(TARGET LibArchive::LibArchive)
+		target_link_libraries(test_autoborder_preview PRIVATE LibArchive::LibArchive)
+	else()
+		target_link_libraries(test_autoborder_preview PRIVATE ${LibArchive_LIBRARIES})
+	endif()
+
+	if(TARGET ZLIB::ZLIB)
+		target_link_libraries(test_autoborder_preview PRIVATE ZLIB::ZLIB)
+	else()
+		target_link_libraries(test_autoborder_preview PRIVATE ${ZLIB_LIBRARIES})
+	endif()
+
+	target_link_libraries(test_autoborder_preview PRIVATE ${OPENGL_LIBRARIES})
+	target_link_libraries(test_autoborder_preview PRIVATE glad::glad)
+	target_link_libraries(test_autoborder_preview PRIVATE glm::glm)
+	target_link_libraries(test_autoborder_preview PRIVATE nanovg::nanovg)
+	target_link_libraries(test_autoborder_preview PRIVATE spdlog::spdlog)
+endif()

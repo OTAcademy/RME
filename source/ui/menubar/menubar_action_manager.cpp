@@ -8,7 +8,7 @@
 #include "app/preferences.h"
 #include "ui/managers/recent_files_manager.h"
 
-void MenuBarActionManager::RegisterActions(MainMenuBar* mb, std::map<std::string, MenuBar::Action*>& actions) {
+void MenuBarActionManager::RegisterActions(MainMenuBar* mb, std::unordered_map<std::string, MenuBar::Action*>& actions) {
 	using namespace MenuBar;
 
 #define MAKE_ACTION(id, kind, handler) actions[#id] = new MenuBar::Action(#id, id, kind, wxCommandEventFunction(&MainMenuBar::handler))
