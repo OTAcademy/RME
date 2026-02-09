@@ -8,6 +8,9 @@
 #include "ui/gui.h"
 #include "ui/dialog_util.h"
 #include "map/map_statistics.h"
+#include "map/map.h"
+#include "game/town.h"
+#include "game/house.h"
 
 #include <wx/wx.h>
 #include <sstream>

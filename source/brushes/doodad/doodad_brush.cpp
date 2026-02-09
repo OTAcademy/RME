@@ -22,6 +22,28 @@ bool DoodadBrush::load(pugi::xml_node node, std::vector<std::string>& warnings) 
 	return DoodadBrushLoader::load(node, items, settings, warnings, this);
 }
 
+void DoodadBrush::getRelatedItems(std::vector<uint16_t>& items_out) {
+	for (const auto& alt : items.getAlternatives()) {
+		if (!alt) {
+			continue;
+		}
+		for (const auto& single : alt->single_items) {
+			if (single.item && single.item->getID() != 0) {
+				items_out.push_back(single.item->getID());
+			}
+		}
+		for (const auto& composite : alt->composite_items) {
+			for (const auto& entry : composite.items) {
+				for (const auto& item : entry.second) {
+					if (item && item->getID() != 0) {
+						items_out.push_back(item->getID());
+					}
+				}
+			}
+		}
+	}
+}
+
 bool DoodadBrush::ownsItem(Item* item) const {
 	if (item->getDoodadBrush() == this) {
 		return true;

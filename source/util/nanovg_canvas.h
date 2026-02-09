@@ -93,6 +93,11 @@ public:
 		return m_nvg.get();
 	}
 
+	/**
+	 * @brief Gets or creates a cached NanoVG image for an item.
+	 */
+	int GetOrCreateItemImage(uint16_t itemId);
+
 protected:
 	/**
 	 * @brief Override this to implement your custom NanoVG drawing.

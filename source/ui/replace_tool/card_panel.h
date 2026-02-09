@@ -28,7 +28,6 @@ protected:
 	void OnSize(wxSizeEvent& event);
 
 private:
-	bool m_isActive = false;
 	bool m_showFooter = false;
 	wxString m_title;
 

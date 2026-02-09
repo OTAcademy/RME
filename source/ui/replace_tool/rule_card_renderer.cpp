@@ -1,5 +1,6 @@
 #include "app/main.h"
 #include "ui/replace_tool/rule_card_renderer.h"
+#include "util/nanovg_canvas.h"
 #include "ui/replace_tool/rule_manager.h"
 #include "game/items.h"
 #include "util/nvg_utils.h"
@@ -20,7 +21,7 @@ void RuleCardRenderer::DrawTrashIcon(NVGcontext* vg, float x, float y, float siz
 	nvgFill(vg);
 }
 
-void RuleCardRenderer::DrawRuleItemCard(NVGcontext* vg, float x, float y, float w, float h, uint16_t id, bool highlight, bool isTrash, bool showDeleteOverlay, int probability) {
+void RuleCardRenderer::DrawRuleItemCard(NanoVGCanvas* canvas, NVGcontext* vg, float x, float y, float w, float h, uint16_t id, bool highlight, bool isTrash, bool showDeleteOverlay, int probability) {
 	NVGpaint bgPaint = nvgLinearGradient(vg, x, y, x, y + h, nvgRGBA(60, 60, 65, 255), nvgRGBA(50, 50, 55, 255));
 	nvgBeginPath(vg);
 	nvgRoundedRect(vg, x, y, w, h, 4.0f);
@@ -46,7 +47,8 @@ void RuleCardRenderer::DrawRuleItemCard(NVGcontext* vg, float x, float y, float 
 		nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
 		nvgText(vg, x + w / 2, y + 44, "REMOVE", nullptr);
 	} else if (id != 0) {
-		int tex = NvgUtils::CreateItemTexture(vg, id);
+		// Use the canvas-provided caching mechanism to avoid leaks
+		int tex = canvas->GetOrCreateItemImage(id);
 		if (tex > 0) {
 			int tw, th;
 			nvgImageSize(vg, tex, &tw, &th);

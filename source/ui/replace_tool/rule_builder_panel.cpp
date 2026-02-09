@@ -270,9 +270,7 @@ void RuleBuilderPanel::OnMouse(wxMouseEvent& event) {
 
 	if (event.Moving()) {
 		HitResult hit = HitTest(event.GetX(), event.GetY());
-		static HitResult lastHover = { HitResult::None, -1, -1 };
-		if (hit.type != lastHover.type || hit.ruleIndex != lastHover.ruleIndex || hit.targetIndex != lastHover.targetIndex) {
-			lastHover = hit;
+		if (hit.type != m_dragHover.type || hit.ruleIndex != m_dragHover.ruleIndex || hit.targetIndex != m_dragHover.targetIndex) {
 			m_dragHover = hit;
 			Refresh();
 		}
@@ -453,7 +451,7 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 		float itemY = ruleY + CARD_PADDING;
 
 		bool hoverSource = (m_dragHover.type == HitResult::Source && m_dragHover.ruleIndex == i);
-		RuleCardRenderer::DrawRuleItemCard(vg, startX, itemY, ITEM_SIZE + 20, itemH, rule.fromId, hoverSource, false, false);
+		RuleCardRenderer::DrawRuleItemCard(this, vg, startX, itemY, ITEM_SIZE + 20, itemH, rule.fromId, hoverSource, false, false);
 
 		// 2. Arrow
 		float arrowX = startX + (ITEM_SIZE + 20) + 10;
@@ -492,7 +490,7 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 				hasTrash = true;
 			}
 
-			RuleCardRenderer::DrawRuleItemCard(vg, tx, ty, ITEM_SIZE + 20, itemH, target.id, isThisHovered, isTrash, isThisHovered, target.probability);
+			RuleCardRenderer::DrawRuleItemCard(this, vg, tx, ty, ITEM_SIZE + 20, itemH, target.id, isThisHovered, isTrash, isThisHovered, target.probability);
 		}
 
 		// Ghost Slot

@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 
 #define NANOVG_GL3_IMPLEMENTATION
-#include <nanovg.h>
+#include "util/nvg_utils.h"
 #include <nanovg_gl.h>
 #include "rendering/core/graphics.h"
 
@@ -162,6 +162,24 @@ void NanoVGCanvas::SetScrollPosition(int pos) {
 	m_scrollPos = std::clamp(pos, 0, maxScroll);
 	UpdateScrollbar(m_contentHeight);
 	Refresh();
+}
+
+int NanoVGCanvas::GetOrCreateItemImage(uint16_t itemId) {
+	int tex = GetCachedImage(itemId);
+	if (tex > 0) {
+		return tex;
+	}
+
+	NVGcontext* vg = GetNVGContext();
+	if (!vg) {
+		return 0;
+	}
+
+	tex = NvgUtils::CreateItemTexture(vg, itemId);
+	if (tex > 0) {
+		AddCachedImage(itemId, tex);
+	}
+	return tex;
 }
 
 void NanoVGCanvas::UpdateScrollbar(int contentHeight) {

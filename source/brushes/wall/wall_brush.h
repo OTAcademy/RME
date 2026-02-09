@@ -43,6 +43,8 @@ public:
 	bool hasWall(Item* item);
 	::DoorType getDoorTypeFromID(uint16_t id);
 
+	void getRelatedItems(std::vector<uint16_t>& items) override;
+
 	bool canSmear() const override {
 		return false;
 	}

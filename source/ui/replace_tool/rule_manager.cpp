@@ -102,6 +102,10 @@ RuleSet RuleManager::LoadRuleSet(const std::string& name) {
 }
 
 bool RuleManager::DeleteRuleSet(const std::string& name) {
+	if (!IsValidRuleSetName(name)) {
+		wxLogError("Invalid rule set name: %s", name);
+		return false;
+	}
 
 	wxFileName path(GetRulesDir(), name, "json");
 	if (!path.FileExists()) {

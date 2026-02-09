@@ -3,6 +3,7 @@
 #include <wx/dcclient.h>
 #include <wx/graphics.h>
 #include <wx/settings.h>
+#include <numbers>
 
 CardPanel::CardPanel(wxWindow* parent, wxWindowID id) : wxPanel(parent, id) {
 	SetBackgroundStyle(wxBG_STYLE_PAINT);
@@ -108,7 +109,7 @@ void CardPanel::OnPaint(wxPaintEvent& event) {
 		headerPath.AddLineToPoint(x, y + r);
 
 		// Top-Left Corner (180 to 270 degrees) -> PI to 1.5 PI
-		const double PI = 3.14159265358979323846;
+		const double PI = std::numbers::pi;
 		headerPath.AddArc(x + r, y + r, r, PI, 1.5 * PI, true);
 
 		// Top Line
@@ -168,7 +169,7 @@ void CardPanel::OnPaint(wxPaintEvent& event) {
 		footerPath.AddLineToPoint(x + cw, y + ch - r);
 
 		// Bottom-Right Corner
-		const double PI = 3.14159265358979323846;
+		const double PI = std::numbers::pi;
 		footerPath.AddArc(x + cw - r, y + ch - r, r, 0, 0.5 * PI, true);
 
 		// Bottom Line

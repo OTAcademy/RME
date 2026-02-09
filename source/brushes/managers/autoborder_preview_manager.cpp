@@ -12,6 +12,7 @@
 #include "ui/gui.h"
 #include "app/settings.h"
 #include "brushes/brush_utility.h"
+#include "editor/editor.h"
 
 AutoborderPreviewManager g_autoborder_preview;
 
@@ -101,7 +102,7 @@ void AutoborderPreviewManager::SimulateBrush(Editor& editor, const Position& pos
 			// If tile didn't exist in source, we need to create it in buffer
 			tile = preview_buffer_map->createTile(p.x, p.y, p.z);
 		}
-		
+
 		// Safety check: tile should always have a valid location
 		ASSERT(tile->getLocation() != nullptr);
 
@@ -143,7 +144,7 @@ void AutoborderPreviewManager::ApplyBorders(const std::vector<Position>& tilesto
 		if (tile) {
 			// Safety check: tile should always have a valid location
 			ASSERT(tile->getLocation() != nullptr);
-			
+
 			if (is_eraser) {
 				TileOperations::wallize(tile, preview_buffer_map.get());
 				TileOperations::tableize(tile, preview_buffer_map.get());

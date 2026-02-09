@@ -80,6 +80,19 @@ void TableBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 	}
 }
 
+void TableBrush::getRelatedItems(std::vector<uint16_t>& items_out) {
+	for (int i = 0; i < 7; ++i) {
+		if (items.hasItems(i)) {
+			const auto& node = items.getItems(i);
+			for (const auto& t : node.items) {
+				if (t.item_id != 0) {
+					items_out.push_back(t.item_id);
+				}
+			}
+		}
+	}
+}
+
 void TableBrush::doTables(BaseMap* map, Tile* tile) {
 	TableBorderCalculator::doTables(map, tile);
 }

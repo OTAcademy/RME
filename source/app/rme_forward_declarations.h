@@ -35,6 +35,7 @@ class Town;
 class Position;
 class Editor;
 class GUI;
+class LiveClient;
 class Selection;
 class CopyBuffer;
 class ItemType;
@@ -45,6 +46,7 @@ class Floor;
 class Action;
 
 class Brush;
+class ReplaceToolWindow;
 
 #include <unordered_set>
 #include <vector>

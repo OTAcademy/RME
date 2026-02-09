@@ -130,7 +130,8 @@ static float CompareHistograms(const std::vector<float>& h1, const std::vector<f
 		return 0.0f;
 	}
 	float intersection = 0.0f;
-	for (size_t i = 0; i < h1.size(); ++i) {
+	size_t minSize = std::min(h1.size(), h2.size());
+	for (size_t i = 0; i < minSize; ++i) {
 		intersection += std::min(h1[i], h2[i]);
 	}
 	return intersection;

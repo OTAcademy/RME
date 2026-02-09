@@ -4,9 +4,11 @@
 #include <nanovg.h>
 #include <cstdint>
 
+class NanoVGCanvas;
+
 class RuleCardRenderer {
 public:
-	static void DrawRuleItemCard(NVGcontext* vg, float x, float y, float w, float h, uint16_t id, bool highlight, bool isTrash, bool showDeleteOverlay, int probability = -1);
+	static void DrawRuleItemCard(NanoVGCanvas* canvas, NVGcontext* vg, float x, float y, float w, float h, uint16_t id, bool highlight, bool isTrash, bool showDeleteOverlay, int probability = -1);
 	static void DrawTrashIcon(NVGcontext* vg, float x, float y, float size, bool highlight);
 };
 

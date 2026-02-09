@@ -6,9 +6,10 @@
 #include <wx/notebook.h>
 #include <wx/srchctrl.h>
 #include <vector>
-#include <map>
 #include <string>
+#include <map>
 
+class Brush;
 class LibraryPanel : public wxPanel, public ItemGridPanel::Listener {
 public:
 	class Listener {
@@ -41,7 +42,7 @@ private:
 	ItemGridPanel* m_relatedGrid;
 
 	std::map<uint16_t, uint16_t> m_cidToSidCache;
-	std::map<uint16_t, class Brush*> m_brushLookup;
+	std::map<uint16_t, Brush*> m_brushLookup;
 };
 
 #endif

@@ -29,7 +29,6 @@ class CarpetBrush : public Brush {
 	friend class CarpetBrushLoader;
 
 	friend class CarpetBorderCalculator;
-	friend class ReplaceToolWindow;
 	friend class LibraryPanel;
 
 public:
@@ -50,8 +49,9 @@ public:
 	bool canDraw(BaseMap* map, const Position& position) const override;
 	void draw(BaseMap* map, Tile* tile, void* parameter) override;
 	void undraw(BaseMap* map, Tile* tile) override;
-
 	static void doCarpets(BaseMap* map, Tile* tile);
+
+	void getRelatedItems(std::vector<uint16_t>& items) override;
 
 	bool canDrag() const override {
 		return true;

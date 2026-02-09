@@ -21,7 +21,7 @@ LibraryPanel::LibraryPanel(wxWindow* parent, Listener* listener) :
 
 	// Pre-fill item list
 	std::vector<uint16_t> ids;
-	for (uint16_t i = 1; i <= g_items.getMaxID(); ++i) {
+	for (uint32_t i = 1; i <= static_cast<uint32_t>(g_items.getMaxID()); ++i) {
 		const ItemType& it = g_items.getItemType(i);
 		if (it.id != 0) {
 			ids.push_back(i);
@@ -122,8 +122,8 @@ void LibraryPanel::OnBrushSearchChange(wxCommandEvent&) {
 
 uint16_t LibraryPanel::GetSidFromCid(uint16_t cid) {
 	if (m_cidToSidCache.empty()) {
-		uint16_t maxId = g_items.getMaxID();
-		for (uint16_t id = 100; id <= maxId; ++id) {
+		uint32_t maxId = static_cast<uint32_t>(g_items.getMaxID());
+		for (uint32_t id = 100; id <= maxId; ++id) {
 			const ItemType& it = g_items.getItemType(id);
 			if (it.id != 0 && it.clientID != 0) {
 				if (m_cidToSidCache.find(it.clientID) == m_cidToSidCache.end()) {
@@ -158,7 +158,11 @@ void LibraryPanel::PopulateBrushGrid() {
 			continue;
 		}
 
-		uint16_t lookId = static_cast<uint16_t>(brush->getLookID());
+		int rawLookId = brush->getLookID();
+		if (rawLookId < 0 || rawLookId > 0xFFFF) {
+			continue;
+		}
+		uint16_t lookId = static_cast<uint16_t>(rawLookId);
 		uint16_t serverId = GetSidFromCid(lookId);
 
 		if (serverId != 0) {
@@ -187,69 +191,7 @@ void LibraryPanel::PopulateRelatedItems(uint16_t brushLookId) {
 	}
 
 	try {
-		if (GroundBrush* gb = brush->asGround()) {
-			std::vector<uint16_t> items;
-			gb->getRelatedItems(items);
-			for (uint16_t id : items) {
-				if (id != 0 && g_items.typeExists(id)) {
-					related.push_back(id);
-				}
-			}
-		} else if (WallBrush* wb = brush->asWall()) {
-			for (int i = 0; i <= 16; ++i) {
-				const auto& node = wb->items.getWallNode(i);
-				for (const auto& item : node.items) {
-					if (item.id != 0) {
-						related.push_back(item.id);
-					}
-				}
-				const auto& doors = wb->items.getDoorItems(i);
-				for (const auto& door : doors) {
-					if (door.id != 0) {
-						related.push_back(door.id);
-					}
-				}
-			}
-		} else if (DoodadBrush* db = brush->asDoodad()) {
-			for (const auto& alt : db->items.getAlternatives()) {
-				if (!alt) {
-					continue;
-				}
-				for (const auto& single : alt->single_items) {
-					if (single.item && single.item->getID() != 0) {
-						related.push_back(single.item->getID());
-					}
-				}
-				for (const auto& composite : alt->composite_items) {
-					for (const auto& entry : composite.items) {
-						for (const auto& item : entry.second) {
-							if (item && item->getID() != 0) {
-								related.push_back(item->getID());
-							}
-						}
-					}
-				}
-			}
-		} else if (TableBrush* tb = brush->asTable()) {
-			for (int i = 0; i < 7; ++i) {
-				if (tb->items.hasItems(i)) {
-					const auto& node = tb->items.getItems(i);
-					for (const auto& t : node.items) {
-						if (t.item_id != 0) {
-							related.push_back(t.item_id);
-						}
-					}
-				}
-			}
-		} else if (CarpetBrush* cb = brush->asCarpet()) {
-			for (const auto& group : cb->m_items.m_groups) {
-				for (const auto& item : group.items) {
-					if (item.id != 0) {
-						related.push_back(item.id);
-					}
-				}
-			}
-		}
+		brush->getRelatedItems(related);
 	} catch (...) { }
 
 	if (brushLookId != 0) {

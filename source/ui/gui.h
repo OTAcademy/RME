@@ -41,7 +41,7 @@ class MainFrame;
 class WelcomeDialog;
 class MapWindow;
 class MapCanvas;
-
+class LiveClient;
 class SearchResultWindow;
 class MinimapWindow;
 class PaletteWindow;

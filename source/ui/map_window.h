@@ -19,12 +19,12 @@
 #define RME_MAP_WINDOW_H_
 
 #include "map/position.h"
-#include "editor/editor.h"
+#include "app/rme_forward_declarations.h"
 class ReplaceToolWindow;
 #include <memory>
 
 struct ReplaceToolWindowDeleter {
-	void operator()(ReplaceToolWindow* w);
+	inline void operator()(ReplaceToolWindow* w);
 };
 
 class MapCanvas;

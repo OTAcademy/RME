@@ -154,34 +154,12 @@ void VirtualItemGrid::OnLeave(wxMouseEvent& event) {
 void VirtualItemGrid::OnTimer(wxTimerEvent&) {
 }
 
-int VirtualItemGrid::GetCachedTexture(uint16_t id) {
-	for (const auto& entry : m_textureCache) {
-		if (entry.id == id) {
-			return entry.tex;
-		}
-	}
-	return 0;
-}
-
-void VirtualItemGrid::AddCachedTexture(uint16_t id, int tex) {
-	m_textureCache.push_back({ id, tex });
-}
-
 void VirtualItemGrid::ClearCache() {
-	m_textureCache.clear();
+	ClearImageCache();
 }
 
 int VirtualItemGrid::GetOrCreateItemTexture(NVGcontext* vg, uint16_t id) {
-	int tex = GetCachedTexture(id);
-	if (tex > 0) {
-		return tex;
-	}
-
-	tex = NvgUtils::CreateItemTexture(vg, id);
-	if (tex > 0) {
-		AddCachedTexture(id, tex);
-	}
-	return tex;
+	return GetOrCreateItemImage(id);
 }
 
 wxString VirtualItemGrid::GetItemName(size_t index) const {

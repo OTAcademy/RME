@@ -30,6 +30,7 @@ public:
 	// View control
 	void RefreshGrid(); // Re-calculates layout and repaints
 	void EnsureVisible(int index);
+	void ClearCache();
 
 protected:
 	void OnNanoVGPaint(NVGcontext* vg, int width, int height) override;
@@ -53,24 +54,14 @@ protected:
 	// Rendering helpers
 	int GetOrCreateItemTexture(NVGcontext* vg, uint16_t itemId);
 
-	// Style constants (can be made configurable later)
+	// Member variables
 	int m_itemSize;
 	int m_padding;
 	int m_columns;
-
-	// State
 	int m_selectedIndex;
 	int m_hoverIndex;
 
-	// Caching
-	struct CacheEntry {
-		uint16_t id;
-		int tex;
-	};
-	std::vector<CacheEntry> m_textureCache; // Simple linear cache for now
-	int GetCachedTexture(uint16_t id);
-	void AddCachedTexture(uint16_t id, int tex);
-	void ClearCache();
+	// Style constants (can be made configurable later)
 
 	wxTimer m_animTimer;
 };

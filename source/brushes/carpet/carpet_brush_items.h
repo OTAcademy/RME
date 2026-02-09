@@ -14,6 +14,7 @@
 class CarpetBrushItems {
 	friend class ReplaceToolWindow;
 	friend class LibraryPanel;
+	friend class CarpetBrush;
 
 public:
 	CarpetBrushItems();

@@ -112,6 +112,23 @@ void WallBrush::doWalls(BaseMap* map, Tile* tile) {
 	WallBorderCalculator::doWalls(map, tile);
 }
 
+void WallBrush::getRelatedItems(std::vector<uint16_t>& items_out) {
+	for (int i = 0; i <= 16; ++i) {
+		const auto& node = items.getWallNode(i);
+		for (const auto& item : node.items) {
+			if (item.id != 0) {
+				items_out.push_back(item.id);
+			}
+		}
+		const auto& doors = items.getDoorItems(i);
+		for (const auto& door : doors) {
+			if (door.id != 0) {
+				items_out.push_back(door.id);
+			}
+		}
+	}
+}
+
 bool WallBrush::hasWall(Item* item) {
 	ASSERT(item->isWall());
 	::BorderType bt = item->getWallAlignment();

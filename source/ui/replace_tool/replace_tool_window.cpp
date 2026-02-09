@@ -27,6 +27,7 @@
 #include "brushes/door/door_brush.h"
 #include "brushes/table/table_brush.h"
 #include "brushes/carpet/carpet_brush.h"
+#include "ui/replace_tool/card_panel.h"
 #include <wx/splitter.h>
 
 ReplaceToolWindow::ReplaceToolWindow(wxWindow* parent, Editor* editor) : wxDialog(parent, wxID_ANY, "Advanced Replace Tool", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
@@ -42,9 +43,6 @@ ReplaceToolWindow::ReplaceToolWindow(wxWindow* parent, Editor* editor) : wxDialo
 }
 
 ReplaceToolWindow::~ReplaceToolWindow() { }
-
-// Include at top
-#include "ui/replace_tool/card_panel.h"
 
 void ReplaceToolWindow::InitLayout() {
 	wxBoxSizer* rootSizer = new wxBoxSizer(wxVERTICAL);
@@ -205,15 +203,17 @@ void ReplaceToolWindow::OnRuleRenamed(const std::string& oldName, const std::str
 
 	RuleSet rs = RuleManager::Get().LoadRuleSet(oldName);
 	if (!rs.name.empty()) {
-		RuleManager::Get().DeleteRuleSet(oldName);
 		rs.name = newName;
-		RuleManager::Get().SaveRuleSet(rs);
+		if (RuleManager::Get().SaveRuleSet(rs)) {
+			RuleManager::Get().DeleteRuleSet(oldName);
 
-		if (m_activeRuleSetName == oldName) {
-			m_activeRuleSetName = newName;
+			if (m_activeRuleSetName == oldName) {
+				m_activeRuleSetName = newName;
+			}
+			UpdateSavedRulesList();
+		} else {
+			wxMessageBox("Failed to save the renamed rule set.", "Rename Error", wxOK | wxICON_ERROR);
 		}
-
-		UpdateSavedRulesList();
 	}
 }
 
@@ -227,7 +227,20 @@ void ReplaceToolWindow::OnRuleChanged() {
 }
 
 void ReplaceToolWindow::OnExecute(wxCommandEvent&) {
-	engine.ExecuteReplacement(editor, ruleBuilder->GetRules());
+	std::vector<ReplacementRule> rules = ruleBuilder->GetRules();
+	if (rules.empty()) {
+		return;
+	}
+
+	int confirm = wxMessageBox(
+		"This will perform a bulk replacement across the entire map. This action cannot be easily undone.\n\nAre you sure you want to proceed?",
+		"Confirm Bulk Replacement",
+		wxYES_NO | wxNO_DEFAULT | wxICON_WARNING
+	);
+
+	if (confirm == wxYES) {
+		engine.ExecuteReplacement(editor, rules);
+	}
 }
 
 void ReplaceToolWindow::OnSaveRule(wxCommandEvent&) {

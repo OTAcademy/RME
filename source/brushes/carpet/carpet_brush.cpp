@@ -70,6 +70,16 @@ void CarpetBrush::undraw(BaseMap* map, Tile* tile) {
 	}
 }
 
+void CarpetBrush::getRelatedItems(std::vector<uint16_t>& items_out) {
+	for (const auto& group : m_items.m_groups) {
+		for (const auto& item : group.items) {
+			if (item.id != 0) {
+				items_out.push_back(item.id);
+			}
+		}
+	}
+}
+
 void CarpetBrush::doCarpets(BaseMap* map, Tile* tile) {
 	CarpetBorderCalculator::calculate(map, tile);
 }
