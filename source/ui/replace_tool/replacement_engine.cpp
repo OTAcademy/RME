@@ -44,12 +44,11 @@ bool ReplacementEngine::ResolveReplacement(uint16_t& resultId, const Replacement
 #include <map>
 #include <string>
 
-void ReplacementEngine::ExecuteReplacement(Editor* editor, const std::vector<ReplacementRule>& rules) {
+void ReplacementEngine::ExecuteReplacement(Editor* editor, const std::vector<ReplacementRule>& rules, ReplaceScope scope, const std::vector<Position>* posVec) {
 	if (rules.empty()) {
 		return;
 	}
 
-	bool selectionOnly = !editor->selection.empty();
 	std::map<uint16_t, const ReplacementRule*> ruleMap;
 	for (const auto& rule : rules) {
 		if (rule.fromId != 0) {
@@ -57,55 +56,79 @@ void ReplacementEngine::ExecuteReplacement(Editor* editor, const std::vector<Rep
 		}
 	}
 
-	auto finder = [this, &ruleMap](Map&, Tile*, Item* item, long long) {
-		auto it = ruleMap.find(item->getID());
-		if (it != ruleMap.end()) {
-			uint16_t newId;
-			if (ResolveReplacement(newId, *it->second)) {
-				if (newId == TRASH_ITEM_ID) {
-					item->setID(0); // Mark for deletion/clearing (Note: actual removal might need more logic but this is consistent with previous impl)
-				} else {
-					item->setID(newId);
+	auto tileProcessor = [this, &ruleMap, editor](Tile* tile) {
+		auto finder = [this, &ruleMap](Map&, Tile*, Item* item, long long) {
+			auto it = ruleMap.find(item->getID());
+			if (it != ruleMap.end()) {
+				uint16_t newId;
+				if (ResolveReplacement(newId, *it->second)) {
+					if (newId == TRASH_ITEM_ID) {
+						item->setID(0);
+					} else {
+						item->setID(newId);
+					}
 				}
 			}
+		};
+
+		long long dummy = 0;
+		if (tile->ground) {
+			finder(editor->map, tile, tile->ground, ++dummy);
 		}
-	};
 
-	if (selectionOnly) {
-		// Optimization: Iterate only over selected tiles instead of the whole map
-		long long done = 0;
 		std::vector<Container*> containers;
-		containers.reserve(32);
+		for (auto* item : tile->items) {
+			containers.clear();
+			Container* container = item->asContainer();
+			finder(editor->map, tile, item, ++dummy);
 
-		for (Tile* tile : editor->selection.getTiles()) {
-			if (tile->ground) {
-				finder(editor->map, tile, tile->ground, ++done);
-			}
-
-			for (auto* item : tile->items) {
-				containers.clear();
-				Container* container = item->asContainer();
-				finder(editor->map, tile, item, ++done);
-
-				if (container) {
-					containers.push_back(container);
-					size_t index = 0;
-					while (index < containers.size()) {
-						container = containers[index++];
-						ItemVector& v = container->getVector();
-						for (auto* i : v) {
-							Container* c = i->asContainer();
-							finder(editor->map, tile, i, ++done);
-							if (c) {
-								containers.push_back(c);
-							}
+			if (container) {
+				containers.push_back(container);
+				size_t index = 0;
+				while (index < containers.size()) {
+					container = containers[index++];
+					ItemVector& v = container->getVector();
+					for (auto* i : v) {
+						Container* c = i->asContainer();
+						finder(editor->map, tile, i, ++dummy);
+						if (c) {
+							containers.push_back(c);
 						}
 					}
 				}
 			}
 		}
-	} else {
-		foreach_ItemOnMap(editor->map, finder, false);
+	};
+
+	if (scope == ReplaceScope::Viewport && posVec) {
+		// Use Viewport scope
+		for (const auto& pos : *posVec) {
+			Tile* tile = editor->map.getTile(pos);
+			if (tile) {
+				tileProcessor(tile);
+			}
+		}
+	} else if (scope == ReplaceScope::Selection && !editor->selection.empty()) {
+		// Use Selection scope
+		for (Tile* tile : editor->selection.getTiles()) {
+			tileProcessor(tile);
+		}
+	} else if (scope == ReplaceScope::AllMap) {
+		// Use All Map scope
+		auto globalFinder = [this, &ruleMap](Map&, Tile*, Item* item, long long) {
+			auto it = ruleMap.find(item->getID());
+			if (it != ruleMap.end()) {
+				uint16_t newId;
+				if (ResolveReplacement(newId, *it->second)) {
+					if (newId == TRASH_ITEM_ID) {
+						item->setID(0);
+					} else {
+						item->setID(newId);
+					}
+				}
+			}
+		};
+		foreach_ItemOnMap(editor->map, globalFinder, false);
 	}
 
 	editor->map.doChange();

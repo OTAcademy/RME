@@ -32,7 +32,7 @@ public:
 			ClearRules,
 			SaveRule,
 			DeleteRule, // The 'X' on the rule card
-			DeleteTarget // The 'X' overlay on a specific target
+			DeleteTarget, // The 'X' overlay on a specific target
 		};
 		Type type = None;
 		int ruleIndex = -1;

@@ -46,7 +46,7 @@ private:
 
 	// Event Handlers
 	void OnExecute(wxCommandEvent& event);
-	// void OnSaveRule(wxCommandEvent& event); // Removed, using Listener instead
+	void OnAddVisibleTiles(wxCommandEvent& event);
 
 	Editor* editor;
 
@@ -59,6 +59,8 @@ private:
 	wxButton* m_addRuleBtn;
 	wxButton* m_editRuleBtn;
 	wxButton* m_deleteRuleBtn;
+	wxButton* m_addVisibleBtn;
+	wxChoice* m_scopeChoice;
 
 	ReplacementEngine engine;
 

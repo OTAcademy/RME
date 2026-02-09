@@ -3,8 +3,15 @@
 
 #include "app/main.h"
 #include "rule_manager.h"
+#include "map/position.h"
 #include <random>
 #include <vector>
+
+enum class ReplaceScope {
+	Selection,
+	Viewport,
+	AllMap
+};
 
 class ReplacementEngine {
 public:
@@ -15,7 +22,8 @@ public:
 	bool ResolveReplacement(uint16_t& resultId, const ReplacementRule& rule);
 
 	// Execute the replacement on the map
-	void ExecuteReplacement(class Editor* editor, const std::vector<ReplacementRule>& rules);
+	// If scope is Viewport, posVec must contain the tiles to process.
+	void ExecuteReplacement(class Editor* editor, const std::vector<ReplacementRule>& rules, ReplaceScope scope, const std::vector<Position>* posVec = nullptr);
 
 private:
 	std::mt19937 rng;

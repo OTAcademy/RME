@@ -33,12 +33,12 @@ void RuleCardRenderer::DrawHeader(NVGcontext* vg, float width) {
 	nvgFillColor(vg, subTextCol);
 	nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
 
-	float headerY = HEADER_HEIGHT / 2.0f;
+	float subTextLabelY = HEADER_HEIGHT / 2.0f;
 	float sourceLabelX = CARD_MARGIN_X + CARD_PADDING;
-	nvgText(vg, sourceLabelX, headerY, "IF FOUND", nullptr);
+	nvgText(vg, sourceLabelX, subTextLabelY, "IF FOUND", nullptr);
 
 	float targetLabelX = sourceLabelX + CARD_W + 10 + ARROW_WIDTH;
-	nvgText(vg, targetLabelX, headerY, "REPLACE WITH", nullptr);
+	nvgText(vg, targetLabelX, subTextLabelY, "REPLACE WITH", nullptr);
 }
 
 void RuleCardRenderer::DrawClearButton(NVGcontext* vg, float width, bool isHovered) {

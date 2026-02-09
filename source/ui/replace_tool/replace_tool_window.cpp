@@ -9,6 +9,8 @@
 #include "app/settings.h"
 #include "app/managers/version_manager.h"
 #include <algorithm> // For std::find
+#include "ui/map_window.h"
+#include "rendering/ui/map_display.h"
 #include <wx/statline.h>
 #include <wx/stattext.h>
 #include <wx/button.h>
@@ -182,6 +184,33 @@ void ReplaceToolWindow::InitLayout() {
 
 	actionsSizer->Add(manageBtnsSizer, wxSizerFlags(0).Expand().Border(wxALL, padding));
 
+	m_addVisibleBtn = new wxButton(actionsCard, wxID_ANY, "ADD VISIBLE FROM VIEWPORT", wxDefaultPosition, FromDIP(wxSize(-1, 28)));
+	m_addVisibleBtn->SetBackgroundColour(wxColour(45, 120, 180)); // Sky Blue
+	m_addVisibleBtn->SetForegroundColour(*wxWHITE);
+	m_addVisibleBtn->SetFont(Theme::GetFont(9, true));
+	actionsSizer->Add(m_addVisibleBtn, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT | wxBOTTOM, padding));
+
+	// Scope Selection
+	wxBoxSizer* scopeSizer = new wxBoxSizer(wxHORIZONTAL);
+	wxStaticText* scopeLabel = new wxStaticText(actionsCard, wxID_ANY, "SCOPE:");
+	scopeLabel->SetForegroundColour(wxColour(180, 180, 180));
+	scopeLabel->SetFont(Theme::GetFont(9, true));
+
+	wxArrayString scopes;
+	scopes.Add("SELECTION");
+	scopes.Add("VIEWPORT");
+	scopes.Add("ALL MAP");
+	m_scopeChoice = new wxChoice(actionsCard, wxID_ANY, wxDefaultPosition, FromDIP(wxSize(-1, 24)), scopes);
+	m_scopeChoice->SetSelection(0);
+	if (editor && editor->selection.empty()) {
+		m_scopeChoice->SetSelection(1); // Default to Viewport if no selection
+	}
+
+	scopeSizer->Add(scopeLabel, wxSizerFlags(0).Center().Border(wxRIGHT, 5));
+	scopeSizer->Add(m_scopeChoice, wxSizerFlags(1).Center());
+
+	actionsSizer->Add(scopeSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT | wxBOTTOM, padding));
+
 	actionsSizer->AddStretchSpacer(1);
 
 	// Execute Button
@@ -212,6 +241,7 @@ void ReplaceToolWindow::InitLayout() {
 	// BINDINGS
 	// ---------------------------------------------------------
 	m_executeBtn->Bind(wxEVT_BUTTON, &ReplaceToolWindow::OnExecute, this);
+	m_addVisibleBtn->Bind(wxEVT_BUTTON, &ReplaceToolWindow::OnAddVisibleTiles, this);
 	closeBtn->Bind(wxEVT_BUTTON, [this](wxCommandEvent&) { Close(); });
 
 	m_addRuleBtn->Bind(wxEVT_BUTTON, [this](wxCommandEvent&) {
@@ -312,25 +342,134 @@ void ReplaceToolWindow::OnRuleChanged() {
 	}
 }
 
-void ReplaceToolWindow::OnRuleItemSelected(uint16_t itemId) {
-	OnLibraryItemSelected(itemId);
-}
-
 void ReplaceToolWindow::OnExecute(wxCommandEvent&) {
 	std::vector<ReplacementRule> rules = ruleBuilder->GetRules();
 	if (rules.empty()) {
+		wxMessageBox("No rules defined. Add some rules first.", "Replace", wxOK | wxICON_INFORMATION);
+		return;
+	}
+
+	int scopeIdx = m_scopeChoice->GetSelection();
+	ReplaceScope scope = ReplaceScope::Selection;
+	if (scopeIdx == 1) {
+		scope = ReplaceScope::Viewport;
+	} else if (scopeIdx == 2) {
+		scope = ReplaceScope::AllMap;
+	}
+
+	if (scope == ReplaceScope::Selection && editor->selection.empty()) {
+		wxMessageBox("No selection active. Please select an area first or change scope.", "Replace", wxOK | wxICON_WARNING);
 		return;
 	}
 
 	int confirm = wxMessageBox(
-		"This will perform a bulk replacement across the entire map. This action cannot be easily undone.\n\nAre you sure you want to proceed?",
+		"Are you sure you want to execute replacements on the map?",
 		"Confirm Bulk Replacement",
 		wxYES_NO | wxNO_DEFAULT | wxICON_WARNING
 	);
 
-	if (confirm == wxYES) {
-		engine.ExecuteReplacement(editor, rules);
+	if (confirm != wxYES) {
+		return;
 	}
+
+	if (scope == ReplaceScope::Viewport) {
+		MapTab* activeTab = g_gui.GetCurrentMapTab();
+		if (activeTab && activeTab->GetCanvas()) {
+			MapCanvas* canvas = activeTab->GetCanvas();
+			wxSize canvasSize = canvas->GetClientSize();
+
+			int startX, startY, endX, endY;
+			canvas->ScreenToMap(0, 0, &startX, &startY);
+			canvas->ScreenToMap(canvasSize.x, canvasSize.y, &endX, &endY);
+
+			// Ensure bounds are consistent
+			if (startX > endX) {
+				std::swap(startX, endX);
+			}
+			if (startY > endY) {
+				std::swap(startY, endY);
+			}
+
+			int z = canvas->GetFloor();
+
+			std::vector<Position> pv;
+			for (int x = startX; x <= endX; ++x) {
+				for (int y = startY; y <= endY; ++y) {
+					pv.push_back(Position(x, y, z));
+				}
+			}
+			engine.ExecuteReplacement(editor, rules, scope, &pv);
+		}
+	} else {
+		engine.ExecuteReplacement(editor, rules, scope);
+	}
+}
+
+void ReplaceToolWindow::OnAddVisibleTiles(wxCommandEvent&) {
+	MapTab* activeTab = g_gui.GetCurrentMapTab();
+	if (!activeTab || !activeTab->GetCanvas()) {
+		return;
+	}
+
+	MapCanvas* canvas = activeTab->GetCanvas();
+	wxSize canvasSize = canvas->GetClientSize();
+
+	int startX, startY, endX, endY;
+	canvas->ScreenToMap(0, 0, &startX, &startY);
+	canvas->ScreenToMap(canvasSize.x, canvasSize.y, &endX, &endY);
+
+	// Ensure bounds are consistent
+	if (startX > endX) {
+		std::swap(startX, endX);
+	}
+	if (startY > endY) {
+		std::swap(startY, endY);
+	}
+
+	int z = canvas->GetFloor();
+
+	std::set<uint16_t> uniqueIds;
+	for (int x = startX; x <= endX; ++x) {
+		for (int y = startY; y <= endY; ++y) {
+			Tile* tile = editor->map.getTile(x, y, z);
+			if (tile) {
+				if (tile->ground) {
+					uniqueIds.insert(tile->ground->getID());
+				}
+				for (Item* item : tile->items) {
+					uniqueIds.insert(item->getID());
+				}
+			}
+		}
+	}
+
+	if (uniqueIds.empty()) {
+		return;
+	}
+
+	std::vector<ReplacementRule> currentRules = ruleBuilder->GetRules();
+	std::set<uint16_t> existingIds;
+	for (const auto& r : currentRules) {
+		existingIds.insert(r.fromId);
+	}
+
+	bool added = false;
+	for (uint16_t id : uniqueIds) {
+		if (id != 0 && existingIds.find(id) == existingIds.end()) {
+			ReplacementRule nr;
+			nr.fromId = id;
+			currentRules.push_back(nr);
+			added = true;
+		}
+	}
+
+	if (added) {
+		ruleBuilder->SetRules(currentRules);
+	}
+}
+
+void ReplaceToolWindow::OnRuleItemSelected(uint16_t itemId) {
+	OnLibraryItemSelected(itemId);
 }
 
 void ReplaceToolWindow::OnSaveRule() {

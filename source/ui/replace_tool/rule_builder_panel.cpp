@@ -294,7 +294,6 @@ void RuleBuilderPanel::OnMouse(wxMouseEvent& event) {
 					m_listener->OnClearRules();
 				}
 			}
-		} else if (hit.type == HitResult::SaveRule) {
 			if (m_listener) {
 				m_listener->OnSaveRule();
 			}
@@ -331,7 +330,6 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 		if (x > width - (BTN_W * 2) - (GAP * 2) && x < width - BTN_W - GAP) {
 			return { HitResult::SaveRule, -1, -1 };
 		}
-
 		// Otherwise, we are clicking the header background/labels - consume the hit so we don't click rules underneath
 		return { HitResult::None, -1, -1 };
 	}
