@@ -198,19 +198,22 @@ TileLocation* MapNode::createTile(int x, int y, int z) {
 	return &f->locs[(x & 3) * 4 + (y & 3)];
 }
 
-std::unique_ptr<Tile> MapNode::setTile(int x, int y, int z, Tile* newtile) {
+std::unique_ptr<Tile> MapNode::setTile(int x, int y, int z, std::unique_ptr<Tile> newtile) {
 	Floor* f = createFloor(x, y, z);
 
 	int offset_x = x & 3;
 	int offset_y = y & 3;
 
 	TileLocation* tmp = &f->locs[offset_x * 4 + offset_y];
+	if (newtile) {
+		newtile->setLocation(tmp);
+	}
 	std::unique_ptr<Tile> oldtile = std::move(tmp->tile);
-	tmp->tile.reset(newtile);
+	tmp->tile = std::move(newtile);
 
-	if (newtile && !oldtile) {
+	if (tmp->tile && !oldtile) {
 		++map.tilecount;
-	} else if (oldtile && !newtile) {
+	} else if (oldtile && !tmp->tile) {
 		--map.tilecount;
 	}
 
@@ -224,7 +227,7 @@ void MapNode::clearTile(int x, int y, int z) {
 	int offset_y = y & 3;
 
 	TileLocation* tmp = &f->locs[offset_x * 4 + offset_y];
-	tmp->tile.reset(map.allocator(tmp));
+	tmp->tile = map.allocator(tmp);
 }
 
 //**************** SpatialHashGrid **********************

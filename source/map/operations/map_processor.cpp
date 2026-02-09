@@ -7,6 +7,7 @@
 #include "map/operations/map_processor.h"
 #include "editor/editor.h"
 #include "map/map.h"
+#include "map/tile_operations.h"
 #include "ui/gui.h"
 #include "brushes/ground/ground_brush.h"
 
@@ -24,7 +25,7 @@ void MapProcessor::borderizeMap(Editor& editor, bool showdialog) {
 		Tile* tile = tileLocation.get();
 		ASSERT(tile);
 
-		tile->borderize(&editor.map);
+		TileOperations::borderize(tile, &editor.map);
 		++tiles_done;
 	}
 

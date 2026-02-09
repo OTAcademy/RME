@@ -110,7 +110,12 @@ Tile::~Tile() {
 }
 
 std::unique_ptr<Tile> Tile::deepCopy(BaseMap& map) {
-	std::unique_ptr<Tile> copy(map.allocator.allocateTile(location));
+	// Use the destination map's TileLocation at the same position
+	TileLocation* dest_location = map.getTileL(getX(), getY(), getZ());
+	if (!dest_location) {
+		dest_location = map.createTileL(getX(), getY(), getZ());
+	}
+	std::unique_ptr<Tile> copy(map.allocator.allocateTile(dest_location));
 	copy->flags = flags;
 	copy->minimapColor = minimapColor;
 	copy->house_id = house_id;
@@ -531,10 +536,6 @@ void Tile::update() {
 	}
 }
 
-void Tile::borderize(BaseMap* parent) {
-	GroundBrush::doBorders(parent, this);
-}
-
 void Tile::addBorderItem(Item* item) {
 	if (!item) {
 		return;
@@ -550,21 +551,6 @@ GroundBrush* Tile::getGroundBrush() const {
 		}
 	}
 	return nullptr;
-}
-
-void Tile::cleanBorders() {
-	auto first_to_remove = std::stable_partition(items.begin(), items.end(), [](Item* item) {
-		return !item->isBorder();
-	});
-
-	for (auto it = first_to_remove; it != items.end(); ++it) {
-		delete *it;
-	}
-	items.erase(first_to_remove, items.end());
-}
-
-void Tile::wallize(BaseMap* parent) {
-	WallBrush::doWalls(parent, this);
 }
 
 Item* Tile::getWall() const {
@@ -595,51 +581,6 @@ void Tile::addWallItem(Item* item) {
 	ASSERT(item->isWall());
 
 	addItem(item);
-}
-
-void Tile::cleanWalls(bool dontdelete) {
-	auto first_to_remove = std::stable_partition(items.begin(), items.end(), [](Item* item) {
-		return !item->isWall();
-	});
-
-	if (!dontdelete) {
-		for (auto it = first_to_remove; it != items.end(); ++it) {
-			delete *it;
-		}
-	}
-	items.erase(first_to_remove, items.end());
-}
-
-void Tile::cleanWalls(WallBrush* wb) {
-	auto first_to_remove = std::stable_partition(items.begin(), items.end(), [wb](Item* item) {
-		return !(item->isWall() && wb->hasWall(item));
-	});
-
-	for (auto it = first_to_remove; it != items.end(); ++it) {
-		delete *it;
-	}
-	items.erase(first_to_remove, items.end());
-}
-
-void Tile::cleanTables(bool dontdelete) {
-	auto first_to_remove = std::stable_partition(items.begin(), items.end(), [](Item* item) {
-		return !item->isTable();
-	});
-
-	if (!dontdelete) {
-		for (auto it = first_to_remove; it != items.end(); ++it) {
-			delete *it;
-		}
-	}
-	items.erase(first_to_remove, items.end());
-}
-
-void Tile::tableize(BaseMap* parent) {
-	TableBrush::doTables(parent, this);
-}
-
-void Tile::carpetize(BaseMap* parent) {
-	CarpetBrush::doCarpets(parent, this);
 }
 
 void Tile::selectGround() {
