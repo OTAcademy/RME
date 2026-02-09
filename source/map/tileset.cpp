@@ -32,19 +32,17 @@ Tileset::Tileset(Brushes& brushes, const std::string& name) :
 }
 
 Tileset::~Tileset() {
-	for (auto* category : categories) {
-		delete category;
-	}
+	// Categories are automatically cleaned up by std::unique_ptr
 }
 
 void Tileset::clear() {
-	for (auto* category : categories) {
+	for (const auto& category : categories) {
 		category->brushlist.clear();
 	}
 }
 
 bool Tileset::containsBrush(Brush* brush) const {
-	for (const auto* category : categories) {
+	for (const auto& category : categories) {
 		if (category->containsBrush(brush)) {
 			return true;
 		}
@@ -55,14 +53,14 @@ bool Tileset::containsBrush(Brush* brush) const {
 
 TilesetCategory* Tileset::getCategory(TilesetCategoryType type) {
 	ASSERT(type >= TILESET_UNKNOWN && type <= TILESET_HOUSE);
-	for (auto* category : categories) {
-		if (category->getType() == type) {
-			return category;
-		}
+	auto it = std::ranges::find_if(categories, [type](const auto& category) {
+		return category->getType() == type;
+	});
+	if (it != categories.end()) {
+		return it->get();
 	}
-	TilesetCategory* tsc = newd TilesetCategory(*this, type);
-	categories.push_back(tsc);
-	return tsc;
+	auto& tsc = categories.emplace_back(std::make_unique<TilesetCategory>(*this, type));
+	return tsc.get();
 }
 
 bool TilesetCategory::containsBrush(Brush* brush) const {
@@ -77,10 +75,11 @@ bool TilesetCategory::containsBrush(Brush* brush) const {
 
 const TilesetCategory* Tileset::getCategory(TilesetCategoryType type) const {
 	ASSERT(type >= TILESET_UNKNOWN && type <= TILESET_HOUSE);
-	for (const auto* category : categories) {
-		if (category->getType() == type) {
-			return category;
-		}
+	auto it = std::ranges::find_if(categories, [type](const auto& category) {
+		return category->getType() == type;
+	});
+	if (it != categories.end()) {
+		return it->get();
 	}
 	return nullptr;
 }
