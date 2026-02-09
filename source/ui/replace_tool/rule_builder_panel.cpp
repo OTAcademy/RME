@@ -79,6 +79,7 @@ bool RuleBuilderPanel::ItemDropTarget::OnDropText(wxCoord x, wxCoord y, const wx
 			m_panel->m_rules[hit.ruleIndex].targets.push_back({ itemId, 0 });
 			m_panel->DistributeProbabilities(hit.ruleIndex);
 			m_panel->m_listener->OnRuleChanged();
+			m_panel->LayoutRules();
 			m_panel->Refresh();
 			return true;
 		}
@@ -225,8 +226,12 @@ wxSize RuleBuilderPanel::DoGetBestClientSize() const {
 }
 
 void RuleBuilderPanel::OnSize(wxSizeEvent& event) {
-	LayoutRules();
-	Refresh();
+	// Guard against redundant size events to prevent potential loop/jitter
+	if (GetClientSize() != m_lastSize) {
+		m_lastSize = GetClientSize();
+		LayoutRules();
+		Refresh();
+	}
 	event.Skip();
 }
 
@@ -246,6 +251,7 @@ void RuleBuilderPanel::OnMouse(wxMouseEvent& event) {
 			if (m_listener) {
 				m_listener->OnRuleChanged();
 			}
+			LayoutRules();
 			Refresh();
 		} else if (hit.type == HitResult::AddTarget && hit.ruleIndex != -1) {
 			if (m_rules[hit.ruleIndex].targets.empty()) {
@@ -285,6 +291,17 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 	int width = GetClientSize().x;
 
 	const float ITEM_HEIGHT = FromDIP(ITEM_H);
+
+	// Header blocked area
+	if (y < HEADER_HEIGHT) {
+		// Only allow clicking the Clear button in the header
+		const int CLEAR_BTN_W = FromDIP(100);
+		if (x > width - CLEAR_BTN_W - 10) {
+			return { HitResult::ClearRules, -1, -1 };
+		}
+		// Otherwise, we are clicking the header background/labels - consume the hit so we don't click rules underneath
+		return { HitResult::None, -1, -1 };
+	}
 
 	// Check Rules
 	for (size_t i = 0; i < m_rules.size(); ++i) {
@@ -370,23 +387,26 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 	int scrollPos = GetScrollPosition();
 
-	wxColour bgCol = Theme::Get(Theme::Role::Surface);
+	// Note: NanoVGCanvas already applies a convert translation of nvgTranslate(0, -scrollPos).
+	// To draw fixed elements (Background, Header), we must undo this translation.
 
-	// Clear BG
+	// 1. Draw Fixed Elements (Background + Header)
+	nvgSave(vg);
+	nvgTranslate(vg, 0, (float)scrollPos); // Undo base scroll
+
+	// Full screen BG (Fixed)
 	nvgBeginPath(vg);
 	nvgRect(vg, 0, 0, width, height);
 	nvgFillColor(vg, nvgRGBA(30, 30, 30, 255)); // Darker background
 	nvgFill(vg);
 
-	// Draw Fixed Headers (Not scrolled)
-	nvgSave(vg);
 	DrawHeader(vg, width);
 	DrawClearButton(vg, width);
 	nvgRestore(vg);
 
-	// Draw Content (Scrolled)
+	// 2. Draw Content (Implicitly scrolled by base class)
 	nvgSave(vg);
-	nvgTranslate(vg, 0, -scrollPos);
+	// No extra translate needed!
 
 	for (size_t i = 0; i < m_rules.size(); ++i) {
 		int ruleY = GetRuleY(i, width);

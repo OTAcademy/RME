@@ -68,6 +68,7 @@ private:
 	};
 
 	std::vector<ReplacementRule> m_rules;
+	wxSize m_lastSize;
 	Listener* m_listener;
 
 	// Visual Layout
