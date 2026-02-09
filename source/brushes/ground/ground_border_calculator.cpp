@@ -7,13 +7,14 @@
 #include "brushes/ground/auto_border.h"
 #include "map/basemap.h"
 #include "map/tile.h"
+#include "map/tile_operations.h"
 #include "game/item.h"
 #include "game/items.h"
 #include <array>
 #include <algorithm>
 
 void GroundBorderCalculator::calculate(BaseMap* map, Tile* tile) {
-	static const auto extractGroundBrushFromTile = [](BaseMap* map, uint32_t x, uint32_t y, uint32_t z) -> GroundBrush* {
+	static const auto extractGroundBrushFromTile = [](BaseMap* map, int x, int y, int z) -> GroundBrush* {
 		Tile* tile = map->getTile(x, y, z);
 		if (tile) {
 			return tile->getGroundBrush();
@@ -31,9 +32,9 @@ void GroundBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 	}
 
 	const Position& position = tile->getPosition();
-	uint32_t x = position.x;
-	uint32_t y = position.y;
-	uint32_t z = position.z;
+	int x = position.x;
+	int y = position.y;
+	int z = position.z;
 
 	// Pair of visited / what border type
 	std::pair<bool, GroundBrush*> neighbours[8] = {
@@ -45,17 +46,10 @@ void GroundBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 	for (size_t i = 0; i < offsets.size(); ++i) {
 		const auto& [dx, dy] = offsets[i];
 
-		// Unsigned bounds check
-		if ((x == 0 && dx < 0) || (y == 0 && dy < 0)) {
-			continue;
-		}
+		int nx = x + dx;
+		int ny = y + dy;
 
-		// Since we verified x/y are not 0 if dx/dy are negative, this arithmetic is safe (in 2s complement or just logic)
-		// But strictly speaking, x + -1 is unsigned addition.
-		// extractGroundBrushFromTile takes uint32_t.
-		// So x + dx where dx is -1 (which is 0xFFFFFFFF) results in x - 1.
-
-		neighbours[i] = { false, extractGroundBrushFromTile(map, x + dx, y + dy, z) };
+		neighbours[i] = { false, extractGroundBrushFromTile(map, nx, ny, z) };
 	}
 
 	static std::vector<const GroundBrush::BorderBlock*> specificList;
@@ -296,7 +290,7 @@ void GroundBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 	auto [first, last] = std::ranges::unique(specificList);
 	specificList.erase(first, last);
 
-	tile->cleanBorders();
+	TileOperations::cleanBorders(tile);
 
 	while (!borderList.empty()) {
 		GroundBrush::BorderCluster& borderCluster = borderList.back();

@@ -240,29 +240,29 @@ void Selection::flush() {
 	}
 	if (!pending_removes.empty()) {
 		bounds_dirty = true;
-		std::sort(pending_removes.begin(), pending_removes.end(), tilePositionLessThan);
-		auto last = std::unique(pending_removes.begin(), pending_removes.end(), [](Tile* a, Tile* b) {
+		std::ranges::sort(pending_removes, tilePositionLessThan);
+		auto [first, last] = std::ranges::unique(pending_removes, [](Tile* a, Tile* b) {
 			return a->getPosition() == b->getPosition();
 		});
-		pending_removes.erase(last, pending_removes.end());
+		pending_removes.erase(first, last);
 
 		std::vector<Tile*> result;
 		result.reserve(tiles.size());
-		std::set_difference(tiles.begin(), tiles.end(), pending_removes.begin(), pending_removes.end(), std::back_inserter(result), tilePositionLessThan);
+		std::ranges::set_difference(tiles, pending_removes, std::back_inserter(result), tilePositionLessThan);
 		tiles = std::move(result);
 	}
 
 	if (!pending_adds.empty()) {
 		bounds_dirty = true;
-		std::sort(pending_adds.begin(), pending_adds.end(), tilePositionLessThan);
-		auto last = std::unique(pending_adds.begin(), pending_adds.end(), [](Tile* a, Tile* b) {
+		std::ranges::sort(pending_adds, tilePositionLessThan);
+		auto [first, last] = std::ranges::unique(pending_adds, [](Tile* a, Tile* b) {
 			return a->getPosition() == b->getPosition();
 		});
-		pending_adds.erase(last, pending_adds.end());
+		pending_adds.erase(first, last);
 
 		std::vector<Tile*> merged;
 		merged.reserve(tiles.size() + pending_adds.size());
-		std::set_union(tiles.begin(), tiles.end(), pending_adds.begin(), pending_adds.end(), std::back_inserter(merged), tilePositionLessThan);
+		std::ranges::set_union(tiles, pending_adds, std::back_inserter(merged), tilePositionLessThan);
 		tiles = std::move(merged);
 	}
 

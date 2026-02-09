@@ -84,13 +84,6 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	int w = end_x - map_x;
 	int h = end_y - map_y;
 
-	// Save previous state to allow composing into an external FBO (e.g. MapDrawer's scale_fbo)
-	GLint old_draw_fbo, old_read_fbo;
-	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &old_draw_fbo);
-	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &old_read_fbo);
-	GLint old_viewport[4];
-	glGetIntegerv(GL_VIEWPORT, old_viewport);
-
 	if (w <= 0 || h <= 0) {
 		return;
 	}
@@ -165,52 +158,49 @@ void LightDrawer::draw(const RenderView& view, bool fog, const LightBuffer& ligh
 	}
 
 	// 3. Render to FBO
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo->GetID());
-	glViewport(0, 0, buffer_width, buffer_height); // Render to full buffer size, though we only care about top-left [pixel_width, pixel_height]
+	{
+		ScopedGLFramebuffer fboScope(GL_FRAMEBUFFER, fbo->GetID());
+		ScopedGLViewport viewportScope(0, 0, buffer_width, buffer_height);
 
-	// Clear to Ambient Color
-	float ambient_r = (global_color.Red() / 255.0f) * ambient_light_level;
-	float ambient_g = (global_color.Green() / 255.0f) * ambient_light_level;
-	float ambient_b = (global_color.Blue() / 255.0f) * ambient_light_level;
+		// Clear to Ambient Color
+		float ambient_r = (global_color.Red() / 255.0f) * ambient_light_level;
+		float ambient_g = (global_color.Green() / 255.0f) * ambient_light_level;
+		float ambient_b = (global_color.Blue() / 255.0f) * ambient_light_level;
 
-	// If global_color is (0,0,0) (not set), use a default dark ambient
-	if (global_color.Red() == 0 && global_color.Green() == 0 && global_color.Blue() == 0) {
-		ambient_r = 0.5f * ambient_light_level;
-		ambient_g = 0.5f * ambient_light_level;
-		ambient_b = 0.5f * ambient_light_level;
-	}
-
-	glClearColor(ambient_r, ambient_g, ambient_b, 1.0f);
-	// Actually, for "Max" blending, we want to start with Ambient.
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	if (!gpu_lights_.empty()) {
-		shader->Use();
-
-		// Setup Projection for FBO: Ortho 0..buffer_width, buffer_height..0 (Y-down)
-		// This matches screen coordinate system and avoids flips
-		glm::mat4 fbo_projection = glm::ortho(0.0f, (float)buffer_width, (float)buffer_height, 0.0f);
-		shader->SetMat4("uProjection", fbo_projection);
-		shader->SetFloat("uTileSize", (float)TileSize);
-
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, light_ssbo->GetID());
-		glBindVertexArray(vao->GetID());
-
-		// Enable MAX blending
-		{
-			ScopedGLCapability blendCap(GL_BLEND);
-			ScopedGLBlend blendState(GL_ONE, GL_ONE, GL_MAX); // Factors don't matter much for MAX, but usually 1,1 is safe
-
-			glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, (GLsizei)gpu_lights_.size());
+		// If global_color is (0,0,0) (not set), use a default dark ambient
+		if (global_color.Red() == 0 && global_color.Green() == 0 && global_color.Blue() == 0) {
+			ambient_r = 0.5f * ambient_light_level;
+			ambient_g = 0.5f * ambient_light_level;
+			ambient_b = 0.5f * ambient_light_level;
 		}
 
-		glBindVertexArray(0);
-	}
+		glClearColor(ambient_r, ambient_g, ambient_b, 1.0f);
+		// Actually, for "Max" blending, we want to start with Ambient.
+		glClear(GL_COLOR_BUFFER_BIT);
 
-	// Restore Previous FBO and Viewport
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, old_draw_fbo);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, old_read_fbo);
-	glViewport(old_viewport[0], old_viewport[1], old_viewport[2], old_viewport[3]);
+		if (!gpu_lights_.empty()) {
+			shader->Use();
+
+			// Setup Projection for FBO: Ortho 0..buffer_width, buffer_height..0 (Y-down)
+			// This matches screen coordinate system and avoids flips
+			glm::mat4 fbo_projection = glm::ortho(0.0f, (float)buffer_width, (float)buffer_height, 0.0f);
+			shader->SetMat4("uProjection", fbo_projection);
+			shader->SetFloat("uTileSize", (float)TileSize);
+
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, light_ssbo->GetID());
+			glBindVertexArray(vao->GetID());
+
+			// Enable MAX blending
+			{
+				ScopedGLCapability blendCap(GL_BLEND);
+				ScopedGLBlend blendState(GL_ONE, GL_ONE, GL_MAX); // Factors don't matter much for MAX, but usually 1,1 is safe
+
+				glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, (GLsizei)gpu_lights_.size());
+			}
+
+			glBindVertexArray(0);
+		}
+	}
 
 	// 4. Composite FBO to Screen
 	// Actually MapDrawer doesn't seem to set viewport every time, but `view.projectionMatrix` assumes 0..screensize.
