@@ -55,7 +55,7 @@ void WallBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 						}
 
 						for (int i = alignment + 1; i != alignment; ++i) {
-							if (i == 16) {
+							if (i == WallBrushItems::WALL_ALIGNMENT_COUNT) {
 								i = 0;
 							}
 							id = try_brush->items.getRandomWallId(i);
@@ -92,7 +92,7 @@ void WallBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 			return;
 		}
 
-		for (int i = 0; i < 16; ++i) {
+		for (int i = 0; i < WallBrushItems::WALL_ALIGNMENT_COUNT; ++i) {
 			id = try_brush->items.getRandomWallId(i);
 			if (id != 0) {
 				break;
@@ -113,7 +113,7 @@ void WallBrush::doWalls(BaseMap* map, Tile* tile) {
 }
 
 void WallBrush::getRelatedItems(std::vector<uint16_t>& items_out) {
-	for (int i = 0; i <= 16; ++i) {
+	for (int i = 0; i < WallBrushItems::WALL_ALIGNMENT_COUNT; ++i) {
 		const auto& node = items.getWallNode(i);
 		for (const auto& item : node.items) {
 			if (item.id != 0) {

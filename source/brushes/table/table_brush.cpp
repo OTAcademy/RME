@@ -81,7 +81,7 @@ void TableBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 }
 
 void TableBrush::getRelatedItems(std::vector<uint16_t>& items_out) {
-	for (int i = 0; i < 7; ++i) {
+	for (int i = 0; i < TableBrushItems::TABLE_ALIGNMENT_COUNT; ++i) {
 		if (items.hasItems(i)) {
 			const auto& node = items.getItems(i);
 			for (const auto& t : node.items) {

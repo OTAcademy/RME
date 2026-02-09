@@ -32,7 +32,7 @@ void ReplacementEngine::ExecuteReplacement(Editor* editor, const std::vector<Rep
 		return;
 	}
 
-	bool selectionOnly = editor->selection.size() > 0;
+	bool selectionOnly = !editor->selection.empty();
 	std::map<uint16_t, const ReplacementRule*> ruleMap;
 	for (const auto& rule : rules) {
 		if (rule.fromId != 0) {

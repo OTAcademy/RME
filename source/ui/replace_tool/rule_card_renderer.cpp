@@ -6,6 +6,7 @@
 #include "util/nvg_utils.h"
 #include <string>
 #include <algorithm>
+#include <format>
 
 void RuleCardRenderer::DrawTrashIcon(NVGcontext* vg, float x, float y, float size, bool highlight) {
 	nvgBeginPath(vg);
@@ -66,7 +67,7 @@ void RuleCardRenderer::DrawRuleItemCard(NanoVGCanvas* canvas, NVGcontext* vg, fl
 		}
 
 		ItemType& it = g_items[id];
-		std::string label = std::to_string(id) + " - " + it.name;
+		std::string label = std::format("{} - {}", id, it.name);
 
 		nvgFillColor(vg, nvgRGBA(255, 255, 255, 255));
 		nvgFontSize(vg, 11.0f);

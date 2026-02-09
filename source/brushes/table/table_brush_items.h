@@ -32,8 +32,10 @@ public:
 	// Helper to check if any items exist for a specific alignment
 	bool hasItems(int alignment) const;
 
+	static constexpr int TABLE_ALIGNMENT_COUNT = 7;
+
 private:
-	std::array<TableNode, 7> table_items; // Using 7 for fixed alignments (0-6)
+	std::array<TableNode, TABLE_ALIGNMENT_COUNT> table_items; // Using 7 for fixed alignments (0-6)
 };
 
 #endif

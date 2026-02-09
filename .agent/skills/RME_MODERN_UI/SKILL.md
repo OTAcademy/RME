@@ -94,14 +94,14 @@ card->SetTitle("SECTION TITLE");
 card->SetShowFooter(true);
 
 // Add content to card
-card->GetContentSizer()->Add(myControl, 1, wxEXPAND | wxALL, padding);
+card->GetContentSizer()->Add(myControl, wxSizerFlags(1).Expand().Border(wxALL, padding));
 
 // Add footer buttons
 wxBoxSizer* footerSizer = new wxBoxSizer(wxHORIZONTAL);
 footerSizer->AddStretchSpacer(1);
-footerSizer->Add(myButton, 0, wxALL, padding/2);
+footerSizer->Add(myButton, wxSizerFlags(0).Border(wxALL, padding/2));
 footerSizer->AddStretchSpacer(1);
-card->GetFooterSizer()->Add(footerSizer, 1, wxEXPAND);
+card->GetFooterSizer()->Add(footerSizer, wxSizerFlags(1).Expand());
 ```
 
 #### CardPanel Rendering Details

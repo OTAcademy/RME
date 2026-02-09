@@ -56,9 +56,11 @@ public:
 		return door_items.at(alignment);
 	}
 
+	static constexpr int WALL_ALIGNMENT_COUNT = 17;
+
 private:
-	std::array<WallNode, 17> wall_items;
-	std::array<std::vector<DoorItem>, 17> door_items;
+	std::array<WallNode, WALL_ALIGNMENT_COUNT> wall_items;
+	std::array<std::vector<DoorItem>, WALL_ALIGNMENT_COUNT> door_items;
 };
 
 #endif

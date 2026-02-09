@@ -208,14 +208,15 @@ void RuleBuilderPanel::DistributeProbabilities(int ruleIndex) {
 		return;
 	}
 	int count = targets.size();
-	int prob = 100 / count;
-	int remainder = 100 % count;
+	// Use floating point accumulation for fairer distribution of remainders
+	double step = 100.0 / count;
+	double accumulated = 0.0;
 
 	for (size_t i = 0; i < targets.size(); ++i) {
-		targets[i].probability = prob;
-		if (i < remainder) {
-			targets[i].probability++;
-		}
+		accumulated += step;
+		int currentTotal = (int)std::round(accumulated);
+		int prevTotal = (int)std::round(accumulated - step);
+		targets[i].probability = currentTotal - prevTotal;
 	}
 }
 

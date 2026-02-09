@@ -137,14 +137,10 @@ static float CompareHistograms(const std::vector<float>& h1, const std::vector<f
 	return intersection;
 }
 
+#include <bit>
+
 static int HammingDistance(uint64_t h1, uint64_t h2) {
-	uint64_t x = h1 ^ h2;
-	int dist = 0;
-	while (x) {
-		x &= (x - 1);
-		dist++;
-	}
-	return dist;
+	return std::popcount(h1 ^ h2);
 }
 
 static std::vector<bool> ResizeMask(const std::vector<bool>& src, int srcW, int srcH, int dstW, int dstH) {
