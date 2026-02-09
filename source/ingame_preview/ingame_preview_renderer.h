@@ -7,7 +7,7 @@
 #include "rendering/core/render_view.h"
 #include "rendering/core/drawing_options.h"
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include <chrono>
 #include <string>
 
@@ -57,7 +57,7 @@ namespace IngamePreview {
 		std::string preview_name = "You";
 
 		// Smooth fading state
-		std::map<int, float> floor_opacity;
+		std::unordered_map<int, float> floor_opacity;
 		std::chrono::steady_clock::time_point last_time;
 
 		// Internal rendering resources (could be shared or managed)

@@ -7,16 +7,16 @@
 
 #include "ui/main_menubar.h"
 #include "ext/pugixml.hpp"
-#include <map>
+#include <unordered_map>
 #include <list>
 #include <string>
 
 class MenuBarLoader {
 public:
-	static bool Load(const FileName& path, wxMenuBar* menubar, std::map<MenuBar::ActionID, std::list<wxMenuItem*>>& items, const std::map<std::string, MenuBar::Action*>& actions, RecentFilesManager& recentFilesManager, std::vector<std::string>& warnings, wxString& error);
+	static bool Load(const FileName& path, wxMenuBar* menubar, std::unordered_map<MenuBar::ActionID, std::list<wxMenuItem*>>& items, const std::unordered_map<std::string, std::unique_ptr<MenuBar::Action>>& actions, RecentFilesManager& recentFilesManager, std::vector<std::string>& warnings, wxString& error);
 
 private:
-	static wxObject* LoadItem(pugi::xml_node node, wxMenu* parent, std::map<MenuBar::ActionID, std::list<wxMenuItem*>>& items, const std::map<std::string, MenuBar::Action*>& actions, RecentFilesManager& recentFilesManager, std::vector<std::string>& warnings, wxString& error);
+	static wxObject* LoadItem(pugi::xml_node node, wxMenu* parent, std::unordered_map<MenuBar::ActionID, std::list<wxMenuItem*>>& items, const std::unordered_map<std::string, std::unique_ptr<MenuBar::Action>>& actions, RecentFilesManager& recentFilesManager, std::vector<std::string>& warnings, wxString& error);
 };
 
 #endif
