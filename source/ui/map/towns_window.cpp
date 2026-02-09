@@ -11,7 +11,7 @@
 #include <iterator>
 
 EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
-	wxDialog(parent, wxID_ANY, "Towns", wxDefaultPosition, FromDIP(wxSize(280, 330))),
+	wxDialog(parent, wxID_ANY, "Towns", wxDefaultPosition, FROM_DIP(parent, wxSize(280, 330))),
 	editor(editor) {
 	Map& map = editor.map;
 
@@ -27,7 +27,7 @@ EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 	}
 
 	// Town list
-	town_listbox = newd wxListBox(this, EDIT_TOWNS_LISTBOX, wxDefaultPosition, FromDIP(wxSize(240, 100)));
+	town_listbox = newd wxListBox(this, EDIT_TOWNS_LISTBOX, wxDefaultPosition, FROM_DIP(this, wxSize(240, 100)));
 	sizer->Add(town_listbox, 1, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, 10);
 
 	tmpsizer = newd wxBoxSizer(wxHORIZONTAL);
@@ -41,11 +41,11 @@ EditTownsDialog::EditTownsDialog(wxWindow* parent, Editor& editor) :
 
 	// House options
 	tmpsizer = newd wxStaticBoxSizer(wxHORIZONTAL, this, "Name / ID");
-	name_field = newd wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, FromDIP(wxSize(190, 20)), 0, wxTextValidator(wxFILTER_ASCII, &town_name));
+	name_field = newd wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, FROM_DIP(this, wxSize(190, 20)), 0, wxTextValidator(wxFILTER_ASCII, &town_name));
 	name_field->SetToolTip("Town name");
 	tmpsizer->Add(name_field, 2, wxEXPAND | wxLEFT | wxBOTTOM, 5);
 
-	id_field = newd wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, FromDIP(wxSize(40, 20)), 0, wxTextValidator(wxFILTER_NUMERIC, &town_id));
+	id_field = newd wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, FROM_DIP(this, wxSize(40, 20)), 0, wxTextValidator(wxFILTER_NUMERIC, &town_id));
 	id_field->SetToolTip("Town ID");
 	id_field->Enable(false);
 	tmpsizer->Add(id_field, 1, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
