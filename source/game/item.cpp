@@ -276,23 +276,23 @@ int Item::getHeight() const {
 }
 
 void Item::setUniqueID(unsigned short n) {
-	setAttribute("uid", n);
+	setAttribute(ATTR_UID, n);
 }
 
 void Item::setActionID(unsigned short n) {
-	setAttribute("aid", n);
+	setAttribute(ATTR_AID, n);
 }
 
 void Item::setText(const std::string& str) {
-	setAttribute("text", str);
+	setAttribute(ATTR_TEXT, str);
 }
 
 void Item::setDescription(const std::string& str) {
-	setAttribute("desc", str);
+	setAttribute(ATTR_DESC, str);
 }
 
 void Item::setTier(unsigned short n) {
-	setAttribute("tier", n);
+	setAttribute(ATTR_TIER, n);
 }
 
 double Item::getWeight() {
