@@ -254,7 +254,6 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			}
 
 			float textW = hud_cached_bounds[2] - hud_cached_bounds[0];
-			float textH = hud_cached_bounds[3] - hud_cached_bounds[1];
 			float padding = 8.0f;
 			float hudW = textW + padding * 2;
 			float hudH = 24.0f;

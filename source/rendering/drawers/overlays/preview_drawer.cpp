@@ -11,14 +11,13 @@
 #include "ui/gui.h"
 #include "brushes/brush.h"
 #include "editor/copybuffer.h"
+#include "ui/map_tab.h"
 
 PreviewDrawer::PreviewDrawer() {
 }
 
 PreviewDrawer::~PreviewDrawer() {
 }
-
-#include "ui/map_tab.h"
 
 void PreviewDrawer::draw(SpriteBatch& sprite_batch, PrimitiveRenderer& primitive_renderer, MapCanvas* canvas, const RenderView& view, int map_z, const DrawingOptions& options, Editor& editor, ItemDrawer* item_drawer, SpriteDrawer* sprite_drawer, CreatureDrawer* creature_drawer, uint32_t current_house_id) {
 	MapTab* mapTab = dynamic_cast<MapTab*>(canvas->GetMapWindow());
