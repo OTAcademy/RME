@@ -160,7 +160,7 @@ void LiveSocket::receiveFloor(NetworkMessage& message, Editor& editor, Action* a
 	if (tileBits == 0) {
 		for (uint_fast8_t x = 0; x < 4; ++x) {
 			for (uint_fast8_t y = 0; y < 4; ++y) {
-				action->addChange(std::make_unique<Change>(map.allocator(node->createTile(ndx * 4 + x, ndy * 4 + y, z))));
+				action->addChange(std::make_unique<Change>(map.allocator(node->createTile(ndx * 4 + x, ndy * 4 + y, z)).release()));
 			}
 		}
 		return;
@@ -183,7 +183,7 @@ void LiveSocket::receiveFloor(NetworkMessage& message, Editor& editor, Action* a
 				receiveTile(tileNode, editor, action, &position);
 				tileNode->advance();
 			} else {
-				action->addChange(std::make_unique<Change>(map.allocator(node->createTile(position.x, position.y, z))));
+				action->addChange(std::make_unique<Change>(map.allocator(node->createTile(position.x, position.y, z)).release()));
 			}
 		}
 	}
@@ -294,9 +294,10 @@ Tile* LiveSocket::readTile(BinaryNode* node, Editor& editor, const Position* pos
 		pos.z = z;
 	}
 
-	Tile* tile = map.allocator(
+	std::unique_ptr<Tile> new_tile = map.allocator(
 		map.createTileL(pos)
 	);
+	Tile* tile = new_tile.release();
 
 	if (tileType == OTBM_HOUSETILE) {
 		uint32_t houseId;

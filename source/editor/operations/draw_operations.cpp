@@ -157,7 +157,7 @@ void DrawOperations::draw(Editor& editor, Position offset, bool alt, bool dodraw
 		if (tile) {
 			new_tile = tile->deepCopy(editor.map);
 		} else {
-			new_tile.reset(editor.map.allocator(editor.map.createTileL(offset)));
+			new_tile = editor.map.allocator(editor.map.createTileL(offset));
 		}
 
 		if (dodraw) {
@@ -178,7 +178,7 @@ void DrawOperations::draw(Editor& editor, Position offset, bool alt, bool dodraw
 		if (tile) {
 			new_tile = tile->deepCopy(editor.map);
 		} else {
-			new_tile.reset(editor.map.allocator(editor.map.createTileL(offset)));
+			new_tile = editor.map.allocator(editor.map.createTileL(offset));
 		}
 		int param;
 		if (!brush->isCreature()) {
@@ -414,11 +414,11 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, Pos
 					std::unique_ptr<Tile> new_tile = tile->deepCopy(editor.map);
 					new_tile->cleanWalls(brush->isWall());
 					g_gui.GetCurrentBrush()->draw(draw_map, new_tile.get());
-					draw_map->setTile(*it, new_tile.release(), true);
+					draw_map->setTile(*it, std::move(new_tile));
 				} else if (dodraw) {
 					std::unique_ptr<Tile> new_tile(editor.map.allocator(location));
 					g_gui.GetCurrentBrush()->draw(draw_map, new_tile.get());
-					draw_map->setTile(*it, new_tile.release(), true);
+					draw_map->setTile(*it, std::move(new_tile));
 				}
 			}
 			for (PositionVector::const_iterator it = tilestodraw.begin(); it != tilestodraw.end(); ++it) {

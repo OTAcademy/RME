@@ -76,8 +76,9 @@ void AutoborderPreviewManager::CopyMapArea(Editor& editor, const Position& pos) 
 			Tile* src_tile = editor.map.getTile(x, y, z);
 			if (src_tile) {
 				// deeply copies tile and its items to buffer map
+				// deepCopy now correctly uses the destination map's TileLocation
 				std::unique_ptr<Tile> new_tile = src_tile->deepCopy(*preview_buffer_map);
-				preview_buffer_map->setTile(new_tile.release());
+				preview_buffer_map->setTile(std::move(new_tile));
 			}
 		}
 	}
@@ -97,9 +98,11 @@ void AutoborderPreviewManager::SimulateBrush(Editor& editor, const Position& pos
 		Tile* tile = preview_buffer_map->getTile(p);
 		if (!tile) {
 			// If tile didn't exist in source, we need to create it in buffer
-			TileLocation* loc = preview_buffer_map->createTileL(p);
-			tile = preview_buffer_map->allocator(loc);
+			tile = preview_buffer_map->createTile(p.x, p.y, p.z);
 		}
+		
+		// Safety check: tile should always have a valid location
+		ASSERT(tile->getLocation() != nullptr);
 
 		if (is_wall) {
 			tile->cleanWalls(false);
@@ -137,6 +140,9 @@ void AutoborderPreviewManager::ApplyBorders(const std::vector<Position>& tilesto
 	auto process_tile = [&](const Position& p) {
 		Tile* tile = preview_buffer_map->getTile(p);
 		if (tile) {
+			// Safety check: tile should always have a valid location
+			ASSERT(tile->getLocation() != nullptr);
+			
 			if (is_eraser) {
 				tile->wallize(preview_buffer_map.get());
 				tile->tableize(preview_buffer_map.get());
@@ -193,7 +199,7 @@ void AutoborderPreviewManager::PruneUnchanged(Editor& editor, const Position& po
 
 			if (equal) {
 				// Remove unmodified tile from buffer to prevent ghosting
-				preview_buffer_map->setTile(x, y, z, nullptr, true);
+				preview_buffer_map->setTile(x, y, z, std::unique_ptr<Tile>());
 			}
 		}
 	}
