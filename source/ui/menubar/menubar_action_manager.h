@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <memory>
 
 // Forward declarations
 class MainMenuBar;
@@ -12,7 +13,7 @@ namespace MenuBar {
 
 class MenuBarActionManager {
 public:
-	static void RegisterActions(MainMenuBar* mb, std::unordered_map<std::string, MenuBar::Action*>& actions);
+	static void RegisterActions(MainMenuBar* mb, std::unordered_map<std::string, std::unique_ptr<MenuBar::Action>>& actions);
 	static void UpdateState(MainMenuBar* mb);
 };
 

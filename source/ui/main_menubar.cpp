@@ -94,8 +94,8 @@ MainMenuBar::MainMenuBar(MainFrame* frame) :
 
 	// Tie all events to this handler!
 
-	for (auto ai = actions.begin(); ai != actions.end(); ++ai) {
-		frame->Bind(wxEVT_MENU, ai->second->handler, this, MAIN_FRAME_MENU + ai->second->id);
+	for (const auto& [name, action] : actions) {
+		frame->Bind(wxEVT_MENU, action->handler, this, MAIN_FRAME_MENU + action->id);
 	}
 	for (size_t i = 0; i < 10; ++i) {
 		frame->Bind(wxEVT_MENU, &MainMenuBar::OnOpenRecent, this, recentFilesManager.GetBaseId() + i);
@@ -104,10 +104,6 @@ MainMenuBar::MainMenuBar(MainFrame* frame) :
 
 MainMenuBar::~MainMenuBar() {
 	// Don't need to delete menubar, it's owned by the frame
-
-	for (auto ai = actions.begin(); ai != actions.end(); ++ai) {
-		delete ai->second;
-	}
 
 	delete searchHandler;
 	delete viewSettingsHandler;

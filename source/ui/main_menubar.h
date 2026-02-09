@@ -19,6 +19,7 @@
 #define RME_MAIN_BAR_H_
 
 #include <wx/docview.h>
+#include <memory>
 #include <unordered_map>
 #include "ui/managers/recent_files_manager.h"
 
@@ -309,7 +310,7 @@ protected:
 
 	std::unordered_map<MenuBar::ActionID, std::list<wxMenuItem*>> items;
 
-	std::unordered_map<std::string, MenuBar::Action*> actions;
+	std::unordered_map<std::string, std::unique_ptr<MenuBar::Action>> actions;
 
 	SearchHandler* searchHandler;
 	ViewSettingsHandler* viewSettingsHandler;
