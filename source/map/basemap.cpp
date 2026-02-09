@@ -28,10 +28,6 @@ BaseMap::BaseMap() :
 	////
 }
 
-BaseMap::~BaseMap() {
-	////
-}
-
 void BaseMap::clear(bool del) {
 	PositionVector pos_vec;
 	for (MapIterator map_iter = begin(); map_iter != end(); ++map_iter) {
@@ -146,10 +142,6 @@ MapIterator::MapIterator(BaseMap* _map) :
 	if (map) {
 		cell_it = map->grid.cells.begin();
 	}
-}
-
-MapIterator::~MapIterator() {
-	////
 }
 
 // Copy constructor for flat iterator design - copies all stateful members
