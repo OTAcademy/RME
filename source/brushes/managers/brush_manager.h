@@ -123,6 +123,8 @@ private:
 	int brush_variation;
 	int creature_spawntime;
 
+	void UpdateDoodadPreview();
+
 	bool draw_locked_doors;
 	bool use_custom_thickness;
 	float custom_thickness_mod;

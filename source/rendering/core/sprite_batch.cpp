@@ -74,9 +74,6 @@ bool SpriteBatch::initialize() {
 		return false;
 	}
 
-	// Create VAO and static buffers
-	vao_ = std::make_unique<GLVertexArray>();
-
 	// Bind Quad VBO/EBO to VAO (DSA)
 	glVertexArrayVertexBuffer(vao_->GetID(), 0, SharedGeometry::Instance().getQuadVBO(), 0, 4 * sizeof(float));
 	glVertexArrayElementBuffer(vao_->GetID(), SharedGeometry::Instance().getQuadEBO());

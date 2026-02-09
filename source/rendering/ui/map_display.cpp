@@ -263,8 +263,8 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 
 			// Background
 			nvgBeginPath(vg);
-			nvgFillColor(vg, nvgRGBA(0, 0, 0, 160));
 			nvgRoundedRect(vg, hudX, hudY, hudW, hudH, 4.0f);
+			nvgFillColor(vg, nvgRGBA(0, 0, 0, 160));
 			nvgFill(vg);
 
 			// Border
