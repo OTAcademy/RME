@@ -95,12 +95,12 @@ void MapProcessor::clearInvalidHouseTiles(Editor& editor, bool showdialog) {
 	}
 
 	uint64_t tiles_done = 0;
-	for (MapIterator map_iter = editor.map.begin(); map_iter != editor.map.end(); ++map_iter) {
+	for (auto& tileLocation : editor.map) {
 		if (showdialog && tiles_done % 4096 == 0) {
-			g_gui.SetLoadDone(int(tiles_done / double(editor.map.getTileCount()) * 100.0));
+			g_gui.SetLoadDone(static_cast<int32_t>(tiles_done / double(editor.map.getTileCount()) * 100.0));
 		}
 
-		Tile* tile = map_iter->get();
+		Tile* tile = tileLocation.get();
 		ASSERT(tile);
 		if (tile->isHouseTile()) {
 			if (houses.getHouse(tile->getHouseID()) == nullptr) {
@@ -121,12 +121,12 @@ void MapProcessor::clearModifiedTileState(Editor& editor, bool showdialog) {
 	}
 
 	uint64_t tiles_done = 0;
-	for (MapIterator map_iter = editor.map.begin(); map_iter != editor.map.end(); ++map_iter) {
+	for (auto& tileLocation : editor.map) {
 		if (showdialog && tiles_done % 4096 == 0) {
-			g_gui.SetLoadDone(int(tiles_done / double(editor.map.getTileCount()) * 100.0));
+			g_gui.SetLoadDone(static_cast<int32_t>(tiles_done / double(editor.map.getTileCount()) * 100.0));
 		}
 
-		Tile* tile = map_iter->get();
+		Tile* tile = tileLocation.get();
 		ASSERT(tile);
 		tile->unmodify();
 		++tiles_done;
