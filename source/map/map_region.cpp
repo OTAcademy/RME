@@ -205,6 +205,9 @@ std::unique_ptr<Tile> MapNode::setTile(int x, int y, int z, std::unique_ptr<Tile
 	int offset_y = y & 3;
 
 	TileLocation* tmp = &f->locs[offset_x * 4 + offset_y];
+	if (newtile) {
+		newtile->setLocation(tmp);
+	}
 	std::unique_ptr<Tile> oldtile = std::move(tmp->tile);
 	tmp->tile = std::move(newtile);
 

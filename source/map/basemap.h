@@ -122,7 +122,10 @@ public:
 	}
 	std::unique_ptr<Tile> setTile(std::unique_ptr<Tile> newtile) {
 		ASSERT(newtile);
-		return setTile(newtile->getX(), newtile->getY(), newtile->getZ(), std::move(newtile));
+		int x = newtile->getX();
+		int y = newtile->getY();
+		int z = newtile->getZ();
+		return setTile(x, y, z, std::move(newtile));
 	}
 	// Replaces a tile and returns the old one
 	std::unique_ptr<Tile> swapTile(int _x, int _y, int _z, std::unique_ptr<Tile> newtile);
