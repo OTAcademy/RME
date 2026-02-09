@@ -231,7 +231,7 @@ inline long long remove_if_TileOnMap(Map& map, RemoveIfType& remove_if) {
 	for (auto& tile_loc : map.tiles()) {
 		Tile* tile = tile_loc.get();
 		if (remove_if(map, tile, removed, done, total)) {
-			map.setTile(tile->getPosition(), nullptr, true);
+			map.setTile(tile->getPosition(), std::unique_ptr<Tile>());
 			++removed;
 		}
 		++done;

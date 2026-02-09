@@ -110,7 +110,12 @@ Tile::~Tile() {
 }
 
 std::unique_ptr<Tile> Tile::deepCopy(BaseMap& map) {
-	std::unique_ptr<Tile> copy(map.allocator.allocateTile(location));
+	// Use the destination map's TileLocation at the same position
+	TileLocation* dest_location = map.getTileL(getX(), getY(), getZ());
+	if (!dest_location) {
+		dest_location = map.createTileL(getX(), getY(), getZ());
+	}
+	std::unique_ptr<Tile> copy(map.allocator.allocateTile(dest_location));
 	copy->flags = flags;
 	copy->minimapColor = minimapColor;
 	copy->house_id = house_id;
