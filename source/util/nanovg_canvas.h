@@ -4,6 +4,7 @@
 #include "app/main.h"
 
 #include <unordered_map>
+#include <list>
 #include <cstdint>
 #include <memory>
 
@@ -37,7 +38,22 @@ struct NVGcontext;
  * };
  * ```
  */
+/**
+ * @class ScopedGLContext
+ * @brief RAII helper to ensure a NanoVGCanvas's OpenGL context is current.
+ */
+class ScopedGLContext {
+public:
+	explicit ScopedGLContext(class NanoVGCanvas* canvas);
+	~ScopedGLContext() = default; // Restoration of previous context is not reliably possible in wx without a global tracker
+
+private:
+	class NanoVGCanvas* m_canvas;
+};
+
 class NanoVGCanvas : public wxGLCanvas {
+	friend class ScopedGLContext;
+
 public:
 	/**
 	 * @brief Constructs a NanoVGCanvas control.
@@ -78,6 +94,11 @@ public:
 		return m_nvg.get();
 	}
 
+	/**
+	 * @brief Gets or creates a cached NanoVG image for an item.
+	 */
+	int GetOrCreateItemImage(uint16_t itemId);
+
 protected:
 	/**
 	 * @brief Override this to implement your custom NanoVG drawing.
@@ -113,6 +134,13 @@ protected:
 	void DeleteCachedImage(uint32_t id);
 
 	/**
+	 * @brief Adds an externally created image to the cache.
+	 * @param id Unique identifier
+	 * @param imageHandle NanoVG image handle
+	 */
+	void AddCachedImage(uint32_t id, int imageHandle);
+
+	/**
 	 * @brief Clears all cached images.
 	 * Call this when the data set changes entirely.
 	 */
@@ -137,6 +165,7 @@ protected:
 	 */
 	bool MakeContextCurrent();
 
+public: // Public for ScopedGLContext and future extensions
 	// Background color (can be overridden by subclasses)
 	float m_bgRed = 45.0f / 255.0f;
 	float m_bgGreen = 45.0f / 255.0f;
@@ -156,6 +185,8 @@ private:
 
 	// Texture cache: ID -> NanoVG image handle
 	std::unordered_map<uint32_t, int> m_imageCache;
+	mutable std::list<uint32_t> m_lruList;
+	size_t m_maxCacheSize = 1024; // Default limit
 
 	// Scroll state
 	int m_scrollPos = 0;

@@ -44,8 +44,9 @@ public:
 	bool canDraw(BaseMap* map, const Position& position) const override;
 	void draw(BaseMap* map, Tile* tile, void* parameter) override;
 	void undraw(BaseMap* map, Tile* tile) override;
-
 	static void doTables(BaseMap* map, Tile* tile);
+
+	void getRelatedItems(std::vector<uint16_t>& items) override;
 
 	int getLookID() const override {
 		return look_id;

@@ -64,6 +64,10 @@ void MapPopupMenu::Update() {
 	deleteItem->Enable(anything_selected);
 
 	if (anything_selected) {
+		Append(MAP_POPUP_MENU_ADVANCED_REPLACE, "Replace tiles...", "Open Advanced Replace Tool for selected items");
+	}
+
+	if (anything_selected) {
 		if (editor.selection.size() == 1) {
 			Tile* tile = editor.selection.getSelectedTile();
 			ItemVector selected_items = tile->getSelectedItems();

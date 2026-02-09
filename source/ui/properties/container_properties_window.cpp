@@ -4,6 +4,7 @@
 
 #include "app/main.h"
 #include "ui/properties/container_properties_window.h"
+#include "map/map.h"
 
 #include "game/complexitem.h"
 #include "ui/dialog_util.h"

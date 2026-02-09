@@ -5,12 +5,18 @@
 #include <glad/glad.h>
 
 #define NANOVG_GL3_IMPLEMENTATION
-#include <nanovg.h>
+#include "util/nvg_utils.h"
 #include <nanovg_gl.h>
 #include "rendering/core/graphics.h"
 
 #include <wx/dcclient.h>
 #include <algorithm>
+
+ScopedGLContext::ScopedGLContext(NanoVGCanvas* canvas) : m_canvas(canvas) {
+	if (m_canvas) {
+		m_canvas->MakeContextCurrent();
+	}
+}
 
 NanoVGCanvas::NanoVGCanvas(wxWindow* parent, wxWindowID id, long style) :
 	wxGLCanvas(parent, id, nullptr, wxDefaultPosition, wxDefaultSize, style) {
@@ -158,6 +164,24 @@ void NanoVGCanvas::SetScrollPosition(int pos) {
 	Refresh();
 }
 
+int NanoVGCanvas::GetOrCreateItemImage(uint16_t itemId) {
+	int tex = GetCachedImage(itemId);
+	if (tex > 0) {
+		return tex;
+	}
+
+	NVGcontext* vg = GetNVGContext();
+	if (!vg) {
+		return 0;
+	}
+
+	tex = NvgUtils::CreateItemTexture(vg, itemId);
+	if (tex > 0) {
+		AddCachedImage(itemId, tex);
+	}
+	return tex;
+}
+
 void NanoVGCanvas::UpdateScrollbar(int contentHeight) {
 	m_contentHeight = contentHeight;
 	int h = GetClientSize().y;
@@ -165,23 +189,28 @@ void NanoVGCanvas::UpdateScrollbar(int contentHeight) {
 }
 
 int NanoVGCanvas::GetOrCreateImage(uint32_t id, const uint8_t* data, int width, int height) {
+	ScopedGLContext ctx(this);
 	if (!m_nvg) {
 		return 0;
 	}
 
 	auto it = m_imageCache.find(id);
 	if (it != m_imageCache.end()) {
+		// Update LRU
+		m_lruList.remove(id);
+		m_lruList.push_front(id);
 		return it->second;
 	}
 
 	int tex = nvgCreateImageRGBA(m_nvg.get(), width, height, 0, data);
 	if (tex > 0) {
-		m_imageCache[id] = tex;
+		AddCachedImage(id, tex);
 	}
 	return tex;
 }
 
 void NanoVGCanvas::DeleteCachedImage(uint32_t id) {
+	ScopedGLContext ctx(this);
 	if (!m_nvg) {
 		return;
 	}
@@ -190,10 +219,41 @@ void NanoVGCanvas::DeleteCachedImage(uint32_t id) {
 	if (it != m_imageCache.end()) {
 		nvgDeleteImage(m_nvg.get(), it->second);
 		m_imageCache.erase(it);
+		m_lruList.remove(id);
+	}
+}
+
+void NanoVGCanvas::AddCachedImage(uint32_t id, int imageHandle) {
+	if (imageHandle > 0) {
+		ScopedGLContext ctx(this);
+		auto it = m_imageCache.find(id);
+		if (it != m_imageCache.end()) {
+			if (m_nvg) {
+				nvgDeleteImage(m_nvg.get(), it->second);
+			}
+			m_lruList.remove(id);
+		}
+
+		// Evict if over limit
+		if (m_imageCache.size() >= m_maxCacheSize) {
+			uint32_t last = m_lruList.back();
+			auto lastIt = m_imageCache.find(last);
+			if (lastIt != m_imageCache.end()) {
+				if (m_nvg) {
+					nvgDeleteImage(m_nvg.get(), lastIt->second);
+				}
+				m_imageCache.erase(lastIt);
+			}
+			m_lruList.pop_back();
+		}
+
+		m_imageCache[id] = imageHandle;
+		m_lruList.push_front(id);
 	}
 }
 
 void NanoVGCanvas::ClearImageCache() {
+	ScopedGLContext ctx(this);
 	if (!m_nvg) {
 		return;
 	}
@@ -205,8 +265,14 @@ void NanoVGCanvas::ClearImageCache() {
 }
 
 int NanoVGCanvas::GetCachedImage(uint32_t id) const {
+	// Const-cast to call MakeContextCurrent if needed, or just assume it's for lookup
+	// Actually GetCachedImage doesn't call GL, it just looks in the map.
+	// So it's fine.
 	auto it = m_imageCache.find(id);
 	if (it != m_imageCache.end()) {
+		// Update LRU
+		m_lruList.remove(id);
+		m_lruList.push_front(id);
 		return it->second;
 	}
 	return 0;

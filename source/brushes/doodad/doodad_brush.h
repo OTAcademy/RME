@@ -13,6 +13,7 @@
 // Doodadbrush, add doodads!
 
 class DoodadBrush : public Brush {
+
 public:
 	DoodadBrush();
 	~DoodadBrush() override;
@@ -33,6 +34,8 @@ public:
 	void draw(BaseMap* map, Tile* tile, void* parameter) override;
 	const CompositeTileList& getComposite(int variation) const;
 	void undraw(BaseMap* map, Tile* tile) override;
+
+	bool ownsItem(Item* item) const;
 
 	bool isEmpty(int variation) const;
 
@@ -59,7 +62,7 @@ public:
 	bool doNewBorders() const {
 		return settings.do_new_borders;
 	}
-	bool ownsItem(Item* item) const;
+	void getRelatedItems(std::vector<uint16_t>& items) override;
 
 	bool canSmear() const override {
 		return settings.draggable;

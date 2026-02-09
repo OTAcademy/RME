@@ -19,7 +19,13 @@
 #define RME_MAP_WINDOW_H_
 
 #include "map/position.h"
-#include "ui/replace_items_window.h"
+#include "app/rme_forward_declarations.h"
+class ReplaceToolWindow;
+#include <memory>
+
+struct ReplaceToolWindowDeleter {
+	inline void operator()(ReplaceToolWindow* w);
+};
 
 class MapCanvas;
 class DCButton;
@@ -75,6 +81,7 @@ public:
 	}
 
 	void ShowReplaceItemsDialog(bool selectionOnly);
+	void ShowAdvancedReplaceForSelection(const std::vector<uint16_t>& ids);
 	void CloseReplaceItemsDialog();
 	void OnReplaceItemsDialogClose(wxCloseEvent& event);
 
@@ -92,7 +99,7 @@ protected:
 	wxScrollBar* vScroll;
 
 private:
-	ReplaceItemsDialog* replaceItemsDialog;
+	std::unique_ptr<ReplaceToolWindow, ReplaceToolWindowDeleter> replaceItemsDialog;
 	Position previous_position;
 
 	friend class MainFrame;

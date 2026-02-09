@@ -162,3 +162,28 @@ inline GroundBrush* extractGroundBrushFromTile(BaseMap* map, uint32_t x, uint32_
 void GroundBrush::doBorders(BaseMap* map, Tile* tile) {
 	GroundBorderCalculator::calculate(map, tile);
 }
+void GroundBrush::getRelatedItems(std::vector<uint16_t>& items) {
+	for (const auto& item_block : border_items) {
+		if (item_block.id != 0) {
+			items.push_back(item_block.id);
+		}
+	}
+
+	for (const BorderBlock* bb : borders) {
+		if (bb->autoborder) {
+			for (uint32_t tile_id : bb->autoborder->tiles) {
+				if (tile_id != 0) {
+					items.push_back(static_cast<uint16_t>(tile_id));
+				}
+			}
+		}
+		for (const SpecificCaseBlock* sc : bb->specific_cases) {
+			if (sc->to_replace_id != 0) {
+				items.push_back(sc->to_replace_id);
+			}
+			if (sc->with_id != 0) {
+				items.push_back(sc->with_id);
+			}
+		}
+	}
+}

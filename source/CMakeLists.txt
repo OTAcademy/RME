@@ -280,6 +280,16 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/positionctrl.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/properties_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_items_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/item_grid_panel.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/library_panel.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/rule_card_renderer.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/rule_builder_panel.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/card_panel.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/replace_tool_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/replacement_engine.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/rule_list_control.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/rule_manager.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/visual_similarity_service.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/result_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/tileset_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/welcome_dialog.h
@@ -292,6 +302,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/util/con_vector.h
     ${CMAKE_CURRENT_LIST_DIR}/util/json.h
     ${CMAKE_CURRENT_LIST_DIR}/util/nanovg_canvas.h
+    ${CMAKE_CURRENT_LIST_DIR}/util/virtual_item_grid.h
 )
 
 include(FetchContent)
@@ -595,6 +606,16 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/positionctrl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/properties/properties_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/replace_items_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/item_grid_panel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/library_panel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/rule_card_renderer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/card_panel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/rule_builder_panel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/replace_tool_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/replacement_engine.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/rule_list_control.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/rule_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui/replace_tool/visual_similarity_service.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/result_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/tileset_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/welcome_dialog.cpp
@@ -603,6 +624,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/ui/menubar_loader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/common.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/nanovg_canvas.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/util/virtual_item_grid.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/tool_options_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ui/tool_options_surface.cpp
     ${CMAKE_CURRENT_LIST_DIR}/util/file_system.cpp

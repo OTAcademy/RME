@@ -262,6 +262,8 @@ public:
 		usesCollection = true;
 	}
 
+	virtual void getRelatedItems(std::vector<uint16_t>& items) { }
+
 protected:
 	static uint32_t id_counter;
 	uint32_t id;
