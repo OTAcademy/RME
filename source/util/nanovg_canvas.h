@@ -3,7 +3,7 @@
 
 #include "app/main.h"
 
-#include <map>
+#include <unordered_map>
 #include <cstdint>
 #include <memory>
 
@@ -178,7 +178,7 @@ private:
 	bool m_glInitialized = false;
 
 	// Texture cache: ID -> NanoVG image handle
-	std::map<uint32_t, int> m_imageCache;
+	std::unordered_map<uint32_t, int> m_imageCache;
 
 	// Scroll state
 	int m_scrollPos = 0;

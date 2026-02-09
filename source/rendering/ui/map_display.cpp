@@ -211,10 +211,16 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 		}
 
 		drawer->Release();
-		// BatchRenderer::End(); call removed
 
 		// Draw UI (Tooltips, Overlays & HUD) using NanoVG
 		if (NVGcontext* vg = m_nvg.get()) {
+			// Sanitize state before handover to NanoVG
+			glUseProgram(0);
+			glBindVertexArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
 			TextRenderer::BeginFrame(vg, GetSize().x, GetSize().y);
 
 			if (options.show_creatures) {
@@ -251,10 +257,10 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			float padding = 8.0f;
 			float hudW = textW + padding * 2;
 			float hudH = 24.0f;
-			float hudX = w - hudW - 10.0f;
+			float hudX = 10.0f;
 			float hudY = h - hudH - 10.0f;
 
-			// Glass Background
+			// Background
 			nvgBeginPath(vg);
 			nvgRoundedRect(vg, hudX, hudY, hudW, hudH, 4.0f);
 			nvgFillColor(vg, nvgRGBA(0, 0, 0, 160));
@@ -273,20 +279,24 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			nvgText(vg, hudX + padding, hudY + hudH * 0.5f, hud_cached_text.c_str(), nullptr);
 
 			TextRenderer::EndFrame(vg);
+
+			// Sanitize state after NanoVG to avoid polluting the next frame or other tabs
+			glUseProgram(0);
+			glBindVertexArray(0);
 		}
 
 		drawer->ClearTooltips();
 	}
 
 	// Clean unused textures once every second
+	// Only run GC if this is the active tab to prevent multiple tabs from fighting over resources
 	static long last_gc_time = 0;
 	long current_time = wxGetLocalTime();
-	if (current_time - last_gc_time >= 1) {
+	if (current_time - last_gc_time >= 1 && g_gui.GetCurrentMapTab() == GetParent()) {
 		g_gui.gfx.garbageCollection();
 		last_gc_time = current_time;
 	}
 
-	// Swap buffer
 	SwapBuffers();
 
 	// FPS tracking and limiting

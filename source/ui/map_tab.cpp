@@ -31,9 +31,7 @@ MapTab::MapTab(MapTabbook* aui, Editor* editor) :
 	EditorTab(),
 	MapWindow(aui, *editor),
 	aui(aui) {
-	iref = newd InternalReference;
-	iref->editor = editor;
-	iref->owner_count = 1;
+	iref = newd InternalReference(editor);
 
 	spdlog::info("MapTab created (New Editor) [Tab={}]", (void*)this);
 
@@ -43,7 +41,7 @@ MapTab::MapTab(MapTabbook* aui, Editor* editor) :
 
 MapTab::MapTab(const MapTab* other) :
 	EditorTab(),
-	MapWindow(other->aui, *other->iref->editor),
+	MapWindow(other->aui, *other->iref->session.editor),
 	aui(other->aui),
 	iref(other->iref) {
 	iref->owner_count++;
@@ -59,8 +57,8 @@ MapTab::~MapTab() {
 	spdlog::info("MapTab destroying [Tab={}] (Owner count: {})", (void*)this, iref->owner_count);
 	iref->owner_count--;
 	if (iref->owner_count <= 0) {
-		spdlog::info("MapTab destroying editor [Editor={}]", (void*)iref->editor);
-		delete iref->editor;
+		spdlog::info("MapTab destroying editor [Editor={}]", (void*)iref->session.editor);
+		delete iref->session.editor;
 		delete iref;
 	}
 }
@@ -83,16 +81,16 @@ MapWindow* MapTab::GetView() const {
 
 wxString MapTab::GetTitle() const {
 	wxString ss;
-	ss << wxstr(iref->editor->map.getName()) << (iref->editor->map.hasChanged() ? "*" : "");
+	ss << wxstr(iref->session.editor->map.getName()) << (iref->session.editor->map.hasChanged() ? "*" : "");
 	return ss;
 }
 
 Editor* MapTab::GetEditor() const {
-	return &editor;
+	return iref->session.editor;
 }
 
 Map* MapTab::GetMap() const {
-	return &editor.map;
+	return &iref->session.editor->map;
 }
 
 void MapTab::VisibilityCheck() {
@@ -102,6 +100,14 @@ void MapTab::VisibilityCheck() {
 }
 
 void MapTab::OnSwitchEditorMode(EditorMode mode) {
+	if (mode == DRAWING_MODE && iref->session.mode != DRAWING_MODE) {
+		Editor* editor = GetEditor();
+		editor->selection.start();
+		editor->selection.clear();
+		editor->selection.finish();
+	}
+
+	iref->session.mode = mode;
 	gem->SetSprite(mode == DRAWING_MODE ? EDITOR_SPRITE_DRAWING_GEM : EDITOR_SPRITE_SELECTION_GEM);
 	if (mode == SELECTION_MODE) {
 		canvas->EnterSelectionMode();

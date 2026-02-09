@@ -27,7 +27,7 @@ class MinimapDrawer;
 class MinimapWindow : public wxGLCanvas {
 public:
 	MinimapWindow(wxWindow* parent);
-	virtual ~MinimapWindow();
+	~MinimapWindow() override;
 
 	void OnPaint(wxPaintEvent&);
 	void OnEraseBackground(wxEraseEvent&) { }

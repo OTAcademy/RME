@@ -103,8 +103,6 @@ private:
 	std::unique_ptr<ShaderProgram> shader_;
 
 	std::unique_ptr<GLVertexArray> vao_;
-	std::unique_ptr<GLBuffer> quad_vbo_;
-	std::unique_ptr<GLBuffer> quad_ebo_;
 
 	RingBuffer ring_buffer_;
 	MultiDrawIndirectRenderer mdi_renderer_;

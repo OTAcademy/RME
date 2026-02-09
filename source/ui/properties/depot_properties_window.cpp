@@ -15,13 +15,6 @@
 // ============================================================================
 // Depot Properties Window
 
-/*
-BEGIN_EVENT_TABLE(DepotPropertiesWindow, wxDialog)
-EVT_BUTTON(wxID_OK, DepotPropertiesWindow::OnClickOK)
-EVT_BUTTON(wxID_CANCEL, DepotPropertiesWindow::OnClickCancel)
-END_EVENT_TABLE()
-*/
-
 DepotPropertiesWindow::DepotPropertiesWindow(wxWindow* parent, const Map* map, const Tile* tile, Item* item, wxPoint pos) :
 	ObjectPropertiesWindowBase(parent, "Depot Properties", map, tile, item, pos),
 	depot_id_field(nullptr) {

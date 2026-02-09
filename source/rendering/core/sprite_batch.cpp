@@ -1,4 +1,5 @@
 #include "rendering/core/sprite_batch.h"
+#include "rendering/core/shared_geometry.h"
 #include <iostream>
 #include <cstring>
 #include <utility>
@@ -67,25 +68,15 @@ bool SpriteBatch::initialize() {
 
 	// Create VAO and static buffers
 	vao_ = std::make_unique<GLVertexArray>();
-	quad_vbo_ = std::make_unique<GLBuffer>();
-	quad_ebo_ = std::make_unique<GLBuffer>();
-
-	// Unit quad geometry
-	float quad_vertices[] = {
-		0.0f, 0.0f, 0.0f, 0.0f, // pos.xy, tex.xy
-		1.0f, 0.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 1.0f, 1.0f,
-		0.0f, 1.0f, 0.0f, 1.0f
-	};
-	unsigned int indices[] = { 0, 1, 2, 2, 3, 0 };
-
-	// Upload static geometry
-	glNamedBufferStorage(quad_vbo_->GetID(), sizeof(quad_vertices), quad_vertices, 0);
-	glNamedBufferStorage(quad_ebo_->GetID(), sizeof(indices), indices, 0);
+	// Initialize Shared Geometry
+	if (!SharedGeometry::Instance().initialize()) {
+		spdlog::error("SpriteBatch: Failed to initialize SharedGeometry");
+		return false;
+	}
 
 	// Bind Quad VBO/EBO to VAO (DSA)
-	glVertexArrayVertexBuffer(vao_->GetID(), 0, quad_vbo_->GetID(), 0, 4 * sizeof(float));
-	glVertexArrayElementBuffer(vao_->GetID(), quad_ebo_->GetID());
+	glVertexArrayVertexBuffer(vao_->GetID(), 0, SharedGeometry::Instance().getQuadVBO(), 0, 4 * sizeof(float));
+	glVertexArrayElementBuffer(vao_->GetID(), SharedGeometry::Instance().getQuadEBO());
 
 	// Loc 0: position (vec2)
 	glEnableVertexArrayAttrib(vao_->GetID(), 0);

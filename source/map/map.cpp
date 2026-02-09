@@ -24,6 +24,7 @@
 #include <sstream>
 #include <algorithm>
 #include <unordered_set>
+#include <unordered_map>
 #include <spdlog/spdlog.h>
 
 Map::Map() :
@@ -171,7 +172,7 @@ bool Map::convert(const ConversionMap& rm, bool showdialog) {
 		g_gui.CreateLoadBar("Converting map ...");
 	}
 
-	std::map<const std::vector<uint16_t>*, std::unordered_set<uint16_t>> mtm_lookups;
+	std::unordered_map<const std::vector<uint16_t>*, std::unordered_set<uint16_t>> mtm_lookups;
 	for (const auto& entry : rm.mtm) {
 		mtm_lookups.emplace(&entry.first, std::unordered_set<uint16_t>(entry.first.begin(), entry.first.end()));
 	}

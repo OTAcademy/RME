@@ -274,7 +274,7 @@ If you find yourself wondering "where do I put my cleanup code?" or "why is my f
 
 - **Today:** If you need a list, use `std::vector`.
 - **Today:** If you need a thread, use `std::thread` (and `CallAfter` to talk to the UI).
-- **Today:** Use `nullptr` instead of `NULL` or `0`.
+- **Today:** Use `nullptr` instead of `NULL` or `0` (Refer to `.agent/rules/cpp_style.md`).
 
 ### PHASE 2: IDENTIFY (Catalog at least 20 violations)
 

@@ -159,7 +159,7 @@ class OTMLNode : public OTMLNodeEnableSharedFromThis {
 public:
 	OTMLNode() :
 		m_unique(false), m_null(false) { }
-	virtual ~OTMLNode() { }
+	virtual ~OTMLNode() = default;
 
 	static OTMLNodePtr create(std::string tag = "", bool unique = false);
 	static OTMLNodePtr create(std::string tag, std::string value);
@@ -269,11 +269,11 @@ protected:
 class OTMLDocument : public OTMLNode {
 public:
 	OTMLDocument() { }
-	virtual ~OTMLDocument() { }
+	~OTMLDocument() override = default;
 	static OTMLDocumentPtr create();
 	static OTMLDocumentPtr parse(const wxString& fileName);
 	static OTMLDocumentPtr parse(std::istream& in, const wxString& source);
-	std::string emit();
+	std::string emit() override;
 	bool save(const wxString& fileName);
 };
 

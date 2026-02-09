@@ -23,6 +23,7 @@
 
 #include "brushes/brush_enums.h"
 #include <map>
+#include <unordered_map>
 #include <string>
 #include <memory>
 #include <string_view>
@@ -82,7 +83,7 @@ public:
 	}
 
 protected:
-	using BorderMap = std::map<uint32_t, std::unique_ptr<AutoBorder>>;
+	using BorderMap = std::unordered_map<uint32_t, std::unique_ptr<AutoBorder>>;
 	BrushMap brushes;
 	BorderMap borders;
 
