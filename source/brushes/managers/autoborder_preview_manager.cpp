@@ -8,6 +8,7 @@
 #include "brushes/managers/brush_manager.h"
 #include "map/map.h"
 #include "map/tile.h"
+#include "map/tile_operations.h"
 #include "ui/gui.h"
 #include "app/settings.h"
 #include "brushes/brush_utility.h"
@@ -105,9 +106,9 @@ void AutoborderPreviewManager::SimulateBrush(Editor& editor, const Position& pos
 		ASSERT(tile->getLocation() != nullptr);
 
 		if (is_wall) {
-			tile->cleanWalls(false);
+			TileOperations::cleanWalls(tile, false);
 		} else if (is_ground) {
-			tile->cleanBorders();
+			TileOperations::cleanBorders(tile);
 		}
 
 		// Draw the brush
@@ -144,19 +145,19 @@ void AutoborderPreviewManager::ApplyBorders(const std::vector<Position>& tilesto
 			ASSERT(tile->getLocation() != nullptr);
 			
 			if (is_eraser) {
-				tile->wallize(preview_buffer_map.get());
-				tile->tableize(preview_buffer_map.get());
-				tile->carpetize(preview_buffer_map.get());
-				tile->borderize(preview_buffer_map.get());
+				TileOperations::wallize(tile, preview_buffer_map.get());
+				TileOperations::tableize(tile, preview_buffer_map.get());
+				TileOperations::carpetize(tile, preview_buffer_map.get());
+				TileOperations::borderize(tile, preview_buffer_map.get());
 			} else if (is_wall) {
-				tile->wallize(preview_buffer_map.get());
+				TileOperations::wallize(tile, preview_buffer_map.get());
 			} else if (is_table) {
-				tile->tableize(preview_buffer_map.get());
+				TileOperations::tableize(tile, preview_buffer_map.get());
 			} else if (is_carpet) {
-				tile->carpetize(preview_buffer_map.get());
+				TileOperations::carpetize(tile, preview_buffer_map.get());
 			} else {
 				// Default/Ground
-				tile->borderize(preview_buffer_map.get());
+				TileOperations::borderize(tile, preview_buffer_map.get());
 			}
 		}
 	};

@@ -27,6 +27,7 @@
 #include <unordered_map>
 #include <memory>
 #include <iterator>
+#include <ranges>
 
 // Class declarations
 class SpatialHashGrid;
@@ -84,6 +85,9 @@ public:
 	void clear(bool del = true);
 	MapIterator begin();
 	MapIterator end();
+	auto tiles() {
+		return std::ranges::subrange(begin(), end());
+	}
 	uint64_t size() const {
 		return tilecount;
 	}

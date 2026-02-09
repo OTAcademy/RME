@@ -7,6 +7,7 @@
 #include "brushes/ground/auto_border.h"
 #include "map/basemap.h"
 #include "map/tile.h"
+#include "map/tile_operations.h"
 #include "game/item.h"
 #include "game/items.h"
 #include <array>
@@ -289,7 +290,7 @@ void GroundBorderCalculator::calculate(BaseMap* map, Tile* tile) {
 	auto [first, last] = std::ranges::unique(specificList);
 	specificList.erase(first, last);
 
-	tile->cleanBorders();
+	TileOperations::cleanBorders(tile);
 
 	while (!borderList.empty()) {
 		GroundBrush::BorderCluster& borderCluster = borderList.back();
