@@ -184,7 +184,7 @@ void Action::commit(DirtyList* dirty_list) {
 
 					uptr.reset(oldtile);
 				} else {
-					uptr.reset(editor.map.allocator(location));
+					uptr = editor.map.allocator(location);
 					if (newtile->getHouseID() != 0) {
 						// oooooomggzzz we need to add it to the appropriate house!
 						House* house = editor.map.houses.getHouse(newtile->getHouseID());

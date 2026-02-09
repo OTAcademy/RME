@@ -30,7 +30,7 @@ public:
 	~MapAllocator() { }
 
 	// shorthands for tiles
-	Tile* operator()(TileLocation* location) {
+	std::unique_ptr<Tile> operator()(TileLocation* location) {
 		return allocateTile(location);
 	}
 	// free
@@ -39,24 +39,24 @@ public:
 	}
 
 	//
-	Tile* allocateTile(TileLocation* location) {
-		return newd Tile(*location);
+	std::unique_ptr<Tile> allocateTile(TileLocation* location) {
+		return std::make_unique<Tile>(*location);
 	}
 	void freeTile(Tile* t) {
 		delete t;
 	}
 
 	//
-	Floor* allocateFloor(int x, int y, int z) {
-		return newd Floor(x, y, z);
+	std::unique_ptr<Floor> allocateFloor(int x, int y, int z) {
+		return std::make_unique<Floor>(x, y, z);
 	}
 	void freeFloor(Floor* f) {
 		delete f;
 	}
 
 	//
-	MapNode* allocateNode(BaseMap& map) {
-		return newd MapNode(map);
+	std::unique_ptr<MapNode> allocateNode(BaseMap& map) {
+		return std::make_unique<MapNode>(map);
 	}
 	void freeNode(MapNode* qt) {
 		delete qt;

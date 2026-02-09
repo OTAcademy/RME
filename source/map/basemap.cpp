@@ -39,7 +39,10 @@ void BaseMap::clear(bool del) {
 		pos_vec.push_back(t->getPosition());
 	}
 	for (PositionVector::iterator pos_iter = pos_vec.begin(); pos_iter != pos_vec.end(); ++pos_iter) {
-		setTile(*pos_iter, nullptr, del);
+		std::unique_ptr<Tile> t = setTile(*pos_iter, nullptr);
+		if (!del) {
+			t.release();
+		}
 	}
 }
 
@@ -54,9 +57,10 @@ Tile* BaseMap::createTile(int x, int y, int z) {
 	if (loc->get()) {
 		return loc->get();
 	}
-	Tile* t = allocator(loc);
-	leaf->setTile(x, y, z, t);
-	return t;
+	std::unique_ptr<Tile> t = allocator(loc);
+	Tile* ptr = t.get();
+	leaf->setTile(x, y, z, std::move(t));
+	return ptr;
 }
 
 Tile* BaseMap::getOrCreateTile(const Position& pos) {
@@ -111,17 +115,13 @@ TileLocation* BaseMap::createTileL(const Position& pos) {
 	return createTileL(pos.x, pos.y, pos.z);
 }
 
-void BaseMap::setTile(int x, int y, int z, Tile* newtile, bool remove) {
+std::unique_ptr<Tile> BaseMap::setTile(int x, int y, int z, Tile* newtile) {
 	ASSERT(!newtile || newtile->getX() == int(x));
 	ASSERT(!newtile || newtile->getY() == int(y));
 	ASSERT(!newtile || newtile->getZ() == int(z));
 
 	MapNode* leaf = grid.getLeafForce(x, y);
-	std::unique_ptr<Tile> old = leaf->setTile(x, y, z, newtile);
-	if (!remove) {
-		old.release(); // Caller takes ownership
-	}
-	// If remove is true, 'old' is deleted when it goes out of scope
+	return leaf->setTile(x, y, z, std::unique_ptr<Tile>(newtile));
 }
 
 std::unique_ptr<Tile> BaseMap::swapTile(int x, int y, int z, Tile* newtile) {
@@ -131,7 +131,7 @@ std::unique_ptr<Tile> BaseMap::swapTile(int x, int y, int z, Tile* newtile) {
 	ASSERT(!newtile || newtile->getZ() == int(z));
 
 	MapNode* leaf = grid.getLeafForce(x, y);
-	return leaf->setTile(x, y, z, newtile);
+	return leaf->setTile(x, y, z, std::unique_ptr<Tile>(newtile));
 }
 
 // Iterators

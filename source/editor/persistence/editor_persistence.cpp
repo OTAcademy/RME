@@ -516,7 +516,7 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 			newsize_y = new_pos.y;
 		}
 
-		imported_map.setTile(import_tile->getPosition(), nullptr);
+		std::unique_ptr<Tile> moved_tile = imported_map.setTile(import_tile->getPosition(), nullptr);
 		TileLocation* location = editor.map.createTileL(new_pos);
 
 		// Check if we should update any houses
@@ -555,7 +555,7 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 		// So this is redundant but safe.
 		import_tile->spawn.reset();
 
-		editor.map.setTile(new_pos, import_tile, true);
+		editor.map.setTile(new_pos, moved_tile.release());
 	}
 
 	for (auto& spawn_entry : spawn_map) {
@@ -563,8 +563,9 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 		TileLocation* location = editor.map.createTileL(pos);
 		Tile* tile = location->get();
 		if (!tile) {
-			tile = editor.map.allocator(location);
-			editor.map.setTile(pos, tile);
+			std::unique_ptr<Tile> new_tile = editor.map.allocator(location);
+			tile = new_tile.get();
+			editor.map.setTile(pos, new_tile.release());
 		} else if (tile->spawn) {
 			editor.map.removeSpawnInternal(tile);
 			tile->spawn.reset();

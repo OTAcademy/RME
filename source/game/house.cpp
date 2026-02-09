@@ -213,8 +213,9 @@ void House::setExit(Map* targetmap, const Position& pos) {
 
 	Tile* newexit = targetmap->getTile(pos);
 	if (!newexit) {
-		newexit = targetmap->allocator(targetmap->createTileL(pos));
-		targetmap->setTile(pos, newexit);
+		std::unique_ptr<Tile> new_tile = targetmap->allocator(targetmap->createTileL(pos));
+		newexit = new_tile.get();
+		targetmap->setTile(pos, new_tile.release());
 	}
 
 	newexit->addHouseExit(this);

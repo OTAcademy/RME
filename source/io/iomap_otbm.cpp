@@ -927,7 +927,8 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 						continue;
 					}
 
-					tile = map.allocator(map.createTileL(pos));
+					std::unique_ptr<Tile> new_tile = map.allocator(map.createTileL(pos));
+					tile = new_tile.get();
 					House* house = nullptr;
 					if (tile_type == OTBM_HOUSETILE) {
 						uint32_t house_id;
@@ -1000,7 +1001,7 @@ bool IOMapOTBM::loadMap(Map& map, NodeFileReadHandle& f) {
 						house->addTile(tile);
 					}
 
-					map.setTile(pos.x, pos.y, pos.z, tile);
+					map.setTile(pos.x, pos.y, pos.z, new_tile.release());
 				} else {
 					warning("Unknown type of tile node");
 				}
@@ -1152,8 +1153,9 @@ bool IOMapOTBM::loadSpawns(Map& map, pugi::xml_document& doc) {
 
 		Spawn* spawn = newd Spawn(radius);
 		if (!tile) {
-			tile = map.allocator(map.createTileL(spawnPosition));
-			map.setTile(spawnPosition, tile);
+			std::unique_ptr<Tile> new_tile = map.allocator(map.createTileL(spawnPosition));
+			tile = new_tile.get();
+			map.setTile(spawnPosition, new_tile.release());
 		}
 
 		tile->spawn.reset(spawn);

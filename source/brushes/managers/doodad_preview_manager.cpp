@@ -117,13 +117,14 @@ void DoodadPreviewManager::FillBuffer() {
 						Tile* tile = doodad_buffer_map->getTile(pos);
 
 						if (!tile) {
-							tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
+							std::unique_ptr<Tile> new_tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
+							tile = new_tile.get();
+							doodad_buffer_map->setTile(pos, new_tile.release());
 						}
 
 						for (const auto& item : items) {
 							tile->addItem(item->deepCopy());
 						}
-						doodad_buffer_map->setTile(tile->getPosition(), tile);
 					}
 					exit = true;
 				} else if (brush->hasSingleObjects(g_brush_manager.GetBrushVariation())) {
@@ -135,12 +136,12 @@ void DoodadPreviewManager::FillBuffer() {
 							break;
 						}
 					} else {
-						tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
+						std::unique_ptr<Tile> new_tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
+						tile = new_tile.get();
+						doodad_buffer_map->setTile(pos, new_tile.release());
 					}
 					int variation = g_brush_manager.GetBrushVariation();
 					brush->draw(doodad_buffer_map.get(), tile, &variation);
-
-					doodad_buffer_map->setTile(tile->getPosition(), tile);
 					exit = true;
 				}
 				if (fail) {
@@ -161,19 +162,21 @@ void DoodadPreviewManager::FillBuffer() {
 			for (const auto& composite : composites) {
 				Position pos = center_pos + composite.first;
 				const auto& items = composite.second;
-				Tile* tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
+				std::unique_ptr<Tile> new_tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(pos));
+				Tile* tile = new_tile.get();
 
 				for (const auto& item : items) {
 					tile->addItem(item->deepCopy());
 				}
-				doodad_buffer_map->setTile(tile->getPosition(), tile);
+				doodad_buffer_map->setTile(tile->getPosition(), new_tile.release());
 			}
 		} else if (brush->hasSingleObjects(g_brush_manager.GetBrushVariation())) {
-			Tile* tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(center_pos));
+			std::unique_ptr<Tile> new_tile = doodad_buffer_map->allocator(doodad_buffer_map->createTileL(center_pos));
+			Tile* tile = new_tile.get();
 			int variation = g_brush_manager.GetBrushVariation();
 			brush->draw(doodad_buffer_map.get(), tile, &variation);
 
-			doodad_buffer_map->setTile(center_pos, tile);
+			doodad_buffer_map->setTile(center_pos, new_tile.release());
 		}
 	}
 }

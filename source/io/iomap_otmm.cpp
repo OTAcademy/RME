@@ -423,7 +423,8 @@ bool IOMapOTMM::loadMap(Map& map, NodeFileReadHandle& f, const FileName& identif
 								continue;
 							}
 
-							tile = map.allocator(pos);
+							std::unique_ptr<Tile> new_tile = map.allocator(pos);
+							tile = new_tile.get();
 							House* house = nullptr;
 							if (tile_type == OTMM_HOUSETILE) {
 								uint32_t house_id;
@@ -493,7 +494,7 @@ bool IOMapOTMM::loadMap(Map& map, NodeFileReadHandle& f, const FileName& identif
 							if (house) {
 								house->addTile(tile);
 							}
-							map.setTile(pos, tile);
+							map.setTile(pos, new_tile.release());
 						} while (tileNode->advance());
 					}
 				} break;
@@ -538,8 +539,9 @@ bool IOMapOTMM::loadMap(Map& map, NodeFileReadHandle& f, const FileName& identif
 
 							Spawn* spawn = newd Spawn(radius);
 							if (!spawn_tile) {
-								spawn_tile = map.allocator(spawnpos);
-								map.setTile(spawnpos, spawn_tile);
+								std::unique_ptr<Tile> new_tile = map.allocator(spawnpos);
+								spawn_tile = new_tile.get();
+								map.setTile(spawnpos, new_tile.release());
 							}
 							spawn_tile->spawn = spawn;
 							map.addSpawn(spawn_tile);

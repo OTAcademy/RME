@@ -98,7 +98,9 @@ void AutoborderPreviewManager::SimulateBrush(Editor& editor, const Position& pos
 		if (!tile) {
 			// If tile didn't exist in source, we need to create it in buffer
 			TileLocation* loc = preview_buffer_map->createTileL(p);
-			tile = preview_buffer_map->allocator(loc);
+			std::unique_ptr<Tile> new_tile = preview_buffer_map->allocator(loc);
+			tile = new_tile.get();
+			preview_buffer_map->setTile(p, new_tile.release());
 		}
 
 		if (is_wall) {
@@ -193,7 +195,7 @@ void AutoborderPreviewManager::PruneUnchanged(Editor& editor, const Position& po
 
 			if (equal) {
 				// Remove unmodified tile from buffer to prevent ghosting
-				preview_buffer_map->setTile(x, y, z, nullptr, true);
+				preview_buffer_map->setTile(x, y, z, nullptr);
 			}
 		}
 	}

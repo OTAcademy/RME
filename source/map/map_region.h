@@ -132,7 +132,7 @@ public:
 
 	TileLocation* createTile(int x, int y, int z);
 	TileLocation* getTile(int x, int y, int z);
-	std::unique_ptr<Tile> setTile(int x, int y, int z, Tile* tile);
+	std::unique_ptr<Tile> setTile(int x, int y, int z, std::unique_ptr<Tile> tile);
 	void clearTile(int x, int y, int z);
 
 	Floor* createFloor(int x, int y, int z);

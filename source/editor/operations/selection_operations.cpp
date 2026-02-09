@@ -100,7 +100,7 @@ void SelectionOperations::moveSelection(Editor& editor, Position offset) {
 		// Create the duplicate source tile, which will replace the old one later
 		std::unique_ptr<Tile> new_src_tile = tile->deepCopy(editor.map);
 
-		std::unique_ptr<Tile> tmp_storage_tile(editor.map.allocator(tile->getLocation()));
+		std::unique_ptr<Tile> tmp_storage_tile = editor.map.allocator(tile->getLocation());
 
 		// Get all the selected items from the NEW source tile and iterate through them
 		// This transfers ownership to the temporary tile
@@ -230,7 +230,7 @@ void SelectionOperations::moveSelection(Editor& editor, Position offset) {
 					new_dest_tile = deep_copy.release();
 				}
 			} else {
-				new_dest_tile = editor.map.allocator(location);
+				new_dest_tile = editor.map.allocator(location).release();
 			}
 			new_dest_tile->merge(tile);
 			delete tile;
@@ -403,7 +403,7 @@ void SelectionOperations::destroySelection(Editor& editor) {
 					new_tile->carpetize(&editor.map);
 					action->addChange(std::make_unique<Change>(new_tile.release()));
 				} else {
-					std::unique_ptr<Tile> new_tile(editor.map.allocator(location));
+					std::unique_ptr<Tile> new_tile = editor.map.allocator(location);
 					new_tile->borderize(&editor.map);
 					if (new_tile->size()) {
 						action->addChange(std::make_unique<Change>(new_tile.release()));

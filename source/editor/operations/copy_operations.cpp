@@ -33,7 +33,8 @@ void CopyOperations::copy(Editor& editor, CopyBuffer& buffer, int floor) {
 		++tile_count;
 
 		TileLocation* newlocation = buffer.tiles->createTileL(tile->getPosition());
-		Tile* copied_tile = buffer.tiles->allocator(newlocation);
+		std::unique_ptr<Tile> new_tile = buffer.tiles->allocator(newlocation);
+		Tile* copied_tile = new_tile.get();
 
 		if (tile->ground && tile->ground->isSelected()) {
 			copied_tile->house_id = tile->house_id;
@@ -55,7 +56,7 @@ void CopyOperations::copy(Editor& editor, CopyBuffer& buffer, int floor) {
 			copied_tile->spawn.reset(tile->spawn->deepCopy());
 		}
 
-		buffer.tiles->setTile(copied_tile);
+		buffer.tiles->setTile(new_tile.release());
 
 		if (copied_tile->getX() < buffer.copyPos.x) {
 			buffer.copyPos.x = copied_tile->getX();
@@ -93,7 +94,8 @@ void CopyOperations::cut(Editor& editor, CopyBuffer& buffer, int floor) {
 		tile_count++;
 
 		std::unique_ptr<Tile> newtile = tile->deepCopy(editor.map);
-		Tile* copied_tile = buffer.tiles->allocator(tile->getLocation());
+		std::unique_ptr<Tile> new_copied_tile = buffer.tiles->allocator(tile->getLocation());
+		Tile* copied_tile = new_copied_tile.get();
 
 		if (tile->ground && tile->ground->isSelected()) {
 			copied_tile->house_id = newtile->house_id;
@@ -118,7 +120,7 @@ void CopyOperations::cut(Editor& editor, CopyBuffer& buffer, int floor) {
 			copied_tile->spawn = std::move(newtile->spawn);
 		}
 
-		buffer.tiles->setTile(copied_tile->getPosition(), copied_tile);
+		buffer.tiles->setTile(copied_tile->getPosition(), new_copied_tile.release());
 
 		if (copied_tile->getX() < buffer.copyPos.x) {
 			buffer.copyPos.x = copied_tile->getX();
@@ -196,7 +198,7 @@ void CopyOperations::paste(Editor& editor, CopyBuffer& buffer, const Position& t
 			if (old_dest_tile) {
 				new_dest_tile = old_dest_tile->deepCopy(editor.map).release();
 			} else {
-				new_dest_tile = editor.map.allocator(dest_location);
+				new_dest_tile = editor.map.allocator(dest_location).release();
 			}
 			// copy_tile may be partially moved-from after the merge call
 			new_dest_tile->merge(copy_tile.get());
