@@ -45,7 +45,7 @@ class MapMenuHandler;
 class MapCanvas : public wxGLCanvas {
 public:
 	MapCanvas(MapWindow* parent, Editor& editor, int* attriblist);
-	virtual ~MapCanvas();
+	~MapCanvas() override;
 	void Reset();
 
 	// All events

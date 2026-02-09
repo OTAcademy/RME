@@ -81,8 +81,10 @@ void GameSprite::clean(time_t time) {
 void GameSprite::unloadDC() {
 	dc[SPRITE_SIZE_16x16].reset();
 	dc[SPRITE_SIZE_32x32].reset();
+	dc[SPRITE_SIZE_64x64].reset();
 	bm[SPRITE_SIZE_16x16].reset();
 	bm[SPRITE_SIZE_32x32].reset();
+	bm[SPRITE_SIZE_64x64].reset();
 	colored_dc.clear();
 }
 
@@ -233,15 +235,19 @@ wxMemoryDC* GameSprite::getDC(SpriteSize size, const Outfit& outfit) {
 }
 
 void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width, int height) {
+	const int sprite_dim = (sz == SPRITE_SIZE_64x64) ? 64 : (sz == SPRITE_SIZE_32x32 ? 32 : 16);
+	int src_width = sprite_dim;
+	int src_height = sprite_dim;
+
 	if (width == -1) {
-		width = sz == SPRITE_SIZE_32x32 ? 32 : 16;
+		width = src_width;
 	}
 	if (height == -1) {
-		height = sz == SPRITE_SIZE_32x32 ? 32 : 16;
+		height = src_height;
 	}
 	wxDC* sdc = getDC(sz);
 	if (sdc) {
-		dc->Blit(start_x, start_y, width, height, sdc, 0, 0, wxCOPY, true);
+		dc->StretchBlit(start_x, start_y, width, height, sdc, 0, 0, src_width, src_height, wxCOPY, true);
 	} else {
 		const wxBrush& b = dc->GetBrush();
 		dc->SetBrush(*wxRED_BRUSH);
@@ -251,15 +257,19 @@ void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int w
 }
 
 void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, const Outfit& outfit, int start_x, int start_y, int width, int height) {
+	const int sprite_dim = (sz == SPRITE_SIZE_64x64) ? 64 : (sz == SPRITE_SIZE_32x32 ? 32 : 16);
+	int src_width = sprite_dim;
+	int src_height = sprite_dim;
+
 	if (width == -1) {
-		width = sz == SPRITE_SIZE_32x32 ? 32 : 16;
+		width = src_width;
 	}
 	if (height == -1) {
-		height = sz == SPRITE_SIZE_32x32 ? 32 : 16;
+		height = src_height;
 	}
 	wxDC* sdc = getDC(sz, outfit);
 	if (sdc) {
-		dc->Blit(start_x, start_y, width, height, sdc, 0, 0, wxCOPY, true);
+		dc->StretchBlit(start_x, start_y, width, height, sdc, 0, 0, src_width, src_height, wxCOPY, true);
 	} else {
 		const wxBrush& b = dc->GetBrush();
 		dc->SetBrush(*wxRED_BRUSH);
@@ -271,11 +281,6 @@ void GameSprite::DrawTo(wxDC* dc, SpriteSize sz, const Outfit& outfit, int start
 GameSprite::Image::Image() :
 	isGLLoaded(false),
 	lastaccess(0) {
-}
-
-GameSprite::Image::~Image() {
-	// Base destructor no longer needs to unload GL texture
-	// as separate textures are removed.
 }
 
 void GameSprite::Image::visit() {

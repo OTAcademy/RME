@@ -12,6 +12,7 @@
 #include "game/sprites.h"
 #include "map/map.h"
 #include "map/tile.h"
+#include "map/tile_operations.h"
 #include "ui/gui.h"
 
 #include <ranges>
@@ -154,7 +155,7 @@ void DoorBrush::undraw(BaseMap* map, Tile* tile) {
 		if (item->isBrushDoor()) {
 			item->getWallBrush()->draw(map, tile, nullptr);
 			if (g_settings.getInteger(Config::USE_AUTOMAGIC)) {
-				tile->wallize(map);
+				TileOperations::wallize(tile, map);
 			}
 			return;
 		}

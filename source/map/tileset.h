@@ -17,6 +17,7 @@
 #ifndef RME_TILESET_H_
 #define RME_TILESET_H_
 
+#include <memory>
 #include <unordered_map>
 #include <vector>
 #include "brushes/brush_enums.h"
@@ -36,16 +37,19 @@ public:
 	void loadBrush(pugi::xml_node node, std::vector<std::string>& warnings);
 	void clear();
 	bool containsBrush(Brush* brush) const;
+
 protected:
 	TilesetCategoryType type;
+
 public:
 	std::vector<Brush*> brushlist;
 	Tileset& tileset;
+
 private:
 	TilesetCategory(const TilesetCategory&);
 	TilesetCategory operator=(const TilesetCategory&);
 };
-using TilesetCategoryArray = std::vector<TilesetCategory*>;
+using TilesetCategoryArray = std::vector<std::unique_ptr<TilesetCategory>>;
 class Tileset {
 public:
 	Tileset(Brushes& brushes, const std::string& name);
@@ -55,12 +59,15 @@ public:
 	void loadCategory(pugi::xml_node node, std::vector<std::string>& warnings);
 	void clear();
 	bool containsBrush(Brush* brush) const;
+
 public:
 	std::string name;
 	int16_t previousId;
 	TilesetCategoryArray categories;
+
 protected:
 	Brushes& brushes;
+
 protected:
 	Tileset(const Tileset&);
 	Tileset operator=(const Tileset&);

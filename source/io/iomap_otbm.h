@@ -128,7 +128,7 @@ public:
 	IOMapOTBM(MapVersion ver) {
 		version = ver;
 	}
-	~IOMapOTBM() { }
+	~IOMapOTBM() override = default;
 
 	static bool getVersionInfo(const FileName& identifier, MapVersion& out_ver);
 
@@ -138,7 +138,7 @@ public:
 protected:
 	static bool getVersionInfo(NodeFileReadHandle* f, MapVersion& out_ver);
 
-	virtual bool loadMap(Map& map, NodeFileReadHandle& handle);
+	bool loadMap(Map& map, NodeFileReadHandle& handle);
 	bool loadSpawns(Map& map, const FileName& dir);
 	bool loadSpawns(Map& map, pugi::xml_document& doc);
 	bool loadHouses(Map& map, const FileName& dir);
@@ -146,7 +146,7 @@ protected:
 	bool loadWaypoints(Map& map, const FileName& dir);
 	bool loadWaypoints(Map& map, pugi::xml_document& doc);
 
-	virtual bool saveMap(Map& map, NodeFileWriteHandle& handle);
+	bool saveMap(Map& map, NodeFileWriteHandle& handle);
 	bool saveSpawns(Map& map, const FileName& dir);
 	bool saveSpawns(Map& map, pugi::xml_document& doc);
 	bool saveHouses(Map& map, const FileName& dir);

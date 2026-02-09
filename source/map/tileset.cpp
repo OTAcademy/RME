@@ -18,6 +18,7 @@
 #include "app/main.h"
 
 #include <algorithm>
+#include <iterator>
 #include "map/tileset.h"
 #include "game/creatures.h"
 #include "brushes/creature/creature_brush.h"
@@ -31,20 +32,18 @@ Tileset::Tileset(Brushes& brushes, const std::string& name) :
 }
 
 Tileset::~Tileset() {
-	for (TilesetCategoryArray::iterator iter = categories.begin(); iter != categories.end(); ++iter) {
-		delete *iter;
-	}
+	// Categories are automatically cleaned up by std::unique_ptr
 }
 
 void Tileset::clear() {
-	for (TilesetCategoryArray::iterator iter = categories.begin(); iter != categories.end(); ++iter) {
-		(*iter)->brushlist.clear();
+	for (const auto& category : categories) {
+		category->brushlist.clear();
 	}
 }
 
 bool Tileset::containsBrush(Brush* brush) const {
-	for (TilesetCategoryArray::const_iterator iter = categories.begin(); iter != categories.end(); ++iter) {
-		if ((*iter)->containsBrush(brush)) {
+	for (const auto& category : categories) {
+		if (category->containsBrush(brush)) {
 			return true;
 		}
 	}
@@ -54,19 +53,19 @@ bool Tileset::containsBrush(Brush* brush) const {
 
 TilesetCategory* Tileset::getCategory(TilesetCategoryType type) {
 	ASSERT(type >= TILESET_UNKNOWN && type <= TILESET_HOUSE);
-	for (TilesetCategoryArray::iterator iter = categories.begin(); iter != categories.end(); ++iter) {
-		if ((*iter)->getType() == type) {
-			return *iter;
-		}
+	auto it = std::ranges::find_if(categories, [type](const auto& category) {
+		return category->getType() == type;
+	});
+	if (it != categories.end()) {
+		return it->get();
 	}
-	TilesetCategory* tsc = newd TilesetCategory(*this, type);
-	categories.push_back(tsc);
-	return tsc;
+	auto& tsc = categories.emplace_back(std::make_unique<TilesetCategory>(*this, type));
+	return tsc.get();
 }
 
 bool TilesetCategory::containsBrush(Brush* brush) const {
-	for (std::vector<Brush*>::const_iterator iter = brushlist.begin(); iter != brushlist.end(); ++iter) {
-		if (*iter == brush) {
+	for (const auto* b : brushlist) {
+		if (b == brush) {
 			return true;
 		}
 	}
@@ -76,10 +75,11 @@ bool TilesetCategory::containsBrush(Brush* brush) const {
 
 const TilesetCategory* Tileset::getCategory(TilesetCategoryType type) const {
 	ASSERT(type >= TILESET_UNKNOWN && type <= TILESET_HOUSE);
-	for (TilesetCategoryArray::const_iterator iter = categories.begin(); iter != categories.end(); ++iter) {
-		if ((*iter)->getType() == type) {
-			return *iter;
-		}
+	auto it = std::ranges::find_if(categories, [type](const auto& category) {
+		return category->getType() == type;
+	});
+	if (it != categories.end()) {
+		return it->get();
 	}
 	return nullptr;
 }
@@ -194,11 +194,9 @@ void TilesetCategory::loadBrush(pugi::xml_node node, std::vector<std::string>& w
 		if (brush) {
 			auto insertPosition = brushlist.end();
 			if (!brushName.empty()) {
-				for (auto itt = brushlist.begin(); itt != brushlist.end(); ++itt) {
-					if ((*itt)->getName() == brushName) {
-						insertPosition = ++itt;
-						break;
-					}
+				auto it = std::ranges::find_if(brushlist, [&](const auto* b) { return b->getName() == brushName; });
+				if (it != brushlist.end()) {
+					insertPosition = std::next(it);
 				}
 			}
 			brush->flagAsVisible();
@@ -262,11 +260,9 @@ void TilesetCategory::loadBrush(pugi::xml_node node, std::vector<std::string>& w
 
 		auto insertPosition = brushlist.end();
 		if (!brushName.empty()) {
-			for (auto itt = brushlist.begin(); itt != brushlist.end(); ++itt) {
-				if ((*itt)->getName() == brushName) {
-					insertPosition = ++itt;
-					break;
-				}
+			auto it = std::ranges::find_if(brushlist, [&](const auto* b) { return b->getName() == brushName; });
+			if (it != brushlist.end()) {
+				insertPosition = std::next(it);
 			}
 		}
 		brushlist.insert(insertPosition, tempBrushVector.begin(), tempBrushVector.end());

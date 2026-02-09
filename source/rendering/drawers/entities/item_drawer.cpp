@@ -168,7 +168,7 @@ void ItemDrawer::BlitItem(SpriteBatch& sprite_batch, PrimitiveRenderer& primitiv
 	// g_gui.gfx.ensureAtlasManager();
 	// BatchRenderer::SetAtlasManager(g_gui.gfx.getAtlasManager());
 
-	int frame = item->getFrame();
+	int frame = (spr->animator) ? spr->animator->getFrame() : 0;
 	if (spr->width == 1 && spr->height == 1 && spr->layers == 1) {
 		const AtlasRegion* region = spr->getAtlasRegion(0, 0, 0, subtype, pattern_x, pattern_y, pattern_z, frame);
 		if (region) {

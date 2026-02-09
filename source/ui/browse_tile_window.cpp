@@ -41,7 +41,7 @@ public:
 protected:
 	void UpdateItems();
 
-	using ItemsMap = std::map<int, Item*>;
+	using ItemsMap = std::vector<Item*>;
 	ItemsMap items;
 	Tile* edit_tile;
 };
@@ -56,8 +56,7 @@ BrowseTileListBox::~BrowseTileListBox() {
 }
 
 void BrowseTileListBox::OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const {
-	ItemsMap::const_iterator item_iterator = items.find(int(n));
-	Item* item = item_iterator->second;
+	Item* item = items[n];
 
 	Sprite* sprite = g_gui.gfx.getSprite(item->getClientID());
 	if (sprite) {
@@ -112,18 +111,17 @@ void BrowseTileListBox::RemoveSelected() {
 }
 
 void BrowseTileListBox::UpdateItems() {
-	int n = 0;
+	items.clear();
+	items.reserve(edit_tile->items.size() + (edit_tile->ground ? 1 : 0));
 	for (ItemVector::reverse_iterator it = edit_tile->items.rbegin(); it != edit_tile->items.rend(); ++it) {
-		items[n] = (*it);
-		++n;
+		items.push_back(*it);
 	}
 
 	if (edit_tile->ground) {
-		items[n] = edit_tile->ground;
-		++n;
+		items.push_back(edit_tile->ground);
 	}
 
-	SetItemCount(n);
+	SetItemCount(items.size());
 }
 
 // ============================================================================

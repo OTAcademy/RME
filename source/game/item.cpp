@@ -74,8 +74,7 @@ Item* Item::Create(uint16_t _type, uint16_t _subtype /*= 0xFFFF*/) {
 Item::Item(unsigned short _type, unsigned short _count) :
 	id(_type),
 	subtype(1),
-	selected(false),
-	frame(0) {
+	selected(false) {
 	if (hasSubtype()) {
 		subtype = _count;
 	}
@@ -277,23 +276,23 @@ int Item::getHeight() const {
 }
 
 void Item::setUniqueID(unsigned short n) {
-	setAttribute("uid", n);
+	setAttribute(ATTR_UID, n);
 }
 
 void Item::setActionID(unsigned short n) {
-	setAttribute("aid", n);
+	setAttribute(ATTR_AID, n);
 }
 
 void Item::setText(const std::string& str) {
-	setAttribute("text", str);
+	setAttribute(ATTR_TEXT, str);
 }
 
 void Item::setDescription(const std::string& str) {
-	setAttribute("desc", str);
+	setAttribute(ATTR_DESC, str);
 }
 
 void Item::setTier(unsigned short n) {
-	setAttribute("tier", n);
+	setAttribute(ATTR_TIER, n);
 }
 
 double Item::getWeight() {
@@ -412,16 +411,6 @@ BorderType Item::getWallAlignment() const {
 BorderType Item::getBorderAlignment() const {
 	ItemType& it = g_items[id];
 	return it.border_alignment;
-}
-
-void Item::animate() {
-	ItemType& type = g_items[id];
-	GameSprite* sprite = type.sprite;
-	if (!sprite || !sprite->animator) {
-		return;
-	}
-
-	frame = sprite->animator->getFrame();
 }
 
 // ============================================================================
