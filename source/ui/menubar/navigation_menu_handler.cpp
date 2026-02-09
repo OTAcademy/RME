@@ -64,7 +64,7 @@ void NavigationMenuHandler::OnJumpToBrush(wxCommandEvent& WXUNUSED(event)) {
 	if (brush) {
 		g_gui.SelectBrush(brush, TILESET_UNKNOWN);
 	}
-	delete dlg;
+	dlg->Destroy();
 }
 
 void NavigationMenuHandler::OnJumpToItemBrush(wxCommandEvent& WXUNUSED(event)) {
@@ -83,7 +83,6 @@ void NavigationMenuHandler::OnJumpToItemBrush(wxCommandEvent& WXUNUSED(event)) {
 		}
 		g_settings.setInteger(Config::JUMP_TO_ITEM_MODE, (int)dialog.getSearchMode());
 	}
-	dialog.Destroy();
 }
 
 void NavigationMenuHandler::OnChangeFloor(wxCommandEvent& event) {
