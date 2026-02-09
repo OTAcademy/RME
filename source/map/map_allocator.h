@@ -33,33 +33,20 @@ public:
 	std::unique_ptr<Tile> operator()(TileLocation* location) {
 		return allocateTile(location);
 	}
-	// free
-	void operator()(Tile* t) {
-		freeTile(t);
-	}
 
 	//
 	std::unique_ptr<Tile> allocateTile(TileLocation* location) {
 		return std::make_unique<Tile>(*location);
-	}
-	void freeTile(Tile* t) {
-		delete t;
 	}
 
 	//
 	std::unique_ptr<Floor> allocateFloor(int x, int y, int z) {
 		return std::make_unique<Floor>(x, y, z);
 	}
-	void freeFloor(Floor* f) {
-		delete f;
-	}
 
 	//
 	std::unique_ptr<MapNode> allocateNode(BaseMap& map) {
 		return std::make_unique<MapNode>(map);
-	}
-	void freeNode(MapNode* qt) {
-		delete qt;
 	}
 };
 

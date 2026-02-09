@@ -121,9 +121,8 @@ void Action::commit(DirtyList* dirty_list) {
 		switch (c->type) {
 			case CHANGE_TILE: {
 				auto& uptr = std::get<std::unique_ptr<Tile>>(c->data);
-				std::unique_ptr<Tile> new_uptr = std::move(uptr);
-				ASSERT(new_uptr);
-				Tile* newtile = new_uptr.get();
+				ASSERT(uptr);
+				Tile* newtile = uptr.get();
 				Position pos = newtile->getPosition();
 
 				if (editor.live_manager.IsClient()) {
@@ -131,13 +130,13 @@ void Action::commit(DirtyList* dirty_list) {
 					if (!nd || !nd->isVisible(pos.z > GROUND_LAYER)) {
 						// Delete all changes that affect tiles outside our view
 						c->clear();
-						new_uptr.reset();
+						uptr.reset();
 						++it;
 						continue;
 					}
 				}
 
-				std::unique_ptr<Tile> oldtile_uptr = editor.map.swapTile(pos, std::move(new_uptr));
+				std::unique_ptr<Tile> oldtile_uptr = editor.map.swapTile(pos, std::move(uptr));
 				Tile* oldtile = oldtile_uptr.get();
 				TileLocation* location = newtile->getLocation();
 
