@@ -21,6 +21,7 @@
 #include "editor/editor_tabs.h"
 #include "app/application.h"
 #include "ui/map_window.h"
+#include "editor/map_session.h"
 
 class MapTab : public EditorTab, public MapWindow {
 public:
@@ -31,7 +32,7 @@ public:
 	~MapTab();
 
 	bool IsUniqueReference() const;
-	bool HasSameReference(MapTab* other) const;
+	bool HasSameReference(const MapTab* other) const;
 
 	// Properties
 	MapWindow* GetView() const;
@@ -40,22 +41,31 @@ public:
 	wxString GetTitle() const;
 	Editor* GetEditor() const;
 	Map* GetMap() const;
+	MapSession* GetSession() const {
+		return &iref->session;
+	}
 
 	void VisibilityCheck();
 
 	// Event handlers
 	void OnSwitchEditorMode(EditorMode mode);
+	EditorMode GetMode() const {
+		return iref->session.mode;
+	}
 
 protected:
+	// Session data
+	// Moved to MapSession
 	struct InternalReference {
-		Editor* editor;
+		InternalReference(Editor* editor) : session(editor), owner_count(1) { }
+		MapSession session;
 		int owner_count;
 	};
 	MapTabbook* aui;
 	InternalReference* iref;
 };
 
-inline bool MapTab::HasSameReference(MapTab* other) const {
+inline bool MapTab::HasSameReference(const MapTab* other) const {
 	return other->iref == iref;
 }
 

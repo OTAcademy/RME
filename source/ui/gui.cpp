@@ -67,9 +67,7 @@ GUI g_gui;
 GUI::GUI() :
 	aui_manager(nullptr),
 	root(nullptr),
-	secondary_map(nullptr),
 	tool_options(nullptr),
-	mode(SELECTION_MODE),
 	pasting(false),
 	disabled_counter(0),
 	hotkeys_enabled(true) {
@@ -98,59 +96,62 @@ void GUI::ShowToolbar(ToolBarID id, bool show) {
 	}
 }
 
+bool GUI::IsSelectionMode() const {
+	MapTab* mapTab = GetCurrentMapTab();
+	return mapTab ? mapTab->GetMode() == SELECTION_MODE : true;
+}
+
+bool GUI::IsDrawingMode() const {
+	MapTab* mapTab = GetCurrentMapTab();
+	return mapTab ? mapTab->GetMode() == DRAWING_MODE : false;
+}
+
 void GUI::SwitchMode() {
-	if (mode == DRAWING_MODE) {
-		SetSelectionMode();
-	} else {
-		SetDrawingMode();
+	MapTab* mapTab = GetCurrentMapTab();
+	if (mapTab) {
+		if (mapTab->GetMode() == DRAWING_MODE) {
+			SetSelectionMode();
+		} else {
+			SetDrawingMode();
+		}
 	}
 }
 
 void GUI::SetSelectionMode() {
-	if (mode == SELECTION_MODE) {
+	MapTab* mapTab = GetCurrentMapTab();
+	if (!mapTab || mapTab->GetMode() == SELECTION_MODE) {
 		return;
 	}
 
 	if (GetCurrentBrush() && GetCurrentBrush()->isDoodad()) {
-		secondary_map = nullptr;
-	}
-
-	tabbook->OnSwitchEditorMode(SELECTION_MODE);
-	mode = SELECTION_MODE;
-}
-
-void GUI::SetDrawingMode() {
-	if (mode == DRAWING_MODE) {
-		return;
-	}
-
-	std::set<MapTab*> al;
-	for (int idx = 0; idx < tabbook->GetTabCount(); ++idx) {
-		EditorTab* editorTab = tabbook->GetTab(idx);
-		if (auto* mapTab = dynamic_cast<MapTab*>(editorTab)) {
-			if (al.contains(mapTab)) {
-				continue;
-			}
-
-			Editor* editor = mapTab->GetEditor();
-			editor->selection.start();
-			editor->selection.clear();
-			editor->selection.finish();
-			al.insert(mapTab);
+		if (mapTab) {
+			mapTab->GetSession()->secondary_map = nullptr;
 		}
 	}
 
-	if (GetCurrentBrush() && GetCurrentBrush()->isDoodad()) {
-		secondary_map = g_doodad_preview.GetBufferMap();
-	} else if (GetCurrentBrush() && GetCurrentBrush()->needBorders() && g_settings.getInteger(Config::USE_AUTOMAGIC)) {
-		// We'll set the map, but it might be empty until first mouse move
-		secondary_map = g_autoborder_preview.GetBufferMap();
-	} else {
-		secondary_map = nullptr;
+	mapTab->OnSwitchEditorMode(SELECTION_MODE);
+}
+
+void GUI::SetDrawingMode() {
+	MapTab* mapTab = GetCurrentMapTab();
+	if (!mapTab || mapTab->GetMode() == DRAWING_MODE) {
+		return;
 	}
 
-	tabbook->OnSwitchEditorMode(DRAWING_MODE);
-	mode = DRAWING_MODE;
+	mapTab->OnSwitchEditorMode(DRAWING_MODE);
+
+	if (GetCurrentBrush() && GetCurrentBrush()->isDoodad()) {
+		if (mapTab) {
+			mapTab->GetSession()->secondary_map = g_doodad_preview.GetBufferMap();
+		}
+	} else if (GetCurrentBrush() && GetCurrentBrush()->needBorders() && g_settings.getInteger(Config::USE_AUTOMAGIC)) {
+		// We'll set the map, but it might be empty until first mouse move
+		if (mapTab) {
+			mapTab->GetSession()->secondary_map = g_autoborder_preview.GetBufferMap();
+		}
+	} else {
+		mapTab->GetSession()->secondary_map = nullptr;
+	}
 }
 
 void GUI::RefreshView() {

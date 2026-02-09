@@ -197,12 +197,8 @@ public:
 	void SwitchMode();
 	void SetSelectionMode();
 	void SetDrawingMode();
-	bool IsSelectionMode() const {
-		return mode == SELECTION_MODE;
-	}
-	bool IsDrawingMode() const {
-		return mode == DRAWING_MODE;
-	}
+	bool IsSelectionMode() const;
+	bool IsDrawingMode() const;
 
 	// Brushes
 	void FillDoodadPreviewBuffer();
@@ -343,13 +339,9 @@ public:
 
 	GraphicManager gfx;
 
-	BaseMap* secondary_map; // A buffer map
-
 	HousePalette* house_palette;
 
 	ToolOptionsWindow* tool_options;
-
-	EditorMode mode;
 
 	bool pasting;
 

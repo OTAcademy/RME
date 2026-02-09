@@ -1,4 +1,5 @@
 #include "rendering/drawers/minimap_renderer.h"
+#include "rendering/core/shared_geometry.h"
 #include "map/map.h"
 #include "map/tile.h"
 #include "rendering/core/minimap_colors.h"
@@ -74,20 +75,15 @@ bool MinimapRenderer::initialize() {
 
 	createPaletteTexture();
 
+	// Initialize Shared Geometry
+	if (!SharedGeometry::Instance().initialize()) {
+		spdlog::error("MinimapRenderer: Failed to initialize SharedGeometry");
+		return false;
+	}
+
 	// Create VAO/VBO for fullscreen quad
 	vao_ = std::make_unique<GLVertexArray>();
-	vbo_ = std::make_unique<GLBuffer>();
 	instance_vbo_ = std::make_unique<GLBuffer>();
-
-	float quad_vertices[] = {
-		// pos      // tex
-		0.0f, 0.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 1.0f, 1.0f,
-		0.0f, 1.0f, 0.0f, 1.0f
-	};
-
-	glNamedBufferStorage(vbo_->GetID(), sizeof(quad_vertices), quad_vertices, 0);
 
 	// Pre-allocate instance buffer
 	instance_vbo_capacity_ = 1024;
@@ -95,11 +91,11 @@ bool MinimapRenderer::initialize() {
 
 	// Setup VAO (DSA)
 	GLuint vao = vao_->GetID();
-	GLuint vbo = vbo_->GetID();
 	GLuint inst_vbo = instance_vbo_->GetID();
 
-	// Binding 0: Quad Data
-	glVertexArrayVertexBuffer(vao, 0, vbo, 0, 4 * sizeof(float));
+	// Binding 0: Quad Data from SharedGeometry
+	glVertexArrayVertexBuffer(vao, 0, SharedGeometry::Instance().getQuadVBO(), 0, 4 * sizeof(float));
+	glVertexArrayElementBuffer(vao, SharedGeometry::Instance().getQuadEBO());
 
 	// Attribute 0: Pos
 	glEnableVertexArrayAttrib(vao, 0);
@@ -343,7 +339,7 @@ void MinimapRenderer::render(const glm::mat4& projection, int x, int y, int w, i
 		shader_->SetInt("uPaletteTexture", 1);
 
 		glBindVertexArray(vao_->GetID());
-		glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, static_cast<GLsizei>(instance_data_.size()));
+		glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, static_cast<GLsizei>(instance_data_.size()));
 		glBindVertexArray(0);
 	}
 }
