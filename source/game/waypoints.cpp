@@ -25,9 +25,7 @@ void Waypoints::addWaypoint(Waypoint* wp) {
 	if (wp->pos != Position()) {
 		Tile* t = map.getTile(wp->pos);
 		if (!t) {
-			std::unique_ptr<Tile> new_tile = map.allocator(map.createTileL(wp->pos));
-			t = new_tile.get();
-			map.setTile(wp->pos, new_tile.release());
+			t = map.createTile(wp->pos.x, wp->pos.y, wp->pos.z);
 		}
 		t->getLocation()->increaseWaypointCount();
 	}

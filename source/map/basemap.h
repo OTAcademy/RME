@@ -116,17 +116,18 @@ public:
 	}
 
 	// Assigns a tile, it might seem pointless to provide position, but it is not, as the passed tile may be nullptr
-	std::unique_ptr<Tile> setTile(int _x, int _y, int _z, Tile* newtile);
-	std::unique_ptr<Tile> setTile(const Position& pos, Tile* newtile) {
-		return setTile(pos.x, pos.y, pos.z, newtile);
+	std::unique_ptr<Tile> setTile(int _x, int _y, int _z, std::unique_ptr<Tile> newtile);
+	std::unique_ptr<Tile> setTile(const Position& pos, std::unique_ptr<Tile> newtile) {
+		return setTile(pos.x, pos.y, pos.z, std::move(newtile));
 	}
-	std::unique_ptr<Tile> setTile(Tile* newtile) {
-		return setTile(newtile->getX(), newtile->getY(), newtile->getZ(), newtile);
+	std::unique_ptr<Tile> setTile(std::unique_ptr<Tile> newtile) {
+		ASSERT(newtile);
+		return setTile(newtile->getX(), newtile->getY(), newtile->getZ(), std::move(newtile));
 	}
 	// Replaces a tile and returns the old one
-	std::unique_ptr<Tile> swapTile(int _x, int _y, int _z, Tile* newtile);
-	std::unique_ptr<Tile> swapTile(const Position& pos, Tile* newtile) {
-		return swapTile(pos.x, pos.y, pos.z, newtile);
+	std::unique_ptr<Tile> swapTile(int _x, int _y, int _z, std::unique_ptr<Tile> newtile);
+	std::unique_ptr<Tile> swapTile(const Position& pos, std::unique_ptr<Tile> newtile) {
+		return swapTile(pos.x, pos.y, pos.z, std::move(newtile));
 	}
 
 	SpatialHashGrid& getGrid() {

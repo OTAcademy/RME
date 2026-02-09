@@ -77,7 +77,7 @@ void AutoborderPreviewManager::CopyMapArea(Editor& editor, const Position& pos) 
 			if (src_tile) {
 				// deeply copies tile and its items to buffer map
 				std::unique_ptr<Tile> new_tile = src_tile->deepCopy(*preview_buffer_map);
-				preview_buffer_map->setTile(new_tile.release());
+				preview_buffer_map->setTile(std::move(new_tile));
 			}
 		}
 	}
@@ -97,10 +97,7 @@ void AutoborderPreviewManager::SimulateBrush(Editor& editor, const Position& pos
 		Tile* tile = preview_buffer_map->getTile(p);
 		if (!tile) {
 			// If tile didn't exist in source, we need to create it in buffer
-			TileLocation* loc = preview_buffer_map->createTileL(p);
-			std::unique_ptr<Tile> new_tile = preview_buffer_map->allocator(loc);
-			tile = new_tile.get();
-			preview_buffer_map->setTile(p, new_tile.release());
+			tile = preview_buffer_map->createTile(p.x, p.y, p.z);
 		}
 
 		if (is_wall) {
@@ -195,7 +192,7 @@ void AutoborderPreviewManager::PruneUnchanged(Editor& editor, const Position& po
 
 			if (equal) {
 				// Remove unmodified tile from buffer to prevent ghosting
-				preview_buffer_map->setTile(x, y, z, nullptr);
+				preview_buffer_map->setTile(x, y, z, std::unique_ptr<Tile>());
 			}
 		}
 	}

@@ -115,23 +115,23 @@ TileLocation* BaseMap::createTileL(const Position& pos) {
 	return createTileL(pos.x, pos.y, pos.z);
 }
 
-std::unique_ptr<Tile> BaseMap::setTile(int x, int y, int z, Tile* newtile) {
+std::unique_ptr<Tile> BaseMap::setTile(int x, int y, int z, std::unique_ptr<Tile> newtile) {
 	ASSERT(!newtile || newtile->getX() == int(x));
 	ASSERT(!newtile || newtile->getY() == int(y));
 	ASSERT(!newtile || newtile->getZ() == int(z));
 
 	MapNode* leaf = grid.getLeafForce(x, y);
-	return leaf->setTile(x, y, z, std::unique_ptr<Tile>(newtile));
+	return leaf->setTile(x, y, z, std::move(newtile));
 }
 
-std::unique_ptr<Tile> BaseMap::swapTile(int x, int y, int z, Tile* newtile) {
+std::unique_ptr<Tile> BaseMap::swapTile(int x, int y, int z, std::unique_ptr<Tile> newtile) {
 	ASSERT(z < MAP_LAYERS);
 	ASSERT(!newtile || newtile->getX() == int(x));
 	ASSERT(!newtile || newtile->getY() == int(y));
 	ASSERT(!newtile || newtile->getZ() == int(z));
 
 	MapNode* leaf = grid.getLeafForce(x, y);
-	return leaf->setTile(x, y, z, std::unique_ptr<Tile>(newtile));
+	return leaf->setTile(x, y, z, std::move(newtile));
 }
 
 // Iterators
