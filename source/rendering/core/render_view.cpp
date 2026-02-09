@@ -89,10 +89,7 @@ bool RenderView::IsRectVisible(int draw_x, int draw_y, int width, int height, in
 }
 
 bool RenderView::IsRectFullyInside(int draw_x, int draw_y, int width, int height) const {
-	if (draw_x >= 0 && draw_x + width <= logical_width && draw_y >= 0 && draw_y + height <= logical_height) {
-		return true;
-	}
-	return false;
+	return (draw_x >= 0 && draw_x + width <= logical_width && draw_y >= 0 && draw_y + height <= logical_height);
 }
 
 void RenderView::getScreenPosition(int map_x, int map_y, int map_z, int& out_x, int& out_y) const {

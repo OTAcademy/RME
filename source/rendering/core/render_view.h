@@ -41,8 +41,8 @@ struct RenderView {
 	void getScreenPosition(int map_x, int map_y, int map_z, int& out_x, int& out_y) const;
 
 	// Cached logical viewport dimensions for optimization
-	float logical_width;
-	float logical_height;
+	float logical_width = 0.0f;
+	float logical_height = 0.0f;
 };
 
 #endif
