@@ -45,7 +45,7 @@ public:
 	using reference = TileLocation&;
 
 	MapIterator(BaseMap* _map = nullptr);
-	~MapIterator();
+	~MapIterator() = default;
 	MapIterator(const MapIterator& other);
 
 	TileLocation& operator*() noexcept;
@@ -78,7 +78,7 @@ private:
 class BaseMap {
 public:
 	BaseMap();
-	virtual ~BaseMap();
+	virtual ~BaseMap() = default;
 
 	// This doesn't destroy the map structure, just clears it, if param is true, delete all tiles too.
 	void clear(bool del = true);
