@@ -11,23 +11,32 @@
 #include "brushes/table/table_brush.h"
 #include "brushes/carpet/carpet_brush.h"
 #include <algorithm>
+#include <functional>
+#include <ranges>
 
 namespace TileOperations {
+
+	namespace {
+
+		template <typename Predicate>
+		void cleanItems(Tile* tile, Predicate p, bool delete_items) {
+			auto& items = tile->items;
+			auto first_to_remove = std::stable_partition(items.begin(), items.end(), std::not_fn(p));
+
+			if (delete_items) {
+				std::ranges::for_each(std::ranges::subrange(first_to_remove, items.end()), [](Item* item_to_delete) { delete item_to_delete; });
+			}
+			items.erase(first_to_remove, items.end());
+		}
+
+	} // anonymous namespace
 
 	void borderize(Tile* tile, BaseMap* map) {
 		GroundBrush::doBorders(map, tile);
 	}
 
 	void cleanBorders(Tile* tile) {
-		auto& items = tile->items;
-		auto first_to_remove = std::stable_partition(items.begin(), items.end(), [](Item* item) {
-			return !item->isBorder();
-		});
-
-		for (auto it = first_to_remove; it != items.end(); ++it) {
-			delete *it;
-		}
-		items.erase(first_to_remove, items.end());
+		cleanItems(tile, [](Item* item) { return item->isBorder(); }, true);
 	}
 
 	void wallize(Tile* tile, BaseMap* map) {
@@ -35,29 +44,11 @@ namespace TileOperations {
 	}
 
 	void cleanWalls(Tile* tile, bool dontdelete) {
-		auto& items = tile->items;
-		auto first_to_remove = std::stable_partition(items.begin(), items.end(), [](Item* item) {
-			return !item->isWall();
-		});
-
-		if (!dontdelete) {
-			for (auto it = first_to_remove; it != items.end(); ++it) {
-				delete *it;
-			}
-		}
-		items.erase(first_to_remove, items.end());
+		cleanItems(tile, [](Item* item) { return item->isWall(); }, !dontdelete);
 	}
 
 	void cleanWalls(Tile* tile, WallBrush* wb) {
-		auto& items = tile->items;
-		auto first_to_remove = std::stable_partition(items.begin(), items.end(), [wb](Item* item) {
-			return !(item->isWall() && wb->hasWall(item));
-		});
-
-		for (auto it = first_to_remove; it != items.end(); ++it) {
-			delete *it;
-		}
-		items.erase(first_to_remove, items.end());
+		cleanItems(tile, [wb](Item* item) { return item->isWall() && wb->hasWall(item); }, true);
 	}
 
 	void tableize(Tile* tile, BaseMap* map) {
@@ -65,17 +56,7 @@ namespace TileOperations {
 	}
 
 	void cleanTables(Tile* tile, bool dontdelete) {
-		auto& items = tile->items;
-		auto first_to_remove = std::stable_partition(items.begin(), items.end(), [](Item* item) {
-			return !item->isTable();
-		});
-
-		if (!dontdelete) {
-			for (auto it = first_to_remove; it != items.end(); ++it) {
-				delete *it;
-			}
-		}
-		items.erase(first_to_remove, items.end());
+		cleanItems(tile, [](Item* item) { return item->isTable(); }, !dontdelete);
 	}
 
 	void carpetize(Tile* tile, BaseMap* map) {
