@@ -40,6 +40,10 @@ void RenderView::Setup(MapCanvas* canvas, const DrawingOptions& options) {
 
 	end_x = start_x + screensize_x / tile_size + 2;
 	end_y = start_y + screensize_y / tile_size + 2;
+
+	// Calculate logical dimensions
+	logical_width = screensize_x * zoom;
+	logical_height = screensize_y * zoom;
 }
 
 int RenderView::getFloorAdjustment() const {
@@ -58,7 +62,8 @@ bool RenderView::IsTileVisible(int map_x, int map_y, int map_z, int& out_x, int&
 	out_y = (map_y * TileSize) - view_scroll_y - offset;
 	const int margin = PAINTERS_ALGORITHM_SAFETY_MARGIN_PIXELS;
 
-	if (out_x < -margin || out_x > screensize_x * zoom + margin || out_y < -margin || out_y > screensize_y * zoom + margin) {
+	// Use cached logical dimensions
+	if (out_x < -margin || out_x > logical_width + margin || out_y < -margin || out_y > logical_height + margin) {
 		return false;
 	}
 	return true;
@@ -68,13 +73,23 @@ bool RenderView::IsPixelVisible(int draw_x, int draw_y, int margin) const {
 	// Logic matches IsTileVisible but uses pre-calculated draw coordinates.
 	// screensize_x * zoom gives the logical viewport size (since TileSize is constant 32).
 	// See SetupGL: glOrtho(0, width * zoom, ...)
-	float logical_width = screensize_x * zoom;
-	float logical_height = screensize_y * zoom;
 
+	// Use cached logical dimensions
 	if (draw_x + TileSize + margin < 0 || draw_x - margin > logical_width || draw_y + TileSize + margin < 0 || draw_y - margin > logical_height) {
 		return false;
 	}
 	return true;
+}
+
+bool RenderView::IsRectVisible(int draw_x, int draw_y, int width, int height, int margin) const {
+	if (draw_x + width + margin < 0 || draw_x - margin > logical_width || draw_y + height + margin < 0 || draw_y - margin > logical_height) {
+		return false;
+	}
+	return true;
+}
+
+bool RenderView::IsRectFullyInside(int draw_x, int draw_y, int width, int height) const {
+	return (draw_x >= 0 && draw_x + width <= logical_width && draw_y >= 0 && draw_y + height <= logical_height);
 }
 
 void RenderView::getScreenPosition(int map_x, int map_y, int map_z, int& out_x, int& out_y) const {

@@ -31,7 +31,7 @@ TileRenderer::TileRenderer(ItemDrawer* id, SpriteDrawer* sd, CreatureDrawer* cd,
 }
 
 // Helper function to populate tooltip data from an item (in-place)
-static bool FillItemTooltipData(TooltipData& data, Item* item, const Position& pos, bool isHouseTile) {
+static bool FillItemTooltipData(TooltipData& data, Item* item, const Position& pos, bool isHouseTile, float zoom) {
 	if (!item) {
 		return false;
 	}
@@ -96,7 +96,7 @@ static bool FillItemTooltipData(TooltipData& data, Item* item, const Position& p
 	data.destination = destination;
 
 	// Populate container items
-	if (g_items[id].isContainer()) {
+	if (g_items[id].isContainer() && zoom <= 1.5f) {
 		if (const Container* container = item->asContainer()) {
 			// Set capacity for rendering empty slots
 			data.containerCapacity = static_cast<uint8_t>(container->getVolume());
@@ -160,10 +160,13 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 		}
 	}
 
-	Waypoint* waypoint = editor->map.waypoints.getWaypoint(location);
+	Waypoint* waypoint = nullptr;
+	if (location->getWaypointCount() > 0) {
+		waypoint = editor->map.waypoints.getWaypoint(location);
+	}
 
 	// Waypoint tooltip (one per waypoint)
-	if (options.show_tooltips && location->getWaypointCount() > 0 && waypoint && map_z == view.floor) {
+	if (options.show_tooltips && waypoint && map_z == view.floor) {
 		tooltip_drawer->addWaypointTooltip(location->getPosition(), waypoint->name);
 	}
 
@@ -186,10 +189,6 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 		}
 	} else {
 		if (tile->ground) {
-			if (options.show_preview && view.zoom <= 2.0) {
-				tile->ground->animate();
-			}
-
 			item_drawer->BlitItem(sprite_batch, primitive_renderer, sprite_drawer, creature_drawer, draw_x, draw_y, tile, tile->ground, options, false, r, g, b);
 		} else if (options.always_show_zones && (r != 255 || g != 255 || b != 255)) {
 			ItemType* zoneItem = &g_items[SPRITE_ZONE];
@@ -200,7 +199,7 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 	// Ground tooltip (one per item)
 	if (options.show_tooltips && map_z == view.floor && tile->ground) {
 		TooltipData& groundData = tooltip_drawer->requestTooltipData();
-		if (FillItemTooltipData(groundData, tile->ground, location->getPosition(), tile->isHouseTile())) {
+		if (FillItemTooltipData(groundData, tile->ground, location->getPosition(), tile->isHouseTile(), view.zoom)) {
 			if (groundData.hasVisibleFields()) {
 				tooltip_drawer->commitTooltip();
 			}
@@ -246,16 +245,11 @@ void TileRenderer::DrawTile(SpriteBatch& sprite_batch, PrimitiveRenderer& primit
 				// item tooltip (one per item)
 				if (options.show_tooltips && map_z == view.floor) {
 					TooltipData& itemData = tooltip_drawer->requestTooltipData();
-					if (FillItemTooltipData(itemData, item, location->getPosition(), tile->isHouseTile())) {
+					if (FillItemTooltipData(itemData, item, location->getPosition(), tile->isHouseTile(), view.zoom)) {
 						if (itemData.hasVisibleFields()) {
 							tooltip_drawer->commitTooltip();
 						}
 					}
-				}
-
-				// item animation
-				if (options.show_preview && view.zoom <= 2.0) {
-					item->animate();
 				}
 
 				// item sprite
