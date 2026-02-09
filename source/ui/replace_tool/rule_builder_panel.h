@@ -14,30 +14,13 @@ class RuleBuilderPanel : public NanoVGCanvas {
 public:
 	class Listener {
 	public:
-		virtual ~Listener() { }
+		virtual ~Listener() = default;
 		virtual void OnRuleChanged() = 0;
 		virtual void OnClearRules() = 0;
 		virtual void OnSaveRule() = 0;
 	};
 
-	RuleBuilderPanel(wxWindow* parent, Listener* listener);
-	virtual ~RuleBuilderPanel();
-
-	void SetRules(const std::vector<ReplacementRule>& rules);
-	std::vector<ReplacementRule> GetRules() const;
-	void Clear();
-
-	// wxControl overrides
-	wxSize DoGetBestClientSize() const override;
-
-protected:
-	void OnNanoVGPaint(NVGcontext* vg, int width, int height) override;
-
-private:
-	void OnMouse(wxMouseEvent& event);
-	void OnSize(wxSizeEvent& event);
-
-	// Hit testing
+	// Hit testing results (Public for renderer access)
 	struct HitResult {
 		enum Type {
 			None,
@@ -54,6 +37,9 @@ private:
 		int ruleIndex = -1;
 		int targetIndex = -1;
 	};
+
+	RuleBuilderPanel(wxWindow* parent, Listener* listener);
+	virtual ~RuleBuilderPanel();
 	HitResult HitTest(int x, int y) const;
 	void DistributeProbabilities(int ruleIndex);
 
@@ -69,27 +55,29 @@ private:
 		RuleBuilderPanel* m_panel;
 	};
 
-	std::vector<ReplacementRule> m_rules;
-	wxSize m_lastSize;
-	Listener* m_listener;
+	void Clear();
+	void SetRules(const std::vector<ReplacementRule>& rules);
+	std::vector<ReplacementRule> GetRules() const;
 
 	// Visual Layout
 	int GetRuleHeight(int index, int width) const;
 	int GetRuleY(int index, int width) const;
 	void LayoutRules();
 
+protected:
+	virtual void OnNanoVGPaint(NVGcontext* vg, int width, int height) override;
+	virtual wxSize DoGetBestClientSize() const override;
+
+	void OnSize(wxSizeEvent& event);
+	void OnMouse(wxMouseEvent& event);
+
+private:
+	std::vector<ReplacementRule> m_rules;
+	wxSize m_lastSize;
+	Listener* m_listener;
+
 	// Drag feedback
 	HitResult m_dragHover;
-
-	// Drawing Helpers
-	void DrawHeader(NVGcontext* vg, float width);
-	void DrawClearButton(NVGcontext* vg, float width);
-	void DrawSaveButton(NVGcontext* vg, float width);
-	void DrawRuleCard(NVGcontext* vg, int ruleIndex, int y, int width);
-	void DrawRuleSource(NVGcontext* vg, int ruleIndex, float x, float y, float h);
-	void DrawRuleArrow(NVGcontext* vg, float x, float y, float h);
-	void DrawRuleTargets(NVGcontext* vg, int ruleIndex, float x, float y, float width, float h);
-	void DrawNewRuleArea(NVGcontext* vg, float width, float y);
 };
 
 #endif

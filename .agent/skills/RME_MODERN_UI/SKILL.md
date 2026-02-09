@@ -348,7 +348,7 @@ class MyComponent : public NanoVGCanvas {
 public:
     class Listener {
     public:
-        virtual ~Listener() {}
+        virtual ~Listener() = default;
         virtual void OnActionTriggered(uint16_t id) = 0;
         virtual void OnSelectionChanged() = 0;
     };
