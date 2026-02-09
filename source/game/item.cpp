@@ -74,8 +74,7 @@ Item* Item::Create(uint16_t _type, uint16_t _subtype /*= 0xFFFF*/) {
 Item::Item(unsigned short _type, unsigned short _count) :
 	id(_type),
 	subtype(1),
-	selected(false),
-	frame(0) {
+	selected(false) {
 	if (hasSubtype()) {
 		subtype = _count;
 	}
@@ -417,16 +416,6 @@ BorderType Item::getWallAlignment() const {
 BorderType Item::getBorderAlignment() const {
 	ItemType& it = g_items[id];
 	return it.border_alignment;
-}
-
-void Item::animate() {
-	ItemType& type = g_items[id];
-	GameSprite* sprite = type.sprite;
-	if (!sprite || !sprite->animator) {
-		return;
-	}
-
-	frame = sprite->animator->getFrame();
 }
 
 // ============================================================================

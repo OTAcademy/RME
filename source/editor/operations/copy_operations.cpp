@@ -6,6 +6,7 @@
 #include "editor/operations/copy_operations.h"
 #include "editor/copybuffer.h"
 #include "editor/editor.h"
+#include "map/tile_operations.h"
 #include "ui/gui.h"
 #include "game/creature.h"
 #include "game/spawn.h"
@@ -32,8 +33,7 @@ void CopyOperations::copy(Editor& editor, CopyBuffer& buffer, int floor) {
 	for (Tile* tile : editor.selection) {
 		++tile_count;
 
-		TileLocation* newlocation = buffer.tiles->createTileL(tile->getPosition());
-		Tile* copied_tile = buffer.tiles->allocator(newlocation);
+		Tile* copied_tile = buffer.tiles->createTile(tile->getX(), tile->getY(), tile->getZ());
 
 		if (tile->ground && tile->ground->isSelected()) {
 			copied_tile->house_id = tile->house_id;
@@ -54,8 +54,6 @@ void CopyOperations::copy(Editor& editor, CopyBuffer& buffer, int floor) {
 		if (tile->spawn && tile->spawn->isSelected()) {
 			copied_tile->spawn.reset(tile->spawn->deepCopy());
 		}
-
-		buffer.tiles->setTile(copied_tile);
 
 		if (copied_tile->getX() < buffer.copyPos.x) {
 			buffer.copyPos.x = copied_tile->getX();
@@ -93,7 +91,7 @@ void CopyOperations::cut(Editor& editor, CopyBuffer& buffer, int floor) {
 		tile_count++;
 
 		std::unique_ptr<Tile> newtile = tile->deepCopy(editor.map);
-		Tile* copied_tile = buffer.tiles->allocator(tile->getLocation());
+		Tile* copied_tile = buffer.tiles->createTile(tile->getX(), tile->getY(), tile->getZ());
 
 		if (tile->ground && tile->ground->isSelected()) {
 			copied_tile->house_id = newtile->house_id;
@@ -117,8 +115,6 @@ void CopyOperations::cut(Editor& editor, CopyBuffer& buffer, int floor) {
 		if (newtile->spawn && newtile->spawn->isSelected()) {
 			copied_tile->spawn = std::move(newtile->spawn);
 		}
-
-		buffer.tiles->setTile(copied_tile->getPosition(), copied_tile);
 
 		if (copied_tile->getX() < buffer.copyPos.x) {
 			buffer.copyPos.x = copied_tile->getX();
@@ -150,12 +146,12 @@ void CopyOperations::cut(Editor& editor, CopyBuffer& buffer, int floor) {
 			TileLocation* location = editor.map.createTileL(pos);
 			if (location->get()) {
 				std::unique_ptr<Tile> new_tile = location->get()->deepCopy(editor.map);
-				new_tile->borderize(&editor.map);
-				new_tile->wallize(&editor.map);
+				TileOperations::borderize(new_tile.get(), &editor.map);
+				TileOperations::wallize(new_tile.get(), &editor.map);
 				action->addChange(std::make_unique<Change>(new_tile.release()));
 			} else {
 				std::unique_ptr<Tile> new_tile(editor.map.allocator(location));
-				new_tile->borderize(&editor.map);
+				TileOperations::borderize(new_tile.get(), &editor.map);
 				if (new_tile->size()) {
 					action->addChange(std::make_unique<Change>(new_tile.release()));
 				}
@@ -196,7 +192,7 @@ void CopyOperations::paste(Editor& editor, CopyBuffer& buffer, const Position& t
 			if (old_dest_tile) {
 				new_dest_tile = old_dest_tile->deepCopy(editor.map).release();
 			} else {
-				new_dest_tile = editor.map.allocator(dest_location);
+				new_dest_tile = editor.map.allocator(dest_location).release();
 			}
 			// copy_tile may be partially moved-from after the merge call
 			new_dest_tile->merge(copy_tile.get());
@@ -284,13 +280,13 @@ void CopyOperations::paste(Editor& editor, CopyBuffer& buffer, const Position& t
 		for (Tile* tile : borderize_tiles) {
 			if (tile) {
 				std::unique_ptr<Tile> newTile = tile->deepCopy(editor.map);
-				newTile->borderize(&map);
+				TileOperations::borderize(newTile.get(), &map);
 
 				if (tile->ground && tile->ground->isSelected()) {
 					newTile->selectGround();
 				}
 
-				newTile->wallize(&map);
+				TileOperations::wallize(newTile.get(), &map);
 				action->addChange(std::make_unique<Change>(newTile.release()));
 			}
 		}

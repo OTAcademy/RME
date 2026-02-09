@@ -11,6 +11,7 @@
 #include "ui/gui.h"
 #include "game/items.h"
 #include "map/basemap.h"
+#include "map/tile_operations.h"
 
 uint32_t WallBrush::full_border_types[16];
 uint32_t WallBrush::half_border_types[16];
@@ -29,7 +30,7 @@ bool WallBrush::load(pugi::xml_node node, std::vector<std::string>& warnings) {
 }
 
 void WallBrush::undraw(BaseMap* map, Tile* tile) {
-	tile->cleanWalls(this);
+	TileOperations::cleanWalls(tile, this);
 }
 
 void WallBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
@@ -77,7 +78,7 @@ void WallBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 		}
 	}
 
-	tile->cleanWalls(this);
+	TileOperations::cleanWalls(tile, this);
 
 	// Just find a valid item and place it, the bordering algorithm will change it to the proper shape.
 	uint16_t id = 0;
@@ -152,7 +153,7 @@ void WallDecorationBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 
 	bool prefLocked = g_gui.HasDoorLocked();
 
-	tile->cleanWalls(this);
+	TileOperations::cleanWalls(tile, this);
 	while (iter != tile->items.end()) {
 		Item* item = *iter;
 		if (item->isBorder()) {
