@@ -27,6 +27,7 @@
 #include <unordered_map>
 #include <memory>
 #include <iterator>
+#include <ranges>
 
 // Class declarations
 class SpatialHashGrid;
@@ -84,6 +85,9 @@ public:
 	void clear(bool del = true);
 	MapIterator begin();
 	MapIterator end();
+	auto tiles() {
+		return std::ranges::subrange(begin(), end());
+	}
 	uint64_t size() const {
 		return tilecount;
 	}
@@ -116,17 +120,21 @@ public:
 	}
 
 	// Assigns a tile, it might seem pointless to provide position, but it is not, as the passed tile may be nullptr
-	void setTile(int _x, int _y, int _z, Tile* newtile, bool remove = false);
-	void setTile(const Position& pos, Tile* newtile, bool remove = false) {
-		setTile(pos.x, pos.y, pos.z, newtile, remove);
+	[[nodiscard]] std::unique_ptr<Tile> setTile(int _x, int _y, int _z, std::unique_ptr<Tile> newtile);
+	[[nodiscard]] std::unique_ptr<Tile> setTile(const Position& pos, std::unique_ptr<Tile> newtile) {
+		return setTile(pos.x, pos.y, pos.z, std::move(newtile));
 	}
-	void setTile(Tile* newtile, bool remove = false) {
-		setTile(newtile->getX(), newtile->getY(), newtile->getZ(), newtile, remove);
+	[[nodiscard]] std::unique_ptr<Tile> setTile(std::unique_ptr<Tile> newtile) {
+		ASSERT(newtile);
+		int x = newtile->getX();
+		int y = newtile->getY();
+		int z = newtile->getZ();
+		return setTile(x, y, z, std::move(newtile));
 	}
 	// Replaces a tile and returns the old one
-	std::unique_ptr<Tile> swapTile(int _x, int _y, int _z, Tile* newtile);
-	std::unique_ptr<Tile> swapTile(const Position& pos, Tile* newtile) {
-		return swapTile(pos.x, pos.y, pos.z, newtile);
+	[[nodiscard]] std::unique_ptr<Tile> swapTile(int _x, int _y, int _z, std::unique_ptr<Tile> newtile);
+	[[nodiscard]] std::unique_ptr<Tile> swapTile(const Position& pos, std::unique_ptr<Tile> newtile) {
+		return swapTile(pos.x, pos.y, pos.z, std::move(newtile));
 	}
 
 	SpatialHashGrid& getGrid() {

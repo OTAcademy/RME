@@ -8,6 +8,7 @@
 #include "brushes/managers/brush_manager.h"
 #include "map/map.h"
 #include "map/tile.h"
+#include "map/tile_operations.h"
 #include "ui/gui.h"
 #include "app/settings.h"
 #include "brushes/brush_utility.h"
@@ -76,8 +77,9 @@ void AutoborderPreviewManager::CopyMapArea(Editor& editor, const Position& pos) 
 			Tile* src_tile = editor.map.getTile(x, y, z);
 			if (src_tile) {
 				// deeply copies tile and its items to buffer map
+				// deepCopy now correctly uses the destination map's TileLocation
 				std::unique_ptr<Tile> new_tile = src_tile->deepCopy(*preview_buffer_map);
-				preview_buffer_map->setTile(new_tile.release());
+				preview_buffer_map->setTile(std::move(new_tile));
 			}
 		}
 	}
@@ -97,14 +99,16 @@ void AutoborderPreviewManager::SimulateBrush(Editor& editor, const Position& pos
 		Tile* tile = preview_buffer_map->getTile(p);
 		if (!tile) {
 			// If tile didn't exist in source, we need to create it in buffer
-			TileLocation* loc = preview_buffer_map->createTileL(p);
-			tile = preview_buffer_map->allocator(loc);
+			tile = preview_buffer_map->createTile(p.x, p.y, p.z);
 		}
+		
+		// Safety check: tile should always have a valid location
+		ASSERT(tile->getLocation() != nullptr);
 
 		if (is_wall) {
-			tile->cleanWalls(false);
+			TileOperations::cleanWalls(tile, false);
 		} else if (is_ground) {
-			tile->cleanBorders();
+			TileOperations::cleanBorders(tile);
 		}
 
 		// Draw the brush
@@ -137,20 +141,23 @@ void AutoborderPreviewManager::ApplyBorders(const std::vector<Position>& tilesto
 	auto process_tile = [&](const Position& p) {
 		Tile* tile = preview_buffer_map->getTile(p);
 		if (tile) {
+			// Safety check: tile should always have a valid location
+			ASSERT(tile->getLocation() != nullptr);
+			
 			if (is_eraser) {
-				tile->wallize(preview_buffer_map.get());
-				tile->tableize(preview_buffer_map.get());
-				tile->carpetize(preview_buffer_map.get());
-				tile->borderize(preview_buffer_map.get());
+				TileOperations::wallize(tile, preview_buffer_map.get());
+				TileOperations::tableize(tile, preview_buffer_map.get());
+				TileOperations::carpetize(tile, preview_buffer_map.get());
+				TileOperations::borderize(tile, preview_buffer_map.get());
 			} else if (is_wall) {
-				tile->wallize(preview_buffer_map.get());
+				TileOperations::wallize(tile, preview_buffer_map.get());
 			} else if (is_table) {
-				tile->tableize(preview_buffer_map.get());
+				TileOperations::tableize(tile, preview_buffer_map.get());
 			} else if (is_carpet) {
-				tile->carpetize(preview_buffer_map.get());
+				TileOperations::carpetize(tile, preview_buffer_map.get());
 			} else {
 				// Default/Ground
-				tile->borderize(preview_buffer_map.get());
+				TileOperations::borderize(tile, preview_buffer_map.get());
 			}
 		}
 	};
@@ -193,7 +200,7 @@ void AutoborderPreviewManager::PruneUnchanged(Editor& editor, const Position& po
 
 			if (equal) {
 				// Remove unmodified tile from buffer to prevent ghosting
-				preview_buffer_map->setTile(x, y, z, nullptr, true);
+				preview_buffer_map->setTile(x, y, z, std::unique_ptr<Tile>());
 			}
 		}
 	}
