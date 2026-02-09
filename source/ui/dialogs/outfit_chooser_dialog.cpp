@@ -18,6 +18,7 @@
 #include <wx/stdpaths.h>
 #include <wx/menu.h>
 #include <algorithm>
+#include <unordered_map>
 
 #include "game/creatures.h"
 #include "rendering/drawers/entities/creature_drawer.h"
@@ -107,7 +108,7 @@ OutfitChooserDialog::OutfitChooserDialog(wxWindow* parent, const Outfit& current
 	favorites = g_preview_preferences.getFavorites();
 
 	// Resolve names from g_creatures
-	std::map<int, wxString> looktype_to_name;
+	std::unordered_map<int, wxString> looktype_to_name;
 	for (const auto& [name, ct] : g_creatures) {
 		if (ct && ct->outfit.lookType != 0) {
 			if (looktype_to_name.find(ct->outfit.lookType) == looktype_to_name.end()) {

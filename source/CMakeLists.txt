@@ -114,6 +114,7 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/map/position.h
     ${CMAKE_CURRENT_LIST_DIR}/map/spatial_hash_grid.h
     ${CMAKE_CURRENT_LIST_DIR}/map/tile.h
+    ${CMAKE_CURRENT_LIST_DIR}/map/tile_operations.h
     ${CMAKE_CURRENT_LIST_DIR}/map/tileset.h
     ${CMAKE_CURRENT_LIST_DIR}/net/net_connection.h
     ${CMAKE_CURRENT_LIST_DIR}/net/process_com.h
@@ -428,6 +429,7 @@ set(rme_SRC
     ${CMAKE_CURRENT_LIST_DIR}/map/map_statistics.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/otml.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/tile.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/map/tile_operations.cpp
     ${CMAKE_CURRENT_LIST_DIR}/map/tileset.cpp
     ${CMAKE_CURRENT_LIST_DIR}/mkpch.cpp
     ${CMAKE_CURRENT_LIST_DIR}/net/net_connection.cpp

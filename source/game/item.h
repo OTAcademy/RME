@@ -77,6 +77,13 @@ IMPLEMENT_INCREMENT_OP(SplashType)
 
 class Item : public ItemAttributes {
 public:
+	// Attribute keys
+	inline static const std::string ATTR_UID = "uid";
+	inline static const std::string ATTR_AID = "aid";
+	inline static const std::string ATTR_TEXT = "text";
+	inline static const std::string ATTR_DESC = "desc";
+	inline static const std::string ATTR_TIER = "tier";
+
 	// Factory member to create item of right type based on type
 	static Item* Create(uint16_t _type, uint16_t _subtype = 0xFFFF);
 	static Item* Create(pugi::xml_node);
@@ -418,17 +425,11 @@ public:
 	void setDescription(const std::string& str);
 	std::string_view getDescription() const;
 
-	void animate();
-	int getFrame() const {
-		return frame;
-	}
-
 protected:
 	uint16_t id; // the same id as in ItemType
 	// Subtype is either fluid type, count, subtype or charges
 	uint16_t subtype;
 	bool selected;
-	int frame;
 
 private:
 	Item& operator=(const Item& i); // Can't copy
@@ -449,7 +450,7 @@ inline int Item::getCount() const {
 }
 
 inline uint16_t Item::getUniqueID() const {
-	const int32_t* a = getIntegerAttribute("uid");
+	const int32_t* a = getIntegerAttribute(ATTR_UID);
 	if (a) {
 		return *a;
 	}
@@ -457,7 +458,7 @@ inline uint16_t Item::getUniqueID() const {
 }
 
 inline uint16_t Item::getActionID() const {
-	const int32_t* a = getIntegerAttribute("aid");
+	const int32_t* a = getIntegerAttribute(ATTR_AID);
 	if (a) {
 		return *a;
 	}
@@ -465,7 +466,7 @@ inline uint16_t Item::getActionID() const {
 }
 
 inline uint16_t Item::getTier() const {
-	const int32_t* a = getIntegerAttribute("tier");
+	const int32_t* a = getIntegerAttribute(ATTR_TIER);
 	if (a) {
 		return *a;
 	}
@@ -473,7 +474,7 @@ inline uint16_t Item::getTier() const {
 }
 
 inline std::string_view Item::getText() const {
-	const std::string* a = getStringAttribute("text");
+	const std::string* a = getStringAttribute(ATTR_TEXT);
 	if (a) {
 		return *a;
 	}
@@ -481,7 +482,7 @@ inline std::string_view Item::getText() const {
 }
 
 inline std::string_view Item::getDescription() const {
-	const std::string* a = getStringAttribute("desc");
+	const std::string* a = getStringAttribute(ATTR_DESC);
 	if (a) {
 		return *a;
 	}

@@ -25,7 +25,7 @@ void Waypoints::addWaypoint(Waypoint* wp) {
 	if (wp->pos != Position()) {
 		Tile* t = map.getTile(wp->pos);
 		if (!t) {
-			map.setTile(wp->pos, t = map.allocator(map.createTileL(wp->pos)));
+			t = map.createTile(wp->pos.x, wp->pos.y, wp->pos.z);
 		}
 		t->getLocation()->increaseWaypointCount();
 	}
