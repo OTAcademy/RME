@@ -33,7 +33,7 @@ FindDialog::FindDialog(wxWindow* parent, wxString title) :
 	sizer->Add(search_field, 0, wxEXPAND);
 
 	item_list = newd FindDialogListBox(this, JUMP_DIALOG_LIST);
-	item_list->SetMinSize(wxSize(470, 400));
+	item_list->SetMinSize(FromDIP(wxSize(470, 400)));
 	item_list->SetToolTip("Double click to select.");
 	sizer->Add(item_list, wxSizerFlags(1).Expand().Border());
 
@@ -332,9 +332,9 @@ Brush* FindDialogListBox::GetSelectedBrush() {
 
 void FindDialogListBox::OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const {
 	if (no_matches) {
-		dc.DrawText("No matches for your search.", rect.GetX() + 40, rect.GetY() + 6);
+		dc.DrawText("No matches for your search.", rect.GetX() + FromDIP(40), rect.GetY() + FromDIP(6));
 	} else if (cleared) {
-		dc.DrawText("Please enter your search string.", rect.GetX() + 40, rect.GetY() + 6);
+		dc.DrawText("Please enter your search string.", rect.GetX() + FromDIP(40), rect.GetY() + FromDIP(6));
 	} else {
 		ASSERT(n < brushlist.size());
 		Sprite* spr = g_gui.gfx.getSprite(brushlist[n]->getLookID());
@@ -352,10 +352,10 @@ void FindDialogListBox::OnDrawItem(wxDC& dc, const wxRect& rect, size_t n) const
 			dc.SetTextForeground(wxColor(0x00, 0x00, 0x00));
 		}
 
-		dc.DrawText(wxstr(brushlist[n]->getName()), rect.GetX() + 40, rect.GetY() + 6);
+		dc.DrawText(wxstr(brushlist[n]->getName()), rect.GetX() + FromDIP(40), rect.GetY() + FromDIP(6));
 	}
 }
 
 wxCoord FindDialogListBox::OnMeasureItem(size_t n) const {
-	return 32;
+	return FromDIP(32);
 }
