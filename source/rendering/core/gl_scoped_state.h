@@ -2,6 +2,7 @@
 #define RME_RENDERING_CORE_GL_SCOPED_STATE_H_
 
 #include <glad/glad.h>
+#include <cassert>
 
 /**
  * @brief RAII wrapper for glEnable/glDisable
@@ -90,12 +91,12 @@ class ScopedGLFramebuffer {
 public:
 	[[nodiscard]] explicit ScopedGLFramebuffer(GLenum target, GLuint framebuffer) :
 		target_(target) {
-		if (target_ == GL_FRAMEBUFFER) {
+		assert(target_ == GL_FRAMEBUFFER || target_ == GL_READ_FRAMEBUFFER || target_ == GL_DRAW_FRAMEBUFFER);
+
+		if (target_ == GL_FRAMEBUFFER || target_ == GL_READ_FRAMEBUFFER) {
 			glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &prev_read_);
-			glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &prev_draw_);
-		} else if (target_ == GL_READ_FRAMEBUFFER) {
-			glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &prev_read_);
-		} else if (target_ == GL_DRAW_FRAMEBUFFER) {
+		}
+		if (target_ == GL_FRAMEBUFFER || target_ == GL_DRAW_FRAMEBUFFER) {
 			glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &prev_draw_);
 		}
 
@@ -103,12 +104,10 @@ public:
 	}
 
 	~ScopedGLFramebuffer() {
-		if (target_ == GL_FRAMEBUFFER) {
+		if (target_ == GL_FRAMEBUFFER || target_ == GL_READ_FRAMEBUFFER) {
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, prev_read_);
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prev_draw_);
-		} else if (target_ == GL_READ_FRAMEBUFFER) {
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, prev_read_);
-		} else if (target_ == GL_DRAW_FRAMEBUFFER) {
+		}
+		if (target_ == GL_FRAMEBUFFER || target_ == GL_DRAW_FRAMEBUFFER) {
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prev_draw_);
 		}
 	}
