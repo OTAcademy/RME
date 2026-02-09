@@ -70,10 +70,10 @@ static const int SECTION_GAP = 20;       // Gap between major sections
 For multi-column layouts (like Replace Tool):
 ```cpp
 // Example: 4-column layout with flex weights
-mainRowSizer->Add(col1Card, 3, wxEXPAND); // Item Library: 3 units
-mainRowSizer->Add(col2Card, 4, wxEXPAND); // Rule Builder: 4 units (largest)
-mainRowSizer->Add(col3Card, 3, wxEXPAND); // Smart Suggestions: 3 units
-mainRowSizer->Add(col4Card, 2, wxEXPAND); // Saved Rules: 2 units (smallest)
+mainRowSizer->Add(col1Card, wxSizerFlags(3).Expand()); // Item Library: 3 units
+mainRowSizer->Add(col2Card, wxSizerFlags(4).Expand()); // Rule Builder: 4 units (largest)
+mainRowSizer->Add(col3Card, wxSizerFlags(3).Expand()); // Smart Suggestions: 3 units
+mainRowSizer->Add(col4Card, wxSizerFlags(2).Expand()); // Saved Rules: 2 units (smallest)
 ```
 
 ## 4. wxWidgets Patterns

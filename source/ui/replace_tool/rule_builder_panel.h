@@ -77,6 +77,15 @@ private:
 
 	// Drag feedback
 	HitResult m_dragHover;
+
+	// Drawing Helpers
+	void DrawHeader(NVGcontext* vg, float width);
+	void DrawClearButton(NVGcontext* vg, float width);
+	void DrawRuleCard(NVGcontext* vg, int ruleIndex, int y, int width);
+	void DrawRuleSource(NVGcontext* vg, int ruleIndex, float x, float y, float h);
+	void DrawRuleArrow(NVGcontext* vg, float x, float y, float h);
+	void DrawRuleTargets(NVGcontext* vg, int ruleIndex, float x, float y, float width, float h);
+	void DrawNewRuleArea(NVGcontext* vg, float width, float y);
 };
 
 #endif

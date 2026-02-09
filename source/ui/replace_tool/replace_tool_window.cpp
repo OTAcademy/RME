@@ -60,8 +60,8 @@ void ReplaceToolWindow::InitLayout() {
 	col1Card->SetTitle("ITEM LIBRARY");
 
 	libraryPanel = new LibraryPanel(col1Card, this);
-	col1Card->GetContentSizer()->Add(libraryPanel, 1, wxEXPAND | wxALL, padding / 2);
-	mainRowSizer->Add(col1Card, 3, wxEXPAND | wxLEFT | wxRIGHT, padding / 2); // Flex 3
+	col1Card->GetContentSizer()->Add(libraryPanel, wxSizerFlags(1).Expand().Border(wxALL, padding / 2));
+	mainRowSizer->Add(col1Card, wxSizerFlags(3).Expand().Border(wxLEFT | wxRIGHT, padding / 2)); // Flex 3
 
 	// ---------------------------------------------------------
 	// COLUMN 2: Rule Builder
@@ -70,7 +70,7 @@ void ReplaceToolWindow::InitLayout() {
 	col2Card->SetTitle("RULE BUILDER");
 
 	ruleBuilder = new RuleBuilderPanel(col2Card, this);
-	col2Card->GetContentSizer()->Add(ruleBuilder, 1, wxEXPAND | wxALL, padding);
+	col2Card->GetContentSizer()->Add(ruleBuilder, wxSizerFlags(1).Expand().Border(wxALL, padding));
 	col2Card->SetShowFooter(true);
 
 	// Rule Builder Footer Buttons
@@ -82,15 +82,15 @@ void ReplaceToolWindow::InitLayout() {
 	m_executeBtn->SetForegroundColour(*wxWHITE);
 
 	ruleFooterSizer->AddStretchSpacer(1);
-	ruleFooterSizer->Add(m_saveBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, padding / 2);
-	ruleFooterSizer->Add(m_executeBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, padding / 2);
+	ruleFooterSizer->Add(m_saveBtn, wxSizerFlags(0).Border(wxALL | wxALIGN_CENTER_VERTICAL, padding / 2));
+	ruleFooterSizer->Add(m_executeBtn, wxSizerFlags(0).Border(wxALL | wxALIGN_CENTER_VERTICAL, padding / 2));
 	ruleFooterSizer->AddStretchSpacer(1);
-	col2Card->GetFooterSizer()->Add(ruleFooterSizer, 1, wxEXPAND);
+	col2Card->GetFooterSizer()->Add(ruleFooterSizer, wxSizerFlags(1).Expand());
 
 	m_saveBtn->Bind(wxEVT_BUTTON, &ReplaceToolWindow::OnSaveRule, this);
 	m_executeBtn->Bind(wxEVT_BUTTON, &ReplaceToolWindow::OnExecute, this);
 
-	mainRowSizer->Add(col2Card, 4, wxEXPAND | wxLEFT | wxRIGHT, padding / 2); // Flex 4
+	mainRowSizer->Add(col2Card, wxSizerFlags(4).Expand().Border(wxLEFT | wxRIGHT, padding / 2)); // Flex 4
 
 	// ---------------------------------------------------------
 	// COLUMN 3: Similarity Engine
@@ -100,8 +100,8 @@ void ReplaceToolWindow::InitLayout() {
 
 	similarItemsGrid = new ItemGridPanel(col3Card, this);
 	similarItemsGrid->SetDraggable(true);
-	col3Card->GetContentSizer()->Add(similarItemsGrid, 1, wxEXPAND | wxALL, padding);
-	mainRowSizer->Add(col3Card, 3, wxEXPAND | wxLEFT | wxRIGHT, padding / 2); // Flex 3
+	col3Card->GetContentSizer()->Add(similarItemsGrid, wxSizerFlags(1).Expand().Border(wxALL, padding));
+	mainRowSizer->Add(col3Card, wxSizerFlags(3).Expand().Border(wxLEFT | wxRIGHT, padding / 2)); // Flex 3
 
 	// ---------------------------------------------------------
 	// COLUMN 4: Saved Rules
@@ -111,7 +111,7 @@ void ReplaceToolWindow::InitLayout() {
 	col4Card->SetShowFooter(true);
 
 	savedRulesList = new RuleListControl(col4Card, this);
-	col4Card->GetContentSizer()->Add(savedRulesList, 1, wxEXPAND | wxALL, padding);
+	col4Card->GetContentSizer()->Add(savedRulesList, wxSizerFlags(1).Expand().Border(wxALL, padding));
 
 	// Saved Rules Footer Buttons
 	wxBoxSizer* savedFooterSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -120,11 +120,11 @@ void ReplaceToolWindow::InitLayout() {
 	m_deleteRuleBtn = new wxButton(col4Card, wxID_ANY, "Del", wxDefaultPosition, FromDIP(wxSize(60, -1)));
 
 	savedFooterSizer->AddStretchSpacer(1);
-	savedFooterSizer->Add(m_addRuleBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
-	savedFooterSizer->Add(m_editRuleBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
-	savedFooterSizer->Add(m_deleteRuleBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+	savedFooterSizer->Add(m_addRuleBtn, wxSizerFlags(0).Border(wxALL | wxALIGN_CENTER_VERTICAL, 2));
+	savedFooterSizer->Add(m_editRuleBtn, wxSizerFlags(0).Border(wxALL | wxALIGN_CENTER_VERTICAL, 2));
+	savedFooterSizer->Add(m_deleteRuleBtn, wxSizerFlags(0).Border(wxALL | wxALIGN_CENTER_VERTICAL, 2));
 	savedFooterSizer->AddStretchSpacer(1);
-	col4Card->GetFooterSizer()->Add(savedFooterSizer, 1, wxEXPAND);
+	col4Card->GetFooterSizer()->Add(savedFooterSizer, wxSizerFlags(1).Expand());
 
 	m_addRuleBtn->Bind(wxEVT_BUTTON, [this](wxCommandEvent&) {
 		std::vector<ReplacementRule> rules = ruleBuilder->GetRules();
@@ -162,10 +162,10 @@ void ReplaceToolWindow::InitLayout() {
 		}
 	});
 
-	mainRowSizer->Add(col4Card, 2, wxEXPAND | wxLEFT | wxRIGHT, padding / 2); // Flex 2
+	mainRowSizer->Add(col4Card, wxSizerFlags(2).Expand().Border(wxLEFT | wxRIGHT, padding / 2)); // Flex 2
 
 	// Add Main Row to Root
-	rootSizer->Add(mainRowSizer, 1, wxEXPAND | wxALL, padding / 2);
+	rootSizer->Add(mainRowSizer, wxSizerFlags(1).Expand().Border(wxALL, padding / 2));
 
 	SetSizer(rootSizer);
 	Layout();

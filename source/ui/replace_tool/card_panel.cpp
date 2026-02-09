@@ -60,11 +60,11 @@ void CardPanel::OnPaint(wxPaintEvent& event) {
 	// Determine Colors
 	// Outer background (simulated shadow/border)
 	wxColour base = Theme::Get(Theme::Role::Surface);
-	wxColour cardBgStart = wxColour(45, 45, 52); // Slightly bluish dark
-	wxColour cardBgEnd = wxColour(40, 40, 48);
-	wxColour borderColor = wxColour(60, 60, 70);
-	wxColour headerBg = wxColour(35, 35, 40);
-	wxColour titleColor = wxColour(220, 220, 230);
+	wxColour cardBgStart = Theme::Get(Theme::Role::Surface);
+	wxColour cardBgEnd = Theme::Get(Theme::Role::Background);
+	wxColour borderColor = Theme::Get(Theme::Role::Border);
+	wxColour headerBg = Theme::Get(Theme::Role::Header);
+	wxColour titleColor = Theme::Get(Theme::Role::Text);
 
 	// Clear
 	gc->SetBrush(wxBrush(base));

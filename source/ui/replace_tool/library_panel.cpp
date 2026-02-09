@@ -1,4 +1,5 @@
 #include "app/main.h"
+#include <wx/log.h>
 #include "ui/replace_tool/library_panel.h"
 #include "ui/replace_tool/visual_similarity_service.h"
 #include "ui/theme.h"
@@ -192,7 +193,11 @@ void LibraryPanel::PopulateRelatedItems(uint16_t brushLookId) {
 
 	try {
 		brush->getRelatedItems(related);
-	} catch (...) { }
+	} catch (const std::exception& e) {
+		wxLogError("Error getting related items for brush %d: %s", brushLookId, e.what());
+	} catch (...) {
+		wxLogError("Unknown error getting related items for brush %d", brushLookId);
+	}
 
 	if (brushLookId != 0) {
 		related.push_back(brushLookId);

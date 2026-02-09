@@ -13,7 +13,6 @@
 // Doodadbrush, add doodads!
 
 class DoodadBrush : public Brush {
-	friend class LibraryPanel;
 
 public:
 	DoodadBrush();

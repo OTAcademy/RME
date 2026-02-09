@@ -9,7 +9,7 @@ class ItemGridPanel : public VirtualItemGrid {
 public:
 	class Listener {
 	public:
-		virtual ~Listener() { }
+		virtual ~Listener() = default;
 		virtual void OnItemSelected(ItemGridPanel* source, uint16_t itemId) = 0;
 	};
 

@@ -368,11 +368,9 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 // Methods removed, using RuleCardRenderer instead
 
 void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
-	int rowHeight = FromDIP(ITEM_H);
 	int scrollPos = GetScrollPosition();
 
 	wxColour bgCol = Theme::Get(Theme::Role::Surface);
-	NVGcolor nvgBg = nvgRGBA(bgCol.Red(), bgCol.Green(), bgCol.Blue(), 255);
 
 	// Clear BG
 	nvgBeginPath(vg);
@@ -382,14 +380,28 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 
 	// Draw Fixed Headers (Not scrolled)
 	nvgSave(vg);
+	DrawHeader(vg, width);
+	DrawClearButton(vg, width);
+	nvgRestore(vg);
 
-	NVGcolor textCol = nvgRGBA(255, 255, 255, 255);
+	// Draw Content (Scrolled)
+	nvgSave(vg);
+	nvgTranslate(vg, 0, -scrollPos);
+
+	for (size_t i = 0; i < m_rules.size(); ++i) {
+		int ruleY = GetRuleY(i, width);
+		DrawRuleCard(vg, i, ruleY, width);
+	}
+
+	int newRuleY = GetRuleY(m_rules.size(), width) + CARD_MARGIN_Y;
+	DrawNewRuleArea(vg, width, newRuleY);
+
+	nvgRestore(vg);
+}
+
+void RuleBuilderPanel::DrawHeader(NVGcontext* vg, float width) {
 	NVGcolor subTextCol = nvgRGBA(150, 150, 150, 255);
-	NVGcolor accentCol = nvgRGBA(Theme::Get(Theme::Role::Accent).Red(), Theme::Get(Theme::Role::Accent).Green(), Theme::Get(Theme::Role::Accent).Blue(), 255);
 
-	const float ITEM_HEIGHT = FromDIP(ITEM_H); // Height of item card
-
-	// Draw Fixed Headers
 	nvgFontSize(vg, 10.0f);
 	nvgFillColor(vg, subTextCol);
 	nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
@@ -402,9 +414,10 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 	nvgText(vg, targetLabelX, headerY, "REPLACE WITH", nullptr);
 
 	nvgStrokeWidth(vg, 1.0f);
-	nvgStroke(vg);
+	nvgStroke(vg); // Is this needed?
+}
 
-	// Draw Clear Rules Button
+void RuleBuilderPanel::DrawClearButton(NVGcontext* vg, float width) {
 	const int CLEAR_BTN_W = FromDIP(100);
 	const int CLEAR_BTN_H = FromDIP(24);
 	float cbX = width - CLEAR_BTN_W - 10;
@@ -425,148 +438,149 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 	nvgFontSize(vg, 11.0f);
 	nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
 	nvgText(vg, cbX + CLEAR_BTN_W / 2.0f, cbY + CLEAR_BTN_H / 2.0f, "CLEAR RULES", nullptr);
+}
 
-	nvgRestore(vg);
+void RuleBuilderPanel::DrawRuleCard(NVGcontext* vg, int ruleIndex, int y, int width) {
+	int ruleH = GetRuleHeight(ruleIndex, width);
+	// Card BG
+	nvgBeginPath(vg);
+	nvgRoundedRect(vg, CARD_MARGIN_X, y, width - CARD_MARGIN_X * 2, ruleH, 4);
+	nvgFillColor(vg, nvgRGBA(50, 50, 50, 255));
+	nvgFill(vg);
+	nvgStrokeColor(vg, nvgRGBA(70, 70, 70, 255));
+	nvgStrokeWidth(vg, 1.0f);
+	nvgStroke(vg);
 
-	// Now draw content (Scrolled)
-	nvgSave(vg);
-	nvgTranslate(vg, 0, -scrollPos);
+	float startX = CARD_MARGIN_X + CARD_PADDING;
+	float itemH = FromDIP(ITEM_H);
+	float itemY = y + CARD_PADDING;
 
-	for (size_t i = 0; i < m_rules.size(); ++i) {
-		const auto& rule = m_rules[i];
-		int ruleH = GetRuleHeight(i, width);
-		int ruleY = GetRuleY(i, width);
+	DrawRuleSource(vg, ruleIndex, startX, itemY, itemH);
 
-		// Card BG
-		nvgBeginPath(vg);
-		nvgRoundedRect(vg, CARD_MARGIN_X, ruleY, width - CARD_MARGIN_X * 2, ruleH, 4);
-		nvgFillColor(vg, nvgRGBA(50, 50, 50, 255));
-		nvgFill(vg);
-		nvgStrokeColor(vg, nvgRGBA(70, 70, 70, 255));
-		nvgStrokeWidth(vg, 1.0f);
-		nvgStroke(vg);
+	float arrowX = startX + (ITEM_SIZE + 20) + 10;
+	DrawRuleArrow(vg, arrowX, itemY, itemH);
 
-		// 1. Source Item (Centered vertically in first row of card)
-		float startX = CARD_MARGIN_X + CARD_PADDING;
-		float itemH = FromDIP(ITEM_H);
-		float itemY = ruleY + CARD_PADDING;
+	float targetStartX = arrowX + ARROW_WIDTH;
+	float availableWidthForTargets = (width - CARD_MARGIN_X * 2) - (targetStartX - CARD_MARGIN_X) - CARD_PADDING;
+	DrawRuleTargets(vg, ruleIndex, targetStartX, y, availableWidthForTargets, itemH);
 
-		bool hoverSource = (m_dragHover.type == HitResult::Source && m_dragHover.ruleIndex == i);
-		RuleCardRenderer::DrawRuleItemCard(this, vg, startX, itemY, ITEM_SIZE + 20, itemH, rule.fromId, hoverSource, false, false);
+	// Delete Rule Button
+	NVGcolor subTextCol = nvgRGBA(150, 150, 150, 255);
+	nvgFillColor(vg, subTextCol);
+	nvgFontSize(vg, 16.0f);
+	nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+	if (m_dragHover.type == HitResult::DeleteRule && m_dragHover.ruleIndex == ruleIndex) {
+		nvgFillColor(vg, nvgRGBA(255, 80, 80, 255));
+	}
+	nvgText(vg, CARD_MARGIN_X + (width - CARD_MARGIN_X * 2) - 15, y + 15, "X", nullptr);
+}
 
-		// 2. Arrow
-		float arrowX = startX + (ITEM_SIZE + 20) + 10;
-		float arrowYCenter = itemY + itemH / 2.0f;
+void RuleBuilderPanel::DrawRuleSource(NVGcontext* vg, int ruleIndex, float x, float y, float h) {
+	bool hoverSource = (m_dragHover.type == HitResult::Source && m_dragHover.ruleIndex == ruleIndex);
+	const auto& rule = m_rules[ruleIndex];
+	RuleCardRenderer::DrawRuleItemCard(this, vg, x, y, ITEM_SIZE + 20, h, rule.fromId, hoverSource, false, false);
+}
 
-		nvgBeginPath(vg);
-		nvgMoveTo(vg, arrowX, arrowYCenter);
-		nvgLineTo(vg, arrowX + ARROW_WIDTH - 20, arrowYCenter);
-		nvgStrokeColor(vg, subTextCol);
-		nvgStrokeWidth(vg, 2.0f);
-		nvgStroke(vg);
+void RuleBuilderPanel::DrawRuleArrow(NVGcontext* vg, float x, float y, float h) {
+	float arrowYCenter = y + h / 2.0f;
+	NVGcolor subTextCol = nvgRGBA(150, 150, 150, 255);
 
-		float tailX = arrowX + ARROW_WIDTH - 20;
-		nvgBeginPath(vg);
-		nvgMoveTo(vg, tailX - 5, arrowYCenter - 5);
-		nvgLineTo(vg, tailX, arrowYCenter);
-		nvgLineTo(vg, tailX - 5, arrowYCenter + 5);
-		nvgStroke(vg);
+	nvgBeginPath(vg);
+	nvgMoveTo(vg, x, arrowYCenter);
+	nvgLineTo(vg, x + ARROW_WIDTH - 20, arrowYCenter);
+	nvgStrokeColor(vg, subTextCol);
+	nvgStrokeWidth(vg, 2.0f);
+	nvgStroke(vg);
 
-		// 3. Targets (Wrapping)
-		float targetStartX = arrowX + ARROW_WIDTH;
-		float availableWidthForTargets = (width - CARD_MARGIN_X * 2) - (targetStartX - CARD_MARGIN_X) - CARD_PADDING;
-		int columns = std::max(1, (int)(availableWidthForTargets / (ITEM_SIZE + 20 + ITEM_SPACING)));
+	float tailX = x + ARROW_WIDTH - 20;
+	nvgBeginPath(vg);
+	nvgMoveTo(vg, tailX - 5, arrowYCenter - 5);
+	nvgLineTo(vg, tailX, arrowYCenter);
+	nvgLineTo(vg, tailX - 5, arrowYCenter + 5);
+	nvgStroke(vg);
+}
 
-		bool hasTrash = false;
-		for (size_t j = 0; j < rule.targets.size(); ++j) {
-			const auto& target = rule.targets[j];
-			int row = j / columns;
-			int col = j % columns;
-			float tx = targetStartX + col * (ITEM_SIZE + 20 + ITEM_SPACING);
-			float ty = ruleY + CARD_PADDING + row * (itemH + ITEM_SPACING);
+void RuleBuilderPanel::DrawRuleTargets(NVGcontext* vg, int ruleIndex, float startX, float ruleY, float width, float h) {
+	const auto& rule = m_rules[ruleIndex];
+	int columns = std::max(1, (int)(width / (ITEM_SIZE + 20 + ITEM_SPACING)));
+	NVGcolor accentCol = nvgRGBA(Theme::Get(Theme::Role::Accent).Red(), Theme::Get(Theme::Role::Accent).Green(), Theme::Get(Theme::Role::Accent).Blue(), 255);
 
-			bool isThisHovered = (m_dragHover.ruleIndex == i && m_dragHover.targetIndex == (int)j && (m_dragHover.type == HitResult::Target || m_dragHover.type == HitResult::DeleteTarget));
-			bool isTrash = (target.id == TRASH_ITEM_ID);
-			if (isTrash) {
-				hasTrash = true;
-			}
+	bool hasTrash = false;
+	for (size_t j = 0; j < rule.targets.size(); ++j) {
+		const auto& target = rule.targets[j];
+		int row = j / columns;
+		int col = j % columns;
+		float tx = startX + col * (ITEM_SIZE + 20 + ITEM_SPACING);
+		float ty = ruleY + CARD_PADDING + row * (h + ITEM_SPACING);
 
-			RuleCardRenderer::DrawRuleItemCard(this, vg, tx, ty, ITEM_SIZE + 20, itemH, target.id, isThisHovered, isTrash, isThisHovered, target.probability);
+		bool isThisHovered = (m_dragHover.ruleIndex == ruleIndex && m_dragHover.targetIndex == (int)j && (m_dragHover.type == HitResult::Target || m_dragHover.type == HitResult::DeleteTarget));
+		bool isTrash = (target.id == TRASH_ITEM_ID);
+		if (isTrash) {
+			hasTrash = true;
 		}
 
-		// Ghost Slot
-		if (!hasTrash) {
-			int tIdx = rule.targets.size();
-			int row = tIdx / columns;
-			int col = tIdx % columns;
-			float tx = targetStartX + col * (ITEM_SIZE + 20 + ITEM_SPACING);
-			float ty = ruleY + CARD_PADDING + row * (itemH + ITEM_SPACING);
-
-			bool hoverNewTarget = (m_dragHover.type == HitResult::AddTarget && m_dragHover.ruleIndex == (int)i);
-
-			nvgBeginPath(vg);
-			nvgRoundedRect(vg, tx, ty, ITEM_SIZE + 20, itemH, 4);
-			if (hoverNewTarget) {
-				nvgStrokeColor(vg, accentCol);
-				nvgStrokeWidth(vg, 2.0f);
-			} else {
-				nvgStrokeColor(vg, nvgRGBA(80, 80, 80, 255));
-				nvgStrokeWidth(vg, 1.0f);
-			}
-			nvgStroke(vg);
-
-			if (hoverNewTarget && rule.targets.empty()) {
-				RuleCardRenderer::DrawTrashIcon(vg, tx + (ITEM_SIZE + 20 - 32.0f) / 2, ty + 8, 32.0f, true);
-				nvgFillColor(vg, nvgRGBA(255, 100, 100, 255));
-				nvgFontSize(vg, 11.0f);
-				nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-				nvgText(vg, tx + (ITEM_SIZE + 20) / 2, ty + 44, "REMOVE", nullptr);
-			} else {
-				nvgFontSize(vg, 30.0f);
-				nvgFillColor(vg, hoverNewTarget ? accentCol : nvgRGBA(100, 100, 100, 255));
-				nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
-				nvgText(vg, tx + (ITEM_SIZE + 20) / 2, ty + itemH / 2, "+", nullptr);
-			}
-		}
-
-		// Delete Rule Button
-		nvgFillColor(vg, subTextCol);
-		nvgFontSize(vg, 16.0f);
-		nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
-		if (m_dragHover.type == HitResult::DeleteRule && m_dragHover.ruleIndex == (int)i) {
-			nvgFillColor(vg, nvgRGBA(255, 80, 80, 255));
-		}
-		nvgText(vg, CARD_MARGIN_X + (width - CARD_MARGIN_X * 2) - 15, ruleY + 15, "X", nullptr);
+		RuleCardRenderer::DrawRuleItemCard(this, vg, tx, ty, ITEM_SIZE + 20, h, target.id, isThisHovered, isTrash, isThisHovered, target.probability);
 	}
 
-	// New Rule Area
-	int newRuleY = GetRuleY(m_rules.size(), width) + CARD_MARGIN_Y;
+	// Ghost Slot
+	if (!hasTrash) {
+		int tIdx = rule.targets.size();
+		int row = tIdx / columns;
+		int col = tIdx % columns;
+		float tx = startX + col * (ITEM_SIZE + 20 + ITEM_SPACING);
+		float ty = ruleY + CARD_PADDING + row * (h + ITEM_SPACING);
 
-	// Determine card style colors
+		bool hoverNewTarget = (m_dragHover.type == HitResult::AddTarget && m_dragHover.ruleIndex == ruleIndex);
+
+		nvgBeginPath(vg);
+		nvgRoundedRect(vg, tx, ty, ITEM_SIZE + 20, h, 4);
+		if (hoverNewTarget) {
+			nvgStrokeColor(vg, accentCol);
+			nvgStrokeWidth(vg, 2.0f);
+		} else {
+			nvgStrokeColor(vg, nvgRGBA(80, 80, 80, 255));
+			nvgStrokeWidth(vg, 1.0f);
+		}
+		nvgStroke(vg);
+
+		if (hoverNewTarget && rule.targets.empty()) {
+			RuleCardRenderer::DrawTrashIcon(vg, tx + (ITEM_SIZE + 20 - 32.0f) / 2, ty + 8, 32.0f, true);
+			nvgFillColor(vg, nvgRGBA(255, 100, 100, 255));
+			nvgFontSize(vg, 11.0f);
+			nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+			nvgText(vg, tx + (ITEM_SIZE + 20) / 2, ty + 44, "REMOVE", nullptr);
+		} else {
+			nvgFontSize(vg, 30.0f);
+			nvgFillColor(vg, hoverNewTarget ? accentCol : nvgRGBA(100, 100, 100, 255));
+			nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+			nvgText(vg, tx + (ITEM_SIZE + 20) / 2, ty + h / 2, "+", nullptr);
+		}
+	}
+}
+
+void RuleBuilderPanel::DrawNewRuleArea(NVGcontext* vg, float width, float y) {
 	NVGcolor cardBgTop = nvgRGBA(45, 45, 50, 255);
 	NVGcolor cardBgBot = nvgRGBA(40, 40, 45, 255);
 	NVGcolor borderColor = nvgRGBA(100, 100, 100, 255);
+	NVGcolor accentCol = nvgRGBA(Theme::Get(Theme::Role::Accent).Red(), Theme::Get(Theme::Role::Accent).Green(), Theme::Get(Theme::Role::Accent).Blue(), 255);
+	NVGcolor subTextCol = nvgRGBA(150, 150, 150, 255);
 
-	// Drop Area
 	float dropH = 60.0f;
 	float cardX = CARD_MARGIN_X;
 	float cardW = width - CARD_MARGIN_X * 2;
 
-	// Fill Card
-	NVGpaint bgPaint = nvgLinearGradient(vg, cardX, newRuleY, cardX, newRuleY + dropH, cardBgTop, cardBgBot);
+	NVGpaint bgPaint = nvgLinearGradient(vg, cardX, y, cardX, y + dropH, cardBgTop, cardBgBot);
 	nvgBeginPath(vg);
-	nvgRoundedRect(vg, cardX, newRuleY, cardW, dropH, 4);
+	nvgRoundedRect(vg, cardX, y, cardW, dropH, 4);
 	nvgFillPaint(vg, bgPaint);
 	nvgFill(vg);
 
 	if (m_dragHover.type == HitResult::NewRule) {
-		// Hover Highlight
 		nvgStrokeColor(vg, accentCol);
 		nvgStrokeWidth(vg, 2.0f);
 		nvgFillColor(vg, nvgRGBAf(accentCol.r, accentCol.g, accentCol.b, 0.1f));
 		nvgFill(vg);
 	} else {
-		// Standard Gray Border
 		nvgStrokeColor(vg, borderColor);
 		nvgStrokeWidth(vg, 1.0f);
 	}
@@ -575,7 +589,5 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 	nvgFontSize(vg, 14.0f);
 	nvgFillColor(vg, subTextCol);
 	nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
-	nvgText(vg, width / 2.0f, newRuleY + dropH / 2.0f, "Drop Item Here to Add New Rule", nullptr);
-
-	nvgRestore(vg);
+	nvgText(vg, width / 2.0f, y + dropH / 2.0f, "Drop Item Here to Add New Rule", nullptr);
 }

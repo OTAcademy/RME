@@ -12,9 +12,7 @@
 //=============================================================================
 // Manages the collection of items for a carpet brush
 class CarpetBrushItems {
-	friend class ReplaceToolWindow;
-	friend class LibraryPanel;
-	friend class CarpetBrush;
+	// Friend declarations removed for loose coupling
 
 public:
 	CarpetBrushItems();
@@ -28,7 +26,7 @@ public:
 	// Clears all items
 	void clear();
 
-private:
+public:
 	struct CarpetItem {
 		int32_t chance;
 		uint16_t id;
@@ -38,6 +36,10 @@ private:
 		std::vector<CarpetItem> items;
 		int32_t total_chance = 0;
 	};
+
+	const std::array<CarpetGroup, 14>& getGroups() const {
+		return m_groups;
+	}
 
 	// Helper to pick from a specific group
 	static uint16_t pickFromGroup(const CarpetGroup& group);

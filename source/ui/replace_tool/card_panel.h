@@ -20,8 +20,8 @@ public:
 		return m_footerSizer;
 	}
 
-	static const int HEADER_HEIGHT = 32;
-	static const int FOOTER_HEIGHT = 42;
+	static const int HEADER_HEIGHT = 40;
+	static const int FOOTER_HEIGHT = 40;
 
 protected:
 	void OnPaint(wxPaintEvent& event);
