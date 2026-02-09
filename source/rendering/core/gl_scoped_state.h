@@ -81,4 +81,68 @@ private:
 	GLint prev_eq_rgb_, prev_eq_alpha_;
 };
 
+/**
+ * @brief RAII wrapper for glFramebuffer
+ *
+ * Saves current READ and DRAW framebuffer bindings on construction and restores them on destruction.
+ */
+class ScopedGLFramebuffer {
+public:
+	[[nodiscard]] explicit ScopedGLFramebuffer(GLenum target, GLuint framebuffer) :
+		target_(target) {
+		if (target_ == GL_FRAMEBUFFER) {
+			glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &prev_read_);
+			glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &prev_draw_);
+		} else if (target_ == GL_READ_FRAMEBUFFER) {
+			glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &prev_read_);
+		} else if (target_ == GL_DRAW_FRAMEBUFFER) {
+			glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &prev_draw_);
+		}
+
+		glBindFramebuffer(target_, framebuffer);
+	}
+
+	~ScopedGLFramebuffer() {
+		if (target_ == GL_FRAMEBUFFER) {
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, prev_read_);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prev_draw_);
+		} else if (target_ == GL_READ_FRAMEBUFFER) {
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, prev_read_);
+		} else if (target_ == GL_DRAW_FRAMEBUFFER) {
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prev_draw_);
+		}
+	}
+
+	ScopedGLFramebuffer(const ScopedGLFramebuffer&) = delete;
+	ScopedGLFramebuffer& operator=(const ScopedGLFramebuffer&) = delete;
+
+private:
+	GLenum target_;
+	GLint prev_read_ = 0;
+	GLint prev_draw_ = 0;
+};
+
+/**
+ * @brief RAII wrapper for glViewport
+ *
+ * Saves current viewport on construction and restores it on destruction.
+ */
+class ScopedGLViewport {
+public:
+	[[nodiscard]] ScopedGLViewport(GLint x, GLint y, GLsizei width, GLsizei height) {
+		glGetIntegerv(GL_VIEWPORT, prev_viewport_);
+		glViewport(x, y, width, height);
+	}
+
+	~ScopedGLViewport() {
+		glViewport(prev_viewport_[0], prev_viewport_[1], prev_viewport_[2], prev_viewport_[3]);
+	}
+
+	ScopedGLViewport(const ScopedGLViewport&) = delete;
+	ScopedGLViewport& operator=(const ScopedGLViewport&) = delete;
+
+private:
+	GLint prev_viewport_[4];
+};
+
 #endif
