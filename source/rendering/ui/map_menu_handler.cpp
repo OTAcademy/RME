@@ -3,21 +3,24 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "app/main.h"
+
+#include <set>
+#include <vector>
+
 #include "rendering/ui/map_menu_handler.h"
 #include "rendering/ui/map_display.h"
 #include "rendering/ui/clipboard_handler.h"
 #include "rendering/ui/popup_action_handler.h"
-#include "brushes/brush_utility.h" // For BrushSelector if needed, though map_display used it directly from "rendering/ui/brush_selector.h" which seems to be "brush_utility.h" or similar?
-// Actually map_display.cpp included "rendering/ui/brush_selector.h".
-// Let's check includes in map_display.cpp again.
-// #include "rendering/ui/brush_selector.h"
-// #include "rendering/ui/popup_action_handler.h"
-// #include "rendering/ui/clipboard_handler.h"
-
 #include "rendering/ui/brush_selector.h"
+
+#include "ui/map_tab.h"
 #include "ui/map_popup_menu.h"
+#include "ui/map_window.h"
+#include "map/tile.h"
+#include "game/item.h"
 #include "editor/editor.h"
 #include "ui/gui_ids.h"
+#include "ui/gui.h"
 
 MapMenuHandler::MapMenuHandler(MapCanvas* canvas, Editor& editor) :
 	canvas(canvas),
@@ -52,6 +55,7 @@ void MapMenuHandler::BindEvents() {
 	canvas->Bind(wxEVT_MENU, &MapMenuHandler::OnSelectMoveTo, this, MAP_POPUP_MENU_MOVE_TO_TILESET);
 
 	canvas->Bind(wxEVT_MENU, &MapMenuHandler::OnProperties, this, MAP_POPUP_MENU_PROPERTIES);
+	canvas->Bind(wxEVT_MENU, &MapMenuHandler::OnAdvancedReplace, this, MAP_POPUP_MENU_ADVANCED_REPLACE);
 	canvas->Bind(wxEVT_MENU, &MapMenuHandler::OnBrowseTile, this, MAP_POPUP_MENU_BROWSE_TILE);
 }
 
@@ -153,4 +157,32 @@ void MapMenuHandler::OnSelectMoveTo(wxCommandEvent& WXUNUSED(event)) {
 
 void MapMenuHandler::OnProperties(wxCommandEvent& WXUNUSED(event)) {
 	PopupActionHandler::OpenProperties(editor);
+}
+
+void MapMenuHandler::OnAdvancedReplace(wxCommandEvent& WXUNUSED(event)) {
+	std::set<uint16_t> uniqueIds;
+	for (Tile* tile : editor.selection.getTiles()) {
+		if (tile->ground) {
+			uint16_t id = tile->ground->getID();
+			if (id != 0) {
+				uniqueIds.insert(id);
+			}
+		}
+		for (Item* item : tile->items) {
+			uint16_t id = item->getID();
+			if (id != 0) {
+				uniqueIds.insert(id);
+			}
+		}
+	}
+
+	if (uniqueIds.empty()) {
+		return;
+	}
+
+	std::vector<uint16_t> sortedIds(uniqueIds.begin(), uniqueIds.end());
+	MapTab* tab = g_gui.GetCurrentMapTab();
+	if (tab) {
+		tab->ShowAdvancedReplaceForSelection(sortedIds);
+	}
 }

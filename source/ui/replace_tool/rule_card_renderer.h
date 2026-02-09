@@ -30,7 +30,7 @@ public:
 	static void DrawHeader(NVGcontext* vg, float width);
 	static void DrawClearButton(NVGcontext* vg, float width, bool isHovered);
 	static void DrawSaveButton(NVGcontext* vg, float width, bool isHovered);
-	static void DrawRuleCard(RuleBuilderPanel* panel, NVGcontext* vg, int ruleIndex, int y, int width, bool hoverDelete, int dragHoverTargetIdx, int dragHoverType);
+	static void DrawRuleCard(RuleBuilderPanel* panel, NVGcontext* vg, int ruleIndex, int y, int width, bool hoverDelete, int dragHoverTargetIdx, int dragHoverType, bool isExternalDrag);
 	static void DrawRuleArrow(NVGcontext* vg, float x, float y, float h);
 	static void DrawNewRuleArea(NVGcontext* vg, float width, float y, bool isHovered);
 };

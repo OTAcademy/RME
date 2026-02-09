@@ -2,8 +2,9 @@
 #define RME_REPLACEMENT_ENGINE_H_
 
 #include "app/main.h"
-#include "ui/replace_tool/rule_manager.h"
+#include "rule_manager.h"
 #include <random>
+#include <vector>
 
 class ReplacementEngine {
 public:

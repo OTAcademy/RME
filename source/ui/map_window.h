@@ -81,6 +81,7 @@ public:
 	}
 
 	void ShowReplaceItemsDialog(bool selectionOnly);
+	void ShowAdvancedReplaceForSelection(const std::vector<uint16_t>& ids);
 	void CloseReplaceItemsDialog();
 	void OnReplaceItemsDialogClose(wxCloseEvent& event);
 

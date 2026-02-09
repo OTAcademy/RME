@@ -20,6 +20,8 @@ public:
 	ReplaceToolWindow(wxWindow* parent, Editor* editor);
 	virtual ~ReplaceToolWindow();
 
+	void InitializeWithIDs(const std::vector<uint16_t>& ids);
+
 	// LibraryPanel::Listener
 	void OnLibraryItemSelected(uint16_t itemId) override;
 
@@ -31,6 +33,7 @@ public:
 	virtual void OnRuleChanged() override;
 	virtual void OnClearRules() override;
 	virtual void OnSaveRule() override;
+	virtual void OnRuleItemSelected(uint16_t itemId) override;
 
 	// ItemGridPanel::Listener
 	virtual void OnItemSelected(ItemGridPanel* source, uint16_t itemId) override;

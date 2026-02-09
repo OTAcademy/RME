@@ -8,6 +8,7 @@
 #include <map>
 #include <mutex>
 #include <cstdint>
+#include <atomic>
 
 class VisualSimilarityService : public wxEvtHandler {
 public:

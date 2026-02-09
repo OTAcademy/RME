@@ -34,12 +34,13 @@ static const int GHOST_SLOT_WIDTH = CARD_W;
 RuleBuilderPanel::ItemDropTarget::ItemDropTarget(RuleBuilderPanel* panel) : m_panel(panel) { }
 
 bool RuleBuilderPanel::ItemDropTarget::OnDropText(wxCoord x, wxCoord y, const wxString& data) {
+	m_panel->m_isExternalDrag = false;
 	if (!data.StartsWith("RME_ITEM:")) {
 		return false;
 	}
 
 	unsigned long idVal;
-	if (!data.AfterFirst(':').ToULong(&idVal)) {
+	if (!data.AfterFirst(':').ToULong(&idVal) || idVal > 0xFFFF) {
 		return false;
 	}
 	uint16_t itemId = (uint16_t)idVal;
@@ -96,10 +97,12 @@ bool RuleBuilderPanel::ItemDropTarget::OnDropText(wxCoord x, wxCoord y, const wx
 		return true;
 	}
 
+	m_panel->m_isExternalDrag = false;
 	return false;
 }
 
 wxDragResult RuleBuilderPanel::ItemDropTarget::OnDragOver(wxCoord x, wxCoord y, wxDragResult def) {
+	m_panel->m_isExternalDrag = true;
 	RuleBuilderPanel::HitResult hit = m_panel->HitTest(x, y);
 	m_panel->m_dragHover = hit;
 	m_panel->Refresh();
@@ -107,6 +110,7 @@ wxDragResult RuleBuilderPanel::ItemDropTarget::OnDragOver(wxCoord x, wxCoord y, 
 }
 
 void RuleBuilderPanel::ItemDropTarget::OnLeave() {
+	m_panel->m_isExternalDrag = false;
 	m_panel->m_dragHover = { RuleBuilderPanel::HitResult::None, -1, -1 };
 	m_panel->Refresh();
 }
@@ -148,19 +152,9 @@ std::vector<ReplacementRule> RuleBuilderPanel::GetRules() const {
 	return m_rules;
 }
 
-void RuleBuilderPanel::LayoutRules() {
-	int width = GetClientSize().x;
-	if (width <= 0) {
-		width = FromDIP(500);
-	}
-
-	int totalHeight = HEADER_HEIGHT + CARD_MARGIN_Y;
-	for (size_t i = 0; i < m_rules.size(); ++i) {
-		totalHeight += GetRuleHeight(i, width) + CARD_MARGIN_Y;
-	}
-	totalHeight += FromDIP(100); // Space for New Rule area
-	UpdateScrollbar(totalHeight);
-}
+// ----------------------------------------------------------------------------
+// Layout logic using cache
+// ----------------------------------------------------------------------------
 
 int RuleBuilderPanel::GetRuleHeight(int index, int width) const {
 	if (index < 0 || index >= (int)m_rules.size()) {
@@ -192,11 +186,32 @@ int RuleBuilderPanel::GetRuleHeight(int index, int width) const {
 }
 
 int RuleBuilderPanel::GetRuleY(int index, int width) const {
-	int y = HEADER_HEIGHT + CARD_MARGIN_Y;
-	for (int i = 0; i < index; ++i) {
-		y += GetRuleHeight(i, width) + CARD_MARGIN_Y;
+	if (index < 0 || index >= (int)m_ruleYCache.size()) {
+		if (index == (int)m_ruleYCache.size()) {
+			return m_totalHeight;
+		}
+		return 0;
 	}
-	return y;
+	return m_ruleYCache[index];
+}
+
+void RuleBuilderPanel::LayoutRules() {
+	int width = GetClientSize().x;
+	if (width <= 0) {
+		width = 800; // Fallback
+	}
+
+	m_ruleYCache.clear();
+	int currentY = RuleCardRenderer::CARD_MARGIN_Y + RuleCardRenderer::HEADER_HEIGHT;
+
+	for (size_t i = 0; i < m_rules.size(); ++i) {
+		m_ruleYCache.push_back(currentY);
+		currentY += GetRuleHeight((int)i, width);
+	}
+	m_totalHeight = currentY;
+
+	int footerHeight = RuleCardRenderer::ITEM_H + (RuleCardRenderer::CARD_MARGIN_Y * 2);
+	UpdateScrollbar(m_totalHeight + footerHeight);
 }
 
 void RuleBuilderPanel::DistributeProbabilities(int ruleIndex) {
@@ -209,6 +224,9 @@ void RuleBuilderPanel::DistributeProbabilities(int ruleIndex) {
 		return;
 	}
 	int count = targets.size();
+	if (count <= 0) {
+		return;
+	}
 	// Use floating point accumulation for fairer distribution of remainders
 	double step = 100.0 / count;
 	double accumulated = 0.0;
@@ -263,6 +281,10 @@ void RuleBuilderPanel::OnMouse(wxMouseEvent& event) {
 					m_listener->OnRuleChanged();
 				}
 				Refresh();
+			}
+		} else if (hit.type == HitResult::Source && hit.ruleIndex != -1) {
+			if (m_listener) {
+				m_listener->OnRuleItemSelected(m_rules[hit.ruleIndex].fromId);
 			}
 		} else if (hit.type == HitResult::ClearRules) {
 			wxMessageDialog dlg(this, "Are you sure you want to clear all rules? This action cannot be undone.", "Clear Rules", wxYES_NO | wxNO_DEFAULT | wxICON_WARNING);
@@ -420,7 +442,7 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 		int dragType = (m_dragHover.ruleIndex == (int)i) ? (int)m_dragHover.type : 0;
 		int dragIdx = (m_dragHover.ruleIndex == (int)i) ? m_dragHover.targetIndex : -1;
 
-		RuleCardRenderer::DrawRuleCard(this, vg, (int)i, ruleY, width, hoverDel, dragIdx, dragType);
+		RuleCardRenderer::DrawRuleCard(this, vg, (int)i, ruleY, width, hoverDel, dragIdx, dragType, m_isExternalDrag);
 	}
 
 	int newRuleY = GetRuleY(m_rules.size(), width) + RuleCardRenderer::CARD_MARGIN_Y;

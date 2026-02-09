@@ -94,6 +94,19 @@ void MapWindow::ShowReplaceItemsDialog(bool selectionOnly) {
 	replaceItemsDialog->Show();
 }
 
+void MapWindow::ShowAdvancedReplaceForSelection(const std::vector<uint16_t>& ids) {
+	if (replaceItemsDialog) {
+		replaceItemsDialog->InitializeWithIDs(ids);
+		replaceItemsDialog->Raise();
+		return;
+	}
+
+	replaceItemsDialog.reset(new ReplaceToolWindow(this, &editor));
+	replaceItemsDialog->Bind(wxEVT_CLOSE_WINDOW, &MapWindow::OnReplaceItemsDialogClose, this);
+	replaceItemsDialog->InitializeWithIDs(ids);
+	replaceItemsDialog->Show();
+}
+
 void MapWindow::CloseReplaceItemsDialog() {
 	if (replaceItemsDialog) {
 		replaceItemsDialog->Close();

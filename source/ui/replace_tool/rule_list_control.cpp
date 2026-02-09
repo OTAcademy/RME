@@ -13,14 +13,18 @@ RuleListControl::RuleListControl(wxWindow* parent, Listener* listener) : wxContr
 	Bind(wxEVT_LEFT_DOWN, &RuleListControl::OnMouse, this);
 	Bind(wxEVT_MOTION, &RuleListControl::OnMouse, this);
 	Bind(wxEVT_LEAVE_WINDOW, &RuleListControl::OnMouse, this);
+	Bind(wxEVT_MOUSEWHEEL, &RuleListControl::OnMouseWheel, this);
 	Bind(wxEVT_CONTEXT_MENU, &RuleListControl::OnContextMenu, this);
 
 	// Bind scroll events
-	auto scrollHandler = [this](wxScrollWinEvent& event) { Refresh(); event.Skip(); };
-	Bind(wxEVT_SCROLLWIN_THUMBTRACK, scrollHandler);
-	Bind(wxEVT_SCROLLWIN_THUMBRELEASE, scrollHandler);
-	Bind(wxEVT_SCROLLWIN_LINEDOWN, scrollHandler);
-	Bind(wxEVT_SCROLLWIN_LINEUP, scrollHandler);
+	Bind(wxEVT_SCROLLWIN_TOP, &RuleListControl::OnScroll, this);
+	Bind(wxEVT_SCROLLWIN_BOTTOM, &RuleListControl::OnScroll, this);
+	Bind(wxEVT_SCROLLWIN_LINEUP, &RuleListControl::OnScroll, this);
+	Bind(wxEVT_SCROLLWIN_LINEDOWN, &RuleListControl::OnScroll, this);
+	Bind(wxEVT_SCROLLWIN_PAGEUP, &RuleListControl::OnScroll, this);
+	Bind(wxEVT_SCROLLWIN_PAGEDOWN, &RuleListControl::OnScroll, this);
+	Bind(wxEVT_SCROLLWIN_THUMBTRACK, &RuleListControl::OnScroll, this);
+	Bind(wxEVT_SCROLLWIN_THUMBRELEASE, &RuleListControl::OnScroll, this);
 
 	Bind(wxEVT_ERASE_BACKGROUND, [](wxEraseEvent&) { });
 }
@@ -151,6 +155,48 @@ void RuleListControl::OnMouse(wxMouseEvent& event) {
 		Refresh();
 	}
 }
+
+void RuleListControl::OnMouseWheel(wxMouseEvent& event) {
+	int rotation = event.GetWheelRotation();
+	int delta = (rotation / 120) * 3; // 3 items per notch
+	int newPos = GetScrollPos(wxVERTICAL) - delta * m_itemHeight;
+
+	int totalHeight = m_ruleSetNames.size() * m_itemHeight;
+	int maxScroll = std::max(0, totalHeight - GetClientSize().y);
+	newPos = std::clamp(newPos, 0, maxScroll);
+
+	SetScrollPos(wxVERTICAL, newPos);
+	Refresh();
+}
+
+void RuleListControl::OnScroll(wxScrollWinEvent& event) {
+	int pos = GetScrollPos(wxVERTICAL);
+	int h = GetClientSize().y;
+	int total = m_ruleSetNames.size() * m_itemHeight;
+	int maxScroll = std::max(0, total - h);
+
+	wxEventType type = event.GetEventType();
+	if (type == wxEVT_SCROLLWIN_TOP) {
+		pos = 0;
+	} else if (type == wxEVT_SCROLLWIN_BOTTOM) {
+		pos = maxScroll;
+	} else if (type == wxEVT_SCROLLWIN_LINEUP) {
+		pos -= m_itemHeight;
+	} else if (type == wxEVT_SCROLLWIN_LINEDOWN) {
+		pos += m_itemHeight;
+	} else if (type == wxEVT_SCROLLWIN_PAGEUP) {
+		pos -= h;
+	} else if (type == wxEVT_SCROLLWIN_PAGEDOWN) {
+		pos += h;
+	} else if (type == wxEVT_SCROLLWIN_THUMBTRACK || type == wxEVT_SCROLLWIN_THUMBRELEASE) {
+		pos = event.GetPosition();
+	}
+
+	pos = std::clamp(pos, 0, maxScroll);
+	SetScrollPos(wxVERTICAL, pos);
+	Refresh();
+}
+
 void RuleListControl::OnContextMenu(wxContextMenuEvent& event) {
 	int menuIdx = m_hoveredIndex;
 	if (menuIdx == -1) {

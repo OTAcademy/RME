@@ -1,5 +1,6 @@
-#include "ui/replace_tool/replace_tool_window.h"
-#include "ui/replace_tool/visual_similarity_service.h"
+#include "app/main.h"
+#include "replace_tool_window.h"
+#include "visual_similarity_service.h"
 #include "ui/theme.h"
 #include "editor/editor.h"
 #include "game/items.h"
@@ -71,6 +72,27 @@ void ReplaceToolWindow::OnClose(wxCloseEvent& event) {
 		g_settings.save();
 	}
 	event.Skip(); // Allow window to close
+}
+
+void ReplaceToolWindow::InitializeWithIDs(const std::vector<uint16_t>& ids) {
+	if (ids.empty()) {
+		return;
+	}
+
+	std::vector<ReplacementRule> rules;
+	for (uint16_t id : ids) {
+		ReplacementRule rule;
+		rule.fromId = id;
+		rules.push_back(rule);
+	}
+
+	// IDs are already sorted from std::set in MapMenuHandler, but sorting here ensures consistency
+	std::sort(rules.begin(), rules.end(), [](const ReplacementRule& a, const ReplacementRule& b) {
+		return a.fromId < b.fromId;
+	});
+
+	ruleBuilder->SetRules(rules);
+	m_activeRuleSetName = "";
 }
 
 void ReplaceToolWindow::InitLayout() {
@@ -290,6 +312,10 @@ void ReplaceToolWindow::OnRuleChanged() {
 	}
 }
 
+void ReplaceToolWindow::OnRuleItemSelected(uint16_t itemId) {
+	OnLibraryItemSelected(itemId);
+}
+
 void ReplaceToolWindow::OnExecute(wxCommandEvent&) {
 	std::vector<ReplacementRule> rules = ruleBuilder->GetRules();
 	if (rules.empty()) {
@@ -345,6 +371,7 @@ void ReplaceToolWindow::OnClearRules() {
 
 void ReplaceToolWindow::OnItemSelected(ItemGridPanel* source, uint16_t itemId) {
 	if (source == similarItemsGrid) {
-		OnLibraryItemSelected(itemId);
+		return;
 	}
+	OnLibraryItemSelected(itemId);
 }

@@ -85,7 +85,7 @@ void RuleCardRenderer::DrawSaveButton(NVGcontext* vg, float width, bool isHovere
 	nvgText(vg, cbX + BTN_W / 2.0f, cbY + BTN_H / 2.0f, "SAVE", nullptr);
 }
 
-void RuleCardRenderer::DrawRuleCard(RuleBuilderPanel* panel, NVGcontext* vg, int ruleIndex, int y, int width, bool hoverDelete, int dragHoverTargetIdx, int dragHoverType) {
+void RuleCardRenderer::DrawRuleCard(RuleBuilderPanel* panel, NVGcontext* vg, int ruleIndex, int y, int width, bool hoverDelete, int dragHoverTargetIdx, int dragHoverType, bool isExternalDrag) {
 	const auto& rules = panel->GetRules();
 	if (ruleIndex < 0 || ruleIndex >= rules.size()) {
 		return;
@@ -174,7 +174,7 @@ void RuleCardRenderer::DrawRuleCard(RuleBuilderPanel* panel, NVGcontext* vg, int
 		}
 		nvgStroke(vg);
 
-		if (hoverAdd && rule.targets.empty()) {
+		if (hoverAdd && rule.targets.empty() && !isExternalDrag) {
 			DrawTrashIcon(vg, tx + (CARD_W - 32.0f) / 2, ty + 8, 32.0f, true);
 			nvgFillColor(vg, nvgRGBA(255, 100, 100, 255));
 			nvgFontSize(vg, 11.0f);

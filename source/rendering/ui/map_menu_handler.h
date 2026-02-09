@@ -5,6 +5,7 @@
 #ifndef RME_RENDERING_UI_MAP_MENU_HANDLER_H_
 #define RME_RENDERING_UI_MAP_MENU_HANDLER_H_
 
+#include "app/main.h"
 #include <wx/event.h>
 
 class MapCanvas;
@@ -45,6 +46,7 @@ public:
 	void OnSelectMoveTo(wxCommandEvent& event);
 
 	void OnProperties(wxCommandEvent& event);
+	void OnAdvancedReplace(wxCommandEvent& event);
 
 private:
 	MapCanvas* canvas;

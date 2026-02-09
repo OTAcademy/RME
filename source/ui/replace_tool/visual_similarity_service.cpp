@@ -229,6 +229,7 @@ void VisualSimilarityService::OnTimer(wxTimerEvent&) {
 
 	if (m_nextIdToIndex > maxId) {
 		m_timer.Stop();
+		std::lock_guard<std::mutex> lock(dataMutex);
 		isIndexed = true;
 	}
 }
@@ -268,83 +269,73 @@ std::vector<uint16_t> VisualSimilarityService::FindSimilar(uint16_t itemId, size
 	};
 	std::vector<ScoredItem> candidates;
 
-	std::vector<VisualItemData> targets;
 	{
 		std::lock_guard<std::mutex> lock(dataMutex);
-		targets.reserve(itemDataCache.size());
 		for (const auto& pair : itemDataCache) {
-			targets.push_back(pair.second);
-		}
-	}
-
-	for (const auto& target : targets) {
-		if (target.id == itemId) {
-			continue;
-		}
-
-		double score = 0.0;
-		float histScore = CompareHistograms(sourceData.histogram, target.histogram);
-
-		if (sourceData.isOpaque) {
-			// Strategy A: aHash for opaque sprites
-			// Mappingtool: We only compare against other opaque sprites to avoid matching walls with items
-			if (target.isOpaque) {
-				int dist = HammingDistance(sourceData.aHash, target.aHash);
-				// Score: 1.0 is perfect match (dist 0), 0.0 is max distance (64)
-				score = 1.0 - (static_cast<double>(dist) / 64.0);
-			} else {
-				continue; // Strict 1:1 behavior
-			}
-		} else {
-			// Strategy B: Standard Binary Mask for transparent sprites
-			if (target.isOpaque) {
-				continue; // Mappingtool: Transparent target does not match opaque candidate
+			const auto& target = pair.second;
+			if (target.id == itemId) {
+				continue;
 			}
 
-			int tp = 0;
-			int sourceOnes = sourceData.truePixels;
-			int targetOnes = target.truePixels;
+			double score = 0.0;
+			float histScore = CompareHistograms(sourceData.histogram, target.histogram);
 
-			if (sourceData.width == target.width && sourceData.height == target.height) {
-				for (size_t i = 0; i < sourceData.binaryMask.size(); ++i) {
-					if (sourceData.binaryMask[i] && target.binaryMask[i]) {
-						tp++;
-					}
+			if (sourceData.isOpaque) {
+				// Strategy A: aHash for opaque sprites
+				// Mappingtool: We only compare against other opaque sprites to avoid matching walls with items
+				if (target.isOpaque) {
+					int dist = HammingDistance(sourceData.aHash, target.aHash);
+					// Score: 1.0 is perfect match (dist 0), 0.0 is max distance (64)
+					score = 1.0 - (static_cast<double>(dist) / 64.0);
+				} else {
+					continue; // Strict 1:1 behavior
 				}
 			} else {
-				// 1:1 Resize Logic (Nearest Neighbor)
-				int w = std::max(sourceData.width, target.width);
-				int h = std::max(sourceData.height, target.height);
-				auto m1 = ResizeMask(sourceData.binaryMask, sourceData.width, sourceData.height, w, h);
-				auto m2 = ResizeMask(target.binaryMask, target.width, target.height, w, h);
-				sourceOnes = 0;
-				targetOnes = 0;
-				for (size_t i = 0; i < m1.size(); ++i) {
-					if (m1[i]) {
-						sourceOnes++;
+				// Strategy B: Standard Binary Mask for transparent sprites
+				if (target.isOpaque) {
+					continue; // Mappingtool: Transparent target does not match opaque candidate
+				}
+
+				int tp = 0;
+				int sourceOnes = sourceData.truePixels;
+				int targetOnes = target.truePixels;
+
+				if (sourceData.width == target.width && sourceData.height == target.height) {
+					for (size_t i = 0; i < sourceData.binaryMask.size(); ++i) {
+						if (sourceData.binaryMask[i] && target.binaryMask[i]) {
+							tp++;
+						}
 					}
-					if (m2[i]) {
-						targetOnes++;
+				} else {
+					// 1:1 Resize Logic (Nearest Neighbor)
+					int w = std::max(sourceData.width, target.width);
+					int h = std::max(sourceData.height, target.height);
+					auto m1 = ResizeMask(sourceData.binaryMask, sourceData.width, sourceData.height, w, h);
+					auto m2 = ResizeMask(target.binaryMask, target.width, target.height, w, h);
+					sourceOnes = 0;
+					targetOnes = 0;
+					for (size_t i = 0; i < m1.size(); ++i) {
+						if (m1[i]) {
+							sourceOnes++;
+						}
+						if (m2[i]) {
+							targetOnes++;
+						}
+						if (m1[i] && m2[i]) {
+							tp++;
+						}
 					}
-					if (m1[i] && m2[i]) {
-						tp++;
-					}
+				}
+
+				if (tp > 0) {
+					// Dice: (2.0 * TP) / (|A| + |B|)
+					score = (2.0 * tp) / (double)(sourceOnes + targetOnes);
 				}
 			}
 
-			if (tp > 0) {
-				// Dice: (2.0 * TP) / (|A| + |B|)
-				score = (2.0 * tp) / (double)(sourceOnes + targetOnes);
+			if (score > 0.0) {
+				candidates.push_back({ target.id, score, histScore });
 			}
-		}
-
-		// Weighted Final Score: 70% Shape, 30% Color
-		// mappingtool: The new score calculation already incorporates the shape similarity directly.
-		// The histogram score is still calculated but not used in the final score for now.
-		// score = (shapeScore * 0.7) + (histScore * 0.3); // Removed as per new strategy
-
-		if (score > 0.0) {
-			candidates.push_back({ target.id, score, histScore });
 		}
 	}
 

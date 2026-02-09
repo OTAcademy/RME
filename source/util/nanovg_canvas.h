@@ -4,6 +4,7 @@
 #include "app/main.h"
 
 #include <unordered_map>
+#include <list>
 #include <cstdint>
 #include <memory>
 
@@ -184,6 +185,8 @@ private:
 
 	// Texture cache: ID -> NanoVG image handle
 	std::unordered_map<uint32_t, int> m_imageCache;
+	mutable std::list<uint32_t> m_lruList;
+	size_t m_maxCacheSize = 1024; // Default limit
 
 	// Scroll state
 	int m_scrollPos = 0;

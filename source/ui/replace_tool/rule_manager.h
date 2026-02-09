@@ -8,12 +8,12 @@
 static const uint16_t TRASH_ITEM_ID = 0xFFFF;
 
 struct ReplacementTarget {
-	uint16_t id;
-	int probability; // 0-100
+	uint16_t id = 0;
+	int probability = 0; // 0-100
 };
 
 struct ReplacementRule {
-	uint16_t fromId;
+	uint16_t fromId = 0;
 	std::vector<ReplacementTarget> targets;
 };
 

@@ -1,4 +1,5 @@
-#include "ui/replace_tool/replacement_engine.h"
+#include "app/main.h"
+#include "replacement_engine.h"
 
 ReplacementEngine::ReplacementEngine() : rng(std::random_device {}()) { }
 
@@ -7,14 +8,26 @@ bool ReplacementEngine::ResolveReplacement(uint16_t& resultId, const Replacement
 		return false;
 	}
 
-	// According to requirement: Roll for first, if fail, roll for second, etc.
-	// This is slightly different from a proportional distribution but follows the requested logic.
-	// Note: This means subsequent targets have a reduced effective probability.
-	std::uniform_int_distribution<int> dist(1, 100);
-
+	// Calculate total probability weight
+	int totalProb = 0;
 	for (const auto& target : rule.targets) {
-		int roll = dist(rng);
-		if (roll <= target.probability) {
+		totalProb += target.probability;
+	}
+
+	if (totalProb <= 0) {
+		return false;
+	}
+
+	// Use a single roll from 1 to max(100, totalProb)
+	// This ensures that if the UI says 100% total, exactly one target is picked.
+	// If total is < 100, the remainder is "no replacement".
+	std::uniform_int_distribution<int> dist(1, std::max(100, totalProb));
+	int roll = dist(rng);
+
+	int currentSum = 0;
+	for (const auto& target : rule.targets) {
+		currentSum += target.probability;
+		if (roll <= currentSum) {
 			resultId = target.id;
 			return true;
 		}
@@ -25,7 +38,11 @@ bool ReplacementEngine::ResolveReplacement(uint16_t& resultId, const Replacement
 
 #include "editor/editor.h"
 #include "ui/gui.h"
+#include "map/tile.h"
+#include "game/item.h"
+#include <algorithm>
 #include <map>
+#include <string>
 
 void ReplacementEngine::ExecuteReplacement(Editor* editor, const std::vector<ReplacementRule>& rules) {
 	if (rules.empty()) {
@@ -40,13 +57,13 @@ void ReplacementEngine::ExecuteReplacement(Editor* editor, const std::vector<Rep
 		}
 	}
 
-	auto finder = [&](Map&, Tile*, Item* item, long long) {
+	auto finder = [this, &ruleMap](Map&, Tile*, Item* item, long long) {
 		auto it = ruleMap.find(item->getID());
 		if (it != ruleMap.end()) {
 			uint16_t newId;
 			if (ResolveReplacement(newId, *it->second)) {
 				if (newId == TRASH_ITEM_ID) {
-					item->setID(0); // Delete/Clear item
+					item->setID(0); // Mark for deletion/clearing (Note: actual removal might need more logic but this is consistent with previous impl)
 				} else {
 					item->setID(newId);
 				}
@@ -54,7 +71,43 @@ void ReplacementEngine::ExecuteReplacement(Editor* editor, const std::vector<Rep
 		}
 	};
 
-	foreach_ItemOnMap(editor->map, finder, selectionOnly);
+	if (selectionOnly) {
+		// Optimization: Iterate only over selected tiles instead of the whole map
+		long long done = 0;
+		std::vector<Container*> containers;
+		containers.reserve(32);
+
+		for (Tile* tile : editor->selection.getTiles()) {
+			if (tile->ground) {
+				finder(editor->map, tile, tile->ground, ++done);
+			}
+
+			for (auto* item : tile->items) {
+				containers.clear();
+				Container* container = item->asContainer();
+				finder(editor->map, tile, item, ++done);
+
+				if (container) {
+					containers.push_back(container);
+					size_t index = 0;
+					while (index < containers.size()) {
+						container = containers[index++];
+						ItemVector& v = container->getVector();
+						for (auto* i : v) {
+							Container* c = i->asContainer();
+							finder(editor->map, tile, i, ++done);
+							if (c) {
+								containers.push_back(c);
+							}
+						}
+					}
+				}
+			}
+		}
+	} else {
+		foreach_ItemOnMap(editor->map, finder, false);
+	}
+
 	editor->map.doChange();
 	g_gui.RefreshView();
 }

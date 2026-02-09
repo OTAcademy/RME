@@ -357,8 +357,7 @@ protected:
 	std::vector<std::unique_ptr<LiveClient>> pending_live_clients;
 
 	friend class RenderingLock;
-	friend MapTab::MapTab(MapTabbook*, Editor*);
-	friend MapTab::MapTab(const MapTab*);
+	friend class MapTab;
 };
 
 extern GUI g_gui;

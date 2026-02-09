@@ -18,6 +18,7 @@ public:
 		virtual void OnRuleChanged() = 0;
 		virtual void OnClearRules() = 0;
 		virtual void OnSaveRule() = 0;
+		virtual void OnRuleItemSelected(uint16_t itemId) = 0;
 	};
 
 	// Hit testing results (Public for renderer access)
@@ -78,6 +79,11 @@ private:
 
 	// Drag feedback
 	HitResult m_dragHover;
+	bool m_isExternalDrag = false;
+
+	// Layout Cache
+	mutable std::vector<int> m_ruleYCache;
+	mutable int m_totalHeight = 0;
 };
 
 #endif

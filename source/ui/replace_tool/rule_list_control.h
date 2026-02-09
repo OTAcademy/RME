@@ -31,6 +31,7 @@ public:
 private:
 	void OnPaint(wxPaintEvent& event);
 	void OnMouse(wxMouseEvent& event);
+	void OnMouseWheel(wxMouseEvent& event);
 	void OnContextMenu(wxContextMenuEvent& event);
 	void OnScroll(wxScrollWinEvent& event);
 	void OnSize(wxSizeEvent& event);
