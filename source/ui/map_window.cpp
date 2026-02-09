@@ -106,6 +106,7 @@ void MapWindow::OnReplaceItemsDialogClose(wxCloseEvent& event) {
 		// unique_ptr will call Destroy() via custom deleter
 		replaceItemsDialog.reset();
 	}
+	event.Skip();
 }
 
 void MapWindow::SetSize(int x, int y, bool center) {

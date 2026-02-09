@@ -17,6 +17,7 @@ public:
 		virtual ~Listener() { }
 		virtual void OnRuleChanged() = 0;
 		virtual void OnClearRules() = 0;
+		virtual void OnSaveRule() = 0;
 	};
 
 	RuleBuilderPanel(wxWindow* parent, Listener* listener);
@@ -45,6 +46,7 @@ private:
 			AddTarget, // The [+] ghost slot at the end of targets
 			NewRule, // The large "Drop New Rule" area
 			ClearRules,
+			SaveRule,
 			DeleteRule, // The 'X' on the rule card
 			DeleteTarget // The 'X' overlay on a specific target
 		};
@@ -82,6 +84,7 @@ private:
 	// Drawing Helpers
 	void DrawHeader(NVGcontext* vg, float width);
 	void DrawClearButton(NVGcontext* vg, float width);
+	void DrawSaveButton(NVGcontext* vg, float width);
 	void DrawRuleCard(NVGcontext* vg, int ruleIndex, int y, int width);
 	void DrawRuleSource(NVGcontext* vg, int ruleIndex, float x, float y, float h);
 	void DrawRuleArrow(NVGcontext* vg, float x, float y, float h);

@@ -9,6 +9,8 @@
 #include "ui/replace_tool/rule_builder_panel.h"
 #include <wx/srchctrl.h>
 #include <wx/notebook.h>
+#include <wx/splitter.h>
+#include <wx/dialog.h>
 #include <map>
 
 class Editor;
@@ -28,9 +30,12 @@ public:
 	// RuleBuilderPanel::Listener
 	virtual void OnRuleChanged() override;
 	virtual void OnClearRules() override;
+	virtual void OnSaveRule() override;
 
 	// ItemGridPanel::Listener
 	virtual void OnItemSelected(ItemGridPanel* source, uint16_t itemId) override;
+
+	void OnClose(wxCloseEvent& event);
 
 private:
 	void InitLayout();
@@ -38,7 +43,7 @@ private:
 
 	// Event Handlers
 	void OnExecute(wxCommandEvent& event);
-	void OnSaveRule(wxCommandEvent& event);
+	// void OnSaveRule(wxCommandEvent& event); // Removed, using Listener instead
 
 	Editor* editor;
 
@@ -46,7 +51,7 @@ private:
 	ItemGridPanel* similarItemsGrid;
 	RuleBuilderPanel* ruleBuilder;
 	RuleListControl* savedRulesList;
-	wxButton* m_saveBtn;
+	// wxButton* m_saveBtn; // Removed
 	wxButton* m_executeBtn;
 	wxButton* m_addRuleBtn;
 	wxButton* m_editRuleBtn;

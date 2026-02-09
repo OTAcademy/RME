@@ -272,6 +272,10 @@ void RuleBuilderPanel::OnMouse(wxMouseEvent& event) {
 					m_listener->OnClearRules();
 				}
 			}
+		} else if (hit.type == HitResult::SaveRule) {
+			if (m_listener) {
+				m_listener->OnSaveRule();
+			}
 		}
 	}
 
@@ -294,11 +298,18 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 
 	// Header blocked area
 	if (y < HEADER_HEIGHT) {
-		// Only allow clicking the Clear button in the header
-		const int CLEAR_BTN_W = FromDIP(100);
-		if (x > width - CLEAR_BTN_W - 10) {
+		const int BTN_W = FromDIP(80);
+		const int GAP = FromDIP(10);
+
+		// Clear Button (Far right)
+		if (x > width - BTN_W - GAP) {
 			return { HitResult::ClearRules, -1, -1 };
 		}
+		// Save Button (Left of Clear)
+		if (x > width - (BTN_W * 2) - (GAP * 2) && x < width - BTN_W - GAP) {
+			return { HitResult::SaveRule, -1, -1 };
+		}
+
 		// Otherwise, we are clicking the header background/labels - consume the hit so we don't click rules underneath
 		return { HitResult::None, -1, -1 };
 	}
@@ -367,10 +378,7 @@ RuleBuilderPanel::HitResult RuleBuilderPanel::HitTest(int x, int y) const {
 	}
 
 	// Clear Rules Button (Far Right of Header)
-	const int CLEAR_BTN_W = FromDIP(100);
-	if (y < HEADER_HEIGHT && x > width - CLEAR_BTN_W - 10) {
-		return { HitResult::ClearRules, -1, -1 };
-	}
+	// Handled in block above
 
 	// New Rule Area (At the bottom)
 	int newRuleY = GetRuleY(m_rules.size(), width) + CARD_MARGIN_Y;
@@ -402,6 +410,7 @@ void RuleBuilderPanel::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 
 	DrawHeader(vg, width);
 	DrawClearButton(vg, width);
+	DrawSaveButton(vg, width);
 	nvgRestore(vg);
 
 	// 2. Draw Content (Implicitly scrolled by base class)
@@ -438,26 +447,52 @@ void RuleBuilderPanel::DrawHeader(NVGcontext* vg, float width) {
 }
 
 void RuleBuilderPanel::DrawClearButton(NVGcontext* vg, float width) {
-	const int CLEAR_BTN_W = FromDIP(100);
-	const int CLEAR_BTN_H = FromDIP(24);
-	float cbX = width - CLEAR_BTN_W - 10;
-	float cbY = (HEADER_HEIGHT - CLEAR_BTN_H) / 2.0f;
+	const int BTN_W = FromDIP(80);
+	const int BTN_H = FromDIP(24);
+	const int GAP = FromDIP(10);
+	float cbX = width - BTN_W - GAP;
+	float cbY = (HEADER_HEIGHT - BTN_H) / 2.0f;
 
-	bool hoverClear = (m_dragHover.type == HitResult::ClearRules);
+	bool hover = (m_dragHover.type == HitResult::ClearRules);
 
 	nvgBeginPath(vg);
-	nvgRoundedRect(vg, cbX, cbY, CLEAR_BTN_W, CLEAR_BTN_H, 4);
-	if (hoverClear) {
-		nvgFillColor(vg, nvgRGBA(180, 40, 40, 255));
+	nvgRoundedRect(vg, cbX, cbY, BTN_W, BTN_H, 4);
+	if (hover) {
+		nvgFillColor(vg, nvgRGBA(200, 50, 50, 255));
 	} else {
-		nvgFillColor(vg, nvgRGBA(60, 60, 60, 255));
+		nvgFillColor(vg, nvgRGBA(180, 40, 40, 255)); // Always Red
 	}
 	nvgFill(vg);
 
 	nvgFillColor(vg, nvgRGBA(255, 255, 255, 255));
 	nvgFontSize(vg, 11.0f);
 	nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
-	nvgText(vg, cbX + CLEAR_BTN_W / 2.0f, cbY + CLEAR_BTN_H / 2.0f, "CLEAR RULES", nullptr);
+	nvgText(vg, cbX + BTN_W / 2.0f, cbY + BTN_H / 2.0f, "CLEAR", nullptr);
+}
+
+void RuleBuilderPanel::DrawSaveButton(NVGcontext* vg, float width) {
+	const int BTN_W = FromDIP(80);
+	const int BTN_H = FromDIP(24);
+	const int GAP = FromDIP(10);
+	// Left of Clear button
+	float cbX = width - (BTN_W * 2) - (GAP * 2);
+	float cbY = (HEADER_HEIGHT - BTN_H) / 2.0f;
+
+	bool hover = (m_dragHover.type == HitResult::SaveRule);
+
+	nvgBeginPath(vg);
+	nvgRoundedRect(vg, cbX, cbY, BTN_W, BTN_H, 4);
+	if (hover) {
+		nvgFillColor(vg, nvgRGBA(50, 200, 50, 255));
+	} else {
+		nvgFillColor(vg, nvgRGBA(40, 180, 40, 255)); // Always Green
+	}
+	nvgFill(vg);
+
+	nvgFillColor(vg, nvgRGBA(255, 255, 255, 255));
+	nvgFontSize(vg, 11.0f);
+	nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+	nvgText(vg, cbX + BTN_W / 2.0f, cbY + BTN_H / 2.0f, "SAVE", nullptr);
 }
 
 void RuleBuilderPanel::DrawRuleCard(NVGcontext* vg, int ruleIndex, int y, int width) {

@@ -4,6 +4,11 @@
 #include "editor/editor.h"
 #include "game/items.h"
 #include "ui/gui.h"
+#include "ui/theme.h"
+#include "editor/editor.h"
+#include "game/items.h"
+#include "ui/gui.h"
+#include "app/settings.h"
 #include "app/managers/version_manager.h"
 #include <algorithm> // For std::find
 #include <wx/statline.h>
@@ -33,16 +38,43 @@
 ReplaceToolWindow::ReplaceToolWindow(wxWindow* parent, Editor* editor) : wxDialog(parent, wxID_ANY, "Advanced Replace Tool", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
 																		 editor(editor) {
 
-	SetSize(FromDIP(wxSize(1400, 850))); // Wider for 64px columns
 	VisualSimilarityService::Get().StartIndexing();
 	SetBackgroundColour(Theme::Get(Theme::Role::Surface));
 
 	InitLayout();
 
 	UpdateSavedRulesList();
+
+	Bind(wxEVT_CLOSE_WINDOW, &ReplaceToolWindow::OnClose, this);
+
+	// Restore window size (Physical pixels)
+	int w = g_settings.getInteger(Config::REPLACE_TOOL_WINDOW_WIDTH);
+	int h = g_settings.getInteger(Config::REPLACE_TOOL_WINDOW_HEIGHT);
+
+	if (w < 600 || h < 400) {
+		// Default size (Logical -> Physical)
+		SetSize(FromDIP(wxSize(1400, 850)));
+	} else {
+		// Restored size (Already Physical)
+		SetSize(wxSize(w, h));
+	}
 }
 
-ReplaceToolWindow::~ReplaceToolWindow() { }
+ReplaceToolWindow::~ReplaceToolWindow() {
+	// Unbind to be safe, though destructor usually handles cleanup
+	Unbind(wxEVT_CLOSE_WINDOW, &ReplaceToolWindow::OnClose, this);
+}
+
+void ReplaceToolWindow::OnClose(wxCloseEvent& event) {
+	if (!IsMaximized()) {
+		// GetSize returns Physical pixels on Windows
+		wxSize size = GetSize();
+		g_settings.setInteger(Config::REPLACE_TOOL_WINDOW_WIDTH, size.GetWidth());
+		g_settings.setInteger(Config::REPLACE_TOOL_WINDOW_HEIGHT, size.GetHeight());
+		g_settings.save();
+	}
+	event.Skip(); // Allow window to close
+}
 
 void ReplaceToolWindow::InitLayout() {
 	wxBoxSizer* rootSizer = new wxBoxSizer(wxVERTICAL);
@@ -71,24 +103,7 @@ void ReplaceToolWindow::InitLayout() {
 
 	ruleBuilder = new RuleBuilderPanel(col2Card, this);
 	col2Card->GetContentSizer()->Add(ruleBuilder, wxSizerFlags(1).Expand().Border(wxALL, padding));
-	col2Card->SetShowFooter(true);
-
-	// Rule Builder Footer Buttons
-	wxBoxSizer* ruleFooterSizer = new wxBoxSizer(wxHORIZONTAL);
-	m_saveBtn = new wxButton(col2Card, wxID_ANY, "Save Rule");
-	m_executeBtn = new wxButton(col2Card, wxID_ANY, "Execute Replace");
-	m_executeBtn->SetDefault();
-	m_executeBtn->SetBackgroundColour(Theme::Get(Theme::Role::Accent));
-	m_executeBtn->SetForegroundColour(*wxWHITE);
-
-	ruleFooterSizer->AddStretchSpacer(1);
-	ruleFooterSizer->Add(m_saveBtn, wxSizerFlags(0).Border(wxALL | wxALIGN_CENTER_VERTICAL, padding / 2));
-	ruleFooterSizer->Add(m_executeBtn, wxSizerFlags(0).Border(wxALL | wxALIGN_CENTER_VERTICAL, padding / 2));
-	ruleFooterSizer->AddStretchSpacer(1);
-	col2Card->GetFooterSizer()->Add(ruleFooterSizer, wxSizerFlags(1).Expand());
-
-	m_saveBtn->Bind(wxEVT_BUTTON, &ReplaceToolWindow::OnSaveRule, this);
-	m_executeBtn->Bind(wxEVT_BUTTON, &ReplaceToolWindow::OnExecute, this);
+	col2Card->SetShowFooter(false); // No footer anymore
 
 	mainRowSizer->Add(col2Card, wxSizerFlags(4).Expand().Border(wxLEFT | wxRIGHT, padding / 2)); // Flex 4
 
@@ -104,27 +119,81 @@ void ReplaceToolWindow::InitLayout() {
 	mainRowSizer->Add(col3Card, wxSizerFlags(3).Expand().Border(wxLEFT | wxRIGHT, padding / 2)); // Flex 3
 
 	// ---------------------------------------------------------
-	// COLUMN 4: Saved Rules
+	// COLUMN 4: Saved Rules (Split: List / Actions)
 	// ---------------------------------------------------------
-	CardPanel* col4Card = new CardPanel(this, wxID_ANY);
-	col4Card->SetTitle("SAVED RULES");
-	col4Card->SetShowFooter(true);
+	// We use a splitter, but instead of raw panels, we put CardPanels inside to get the headers
+	wxSplitterWindow* splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_LIVE_UPDATE | wxSP_3DSASH | wxSP_NOBORDER);
 
-	savedRulesList = new RuleListControl(col4Card, this);
-	col4Card->GetContentSizer()->Add(savedRulesList, wxSizerFlags(1).Expand().Border(wxALL, padding));
+	// -- Top Card: Rules List --
+	CardPanel* savedRulesCard = new CardPanel(splitter, wxID_ANY);
+	savedRulesCard->SetTitle("SAVED RULES");
+	savedRulesCard->SetShowFooter(false);
 
-	// Saved Rules Footer Buttons
-	wxBoxSizer* savedFooterSizer = new wxBoxSizer(wxHORIZONTAL);
-	m_addRuleBtn = new wxButton(col4Card, wxID_ANY, "Add", wxDefaultPosition, FromDIP(wxSize(60, -1)));
-	m_editRuleBtn = new wxButton(col4Card, wxID_ANY, "Edit", wxDefaultPosition, FromDIP(wxSize(60, -1)));
-	m_deleteRuleBtn = new wxButton(col4Card, wxID_ANY, "Del", wxDefaultPosition, FromDIP(wxSize(60, -1)));
+	savedRulesList = new RuleListControl(savedRulesCard, this);
+	savedRulesCard->GetContentSizer()->Add(savedRulesList, wxSizerFlags(1).Expand().Border(wxALL, padding));
 
-	savedFooterSizer->AddStretchSpacer(1);
-	savedFooterSizer->Add(m_addRuleBtn, wxSizerFlags(0).Border(wxALL | wxALIGN_CENTER_VERTICAL, 2));
-	savedFooterSizer->Add(m_editRuleBtn, wxSizerFlags(0).Border(wxALL | wxALIGN_CENTER_VERTICAL, 2));
-	savedFooterSizer->Add(m_deleteRuleBtn, wxSizerFlags(0).Border(wxALL | wxALIGN_CENTER_VERTICAL, 2));
-	savedFooterSizer->AddStretchSpacer(1);
-	col4Card->GetFooterSizer()->Add(savedFooterSizer, wxSizerFlags(1).Expand());
+	// -- Bottom Card: Actions --
+	CardPanel* actionsCard = new CardPanel(splitter, wxID_ANY);
+	actionsCard->SetTitle("ACTIONS");
+	actionsCard->SetShowFooter(false);
+
+	wxBoxSizer* actionsSizer = new wxBoxSizer(wxVERTICAL);
+
+	// Grid for management buttons (Add, Edit, Del)
+	wxBoxSizer* manageBtnsSizer = new wxBoxSizer(wxHORIZONTAL);
+
+	m_addRuleBtn = new wxButton(actionsCard, wxID_ANY, "ADD", wxDefaultPosition, FromDIP(wxSize(-1, 28)));
+	m_addRuleBtn->SetBackgroundColour(wxColour(40, 180, 40)); // Green
+	m_addRuleBtn->SetForegroundColour(*wxWHITE);
+	m_addRuleBtn->SetFont(Theme::GetFont(9, true));
+
+	m_editRuleBtn = new wxButton(actionsCard, wxID_ANY, "EDIT", wxDefaultPosition, FromDIP(wxSize(-1, 28)));
+	m_editRuleBtn->SetBackgroundColour(wxColour(80, 80, 80)); // Neutral Dark Gray
+	m_editRuleBtn->SetForegroundColour(*wxWHITE);
+	m_editRuleBtn->SetFont(Theme::GetFont(9, true));
+
+	m_deleteRuleBtn = new wxButton(actionsCard, wxID_ANY, "DEL", wxDefaultPosition, FromDIP(wxSize(-1, 28)));
+	m_deleteRuleBtn->SetBackgroundColour(wxColour(180, 40, 40)); // Red
+	m_deleteRuleBtn->SetForegroundColour(*wxWHITE);
+	m_deleteRuleBtn->SetFont(Theme::GetFont(9, true));
+
+	manageBtnsSizer->Add(m_addRuleBtn, wxSizerFlags(1).Border(wxRIGHT, 2));
+	manageBtnsSizer->Add(m_editRuleBtn, wxSizerFlags(1).Border(wxLEFT | wxRIGHT, 2));
+	manageBtnsSizer->Add(m_deleteRuleBtn, wxSizerFlags(1).Border(wxLEFT, 2));
+
+	actionsSizer->Add(manageBtnsSizer, wxSizerFlags(0).Expand().Border(wxALL, padding));
+
+	actionsSizer->AddStretchSpacer(1);
+
+	// Execute Button
+	m_executeBtn = new wxButton(actionsCard, wxID_ANY, "EXECUTE REPLACE", wxDefaultPosition, FromDIP(wxSize(-1, 32)));
+	m_executeBtn->SetDefault();
+	m_executeBtn->SetBackgroundColour(Theme::Get(Theme::Role::Accent)); // Blue
+	m_executeBtn->SetForegroundColour(*wxWHITE);
+	m_executeBtn->SetFont(Theme::GetFont(10, true));
+	actionsSizer->Add(m_executeBtn, wxSizerFlags(0).Expand().Border(wxALL, padding));
+
+	// Close Button
+	wxButton* closeBtn = new wxButton(actionsCard, wxID_ANY, "CLOSE", wxDefaultPosition, FromDIP(wxSize(-1, 32)));
+	closeBtn->SetBackgroundColour(wxColour(120, 120, 120)); // Gray
+	closeBtn->SetForegroundColour(*wxWHITE);
+	closeBtn->SetFont(Theme::GetFont(10, true));
+	actionsSizer->Add(closeBtn, wxSizerFlags(0).Expand().Border(wxALL, padding));
+
+	actionsCard->GetContentSizer()->Add(actionsSizer, wxSizerFlags(1).Expand());
+
+	// Setup Splitter
+	splitter->SetMinimumPaneSize(FromDIP(100));
+	splitter->SplitHorizontally(savedRulesCard, actionsCard);
+	splitter->SetSashGravity(0.65); // Give 65% to the list
+
+	mainRowSizer->Add(splitter, wxSizerFlags(2).Expand().Border(wxALL, padding / 2)); // Flex 2
+
+	// ---------------------------------------------------------
+	// BINDINGS
+	// ---------------------------------------------------------
+	m_executeBtn->Bind(wxEVT_BUTTON, &ReplaceToolWindow::OnExecute, this);
+	closeBtn->Bind(wxEVT_BUTTON, [this](wxCommandEvent&) { Close(); });
 
 	m_addRuleBtn->Bind(wxEVT_BUTTON, [this](wxCommandEvent&) {
 		std::vector<ReplacementRule> rules = ruleBuilder->GetRules();
@@ -161,8 +230,6 @@ void ReplaceToolWindow::InitLayout() {
 			}
 		}
 	});
-
-	mainRowSizer->Add(col4Card, wxSizerFlags(2).Expand().Border(wxLEFT | wxRIGHT, padding / 2)); // Flex 2
 
 	// Add Main Row to Root
 	rootSizer->Add(mainRowSizer, wxSizerFlags(1).Expand().Border(wxALL, padding / 2));
@@ -243,7 +310,7 @@ void ReplaceToolWindow::OnExecute(wxCommandEvent&) {
 	}
 }
 
-void ReplaceToolWindow::OnSaveRule(wxCommandEvent&) {
+void ReplaceToolWindow::OnSaveRule() {
 	std::vector<ReplacementRule> rules = ruleBuilder->GetRules();
 	if (rules.empty()) {
 		return;
