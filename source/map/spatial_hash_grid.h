@@ -8,6 +8,8 @@
 #include <vector>
 #include <utility>
 #include <ranges>
+#include <algorithm>
+#include <tuple>
 
 class MapNode;
 class BaseMap;
@@ -53,40 +55,24 @@ public:
 		int end_nx = (max_x - 1) >> NODE_SHIFT;
 		int end_ny = (max_y - 1) >> NODE_SHIFT;
 
-		uint64_t cached_cell_key = 0;
-		bool has_cached_cell = false;
-		GridCell* cached_cell = nullptr;
+		int start_cx = start_nx >> NODES_PER_CELL_SHIFT;
+		int start_cy = start_ny >> NODES_PER_CELL_SHIFT;
+		int end_cx = end_nx >> NODES_PER_CELL_SHIFT;
+		int end_cy = end_ny >> NODES_PER_CELL_SHIFT;
 
-		for (int ny : std::views::iota(start_ny, end_ny + 1)) {
-			int cy = ny >> NODES_PER_CELL_SHIFT;
-			int local_ny = ny & (NODES_PER_CELL - 1);
+		// Cast operands to long long to avoid subtraction overflow before the final multiplication.
+		// (static_cast<long long>(end_cx) - start_cx + 1) ensures the expression is evaluated in 64-bit.
+		long long num_viewport_cells = (static_cast<long long>(end_cx) - start_cx + 1) * (static_cast<long long>(end_cy) - start_cy + 1);
 
-			for (int nx : std::views::iota(start_nx, end_nx + 1)) {
-				int cx = nx >> NODES_PER_CELL_SHIFT;
-				int local_nx = nx & (NODES_PER_CELL - 1);
-
-				uint64_t key = makeKeyFromCell(cx, cy);
-
-				GridCell* cell = nullptr;
-				if (has_cached_cell && key == cached_cell_key) {
-					cell = cached_cell;
-				} else {
-					auto it = cells.find(key);
-					if (it != cells.end()) {
-						cell = it->second.get();
-						cached_cell = cell;
-						cached_cell_key = key;
-						has_cached_cell = true;
-					}
-				}
-
-				if (cell) {
-					int idx = local_ny * NODES_PER_CELL + local_nx;
-					if (MapNode* node = cell->nodes[idx].get()) {
-						func(node, nx << NODE_SHIFT, ny << NODE_SHIFT);
-					}
-				}
-			}
+		// Strategy selection heuristic:
+		// If the number of cells in the viewport is greater than the total number of allocated cells,
+		// it's more efficient to iterate over allocated cells and check if they are within the viewport.
+		// Otherwise, we iterate over the viewport cells and look them up in the hash map.
+		// Mixing signed long long and unsigned size_t is safe here as both are non-negative.
+		if (num_viewport_cells > static_cast<long long>(cells.size())) {
+			visitLeavesByCells(start_nx, start_ny, end_nx, end_ny, start_cx, start_cy, end_cx, end_cy, std::forward<Func>(func));
+		} else {
+			visitLeavesByViewport(start_nx, start_ny, end_nx, end_ny, start_cx, start_cy, end_cx, end_cy, std::forward<Func>(func));
 		}
 	}
 
@@ -101,10 +87,123 @@ protected:
 	BaseMap& map;
 	std::unordered_map<uint64_t, std::unique_ptr<GridCell>> cells;
 
+	// Traverses cells by iterating over the viewport coordinates.
+	// Efficient for small or dense viewports.
+	template <typename Func>
+	void visitLeavesByViewport(int start_nx, int start_ny, int end_nx, int end_ny, int start_cx, int start_cy, int end_cx, int end_cy, Func&& func) {
+		uint64_t cached_cell_key = 0;
+		bool has_cached_cell = false;
+		GridCell* cached_cell = nullptr;
+
+		for (int ny : std::views::iota(start_ny, end_ny + 1)) {
+			int cy = ny >> NODES_PER_CELL_SHIFT;
+			int local_ny = ny & (NODES_PER_CELL - 1);
+
+			for (int cx = start_cx; cx <= end_cx; ++cx) {
+				uint64_t key = makeKeyFromCell(cx, cy);
+
+				GridCell* cell = nullptr;
+				if (has_cached_cell && key == cached_cell_key) {
+					cell = cached_cell;
+				} else {
+					auto it = cells.find(key);
+					if (it != cells.end()) {
+						cell = it->second.get();
+						cached_cell = cell;
+						cached_cell_key = key;
+						has_cached_cell = true;
+					} else {
+						has_cached_cell = false;
+					}
+				}
+
+				if (cell) {
+					int cell_start_nx = cx << NODES_PER_CELL_SHIFT;
+					int local_start_nx = std::max(start_nx, cell_start_nx) - cell_start_nx;
+					int local_end_nx = std::min(end_nx, cell_start_nx + NODES_PER_CELL - 1) - cell_start_nx;
+
+					for (int lnx = local_start_nx; lnx <= local_end_nx; ++lnx) {
+						int idx = local_ny * NODES_PER_CELL + lnx;
+						if (MapNode* node = cell->nodes[idx].get()) {
+							func(node, (cell_start_nx + lnx) << NODE_SHIFT, ny << NODE_SHIFT);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Traverses cells by iterating over pre-filtered allocated cells.
+	// Efficient for huge or sparse viewports.
+	template <typename Func>
+	void visitLeavesByCells(int start_nx, int start_ny, int end_nx, int end_ny, int start_cx, int start_cy, int end_cx, int end_cy, Func&& func) {
+		struct CellEntry {
+			int cx;
+			int cy;
+			GridCell* cell;
+		};
+		std::vector<CellEntry> visible_cells;
+		visible_cells.reserve(std::min(cells.size(), static_cast<size_t>((static_cast<long long>(end_cx) - start_cx + 1) * (static_cast<long long>(end_cy) - start_cy + 1))));
+
+		for (const auto& [key, cell_ptr] : cells) {
+			int cx, cy;
+			getCellCoordsFromKey(key, cx, cy);
+
+			if (cx >= start_cx && cx <= end_cx && cy >= start_cy && cy <= end_cy) {
+				visible_cells.push_back({ .cx = cx, .cy = cy, .cell = cell_ptr.get() });
+			}
+		}
+
+		if (visible_cells.empty()) {
+			return;
+		}
+
+		if (visible_cells.size() > 1) {
+			std::sort(visible_cells.begin(), visible_cells.end(), [](const CellEntry& a, const CellEntry& b) {
+				return std::tie(a.cy, a.cx) < std::tie(b.cy, b.cx);
+			});
+		}
+
+		size_t first_in_row_idx = 0;
+		size_t num_visible = visible_cells.size();
+
+		for (int ny : std::views::iota(start_ny, end_ny + 1)) {
+			int current_cy = ny >> NODES_PER_CELL_SHIFT;
+			int local_ny = ny & (NODES_PER_CELL - 1);
+
+			// Advance to current row. This correctly handles gaps in Y coordinates.
+			while (first_in_row_idx < num_visible && visible_cells[first_in_row_idx].cy < current_cy) {
+				first_in_row_idx++;
+			}
+
+			// Iterate cells in current row
+			for (size_t i = first_in_row_idx; i < num_visible && visible_cells[i].cy == current_cy; ++i) {
+				const auto& entry = visible_cells[i];
+				GridCell* cell = entry.cell;
+				int cx = entry.cx;
+
+				int cell_start_nx = cx << NODES_PER_CELL_SHIFT;
+				int local_start_nx = std::max(start_nx, cell_start_nx) - cell_start_nx;
+				int local_end_nx = std::min(end_nx, cell_start_nx + NODES_PER_CELL - 1) - cell_start_nx;
+
+				for (int lnx = local_start_nx; lnx <= local_end_nx; ++lnx) {
+					int idx = local_ny * NODES_PER_CELL + lnx;
+					if (MapNode* node = cell->nodes[idx].get()) {
+						func(node, (cell_start_nx + lnx) << NODE_SHIFT, ny << NODE_SHIFT);
+					}
+				}
+			}
+		}
+	}
+
 	static uint64_t makeKeyFromCell(int cx, int cy) {
-		// Assumption: cell coordinates fit in 32 bits (covering +/- 2 billion tiles).
-		// Tibia maps are typically limited to 65k x 65k.
-		return (static_cast<uint64_t>(static_cast<uint32_t>(cx)) << 32) | static_cast<uint64_t>(static_cast<uint32_t>(cy));
+		static_assert(sizeof(int) == 4, "Key packing assumes exactly 32-bit integers");
+		return (static_cast<uint64_t>(static_cast<uint32_t>(cx)) << 32) | static_cast<uint32_t>(cy);
+	}
+
+	static void getCellCoordsFromKey(uint64_t key, int& cx, int& cy) {
+		cx = static_cast<int32_t>(key >> 32);
+		cy = static_cast<int32_t>(key);
 	}
 
 	static uint64_t makeKey(int x, int y) {

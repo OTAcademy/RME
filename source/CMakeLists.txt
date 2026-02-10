@@ -299,7 +299,6 @@ set(rme_H
     ${CMAKE_CURRENT_LIST_DIR}/ui/tool_options_window.h
     ${CMAKE_CURRENT_LIST_DIR}/ui/tool_options_surface.h
     ${CMAKE_CURRENT_LIST_DIR}/util/common.h
-    ${CMAKE_CURRENT_LIST_DIR}/util/con_vector.h
     ${CMAKE_CURRENT_LIST_DIR}/util/json.h
     ${CMAKE_CURRENT_LIST_DIR}/util/nanovg_canvas.h
     ${CMAKE_CURRENT_LIST_DIR}/util/virtual_item_grid.h

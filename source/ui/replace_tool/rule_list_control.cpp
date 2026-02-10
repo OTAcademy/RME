@@ -2,6 +2,7 @@
 #include "ui/theme.h"
 #include <wx/dcbuffer.h>
 #include <wx/graphics.h>
+#include <memory>
 
 RuleListControl::RuleListControl(wxWindow* parent, Listener* listener) : wxControl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL | wxNO_BORDER | wxWANTS_CHARS),
 																		 m_listener(listener) {

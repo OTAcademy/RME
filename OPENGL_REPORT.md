@@ -1,43 +1,49 @@
 OPENGL RENDERING SPECIALIST - Daily Report
-Date: 2024-12-15 14:30
+Date: 2024-05-24 10:00
 Files Scanned: 24
 Review Time: 20 minutes
 Quick Summary
-Found 0 critical issues in the rendering pipeline. The codebase demonstrates high-performance batching and optimization practices.
-The previously mentioned issues (individual draw calls, redundant texture binds, static data upload) are NOT present in the current implementation.
-The system utilizes efficient `SpriteBatch` with `glDrawElementsInstanced` and `RingBuffer` for data upload.
-
+Found 1 critical issue in TileRenderer.cpp / SpriteBatch.cpp - Interleaved renderer calls causing GL state corruption.
+Estimated improvement: Prevents rendering artifacts and potential crashes.
 Issue Count
-CRITICAL: 0
-HIGH: 0
-MEDIUM: 0
-LOW: 2
+CRITICAL: 1
+HIGH: 2
+MEDIUM: 1
+LOW: 1
 
 Issues Found
-LOW: Could use compressed texture formats
-Location: source/rendering/core/atlas_manager.cpp:160
-Problem: `AtlasManager` initializes texture array with `GL_R8UI` (for minimap) or `GL_RGBA8` (implied for main atlas, though `AtlasManager` code shows `glTextureStorage3D` with `GL_R8UI` for minimap, wait... `AtlasManager::ensureInitialized` calls `atlas_.initialize`. `TextureAtlas::initialize` likely uses `GL_RGBA8`.)
-Impact: Higher VRAM usage than necessary.
-Fix: Use compressed formats like `GL_COMPRESSED_RGBA_S3TC_DXT5_EXT` or ASTC if available.
-Expected improvement: ~4x VRAM reduction for sprites.
+CRITICAL: Interleaved SpriteBatch and PrimitiveRenderer calls without state protection
+Location: src/rendering/drawers/tiles/tile_renderer.cpp (DrawHookIndicator) and src/rendering/core/sprite_batch.cpp
+Problem: `TileRenderer` calls `DrawHookIndicator` (using `PrimitiveRenderer`) inside the tile loop while `SpriteBatch` is active. `PrimitiveRenderer::flush` changes the active shader and VAO. `SpriteBatch::flush` (called later) assumes its shader/VAO are still bound but does not re-bind them, leading to drawing with the wrong shader state.
+Impact: Rendering corruption, undefined behavior, potential driver crashes.
+Fix: Modify `SpriteBatch::flush` to robustly bind its shader and VAO every time, handling external state changes.
 
-LOW: Opportunity for shared geometry buffers
-Location: source/rendering/map_drawer.cpp, source/rendering/core/sprite_batch.cpp, source/rendering/drawers/minimap_renderer.cpp
-Problem: Multiple classes create their own quad VBOs (`MapDrawer` for post-process, `SpriteBatch` for sprites, `MinimapRenderer` for minimap).
-Impact: Minor GPU memory overhead (negligible but unclean).
-Fix: Create a shared `GeometryManager` or `Graphics::GetQuadVBO()` to reuse a single unit quad VBO.
-Expected improvement: Code cleanliness.
+HIGH: Redundant texture binding in tile loop
+Location: src/rendering/drawers/tiles/tile_renderer.cpp
+Problem: Although `SpriteBatch` batches draw calls, the interleaving with `PrimitiveRenderer` forces frequent flushes and state changes (Shader/VAO switches), negating batching benefits.
+Impact: Increased CPU overhead due to excessive GL state changes.
+Fix: Convert `DrawHookIndicator` and `BrushCursorDrawer` to use `SpriteBatch` exclusively where possible, or batch primitives separately.
+
+HIGH: Static tile geometry uploaded every frame
+Location: src/rendering/drawers/map_layer_drawer.cpp
+Problem: Map geometry is mostly static but is rebuilt and uploaded to `SpriteBatch`'s dynamic buffer every frame.
+Impact: Wastes PCIe bandwidth and CPU time.
+Fix: Implement static VBO caching for map chunks (nodes) using `GL_STATIC_DRAW`, only updating when tiles change.
+
+MEDIUM: Hook Indicator using PrimitiveRenderer
+Location: src/rendering/drawers/entities/item_drawer.cpp
+Problem: `DrawHookIndicator` uses `PrimitiveRenderer` to draw simple triangles. `SpriteBatch` cannot easily draw arbitrary triangles, forcing a renderer switch.
+Impact: Breaks batching in the main render loop.
+Fix: Add a "hook" sprite to the atlas or implement a way to draw simple geometric shapes in `SpriteBatch`.
+
+LOW/INFO: LightDrawer uses CPU accumulation
+Location: src/rendering/drawers/tiles/tile_renderer.cpp
+Problem: `AddLight` accumulates lights in a CPU vector.
+Impact: Minor CPU overhead.
+Fix: Acceptable for current light counts.
 
 Summary Stats
-Most common issue: N/A
-Cleanest file: source/rendering/drawers/tiles/tile_renderer.cpp (Correctly uses `SpriteBatch` via `SpriteDrawer`)
-Needs attention: None (System is optimized)
-Estimated total speedup: N/A (Already optimized)
-
-Integration Details
-Estimated Runtime: N/A
-Expected Findings: 0 critical issues
-Automation: Continue daily scans to prevent regression.
-
-RASTER'S OBSERVATIONS
-The rendering pipeline is robust. `SpriteBatch` correctly handles batching, `RingBuffer` uses persistent mapping for efficient data upload, and `TextureAtlas` uses array textures to avoid binding thrashing. The `MapLayerDrawer` performs CPU-side culling before submission. The example issues from the training data (individual draw calls in `TileRenderer`) have been resolved or were not present in this version.
+Most common issue: Renderer Interleaving (2 locations)
+Cleanest file: src/rendering/core/graphics.cpp
+Needs attention: src/rendering/core/sprite_batch.cpp (Robustness fix required)
+Estimated total speedup: N/A (Stability fix)

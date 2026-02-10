@@ -422,9 +422,9 @@ void DrawOperations::draw(Editor& editor, const PositionVector& tilestodraw, Pos
 					draw_map->setTile(*it, std::move(new_tile));
 				}
 			}
-			for (PositionVector::const_iterator it = tilestodraw.begin(); it != tilestodraw.end(); ++it) {
-				// Get the correct tiles from the draw map instead of the editor map
-				Tile* tile = draw_map->getTile(*it);
+			// Iterate over the map instead of tilestodraw to avoid duplicates!
+			for (MapIterator it = draw_map->begin(); it != draw_map->end(); ++it) {
+				Tile* tile = it->get();
 				if (tile) {
 					TileOperations::wallize(tile, draw_map);
 					action->addChange(std::make_unique<Change>(tile));
