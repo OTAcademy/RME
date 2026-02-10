@@ -40,6 +40,7 @@ public:
 
 	virtual void DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width = -1, int height = -1) = 0;
 	virtual void unloadDC() = 0;
+	virtual wxSize GetSize() const = 0;
 
 private:
 	Sprite(const Sprite&);
@@ -54,6 +55,9 @@ public:
 
 	void DrawTo(wxDC* dc, SpriteSize sz, int start_x, int start_y, int width = -1, int height = -1) override;
 	virtual void unloadDC() override;
+	wxSize GetSize() const override {
+		return wxSize(32, 32);
+	}
 
 	GameSprite* parent;
 	Outfit outfit;
@@ -74,6 +78,10 @@ public:
 	virtual void DrawTo(wxDC* dc, SpriteSize sz, const Outfit& outfit, int start_x, int start_y, int width = -1, int height = -1);
 
 	void unloadDC() override;
+
+	wxSize GetSize() const override {
+		return wxSize(width * 32, height * 32);
+	}
 
 	void clean(time_t time);
 

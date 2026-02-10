@@ -201,79 +201,87 @@ int NanoVGCanvas::GetOrCreateSpriteTexture(NVGcontext* vg, Sprite* sprite) {
 	// Try to get as GameSprite for RGBA access (Fast Path)
 	GameSprite* gs = dynamic_cast<GameSprite*>(sprite);
 	if (gs && !gs->spriteList.empty()) {
-		// Calculate composite size
-		int w = gs->width * 32;
-		int h = gs->height * 32;
-		if (w <= 0 || h <= 0) {
-			return 0;
-		}
+		return CreateGameSpriteTexture(vg, gs, spriteId);
+	}
 
-		// Create composite RGBA buffer
-		size_t bufferSize = static_cast<size_t>(w) * h * 4;
-		std::vector<uint8_t> composite(bufferSize, 0);
+	// Generic Fallback (Slow Path via wxDC)
+	return CreateGenericSpriteTexture(vg, sprite, spriteId);
+}
 
-		// Composite all layers
-		int px = (gs->pattern_x >= 3) ? 2 : 0;
-		for (int l = 0; l < gs->layers; ++l) {
-			for (int sw = 0; sw < gs->width; ++sw) {
-				for (int sh = 0; sh < gs->height; ++sh) {
-					int idx = gs->getIndex(sw, sh, l, px, 0, 0, 0);
-					if (idx < 0 || static_cast<size_t>(idx) >= gs->spriteList.size()) {
-						continue;
-					}
+int NanoVGCanvas::CreateGameSpriteTexture(NVGcontext* vg, GameSprite* gs, uint32_t spriteId) {
+	// Calculate composite size
+	int w = gs->width * 32;
+	int h = gs->height * 32;
+	if (w <= 0 || h <= 0) {
+		return 0;
+	}
 
-					auto image = gs->spriteList[idx];
-					if (!image) {
-						continue;
-					}
+	// Create composite RGBA buffer
+	size_t bufferSize = static_cast<size_t>(w) * h * 4;
+	std::vector<uint8_t> composite(bufferSize, 0);
 
-					auto data = image->getRGBAData();
-					if (!data) {
-						continue;
-					}
+	// Composite all layers
+	int px = (gs->pattern_x >= 3) ? 2 : 0;
+	for (int l = 0; l < gs->layers; ++l) {
+		for (int sw = 0; sw < gs->width; ++sw) {
+			for (int sh = 0; sh < gs->height; ++sh) {
+				int idx = gs->getIndex(sw, sh, l, px, 0, 0, 0);
+				if (idx < 0 || static_cast<size_t>(idx) >= gs->spriteList.size()) {
+					continue;
+				}
 
-					int part_x = (gs->width - sw - 1) * 32;
-					int part_y = (gs->height - sh - 1) * 32;
+				auto image = gs->spriteList[idx];
+				if (!image) {
+					continue;
+				}
 
-					for (int sy = 0; sy < 32; ++sy) {
-						for (int sx = 0; sx < 32; ++sx) {
-							int dy = part_y + sy;
-							int dx = part_x + sx;
-							int di = (dy * w + dx) * 4;
-							int si = (sy * 32 + sx) * 4;
+				auto data = image->getRGBAData();
+				if (!data) {
+					continue;
+				}
 
-							uint8_t sa = data[si + 3];
-							if (sa == 0) {
-								continue;
-							}
+				int part_x = (gs->width - sw - 1) * 32;
+				int part_y = (gs->height - sh - 1) * 32;
 
-							if (sa == 255) {
-								composite[di + 0] = data[si + 0];
-								composite[di + 1] = data[si + 1];
-								composite[di + 2] = data[si + 2];
-								composite[di + 3] = 255;
-							} else {
-								float a = sa / 255.0f;
-								float ia = 1.0f - a;
-								composite[di + 0] = static_cast<uint8_t>(data[si + 0] * a + composite[di + 0] * ia);
-								composite[di + 1] = static_cast<uint8_t>(data[si + 1] * a + composite[di + 1] * ia);
-								composite[di + 2] = static_cast<uint8_t>(data[si + 2] * a + composite[di + 2] * ia);
-								composite[di + 3] = std::max(composite[di + 3], sa);
-							}
+				for (int sy = 0; sy < 32; ++sy) {
+					for (int sx = 0; sx < 32; ++sx) {
+						int dy = part_y + sy;
+						int dx = part_x + sx;
+						int di = (dy * w + dx) * 4;
+						int si = (sy * 32 + sx) * 4;
+
+						uint8_t sa = data[si + 3];
+						if (sa == 0) {
+							continue;
+						}
+
+						if (sa == 255) {
+							composite[di + 0] = data[si + 0];
+							composite[di + 1] = data[si + 1];
+							composite[di + 2] = data[si + 2];
+							composite[di + 3] = 255;
+						} else {
+							float a = sa / 255.0f;
+							float ia = 1.0f - a;
+							composite[di + 0] = static_cast<uint8_t>(data[si + 0] * a + composite[di + 0] * ia);
+							composite[di + 1] = static_cast<uint8_t>(data[si + 1] * a + composite[di + 1] * ia);
+							composite[di + 2] = static_cast<uint8_t>(data[si + 2] * a + composite[di + 2] * ia);
+							composite[di + 3] = std::max(composite[di + 3], sa);
 						}
 					}
 				}
 			}
 		}
-
-		// Create NanoVG image
-		return GetOrCreateImage(spriteId, composite.data(), w, h);
 	}
 
-	// Generic Fallback (Slow Path via wxDC)
-	// Assume 32x32 for now as most EditorSprites are small icons
-	int w = 32;
-	int h = 32;
+	// Create NanoVG image
+	return GetOrCreateImage(spriteId, composite.data(), w, h);
+}
+
+int NanoVGCanvas::CreateGenericSpriteTexture(NVGcontext* vg, Sprite* sprite, uint32_t spriteId) {
+	wxSize sz = sprite->GetSize();
+	int w = sz.x;
+	int h = sz.y;
 
 	wxBitmap bmp(w, h);
 	// Need a DC to draw
@@ -282,7 +290,7 @@ int NanoVGCanvas::GetOrCreateSpriteTexture(NVGcontext* vg, Sprite* sprite) {
 		// Initialize with transparent background
 		mdc.SetBackground(wxBrush(wxColor(0, 0, 0), wxBRUSHSTYLE_TRANSPARENT));
 		mdc.Clear();
-		// Draw at 0,0 with 32x32 size
+		// Draw at 0,0 with its size
 		sprite->DrawTo(&mdc, SPRITE_SIZE_32x32, 0, 0, w, h);
 	}
 

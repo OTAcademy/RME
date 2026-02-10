@@ -53,6 +53,9 @@ protected:
 	void OnNanoVGPaint(NVGcontext* vg, int width, int height) override;
 	wxSize DoGetBestClientSize() const override;
 
+	void DrawSunkenBorder(NVGcontext* vg, float x, float y);
+	void DrawRaisedBorder(NVGcontext* vg, float x, float y);
+
 	void SetOverlay(Sprite* espr);
 
 	int type;

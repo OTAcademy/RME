@@ -50,9 +50,13 @@ DCButton::DCButton(wxWindow* parent, wxWindowID id, wxPoint pos, int type, Rende
 	overlay(nullptr) {
 
 	wxSize winSize;
-	if (sz == RENDER_SIZE_64x64) winSize = wxSize(68, 68);
-	else if (sz == RENDER_SIZE_32x32) winSize = wxSize(36, 36);
-	else winSize = wxSize(20, 20);
+	if (sz == RENDER_SIZE_64x64) {
+		winSize = wxSize(68, 68);
+	} else if (sz == RENDER_SIZE_32x32) {
+		winSize = wxSize(36, 36);
+	} else {
+		winSize = wxSize(20, 20);
+	}
 
 	SetSize(winSize);
 	SetMinSize(winSize);
@@ -108,8 +112,12 @@ bool DCButton::GetValue() const {
 }
 
 wxSize DCButton::DoGetBestClientSize() const {
-	if (size == RENDER_SIZE_64x64) return FromDIP(wxSize(68, 68));
-	if (size == RENDER_SIZE_32x32) return FromDIP(wxSize(36, 36));
+	if (size == RENDER_SIZE_64x64) {
+		return FromDIP(wxSize(68, 68));
+	}
+	if (size == RENDER_SIZE_32x32) {
+		return FromDIP(wxSize(36, 36));
+	}
 	return FromDIP(wxSize(20, 20));
 }
 
@@ -137,91 +145,23 @@ void DCButton::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 	nvgFillColor(vg, nvgRGBA(0, 0, 0, 255));
 	nvgFill(vg);
 
-	// Border Colors
-	NVGcolor highlight = nvgRGBA(255, 255, 255, 255);
-	NVGcolor dark_highlight = nvgRGBA(212, 208, 200, 255); // 0xD4, 0xD0, 0xC8
-	NVGcolor light_shadow = nvgRGBA(128, 128, 128, 255); // 0x80, 0x80, 0x80
-	NVGcolor shadow = nvgRGBA(64, 64, 64, 255); // 0x40, 0x40, 0x40
-
-	nvgStrokeWidth(vg, 1.0f);
-	// NanoVG lines are centered, so we need offset 0.5f for crisp lines
-
 	if (type == DC_BTN_TOGGLE && GetValue()) {
-		// Sunken
-		nvgBeginPath(vg);
-		// Shadow Top/Left Outer
-		nvgMoveTo(vg, 0.5f, size_y - 0.5f);
-		nvgLineTo(vg, 0.5f, 0.5f);
-		nvgLineTo(vg, size_x - 0.5f, 0.5f);
-		nvgStrokeColor(vg, shadow);
-		nvgStroke(vg);
-
-		nvgBeginPath(vg);
-		// Light Shadow Top/Left Inner
-		nvgMoveTo(vg, 1.5f, size_y - 1.5f);
-		nvgLineTo(vg, 1.5f, 1.5f);
-		nvgLineTo(vg, size_x - 1.5f, 1.5f);
-		nvgStrokeColor(vg, light_shadow);
-		nvgStroke(vg);
-
-		nvgBeginPath(vg);
-		// Dark Highlight Bottom/Right Inner
-		nvgMoveTo(vg, size_x - 1.5f, 1.5f);
-		nvgLineTo(vg, size_x - 1.5f, size_y - 1.5f);
-		nvgLineTo(vg, 1.5f, size_y - 1.5f);
-		nvgStrokeColor(vg, dark_highlight);
-		nvgStroke(vg);
-
-		nvgBeginPath(vg);
-		// Highlight Bottom/Right Outer
-		nvgMoveTo(vg, size_x - 0.5f, 0.5f);
-		nvgLineTo(vg, size_x - 0.5f, size_y - 0.5f);
-		nvgLineTo(vg, 0.5f, size_y - 0.5f);
-		nvgStrokeColor(vg, highlight);
-		nvgStroke(vg);
-
+		DrawSunkenBorder(vg, static_cast<float>(size_x), static_cast<float>(size_y));
 	} else {
-		// Raised
-		nvgBeginPath(vg);
-		// Highlight Top/Left Outer
-		nvgMoveTo(vg, 0.5f, size_y - 0.5f);
-		nvgLineTo(vg, 0.5f, 0.5f);
-		nvgLineTo(vg, size_x - 0.5f, 0.5f);
-		nvgStrokeColor(vg, highlight);
-		nvgStroke(vg);
-
-		nvgBeginPath(vg);
-		// Dark Highlight Top/Left Inner
-		nvgMoveTo(vg, 1.5f, size_y - 1.5f);
-		nvgLineTo(vg, 1.5f, 1.5f);
-		nvgLineTo(vg, size_x - 1.5f, 1.5f);
-		nvgStrokeColor(vg, dark_highlight);
-		nvgStroke(vg);
-
-		nvgBeginPath(vg);
-		// Light Shadow Bottom/Right Inner
-		nvgMoveTo(vg, size_x - 1.5f, 1.5f);
-		nvgLineTo(vg, size_x - 1.5f, size_y - 1.5f);
-		nvgLineTo(vg, 1.5f, size_y - 1.5f);
-		nvgStrokeColor(vg, light_shadow);
-		nvgStroke(vg);
-
-		nvgBeginPath(vg);
-		// Shadow Bottom/Right Outer
-		nvgMoveTo(vg, size_x - 0.5f, 0.5f);
-		nvgLineTo(vg, size_x - 0.5f, size_y - 0.5f);
-		nvgLineTo(vg, 0.5f, size_y - 0.5f);
-		nvgStrokeColor(vg, shadow);
-		nvgStroke(vg);
+		DrawRaisedBorder(vg, static_cast<float>(size_x), static_cast<float>(size_y));
 	}
 
 	if (sprite) {
 		int tex = GetOrCreateSpriteTexture(vg, sprite);
 		if (tex > 0) {
 			int imgSize = 32;
-			if (size == RENDER_SIZE_16x16) imgSize = 16;
-			else if (size == RENDER_SIZE_32x32) imgSize = 32;
-			else if (size == RENDER_SIZE_64x64) imgSize = 64; // Not supported in original?
+			if (size == RENDER_SIZE_16x16) {
+				imgSize = 16;
+			} else if (size == RENDER_SIZE_32x32) {
+				imgSize = 32;
+			} else if (size == RENDER_SIZE_64x64) {
+				imgSize = 64; // Not supported in original?
+			}
 
 			NVGpaint imgPaint = nvgImagePattern(vg, 2, 2, imgSize, imgSize, 0, tex, 1.0f);
 			nvgBeginPath(vg);
@@ -253,4 +193,78 @@ void DCButton::OnClick(wxMouseEvent& WXUNUSED(evt)) {
 	SetFocus();
 
 	GetEventHandler()->ProcessEvent(event);
+}
+
+void DCButton::DrawSunkenBorder(NVGcontext* vg, float size_x, float size_y) {
+	NVGcolor dark_highlight = nvgRGBA(212, 208, 200, 255);
+	NVGcolor light_shadow = nvgRGBA(128, 128, 128, 255);
+	NVGcolor highlight = nvgRGBA(255, 255, 255, 255);
+	NVGcolor shadow = nvgRGBA(64, 64, 64, 255);
+
+	nvgStrokeWidth(vg, 1.0f);
+
+	nvgBeginPath(vg);
+	nvgMoveTo(vg, 0.5f, size_y - 0.5f);
+	nvgLineTo(vg, 0.5f, 0.5f);
+	nvgLineTo(vg, size_x - 0.5f, 0.5f);
+	nvgStrokeColor(vg, shadow);
+	nvgStroke(vg);
+
+	nvgBeginPath(vg);
+	nvgMoveTo(vg, 1.5f, size_y - 1.5f);
+	nvgLineTo(vg, 1.5f, 1.5f);
+	nvgLineTo(vg, size_x - 1.5f, 1.5f);
+	nvgStrokeColor(vg, light_shadow);
+	nvgStroke(vg);
+
+	nvgBeginPath(vg);
+	nvgMoveTo(vg, size_x - 1.5f, 1.5f);
+	nvgLineTo(vg, size_x - 1.5f, size_y - 1.5f);
+	nvgLineTo(vg, 1.5f, size_y - 1.5f);
+	nvgStrokeColor(vg, dark_highlight);
+	nvgStroke(vg);
+
+	nvgBeginPath(vg);
+	nvgMoveTo(vg, size_x - 0.5f, 0.5f);
+	nvgLineTo(vg, size_x - 0.5f, size_y - 0.5f);
+	nvgLineTo(vg, 0.5f, size_y - 0.5f);
+	nvgStrokeColor(vg, highlight);
+	nvgStroke(vg);
+}
+
+void DCButton::DrawRaisedBorder(NVGcontext* vg, float size_x, float size_y) {
+	NVGcolor dark_highlight = nvgRGBA(212, 208, 200, 255);
+	NVGcolor light_shadow = nvgRGBA(128, 128, 128, 255);
+	NVGcolor highlight = nvgRGBA(255, 255, 255, 255);
+	NVGcolor shadow = nvgRGBA(64, 64, 64, 255);
+
+	nvgStrokeWidth(vg, 1.0f);
+
+	nvgBeginPath(vg);
+	nvgMoveTo(vg, 0.5f, size_y - 0.5f);
+	nvgLineTo(vg, 0.5f, 0.5f);
+	nvgLineTo(vg, size_x - 0.5f, 0.5f);
+	nvgStrokeColor(vg, highlight);
+	nvgStroke(vg);
+
+	nvgBeginPath(vg);
+	nvgMoveTo(vg, 1.5f, size_y - 1.5f);
+	nvgLineTo(vg, 1.5f, 1.5f);
+	nvgLineTo(vg, size_x - 1.5f, 1.5f);
+	nvgStrokeColor(vg, dark_highlight);
+	nvgStroke(vg);
+
+	nvgBeginPath(vg);
+	nvgMoveTo(vg, size_x - 1.5f, 1.5f);
+	nvgLineTo(vg, size_x - 1.5f, size_y - 1.5f);
+	nvgLineTo(vg, 1.5f, size_y - 1.5f);
+	nvgStrokeColor(vg, light_shadow);
+	nvgStroke(vg);
+
+	nvgBeginPath(vg);
+	nvgMoveTo(vg, size_x - 0.5f, 0.5f);
+	nvgLineTo(vg, size_x - 0.5f, size_y - 0.5f);
+	nvgLineTo(vg, 0.5f, size_y - 0.5f);
+	nvgStrokeColor(vg, shadow);
+	nvgStroke(vg);
 }

@@ -29,6 +29,7 @@ VirtualBrushGrid::VirtualBrushGrid(wxWindow* parent, const TilesetCategory* _til
 
 	Bind(wxEVT_LEFT_DOWN, &VirtualBrushGrid::OnMouseDown, this);
 	Bind(wxEVT_MOTION, &VirtualBrushGrid::OnMotion, this);
+	Bind(wxEVT_SIZE, &VirtualBrushGrid::OnSize, this);
 	Bind(wxEVT_TIMER, &VirtualBrushGrid::OnTimer, this);
 
 	UpdateLayout();
@@ -72,20 +73,6 @@ wxSize VirtualBrushGrid::DoGetBestClientSize() const {
 }
 
 void VirtualBrushGrid::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
-	// Update layout if needed
-	if (display_mode == DisplayMode::List) {
-		columns = 1;
-		// Check if content height matches, logic simplified for now
-	} else {
-		int newCols = std::max(1, (width - padding) / (item_size + padding));
-		if (newCols != columns) {
-			columns = newCols;
-			int rows = (static_cast<int>(tileset->size()) + columns - 1) / columns;
-			int contentHeight = rows * (item_size + padding) + padding;
-			UpdateScrollbar(contentHeight);
-		}
-	}
-
 	// Calculate visible range
 	int scrollPos = GetScrollPosition();
 	int rowHeight = (display_mode == DisplayMode::List) ? 36 : (item_size + padding);
@@ -164,7 +151,7 @@ void VirtualBrushGrid::DrawBrushItem(NVGcontext* vg, int i, const wxRect& rect) 
 		if (tex > 0) {
 			int iconSize = (display_mode == DisplayMode::List) ? 32 : (item_size - 4);
 			int iconX = rect.x + 2;
-			int iconY = (display_mode == DisplayMode::List) ? (rect.y + 2) : (rect.y + 2);
+			int iconY = rect.y + 2;
 
 			NVGpaint imgPaint = nvgImagePattern(vg, static_cast<float>(iconX), static_cast<float>(iconY), static_cast<float>(iconSize), static_cast<float>(iconSize), 0.0f, tex, 1.0f);
 
@@ -293,6 +280,12 @@ void VirtualBrushGrid::OnMotion(wxMouseEvent& event) {
 void VirtualBrushGrid::OnTimer(wxTimerEvent& event) {
 	// Animation tick for hover effects (optional - can be enhanced later)
 	Refresh();
+}
+
+void VirtualBrushGrid::OnSize(wxSizeEvent& event) {
+	UpdateLayout();
+	Refresh();
+	event.Skip();
 }
 
 void VirtualBrushGrid::SelectFirstBrush() {

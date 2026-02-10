@@ -131,6 +131,8 @@ protected:
 	 * @return NanoVG image handle, or 0 on failure
 	 */
 	int GetOrCreateImage(uint32_t id, const uint8_t* data, int width, int height);
+	int CreateGameSpriteTexture(NVGcontext* vg, GameSprite* gs, uint32_t spriteId);
+	int CreateGenericSpriteTexture(NVGcontext* vg, Sprite* sprite, uint32_t spriteId);
 
 	/**
 	 * @brief Deletes a cached image.

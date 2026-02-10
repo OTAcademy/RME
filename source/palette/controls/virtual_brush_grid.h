@@ -55,6 +55,7 @@ protected:
 	// Event Handlers
 	void OnMouseDown(wxMouseEvent& event);
 	void OnMotion(wxMouseEvent& event);
+	void OnSize(wxSizeEvent& event);
 
 	// Internal helpers
 	void UpdateLayout();
