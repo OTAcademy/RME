@@ -177,7 +177,7 @@ int NanoVGCanvas::GetOrCreateItemImage(uint16_t itemId) {
 
 	tex = NvgUtils::CreateItemTexture(vg, itemId);
 	if (tex > 0) {
-		AddCachedImage(itemId, tex);
+		AddCachedImage(static_cast<uint64_t>(itemId), tex);
 	}
 	return tex;
 }
@@ -187,10 +187,8 @@ int NanoVGCanvas::GetOrCreateSpriteTexture(NVGcontext* vg, Sprite* sprite) {
 		return 0;
 	}
 
-	// Use sprite pointer address as unique ID (stable during runtime)
-	uintptr_t ptr = reinterpret_cast<uintptr_t>(sprite);
-	// XOR fold to 32-bit ID
-	uint32_t spriteId = static_cast<uint32_t>(ptr ^ (ptr >> 32));
+	// Use full pointer as unique ID for 64-bit systems
+	uint64_t spriteId = reinterpret_cast<uint64_t>(sprite);
 
 	// Check cache first
 	int existingTex = GetCachedImage(spriteId);
@@ -208,7 +206,7 @@ int NanoVGCanvas::GetOrCreateSpriteTexture(NVGcontext* vg, Sprite* sprite) {
 	return CreateGenericSpriteTexture(vg, sprite, spriteId);
 }
 
-int NanoVGCanvas::CreateGameSpriteTexture(NVGcontext* vg, GameSprite* gs, uint32_t spriteId) {
+int NanoVGCanvas::CreateGameSpriteTexture(NVGcontext* vg, GameSprite* gs, uint64_t spriteId) {
 	// Calculate composite size
 	int w = gs->width * 32;
 	int h = gs->height * 32;
@@ -278,10 +276,18 @@ int NanoVGCanvas::CreateGameSpriteTexture(NVGcontext* vg, GameSprite* gs, uint32
 	return GetOrCreateImage(spriteId, composite.data(), w, h);
 }
 
-int NanoVGCanvas::CreateGenericSpriteTexture(NVGcontext* vg, Sprite* sprite, uint32_t spriteId) {
+int NanoVGCanvas::CreateGenericSpriteTexture(NVGcontext* vg, Sprite* sprite, uint64_t spriteId) {
 	wxSize sz = sprite->GetSize();
 	int w = sz.x;
 	int h = sz.y;
+
+	// Determine best SpriteSize for DrawTo
+	SpriteSize drawSize = SPRITE_SIZE_32x32;
+	if (w <= 16 && h <= 16) {
+		drawSize = SPRITE_SIZE_16x16;
+	} else if (w > 32 || h > 32) {
+		drawSize = SPRITE_SIZE_64x64;
+	}
 
 	wxBitmap bmp(w, h);
 	// Need a DC to draw
@@ -291,7 +297,7 @@ int NanoVGCanvas::CreateGenericSpriteTexture(NVGcontext* vg, Sprite* sprite, uin
 		mdc.SetBackground(wxBrush(wxColor(0, 0, 0), wxBRUSHSTYLE_TRANSPARENT));
 		mdc.Clear();
 		// Draw at 0,0 with its size
-		sprite->DrawTo(&mdc, SPRITE_SIZE_32x32, 0, 0, w, h);
+		sprite->DrawTo(&mdc, drawSize, 0, 0, w, h);
 	}
 
 	wxImage img = bmp.ConvertToImage();
@@ -325,7 +331,7 @@ void NanoVGCanvas::UpdateScrollbar(int contentHeight) {
 	SetScrollbar(wxVERTICAL, m_scrollPos, h, contentHeight);
 }
 
-int NanoVGCanvas::GetOrCreateImage(uint32_t id, const uint8_t* data, int width, int height) {
+int NanoVGCanvas::GetOrCreateImage(uint64_t id, const uint8_t* data, int width, int height) {
 	ScopedGLContext ctx(this);
 	if (!m_nvg) {
 		return 0;
@@ -346,7 +352,7 @@ int NanoVGCanvas::GetOrCreateImage(uint32_t id, const uint8_t* data, int width, 
 	return tex;
 }
 
-void NanoVGCanvas::DeleteCachedImage(uint32_t id) {
+void NanoVGCanvas::DeleteCachedImage(uint64_t id) {
 	ScopedGLContext ctx(this);
 	if (!m_nvg) {
 		return;
@@ -360,7 +366,7 @@ void NanoVGCanvas::DeleteCachedImage(uint32_t id) {
 	}
 }
 
-void NanoVGCanvas::AddCachedImage(uint32_t id, int imageHandle) {
+void NanoVGCanvas::AddCachedImage(uint64_t id, int imageHandle) {
 	if (imageHandle > 0) {
 		ScopedGLContext ctx(this);
 		auto it = m_imageCache.find(id);
@@ -373,7 +379,7 @@ void NanoVGCanvas::AddCachedImage(uint32_t id, int imageHandle) {
 
 		// Evict if over limit
 		if (m_imageCache.size() >= m_maxCacheSize) {
-			uint32_t last = m_lruList.back();
+			uint64_t last = m_lruList.back();
 			auto lastIt = m_imageCache.find(last);
 			if (lastIt != m_imageCache.end()) {
 				if (m_nvg) {
@@ -401,7 +407,7 @@ void NanoVGCanvas::ClearImageCache() {
 	m_imageCache.clear();
 }
 
-int NanoVGCanvas::GetCachedImage(uint32_t id) const {
+int NanoVGCanvas::GetCachedImage(uint64_t id) const {
 	// Const-cast to call MakeContextCurrent if needed, or just assume it's for lookup
 	// Actually GetCachedImage doesn't call GL, it just looks in the map.
 	// So it's fine.

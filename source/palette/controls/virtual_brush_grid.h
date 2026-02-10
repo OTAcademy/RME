@@ -39,6 +39,11 @@ public:
 		List
 	};
 
+	static constexpr int LIST_ROW_HEIGHT = 36;
+	static constexpr int GRID_PADDING = 4;
+	static constexpr int GRID_ITEM_SIZE_BASE = 32;
+	static constexpr int ICON_OFFSET = 2;
+
 	void SetDisplayMode(DisplayMode mode);
 
 protected:
@@ -70,6 +75,9 @@ protected:
 	int columns;
 	int item_size;
 	int padding;
+
+	// Optimization: UTF8 name cache
+	mutable std::unordered_map<const Brush*, std::string> m_utf8NameCache;
 
 	// Animation state
 	wxTimer* m_animTimer;

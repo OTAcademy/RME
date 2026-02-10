@@ -93,10 +93,9 @@ void DCButton::SetOverlay(Sprite* espr) {
 
 void DCButton::SetValue(bool val) {
 	ASSERT(type == DC_BTN_TOGGLE);
-	bool oldval = val;
+	bool oldval = state;
 	state = val;
-	if (state == oldval) {
-		// Cheap to change value to the old one (which is done ALOT)
+	if (state != oldval) {
 		if (GetValue() && g_settings.getInteger(Config::USE_GUI_SELECTION_SHADOW)) {
 			SetOverlay(g_gui.gfx.getSprite(EDITOR_SPRITE_SELECTION_MARKER));
 		} else {
