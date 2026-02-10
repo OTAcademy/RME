@@ -21,9 +21,9 @@
 #include "io/filehandle.h"
 #include "brushes/brush_enums.h"
 #include "ext/pugixml.hpp"
-#include "util/con_vector.h"
 #include <wx/string.h>
 #include <string_view>
+#include <memory>
 #include <map>
 #include <vector>
 
@@ -431,7 +431,7 @@ public:
 class ItemDatabase {
 public:
 	ItemDatabase();
-	~ItemDatabase();
+	~ItemDatabase() = default;
 
 	void clear();
 
@@ -451,8 +451,8 @@ public:
 	bool loadItemFromGameXml(pugi::xml_node itemNode, int id);
 	bool loadMetaItem(pugi::xml_node node);
 
-	// typedef std::map<int32_t, ItemType*> ItemMap;
-	using ItemMap = contigous_vector<ItemType*>;
+	// using ItemMap = contigous_vector<ItemType*>;
+	using ItemMap = std::vector<std::unique_ptr<ItemType>>;
 	using ItemNameMap = std::map<std::string, ItemType*>;
 	ItemMap items;
 
