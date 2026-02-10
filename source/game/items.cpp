@@ -141,18 +141,18 @@ void ItemDatabase::clear() {
 }
 
 bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings) {
-	return loadFromOtbGeneric(itemNode, 1, error, warnings);
+	return loadFromOtbGeneric(itemNode, OtbFileFormatVersion::V1, error, warnings);
 }
 
 bool ItemDatabase::loadFromOtbVer2(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings) {
-	return loadFromOtbGeneric(itemNode, 2, error, warnings);
+	return loadFromOtbGeneric(itemNode, OtbFileFormatVersion::V2, error, warnings);
 }
 
 bool ItemDatabase::loadFromOtbVer3(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings) {
-	return loadFromOtbGeneric(itemNode, 3, error, warnings);
+	return loadFromOtbGeneric(itemNode, OtbFileFormatVersion::V3, error, warnings);
 }
 
-bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, int version, wxString& error, std::vector<std::string>& warnings) {
+bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion version, wxString& error, std::vector<std::string>& warnings) {
 	uint8_t u8;
 
 	for (; itemNode != nullptr; itemNode = itemNode->advance()) {
@@ -217,6 +217,8 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, int version, wxStrin
 			t->floorChangeSouth = ((flags & FLAG_FLOORCHANGESOUTH) == FLAG_FLOORCHANGESOUTH);
 			t->floorChangeWest = ((flags & FLAG_FLOORCHANGEWEST) == FLAG_FLOORCHANGEWEST);
 			t->floorChange = t->floorChangeDown || t->floorChangeNorth || t->floorChangeEast || t->floorChangeSouth || t->floorChangeWest;
+
+			// The OTB `FLAG_ALWAYSONTOP` is mapped to the editor's `alwaysOnBottom` property.
 			t->alwaysOnBottom = ((flags & FLAG_ALWAYSONTOP) == FLAG_ALWAYSONTOP);
 			t->isHangable = ((flags & FLAG_HANGABLE) == FLAG_HANGABLE);
 			t->hookEast = ((flags & FLAG_HOOK_EAST) == FLAG_HOOK_EAST);
@@ -225,7 +227,7 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, int version, wxStrin
 			t->rotable = ((flags & FLAG_ROTABLE) == FLAG_ROTABLE);
 			t->canReadText = ((flags & FLAG_READABLE) == FLAG_READABLE);
 
-			if (version >= 3) {
+			if (version >= OtbFileFormatVersion::V3) {
 				t->client_chargeable = ((flags & FLAG_CLIENTCHARGES) == FLAG_CLIENTCHARGES);
 				t->ignoreLook = ((flags & FLAG_IGNORE_LOOK) == FLAG_IGNORE_LOOK);
 			}

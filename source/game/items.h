@@ -117,6 +117,12 @@ enum WeaponType_t : uint8_t {
 
 /////////OTB specific//////////////
 
+enum class OtbFileFormatVersion {
+	V1 = 1,
+	V2 = 2,
+	V3 = 3
+};
+
 enum rootattrib_t {
 	ROOT_ATTR_VERSION = 0x01
 };
@@ -460,7 +466,7 @@ protected:
 	bool loadFromOtbVer2(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings);
 	bool loadFromOtbVer3(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings);
 
-	bool loadFromOtbGeneric(BinaryNode* itemNode, int version, wxString& error, std::vector<std::string>& warnings);
+	bool loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion version, wxString& error, std::vector<std::string>& warnings);
 
 private:
 	void parseItemTypeAttribute(ItemType& it, std::string_view value);
