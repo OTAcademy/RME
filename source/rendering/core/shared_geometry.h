@@ -3,7 +3,7 @@
 
 #include "rendering/core/gl_resources.h"
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include <mutex>
 
 class SharedGeometry {
@@ -34,7 +34,7 @@ private:
 		std::unique_ptr<GLBuffer> ebo;
 	};
 
-	std::map<void*, ContextGeometry> contexts_;
+	std::unordered_map<void*, ContextGeometry> contexts_;
 	std::mutex mutex_;
 };
 

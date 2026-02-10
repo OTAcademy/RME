@@ -10,13 +10,15 @@
 #include "game/items.h"
 #include "map/tile.h"
 
+#include <unordered_map>
+
 struct MapConversionContext {
 	struct CreatureInfo {
 		std::string name;
 		bool is_npc;
 		Outfit outfit;
 	};
-	using CreatureMap = std::map<std::string, CreatureInfo>;
+	using CreatureMap = std::unordered_map<std::string, CreatureInfo>;
 	CreatureMap creature_types;
 
 	void operator()(Map& map, Tile* tile, long long done) {
