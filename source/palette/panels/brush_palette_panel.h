@@ -5,6 +5,8 @@
 #include "palette/panels/brush_panel.h"
 #include "app/settings.h"
 
+#include <unordered_map>
+
 class BrushPalettePanel : public PalettePanel {
 public:
 	BrushPalettePanel(wxWindow* parent, const TilesetContainer& tilesets, TilesetCategoryType category, wxWindowID id = wxID_ANY);
@@ -46,7 +48,7 @@ protected:
 
 	// No size_panel, it was unused
 
-	std::map<wxWindow*, Brush*> remembered_brushes;
+	std::unordered_map<wxWindow*, Brush*> remembered_brushes;
 };
 
 #endif
