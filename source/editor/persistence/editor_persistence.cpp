@@ -21,6 +21,7 @@
 #include <ctime>
 #include <sstream>
 #include <format>
+#include <unordered_map>
 #include <spdlog/spdlog.h>
 
 void EditorPersistence::loadMap(Editor& editor, const FileName& fn) {

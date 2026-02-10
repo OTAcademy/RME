@@ -22,6 +22,7 @@ LibraryPanel::LibraryPanel(wxWindow* parent, Listener* listener) :
 
 	// Pre-fill item list
 	std::vector<uint16_t> ids;
+	ids.reserve(g_items.getMaxID());
 	for (uint32_t i = 1; i <= static_cast<uint32_t>(g_items.getMaxID()); ++i) {
 		const ItemType& it = g_items.getItemType(i);
 		if (it.id != 0) {
@@ -138,6 +139,7 @@ uint16_t LibraryPanel::GetSidFromCid(uint16_t cid) {
 
 void LibraryPanel::PopulateBrushGrid() {
 	std::vector<uint16_t> brushIds;
+	brushIds.reserve(g_brushes.getMap().size());
 	std::map<uint16_t, wxString> overrides;
 	m_brushLookup.clear();
 
