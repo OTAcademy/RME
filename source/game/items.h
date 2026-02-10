@@ -469,10 +469,10 @@ protected:
 	bool loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion version, wxString& error, std::vector<std::string>& warnings);
 
 private:
-	void parseItemTypeAttribute(ItemType& it, std::string_view value);
-	void parseSlotTypeAttribute(ItemType& it, std::string_view value);
-	void parseWeaponTypeAttribute(ItemType& it, std::string_view value);
-	void parseFloorChangeAttribute(ItemType& it, std::string_view value);
+	static void parseItemTypeAttribute(ItemType& it, std::string_view value);
+	static void parseSlotTypeAttribute(ItemType& it, std::string_view value);
+	static void parseWeaponTypeAttribute(ItemType& it, std::string_view value);
+	static void parseFloorChangeAttribute(ItemType& it, std::string_view value);
 
 protected:
 	// Count of GameSprite types

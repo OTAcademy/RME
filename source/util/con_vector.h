@@ -64,6 +64,23 @@ public:
 		locate(index) = value;
 	}
 
+	void clear() {
+		memset(start, 0, sizeof(T) * sz);
+	}
+
+	T* begin() {
+		return start;
+	}
+	T* end() {
+		return start + sz;
+	}
+	const T* begin() const {
+		return start;
+	}
+	const T* end() const {
+		return start + sz;
+	}
+
 	T operator[](size_t index) {
 		return at(index);
 	}
