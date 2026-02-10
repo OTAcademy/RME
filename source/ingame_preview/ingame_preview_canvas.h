@@ -93,7 +93,11 @@ namespace IngamePreview {
 		int animation_phase;
 
 		// New Movement Support
-		std::deque<Direction> walk_queue;
+		struct MoveRequest {
+			Direction dir;
+			bool ignore_collision;
+		};
+		std::deque<MoveRequest> walk_queue;
 		uint16_t speed;
 		long long last_step_time;
 		long long walk_lock_timer;
@@ -101,10 +105,10 @@ namespace IngamePreview {
 		wxTimer animation_timer;
 
 		void UpdateWalk();
-		void StartWalk(Direction dir);
+		void StartWalk(Direction dir, bool ignore_collision = false);
 		// New helpers
-		void BufferWalk(Direction dir);
-		bool CanWalk();
+		void BufferWalk(Direction dir, bool ignore_collision = false);
+		bool CanWalk(const Position& target_pos, bool ignore_collision);
 		int GetStepDuration(uint16_t ground_speed = 100);
 		void Turn(Direction dir);
 	};

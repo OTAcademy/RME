@@ -10,6 +10,8 @@
 #include <glad/glad.h>
 #include <nanovg.h>
 #include <nanovg_gl.h>
+#include "game/complexitem.h"
+#include "ui/managers/minimap_manager.h"
 
 namespace IngamePreview {
 
@@ -123,10 +125,12 @@ namespace IngamePreview {
 				parent->SetFollowSelection(false);
 			}
 
+			bool alt = event.AltDown();
+
 			if (ctrl) {
 				Turn(dir);
 			} else {
-				BufferWalk(dir);
+				BufferWalk(dir, alt);
 			}
 		} else {
 			event.Skip();
@@ -141,19 +145,30 @@ namespace IngamePreview {
 		Refresh();
 	}
 
-	void IngamePreviewCanvas::BufferWalk(Direction dir) {
+	void IngamePreviewCanvas::BufferWalk(Direction dir, bool ignore_collision) {
 		if (walk_queue.empty()) {
-			walk_queue.push_back(dir);
+			walk_queue.push_back({ dir, ignore_collision });
 			UpdateWalk(); // Try to start immediately
 		} else if (walk_queue.size() < 2) {
-			if (walk_queue.back() != dir) {
-				walk_queue.push_back(dir);
+			if (walk_queue.back().dir != dir) {
+				walk_queue.push_back({ dir, ignore_collision });
 			}
 		}
 	}
 
-	bool IngamePreviewCanvas::CanWalk() {
-		// Collision checking is done in StartWalk now
+	bool IngamePreviewCanvas::CanWalk(const Position& target_pos, bool ignore_collision) {
+		if (ignore_collision) {
+			return true;
+		}
+
+		if (auto* tab = g_gui.GetCurrentMapTab()) {
+			if (auto* editor = tab->GetEditor()) {
+				const Tile* tile = editor->map.getTile(target_pos);
+				if (!tile || tile->isBlocking()) {
+					return false;
+				}
+			}
+		}
 		return true;
 	}
 
@@ -174,7 +189,7 @@ namespace IngamePreview {
 		Refresh();
 	}
 
-	void IngamePreviewCanvas::StartWalk(Direction dir) {
+	void IngamePreviewCanvas::StartWalk(Direction dir, bool ignore_collision) {
 		if (is_walking) {
 			return;
 		}
@@ -192,16 +207,17 @@ namespace IngamePreview {
 		}
 
 		// 2. Collision Check
+		if (!CanWalk(target_pos, ignore_collision)) {
+			walk_queue.clear();
+			return;
+		}
+
 		uint16_t ground_speed = 100;
 		if (auto* tab = g_gui.GetCurrentMapTab()) {
 			if (auto* editor = tab->GetEditor()) {
 				const Tile* tile = editor->map.getTile(target_pos);
-				if (!tile || tile->isBlocking()) {
-					walk_queue.clear();
-					return;
-				}
-				if (const Item* ground = tile->ground) {
-					ground_speed = g_items[ground->getID()].way_speed;
+				if (tile && tile->ground) {
+					ground_speed = g_items[tile->ground->getID()].way_speed;
 				}
 			}
 		}
@@ -234,13 +250,16 @@ namespace IngamePreview {
 
 	void IngamePreviewCanvas::UpdateWalk() {
 		if (!is_walking && !walk_queue.empty()) {
-			Direction next = walk_queue.front();
+			MoveRequest next = walk_queue.front();
 			walk_queue.pop_front();
-			StartWalk(next);
+			StartWalk(next.dir, next.ignore_collision);
 		}
 
 		if (!is_walking) {
-			animation_phase = 0;
+			if (animation_phase != 0) {
+				spdlog::debug("UpdateWalk: Resetting animation_phase from {} to 0 (not walking)", animation_phase);
+				animation_phase = 0;
+			}
 			return;
 		}
 
@@ -253,6 +272,43 @@ namespace IngamePreview {
 			walk_offset_y = 0;
 			animation_phase = 0;
 			last_step_time = now;
+
+			// Check for teleports
+			if (auto* tab = g_gui.GetCurrentMapTab()) {
+				if (auto* editor = tab->GetEditor()) {
+					int jump_count = 0;
+					while (jump_count < 10) { // Limit to 10 jumps to avoid infinite loops
+						const Tile* tile = editor->map.getTile(camera_pos);
+						if (!tile) {
+							break;
+						}
+
+						Position next_pos;
+						bool teleported = false;
+
+						for (const Item* item : tile->items) {
+							if (const Teleport* teleport = item->asTeleport()) {
+								if (teleport->hasDestination()) {
+									next_pos = teleport->getDestination();
+									teleported = true;
+									break;
+								}
+							}
+						}
+
+						if (teleported) {
+							camera_pos = next_pos;
+							jump_count++;
+						} else {
+							break;
+						}
+					}
+				}
+			}
+
+			// Synchronize with main editor and minimap
+			g_gui.SetScreenCenterPosition(camera_pos);
+			g_minimap.Update(true);
 
 			// Try next step
 			if (!walk_queue.empty()) {
@@ -332,6 +388,11 @@ namespace IngamePreview {
 	void IngamePreviewCanvas::Render(Editor* current_editor) {
 		if (!IsShownOnScreen() || !current_editor) {
 			return;
+		}
+
+		// DEBUG: Check if animation_phase is non-zero when not walking
+		if (animation_phase != 0 && !is_walking) {
+			spdlog::warn("Render: animation_phase={} but is_walking=false! This shouldn't happen.", animation_phase);
 		}
 
 		SetCurrent(*g_gui.GetGLContext(this));

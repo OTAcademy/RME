@@ -13,6 +13,9 @@
 #include "game/items.h"
 #include "game/sprites.h"
 #include "rendering/core/sprite_batch.h"
+#include "rendering/core/game_sprite.h"
+#include "rendering/core/animator.h"
+#include <spdlog/spdlog.h>
 
 CreatureDrawer::CreatureDrawer() {
 }
@@ -40,7 +43,22 @@ void CreatureDrawer::BlitCreature(SpriteBatch& sprite_batch, SpriteDrawer* sprit
 			return;
 		}
 
-		int tme = 0; // GetTime() % itype->FPA;
+		// Resolve animation frame for walk animation
+		// For in-game preview: animationPhase controls walk animation
+		// - When > 0: walking (use the provided animation phase)
+		// - When == 0: standing idle (ALWAYS use frame 0, NOT the global animator)
+		// The global animator is for idle creatures on the map, NOT for the player
+		int resolvedFrame = 0;
+		if (animationPhase > 0) {
+			// Walking: use the calculated walk animation phase
+			resolvedFrame = animationPhase;
+		} else {
+			// Standing still: always use frame 0 (idle)
+			// Do NOT use spr->animator->getFrame() - that's for global idle animations
+			// of creatures on the map, not for the player character
+			resolvedFrame = 0;
+		}
+		
 
 		// mount and addon drawing thanks to otc code
 		// mount colors by Zbizu
@@ -57,7 +75,7 @@ void CreatureDrawer::BlitCreature(SpriteBatch& sprite_batch, SpriteDrawer* sprit
 
 				for (int cx = 0; cx != mountSpr->width; ++cx) {
 					for (int cy = 0; cy != mountSpr->height; ++cy) {
-						const AtlasRegion* region = mountSpr->getAtlasRegion(cx, cy, (int)dir, 0, 0, mountOutfit, animationPhase);
+						const AtlasRegion* region = mountSpr->getAtlasRegion(cx, cy, (int)dir, 0, 0, mountOutfit, resolvedFrame);
 						if (region) {
 							sprite_drawer->glBlitAtlasQuad(sprite_batch, screenx - cx * TileSize - mountSpr->getDrawOffset().first, screeny - cy * TileSize - mountSpr->getDrawOffset().second, region, red, green, blue, alpha);
 						}
@@ -80,7 +98,7 @@ void CreatureDrawer::BlitCreature(SpriteBatch& sprite_batch, SpriteDrawer* sprit
 
 			for (int cx = 0; cx != spr->width; ++cx) {
 				for (int cy = 0; cy != spr->height; ++cy) {
-					const AtlasRegion* region = spr->getAtlasRegion(cx, cy, (int)dir, pattern_y, pattern_z, outfit, animationPhase);
+					const AtlasRegion* region = spr->getAtlasRegion(cx, cy, (int)dir, pattern_y, pattern_z, outfit, resolvedFrame);
 					if (region) {
 						sprite_drawer->glBlitAtlasQuad(sprite_batch, screenx - cx * TileSize - spr->getDrawOffset().first, screeny - cy * TileSize - spr->getDrawOffset().second, region, red, green, blue, alpha);
 					}
