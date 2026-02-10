@@ -7,7 +7,7 @@
 #include <wx/srchctrl.h>
 #include <vector>
 #include <string>
-#include <map>
+#include <unordered_map>
 
 class Brush;
 class LibraryPanel : public wxPanel, public ItemGridPanel::Listener {
@@ -41,8 +41,8 @@ private:
 	ItemGridPanel* m_brushGrid;
 	ItemGridPanel* m_relatedGrid;
 
-	std::map<uint16_t, uint16_t> m_cidToSidCache;
-	std::map<uint16_t, Brush*> m_brushLookup;
+	std::unordered_map<uint16_t, uint16_t> m_cidToSidCache;
+	std::unordered_map<uint16_t, Brush*> m_brushLookup;
 };
 
 #endif

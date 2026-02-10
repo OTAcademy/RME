@@ -5,7 +5,7 @@
 #include <wx/event.h>
 #include <wx/timer.h>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <mutex>
 #include <cstdint>
 #include <atomic>
@@ -40,7 +40,7 @@ private:
 
 	void OnTimer(wxTimerEvent& event);
 
-	std::map<uint16_t, VisualItemData> itemDataCache;
+	std::unordered_map<uint16_t, VisualItemData> itemDataCache;
 	std::mutex dataMutex;
 
 	wxTimer m_timer;
