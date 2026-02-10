@@ -18,6 +18,8 @@
 #include <nanovg.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <spdlog/spdlog.h>
+#include <algorithm>  // For std::max
+#include <cstdlib>    // For std::abs
 
 namespace IngamePreview {
 
@@ -59,6 +61,9 @@ namespace IngamePreview {
 	}
 
 	void IngamePreviewRenderer::Render(NVGcontext* vg, const BaseMap& map, int viewport_x, int viewport_y, int viewport_width, int viewport_height, const Position& camera_pos, float zoom, bool lighting_enabled, uint8_t ambient_light, const Outfit& preview_outfit, Direction preview_direction, int animation_phase, int offset_x, int offset_y) {
+		// CRITICAL: Update animation time for all sprite animations to work
+		g_gui.gfx.updateTime();
+		
 		auto now = std::chrono::steady_clock::now();
 		double dt = std::chrono::duration<double>(now - last_time).count();
 		last_time = now;
@@ -78,6 +83,10 @@ namespace IngamePreview {
 		view.camera_pos = camera_pos;
 		view.viewport_x = viewport_x;
 		view.viewport_y = viewport_y;
+		
+		// Initialize cached logical dimensions (required for visibility culling)
+		view.logical_width = viewport_width * zoom;
+		view.logical_height = viewport_height * zoom;
 
 		// Proper coordinate alignment
 		// We want camera_pos to be at the center of the viewport
@@ -119,18 +128,38 @@ namespace IngamePreview {
 			sprite_batch->begin(view.projectionMatrix);
 			sprite_batch->setGlobalTint(1.0f, 1.0f, 1.0f, alpha);
 
-			// Dynamic viewport culling
-			view.start_x = static_cast<int>(std::floor((view.view_scroll_x - TileSize * 2) / static_cast<float>(TileSize)));
-			view.start_y = static_cast<int>(std::floor((view.view_scroll_y - TileSize * 2) / static_cast<float>(TileSize)));
-			view.end_x = static_cast<int>(std::ceil((view.view_scroll_x + viewport_width * zoom + TileSize * 2) / static_cast<float>(TileSize)));
-			view.end_y = static_cast<int>(std::ceil((view.view_scroll_y + viewport_height * zoom + TileSize * 2) / static_cast<float>(TileSize)));
-
-			// Pre-calculate view offsets
-			int offset = (z <= GROUND_LAYER)
+			// Pre-calculate view offsets for this floor
+			int floor_offset = (z <= GROUND_LAYER)
 				? (GROUND_LAYER - z) * TileSize
 				: TileSize * (view.floor - z);
-			int base_draw_x = -view.view_scroll_x - offset;
-			int base_draw_y = -view.view_scroll_y - offset;
+			int camera_offset = (camera_pos.z <= GROUND_LAYER)
+				? (GROUND_LAYER - camera_pos.z) * TileSize
+				: 0;
+			// offset_diff accounts for the diagonal shift between the camera floor and this floor
+			int offset_diff = floor_offset - camera_offset;
+
+			// Dynamic viewport culling — adjusted per floor
+			// Use EXTREMELY large margins to guarantee no tiles are ever culled
+			// The camera floor (z == camera_pos.z) uses view_scroll directly
+			// Other floors are shifted by floor_offset, so we need to expand bounds
+			constexpr int margin = TileSize * 16; // 16 tiles margin = 512 pixels
+			
+			// For viewport bounds, we need to consider the camera floor's coordinate system
+			// The camera floor uses view_scroll directly (floor_offset = camera_offset)
+			// For other floors, tiles are drawn at different positions due to floor_offset
+			// To ensure ALL visible tiles on ANY floor are rendered, we expand bounds by max possible offset
+			int max_floor_offset = std::max(
+				std::abs(floor_offset - camera_offset),
+				TileSize * MAP_MAX_LAYER  // Maximum possible floor offset
+			);
+			
+			view.start_x = static_cast<int>(std::floor((view.view_scroll_x - margin - max_floor_offset) / static_cast<float>(TileSize)));
+			view.start_y = static_cast<int>(std::floor((view.view_scroll_y - margin - max_floor_offset) / static_cast<float>(TileSize)));
+			view.end_x = static_cast<int>(std::ceil((view.view_scroll_x + viewport_width * zoom + margin + max_floor_offset) / static_cast<float>(TileSize)));
+			view.end_y = static_cast<int>(std::ceil((view.view_scroll_y + viewport_height * zoom + margin + max_floor_offset) / static_cast<float>(TileSize)));
+			
+			int base_draw_x = -view.view_scroll_x - floor_offset;
+			int base_draw_y = -view.view_scroll_y - floor_offset;
 
 			for (int x = view.start_x; x <= view.end_x; ++x) {
 				for (int y = view.start_y; y <= view.end_y; ++y) {

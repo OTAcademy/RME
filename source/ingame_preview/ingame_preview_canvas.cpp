@@ -240,7 +240,10 @@ namespace IngamePreview {
 		}
 
 		if (!is_walking) {
-			animation_phase = 0;
+			if (animation_phase != 0) {
+				spdlog::debug("UpdateWalk: Resetting animation_phase from {} to 0 (not walking)", animation_phase);
+				animation_phase = 0;
+			}
 			return;
 		}
 
@@ -332,6 +335,11 @@ namespace IngamePreview {
 	void IngamePreviewCanvas::Render(Editor* current_editor) {
 		if (!IsShownOnScreen() || !current_editor) {
 			return;
+		}
+		
+		// DEBUG: Check if animation_phase is non-zero when not walking
+		if (animation_phase != 0 && !is_walking) {
+			spdlog::warn("Render: animation_phase={} but is_walking=false! This shouldn't happen.", animation_phase);
 		}
 
 		SetCurrent(*g_gui.GetGLContext(this));
