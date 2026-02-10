@@ -182,22 +182,22 @@
 		<item name="Jump to Item..." hotkey="Ctrl+J" action="JUMP_TO_ITEM_BRUSH" help="Jump to an item brush (RAW palette)."/>
 		<separator/>
 		<menu name="Floor">
-			<item name="Floor 0" action="FLOOR_0" help=""/>
-			<item name="Floor 1" action="FLOOR_1" help=""/>
-			<item name="Floor 2" action="FLOOR_2" help=""/>
-			<item name="Floor 3" action="FLOOR_3" help=""/>
-			<item name="Floor 4" action="FLOOR_4" help=""/>
-			<item name="Floor 5" action="FLOOR_5" help=""/>
-			<item name="Floor 6" action="FLOOR_6" help=""/>
-			<item name="Floor 7" action="FLOOR_7" help=""/>
-			<item name="Floor 8" action="FLOOR_8" help=""/>
-			<item name="Floor 9" action="FLOOR_9" help=""/>
-			<item name="Floor 10" action="FLOOR_10" help=""/>
-			<item name="Floor 11" action="FLOOR_11" help=""/>
-			<item name="Floor 12" action="FLOOR_12" help=""/>
-			<item name="Floor 13" action="FLOOR_13" help=""/>
-			<item name="Floor 14" action="FLOOR_14" help=""/>
-			<item name="Floor 15" action="FLOOR_15" help=""/>
+			<item name="Floor 0" action="FLOOR_0" help="Switch to floor 0."/>
+			<item name="Floor 1" action="FLOOR_1" help="Switch to floor 1."/>
+			<item name="Floor 2" action="FLOOR_2" help="Switch to floor 2."/>
+			<item name="Floor 3" action="FLOOR_3" help="Switch to floor 3."/>
+			<item name="Floor 4" action="FLOOR_4" help="Switch to floor 4."/>
+			<item name="Floor 5" action="FLOOR_5" help="Switch to floor 5."/>
+			<item name="Floor 6" action="FLOOR_6" help="Switch to floor 6."/>
+			<item name="Floor 7" action="FLOOR_7" help="Switch to floor 7."/>
+			<item name="Floor 8" action="FLOOR_8" help="Switch to floor 8."/>
+			<item name="Floor 9" action="FLOOR_9" help="Switch to floor 9."/>
+			<item name="Floor 10" action="FLOOR_10" help="Switch to floor 10."/>
+			<item name="Floor 11" action="FLOOR_11" help="Switch to floor 11."/>
+			<item name="Floor 12" action="FLOOR_12" help="Switch to floor 12."/>
+			<item name="Floor 13" action="FLOOR_13" help="Switch to floor 13."/>
+			<item name="Floor 14" action="FLOOR_14" help="Switch to floor 14."/>
+			<item name="Floor 15" action="FLOOR_15" help="Switch to floor 15."/>
 		</menu>
 	</menu>
 	<menu name="Window">
@@ -238,8 +238,8 @@
 		<item name="Fog in light view" hotkey="" action="EXPERIMENTAL_FOG" help="Apply fog filter to light effect."/>
 	</menu>
 	<menu name="About">
-		<item name="Extensions..." hotkey="F2" action="EXTENSIONS" help=""/>
-		<item name="Goto Website" hotkey="F3" action="GOTO_WEBSITE" help=""/>
-		<item name="About..." hotkey="F1" action="ABOUT" help=""/>
+		<item name="Extensions..." hotkey="F2" action="EXTENSIONS" help="Manage extensions."/>
+		<item name="Goto Website" hotkey="F3" action="GOTO_WEBSITE" help="Visit the official website."/>
+		<item name="About..." hotkey="F1" action="ABOUT" help="Show information about the application."/>
 	</menu>
 </menubar>

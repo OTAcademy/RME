@@ -180,6 +180,10 @@ enum EditorActionID {
 	ID_LIGHT_TOGGLE
 };
 
+enum StatusField {
+	STATUS_FIELD_FLOOR_ZOOM = 3,
+};
+
 enum ToolBarID {
 	TOOLBAR_STANDARD,
 	TOOLBAR_BRUSHES,

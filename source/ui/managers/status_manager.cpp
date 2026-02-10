@@ -9,9 +9,9 @@
 
 StatusManager g_status;
 
-void StatusManager::SetStatusText(const wxString& text) {
+void StatusManager::SetStatusText(const wxString& text, int field) {
 	if (g_gui.root) {
-		g_gui.root->SetStatusText(text, 0);
+		g_gui.root->SetStatusText(text, field);
 	}
 }
 
