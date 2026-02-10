@@ -99,6 +99,11 @@ public:
 	 */
 	int GetOrCreateItemImage(uint16_t itemId);
 
+	/**
+	 * @brief Gets or creates a cached NanoVG image for a Sprite (GameSprite or generic).
+	 */
+	int GetOrCreateSpriteTexture(NVGcontext* vg, Sprite* sprite);
+
 protected:
 	/**
 	 * @brief Override this to implement your custom NanoVG drawing.

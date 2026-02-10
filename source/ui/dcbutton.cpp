@@ -23,29 +23,43 @@
 #include "game/sprites.h"
 #include "ui/gui.h"
 
-IMPLEMENT_DYNAMIC_CLASS(DCButton, wxPanel)
+#include <glad/glad.h>
+#include <nanovg.h>
+
+IMPLEMENT_DYNAMIC_CLASS(DCButton, NanoVGCanvas)
 
 DCButton::DCButton() :
-	wxPanel(nullptr, wxID_ANY, wxDefaultPosition, wxSize(36, 36)),
+	NanoVGCanvas(nullptr, wxID_ANY, 0),
 	type(DC_BTN_NORMAL),
 	state(false),
 	size(RENDER_SIZE_16x16),
 	sprite(nullptr),
 	overlay(nullptr) {
-	Bind(wxEVT_PAINT, &DCButton::OnPaint, this);
+	SetSize(36, 36);
+	SetMinSize(wxSize(36, 36));
 	Bind(wxEVT_LEFT_DOWN, &DCButton::OnClick, this);
 	SetSprite(0);
 }
 
 DCButton::DCButton(wxWindow* parent, wxWindowID id, wxPoint pos, int type, RenderSize sz, int sprite_id) :
-	wxPanel(parent, id, pos, (sz == RENDER_SIZE_64x64 ? wxSize(68, 68) : sz == RENDER_SIZE_32x32 ? wxSize(36, 36)
-																								 : wxSize(20, 20))),
+	NanoVGCanvas(parent, id, 0),
 	type(type),
 	state(false),
 	size(sz),
 	sprite(nullptr),
 	overlay(nullptr) {
-	Bind(wxEVT_PAINT, &DCButton::OnPaint, this);
+
+	wxSize winSize;
+	if (sz == RENDER_SIZE_64x64) winSize = wxSize(68, 68);
+	else if (sz == RENDER_SIZE_32x32) winSize = wxSize(36, 36);
+	else winSize = wxSize(20, 20);
+
+	SetSize(winSize);
+	SetMinSize(winSize);
+	if (pos != wxDefaultPosition) {
+		SetPosition(pos);
+	}
+
 	Bind(wxEVT_LEFT_DOWN, &DCButton::OnClick, this);
 	SetSprite(sprite_id);
 }
@@ -93,17 +107,16 @@ bool DCButton::GetValue() const {
 	return state;
 }
 
-void DCButton::OnPaint(wxPaintEvent& event) {
-	wxBufferedPaintDC pdc(this);
+wxSize DCButton::DoGetBestClientSize() const {
+	if (size == RENDER_SIZE_64x64) return FromDIP(wxSize(68, 68));
+	if (size == RENDER_SIZE_32x32) return FromDIP(wxSize(36, 36));
+	return FromDIP(wxSize(20, 20));
+}
 
+void DCButton::OnNanoVGPaint(NVGcontext* vg, int width, int height) {
 	if (g_gui.gfx.isUnloaded()) {
 		return;
 	}
-
-	wxPen* highlight_pen = wxThePenList->FindOrCreatePen(wxColor(0xFF, 0xFF, 0xFF), 1, wxSOLID);
-	wxPen* dark_highlight_pen = wxThePenList->FindOrCreatePen(wxColor(0xD4, 0xD0, 0xC8), 1, wxSOLID);
-	wxPen* light_shadow_pen = wxThePenList->FindOrCreatePen(wxColor(0x80, 0x80, 0x80), 1, wxSOLID);
-	wxPen* shadow_pen = wxThePenList->FindOrCreatePen(wxColor(0x40, 0x40, 0x40), 1, wxSOLID);
 
 	int size_x = 20, size_y = 20;
 
@@ -113,55 +126,119 @@ void DCButton::OnPaint(wxPaintEvent& event) {
 	} else if (size == RENDER_SIZE_32x32) {
 		size_x = 36;
 		size_y = 36;
+	} else if (size == RENDER_SIZE_64x64) {
+		size_x = 68;
+		size_y = 68;
 	}
 
-	pdc.SetBrush(*wxBLACK);
-	pdc.DrawRectangle(0, 0, size_x, size_y);
+	// Background
+	nvgBeginPath(vg);
+	nvgRect(vg, 0, 0, size_x, size_y);
+	nvgFillColor(vg, nvgRGBA(0, 0, 0, 255));
+	nvgFill(vg);
+
+	// Border Colors
+	NVGcolor highlight = nvgRGBA(255, 255, 255, 255);
+	NVGcolor dark_highlight = nvgRGBA(212, 208, 200, 255); // 0xD4, 0xD0, 0xC8
+	NVGcolor light_shadow = nvgRGBA(128, 128, 128, 255); // 0x80, 0x80, 0x80
+	NVGcolor shadow = nvgRGBA(64, 64, 64, 255); // 0x40, 0x40, 0x40
+
+	nvgStrokeWidth(vg, 1.0f);
+	// NanoVG lines are centered, so we need offset 0.5f for crisp lines
+
 	if (type == DC_BTN_TOGGLE && GetValue()) {
-		pdc.SetPen(*shadow_pen);
-		pdc.DrawLine(0, 0, size_x - 1, 0);
-		pdc.DrawLine(0, 1, 0, size_y - 1);
-		pdc.SetPen(*light_shadow_pen);
-		pdc.DrawLine(1, 1, size_x - 2, 1);
-		pdc.DrawLine(1, 2, 1, size_y - 2);
-		pdc.SetPen(*dark_highlight_pen);
-		pdc.DrawLine(size_x - 2, 1, size_x - 2, size_y - 2);
-		pdc.DrawLine(1, size_y - 2, size_x - 1, size_y - 2);
-		pdc.SetPen(*highlight_pen);
-		pdc.DrawLine(size_x - 1, 0, size_x - 1, size_y - 1);
-		pdc.DrawLine(0, size_y - 1, size_y, size_y - 1);
+		// Sunken
+		nvgBeginPath(vg);
+		// Shadow Top/Left Outer
+		nvgMoveTo(vg, 0.5f, size_y - 0.5f);
+		nvgLineTo(vg, 0.5f, 0.5f);
+		nvgLineTo(vg, size_x - 0.5f, 0.5f);
+		nvgStrokeColor(vg, shadow);
+		nvgStroke(vg);
+
+		nvgBeginPath(vg);
+		// Light Shadow Top/Left Inner
+		nvgMoveTo(vg, 1.5f, size_y - 1.5f);
+		nvgLineTo(vg, 1.5f, 1.5f);
+		nvgLineTo(vg, size_x - 1.5f, 1.5f);
+		nvgStrokeColor(vg, light_shadow);
+		nvgStroke(vg);
+
+		nvgBeginPath(vg);
+		// Dark Highlight Bottom/Right Inner
+		nvgMoveTo(vg, size_x - 1.5f, 1.5f);
+		nvgLineTo(vg, size_x - 1.5f, size_y - 1.5f);
+		nvgLineTo(vg, 1.5f, size_y - 1.5f);
+		nvgStrokeColor(vg, dark_highlight);
+		nvgStroke(vg);
+
+		nvgBeginPath(vg);
+		// Highlight Bottom/Right Outer
+		nvgMoveTo(vg, size_x - 0.5f, 0.5f);
+		nvgLineTo(vg, size_x - 0.5f, size_y - 0.5f);
+		nvgLineTo(vg, 0.5f, size_y - 0.5f);
+		nvgStrokeColor(vg, highlight);
+		nvgStroke(vg);
+
 	} else {
-		pdc.SetPen(*highlight_pen);
-		pdc.DrawLine(0, 0, size_x - 1, 0);
-		pdc.DrawLine(0, 1, 0, size_y - 1);
-		pdc.SetPen(*dark_highlight_pen);
-		pdc.DrawLine(1, 1, size_x - 2, 1);
-		pdc.DrawLine(1, 2, 1, size_y - 2);
-		pdc.SetPen(*light_shadow_pen);
-		pdc.DrawLine(size_x - 2, 1, size_x - 2, size_y - 2);
-		pdc.DrawLine(1, size_y - 2, size_x - 1, size_y - 2);
-		pdc.SetPen(*shadow_pen);
-		pdc.DrawLine(size_x - 1, 0, size_x - 1, size_y - 1);
-		pdc.DrawLine(0, size_y - 1, size_y, size_y - 1);
+		// Raised
+		nvgBeginPath(vg);
+		// Highlight Top/Left Outer
+		nvgMoveTo(vg, 0.5f, size_y - 0.5f);
+		nvgLineTo(vg, 0.5f, 0.5f);
+		nvgLineTo(vg, size_x - 0.5f, 0.5f);
+		nvgStrokeColor(vg, highlight);
+		nvgStroke(vg);
+
+		nvgBeginPath(vg);
+		// Dark Highlight Top/Left Inner
+		nvgMoveTo(vg, 1.5f, size_y - 1.5f);
+		nvgLineTo(vg, 1.5f, 1.5f);
+		nvgLineTo(vg, size_x - 1.5f, 1.5f);
+		nvgStrokeColor(vg, dark_highlight);
+		nvgStroke(vg);
+
+		nvgBeginPath(vg);
+		// Light Shadow Bottom/Right Inner
+		nvgMoveTo(vg, size_x - 1.5f, 1.5f);
+		nvgLineTo(vg, size_x - 1.5f, size_y - 1.5f);
+		nvgLineTo(vg, 1.5f, size_y - 1.5f);
+		nvgStrokeColor(vg, light_shadow);
+		nvgStroke(vg);
+
+		nvgBeginPath(vg);
+		// Shadow Bottom/Right Outer
+		nvgMoveTo(vg, size_x - 0.5f, 0.5f);
+		nvgLineTo(vg, size_x - 0.5f, size_y - 0.5f);
+		nvgLineTo(vg, 0.5f, size_y - 0.5f);
+		nvgStrokeColor(vg, shadow);
+		nvgStroke(vg);
 	}
 
 	if (sprite) {
-		if (size == RENDER_SIZE_16x16) {
-			// Draw the picture!
-			sprite->DrawTo(&pdc, SPRITE_SIZE_16x16, 2, 2);
+		int tex = GetOrCreateSpriteTexture(vg, sprite);
+		if (tex > 0) {
+			int imgSize = 32;
+			if (size == RENDER_SIZE_16x16) imgSize = 16;
+			else if (size == RENDER_SIZE_32x32) imgSize = 32;
+			else if (size == RENDER_SIZE_64x64) imgSize = 64; // Not supported in original?
+
+			NVGpaint imgPaint = nvgImagePattern(vg, 2, 2, imgSize, imgSize, 0, tex, 1.0f);
+			nvgBeginPath(vg);
+			nvgRect(vg, 2, 2, imgSize, imgSize);
+			nvgFillPaint(vg, imgPaint);
+			nvgFill(vg);
 
 			if (overlay && type == DC_BTN_TOGGLE && GetValue()) {
-				overlay->DrawTo(&pdc, SPRITE_SIZE_16x16, 2, 2);
+				int overlayTex = GetOrCreateSpriteTexture(vg, overlay);
+				if (overlayTex > 0) {
+					NVGpaint ovPaint = nvgImagePattern(vg, 2, 2, imgSize, imgSize, 0, overlayTex, 1.0f);
+					nvgBeginPath(vg);
+					nvgRect(vg, 2, 2, imgSize, imgSize);
+					nvgFillPaint(vg, ovPaint);
+					nvgFill(vg);
+				}
 			}
-		} else if (size == RENDER_SIZE_32x32) {
-			// Draw the picture!
-			sprite->DrawTo(&pdc, SPRITE_SIZE_32x32, 2, 2);
-
-			if (overlay && type == DC_BTN_TOGGLE && GetValue()) {
-				overlay->DrawTo(&pdc, SPRITE_SIZE_32x32, 2, 2);
-			}
-		} else if (size == RENDER_SIZE_64x64) {
-			////
 		}
 	}
 }

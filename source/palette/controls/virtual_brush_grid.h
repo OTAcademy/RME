@@ -34,6 +34,13 @@ public:
 	Brush* GetSelectedBrush() const override;
 	bool SelectBrush(const Brush* brush) override;
 
+	enum class DisplayMode {
+		Grid,
+		List
+	};
+
+	void SetDisplayMode(DisplayMode mode);
+
 protected:
 	/**
 	 * @brief Performs NanoVG rendering of the brush grid.
@@ -53,9 +60,9 @@ protected:
 	void UpdateLayout();
 	int HitTest(int x, int y) const;
 	wxRect GetItemRect(int index) const;
-	int GetOrCreateBrushTexture(NVGcontext* vg, Brush* brush);
 	void DrawBrushItem(NVGcontext* vg, int index, const wxRect& rect);
 
+	DisplayMode display_mode = DisplayMode::Grid;
 	RenderSize icon_size;
 	int selected_index;
 	int hover_index;
