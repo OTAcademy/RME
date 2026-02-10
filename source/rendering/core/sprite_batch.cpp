@@ -216,12 +216,12 @@ void SpriteBatch::flush(const AtlasManager& atlas_manager) {
 		return;
 	}
 
+	// Ensure shader and VAO are bound to handle interleaved renderer calls
+	shader_->Use();
 	atlas_manager.bind(0);
 
-	if (last_bound_vao_ != vao_->GetID()) {
-		glBindVertexArray(vao_->GetID());
-		last_bound_vao_ = vao_->GetID();
-	}
+	glBindVertexArray(vao_->GetID());
+	last_bound_vao_ = vao_->GetID();
 
 	glBindBuffer(GL_ARRAY_BUFFER, ring_buffer_.getBufferId());
 
