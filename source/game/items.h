@@ -21,9 +21,9 @@
 #include "io/filehandle.h"
 #include "brushes/brush_enums.h"
 #include "ext/pugixml.hpp"
-#include "util/con_vector.h"
 #include <wx/string.h>
 #include <string_view>
+#include <memory>
 #include <map>
 #include <vector>
 
@@ -116,6 +116,12 @@ enum WeaponType_t : uint8_t {
 };
 
 /////////OTB specific//////////////
+
+enum class OtbFileFormatVersion {
+	V1 = 1,
+	V2 = 2,
+	V3 = 3
+};
 
 enum rootattrib_t {
 	ROOT_ATTR_VERSION = 0x01
@@ -425,7 +431,7 @@ public:
 class ItemDatabase {
 public:
 	ItemDatabase();
-	~ItemDatabase();
+	~ItemDatabase() = default;
 
 	void clear();
 
@@ -445,8 +451,8 @@ public:
 	bool loadItemFromGameXml(pugi::xml_node itemNode, int id);
 	bool loadMetaItem(pugi::xml_node node);
 
-	// typedef std::map<int32_t, ItemType*> ItemMap;
-	using ItemMap = contigous_vector<ItemType*>;
+	// using ItemMap = contigous_vector<ItemType*>;
+	using ItemMap = std::vector<std::unique_ptr<ItemType>>;
 	using ItemNameMap = std::map<std::string, ItemType*>;
 	ItemMap items;
 
@@ -460,11 +466,13 @@ protected:
 	bool loadFromOtbVer2(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings);
 	bool loadFromOtbVer3(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings);
 
+	bool loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion version, wxString& error, std::vector<std::string>& warnings);
+
 private:
-	void parseItemTypeAttribute(ItemType& it, std::string_view value);
-	void parseSlotTypeAttribute(ItemType& it, std::string_view value);
-	void parseWeaponTypeAttribute(ItemType& it, std::string_view value);
-	void parseFloorChangeAttribute(ItemType& it, std::string_view value);
+	static void parseItemTypeAttribute(ItemType& it, std::string_view value);
+	static void parseSlotTypeAttribute(ItemType& it, std::string_view value);
+	static void parseWeaponTypeAttribute(ItemType& it, std::string_view value);
+	static void parseFloorChangeAttribute(ItemType& it, std::string_view value);
 
 protected:
 	// Count of GameSprite types

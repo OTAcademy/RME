@@ -21,6 +21,7 @@
 #include <ctime>
 #include <sstream>
 #include <format>
+#include <unordered_map>
 #include <spdlog/spdlog.h>
 
 void EditorPersistence::loadMap(Editor& editor, const FileName& fn) {
@@ -259,8 +260,10 @@ bool EditorPersistence::importMap(Editor& editor, FileName filename, int import_
 
 	g_gui.CreateLoadBar("Merging maps...");
 
-	std::map<uint32_t, uint32_t> town_id_map;
-	std::map<uint32_t, uint32_t> house_id_map;
+	std::unordered_map<uint32_t, uint32_t> town_id_map;
+	town_id_map.reserve(imported_map.towns.count());
+	std::unordered_map<uint32_t, uint32_t> house_id_map;
+	house_id_map.reserve(imported_map.houses.count());
 
 	if (house_import_type != IMPORT_DONT) {
 		for (TownMap::iterator tit = imported_map.towns.begin(); tit != imported_map.towns.end();) {
