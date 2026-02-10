@@ -21,6 +21,7 @@
 #include <unordered_map>
 #include <array>
 #include <format>
+#include <limits>
 
 #include "game/materials.h"
 #include "app/managers/version_manager.h"
@@ -47,29 +48,29 @@ ItemType::ItemType() :
 	type(ITEM_TYPE_NONE),
 	volume(0),
 	maxTextLen(0),
-	// writeOnceItemID(0),
+	slot_position(SLOTP_HAND),
+	weapon_type(WEAPON_NONE),
 	ground_equivalent(0),
 	border_group(0),
 	has_equivalent(false),
 	wall_hate_me(false),
 	name(""),
+	editorsuffix(""),
 	description(""),
 	weight(0.0f),
 	attack(0),
 	defense(0),
 	armor(0),
-	slot_position(SLOTP_HAND),
-	weapon_type(WEAPON_NONE),
 	charges(0),
 	client_chargeable(false),
 	extra_chargeable(false),
 	ignoreLook(false),
-
 	isHangable(false),
 	hookEast(false),
 	hookSouth(false),
 	canReadText(false),
 	canWriteText(false),
+	allowDistRead(false),
 	replaceable(true),
 	decays(false),
 	stackable(false),
@@ -82,22 +83,20 @@ ItemType::ItemType() :
 	isWall(false),
 	isBrushDoor(false),
 	isOpen(false),
+	isLocked(false),
 	isTable(false),
 	isCarpet(false),
-
 	floorChangeDown(false),
 	floorChangeNorth(false),
 	floorChangeSouth(false),
 	floorChangeEast(false),
 	floorChangeWest(false),
 	floorChange(false),
-
 	unpassable(false),
 	blockPickupable(false),
 	blockMissiles(false),
 	blockPathfinder(false),
 	hasElevation(false),
-
 	alwaysOnTopOrder(0),
 	rotateTo(0),
 	way_speed(100),
@@ -221,7 +220,7 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion
 
 		using AttributeHandler = bool (*)(ItemDatabase&, ItemType&, BinaryNode*, uint16_t, wxString&, std::vector<std::string>&);
 		static const auto handlers = [] {
-			std::array<AttributeHandler, 256> h {};
+			std::array<AttributeHandler, std::numeric_limits<uint8_t>::max() + 1> h {};
 			h.fill([](ItemDatabase&, ItemType&, BinaryNode* node, uint16_t len, [[maybe_unused]] wxString&, [[maybe_unused]] std::vector<std::string>&) {
 				node->skip(len);
 				return true;
@@ -408,8 +407,8 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion
 				warnings.push_back("items.otb: Duplicate items");
 			}
 
-			if (t->id >= items.size()) {
-				items.resize(t->id + 1);
+			if (static_cast<size_t>(t->id) >= items.size()) {
+				items.resize(static_cast<size_t>(t->id) + 1);
 			}
 			items[t->id] = std::move(owned_t);
 		}
