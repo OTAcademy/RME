@@ -116,7 +116,6 @@ private:
 
 	int draw_call_count_ = 0;
 	int sprite_count_ = 0;
-	GLuint last_bound_vao_ = 0;
 };
 
 #endif

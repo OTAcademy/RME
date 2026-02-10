@@ -81,6 +81,7 @@ protected:
 	uint32_t clientIds;
 	uint16_t port;
 
+	mutable std::mutex clientMutex;
 	bool stopped;
 };
 
