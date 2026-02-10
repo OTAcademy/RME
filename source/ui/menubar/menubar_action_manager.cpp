@@ -260,6 +260,7 @@ void MenuBarActionManager::UpdateState(MainMenuBar* mb) {
 
 	if (has_map) {
 		mb->CheckItem(SHOW_SPAWNS, g_settings.getBoolean(Config::SHOW_SPAWNS));
+		mb->CheckItem(SHOW_LIGHTS, g_settings.getBoolean(Config::SHOW_LIGHTS));
 	}
 
 	mb->EnableItem(WIN_MINIMAP, loaded);

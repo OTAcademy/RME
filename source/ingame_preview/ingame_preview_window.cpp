@@ -62,7 +62,7 @@ namespace IngamePreview {
 
 		lighting_btn = new wxToggleButton(this, ID_ENABLE_LIGHTING, "", wxDefaultPosition, wxSize(28, 24));
 		lighting_btn->SetBitmap(wxMaterialDesignArtProvider::GetBitmap(wxART_WB_SUNNY, wxART_CLIENT_MATERIAL_FILLED, wxSize(16, 16), wxColour(255, 235, 59)));
-		lighting_btn->SetValue(true);
+		lighting_btn->SetValue(false);
 		lighting_btn->SetToolTip("Toggle Lighting");
 		toolbar_sizer->Add(lighting_btn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 1);
 
