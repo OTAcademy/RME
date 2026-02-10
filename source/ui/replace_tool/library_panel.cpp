@@ -124,12 +124,11 @@ void LibraryPanel::OnBrushSearchChange(wxCommandEvent&) {
 uint16_t LibraryPanel::GetSidFromCid(uint16_t cid) {
 	if (m_cidToSidCache.empty()) {
 		uint32_t maxId = static_cast<uint32_t>(g_items.getMaxID());
+		m_cidToSidCache.reserve(maxId - 100);
 		for (uint32_t id = 100; id <= maxId; ++id) {
 			const ItemType& it = g_items.getItemType(id);
 			if (it.id != 0 && it.clientID != 0) {
-				if (m_cidToSidCache.find(it.clientID) == m_cidToSidCache.end()) {
-					m_cidToSidCache[it.clientID] = it.id;
-				}
+				m_cidToSidCache.emplace(it.clientID, it.id);
 			}
 		}
 	}
@@ -167,9 +166,8 @@ void LibraryPanel::PopulateBrushGrid() {
 		uint16_t serverId = GetSidFromCid(lookId);
 
 		if (serverId != 0) {
-			if (m_brushLookup.find(serverId) == m_brushLookup.end()) {
+			if (auto [it, inserted] = m_brushLookup.try_emplace(serverId, brush); inserted) {
 				brushIds.push_back(serverId);
-				m_brushLookup[serverId] = brush;
 				overrides[serverId] = name;
 			}
 		}
