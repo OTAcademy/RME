@@ -131,7 +131,7 @@ void SpriteBatch::begin(const glm::mat4& projection) {
 	in_batch_ = true;
 	draw_call_count_ = 0;
 	sprite_count_ = 0;
-	last_bound_vao_ = 0;
+	sprite_count_ = 0;
 	global_tint_ = glm::vec4(1.0f);
 
 	glEnable(GL_BLEND);
@@ -218,10 +218,13 @@ void SpriteBatch::flush(const AtlasManager& atlas_manager) {
 
 	// Ensure shader and VAO are bound to handle interleaved renderer calls
 	shader_->Use();
+	shader_->SetMat4("uMVP", projection_);
+	shader_->SetInt("uAtlas", 0);
+	shader_->SetVec4("uGlobalTint", global_tint_);
+
 	atlas_manager.bind(0);
 
 	glBindVertexArray(vao_->GetID());
-	last_bound_vao_ = vao_->GetID();
 
 	glBindBuffer(GL_ARRAY_BUFFER, ring_buffer_.getBufferId());
 
