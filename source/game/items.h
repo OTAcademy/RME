@@ -460,6 +460,8 @@ protected:
 	bool loadFromOtbVer2(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings);
 	bool loadFromOtbVer3(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings);
 
+	bool loadFromOtbGeneric(BinaryNode* itemNode, int version, wxString& error, std::vector<std::string>& warnings);
+
 private:
 	void parseItemTypeAttribute(ItemType& it, std::string_view value);
 	void parseSlotTypeAttribute(ItemType& it, std::string_view value);

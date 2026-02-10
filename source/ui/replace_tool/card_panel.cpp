@@ -4,6 +4,7 @@
 #include <wx/graphics.h>
 #include <wx/settings.h>
 #include <numbers>
+#include <memory>
 
 CardPanel::CardPanel(wxWindow* parent, wxWindowID id) : wxPanel(parent, id) {
 	SetBackgroundStyle(wxBG_STYLE_PAINT);

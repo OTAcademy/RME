@@ -55,9 +55,9 @@ ItemType::ItemType() :
 	attack(0),
 	defense(0),
 	armor(0),
-	charges(0),
 	slot_position(SLOTP_HAND),
 	weapon_type(WEAPON_NONE),
+	charges(0),
 	client_chargeable(false),
 	extra_chargeable(false),
 	ignoreLook(false),
@@ -141,6 +141,18 @@ void ItemDatabase::clear() {
 }
 
 bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings) {
+	return loadFromOtbGeneric(itemNode, 1, error, warnings);
+}
+
+bool ItemDatabase::loadFromOtbVer2(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings) {
+	return loadFromOtbGeneric(itemNode, 2, error, warnings);
+}
+
+bool ItemDatabase::loadFromOtbVer3(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings) {
+	return loadFromOtbGeneric(itemNode, 3, error, warnings);
+}
+
+bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, int version, wxString& error, std::vector<std::string>& warnings) {
 	uint8_t u8;
 
 	for (; itemNode != nullptr; itemNode = itemNode->advance()) {
@@ -150,7 +162,7 @@ bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::v
 			continue;
 		}
 
-		if (u8 == ITEM_GROUP_DEPRECATED) {
+		if (ItemGroup_t(u8) == ITEM_GROUP_DEPRECATED) {
 			continue;
 		}
 
@@ -183,6 +195,9 @@ bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::v
 			case ITEM_GROUP_MAGICFIELD:
 				t->type = ITEM_TYPE_MAGICFIELD;
 				break;
+			case ITEM_GROUP_PODIUM:
+				t->type = ITEM_TYPE_PODIUM;
+				break;
 			default:
 				warnings.push_back("Unknown item group declaration");
 		}
@@ -193,7 +208,6 @@ bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::v
 			t->blockMissiles = ((flags & FLAG_BLOCK_MISSILES) == FLAG_BLOCK_MISSILES);
 			t->blockPathfinder = ((flags & FLAG_BLOCK_PATHFINDER) == FLAG_BLOCK_PATHFINDER);
 			t->hasElevation = ((flags & FLAG_HAS_ELEVATION) == FLAG_HAS_ELEVATION);
-			// t->useable = ((flags & FLAG_USEABLE) == FLAG_USEABLE);
 			t->pickupable = ((flags & FLAG_PICKUPABLE) == FLAG_PICKUPABLE);
 			t->moveable = ((flags & FLAG_MOVEABLE) == FLAG_MOVEABLE);
 			t->stackable = ((flags & FLAG_STACKABLE) == FLAG_STACKABLE);
@@ -203,7 +217,6 @@ bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::v
 			t->floorChangeSouth = ((flags & FLAG_FLOORCHANGESOUTH) == FLAG_FLOORCHANGESOUTH);
 			t->floorChangeWest = ((flags & FLAG_FLOORCHANGEWEST) == FLAG_FLOORCHANGEWEST);
 			t->floorChange = t->floorChangeDown || t->floorChangeNorth || t->floorChangeEast || t->floorChangeSouth || t->floorChangeWest;
-			// Now this is confusing, just accept that the ALWAYSONTOP flag means it's always on bottom, got it?!
 			t->alwaysOnBottom = ((flags & FLAG_ALWAYSONTOP) == FLAG_ALWAYSONTOP);
 			t->isHangable = ((flags & FLAG_HANGABLE) == FLAG_HANGABLE);
 			t->hookEast = ((flags & FLAG_HOOK_EAST) == FLAG_HOOK_EAST);
@@ -211,6 +224,11 @@ bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::v
 			t->allowDistRead = ((flags & FLAG_ALLOWDISTREAD) == FLAG_ALLOWDISTREAD);
 			t->rotable = ((flags & FLAG_ROTABLE) == FLAG_ROTABLE);
 			t->canReadText = ((flags & FLAG_READABLE) == FLAG_READABLE);
+
+			if (version >= 3) {
+				t->client_chargeable = ((flags & FLAG_CLIENTCHARGES) == FLAG_CLIENTCHARGES);
+				t->ignoreLook = ((flags & FLAG_IGNORE_LOOK) == FLAG_IGNORE_LOOK);
+			}
 		}
 
 		uint8_t attribute;
@@ -257,7 +275,7 @@ bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::v
 						return false;
 					}
 
-					uint16_t speed;
+					uint16_t speed = 0;
 					if (!itemNode->getU16(speed)) {
 						warnings.push_back("Invalid item type property (3)");
 					}
@@ -274,9 +292,6 @@ bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::v
 					if (!itemNode->skip(4)) { // Just skip two bytes, we don't need light
 						warnings.push_back("Invalid item type property (4)");
 					}
-
-					// t->lightLevel = itemNode->getU16();
-					// t->lightColor = itemNode->getU16();
 					break;
 				}
 
@@ -286,12 +301,12 @@ bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::v
 						break;
 					}
 
-					uint8_t u8 = 0;
-					if (!itemNode->getU8(u8)) {
+					uint8_t u8_top = 0;
+					if (!itemNode->getU8(u8_top)) {
 						warnings.push_back("Invalid item type property (5)");
 					}
 
-					t->alwaysOnTopOrder = u8;
+					t->alwaysOnTopOrder = u8_top;
 					break;
 				}
 
@@ -380,8 +395,8 @@ bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::v
 						break;
 					}
 
-					uint16_t readOnlyID;
-					uint16_t maxTextLen;
+					uint16_t readOnlyID = 0;
+					uint16_t maxTextLen = 0;
 
 					if (!itemNode->getU16(readOnlyID)) {
 						warnings.push_back("Invalid item type property (9)");
@@ -398,345 +413,18 @@ bool ItemDatabase::loadFromOtbVer1(BinaryNode* itemNode, wxString& error, std::v
 					break;
 				}
 
-				default: {
-					// skip unknown attributes
-					itemNode->skip(datalen);
-					// warnings.push_back("items.otb: Skipped unknown attribute");
-					break;
-				}
-			}
-		}
-
-		if (t) {
-			if (items[t->id]) {
-				warnings.push_back("items.otb: Duplicate items");
-				delete items[t->id];
-			}
-			items.set(t->id, t);
-		}
-	}
-	return true;
-}
-
-bool ItemDatabase::loadFromOtbVer2(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings) {
-	uint8_t u8;
-	for (; itemNode != nullptr; itemNode = itemNode->advance()) {
-		if (!itemNode->getU8(u8)) {
-			// Invalid!
-			warnings.push_back("Invalid item type encountered...");
-			continue;
-		}
-
-		if (ItemGroup_t(u8) == ITEM_GROUP_DEPRECATED) {
-			continue;
-		}
-
-		ItemType* t = newd ItemType();
-		t->group = ItemGroup_t(u8);
-
-		switch (t->group) {
-			case ITEM_GROUP_NONE:
-			case ITEM_GROUP_GROUND:
-			case ITEM_GROUP_SPLASH:
-			case ITEM_GROUP_FLUID:
-				break;
-			case ITEM_GROUP_DOOR:
-				t->type = ITEM_TYPE_DOOR;
-				break;
-			case ITEM_GROUP_CONTAINER:
-				t->type = ITEM_TYPE_CONTAINER;
-				break;
-			case ITEM_GROUP_RUNE:
-				t->client_chargeable = true;
-				break;
-			case ITEM_GROUP_TELEPORT:
-				t->type = ITEM_TYPE_TELEPORT;
-				break;
-			case ITEM_GROUP_MAGICFIELD:
-				t->type = ITEM_TYPE_MAGICFIELD;
-				break;
-			default:
-				warnings.push_back("Unknown item group declaration");
-		}
-
-		uint32_t flags;
-		if (itemNode->getU32(flags)) {
-			t->unpassable = ((flags & FLAG_UNPASSABLE) == FLAG_UNPASSABLE);
-			t->blockMissiles = ((flags & FLAG_BLOCK_MISSILES) == FLAG_BLOCK_MISSILES);
-			t->blockPathfinder = ((flags & FLAG_BLOCK_PATHFINDER) == FLAG_BLOCK_PATHFINDER);
-			t->hasElevation = ((flags & FLAG_HAS_ELEVATION) == FLAG_HAS_ELEVATION);
-			t->pickupable = ((flags & FLAG_PICKUPABLE) == FLAG_PICKUPABLE);
-			t->moveable = ((flags & FLAG_MOVEABLE) == FLAG_MOVEABLE);
-			t->stackable = ((flags & FLAG_STACKABLE) == FLAG_STACKABLE);
-			t->floorChangeDown = ((flags & FLAG_FLOORCHANGEDOWN) == FLAG_FLOORCHANGEDOWN);
-			t->floorChangeNorth = ((flags & FLAG_FLOORCHANGENORTH) == FLAG_FLOORCHANGENORTH);
-			t->floorChangeEast = ((flags & FLAG_FLOORCHANGEEAST) == FLAG_FLOORCHANGEEAST);
-			t->floorChangeSouth = ((flags & FLAG_FLOORCHANGESOUTH) == FLAG_FLOORCHANGESOUTH);
-			t->floorChangeWest = ((flags & FLAG_FLOORCHANGEWEST) == FLAG_FLOORCHANGEWEST);
-			t->floorChange = t->floorChangeDown || t->floorChangeNorth || t->floorChangeEast || t->floorChangeSouth || t->floorChangeWest;
-			// Now this is confusing, just accept that the ALWAYSONTOP flag means it's always on bottom, got it?!
-			t->alwaysOnBottom = ((flags & FLAG_ALWAYSONTOP) == FLAG_ALWAYSONTOP);
-			t->isHangable = ((flags & FLAG_HANGABLE) == FLAG_HANGABLE);
-			t->hookEast = ((flags & FLAG_HOOK_EAST) == FLAG_HOOK_EAST);
-			t->hookSouth = ((flags & FLAG_HOOK_SOUTH) == FLAG_HOOK_SOUTH);
-			t->allowDistRead = ((flags & FLAG_ALLOWDISTREAD) == FLAG_ALLOWDISTREAD);
-			t->rotable = ((flags & FLAG_ROTABLE) == FLAG_ROTABLE);
-			t->canReadText = ((flags & FLAG_READABLE) == FLAG_READABLE);
-		}
-
-		uint8_t attribute;
-		while (itemNode->getU8(attribute)) {
-			uint16_t datalen;
-			if (!itemNode->getU16(datalen)) {
-				warnings.push_back("Invalid item type property");
-				break;
-			}
-
-			switch (attribute) {
-				case ITEM_ATTR_SERVERID: {
-					if (datalen != sizeof(uint16_t)) {
-						error = "items.otb: Unexpected data length of server id block (Should be 2 bytes)";
-						return false;
-					}
-
-					if (!itemNode->getU16(t->id)) {
-						warnings.push_back("Invalid item type property (2)");
-					}
-
-					if (max_item_id < t->id) {
-						max_item_id = t->id;
-					}
-					break;
-				}
-
-				case ITEM_ATTR_CLIENTID: {
-					if (datalen != sizeof(uint16_t)) {
-						error = "items.otb: Unexpected data length of client id block (Should be 2 bytes)";
-						return false;
-					}
-
-					if (!itemNode->getU16(t->clientID)) {
-						warnings.push_back("Invalid item type property (2)");
-					}
-
-					t->sprite = static_cast<GameSprite*>(g_gui.gfx.getSprite(t->clientID));
-					break;
-				}
-
-				case ITEM_ATTR_SPEED: {
-					if (datalen != sizeof(uint16_t)) {
-						error = "items.otb: Unexpected data length of speed block (Should be 2 bytes)";
-						return false;
-					}
-
-					uint16_t speed;
-					if (!itemNode->getU16(speed)) {
-						warnings.push_back("Invalid item type property (3)");
-					}
-					t->way_speed = speed;
-					break;
-				}
-
-				case ITEM_ATTR_LIGHT2: {
-					if (datalen != sizeof(lightBlock2)) {
-						warnings.push_back(("items.otb: Unexpected data length of item light (2) block (Should be " + i2ws(sizeof(lightBlock2)) + " bytes)").ToStdString());
-						break;
-					}
-
-					if (!itemNode->skip(4)) { // Just skip two bytes, we don't need light
-						warnings.push_back("Invalid item type property (4)");
-					}
-
-					// t->lightLevel = itemNode->getU16();
-					// t->lightColor = itemNode->getU16();
-					break;
-				}
-
-				case ITEM_ATTR_TOPORDER: {
-					if (datalen != sizeof(uint8_t)) {
-						warnings.push_back("items.otb: Unexpected data length of item toporder block (Should be 1 byte)");
-						break;
-					}
-
-					uint8_t u8 = 0;
-					if (!itemNode->getU8(u8)) {
-						warnings.push_back("Invalid item type property (5)");
-					}
-					t->alwaysOnTopOrder = u8;
-					break;
-				}
-
-				default: {
-					// skip unknown attributes
-					itemNode->skip(datalen);
-					// warnings.push_back("items.otb: Skipped unknown attribute");
-					break;
-				}
-			}
-		}
-
-		if (t) {
-			if (items[t->id]) {
-				warnings.push_back("items.otb: Duplicate items");
-				delete items[t->id];
-			}
-			items.set(t->id, t);
-		}
-	}
-	return true;
-}
-
-bool ItemDatabase::loadFromOtbVer3(BinaryNode* itemNode, wxString& error, std::vector<std::string>& warnings) {
-	uint8_t u8;
-	for (; itemNode != nullptr; itemNode = itemNode->advance()) {
-		if (!itemNode->getU8(u8)) {
-			// Invalid!
-			warnings.push_back("Invalid item type encountered...");
-			continue;
-		}
-
-		if (ItemGroup_t(u8) == ITEM_GROUP_DEPRECATED) {
-			continue;
-		}
-
-		ItemType* t = newd ItemType();
-		t->group = ItemGroup_t(u8);
-
-		switch (t->group) {
-			case ITEM_GROUP_NONE:
-			case ITEM_GROUP_GROUND:
-			case ITEM_GROUP_SPLASH:
-			case ITEM_GROUP_FLUID:
-				break;
-			case ITEM_GROUP_CONTAINER:
-				t->type = ITEM_TYPE_CONTAINER;
-				break;
-			case ITEM_GROUP_PODIUM:
-				t->type = ITEM_TYPE_PODIUM;
-				break;
-			default:
-				warnings.push_back("Unknown item group declaration");
-		}
-
-		uint32_t flags;
-		if (itemNode->getU32(flags)) {
-			t->unpassable = ((flags & FLAG_UNPASSABLE) == FLAG_UNPASSABLE);
-			t->blockMissiles = ((flags & FLAG_BLOCK_MISSILES) == FLAG_BLOCK_MISSILES);
-			t->blockPathfinder = ((flags & FLAG_BLOCK_PATHFINDER) == FLAG_BLOCK_PATHFINDER);
-			t->hasElevation = ((flags & FLAG_HAS_ELEVATION) == FLAG_HAS_ELEVATION);
-			t->pickupable = ((flags & FLAG_PICKUPABLE) == FLAG_PICKUPABLE);
-			t->moveable = ((flags & FLAG_MOVEABLE) == FLAG_MOVEABLE);
-			t->stackable = ((flags & FLAG_STACKABLE) == FLAG_STACKABLE);
-			t->floorChangeDown = ((flags & FLAG_FLOORCHANGEDOWN) == FLAG_FLOORCHANGEDOWN);
-			t->floorChangeNorth = ((flags & FLAG_FLOORCHANGENORTH) == FLAG_FLOORCHANGENORTH);
-			t->floorChangeEast = ((flags & FLAG_FLOORCHANGEEAST) == FLAG_FLOORCHANGEEAST);
-			t->floorChangeSouth = ((flags & FLAG_FLOORCHANGESOUTH) == FLAG_FLOORCHANGESOUTH);
-			t->floorChangeWest = ((flags & FLAG_FLOORCHANGEWEST) == FLAG_FLOORCHANGEWEST);
-			t->floorChange = t->floorChangeDown || t->floorChangeNorth || t->floorChangeEast || t->floorChangeSouth || t->floorChangeWest;
-			// Now this is confusing, just accept that the ALWAYSONTOP flag means it's always on bottom, got it?!
-			t->alwaysOnBottom = ((flags & FLAG_ALWAYSONTOP) == FLAG_ALWAYSONTOP);
-			t->isHangable = ((flags & FLAG_HANGABLE) == FLAG_HANGABLE);
-			t->hookEast = ((flags & FLAG_HOOK_EAST) == FLAG_HOOK_EAST);
-			t->hookSouth = ((flags & FLAG_HOOK_SOUTH) == FLAG_HOOK_SOUTH);
-			t->allowDistRead = ((flags & FLAG_ALLOWDISTREAD) == FLAG_ALLOWDISTREAD);
-			t->rotable = ((flags & FLAG_ROTABLE) == FLAG_ROTABLE);
-			t->canReadText = ((flags & FLAG_READABLE) == FLAG_READABLE);
-			t->client_chargeable = ((flags & FLAG_CLIENTCHARGES) == FLAG_CLIENTCHARGES);
-			t->ignoreLook = ((flags & FLAG_IGNORE_LOOK) == FLAG_IGNORE_LOOK);
-		}
-
-		uint8_t attribute;
-		while (itemNode->getU8(attribute)) {
-			uint16_t datalen;
-			if (!itemNode->getU16(datalen)) {
-				warnings.push_back("Invalid item type property");
-				break;
-			}
-
-			switch (attribute) {
-				case ITEM_ATTR_SERVERID: {
-					if (datalen != sizeof(uint16_t)) {
-						error = "items.otb: Unexpected data length of server id block (Should be 2 bytes)";
-						return false;
-					}
-
-					if (!itemNode->getU16(t->id)) {
-						warnings.push_back("Invalid item type property (2)");
-					}
-
-					if (max_item_id < t->id) {
-						max_item_id = t->id;
-					}
-					break;
-				}
-
-				case ITEM_ATTR_CLIENTID: {
-					if (datalen != sizeof(uint16_t)) {
-						error = "items.otb: Unexpected data length of client id block (Should be 2 bytes)";
-						return false;
-					}
-
-					if (!itemNode->getU16(t->clientID)) {
-						warnings.push_back("Invalid item type property (2)");
-					}
-
-					t->sprite = static_cast<GameSprite*>(g_gui.gfx.getSprite(t->clientID));
-					break;
-				}
-
-				case ITEM_ATTR_SPEED: {
-					if (datalen != sizeof(uint16_t)) {
-						error = "items.otb: Unexpected data length of speed block (Should be 2 bytes)";
-						return false;
-					}
-
-					uint16_t speed;
-					if (!itemNode->getU16(speed)) {
-						warnings.push_back("Invalid item type property (3)");
-					}
-					t->way_speed = speed;
-					break;
-				}
-
-				case ITEM_ATTR_LIGHT2: {
-					if (datalen != sizeof(lightBlock2)) {
-						warnings.push_back(("items.otb: Unexpected data length of item light (2) block (Should be " + i2ws(sizeof(lightBlock2)) + " bytes)").ToStdString());
-						break;
-					}
-					if (!itemNode->skip(4)) { // Just skip two bytes, we don't need light
-						warnings.push_back("Invalid item type property (4)");
-					}
-
-					// t->lightLevel = itemNode->getU16();
-					// t->lightColor = itemNode->getU16();
-					break;
-				}
-
-				case ITEM_ATTR_TOPORDER: {
-					if (datalen != sizeof(uint8_t)) {
-						warnings.push_back("items.otb: Unexpected data length of item toporder block (Should be 1 byte)");
-						break;
-					}
-
-					if (!itemNode->getU8(u8)) {
-						warnings.push_back("Invalid item type property (5)");
-					}
-
-					t->alwaysOnTopOrder = u8;
-					break;
-				}
-
 				case ITEM_ATTR_CLASSIFICATION: {
 					if (datalen != sizeof(uint8_t)) {
 						warnings.push_back("items.otb: Unexpected data length of item classification block (Should be 1 byte)");
 						break;
 					}
 
-					if (!itemNode->getU8(u8)) {
+					uint8_t cls = 0;
+					if (!itemNode->getU8(cls)) {
 						warnings.push_back("Invalid item type property (5)");
 					}
 
-					t->classification = u8;
+					t->classification = cls;
 					break;
 				}
 

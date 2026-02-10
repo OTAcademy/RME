@@ -1,0 +1,19 @@
+[1/2] Building CXX object CMakeFiles/rme.dir/source/game/items.cpp.o
+In file included from /app/source/game/item.h:21,
+                 from /app/source/map/tile.h:22,
+                 from /app/source/map/map_allocator.h:21,
+                 from /app/source/map/basemap.h:24,
+                 from /app/source/editor/copybuffer.h:25,
+                 from /app/source/ui/gui.h:7,
+                 from /app/source/game/items.cpp:24:
+/app/source/game/items.h: In constructor ‘ItemType::ItemType()’:
+/app/source/game/items.h:378:18: warning: ‘ItemType::charges’ will be initialized after [-Wreorder]
+  378 |         uint32_t charges;
+      |                  ^~~~~~~
+/app/source/game/items.h:361:18: warning:   ‘uint16_t ItemType::slot_position’ [-Wreorder]
+  361 |         uint16_t slot_position;
+      |                  ^~~~~~~~~~~~~
+/app/source/game/items.cpp:32:1: warning:   when initialized here [-Wreorder]
+   32 | ItemType::ItemType() :
+      | ^~~~~~~~
+[2/2] Linking CXX executable rme

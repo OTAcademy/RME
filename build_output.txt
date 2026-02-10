@@ -1,0 +1,86 @@
+[1/50] Building CXX object CMakeFiles/rme.dir/source/ui/toolbar/position_toolbar.cpp.o
+In file included from /app/source/map/map.h:26,
+                 from /app/source/editor/editor.h:24,
+                 from /app/source/ui/toolbar/position_toolbar.cpp:9:
+/app/source/game/complexitem.h:183:9: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+  183 |         const uint8_t getDirection() {
+      |         ^~~~~
+[2/50] Building CXX object CMakeFiles/rme.dir/source/ui/toolbar/brush_toolbar.cpp.o
+In file included from /app/source/map/map.h:26,
+                 from /app/source/editor/editor.h:24,
+                 from /app/source/ui/toolbar/brush_toolbar.cpp:9:
+/app/source/game/complexitem.h:183:9: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+  183 |         const uint8_t getDirection() {
+      |         ^~~~~
+[3/50] Building CXX object CMakeFiles/rme.dir/source/ui/toolbar/size_toolbar.cpp.o
+In file included from /app/source/map/map.h:26,
+                 from /app/source/editor/editor.h:24,
+                 from /app/source/ui/toolbar/size_toolbar.cpp:9:
+/app/source/game/complexitem.h:183:9: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+  183 |         const uint8_t getDirection() {
+      |         ^~~~~
+[4/50] Building CXX object CMakeFiles/rme.dir/source/ui/map_tab.cpp.o
+In file included from /app/source/map/map.h:26,
+                 from /app/source/editor/editor.h:24,
+                 from /app/source/ui/map_tab.cpp:21:
+/app/source/game/complexitem.h:183:9: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+  183 |         const uint8_t getDirection() {
+      |         ^~~~~
+[5/50] Building CXX object CMakeFiles/rme.dir/source/ui/toolbar/toolbar_persistence.cpp.o
+[6/50] Building CXX object CMakeFiles/rme.dir/source/ui/toolbar/standard_toolbar.cpp.o
+In file included from /app/source/map/map.h:26,
+                 from /app/source/editor/editor.h:24,
+                 from /app/source/ui/toolbar/standard_toolbar.cpp:10:
+/app/source/game/complexitem.h:183:9: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+  183 |         const uint8_t getDirection() {
+      |         ^~~~~
+/app/source/ui/toolbar/standard_toolbar.cpp: In constructor ‘StandardToolBar::StandardToolBar(wxWindow*)’:
+/app/source/ui/toolbar/standard_toolbar.cpp:44:42: warning: arithmetic between different enumeration types ‘EditorActionID’ and ‘MenuBar::ActionID’ is deprecated [-Wdeprecated-enum-enum-conversion]
+   44 |         toolbar->AddTool(MAIN_FRAME_MENU + MenuBar::JUMP_TO_BRUSH, wxEmptyString, find_bitmap, wxNullBitmap, wxITEM_NORMAL, "Jump to Brush (J)", wxEmptyString, nullptr);
+      |                          ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+[7/50] Building CXX object CMakeFiles/rme.dir/source/ui/toolbar/light_toolbar.cpp.o
+[8/50] Building CXX object CMakeFiles/rme.dir/source/ui/toolbar/toolbar_registry.cpp.o
+[9/50] Building CXX object CMakeFiles/rme.dir/source/ui/toolbar/toolbar_factory.cpp.o
+[10/50] Building CXX object CMakeFiles/rme.dir/source/ui/toolbar/toolbar_layout.cpp.o
+[11/50] Building CXX object CMakeFiles/rme.dir/source/ui/pngfiles.cpp.o
+[12/50] Building CXX object CMakeFiles/rme.dir/source/ui/properties/old_properties_window.cpp.o
+In file included from /app/source/ui/properties/old_properties_window.cpp:9:
+/app/source/game/complexitem.h:183:9: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+  183 |         const uint8_t getDirection() {
+      |         ^~~~~
+[13/50] Building CXX object CMakeFiles/rme.dir/source/ui/positionctrl.cpp.o
+[14/50] Building CXX object CMakeFiles/rme.dir/source/ui/properties/properties_window.cpp.o
+In file included from /app/source/ui/properties/properties_window.cpp:23:
+/app/source/game/complexitem.h:183:9: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+  183 |         const uint8_t getDirection() {
+      |         ^~~~~
+[15/50] Building CXX object CMakeFiles/rme.dir/source/ui/replace_items_window.cpp.o
+In file included from /app/source/map/map.h:26,
+                 from /app/source/editor/editor.h:24,
+                 from /app/source/ui/replace_items_window.h:23,
+                 from /app/source/ui/replace_items_window.cpp:19:
+/app/source/game/complexitem.h:183:9: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+  183 |         const uint8_t getDirection() {
+      |         ^~~~~
+[16/50] Building CXX object CMakeFiles/rme.dir/source/ui/replace_tool/card_panel.cpp.o
+FAILED: CMakeFiles/rme.dir/source/ui/replace_tool/card_panel.cpp.o
+/usr/bin/c++ -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_SYSTEM_DYN_LINK -DBOOST_SYSTEM_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -DFMT_SHARED -DNANOVG_GL3 -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -DUNICODE="" -DWXUSINGDLL -DWXWIN_COMPATIBILITY_3_3 -D_FILE_OFFSET_BITS=64 -D_UNICODE="" -D__WXGTK__ -I/app/build_conan/build/Release/_deps/wxmaterialdesignartprovider-src -I/app/source -I/app/ext/nanovg/src -isystem /usr/lib/x86_64-linux-gnu/wx/include/gtk3-unicode-3.2 -isystem /usr/include/wx-3.2 -isystem /home/jules/.conan2/p/b/glad434481e345f8d/p/include -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-deprecated-declarations -Wno-overloaded-virtual -Wno-strict-aliasing -Wno-sign-compare -Wno-unused-function -Wunused-result -pthread -O3 -DNDEBUG -std=gnu++20 -pthread -MD -MT CMakeFiles/rme.dir/source/ui/replace_tool/card_panel.cpp.o -MF CMakeFiles/rme.dir/source/ui/replace_tool/card_panel.cpp.o.d -o CMakeFiles/rme.dir/source/ui/replace_tool/card_panel.cpp.o -c /app/source/ui/replace_tool/card_panel.cpp
+/app/source/ui/replace_tool/card_panel.cpp: In member function ‘void CardPanel::OnPaint(wxPaintEvent&)’:
+/app/source/ui/replace_tool/card_panel.cpp:50:14: error: ‘unique_ptr’ is not a member of ‘std’
+   50 |         std::unique_ptr<wxGraphicsContext> gc(wxGraphicsContext::Create(dc));
+      |              ^~~~~~~~~~
+/app/source/ui/replace_tool/card_panel.cpp:5:1: note: ‘std::unique_ptr’ is defined in header ‘<memory>’; did you forget to ‘#include <memory>’?
+    4 | #include <wx/graphics.h>
+  +++ |+#include <memory>
+    5 | #include <wx/settings.h>
+/app/source/ui/replace_tool/card_panel.cpp:50:42: error: expected primary-expression before ‘>’ token
+   50 |         std::unique_ptr<wxGraphicsContext> gc(wxGraphicsContext::Create(dc));
+      |                                          ^
+/app/source/ui/replace_tool/card_panel.cpp:50:44: error: ‘gc’ was not declared in this scope; did you mean ‘dc’?
+   50 |         std::unique_ptr<wxGraphicsContext> gc(wxGraphicsContext::Create(dc));
+      |                                            ^~
+      |                                            dc
+[17/50] Building CXX object CMakeFiles/rme.dir/source/ui/replace_tool/item_grid_panel.cpp.o
+[18/50] Building CXX object CMakeFiles/rme.dir/source/ui/replace_tool/library_panel.cpp.o
+[19/50] Building CXX object CMakeFiles/rme.dir/source/ui/replace_tool/rule_card_renderer.cpp.o
+ninja: build stopped: subcommand failed.
