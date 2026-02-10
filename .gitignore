@@ -90,3 +90,5 @@ analyze_legacy.py
 /test_iterator_mock
 /test_selection_mock
 /test_variant_logic
+build_output*.txt
+build_script.log
