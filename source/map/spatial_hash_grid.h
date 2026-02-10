@@ -8,6 +8,7 @@
 #include <vector>
 #include <utility>
 #include <ranges>
+#include <algorithm>
 
 class MapNode;
 class BaseMap;
@@ -53,37 +54,114 @@ public:
 		int end_nx = (max_x - 1) >> NODE_SHIFT;
 		int end_ny = (max_y - 1) >> NODE_SHIFT;
 
-		uint64_t cached_cell_key = 0;
-		bool has_cached_cell = false;
-		GridCell* cached_cell = nullptr;
+		int start_cx = start_nx >> NODES_PER_CELL_SHIFT;
+		int start_cy = start_ny >> NODES_PER_CELL_SHIFT;
+		int end_cx = end_nx >> NODES_PER_CELL_SHIFT;
+		int end_cy = end_ny >> NODES_PER_CELL_SHIFT;
 
-		for (int ny : std::views::iota(start_ny, end_ny + 1)) {
-			int cy = ny >> NODES_PER_CELL_SHIFT;
-			int local_ny = ny & (NODES_PER_CELL - 1);
+		long long num_viewport_cells = (long long)(end_cx - start_cx + 1) * (end_cy - start_cy + 1);
 
-			for (int nx : std::views::iota(start_nx, end_nx + 1)) {
-				int cx = nx >> NODES_PER_CELL_SHIFT;
-				int local_nx = nx & (NODES_PER_CELL - 1);
+		if (num_viewport_cells > (long long)cells.size()) {
+			// Strategy B: Sparse Viewport - Iterate allocated cells
+			// This is efficient when the viewport is huge but the map is sparse.
 
-				uint64_t key = makeKeyFromCell(cx, cy);
+			struct CellEntry {
+				int cx;
+				int cy;
+				GridCell* cell;
+			};
+			std::vector<CellEntry> visible_cells;
+			visible_cells.reserve(std::min((size_t)cells.size(), (size_t)num_viewport_cells));
 
-				GridCell* cell = nullptr;
-				if (has_cached_cell && key == cached_cell_key) {
-					cell = cached_cell;
-				} else {
-					auto it = cells.find(key);
-					if (it != cells.end()) {
-						cell = it->second.get();
-						cached_cell = cell;
-						cached_cell_key = key;
-						has_cached_cell = true;
-					}
+			for (const auto& entry : cells) {
+				uint64_t key = entry.first;
+				int cx = static_cast<int>(key >> 32);
+				int cy = static_cast<int>(key & 0xFFFFFFFF);
+
+				if (cx >= start_cx && cx <= end_cx && cy >= start_cy && cy <= end_cy) {
+					visible_cells.push_back({cx, cy, entry.second.get()});
+				}
+			}
+
+			// Sort by CY then CX to preserve Painter's Algorithm order (Row-Major)
+			std::sort(visible_cells.begin(), visible_cells.end(), [](const CellEntry& a, const CellEntry& b) {
+				if (a.cy != b.cy) return a.cy < b.cy;
+				return a.cx < b.cx;
+			});
+
+			size_t cell_idx = 0;
+			size_t num_visible = visible_cells.size();
+
+			for (int ny : std::views::iota(start_ny, end_ny + 1)) {
+				int current_cy = ny >> NODES_PER_CELL_SHIFT;
+				int local_ny = ny & (NODES_PER_CELL - 1);
+
+				// Advance to current row
+				while (cell_idx < num_visible && visible_cells[cell_idx].cy < current_cy) {
+					cell_idx++;
 				}
 
-				if (cell) {
-					int idx = local_ny * NODES_PER_CELL + local_nx;
-					if (MapNode* node = cell->nodes[idx].get()) {
-						func(node, nx << NODE_SHIFT, ny << NODE_SHIFT);
+				// Iterate cells in current row
+				size_t current_idx = cell_idx;
+				while (current_idx < num_visible && visible_cells[current_idx].cy == current_cy) {
+					const auto& entry = visible_cells[current_idx];
+					GridCell* cell = entry.cell;
+					int cx = entry.cx;
+
+					int cell_start_nx = cx << NODES_PER_CELL_SHIFT;
+					int local_start_nx = std::max(start_nx, cell_start_nx) - cell_start_nx;
+					int local_end_nx = std::min(end_nx, cell_start_nx + NODES_PER_CELL - 1) - cell_start_nx;
+
+					for (int lnx = local_start_nx; lnx <= local_end_nx; ++lnx) {
+						int idx = local_ny * NODES_PER_CELL + lnx;
+						if (MapNode* node = cell->nodes[idx].get()) {
+							func(node, (cell_start_nx + lnx) << NODE_SHIFT, ny << NODE_SHIFT);
+						}
+					}
+					current_idx++;
+				}
+			}
+		} else {
+			// Strategy A: Dense Viewport - Iterate viewport cells
+			// This is efficient when the viewport is small or dense.
+
+			uint64_t cached_cell_key = 0;
+			bool has_cached_cell = false;
+			GridCell* cached_cell = nullptr;
+
+			for (int ny : std::views::iota(start_ny, end_ny + 1)) {
+				int cy = ny >> NODES_PER_CELL_SHIFT;
+				int local_ny = ny & (NODES_PER_CELL - 1);
+
+				for (int cx = start_cx; cx <= end_cx; ++cx) {
+					uint64_t key = makeKeyFromCell(cx, cy);
+
+					GridCell* cell = nullptr;
+					if (has_cached_cell && key == cached_cell_key) {
+						cell = cached_cell;
+					} else {
+						auto it = cells.find(key);
+						if (it != cells.end()) {
+							cell = it->second.get();
+							cached_cell = cell;
+							cached_cell_key = key;
+							has_cached_cell = true;
+						} else {
+							has_cached_cell = false; // Invalidate cache on miss
+						}
+					}
+
+					if (cell) {
+						int cell_start_nx = cx << NODES_PER_CELL_SHIFT;
+						int local_start_nx = std::max(start_nx, cell_start_nx) - cell_start_nx;
+						int local_end_nx = std::min(end_nx, cell_start_nx + NODES_PER_CELL - 1) - cell_start_nx;
+
+						for (int lnx = local_start_nx; lnx <= local_end_nx; ++lnx) {
+							int idx = local_ny * NODES_PER_CELL + lnx;
+							if (MapNode* node = cell->nodes[idx].get()) {
+								func(node, (cell_start_nx + lnx) << NODE_SHIFT, ny << NODE_SHIFT);
+							}
+						}
 					}
 				}
 			}
