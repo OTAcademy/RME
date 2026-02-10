@@ -131,7 +131,6 @@ using FileName = wxFileName;
 
 #include "util/json.h"
 
-#include "util/con_vector.h"
 #include "util/common.h"
 #include "app/threads.h"
 

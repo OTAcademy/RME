@@ -219,15 +219,15 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion
 			}
 		}
 
-		using AttributeHandler = bool (*)(ItemType&, BinaryNode*, uint16_t, wxString&, std::vector<std::string>&);
+		using AttributeHandler = bool (*)(ItemDatabase&, ItemType&, BinaryNode*, uint16_t, wxString&, std::vector<std::string>&);
 		static const auto handlers = [] {
 			std::array<AttributeHandler, 256> h {};
-			h.fill([](ItemType&, BinaryNode* node, uint16_t len, wxString&, std::vector<std::string>&) {
+			h.fill([](ItemDatabase&, ItemType&, BinaryNode* node, uint16_t len, [[maybe_unused]] wxString&, [[maybe_unused]] std::vector<std::string>&) {
 				node->skip(len);
 				return true;
 			});
 
-			h[ITEM_ATTR_SERVERID] = [](ItemType& it, BinaryNode* node, uint16_t len, wxString& err, std::vector<std::string>& warnings) {
+			h[ITEM_ATTR_SERVERID] = [](ItemDatabase& db, ItemType& it, BinaryNode* node, uint16_t len, wxString& err, std::vector<std::string>& warnings) {
 				if (len != sizeof(uint16_t)) {
 					err = std::format("items.otb: Unexpected data length of server id block (Should be {} bytes)", sizeof(uint16_t));
 					return false;
@@ -236,13 +236,13 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion
 					warnings.push_back("Invalid item type property (serverID)");
 					return true;
 				}
-				if (g_items.max_item_id < it.id) {
-					g_items.max_item_id = it.id;
+				if (db.max_item_id < it.id) {
+					db.max_item_id = it.id;
 				}
 				return true;
 			};
 
-			h[ITEM_ATTR_CLIENTID] = [](ItemType& it, BinaryNode* node, uint16_t len, wxString& err, std::vector<std::string>& warnings) {
+			h[ITEM_ATTR_CLIENTID] = [](ItemDatabase&, ItemType& it, BinaryNode* node, uint16_t len, wxString& err, std::vector<std::string>& warnings) {
 				if (len != sizeof(uint16_t)) {
 					err = std::format("items.otb: Unexpected data length of client id block (Should be {} bytes)", sizeof(uint16_t));
 					return false;
@@ -254,7 +254,7 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion
 				return true;
 			};
 
-			h[ITEM_ATTR_SPEED] = [](ItemType& it, BinaryNode* node, uint16_t len, wxString& err, std::vector<std::string>& warnings) {
+			h[ITEM_ATTR_SPEED] = [](ItemDatabase&, ItemType& it, BinaryNode* node, uint16_t len, wxString& err, std::vector<std::string>& warnings) {
 				if (len != sizeof(uint16_t)) {
 					err = std::format("items.otb: Unexpected data length of speed block (Should be {} bytes)", sizeof(uint16_t));
 					return false;
@@ -267,7 +267,7 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion
 				return true;
 			};
 
-			h[ITEM_ATTR_LIGHT2] = [](ItemType&, BinaryNode* node, uint16_t len, wxString&, std::vector<std::string>& warnings) {
+			h[ITEM_ATTR_LIGHT2] = [](ItemDatabase&, ItemType&, BinaryNode* node, uint16_t len, [[maybe_unused]] wxString&, std::vector<std::string>& warnings) {
 				const size_t expected_len = 4; // sizeof(lightBlock2)
 				if (len != expected_len) {
 					warnings.push_back(std::format("items.otb: Unexpected data length of item light (2) block (Should be {} bytes)", expected_len));
@@ -279,7 +279,7 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion
 				return true;
 			};
 
-			h[ITEM_ATTR_TOPORDER] = [](ItemType& it, BinaryNode* node, uint16_t len, wxString&, std::vector<std::string>& warnings) {
+			h[ITEM_ATTR_TOPORDER] = [](ItemDatabase&, ItemType& it, BinaryNode* node, uint16_t len, [[maybe_unused]] wxString&, std::vector<std::string>& warnings) {
 				if (len != sizeof(uint8_t)) {
 					warnings.push_back("items.otb: Unexpected data length of item toporder block (Should be 1 byte)");
 					return true;
@@ -292,7 +292,7 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion
 				return true;
 			};
 
-			h[ITEM_ATTR_NAME] = [](ItemType& it, BinaryNode* node, uint16_t len, wxString&, std::vector<std::string>& warnings) {
+			h[ITEM_ATTR_NAME] = [](ItemDatabase&, ItemType& it, BinaryNode* node, uint16_t len, [[maybe_unused]] wxString&, std::vector<std::string>& warnings) {
 				if (len >= 128) {
 					warnings.push_back("items.otb: Unexpected data length of item name block (Should be < 128 bytes)");
 					return true;
@@ -305,7 +305,7 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion
 				return true;
 			};
 
-			h[ITEM_ATTR_DESCR] = [](ItemType& it, BinaryNode* node, uint16_t len, wxString&, std::vector<std::string>& warnings) {
+			h[ITEM_ATTR_DESCR] = [](ItemDatabase&, ItemType& it, BinaryNode* node, uint16_t len, [[maybe_unused]] wxString&, std::vector<std::string>& warnings) {
 				if (len >= 128) {
 					warnings.push_back("items.otb: Unexpected data length of item descr block (Should be < 128 bytes)");
 					return true;
@@ -318,7 +318,7 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion
 				return true;
 			};
 
-			h[ITEM_ATTR_MAXITEMS] = [](ItemType& it, BinaryNode* node, uint16_t len, wxString&, std::vector<std::string>& warnings) {
+			h[ITEM_ATTR_MAXITEMS] = [](ItemDatabase&, ItemType& it, BinaryNode* node, uint16_t len, [[maybe_unused]] wxString&, std::vector<std::string>& warnings) {
 				if (len != sizeof(uint16_t)) {
 					warnings.push_back("items.otb: Unexpected data length of item volume block (Should be 2 bytes)");
 					return true;
@@ -329,21 +329,21 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion
 				return true;
 			};
 
-			h[ITEM_ATTR_WEIGHT] = [](ItemType& it, BinaryNode* node, uint16_t len, wxString&, std::vector<std::string>& warnings) {
+			h[ITEM_ATTR_WEIGHT] = [](ItemDatabase&, ItemType& it, BinaryNode* node, uint16_t len, [[maybe_unused]] wxString&, std::vector<std::string>& warnings) {
 				if (len != sizeof(double)) {
 					warnings.push_back("items.otb: Unexpected data length of item weight block (Should be 8 bytes)");
 					return true;
 				}
-				double wi;
-				if (!node->getRAW(reinterpret_cast<uint8_t*>(&wi), sizeof(double))) {
+				uint8_t raw_weight[sizeof(double)];
+				if (!node->getRAW(raw_weight, sizeof(double))) {
 					warnings.push_back("Invalid item type property (weight)");
 					return true;
 				}
-				it.weight = wi;
+				memcpy(&it.weight, raw_weight, sizeof(double));
 				return true;
 			};
 
-			h[ITEM_ATTR_ROTATETO] = [](ItemType& it, BinaryNode* node, uint16_t len, [[maybe_unused]] wxString&, std::vector<std::string>& warnings) {
+			h[ITEM_ATTR_ROTATETO] = [](ItemDatabase&, ItemType& it, BinaryNode* node, uint16_t len, [[maybe_unused]] wxString&, std::vector<std::string>& warnings) {
 				if (len != sizeof(uint16_t)) {
 					warnings.push_back("items.otb: Unexpected data length of item rotateTo block (Should be 2 bytes)");
 					return true;
@@ -356,7 +356,7 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion
 				return true;
 			};
 
-			h[ITEM_ATTR_WRITEABLE3] = [](ItemType& it, BinaryNode* node, uint16_t len, [[maybe_unused]] wxString&, std::vector<std::string>& warnings) {
+			h[ITEM_ATTR_WRITEABLE3] = [](ItemDatabase&, ItemType& it, BinaryNode* node, uint16_t len, [[maybe_unused]] wxString&, std::vector<std::string>& warnings) {
 				const size_t expected_len = 4; // sizeof(writeableBlock3)
 				if (len != expected_len) {
 					warnings.push_back(std::format("items.otb: Unexpected data length of item writeable (3) block (Should be {} bytes)", expected_len));
@@ -374,7 +374,7 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion
 				return true;
 			};
 
-			h[ITEM_ATTR_CLASSIFICATION] = [](ItemType& it, BinaryNode* node, uint16_t len, [[maybe_unused]] wxString&, std::vector<std::string>& warnings) {
+			h[ITEM_ATTR_CLASSIFICATION] = [](ItemDatabase&, ItemType& it, BinaryNode* node, uint16_t len, [[maybe_unused]] wxString&, std::vector<std::string>& warnings) {
 				if (len != sizeof(uint8_t)) {
 					warnings.push_back("items.otb: Unexpected data length of item classification block (Should be 1 byte)");
 					return true;
@@ -398,7 +398,7 @@ bool ItemDatabase::loadFromOtbGeneric(BinaryNode* itemNode, OtbFileFormatVersion
 				break;
 			}
 
-			if (!handlers[attribute](*t, itemNode, datalen, error, warnings)) {
+			if (!handlers[attribute](*this, *t, itemNode, datalen, error, warnings)) {
 				return false;
 			}
 		}
