@@ -60,12 +60,19 @@ public:
 		int end_cx = end_nx >> NODES_PER_CELL_SHIFT;
 		int end_cy = end_ny >> NODES_PER_CELL_SHIFT;
 
-		long long num_viewport_cells = static_cast<long long>(end_cx - start_cx + 1) * static_cast<long long>(end_cy - start_cy + 1);
+		// Cast operands to long long to avoid subtraction overflow before the final multiplication.
+		// (static_cast<long long>(end_cx) - start_cx + 1) ensures the expression is evaluated in 64-bit.
+		long long num_viewport_cells = (static_cast<long long>(end_cx) - start_cx + 1) * (static_cast<long long>(end_cy) - start_cy + 1);
 
+		// Strategy selection heuristic:
+		// If the number of cells in the viewport is greater than the total number of allocated cells,
+		// it's more efficient to iterate over allocated cells and check if they are within the viewport.
+		// Otherwise, we iterate over the viewport cells and look them up in the hash map.
+		// Mixing signed long long and unsigned size_t is safe here as both are non-negative.
 		if (num_viewport_cells > static_cast<long long>(cells.size())) {
-			visitLeavesSparse(start_nx, start_ny, end_nx, end_ny, start_cx, start_cy, end_cx, end_cy, std::forward<Func>(func));
+			visitLeavesByCells(start_nx, start_ny, end_nx, end_ny, start_cx, start_cy, end_cx, end_cy, std::forward<Func>(func));
 		} else {
-			visitLeavesDense(start_nx, start_ny, end_nx, end_ny, start_cx, start_cy, end_cx, end_cy, std::forward<Func>(func));
+			visitLeavesByViewport(start_nx, start_ny, end_nx, end_ny, start_cx, start_cy, end_cx, end_cy, std::forward<Func>(func));
 		}
 	}
 
@@ -80,8 +87,10 @@ protected:
 	BaseMap& map;
 	std::unordered_map<uint64_t, std::unique_ptr<GridCell>> cells;
 
+	// Traverses cells by iterating over the viewport coordinates.
+	// Efficient for small or dense viewports.
 	template <typename Func>
-	void visitLeavesDense(int start_nx, int start_ny, int end_nx, int end_ny, int start_cx, int start_cy, int end_cx, int end_cy, Func&& func) {
+	void visitLeavesByViewport(int start_nx, int start_ny, int end_nx, int end_ny, int start_cx, int start_cy, int end_cx, int end_cy, Func&& func) {
 		uint64_t cached_cell_key = 0;
 		bool has_cached_cell = false;
 		GridCell* cached_cell = nullptr;
@@ -124,15 +133,17 @@ protected:
 		}
 	}
 
+	// Traverses cells by iterating over pre-filtered allocated cells.
+	// Efficient for huge or sparse viewports.
 	template <typename Func>
-	void visitLeavesSparse(int start_nx, int start_ny, int end_nx, int end_ny, int start_cx, int start_cy, int end_cx, int end_cy, Func&& func) {
+	void visitLeavesByCells(int start_nx, int start_ny, int end_nx, int end_ny, int start_cx, int start_cy, int end_cx, int end_cy, Func&& func) {
 		struct CellEntry {
 			int cx;
 			int cy;
 			GridCell* cell;
 		};
 		std::vector<CellEntry> visible_cells;
-		visible_cells.reserve(std::min(cells.size(), static_cast<size_t>(static_cast<long long>(end_cx - start_cx + 1) * (end_cy - start_cy + 1))));
+		visible_cells.reserve(std::min(cells.size(), static_cast<size_t>((static_cast<long long>(end_cx) - start_cx + 1) * (static_cast<long long>(end_cy) - start_cy + 1))));
 
 		for (const auto& [key, cell_ptr] : cells) {
 			int cx, cy;
@@ -160,7 +171,7 @@ protected:
 			int current_cy = ny >> NODES_PER_CELL_SHIFT;
 			int local_ny = ny & (NODES_PER_CELL - 1);
 
-			// Advance to current row
+			// Advance to current row. This correctly handles gaps in Y coordinates.
 			while (first_in_row_idx < num_visible && visible_cells[first_in_row_idx].cy < current_cy) {
 				first_in_row_idx++;
 			}
@@ -186,13 +197,13 @@ protected:
 	}
 
 	static uint64_t makeKeyFromCell(int cx, int cy) {
-		static_assert(sizeof(int) >= 4, "Key packing assumes at least 32-bit integers");
-		return (static_cast<uint64_t>(static_cast<uint32_t>(cx)) << 32) | static_cast<uint64_t>(static_cast<uint32_t>(cy));
+		static_assert(sizeof(int) == 4, "Key packing assumes exactly 32-bit integers");
+		return (static_cast<uint64_t>(static_cast<uint32_t>(cx)) << 32) | static_cast<uint32_t>(cy);
 	}
 
 	static void getCellCoordsFromKey(uint64_t key, int& cx, int& cy) {
-		cx = static_cast<int>(key >> 32);
-		cy = static_cast<int>(key & 0xFFFFFFFF);
+		cx = static_cast<int32_t>(key >> 32);
+		cy = static_cast<int32_t>(key);
 	}
 
 	static uint64_t makeKey(int x, int y) {
