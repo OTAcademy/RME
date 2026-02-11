@@ -2,6 +2,7 @@
 #include "ui/main_menubar.h"
 #include "ui/gui.h"
 #include "app/preferences.h"
+#include <format>
 
 ViewSettingsHandler::ViewSettingsHandler(MainMenuBar* menuBar) :
 	menuBar(menuBar) {
@@ -74,6 +75,9 @@ void ViewSettingsHandler::LoadValues() {
 void ViewSettingsHandler::OnChangeViewSettings(wxCommandEvent& event) {
 	using namespace MenuBar;
 
+	bool old_grid = g_settings.getBoolean(Config::SHOW_GRID);
+	bool old_ghost = g_settings.getBoolean(Config::TRANSPARENT_ITEMS);
+
 	g_settings.setInteger(Config::SHOW_ALL_FLOORS, menuBar->IsItemChecked(SHOW_ALL_FLOORS));
 	if (menuBar->IsItemChecked(SHOW_ALL_FLOORS)) {
 		menuBar->EnableItem(SELECT_MODE_VISIBLE, true);
@@ -113,6 +117,16 @@ void ViewSettingsHandler::OnChangeViewSettings(wxCommandEvent& event) {
 	g_settings.setInteger(Config::EXT_HOUSE_SHADER, menuBar->IsItemChecked(EXT_HOUSE_SHADER));
 
 	g_settings.setInteger(Config::EXPERIMENTAL_FOG, menuBar->IsItemChecked(EXPERIMENTAL_FOG));
+
+	bool new_grid = g_settings.getBoolean(Config::SHOW_GRID);
+	if (old_grid != new_grid) {
+		g_gui.SetStatusText(std::format("Grid: {}", new_grid ? "On" : "Off"));
+	}
+
+	bool new_ghost = g_settings.getBoolean(Config::TRANSPARENT_ITEMS);
+	if (old_ghost != new_ghost) {
+		g_gui.SetStatusText(std::format("Ghost Mode: {}", new_ghost ? "On" : "Off"));
+	}
 
 	g_gui.RefreshView();
 }

@@ -47,6 +47,16 @@ private:
 	const int GRID_GAP = 4;
 	const int SECTION_GAP = 12;
 
+	const int SLIDER_LABEL_WIDTH = 70;
+	const int SLIDER_TEXT_MARGIN = 40;
+	const int SLIDER_VALUE_MARGIN = 8;
+	const int SLIDER_THUMB_RADIUS = 5;
+
+	const int MIN_BRUSH_SIZE = 1;
+	const int MAX_BRUSH_SIZE = 15;
+	const int MIN_BRUSH_THICKNESS = 1;
+	const int MAX_BRUSH_THICKNESS = 100;
+
 	// Animation
 	wxTimer m_animTimer;
 	float m_hoverAlpha = 0.0f;
@@ -85,6 +95,8 @@ private:
 	void DrawToolIcon(wxDC& dc, const ToolRect& tr);
 	void DrawSlider(wxDC& dc, const wxRect& rect, const wxString& label, int value, int min, int max, bool active);
 	void DrawCheckbox(wxDC& dc, const wxRect& rect, const wxString& label, bool value, bool hover);
+
+	int CalculateSliderValue(const wxRect& sliderRect, int min, int max) const;
 
 	Brush* GetBrushAt(const wxPoint& pt);
 	void HandleClick(const wxPoint& pt);

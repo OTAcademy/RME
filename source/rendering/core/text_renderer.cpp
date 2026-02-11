@@ -71,11 +71,11 @@ void TextRenderer::LoadFont(NVGcontext* vg) {
 	}
 }
 
-void TextRenderer::BeginFrame(NVGcontext* vg, int width, int height) {
+void TextRenderer::BeginFrame(NVGcontext* vg, int width, int height, float pixelRatio) {
 	if (!vg) {
 		return;
 	}
-	nvgBeginFrame(vg, width, height, 1.0f); // Assuming 1.0 pixel ratio for now
+	nvgBeginFrame(vg, width, height, pixelRatio);
 }
 
 void TextRenderer::EndFrame(NVGcontext* vg) {

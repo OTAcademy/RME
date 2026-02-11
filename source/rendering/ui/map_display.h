@@ -153,6 +153,7 @@ public:
 	int hud_cached_x = -1;
 	int hud_cached_y = -1;
 	int hud_cached_z = -1;
+	double hud_cached_zoom = -1.0;
 
 	int view_scroll_x;
 	int view_scroll_y;

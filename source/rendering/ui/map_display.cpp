@@ -221,7 +221,7 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
-			TextRenderer::BeginFrame(vg, GetSize().x, GetSize().y);
+			TextRenderer::BeginFrame(vg, GetSize().x, GetSize().y, GetContentScaleFactor());
 
 			if (options.show_creatures) {
 				drawer->DrawCreatureNames(vg);
@@ -234,29 +234,32 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			int w = GetSize().x;
 			int h = GetSize().y;
 
-			bool needs_update = (editor.selection.size() != hud_cached_selection_count || last_cursor_map_x != hud_cached_x || last_cursor_map_y != hud_cached_y || last_cursor_map_z != hud_cached_z);
+			const float hudFontSize = 16.0f;
+			nvgFontSize(vg, hudFontSize);
+			nvgFontFace(vg, "sans");
+
+			bool needs_update = (editor.selection.size() != hud_cached_selection_count || last_cursor_map_x != hud_cached_x || last_cursor_map_y != hud_cached_y || last_cursor_map_z != hud_cached_z || zoom != hud_cached_zoom);
 
 			if (needs_update || hud_cached_text.empty()) {
 				if (!editor.selection.empty()) {
-					hud_cached_text = std::format("Pos: {}, {}, {} | Sel: {}", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z, editor.selection.size());
+					hud_cached_text = std::format("Pos: {}, {}, {} | Zoom: {:.0f}% | Sel: {}", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z, zoom * 100, editor.selection.size());
 				} else {
-					hud_cached_text = std::format("Pos: {}, {}, {}", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z);
+					hud_cached_text = std::format("Pos: {}, {}, {} | Zoom: {:.0f}%", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z, zoom * 100);
 				}
 
 				hud_cached_selection_count = editor.selection.size();
 				hud_cached_x = last_cursor_map_x;
 				hud_cached_y = last_cursor_map_y;
 				hud_cached_z = last_cursor_map_z;
+				hud_cached_zoom = zoom;
 
-				nvgFontSize(vg, 14.0f);
-				nvgFontFace(vg, "sans");
 				nvgTextBounds(vg, 0, 0, hud_cached_text.c_str(), nullptr, hud_cached_bounds);
 			}
 
 			float textW = hud_cached_bounds[2] - hud_cached_bounds[0];
 			float padding = 8.0f;
 			float hudW = textW + padding * 2;
-			float hudH = 24.0f;
+			float hudH = 28.0f;
 			float hudX = 10.0f;
 			float hudY = h - hudH - 10.0f;
 
