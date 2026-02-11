@@ -9,7 +9,7 @@ struct NVGcontext;
 class TextRenderer {
 public:
 	static void LoadFont(NVGcontext* vg);
-	static void BeginFrame(NVGcontext* vg, int width, int height);
+	static void BeginFrame(NVGcontext* vg, int width, int height, float pixelRatio);
 	static void EndFrame(NVGcontext* vg);
 
 	static void DrawText(NVGcontext* vg, int x, int y, const std::string& text, const glm::vec4& color = glm::vec4(1.0f), float fontSize = 16.0f);

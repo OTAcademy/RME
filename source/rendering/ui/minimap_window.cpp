@@ -136,7 +136,7 @@ void MinimapWindow::OnPaint(wxPaintEvent& event) {
 	if (vg) {
 		int w, h;
 		GetClientSize(&w, &h);
-		nvgBeginFrame(vg, w, h, 1.0f);
+		nvgBeginFrame(vg, w, h, GetContentScaleFactor());
 
 		// Subtle glass border
 		nvgBeginPath(vg);

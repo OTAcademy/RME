@@ -8,6 +8,8 @@
 #include "brushes/managers/brush_manager.h"
 #include "brushes/brush.h"
 #include "game/sprites.h"
+#include <format>
+#include <algorithm>
 
 // Bring in specific brushes for identification/selection
 #include "brushes/border/optional_border_brush.h"
@@ -201,11 +203,11 @@ void ToolOptionsSurface::OnPaint(wxPaintEvent& evt) {
 
 	// 2. Draw Sliders
 	if (interactables.size_slider_rect.height > 0) {
-		DrawSlider(dc, interactables.size_slider_rect, "Size", current_size, 1, 15, true);
+		DrawSlider(dc, interactables.size_slider_rect, "Size", current_size, MIN_BRUSH_SIZE, MAX_BRUSH_SIZE, true);
 	}
 	if (interactables.thickness_slider_rect.height > 0) {
 		// Doodad thickness logic usually 0-100% or similar? No, old code was just "Thickness".
-		DrawSlider(dc, interactables.thickness_slider_rect, "Thickness", current_thickness, 1, 100, true);
+		DrawSlider(dc, interactables.thickness_slider_rect, "Thickness", current_thickness, MIN_BRUSH_THICKNESS, MAX_BRUSH_THICKNESS, true);
 	}
 
 	// 3. Checkboxes
@@ -277,9 +279,9 @@ void ToolOptionsSurface::DrawSlider(wxDC& dc, const wxRect& rect, const wxString
 	dc.DrawText(label, rect.GetLeft(), rect.GetTop() + (rect.height - extent.y) / 2);
 
 	// Track
-	int label_w = FromDIP(70);
+	int label_w = FromDIP(SLIDER_LABEL_WIDTH);
 	int track_x = rect.GetLeft() + label_w;
-	int track_w = rect.width - label_w - FromDIP(40); // Room for value text
+	int track_w = rect.width - label_w - FromDIP(SLIDER_TEXT_MARGIN); // Room for value text
 	int track_h = FromDIP(4);
 	int track_y = rect.GetTop() + (rect.height - track_h) / 2;
 
@@ -291,20 +293,20 @@ void ToolOptionsSurface::DrawSlider(wxDC& dc, const wxRect& rect, const wxString
 
 	// Fill
 	if (value > min && max > min) {
-		float pct = (float)(value - min) / (float)(max - min);
-		int fill_w = (int)(track_w * pct);
+		float pct = std::clamp(static_cast<float>(value - min) / static_cast<float>(max - min), 0.0f, 1.0f);
+		int fill_w = static_cast<int>(track_w * pct);
 		wxRect fill_rect(track_x, track_y, fill_w, track_h);
 		dc.SetBrush(wxBrush(Theme::Get(Theme::Role::Accent)));
 		dc.DrawRectangle(fill_rect);
 
 		// Thumb
 		dc.SetBrush(wxBrush(Theme::Get(Theme::Role::Text)));
-		dc.DrawCircle(track_x + fill_w, track_y + track_h / 2, FromDIP(5));
+		dc.DrawCircle(track_x + fill_w, track_y + track_h / 2, FromDIP(SLIDER_THUMB_RADIUS));
 	}
 
 	// Value Text
-	wxString val_str = wxString::Format("%d", value);
-	dc.DrawText(val_str, track_x + track_w + FromDIP(8), rect.GetTop() + (rect.height - extent.y) / 2);
+	wxString val_str = std::format("{}", value);
+	dc.DrawText(val_str, track_x + track_w + FromDIP(SLIDER_VALUE_MARGIN), rect.GetTop() + (rect.height - extent.y) / 2);
 }
 
 void ToolOptionsSurface::DrawCheckbox(wxDC& dc, const wxRect& rect, const wxString& label, bool value, bool hover) {
@@ -356,12 +358,14 @@ void ToolOptionsSurface::OnMouse(wxMouseEvent& evt) {
 	for (const auto& tr : tool_rects) {
 		if (tr.rect.Contains(m_hoverPos)) {
 			hover_brush = tr.brush;
-			SetToolTip(tr.tooltip);
+			if (prev_hover != hover_brush) {
+				SetToolTip(tr.tooltip);
+			}
 			hand_cursor = true;
 			break;
 		}
 	}
-	if (!hover_brush) {
+	if (!hover_brush && prev_hover) {
 		UnsetToolTip();
 	}
 
@@ -370,9 +374,23 @@ void ToolOptionsSurface::OnMouse(wxMouseEvent& evt) {
 		if (interactables.size_slider_rect.Contains(m_hoverPos)) {
 			interactables.dragging_size = true;
 			CaptureMouse();
+			int val = CalculateSliderValue(interactables.size_slider_rect, MIN_BRUSH_SIZE, MAX_BRUSH_SIZE);
+			if (val != current_size) {
+				current_size = val;
+				g_brush_manager.SetBrushSize(current_size);
+				Refresh();
+			}
+			g_gui.SetStatusText(std::format("Brush Size: {}", current_size));
 		} else if (interactables.thickness_slider_rect.Contains(m_hoverPos)) {
 			interactables.dragging_thickness = true;
 			CaptureMouse();
+			int val = CalculateSliderValue(interactables.thickness_slider_rect, MIN_BRUSH_THICKNESS, MAX_BRUSH_THICKNESS);
+			if (val != current_thickness) {
+				current_thickness = val;
+				g_brush_manager.SetBrushThickness(true, current_thickness, 100);
+				Refresh();
+			}
+			g_gui.SetStatusText(std::format("Thickness: {}", current_thickness));
 		} else if (interactables.preview_check_rect.Contains(m_hoverPos)) {
 			show_preview = !show_preview;
 			g_settings.setInteger(Config::SHOW_AUTOBORDER_PREVIEW, show_preview);
@@ -384,70 +402,40 @@ void ToolOptionsSurface::OnMouse(wxMouseEvent& evt) {
 			Refresh();
 		} else if (hover_brush) {
 			SelectBrush(hover_brush);
-			g_gui.SetStatusText("Selected Tool: " + hover_brush->getName());
+			g_gui.SetStatusText(std::format("Selected Tool: {}", hover_brush->getName()));
 		}
 	} else if (evt.LeftDClick()) {
 		if (interactables.size_slider_rect.Contains(m_hoverPos)) {
-			current_size = 1;
+			current_size = MIN_BRUSH_SIZE;
 			g_brush_manager.SetBrushSize(current_size);
 			Refresh();
-			g_gui.SetStatusText("Brush Size: " + std::to_string(current_size));
+			g_gui.SetStatusText(std::format("Brush Size: {}", current_size));
 		} else if (interactables.thickness_slider_rect.Contains(m_hoverPos)) {
-			current_thickness = 100;
+			current_thickness = MAX_BRUSH_THICKNESS;
 			g_brush_manager.SetBrushThickness(true, current_thickness, 100);
 			Refresh();
-			g_gui.SetStatusText("Thickness: " + std::to_string(current_thickness));
+			g_gui.SetStatusText(std::format("Thickness: {}", current_thickness));
 		}
 	}
 
 	if (evt.Dragging() && evt.LeftIsDown()) {
 		if (interactables.dragging_size) {
-			// Calculate value
-			// In a real impl, refactor the math to a helper
-			int label_w = FromDIP(70);
-			int track_x = interactables.size_slider_rect.GetLeft() + label_w;
-			int track_w = interactables.size_slider_rect.width - label_w - FromDIP(40);
-
-			int rel_x = m_hoverPos.x - track_x;
-			float pct = (float)rel_x / (float)track_w;
-			if (pct < 0) {
-				pct = 0;
-			}
-			if (pct > 1) {
-				pct = 1;
-			}
-
-			int min = 1, max = 15;
-			int val = min + (int)(pct * (max - min));
+			int val = CalculateSliderValue(interactables.size_slider_rect, MIN_BRUSH_SIZE, MAX_BRUSH_SIZE);
 			if (val != current_size) {
 				current_size = val;
 				g_brush_manager.SetBrushSize(current_size); // Assuming square for now
 				Refresh();
 			}
-			g_gui.SetStatusText("Brush Size: " + std::to_string(current_size));
+			g_gui.SetStatusText(std::format("Brush Size: {}", current_size));
 		}
 		if (interactables.dragging_thickness) {
-			int label_w = FromDIP(70);
-			int track_x = interactables.thickness_slider_rect.GetLeft() + label_w;
-			int track_w = interactables.thickness_slider_rect.width - label_w - FromDIP(40);
-
-			int rel_x = m_hoverPos.x - track_x;
-			float pct = (float)rel_x / (float)track_w;
-			if (pct < 0) {
-				pct = 0;
-			}
-			if (pct > 1) {
-				pct = 1;
-			}
-
-			int min = 1, max = 100;
-			int val = min + (int)(pct * (max - min));
+			int val = CalculateSliderValue(interactables.thickness_slider_rect, MIN_BRUSH_THICKNESS, MAX_BRUSH_THICKNESS);
 			if (val != current_thickness) {
 				current_thickness = val;
 				g_brush_manager.SetBrushThickness(true, current_thickness, 100);
 				Refresh();
 			}
-			g_gui.SetStatusText("Thickness: " + std::to_string(current_thickness));
+			g_gui.SetStatusText(std::format("Thickness: {}", current_thickness));
 		}
 	}
 
@@ -525,4 +513,15 @@ void ToolOptionsSurface::SelectBrush(Brush* brush) {
 	active_brush = brush;
 	g_brush_manager.SelectBrush(brush);
 	Refresh();
+}
+
+int ToolOptionsSurface::CalculateSliderValue(const wxRect& sliderRect, int min, int max) const {
+	int label_w = FromDIP(SLIDER_LABEL_WIDTH);
+	int track_x = sliderRect.GetLeft() + label_w;
+	int track_w = sliderRect.width - label_w - FromDIP(SLIDER_TEXT_MARGIN);
+
+	int rel_x = m_hoverPos.x - track_x;
+	float pct = std::clamp(static_cast<float>(rel_x) / static_cast<float>(track_w), 0.0f, 1.0f);
+
+	return min + static_cast<int>(pct * (max - min));
 }
