@@ -234,19 +234,20 @@ void MapCanvas::OnPaint(wxPaintEvent& event) {
 			int w = GetSize().x;
 			int h = GetSize().y;
 
-			bool needs_update = (editor.selection.size() != hud_cached_selection_count || last_cursor_map_x != hud_cached_x || last_cursor_map_y != hud_cached_y || last_cursor_map_z != hud_cached_z);
+			bool needs_update = (editor.selection.size() != hud_cached_selection_count || last_cursor_map_x != hud_cached_x || last_cursor_map_y != hud_cached_y || last_cursor_map_z != hud_cached_z || zoom != hud_cached_zoom);
 
 			if (needs_update || hud_cached_text.empty()) {
 				if (!editor.selection.empty()) {
-					hud_cached_text = std::format("Pos: {}, {}, {} | Sel: {}", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z, editor.selection.size());
+					hud_cached_text = std::format("Pos: {}, {}, {} | Zoom: {:.0f}% | Sel: {}", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z, zoom * 100, editor.selection.size());
 				} else {
-					hud_cached_text = std::format("Pos: {}, {}, {}", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z);
+					hud_cached_text = std::format("Pos: {}, {}, {} | Zoom: {:.0f}%", last_cursor_map_x, last_cursor_map_y, last_cursor_map_z, zoom * 100);
 				}
 
 				hud_cached_selection_count = editor.selection.size();
 				hud_cached_x = last_cursor_map_x;
 				hud_cached_y = last_cursor_map_y;
 				hud_cached_z = last_cursor_map_z;
+				hud_cached_zoom = zoom;
 
 				nvgFontSize(vg, 14.0f);
 				nvgFontFace(vg, "sans");

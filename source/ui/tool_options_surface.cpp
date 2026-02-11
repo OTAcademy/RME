@@ -2,6 +2,7 @@
 #include "app/main.h"
 #include "app/settings.h"
 #include "ui/gui.h"
+#include "ui/theme.h"
 #include "rendering/core/graphics.h"
 #include "ui/artprovider.h"
 #include "brushes/managers/brush_manager.h"
@@ -20,6 +21,7 @@ ToolOptionsSurface::ToolOptionsSurface(wxWindow* parent) : wxControl(parent, wxI
 	Bind(wxEVT_PAINT, &ToolOptionsSurface::OnPaint, this);
 	Bind(wxEVT_ERASE_BACKGROUND, &ToolOptionsSurface::OnEraseBackground, this);
 	Bind(wxEVT_LEFT_DOWN, &ToolOptionsSurface::OnMouse, this);
+	Bind(wxEVT_LEFT_DCLICK, &ToolOptionsSurface::OnMouse, this);
 	Bind(wxEVT_LEFT_UP, &ToolOptionsSurface::OnMouse, this);
 	Bind(wxEVT_MOTION, &ToolOptionsSurface::OnMouse, this);
 	Bind(wxEVT_LEAVE_WINDOW, &ToolOptionsSurface::OnLeave, this);
@@ -188,7 +190,7 @@ void ToolOptionsSurface::OnPaint(wxPaintEvent& evt) {
 	PrepareDC(dc);
 
 	// Background
-	wxColour bg = wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE);
+	wxColour bg = Theme::Get(Theme::Role::Surface);
 	dc.SetBackground(wxBrush(bg));
 	dc.Clear();
 
@@ -203,7 +205,7 @@ void ToolOptionsSurface::OnPaint(wxPaintEvent& evt) {
 	}
 	if (interactables.thickness_slider_rect.height > 0) {
 		// Doodad thickness logic usually 0-100% or similar? No, old code was just "Thickness".
-		DrawSlider(dc, interactables.thickness_slider_rect, "Thinkness", current_thickness, 1, 100, true);
+		DrawSlider(dc, interactables.thickness_slider_rect, "Thickness", current_thickness, 1, 100, true);
 	}
 
 	// 3. Checkboxes
@@ -226,12 +228,12 @@ void ToolOptionsSurface::DrawToolIcon(wxDC& dc, const ToolRect& tr) {
 
 	// Background
 	if (is_selected) {
-		dc.SetPen(wxPen(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)));
-		dc.SetBrush(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT).ChangeLightness(180)));
+		dc.SetPen(wxPen(Theme::Get(Theme::Role::Accent)));
+		dc.SetBrush(wxBrush(Theme::Get(Theme::Role::Selected)));
 		dc.DrawRectangle(r);
 	} else if (is_hover) {
 		dc.SetPen(*wxTRANSPARENT_PEN);
-		dc.SetBrush(wxBrush(wxColour(200, 200, 200, 100))); // Transparent grey
+		dc.SetBrush(wxBrush(wxColour(255, 255, 255, 30))); // Transparent white
 		dc.DrawRectangle(r);
 	}
 
@@ -251,7 +253,7 @@ void ToolOptionsSurface::DrawToolIcon(wxDC& dc, const ToolRect& tr) {
 		} else {
 			// Fallback text/color if no sprite
 			wxString label = tr.tooltip.Left(1);
-			dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+			dc.SetTextForeground(Theme::Get(Theme::Role::Text));
 			dc.DrawLabel(label, r, wxALIGN_CENTER);
 		}
 	}
@@ -259,9 +261,9 @@ void ToolOptionsSurface::DrawToolIcon(wxDC& dc, const ToolRect& tr) {
 	// Border
 	dc.SetBrush(*wxTRANSPARENT_BRUSH);
 	if (is_selected) {
-		dc.SetPen(wxPen(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)));
+		dc.SetPen(wxPen(Theme::Get(Theme::Role::Accent)));
 	} else {
-		dc.SetPen(wxPen(wxColour(100, 100, 100)));
+		dc.SetPen(wxPen(Theme::Get(Theme::Role::Border)));
 	}
 	dc.DrawRectangle(r);
 }
@@ -269,7 +271,7 @@ void ToolOptionsSurface::DrawToolIcon(wxDC& dc, const ToolRect& tr) {
 void ToolOptionsSurface::DrawSlider(wxDC& dc, const wxRect& rect, const wxString& label, int value, int min, int max, bool active) {
 	// Label
 	dc.SetFont(GetFont());
-	dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+	dc.SetTextForeground(Theme::Get(Theme::Role::Text));
 
 	wxSize extent = dc.GetTextExtent(label);
 	dc.DrawText(label, rect.GetLeft(), rect.GetTop() + (rect.height - extent.y) / 2);
@@ -284,7 +286,7 @@ void ToolOptionsSurface::DrawSlider(wxDC& dc, const wxRect& rect, const wxString
 	wxRect track_rect(track_x, track_y, track_w, track_h);
 
 	dc.SetPen(*wxTRANSPARENT_PEN);
-	dc.SetBrush(wxBrush(wxColour(200, 200, 200)));
+	dc.SetBrush(wxBrush(Theme::Get(Theme::Role::Border)));
 	dc.DrawRectangle(track_rect);
 
 	// Fill
@@ -292,11 +294,11 @@ void ToolOptionsSurface::DrawSlider(wxDC& dc, const wxRect& rect, const wxString
 		float pct = (float)(value - min) / (float)(max - min);
 		int fill_w = (int)(track_w * pct);
 		wxRect fill_rect(track_x, track_y, fill_w, track_h);
-		dc.SetBrush(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)));
+		dc.SetBrush(wxBrush(Theme::Get(Theme::Role::Accent)));
 		dc.DrawRectangle(fill_rect);
 
 		// Thumb
-		dc.SetBrush(wxBrush(wxColour(50, 50, 50)));
+		dc.SetBrush(wxBrush(Theme::Get(Theme::Role::Text)));
 		dc.DrawCircle(track_x + fill_w, track_y + track_h / 2, FromDIP(5));
 	}
 
@@ -312,12 +314,12 @@ void ToolOptionsSurface::DrawCheckbox(wxDC& dc, const wxRect& rect, const wxStri
 	wxRect box(rect.GetLeft(), box_y, box_sz, box_sz);
 
 	if (hover) {
-		dc.SetPen(wxPen(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)));
+		dc.SetPen(wxPen(Theme::Get(Theme::Role::AccentHover)));
 	} else {
-		dc.SetPen(wxPen(wxColour(150, 150, 150)));
+		dc.SetPen(wxPen(Theme::Get(Theme::Role::Border)));
 	}
 
-	dc.SetBrush(value ? wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)) : *wxWHITE_BRUSH);
+	dc.SetBrush(value ? wxBrush(Theme::Get(Theme::Role::Accent)) : wxBrush(Theme::Get(Theme::Role::Background)));
 	dc.DrawRectangle(box);
 
 	// Checkmark (simple)
@@ -328,7 +330,7 @@ void ToolOptionsSurface::DrawCheckbox(wxDC& dc, const wxRect& rect, const wxStri
 	}
 
 	// Label
-	dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+	dc.SetTextForeground(Theme::Get(Theme::Role::Text));
 	dc.DrawText(label, box.GetRight() + FromDIP(8), box_y - 1);
 }
 
@@ -348,13 +350,19 @@ void ToolOptionsSurface::OnMouse(wxMouseEvent& evt) {
 	interactables.hover_preview = false;
 	interactables.hover_lock = false;
 
+	bool hand_cursor = false;
+
 	// Tools
 	for (const auto& tr : tool_rects) {
 		if (tr.rect.Contains(m_hoverPos)) {
 			hover_brush = tr.brush;
-			// Tooltip handling could go here (delayed)
+			SetToolTip(tr.tooltip);
+			hand_cursor = true;
 			break;
 		}
+	}
+	if (!hover_brush) {
+		UnsetToolTip();
 	}
 
 	// Sliders Interaction
@@ -376,6 +384,19 @@ void ToolOptionsSurface::OnMouse(wxMouseEvent& evt) {
 			Refresh();
 		} else if (hover_brush) {
 			SelectBrush(hover_brush);
+			g_gui.SetStatusText("Selected Tool: " + hover_brush->getName());
+		}
+	} else if (evt.LeftDClick()) {
+		if (interactables.size_slider_rect.Contains(m_hoverPos)) {
+			current_size = 1;
+			g_brush_manager.SetBrushSize(current_size);
+			Refresh();
+			g_gui.SetStatusText("Brush Size: " + std::to_string(current_size));
+		} else if (interactables.thickness_slider_rect.Contains(m_hoverPos)) {
+			current_thickness = 100;
+			g_brush_manager.SetBrushThickness(true, current_thickness, 100);
+			Refresh();
+			g_gui.SetStatusText("Thickness: " + std::to_string(current_thickness));
 		}
 	}
 
@@ -403,8 +424,31 @@ void ToolOptionsSurface::OnMouse(wxMouseEvent& evt) {
 				g_brush_manager.SetBrushSize(current_size); // Assuming square for now
 				Refresh();
 			}
+			g_gui.SetStatusText("Brush Size: " + std::to_string(current_size));
 		}
-		// Thickness similar...
+		if (interactables.dragging_thickness) {
+			int label_w = FromDIP(70);
+			int track_x = interactables.thickness_slider_rect.GetLeft() + label_w;
+			int track_w = interactables.thickness_slider_rect.width - label_w - FromDIP(40);
+
+			int rel_x = m_hoverPos.x - track_x;
+			float pct = (float)rel_x / (float)track_w;
+			if (pct < 0) {
+				pct = 0;
+			}
+			if (pct > 1) {
+				pct = 1;
+			}
+
+			int min = 1, max = 100;
+			int val = min + (int)(pct * (max - min));
+			if (val != current_thickness) {
+				current_thickness = val;
+				g_brush_manager.SetBrushThickness(true, current_thickness, 100);
+				Refresh();
+			}
+			g_gui.SetStatusText("Thickness: " + std::to_string(current_thickness));
+		}
 	}
 
 	if (evt.LeftUp()) {
@@ -418,10 +462,18 @@ void ToolOptionsSurface::OnMouse(wxMouseEvent& evt) {
 	// Hover states for checkboxes
 	if (interactables.preview_check_rect.Contains(m_hoverPos)) {
 		interactables.hover_preview = true;
+		hand_cursor = true;
 	}
 	if (interactables.lock_check_rect.Contains(m_hoverPos)) {
 		interactables.hover_lock = true;
+		hand_cursor = true;
 	}
+
+	if (interactables.size_slider_rect.Contains(m_hoverPos) || interactables.thickness_slider_rect.Contains(m_hoverPos)) {
+		hand_cursor = true;
+	}
+
+	SetCursor(hand_cursor ? wxCursor(wxCURSOR_HAND) : wxCursor(wxCURSOR_ARROW));
 
 	if (prev_hover != hover_brush || prev_preview != interactables.hover_preview || prev_lock != interactables.hover_lock) {
 		Refresh();
