@@ -3,66 +3,57 @@
 #include "rendering/core/graphics.h"
 #include "rendering/core/editor_sprite.h"
 #include "game/sprites.h"
-#include "../../../brushes/door_normal.xpm"
-#include "../../../brushes/door_normal_small.xpm"
-#include "../../../brushes/door_locked.xpm"
-#include "../../../brushes/door_locked_small.xpm"
-#include "../../../brushes/door_magic.xpm"
-#include "../../../brushes/door_magic_small.xpm"
-#include "../../../brushes/door_quest.xpm"
-#include "../../../brushes/door_quest_small.xpm"
-#include "../../../brushes/door_normal_alt.xpm"
-#include "../../../brushes/door_normal_alt_small.xpm"
-#include "../../../brushes/door_archway.xpm"
-#include "../../../brushes/door_archway_small.xpm"
-#include "app/main.h"
-
-// Needs to be defined or included to access png files
-#include "ui/pngfiles.h"
-#include "rendering/utilities/wx_utils.h"
-
-#include <wx/mstream.h>
+#include "util/image_manager.h"
 #include <memory>
 
 // Helper logic moved to wx_utils.h
-#define loadPNGFile(name) _wxGetBitmapFromMemory(name, sizeof(name))
+// Helper to wrap ImageManager returns for EditorSprite
+#define getEditorSprite(pathSmall, pathLarge) std::make_unique<EditorSprite>( \
+	std::make_unique<wxBitmap>(IMAGE_MANAGER.GetBitmap(pathSmall)),           \
+	std::make_unique<wxBitmap>(IMAGE_MANAGER.GetBitmap(pathLarge))            \
+)
+
+#define getSingleEditorSprite(path) std::make_unique<EditorSprite>( \
+	std::make_unique<wxBitmap>(IMAGE_MANAGER.GetBitmap(path)),      \
+	nullptr                                                         \
+)
 
 bool EditorSpriteLoader::Load(GraphicManager* gm) {
 	// Unused graphics MIGHT be loaded here, but it's a neglectable loss
 	gm->insertSprite(EDITOR_SPRITE_SELECTION_MARKER, std::make_unique<EditorSprite>(std::make_unique<wxBitmap>(selection_marker_xpm16x16), std::make_unique<wxBitmap>(selection_marker_xpm32x32)));
-	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_1x1, std::make_unique<EditorSprite>(loadPNGFile(circular_1_small_png), loadPNGFile(circular_1_png)));
-	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_3x3, std::make_unique<EditorSprite>(loadPNGFile(circular_2_small_png), loadPNGFile(circular_2_png)));
-	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_5x5, std::make_unique<EditorSprite>(loadPNGFile(circular_3_small_png), loadPNGFile(circular_3_png)));
-	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_7x7, std::make_unique<EditorSprite>(loadPNGFile(circular_4_small_png), loadPNGFile(circular_4_png)));
-	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_9x9, std::make_unique<EditorSprite>(loadPNGFile(circular_5_small_png), loadPNGFile(circular_5_png)));
-	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_15x15, std::make_unique<EditorSprite>(loadPNGFile(circular_6_small_png), loadPNGFile(circular_6_png)));
-	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_19x19, std::make_unique<EditorSprite>(loadPNGFile(circular_7_small_png), loadPNGFile(circular_7_png)));
-	gm->insertSprite(EDITOR_SPRITE_BRUSH_SD_1x1, std::make_unique<EditorSprite>(loadPNGFile(rectangular_1_small_png), loadPNGFile(rectangular_1_png)));
-	gm->insertSprite(EDITOR_SPRITE_BRUSH_SD_3x3, std::make_unique<EditorSprite>(loadPNGFile(rectangular_2_small_png), loadPNGFile(rectangular_2_png)));
-	gm->insertSprite(EDITOR_SPRITE_BRUSH_SD_5x5, std::make_unique<EditorSprite>(loadPNGFile(rectangular_3_small_png), loadPNGFile(rectangular_3_png)));
-	gm->insertSprite(EDITOR_SPRITE_BRUSH_SD_7x7, std::make_unique<EditorSprite>(loadPNGFile(rectangular_4_small_png), loadPNGFile(rectangular_4_png)));
-	gm->insertSprite(EDITOR_SPRITE_BRUSH_SD_9x9, std::make_unique<EditorSprite>(loadPNGFile(rectangular_5_small_png), loadPNGFile(rectangular_5_png)));
-	gm->insertSprite(EDITOR_SPRITE_BRUSH_SD_15x15, std::make_unique<EditorSprite>(loadPNGFile(rectangular_6_small_png), loadPNGFile(rectangular_6_png)));
-	gm->insertSprite(EDITOR_SPRITE_BRUSH_SD_19x19, std::make_unique<EditorSprite>(loadPNGFile(rectangular_7_small_png), loadPNGFile(rectangular_7_png)));
+	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_1x1, getEditorSprite(IMAGE_CIRCULAR_1_SMALL, IMAGE_CIRCULAR_1));
+	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_3x3, getEditorSprite(IMAGE_CIRCULAR_2_SMALL, IMAGE_CIRCULAR_2));
+	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_5x5, getEditorSprite(IMAGE_CIRCULAR_3_SMALL, IMAGE_CIRCULAR_3));
+	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_7x7, getEditorSprite(IMAGE_CIRCULAR_4_SMALL, IMAGE_CIRCULAR_4));
+	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_9x9, getEditorSprite(IMAGE_CIRCULAR_5_SMALL, IMAGE_CIRCULAR_5));
+	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_15x15, getEditorSprite(IMAGE_CIRCULAR_6_SMALL, IMAGE_CIRCULAR_6));
+	gm->insertSprite(EDITOR_SPRITE_BRUSH_CD_19x19, getEditorSprite(IMAGE_CIRCULAR_7_SMALL, IMAGE_CIRCULAR_7));
+	gm->insertSprite(EDITOR_SPRITE_BRUSH_SD_1x1, getEditorSprite(IMAGE_RECTANGULAR_1_SMALL, IMAGE_RECTANGULAR_1));
+	gm->insertSprite(EDITOR_SPRITE_BRUSH_SD_3x3, getEditorSprite(IMAGE_RECTANGULAR_2_SMALL, IMAGE_RECTANGULAR_2));
+	gm->insertSprite(EDITOR_SPRITE_BRUSH_SD_5x5, getEditorSprite(IMAGE_RECTANGULAR_3_SMALL, IMAGE_RECTANGULAR_3));
+	gm->insertSprite(EDITOR_SPRITE_BRUSH_SD_7x7, getEditorSprite(IMAGE_RECTANGULAR_4_SMALL, IMAGE_RECTANGULAR_4));
+	gm->insertSprite(EDITOR_SPRITE_BRUSH_SD_9x9, getEditorSprite(IMAGE_RECTANGULAR_5_SMALL, IMAGE_RECTANGULAR_5));
+	gm->insertSprite(EDITOR_SPRITE_BRUSH_SD_15x15, getEditorSprite(IMAGE_RECTANGULAR_6_SMALL, IMAGE_RECTANGULAR_6));
+	gm->insertSprite(EDITOR_SPRITE_BRUSH_SD_19x19, getEditorSprite(IMAGE_RECTANGULAR_7_SMALL, IMAGE_RECTANGULAR_7));
 
-	gm->insertSprite(EDITOR_SPRITE_OPTIONAL_BORDER_TOOL, std::make_unique<EditorSprite>(loadPNGFile(optional_border_small_png), loadPNGFile(optional_border_png)));
-	gm->insertSprite(EDITOR_SPRITE_ERASER, std::make_unique<EditorSprite>(loadPNGFile(eraser_small_png), loadPNGFile(eraser_png)));
-	gm->insertSprite(EDITOR_SPRITE_PZ_TOOL, std::make_unique<EditorSprite>(loadPNGFile(protection_zone_small_png), loadPNGFile(protection_zone_png)));
-	gm->insertSprite(EDITOR_SPRITE_PVPZ_TOOL, std::make_unique<EditorSprite>(loadPNGFile(pvp_zone_small_png), loadPNGFile(pvp_zone_png)));
-	gm->insertSprite(EDITOR_SPRITE_NOLOG_TOOL, std::make_unique<EditorSprite>(loadPNGFile(no_logout_small_png), loadPNGFile(no_logout_png)));
-	gm->insertSprite(EDITOR_SPRITE_NOPVP_TOOL, std::make_unique<EditorSprite>(loadPNGFile(no_pvp_small_png), loadPNGFile(no_pvp_png)));
+	gm->insertSprite(EDITOR_SPRITE_OPTIONAL_BORDER_TOOL, getEditorSprite(IMAGE_OPTIONAL_BORDER_SMALL, IMAGE_OPTIONAL_BORDER));
+	gm->insertSprite(EDITOR_SPRITE_ERASER, getEditorSprite(IMAGE_ERASER_SMALL, IMAGE_ERASER));
+	gm->insertSprite(EDITOR_SPRITE_PZ_TOOL, getEditorSprite(IMAGE_PROTECTION_ZONE_SMALL, IMAGE_PROTECTION_ZONE));
+	gm->insertSprite(EDITOR_SPRITE_PVPZ_TOOL, getEditorSprite(IMAGE_PVP_ZONE_SMALL, IMAGE_PVP_ZONE));
+	gm->insertSprite(EDITOR_SPRITE_NOLOG_TOOL, getEditorSprite(IMAGE_NO_LOGOUT_ZONE_SMALL, IMAGE_NO_LOGOUT_ZONE));
+	gm->insertSprite(EDITOR_SPRITE_NOPVP_TOOL, getEditorSprite(IMAGE_NO_PVP_ZONE_SMALL, IMAGE_NO_PVP_ZONE));
 
-	gm->insertSprite(EDITOR_SPRITE_DOOR_NORMAL, std::make_unique<EditorSprite>(std::make_unique<wxBitmap>(door_normal_small_xpm), std::make_unique<wxBitmap>(door_normal_xpm)));
-	gm->insertSprite(EDITOR_SPRITE_DOOR_LOCKED, std::make_unique<EditorSprite>(std::make_unique<wxBitmap>(door_locked_small_xpm), std::make_unique<wxBitmap>(door_locked_xpm)));
-	gm->insertSprite(EDITOR_SPRITE_DOOR_MAGIC, std::make_unique<EditorSprite>(std::make_unique<wxBitmap>(door_magic_small_xpm), std::make_unique<wxBitmap>(door_magic_xpm)));
-	gm->insertSprite(EDITOR_SPRITE_DOOR_QUEST, std::make_unique<EditorSprite>(std::make_unique<wxBitmap>(door_quest_small_xpm), std::make_unique<wxBitmap>(door_quest_xpm)));
-	gm->insertSprite(EDITOR_SPRITE_DOOR_NORMAL_ALT, std::make_unique<EditorSprite>(std::make_unique<wxBitmap>(door_normal_alt_small_xpm), std::make_unique<wxBitmap>(door_normal_alt_xpm)));
-	gm->insertSprite(EDITOR_SPRITE_DOOR_ARCHWAY, std::make_unique<EditorSprite>(std::make_unique<wxBitmap>(door_archway_small_xpm), std::make_unique<wxBitmap>(door_archway_xpm)));
-	gm->insertSprite(EDITOR_SPRITE_WINDOW_NORMAL, std::make_unique<EditorSprite>(loadPNGFile(window_normal_small_png), loadPNGFile(window_normal_png)));
-	gm->insertSprite(EDITOR_SPRITE_WINDOW_HATCH, std::make_unique<EditorSprite>(loadPNGFile(window_hatch_small_png), loadPNGFile(window_hatch_png)));
+	gm->insertSprite(EDITOR_SPRITE_DOOR_NORMAL, getEditorSprite(IMAGE_DOOR_NORMAL_SMALL, IMAGE_DOOR_NORMAL));
+	gm->insertSprite(EDITOR_SPRITE_DOOR_LOCKED, getEditorSprite(IMAGE_DOOR_LOCKED_SMALL, IMAGE_DOOR_LOCKED));
+	gm->insertSprite(EDITOR_SPRITE_DOOR_MAGIC, getEditorSprite(IMAGE_DOOR_MAGIC_SMALL, IMAGE_DOOR_MAGIC));
+	gm->insertSprite(EDITOR_SPRITE_DOOR_QUEST, getEditorSprite(IMAGE_DOOR_QUEST_SMALL, IMAGE_DOOR_QUEST));
+	gm->insertSprite(EDITOR_SPRITE_DOOR_NORMAL_ALT, getEditorSprite(IMAGE_DOOR_NORMAL_ALT_SMALL, IMAGE_DOOR_NORMAL_ALT));
+	gm->insertSprite(EDITOR_SPRITE_DOOR_ARCHWAY, getEditorSprite(IMAGE_DOOR_ARCHWAY_SMALL, IMAGE_DOOR_ARCHWAY));
+	gm->insertSprite(EDITOR_SPRITE_WINDOW_NORMAL, getEditorSprite(IMAGE_WINDOW_NORMAL_SMALL, IMAGE_WINDOW_NORMAL));
+	gm->insertSprite(EDITOR_SPRITE_WINDOW_HATCH, getEditorSprite(IMAGE_WINDOW_HATCH_SMALL, IMAGE_WINDOW_HATCH));
 
-	gm->insertSprite(EDITOR_SPRITE_SELECTION_GEM, std::make_unique<EditorSprite>(loadPNGFile(gem_edit_png), nullptr));
-	gm->insertSprite(EDITOR_SPRITE_DRAWING_GEM, std::make_unique<EditorSprite>(loadPNGFile(gem_move_png), nullptr));
+	gm->insertSprite(EDITOR_SPRITE_SELECTION_GEM, getSingleEditorSprite(IMAGE_GEM_EDIT));
+	gm->insertSprite(EDITOR_SPRITE_DRAWING_GEM, getSingleEditorSprite(IMAGE_GEM_MOVE));
 
 	return true;
 }

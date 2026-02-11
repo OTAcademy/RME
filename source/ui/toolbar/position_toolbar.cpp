@@ -7,14 +7,14 @@
 #include "ui/gui.h"
 #include "ui/gui_ids.h"
 #include "editor/editor.h"
-#include "ui/artprovider.h"
+#include "util/image_manager.h"
 #include <wx/artprov.h>
 
 const wxString PositionToolBar::PANE_NAME = "position_toolbar";
 
 PositionToolBar::PositionToolBar(wxWindow* parent) {
 	wxSize icon_size = FROM_DIP(parent, wxSize(16, 16));
-	wxBitmap go_bitmap = wxArtProvider::GetBitmap(ART_POSITION_GO, wxART_TOOLBAR, icon_size);
+	wxBitmap go_bitmap = IMAGE_MANAGER.GetBitmap(ICON_LOCATION_ARROW, icon_size);
 
 	toolbar = newd wxAuiToolBar(parent, TOOLBAR_POSITION, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE | wxAUI_TB_HORZ_TEXT);
 	toolbar->SetToolBitmapSize(icon_size);

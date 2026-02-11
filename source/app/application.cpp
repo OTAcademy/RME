@@ -32,7 +32,6 @@
 #include "ui/about_window.h"
 #include "ui/main_menubar.h"
 #include "app/updater.h"
-#include "ui/artprovider.h"
 #include "ui/map/export_tilesets_window.h"
 #include <wx/stattext.h>
 #include <wx/slider.h>
@@ -77,7 +76,7 @@ bool Application::OnInit() {
 #endif
 
 	// Configure spdlog for debug output
-	spdlog::set_level(spdlog::level::info);
+	spdlog::set_level(spdlog::level::debug);
 	spdlog::flush_on(spdlog::level::info);
 	spdlog::info("RME starting up - logging enabled");
 
@@ -90,7 +89,6 @@ bool Application::OnInit() {
 
 	// Tell that we are the real thing
 	wxAppConsole::SetInstance(this);
-	wxArtProvider::Push(new ArtProvider());
 
 #if defined(__LINUX__) || defined(__WINDOWS__)
 	int argc = 1;
@@ -129,10 +127,7 @@ bool Application::OnInit() {
 #endif
 
 	// Image handlers
-	// wxImage::AddHandler(newd wxBMPHandler);
-	wxImage::AddHandler(newd wxPNGHandler);
-	wxImage::AddHandler(newd wxJPEGHandler);
-	wxImage::AddHandler(newd wxTGAHandler);
+	wxInitAllImageHandlers();
 
 	g_gui.gfx.loadEditorSprites();
 

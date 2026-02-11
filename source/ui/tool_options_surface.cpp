@@ -4,7 +4,6 @@
 #include "ui/gui.h"
 #include "ui/theme.h"
 #include "rendering/core/graphics.h"
-#include "ui/artprovider.h"
 #include "brushes/managers/brush_manager.h"
 #include "brushes/brush.h"
 #include "game/sprites.h"

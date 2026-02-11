@@ -11,41 +11,28 @@
 #include "brushes/flag/flag_brush.h"
 #include "brushes/door/door_brush.h"
 #include "brushes/border/optional_border_brush.h"
-#include "ui/pngfiles.h"
-#include "ui/artprovider.h"
-#include <wx/artprov.h>
-#include <wx/mstream.h>
+#include "util/image_manager.h"
 
-const wxString BrushToolBar::PANE_NAME = "brushes_toolbar";
-
-#define loadPNGFile(name) _wxGetBitmapFromMemory(name, sizeof(name))
-inline wxBitmap _wxGetBitmapFromMemory(const unsigned char* data, int length) {
-	wxMemoryInputStream is(data, length);
-	wxImage img(is, "image/png");
-	if (!img.IsOk()) {
-		return wxBitmap();
-	}
-	return wxBitmap(img, -1);
-}
+const wxString BrushToolBar::PANE_NAME = "brush_toolbar";
 
 BrushToolBar::BrushToolBar(wxWindow* parent) {
 	wxSize icon_size = FROM_DIP(parent, wxSize(16, 16));
 
-	wxBitmap border_bitmap = loadPNGFile(optional_border_small_png);
-	wxBitmap eraser_bitmap = loadPNGFile(eraser_small_png);
-	wxBitmap pz_bitmap = wxArtProvider::GetBitmap(ART_PZ_BRUSH, wxART_TOOLBAR, icon_size);
-	wxBitmap nopvp_bitmap = wxArtProvider::GetBitmap(ART_NOPVP_BRUSH, wxART_TOOLBAR, icon_size);
-	wxBitmap nologout_bitmap = wxArtProvider::GetBitmap(ART_NOLOOUT_BRUSH, wxART_TOOLBAR, icon_size);
-	wxBitmap pvp_bitmap = wxArtProvider::GetBitmap(ART_PVP_BRUSH, wxART_TOOLBAR, icon_size);
-	wxBitmap normal_bitmap = wxArtProvider::GetBitmap(ART_DOOR_NORMAL_SMALL, wxART_TOOLBAR, icon_size);
-	wxBitmap locked_bitmap = wxArtProvider::GetBitmap(ART_DOOR_LOCKED_SMALL, wxART_TOOLBAR, icon_size);
-	wxBitmap magic_bitmap = wxArtProvider::GetBitmap(ART_DOOR_MAGIC_SMALL, wxART_TOOLBAR, icon_size);
-	wxBitmap quest_bitmap = wxArtProvider::GetBitmap(ART_DOOR_QUEST_SMALL, wxART_TOOLBAR, icon_size);
-	wxBitmap normal_alt_bitmap = wxArtProvider::GetBitmap(ART_DOOR_NORMAL_ALT_SMALL, wxART_TOOLBAR, icon_size);
-	wxBitmap archway_bitmap = wxArtProvider::GetBitmap(ART_DOOR_ARCHWAY_SMALL, wxART_TOOLBAR, icon_size);
+	wxBitmap border_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_OPTIONAL_BORDER_SMALL, icon_size);
+	wxBitmap eraser_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_ERASER_SMALL, icon_size);
+	wxBitmap pz_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_PROTECTION_ZONE_SMALL, icon_size);
+	wxBitmap nopvp_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_NO_PVP_ZONE_SMALL, icon_size);
+	wxBitmap nologout_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_NO_LOGOUT_ZONE_SMALL, icon_size);
+	wxBitmap pvp_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_PVP_ZONE_SMALL, icon_size);
+	wxBitmap normal_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_DOOR_NORMAL_SMALL, icon_size);
+	wxBitmap locked_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_DOOR_LOCKED_SMALL, icon_size);
+	wxBitmap magic_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_DOOR_MAGIC_SMALL, icon_size);
+	wxBitmap quest_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_DOOR_QUEST_SMALL, icon_size);
+	wxBitmap normal_alt_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_DOOR_NORMAL_ALT_SMALL, icon_size);
+	wxBitmap archway_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_DOOR_ARCHWAY_SMALL, icon_size);
 
-	wxBitmap hatch_bitmap = loadPNGFile(window_hatch_small_png);
-	wxBitmap window_bitmap = loadPNGFile(window_normal_small_png);
+	wxBitmap hatch_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_WINDOW_HATCH_SMALL, icon_size);
+	wxBitmap window_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_WINDOW_NORMAL_SMALL, icon_size);
 
 	toolbar = newd wxAuiToolBar(parent, TOOLBAR_BRUSHES, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
 	toolbar->SetToolBitmapSize(icon_size);

@@ -1,5 +1,6 @@
 #include "app/main.h"
 #include "util/nanovg_canvas.h"
+#include "util/image_manager.h"
 #include "rendering/core/text_renderer.h"
 
 #include <glad/glad.h>
@@ -180,6 +181,15 @@ int NanoVGCanvas::GetOrCreateItemImage(uint16_t itemId) {
 		AddCachedImage(static_cast<uint64_t>(itemId), tex);
 	}
 	return tex;
+}
+
+int NanoVGCanvas::GetOrCreateStaticImage(const std::string& assetPath) {
+	NVGcontext* vg = GetNVGContext();
+	if (!vg) {
+		return 0;
+	}
+
+	return IMAGE_MANAGER.GetNanoVGImage(vg, assetPath);
 }
 
 int NanoVGCanvas::GetOrCreateSpriteTexture(NVGcontext* vg, Sprite* sprite) {

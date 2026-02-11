@@ -7,7 +7,7 @@
 #include "ui/gui.h"
 #include "ui/gui_ids.h"
 #include "app/settings.h"
-#include "MaterialDesign/wxMaterialDesignArtProvider.hpp"
+#include "util/image_manager.h"
 
 const wxString LightToolBar::PANE_NAME = "light_toolbar";
 
@@ -32,7 +32,7 @@ LightToolBar::LightToolBar(wxWindow* parent) {
 	toolbar->AddControl(ambient_slider);
 	toolbar->AddSeparator();
 
-	wxBitmap light_bitmap = wxMaterialDesignArtProvider::GetBitmap(wxART_WB_SUNNY, wxART_CLIENT_MATERIAL_FILLED, icon_size, wxColour(255, 235, 59));
+	wxBitmap light_bitmap = IMAGE_MANAGER.GetBitmap(ICON_SUNNY, icon_size, wxColour(255, 235, 59));
 	toolbar->AddTool(ID_LIGHT_TOGGLE, "Toggle Lighting", light_bitmap, "Toggle Lighting", wxITEM_CHECK);
 	toolbar->ToggleTool(ID_LIGHT_TOGGLE, g_settings.getBoolean(Config::SHOW_LIGHTS));
 

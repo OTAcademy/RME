@@ -25,27 +25,12 @@
 #include "io/filehandle.h"
 #include "app/settings.h"
 #include "ui/gui.h"
-#include "ui/gui.h"
 #include "map/otml.h"
 #include "rendering/io/editor_sprite_loader.h"
 
 #include <wx/mstream.h>
 #include <wx/dir.h>
-#include "ui/pngfiles.h"
 #include "rendering/utilities/wx_utils.h"
-
-#include "../../../brushes/door_normal.xpm"
-#include "../../../brushes/door_normal_small.xpm"
-#include "../../../brushes/door_locked.xpm"
-#include "../../../brushes/door_locked_small.xpm"
-#include "../../../brushes/door_magic.xpm"
-#include "../../../brushes/door_magic_small.xpm"
-#include "../../../brushes/door_quest.xpm"
-#include "../../../brushes/door_quest_small.xpm"
-#include "../../../brushes/door_normal_alt.xpm"
-#include "../../../brushes/door_normal_alt_small.xpm"
-#include "../../../brushes/door_archway.xpm"
-#include "../../../brushes/door_archway_small.xpm"
 
 #include "rendering/core/outfit_colors.h"
 #include "rendering/core/outfit_colorizer.h"
@@ -175,8 +160,6 @@ uint16_t GraphicManager::getItemSpriteMaxID() const {
 uint16_t GraphicManager::getCreatureSpriteMaxID() const {
 	return creature_count;
 }
-
-#define loadPNGFile(name) _wxGetBitmapFromMemory(name, sizeof(name))
 
 #include "rendering/io/game_sprite_loader.h"
 

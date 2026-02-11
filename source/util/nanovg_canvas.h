@@ -94,10 +94,12 @@ public:
 		return m_nvg.get();
 	}
 
-	/**
-	 * @brief Gets or creates a cached NanoVG image for an item.
-	 */
 	int GetOrCreateItemImage(uint16_t itemId);
+
+	/**
+	 * @brief Gets or creates a cached NanoVG image for a static asset.
+	 */
+	int GetOrCreateStaticImage(const std::string& assetPath);
 
 	/**
 	 * @brief Gets or creates a cached NanoVG image for a Sprite (GameSprite or generic).

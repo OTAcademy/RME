@@ -75,6 +75,14 @@ endif()
 set_target_properties(rme PROPERTIES CXX_STANDARD 20)
 set_target_properties(rme PROPERTIES CXX_STANDARD_REQUIRED ON)
 target_compile_definitions(rme PRIVATE WXWIN_COMPATIBILITY_3_3 NANOVG_GL3)
+ 
+# Copy assets to build directory
+add_custom_command(TARGET rme POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+	"${CMAKE_CURRENT_SOURCE_DIR}/source/assets"
+	"$<TARGET_FILE_DIR:rme>/assets"
+	COMMENT "Copying assets to output directory..."
+)
 
 
 # Link against wxWidgets (works with both vcpkg and Conan)

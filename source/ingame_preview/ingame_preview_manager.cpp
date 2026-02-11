@@ -1,7 +1,7 @@
 #include <iostream>
 #include "ingame_preview/ingame_preview_manager.h"
 #include "ingame_preview/ingame_preview_window.h"
-#include "MaterialDesign/wxMaterialDesignArtProvider.hpp"
+#include "util/image_manager.h"
 
 #include "ui/gui.h"
 #include "editor/editor.h"
@@ -21,11 +21,6 @@ namespace IngamePreview {
 	}
 
 	void IngamePreviewManager::Create() {
-		static bool artProviderRegistered = false;
-		if (!artProviderRegistered) {
-			wxArtProvider::Push(new wxMaterialDesignArtProvider);
-			artProviderRegistered = true;
-		}
 
 		if (!g_gui.aui_manager) {
 			return;

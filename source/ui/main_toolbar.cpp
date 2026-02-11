@@ -23,8 +23,6 @@
 #include "app/settings.h"
 #include "brushes/brush.h"
 #include "brushes/managers/brush_manager.h"
-#include "ui/artprovider.h"
-#include <wx/artprov.h>
 #include <wx/mstream.h>
 
 #include "ui/toolbar/toolbar_persistence.h"

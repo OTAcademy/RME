@@ -21,7 +21,7 @@
 #include "editor/action_queue.h"
 #include "rendering/core/graphics.h"
 #include "ui/gui.h"
-#include "ui/artprovider.h"
+#include "util/image_manager.h"
 #include "game/items.h"
 
 // ============================================================================
@@ -66,8 +66,8 @@ void ReplaceItemsButton::SetItemId(uint16_t id) {
 
 ReplaceItemsListBox::ReplaceItemsListBox(wxWindow* parent) :
 	wxVListBox(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLB_SINGLE) {
-	m_arrow_bitmap = wxArtProvider::GetBitmap(ART_POSITION_GO, wxART_TOOLBAR, FROM_DIP(parent, wxSize(16, 16)));
-	m_flag_bitmap = wxArtProvider::GetBitmap(ART_PZ_BRUSH, wxART_TOOLBAR, FROM_DIP(parent, wxSize(16, 16)));
+	m_arrow_bitmap = IMAGE_MANAGER.GetBitmap(ICON_LOCATION_ARROW, FROM_DIP(parent, wxSize(16, 16)));
+	m_flag_bitmap = IMAGE_MANAGER.GetBitmap(IMAGE_PROTECTION_ZONE_SMALL, FROM_DIP(parent, wxSize(16, 16)));
 }
 
 bool ReplaceItemsListBox::AddItem(const ReplacingItem& item) {
@@ -185,7 +185,7 @@ ReplaceItemsDialog::ReplaceItemsDialog(wxWindow* parent, bool selectionOnly) :
 	replace_button = new ReplaceItemsButton(this);
 	items_sizer->Add(replace_button, 0, wxALL, 5);
 
-	wxBitmap bitmap = wxArtProvider::GetBitmap(ART_POSITION_GO, wxART_TOOLBAR, FromDIP(wxSize(16, 16)));
+	wxBitmap bitmap = IMAGE_MANAGER.GetBitmap(ICON_LOCATION_ARROW, FromDIP(wxSize(16, 16)));
 	arrow_bitmap = new wxStaticBitmap(this, wxID_ANY, bitmap);
 	items_sizer->Add(arrow_bitmap, 0, wxTOP, 15);
 
