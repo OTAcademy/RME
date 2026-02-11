@@ -49,7 +49,7 @@ public:
 	std::vector<SortedGridCell> getSortedCells() const;
 
 	template <typename Func>
-	inline void visitLeaves(int min_x, int min_y, int max_x, int max_y, Func&& func) {
+	void visitLeaves(int min_x, int min_y, int max_x, int max_y, Func&& func) {
 		int start_nx = min_x >> NODE_SHIFT;
 		int start_ny = min_y >> NODE_SHIFT;
 		int end_nx = (max_x - 1) >> NODE_SHIFT;
@@ -90,14 +90,16 @@ protected:
 	// Traverses cells by iterating over the viewport coordinates.
 	// Efficient for small or dense viewports.
 	template <typename Func>
-	inline void visitLeavesByViewport(int start_nx, int start_ny, int end_nx, int end_ny, int start_cx, int start_cy, int end_cx, int end_cy, Func&& func) {
+	void visitLeavesByViewport(int start_nx, int start_ny, int end_nx, int end_ny, int start_cx, int start_cy, int end_cx, int end_cy, Func&& func) {
+		struct RowCellInfo {
+			GridCell* cell;
+			int start_nx;
+		};
+		std::vector<RowCellInfo> row_cells;
+		row_cells.reserve(end_cx - start_cx + 1);
+
 		for (int cy = start_cy; cy <= end_cy; ++cy) {
-			struct RowCellInfo {
-				GridCell* cell;
-				int start_nx;
-			};
-			std::vector<RowCellInfo> row_cells;
-			row_cells.reserve(end_cx - start_cx + 1);
+			row_cells.clear();
 
 			for (int cx = start_cx; cx <= end_cx; ++cx) {
 				uint64_t key = makeKeyFromCell(cx, cy);
@@ -135,7 +137,7 @@ protected:
 	// Traverses cells by iterating over pre-filtered allocated cells.
 	// Efficient for huge or sparse viewports.
 	template <typename Func>
-	inline void visitLeavesByCells(int start_nx, int start_ny, int end_nx, int end_ny, int start_cx, int start_cy, int end_cx, int end_cy, Func&& func) {
+	void visitLeavesByCells(int start_nx, int start_ny, int end_nx, int end_ny, int start_cx, int start_cy, int end_cx, int end_cy, Func&& func) {
 		struct CellEntry {
 			int cx;
 			int cy;
