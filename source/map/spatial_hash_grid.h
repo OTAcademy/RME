@@ -91,34 +91,35 @@ protected:
 	// Efficient for small or dense viewports.
 	template <typename Func>
 	void visitLeavesByViewport(int start_nx, int start_ny, int end_nx, int end_ny, int start_cx, int start_cy, int end_cx, int end_cy, Func&& func) {
-		uint64_t cached_cell_key = 0;
-		bool has_cached_cell = false;
-		GridCell* cached_cell = nullptr;
+		struct RowCellInfo {
+			GridCell* cell;
+			int start_nx;
+		};
+		std::vector<RowCellInfo> row_cells;
+		row_cells.reserve(end_cx - start_cx + 1);
 
-		for (int ny : std::views::iota(start_ny, end_ny + 1)) {
-			int cy = ny >> NODES_PER_CELL_SHIFT;
-			int local_ny = ny & (NODES_PER_CELL - 1);
+		for (int cy = start_cy; cy <= end_cy; ++cy) {
+			row_cells.clear();
 
 			for (int cx = start_cx; cx <= end_cx; ++cx) {
 				uint64_t key = makeKeyFromCell(cx, cy);
-
-				GridCell* cell = nullptr;
-				if (has_cached_cell && key == cached_cell_key) {
-					cell = cached_cell;
-				} else {
-					auto it = cells.find(key);
-					if (it != cells.end()) {
-						cell = it->second.get();
-						cached_cell = cell;
-						cached_cell_key = key;
-						has_cached_cell = true;
-					} else {
-						has_cached_cell = false;
-					}
+				auto it = cells.find(key);
+				if (it != cells.end()) {
+					row_cells.push_back({ .cell = it->second.get(), .start_nx = (cx << NODES_PER_CELL_SHIFT) });
 				}
+			}
 
-				if (cell) {
-					int cell_start_nx = cx << NODES_PER_CELL_SHIFT;
+			if (row_cells.empty()) {
+				continue;
+			}
+
+			int row_start_ny = std::max(start_ny, cy << NODES_PER_CELL_SHIFT);
+			int row_end_ny = std::min(end_ny, ((cy + 1) << NODES_PER_CELL_SHIFT) - 1);
+
+			for (int ny : std::views::iota(row_start_ny, row_end_ny + 1)) {
+				int local_ny = ny & (NODES_PER_CELL - 1);
+
+				for (const auto& [cell, cell_start_nx] : row_cells) {
 					int local_start_nx = std::max(start_nx, cell_start_nx) - cell_start_nx;
 					int local_end_nx = std::min(end_nx, cell_start_nx + NODES_PER_CELL - 1) - cell_start_nx;
 
