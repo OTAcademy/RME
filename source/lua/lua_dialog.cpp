@@ -1007,7 +1007,7 @@ LuaDialog* LuaDialog::color(sol::table options) {
 	std::string id = options.get_or(std::string("id"), "color_"s + std::to_string(widgets.size()));
 	std::string labelText = options.get_or(std::string("label"), ""s);
 
-	wxColour defaultColor = *wxBLACK;
+	wxColour defaultColor = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
 	if (options["color"].valid()) {
 		sol::table c = options["color"];
 		int r = c.get_or(std::string("red"), c.get_or(1, 0));

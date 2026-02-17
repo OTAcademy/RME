@@ -39,6 +39,14 @@
 
 #include <wx/snglinst.h>
 
+#if defined(__WXMSW__)
+	#include <windows.h>
+	#include <dwmapi.h>
+	#ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
+		#define DWMWA_USE_IMMERSIVE_DARK_MODE 20
+	#endif
+#endif
+
 #if defined(__LINUX__) || defined(__WINDOWS__)
 	#include <GL/glut.h>
 #endif
@@ -97,6 +105,10 @@ Application::~Application() {
 bool Application::OnInit() {
 #if defined __DEBUG_MODE__ && defined __WINDOWS__
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
+#if wxCHECK_VERSION(3,3,0)
+	SetAppearance(wxApp::Appearance::System);
 #endif
 
 	std::cout << "This is free software: you are free to change and redistribute it." << std::endl;
@@ -166,9 +178,33 @@ bool Application::OnInit() {
 	m_file_to_open = wxEmptyString;
 	ParseCommandLineMap(m_file_to_open);
 
+#if defined(__WXMSW__)
+	HMODULE hUxtheme = LoadLibraryW(L"uxtheme.dll");
+	if (hUxtheme) {
+		using FnSetPreferredAppMode = int (WINAPI*)(int);
+		auto pSetPreferredAppMode = reinterpret_cast<FnSetPreferredAppMode>(GetProcAddress(hUxtheme, MAKEINTRESOURCEA(135)));
+		if (pSetPreferredAppMode) {
+			pSetPreferredAppMode(1);
+		}
+	}
+#endif
+
 	g_gui.root = newd MainFrame(__W_RME_APPLICATION_NAME__, wxDefaultPosition, wxSize(700, 500));
 	SetTopWindow(g_gui.root);
 	g_gui.SetTitle("");
+
+#ifdef __WXMSW__
+	HKEY hKey = nullptr;
+	if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+		DWORD useLight = 1;
+		DWORD size = sizeof(useLight);
+		RegQueryValueExW(hKey, L"AppsUseLightTheme", nullptr, nullptr, reinterpret_cast<LPBYTE>(&useLight), &size);
+		RegCloseKey(hKey);
+		BOOL useDark = (useLight == 0);
+		HWND hwnd = static_cast<HWND>(g_gui.root->GetHandle());
+		DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &useDark, sizeof(useDark));
+	}
+#endif
 
 	g_gui.root->LoadRecentFiles();
 

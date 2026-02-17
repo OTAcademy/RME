@@ -118,8 +118,8 @@ void LuaScriptsWindow::BuildUI() {
 	// Set monospace font for console
 	wxFont consoleFont(9, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 	console_output->SetFont(consoleFont);
-	console_output->SetBackgroundColour(wxColour(30, 30, 30));
-	console_output->SetForegroundColour(wxColour(200, 200, 200));
+	console_output->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+	console_output->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
 
 	mainSizer->Add(console_output, 1, wxEXPAND | wxALL, 2);
 
@@ -148,9 +148,8 @@ void LuaScriptsWindow::RefreshScriptList() {
 		// Store script index as item data
 		script_list->SetItemData(index, static_cast<long>(i));
 
-		// Color based on enabled state
 		if (!script->isEnabled()) {
-			script_list->SetItemTextColour(index, wxColour(128, 128, 128));
+			script_list->SetItemTextColour(index, wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
 		}
 	}
 
@@ -169,12 +168,11 @@ void LuaScriptsWindow::LogMessage(const wxString& message, bool isError) {
 		return;
 	}
 
-	// Set color based on message type
 	wxTextAttr attr;
 	if (isError) {
-		attr.SetTextColour(wxColour(255, 100, 100)); // Red for errors
+		attr.SetTextColour(wxColour(255, 100, 100));
 	} else {
-		attr.SetTextColour(wxColour(200, 200, 200)); // Light gray for normal
+		attr.SetTextColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
 	}
 
 	console_output->SetDefaultStyle(attr);
@@ -211,9 +209,9 @@ void LuaScriptsWindow::UpdateScriptState(long index) {
 		script_list->SetItem(index, 0, script->isEnabled() ? "On" : "Off");
 
 		if (script->isEnabled()) {
-			script_list->SetItemTextColour(index, wxColour(0, 0, 0));
+			script_list->SetItemTextColour(index, wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
 		} else {
-			script_list->SetItemTextColour(index, wxColour(128, 128, 128));
+			script_list->SetItemTextColour(index, wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
 		}
 	}
 }
