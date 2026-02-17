@@ -80,7 +80,7 @@ public:
 class RecentItem : public wxPanel {
 public:
 	RecentItem(wxWindow* parent, const wxColour& base_colour, const wxString& item_name);
-	void OnPaint(wxPaintEvent& event);
+	void OnPaint(const wxPaintEvent& event);
 	void OnMouseEnter(const wxMouseEvent& event);
 	void OnMouseLeave(const wxMouseEvent& event);
 	wxString GetText() const { return m_item_text; }

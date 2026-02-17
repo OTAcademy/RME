@@ -218,7 +218,7 @@ RecentItem::RecentItem(wxWindow* parent, const wxColour& base_colour, const wxSt
 	Bind(wxEVT_LEAVE_WINDOW, &RecentItem::OnMouseLeave, this);
 }
 
-void RecentItem::OnPaint(wxPaintEvent& event) {
+void RecentItem::OnPaint(const wxPaintEvent& event) {
 	wxPaintDC dc(this);
 	wxColour bg = m_is_hover ? m_bg_colour_hover : m_bg_colour;
 	dc.SetBrush(wxBrush(bg));
@@ -229,8 +229,8 @@ void RecentItem::OnPaint(wxPaintEvent& event) {
 	int pad = FROM_DIP(this, 8);
 	dc.SetFont(GetFont().Bold());
 	dc.DrawText(m_title_text, pad, pad);
-	dc.SetFont(GetFont().Smaller());
 	wxSize titleSize = dc.GetTextExtent(m_title_text);
+	dc.SetFont(GetFont().Smaller());
 	dc.DrawText(m_item_text, pad, pad + titleSize.y + FROM_DIP(this, 2));
 }
 
