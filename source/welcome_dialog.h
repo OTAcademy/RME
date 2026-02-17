@@ -80,19 +80,19 @@ public:
 class RecentItem : public wxPanel {
 public:
 	RecentItem(wxWindow* parent, const wxColour& base_colour, const wxString& item_name);
+	void OnPaint(wxPaintEvent& event);
 	void OnMouseEnter(const wxMouseEvent& event);
 	void OnMouseLeave(const wxMouseEvent& event);
-	void PropagateItemClicked(wxMouseEvent& event);
-	wxString GetText() {
-		return m_item_text;
-	};
+	wxString GetText() const { return m_item_text; }
 
 private:
+	wxColour m_bg_colour;
+	wxColour m_bg_colour_hover;
 	wxColour m_text_colour;
 	wxColour m_text_colour_hover;
-	wxStaticText* m_title;
-	wxStaticText* m_file_path;
+	wxString m_title_text;
 	wxString m_item_text;
+	bool m_is_hover;
 };
 
 #endif // WELCOME_DIALOG_H

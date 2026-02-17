@@ -25,7 +25,7 @@ wxDEFINE_EVENT(WELCOME_DIALOG_ACTION, wxCommandEvent);
 WelcomeDialog::WelcomeDialog(const wxString& title_text, const wxString& version_text, const wxSize& size, const wxBitmap& rme_logo, const std::vector<wxString>& recent_files) :
 	wxDialog(nullptr, wxID_ANY, "", wxDefaultPosition, size) {
 	Centre();
-	wxColour base_colour = wxColor(250, 250, 250);
+	wxColour base_colour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
 	m_welcome_dialog_panel = newd WelcomeDialogPanel(this, GetClientSize(), title_text, version_text, base_colour, wxBitmap(rme_logo.ConvertToImage().Scale(FROM_DIP(this, 48), FROM_DIP(this, 48))), recent_files);
 }
 
@@ -61,9 +61,9 @@ void WelcomeDialog::OnCheckboxClicked(const wxCommandEvent& event) {
 
 void WelcomeDialog::OnRecentItemClicked(const wxMouseEvent& event) {
 	auto* recent_item = dynamic_cast<RecentItem*>(event.GetEventObject());
-	wxSize button_size = recent_item->GetSize();
-	wxPoint click_point = event.GetPosition();
-	if (click_point.x > 0 && click_point.x < button_size.x && click_point.y > 0 && click_point.y < button_size.x) {
+	wxSize sz = recent_item->GetSize();
+	wxPoint pt = event.GetPosition();
+	if (pt.x >= 0 && pt.x < sz.x && pt.y >= 0 && pt.y < sz.y) {
 		wxCommandEvent action_event(WELCOME_DIALOG_ACTION);
 		action_event.SetString(recent_item->GetText());
 		action_event.SetId(wxID_OPEN);
@@ -76,7 +76,7 @@ WelcomeDialogPanel::WelcomeDialogPanel(WelcomeDialog* dialog, const wxSize& size
 	m_rme_logo(rme_logo),
 	m_title_text(title_text),
 	m_version_text(version_text),
-	m_text_colour(base_colour.ChangeLightness(40)),
+	m_text_colour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT)),
 	m_background_colour(base_colour) {
 
 	auto* recent_maps_panel = newd RecentMapsPanel(this, dialog, base_colour, recent_files);
@@ -149,7 +149,7 @@ void WelcomeDialogPanel::OnPaint(const wxPaintEvent& event) {
 
 	dc.SetFont(GetFont());
 	wxSize version_size = dc.GetTextExtent(m_version_text);
-	dc.SetTextForeground(m_text_colour.ChangeLightness(110));
+	dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
 	dc.DrawText(m_version_text, wxPoint(header_point.x - version_size.x / 2, header_point.y + header_size.y + 10));
 }
 
@@ -157,9 +157,9 @@ WelcomeDialogButton::WelcomeDialogButton(wxWindow* parent, const wxPoint& pos, c
 	wxPanel(parent, wxID_ANY, pos, size),
 	m_action(wxID_CLOSE),
 	m_text(text),
-	m_text_colour(base_colour.ChangeLightness(40)),
+	m_text_colour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT)),
 	m_background(base_colour.ChangeLightness(96)),
-	m_background_hover(base_colour.ChangeLightness(93)),
+	m_background_hover(base_colour.ChangeLightness(86)),
 	m_is_hover(false) {
 	Bind(wxEVT_PAINT, &WelcomeDialogButton::OnPaint, this);
 	Bind(wxEVT_ENTER_WINDOW, &WelcomeDialogButton::OnMouseEnter, this);
@@ -203,52 +203,47 @@ RecentMapsPanel::RecentMapsPanel(wxWindow* parent, WelcomeDialog* dialog, const 
 
 RecentItem::RecentItem(wxWindow* parent, const wxColour& base_colour, const wxString& item_name) :
 	wxPanel(parent, wxID_ANY),
-	m_text_colour(base_colour.ChangeLightness(40)),
-	m_text_colour_hover(base_colour.ChangeLightness(20)),
-	m_item_text(item_name) {
-	SetBackgroundColour(base_colour.ChangeLightness(95));
-	m_title = newd wxStaticText(this, wxID_ANY, wxFileNameFromPath(m_item_text));
-	m_title->SetFont(GetFont().Bold());
-	m_title->SetForegroundColour(m_text_colour);
-	m_title->SetToolTip(m_item_text);
-	m_file_path = newd wxStaticText(this, wxID_ANY, m_item_text, wxDefaultPosition, wxDefaultSize, wxST_ELLIPSIZE_START);
-	m_file_path->SetToolTip(m_item_text);
-	m_file_path->SetFont(GetFont().Smaller());
-	m_file_path->SetForegroundColour(m_text_colour);
-	wxBoxSizer* mainSizer = newd wxBoxSizer(wxHORIZONTAL);
-	wxBoxSizer* sizer = newd wxBoxSizer(wxVERTICAL);
-	sizer->Add(m_title);
-	sizer->Add(m_file_path, 1, wxTOP, FROM_DIP(this, 2));
-	mainSizer->Add(sizer, 0, wxEXPAND | wxALL, FROM_DIP(this, 8));
+	m_bg_colour(base_colour.ChangeLightness(95)),
+	m_bg_colour_hover(base_colour.ChangeLightness(88)),
+	m_text_colour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT)),
+	m_text_colour_hover(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHTTEXT)),
+	m_title_text(wxFileNameFromPath(item_name)),
+	m_item_text(item_name),
+	m_is_hover(false) {
+	SetBackgroundColour(m_bg_colour);
+	SetToolTip(item_name);
+	SetMinSize(wxSize(-1, FROM_DIP(this, 44)));
+	Bind(wxEVT_PAINT, &RecentItem::OnPaint, this);
 	Bind(wxEVT_ENTER_WINDOW, &RecentItem::OnMouseEnter, this);
 	Bind(wxEVT_LEAVE_WINDOW, &RecentItem::OnMouseLeave, this);
-	m_title->Bind(wxEVT_LEFT_UP, &RecentItem::PropagateItemClicked, this);
-	m_file_path->Bind(wxEVT_LEFT_UP, &RecentItem::PropagateItemClicked, this);
-	SetSizerAndFit(mainSizer);
 }
 
-void RecentItem::PropagateItemClicked(wxMouseEvent& event) {
-	event.ResumePropagation(1);
-	event.SetEventObject(this);
-	event.Skip();
+void RecentItem::OnPaint(wxPaintEvent& event) {
+	wxPaintDC dc(this);
+	wxColour bg = m_is_hover ? m_bg_colour_hover : m_bg_colour;
+	dc.SetBrush(wxBrush(bg));
+	dc.SetPen(wxPen(bg));
+	dc.DrawRectangle(wxRect(wxPoint(0, 0), GetClientSize()));
+	wxColour fg = m_is_hover ? m_text_colour_hover : m_text_colour;
+	dc.SetTextForeground(fg);
+	int pad = FROM_DIP(this, 8);
+	dc.SetFont(GetFont().Bold());
+	dc.DrawText(m_title_text, pad, pad);
+	dc.SetFont(GetFont().Smaller());
+	wxSize titleSize = dc.GetTextExtent(m_title_text);
+	dc.DrawText(m_item_text, pad, pad + titleSize.y + FROM_DIP(this, 2));
 }
 
 void RecentItem::OnMouseEnter(const wxMouseEvent& event) {
-	if (GetScreenRect().Contains(ClientToScreen(event.GetPosition()))
-		&& m_title->GetForegroundColour() != m_text_colour_hover) {
-		m_title->SetForegroundColour(m_text_colour_hover);
-		m_file_path->SetForegroundColour(m_text_colour_hover);
-		m_title->Refresh();
-		m_file_path->Refresh();
+	if (!m_is_hover) {
+		m_is_hover = true;
+		Refresh();
 	}
 }
 
 void RecentItem::OnMouseLeave(const wxMouseEvent& event) {
-	if (!GetScreenRect().Contains(ClientToScreen(event.GetPosition()))
-		&& m_title->GetForegroundColour() != m_text_colour) {
-		m_title->SetForegroundColour(m_text_colour);
-		m_file_path->SetForegroundColour(m_text_colour);
-		m_title->Refresh();
-		m_file_path->Refresh();
+	if (m_is_hover) {
+		m_is_hover = false;
+		Refresh();
 	}
 }

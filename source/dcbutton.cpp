@@ -96,23 +96,10 @@ void DCButton::OnPaint(wxPaintEvent& event) {
 		return;
 	}
 
-	static std::unique_ptr<wxPen> highlight_pen;
-	static std::unique_ptr<wxPen> dark_highlight_pen;
-	static std::unique_ptr<wxPen> light_shadow_pen;
-	static std::unique_ptr<wxPen> shadow_pen;
-
-	if (highlight_pen.get() == nullptr) {
-		highlight_pen.reset(newd wxPen(wxColor(0xFF, 0xFF, 0xFF), 1, wxSOLID));
-	}
-	if (dark_highlight_pen.get() == nullptr) {
-		dark_highlight_pen.reset(newd wxPen(wxColor(0xD4, 0xD0, 0xC8), 1, wxSOLID));
-	}
-	if (light_shadow_pen.get() == nullptr) {
-		light_shadow_pen.reset(newd wxPen(wxColor(0x80, 0x80, 0x80), 1, wxSOLID));
-	}
-	if (shadow_pen.get() == nullptr) {
-		shadow_pen.reset(newd wxPen(wxColor(0x40, 0x40, 0x40), 1, wxSOLID));
-	}
+	wxPen highlight_pen(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNHIGHLIGHT), 1, wxSOLID);
+	wxPen dark_highlight_pen(wxSystemSettings::GetColour(wxSYS_COLOUR_3DLIGHT), 1, wxSOLID);
+	wxPen light_shadow_pen(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNSHADOW), 1, wxSOLID);
+	wxPen shadow_pen(wxSystemSettings::GetColour(wxSYS_COLOUR_3DDKSHADOW), 1, wxSOLID);
 
 	int size_x = 20, size_y = 20;
 
@@ -124,32 +111,32 @@ void DCButton::OnPaint(wxPaintEvent& event) {
 		size_y = 36;
 	}
 
-	pdc.SetBrush(*wxBLACK);
+	pdc.SetBrush(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE)));
 	pdc.DrawRectangle(0, 0, size_x, size_y);
 	if (type == DC_BTN_TOGGLE && GetValue()) {
-		pdc.SetPen(*shadow_pen);
+		pdc.SetPen(shadow_pen);
 		pdc.DrawLine(0, 0, size_x - 1, 0);
 		pdc.DrawLine(0, 1, 0, size_y - 1);
-		pdc.SetPen(*light_shadow_pen);
+		pdc.SetPen(light_shadow_pen);
 		pdc.DrawLine(1, 1, size_x - 2, 1);
 		pdc.DrawLine(1, 2, 1, size_y - 2);
-		pdc.SetPen(*dark_highlight_pen);
+		pdc.SetPen(dark_highlight_pen);
 		pdc.DrawLine(size_x - 2, 1, size_x - 2, size_y - 2);
 		pdc.DrawLine(1, size_y - 2, size_x - 1, size_y - 2);
-		pdc.SetPen(*highlight_pen);
+		pdc.SetPen(highlight_pen);
 		pdc.DrawLine(size_x - 1, 0, size_x - 1, size_y - 1);
 		pdc.DrawLine(0, size_y - 1, size_y, size_y - 1);
 	} else {
-		pdc.SetPen(*highlight_pen);
+		pdc.SetPen(highlight_pen);
 		pdc.DrawLine(0, 0, size_x - 1, 0);
 		pdc.DrawLine(0, 1, 0, size_y - 1);
-		pdc.SetPen(*dark_highlight_pen);
+		pdc.SetPen(dark_highlight_pen);
 		pdc.DrawLine(1, 1, size_x - 2, 1);
 		pdc.DrawLine(1, 2, 1, size_y - 2);
-		pdc.SetPen(*light_shadow_pen);
+		pdc.SetPen(light_shadow_pen);
 		pdc.DrawLine(size_x - 2, 1, size_x - 2, size_y - 2);
 		pdc.DrawLine(1, size_y - 2, size_x - 1, size_y - 2);
-		pdc.SetPen(*shadow_pen);
+		pdc.SetPen(shadow_pen);
 		pdc.DrawLine(size_x - 1, 0, size_x - 1, size_y - 1);
 		pdc.DrawLine(0, size_y - 1, size_y, size_y - 1);
 	}
