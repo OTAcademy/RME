@@ -204,7 +204,7 @@ RecentMapsPanel::RecentMapsPanel(wxWindow* parent, WelcomeDialog* dialog, const 
 RecentItem::RecentItem(wxWindow* parent, const wxColour& base_colour, const wxString& item_name) :
 	wxPanel(parent, wxID_ANY),
 	m_bg_colour(base_colour.ChangeLightness(95)),
-	m_bg_colour_hover(base_colour.ChangeLightness(88)),
+	m_bg_colour_hover(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)),
 	m_text_colour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT)),
 	m_text_colour_hover(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHTTEXT)),
 	m_title_text(wxFileNameFromPath(item_name)),
