@@ -130,8 +130,10 @@
 #define MAP_MAX_HEIGHT 65000
 #define MAP_MAX_LAYER 15
 
-// The size of the tile in pixels
-constexpr int TileSize = 32;
+// The size of one world tile in editor pixels.
+// Keep SPRITE_PIXELS at 32: Tibia sprites remain 32x32 while the editor
+// renders each world tile on a 64x64 pixel grid.
+constexpr int TileSize = 64;
 
 // The default size of sprites
 #define SPRITE_PIXELS 32
