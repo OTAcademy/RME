@@ -119,6 +119,7 @@ bool DrawingOptions::isDrawLight() const noexcept {
 
 MapDrawer::MapDrawer(MapCanvas* canvas) :
 	canvas(canvas), editor(canvas->editor) {
+	tooltips.reserve(256);
 	light_drawer = std::make_shared<LightDrawer>();
 }
 
@@ -182,9 +183,6 @@ void MapDrawer::SetupGL() {
 }
 
 void MapDrawer::Release() {
-	for (std::vector<MapTooltip*>::const_iterator it = tooltips.begin(); it != tooltips.end(); ++it) {
-		delete *it;
-	}
 	tooltips.clear();
 
 	if (light_drawer) {
@@ -1959,9 +1957,8 @@ void MapDrawer::DrawHookIndicator(int x, int y, const ItemType& type) {
 }
 
 void MapDrawer::DrawTooltips() {
-	for (std::vector<MapTooltip*>::const_iterator it = tooltips.begin(); it != tooltips.end(); ++it) {
-		MapTooltip* tooltip = (*it);
-		const char* text = tooltip->text.c_str();
+	for (const MapTooltip& tooltip : tooltips) {
+		const char* text = tooltip.text.c_str();
 		float line_width = 0.0f;
 		float width = 2.0f;
 		float height = 14.0f;
@@ -1980,7 +1977,7 @@ void MapDrawer::DrawTooltips() {
 			char_count++;
 			line_char_count++;
 
-			if (tooltip->ellipsis && char_count > (MapTooltip::MAX_CHARS + 3)) {
+			if (tooltip.ellipsis && char_count > (MapTooltip::MAX_CHARS + 3)) {
 				break;
 			}
 		}
@@ -1990,8 +1987,8 @@ void MapDrawer::DrawTooltips() {
 		width = (width + 8.0f) * scale;
 		height = (height + 4.0f) * scale;
 
-		float x = tooltip->x + (TileSize / 2.0f);
-		float y = tooltip->y;
+		float x = tooltip.x + (TileSize / 2.0f);
+		float y = tooltip.y;
 		float center = width / 2.0f;
 		float space = (7.0f * scale);
 		float startx = x - center;
@@ -2017,7 +2014,7 @@ void MapDrawer::DrawTooltips() {
 		};
 
 		// background
-		glColor4ub(tooltip->r, tooltip->g, tooltip->b, 255);
+		glColor4ub(tooltip.r, tooltip.g, tooltip.b, 255);
 		glBegin(GL_POLYGON);
 		for (int i = 0; i < 8; ++i) {
 			glVertex2f(vertexes[i][0], vertexes[i][1]);
@@ -2051,7 +2048,7 @@ void MapDrawer::DrawTooltips() {
 				char_count++;
 				line_char_count++;
 
-				if (tooltip->ellipsis && char_count >= MapTooltip::MAX_CHARS) {
+				if (tooltip.ellipsis && char_count >= MapTooltip::MAX_CHARS) {
 					glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, '.');
 					if (char_count >= (MapTooltip::MAX_CHARS + 2)) {
 						break;
@@ -2074,9 +2071,8 @@ void MapDrawer::MakeTooltip(int screenx, int screeny, const std::string& text, u
 		return;
 	}
 
-	MapTooltip* tooltip = newd MapTooltip(screenx, screeny, text, r, g, b);
-	tooltip->checkLineEnding();
-	tooltips.push_back(tooltip);
+	tooltips.emplace_back(screenx, screeny, text, r, g, b);
+	tooltips.back().checkLineEnding();
 }
 
 void MapDrawer::AddLight(TileLocation* location) {

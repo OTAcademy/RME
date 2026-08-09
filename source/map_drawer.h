@@ -111,7 +111,7 @@ class MapDrawer {
 	int floor;
 
 protected:
-	std::vector<MapTooltip*> tooltips;
+	std::vector<MapTooltip> tooltips;
 	std::ostringstream tooltip;
 
 public:

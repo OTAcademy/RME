@@ -20,5 +20,11 @@
 		"boost-thread",
 		"zlib"
 	],
+	"overrides": [
+  {
+    "name": "lua",
+    "version-string": "5.4.8"
+  }
+],
 	"builtin-baseline": "734f8130ffe2f02cf855a3a42a2958f01b3fb005"
 }
